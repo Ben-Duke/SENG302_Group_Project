@@ -1,27 +1,27 @@
 # Routes
-# This file defines all application routes (Higher priority routes first)
+# This file defines all HomeController routes (Higher priority routes first)
 # ~~~~
 
-# Home page
-GET     /                           controllers.HomeController.index
+# Root
+GET / controllers.HomeController.getRoot
 
-# Widgets
-GET     /widgets                    controllers.WidgetController.listWidgets(request: Request)
-POST    /widgets                    controllers.WidgetController.createWidget(request: Request)
+# Create profile
+GET /register                            controllers.HomeController.registerTraveller()
+POST /register                           controllers.HomeController.registrationComplete(request: Request)
 
-# Computers list (look at the default values for pagination parameters)
-GET     /computers                  controllers.HomeController.list(request: Request, p:Int ?= 0, s ?= "name", o ?= "asc", f ?= "")
-
-# Add computer
-GET     /computers/new              controllers.HomeController.create(request: Request)
-POST    /computers                  controllers.HomeController.save(request: Request)
-
-# Edit existing computer
-GET     /computers/:id              controllers.HomeController.edit(request: Request, id:Long)
-POST    /computers/:id              controllers.HomeController.update(request: Request, id:Long)
-
-# Delete a computer
-POST    /computers/:id/delete       controllers.HomeController.delete(id:Long)
+# View profile
+GET        /profiles/:username           controllers.ProfileController.viewProfile(username: String)
+GET        /profiles                 controllers.HomeController.viewAllProfiles()
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
+
+# Login
+GET     /login                        controllers.HomeController.loginHome
+POST    /login                        controllers.HomeController.submitLogin(request: Request)
+
+# Destinations
+GET     /destinations               controllers.HomeController.createDestination()
+POST    /destinations               controllers.HomeController.submitDestination(request: Request)
+GET     /profiles/:username/destinations        controllers.HomeController.viewDestinations(username: String)
+

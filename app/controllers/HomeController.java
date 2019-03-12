@@ -1,164 +1,173 @@
 package controllers;
 
-import models.Computer;
+import formdata.DestinationFormData;
+import formdata.LoginFormData;
+import formdata.TravellerFormData;
+import models.Destination;
+import models.Traveller;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import play.data.Form;
 import play.data.FormFactory;
-import play.i18n.MessagesApi;
-import play.libs.concurrent.HttpExecutionContext;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
-import play.mvc.Results;
-import repository.CompanyRepository;
-import repository.ComputerRepository;
+import scala.collection.TraversableView;
 
 import javax.inject.Inject;
-import javax.persistence.PersistenceException;
-import java.util.Map;
-import java.util.concurrent.CompletionStage;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
- * Manage a database of computers
+ * This controller contains an action to handle HTTP requests
+ * to the application's home page.
  */
 public class HomeController extends Controller {
 
-    private final ComputerRepository computerRepository;
-    private final CompanyRepository companyRepository;
-    private final FormFactory formFactory;
-    private final HttpExecutionContext httpExecutionContext;
-    private final MessagesApi messagesApi;
+    private final Form<TravellerFormData> travellerForm;
+    private final Form<LoginFormData> loginForm;
+    private final Form<DestinationFormData> destinationForm;
+    private final Logger logger = LoggerFactory.getLogger("application");
+    private static List<Traveller> travellers = new ArrayList<>();
+    private static Traveller currentTraveller = new Traveller();
+
+
+
+    // populate traveller list
+    static {
+        ArrayList<String> countries = new ArrayList<>();
+        countries.add("New Zealand");
+        ArrayList<String> nationalities = new ArrayList<>();
+        nationalities.add("Australia");
+        String dob = "2018-05-03";
+        Traveller t1 = new Traveller("nbi21", "123", "Noel", "Bisson", "Male", countries, nationalities, dob);
+        travellers.add(t1);
+    }
+
+    public static Traveller getCurrentTraveller() {
+        return currentTraveller;
+    }
+
+    public static List<Traveller> getTravellers() {
+        return travellers;
+    }
 
     @Inject
-    public HomeController(FormFactory formFactory,
-                          ComputerRepository computerRepository,
-                          CompanyRepository companyRepository,
-                          HttpExecutionContext httpExecutionContext,
-                          MessagesApi messagesApi) {
-        this.computerRepository = computerRepository;
-        this.formFactory = formFactory;
-        this.companyRepository = companyRepository;
-        this.httpExecutionContext = httpExecutionContext;
-        this.messagesApi = messagesApi;
+    public HomeController(FormFactory formFactory) {
+        travellerForm = formFactory.form(TravellerFormData.class);
+        loginForm = formFactory.form(LoginFormData.class);
+        destinationForm = formFactory.form(DestinationFormData.class);
     }
 
     /**
-     * This result directly redirect to application home.
-     */
-    private Result REDIRECTTOLIST = Results.redirect(
-        routes.HomeController.list(0, "name", "asc", "")
-    );
-
-    /**
-     * Handle default path requests
-     */
-    public Result index() {
-      return ok(views.html.index.render());
-    }
-
-    /**
-     * Display the paginated list of computers.
+     * Returns the page with a form to register a new traveller and their details
      *
-     * @param page   Current page number (starts from 0)
-     * @param sortBy Column to be sorted
-     * @param order  Sort order (either asc or desc)
-     * @param filter Filter applied on computer names
+     * @return The page containing the create traveller form.
      */
-    public CompletionStage<Result> list(Http.Request request, int page, String sortBy, String order, String filter) {
-        // Run a db operation in another thread (using DatabaseExecutionContext)
-        return computerRepository.page(page, 10, sortBy, order, filter).thenApplyAsync(list -> {
-            // This is the HTTP rendering thread context
-            return ok(views.html.list.render(list, sortBy, order, filter, request, messagesApi.preferred(request)));
-        }, httpExecutionContext.current());
+    public Result registerTraveller() {
+        TravellerFormData travellerFormData =  new TravellerFormData();
+        travellerForm.fill(travellerFormData);
+        Date today = new Date();
+        today.setTime(today.getTime());
+        logger.debug("getIndex");
+        return ok(views.html.containers.profile.register.render(travellerForm, Traveller.getGenderList(), today.toString(), Traveller.getCountryList()));
     }
 
     /**
-     * Display the 'edit form' of a existing Computer.
+     * Returns the page with a comfirmation that the traveller is registered.
      *
-     * @param id Id of the computer to edit
+     * @return A view that redirects the traveller to the complete registration page.
      */
-    public CompletionStage<Result> edit(Http.Request request,Long id) {
 
-        // Run a db operation in another thread (using DatabaseExecutionContext)
-        CompletionStage<Map<String, String>> companiesFuture = companyRepository.options();
-
-        // Run the lookup also in another thread, then combine the results:
-        return computerRepository.lookup(id).thenCombineAsync(companiesFuture, (computerOptional, companies) -> {
-            // This is the HTTP rendering thread context
-            Computer c = computerOptional.get();
-            Form<Computer> computerForm = formFactory.form(Computer.class).fill(c);
-            return ok(views.html.editForm.render(id, computerForm, companies, request, messagesApi.preferred(request)));
-        }, httpExecutionContext.current());
-    }
-
-    /**
-     * Handle the 'edit form' submission
-     *
-     * @param id Id of the computer to edit
-     */
-    public CompletionStage<Result> update(Http.Request request, Long id) throws PersistenceException {
-        Form<Computer> computerForm = formFactory.form(Computer.class).bindFromRequest(request);
-        if (computerForm.hasErrors()) {
-            // Run companies db operation and then render the failure case
-            return companyRepository.options().thenApplyAsync(companies -> {
-                // This is the HTTP rendering thread context
-                return badRequest(views.html.editForm.render(id, computerForm, companies, request, messagesApi.preferred(request)));
-            }, httpExecutionContext.current());
+    public Result registrationComplete(Http.Request request){
+        Form<TravellerFormData> incomingForm = travellerForm.bindFromRequest(request);
+        if (incomingForm.hasErrors()) {
+            Date today = new Date();
+            today.setTime(today.getTime());
+            return badRequest(views.html.containers.profile.register.render(incomingForm, Traveller.getGenderList(), today.toString(), Traveller.getCountryList()));
         } else {
-            Computer newComputerData = computerForm.get();
-            // Run update operation and then flash and then redirect
-            return computerRepository.update(id, newComputerData).thenApplyAsync(data -> {
-                // This is the HTTP rendering thread context
-                return REDIRECTTOLIST
-                    .flashing("success", "Computer " + newComputerData.name + " has been updated");
-            }, httpExecutionContext.current());
+            TravellerFormData created = incomingForm.get();
+            Traveller createdTraveller = Traveller.makeInstance(created);
+            travellers.add(createdTraveller);
+            currentTraveller = createdTraveller;
+            logger.debug(incomingForm.get().toString());
+            return ok(views.html.components.profile.viewProfile.render(createdTraveller));
         }
     }
 
     /**
-     * Display the 'new computer form'.
+     * Returns the login result page, whether there is an error or it is successful
+     * @param request the http request
+     * @return The corresponding view relating to login success or failure
      */
-    public CompletionStage<Result> create(Http.Request request) {
-        Form<Computer> computerForm = formFactory.form(Computer.class);
-        // Run companies db operation and then render the form
-        return companyRepository.options().thenApplyAsync((Map<String, String> companies) -> {
-            // This is the HTTP rendering thread context
-            return ok(views.html.createForm.render(computerForm, companies, request, messagesApi.preferred(request)));
-        }, httpExecutionContext.current());
-    }
+    public Result submitLogin(Http.Request request) {
+        Form<LoginFormData> incomingForm = loginForm.bindFromRequest(request);
+        if (incomingForm.hasErrors()) {
+            return badRequest(views.html.containers.login.loginhome.render(incomingForm));
+        } else {
+            LoginFormData created = incomingForm.get();
 
-    /**
-     * Handle the 'new computer form' submission
-     */
-    public CompletionStage<Result> save(Http.Request request) {
-        Form<Computer> computerForm = formFactory.form(Computer.class).bindFromRequest(request);
-        if (computerForm.hasErrors()) {
-            // Run companies db operation and then render the form
-            return companyRepository.options().thenApplyAsync(companies -> {
-                // This is the HTTP rendering thread context
-                return badRequest(views.html.createForm.render(computerForm, companies, request, messagesApi.preferred(request)));
-            }, httpExecutionContext.current());
+            currentTraveller = ProfileController.findTraveller(created.username);
+            return redirect(routes.ProfileController.viewProfile(currentTraveller.getUsername()));
         }
-
-        Computer computer = computerForm.get();
-        // Run insert db operation, then redirect
-        return computerRepository.insert(computer).thenApplyAsync(data -> {
-            // This is the HTTP rendering thread context
-            return REDIRECTTOLIST
-                .flashing("success", "Computer " + computer.name + " has been created");
-        }, httpExecutionContext.current());
     }
 
     /**
-     * Handle computer deletion
+     * Returns the page to log in.
+     * @return A view that the traveller uses to login
      */
-    public CompletionStage<Result> delete(Long id) {
-        // Run delete db operation, then redirect
-        return computerRepository.delete(id).thenApplyAsync(v -> {
-            // This is the HTTP rendering thread context
-            return REDIRECTTOLIST
-                .flashing("success", "Computer has been deleted");
-        }, httpExecutionContext.current());
+    public Result loginHome() {
+        return ok(views.html.containers.login.loginhome.render(loginForm));
     }
 
+    /**
+     * Returns the create destination page
+     * @return A view that the traveller uses to create a destination
+     */
+    public Result createDestination() {
+        Date today = new Date();
+        return ok(views.html.containers.destinations.createdestination.render(destinationForm, DestinationFormData.getTypeList(), today.toString(), Traveller.getCountryList(), currentTraveller));
+    }
+
+    /**
+     * Returns the result of the destination creation, a failure from form errors or success
+     * @param request the http request
+     * @return A view that corresponds to the form actions
+     */
+    public Result submitDestination(Http.Request request) {
+        Date today = new Date();
+        Form<DestinationFormData> incomingForm = destinationForm.bindFromRequest(request);
+        if (incomingForm.hasErrors()) {
+            return badRequest(views.html.containers.destinations.createdestination.render(incomingForm, DestinationFormData.getTypeList(), today.toString(), Traveller.getCountryList(), currentTraveller));
+        } else {
+            Destination newDestination = Destination.makeInstance(incomingForm.get());
+            currentTraveller.getDestinations().add(newDestination);
+            return ok(views.html.components.profile.viewProfile.render(currentTraveller));
+        }
+    }
+
+    /**
+     * Returns the view destinations page for a particular traveller
+     * @param username the user whose destinations are being viewed
+     * @return the view destinations page
+     */
+    public Result viewDestinations(String username) {
+        Traveller newTraveller = ProfileController.findTraveller(username);
+        return ok(views.html.containers.destinations.viewDestinations.render(newTraveller));
+    }
+
+    /**
+     * Returns the view all profiles page for all travellers
+     * @return the view all profiles page
+     */
+    public Result viewAllProfiles() {
+        return ok(views.html.components.profile.completeregister.render(travellers));
+    }
+
+    /** Redirect to login from root **/
+    public Result getRoot() {
+        return redirect(routes.HomeController.loginHome());
+    }
 }
-            

@@ -1,4 +1,4 @@
-name := "SENG302 TEAM UPDATE ME"
+name := "team-3"
 
 version := "0.0.1-SNAPSHOT"
 
@@ -17,5 +17,4 @@ libraryDependencies += "org.assertj" % "assertj-core" % "3.6.2" % Test
 libraryDependencies += "org.mockito" % "mockito-core" % "2.1.0" % Test
 testOptions in Test += Tests.Argument(TestFrameworks.JUnit, "-a", "-v")
 
-javacOptions ++= Seq("-Xlint:unchecked", "-Xlint:deprecation", "-Werror")
-
+javacOptions ++= Seq("-Xlint:unchecked", "-Xlint:deprecation")

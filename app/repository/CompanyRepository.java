@@ -4,7 +4,6 @@ import io.ebean.Ebean;
 import io.ebean.EbeanServer;
 import models.Company;
 import play.db.ebean.EbeanConfig;
-import play.db.ebean.EbeanDynamicEvolutions;
 
 import javax.inject.Inject;
 import java.util.HashMap;
@@ -21,13 +20,11 @@ public class CompanyRepository {
 
     private final EbeanServer ebeanServer;
     private final DatabaseExecutionContext executionContext;
-    private final EbeanDynamicEvolutions ebeanDynamicEvolutions;
-    
+
     @Inject
-    public CompanyRepository(EbeanConfig ebeanConfig, EbeanDynamicEvolutions ebeanDynamicEvolutions, DatabaseExecutionContext executionContext) {
-    	this.ebeanDynamicEvolutions = ebeanDynamicEvolutions;
-    	this.ebeanServer = Ebean.getServer(ebeanConfig.defaultServer());
-    	this.executionContext = executionContext;
+    public CompanyRepository(EbeanConfig ebeanConfig, DatabaseExecutionContext executionContext) {
+        this.ebeanServer = Ebean.getServer(ebeanConfig.defaultServer());
+        this.executionContext = executionContext;
     }
 
     public CompletionStage<Map<String, String>> options() {

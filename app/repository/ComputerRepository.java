@@ -3,7 +3,6 @@ package repository;
 import io.ebean.*;
 import models.Computer;
 import play.db.ebean.EbeanConfig;
-import play.db.ebean.EbeanDynamicEvolutions;
 
 import javax.inject.Inject;
 import java.util.Optional;
@@ -19,13 +18,11 @@ public class ComputerRepository {
 
     private final EbeanServer ebeanServer;
     private final DatabaseExecutionContext executionContext;
-    private final EbeanDynamicEvolutions ebeanDynamicEvolutions;
-    
+
     @Inject
-    public ComputerRepository(EbeanConfig ebeanConfig, EbeanDynamicEvolutions ebeanDynamicEvolutions, DatabaseExecutionContext executionContext) {
-    	this.ebeanDynamicEvolutions = ebeanDynamicEvolutions;
-    	this.ebeanServer = Ebean.getServer(ebeanConfig.defaultServer());
-    	this.executionContext = executionContext;
+    public ComputerRepository(EbeanConfig ebeanConfig, DatabaseExecutionContext executionContext) {
+        this.ebeanServer = Ebean.getServer(ebeanConfig.defaultServer());
+        this.executionContext = executionContext;
     }
 
     /**

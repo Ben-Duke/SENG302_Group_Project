@@ -1,0 +1,45 @@
+@(traveller: Traveller)
+
+
+
+@infoRow(title: String, value: String) = {
+    <div class="row">
+        <div class="col">
+            @title: @value
+        </div>
+    </div>
+}
+
+@main("View Profile") {
+    @if(traveller == null) {
+        <div> The username given did not match any existing profiles. </div>
+    } else {
+        <div class="container">
+            @infoRow("First Name", traveller.getFirstName)
+            @infoRow("Last Name", traveller.getLastName)
+            @infoRow("Username", traveller.getUsername)
+            @infoRow("Password", traveller.getPassword)
+            @infoRow("Date of Birth", traveller.getDob.toString)
+            @infoRow("Passports", traveller.getPassports.toString)
+            @infoRow("Nationalities", traveller.getNationalities.toString)
+        </div>
+
+        <div class="container">
+            <div class="row no-gutters">
+                <div class="col">
+                    <br>
+                    <form action = "@routes.HomeController.viewDestinations(traveller.getUsername)">
+                        <input id="createDestination" type="submit" class="btn btn-primary" value="View Destinations">
+                    </form>
+                    <br>
+                    <form action = "@routes.HomeController.viewAllProfiles()">
+                        <input id="createDestination" type="submit" class="btn btn-primary" value="View Other Profiles">
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    }
+
+
+}

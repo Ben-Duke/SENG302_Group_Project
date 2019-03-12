@@ -1,0 +1,10 @@
+@(created: formdata.LoginFormData)
+@main("Logged in") {
+    <div class="alert alert-success alert-dismissible">
+        <a href="#" class="close" onclick="this.parentElement.style.display='none';" data-dismiss="alert" aria-label="close">&times;</a>
+        <strong>Logged in!</strong>
+        @created.username
+        @created.password
+    </div>
+
+}

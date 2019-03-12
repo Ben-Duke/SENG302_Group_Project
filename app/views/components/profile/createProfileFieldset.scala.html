@@ -1,0 +1,69 @@
+@import java.util
+@import formdata.TravellerFormData
+@(travellerForm: Form[TravellerFormData], genders: util.List[String], today: String, countries: util.Map[String, Boolean])
+
+
+@import views.html.bootstrap3._
+
+<fieldset>
+        <!-- Header -->
+    <legend id="legend">Traveller registration</legend>
+
+        <!-- FirstName -->
+    @text(travellerForm("firstName"),
+        label = "First name",
+        placeholder = "first name",
+        help = "Please enter your first name. (required)")
+
+        <!-- LastName -->
+    @text(travellerForm("lastName"),
+        label = "Last name",
+        placeholder = "last name",
+        help = "Please enter your last name. (required)")
+
+        <!-- Username -->
+    @text(travellerForm("username"),
+        label = "Username",
+        placeholder = "traveller name",
+        help = "Please enter your Username. (required)")
+
+        <!-- Password -->
+    @password(travellerForm("password"),
+        label = "Password",
+        placeholder = "password",
+        help = "Please enter your Password. (required)")
+
+        <!-- Gender -->
+    @radiobuttons(travellerForm("gender"),
+        label = "Gender",
+        buttonNameList = genders,
+        help = "Please select your gender. (required)")
+
+        <!-- Date of birth -->
+    @datepicker(travellerForm("dob"),
+        label = "Date of birth",
+        placeholder = "01/01/2000",
+        max = today,
+        help = "Please select your Date of birth. (required)")
+
+        <!-- Passports -->
+    @select(travellerForm("passports"),
+        label = "Passports",
+        optionMap = countries,
+        isMultiple = true,
+        help = "Select(Using ctrl) zero or more passports. (optional)")
+
+        <!-- Nationalities -->
+    @select(travellerForm("nationalities"),
+        label = "Nationalities",
+        optionMap = countries,
+        isMultiple = true,
+        help = "Select(Using ctrl) zero or more nationalities. (required)")
+
+    <div class="form-group actions">
+        <div class="col-sm-offset-2 col-sm-10">
+            <input id="submit" type="submit" value="Submit" class="btn btn-primary"/>
+        </div>
+    </div>
+
+</fieldset>

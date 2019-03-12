@@ -1,0 +1,51 @@
+@import java.util
+@import formdata.TravellerFormData
+@import helper._
+@(created: List[Traveller])
+
+@main("Complete Register") {
+
+    <h2>Users:</h2>
+
+    <table class="table">
+        <thead class="thead-dark">
+        <tr>
+            <th scope="col">Username</th>
+            <th scope="col">First</th>
+            <th scope="col">Last</th>
+            <th scope="col">Date Of Birth</th>
+            <th scope="col">Gender</th>
+            <th scope="col">Passports</th>
+            <th scope="col">Nationalities</th>
+        </tr>
+        </thead>
+        <tbody>
+            @for(traveller <- created) {
+                <tr>
+                    <th scope="row">
+                        <form action = "@routes.ProfileController.viewProfile(traveller.getUsername)">
+                            <input id="createProfile" type="submit" class="btn btn-link" value=@traveller.getUsername>
+                        </form></th>
+                    <td>@traveller.getFirstName</td>
+                    <td>@traveller.getLastName</td>
+                    <td>@traveller.getDob</td>
+                    <td>@traveller.getGender</td>
+                    <td>@traveller.getPassports</td>
+                    <td>@traveller.getNationalities</td>
+                </tr>
+            }
+        </tbody>
+
+    </table>
+
+
+    <div class="col-sm">
+        <br>
+        <form action = "@routes.HomeController.registerTraveller()">
+            <input id="createProfile" type="submit" class="btn btn-primary" value="Create a new profile">
+        </form>
+    </div>
+
+}
+
+

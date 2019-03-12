@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="sbt: io.ebean:ebean-datasource-api:4.3:jar">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.ivy2/cache/io.ebean/ebean-datasource-api/jars/ebean-datasource-api-4.3.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.ivy2/cache/io.ebean/ebean-datasource-api/srcs/ebean-datasource-api-4.3-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

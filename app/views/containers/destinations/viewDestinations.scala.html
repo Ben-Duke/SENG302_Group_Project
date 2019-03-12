@@ -1,0 +1,46 @@
+@import java.util
+@(traveller: Traveller)
+
+@main("Destinations") {
+    <h2>Destinations: </h2>
+    <table class="table">
+        <thead class="thead-dark">
+            <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Type</th>
+                <th scope="col">Country</th>
+                <th scope="col">City</th>
+                <th scope="col">District</th>
+                <th scope="col">Latitude</th>
+                <th scope="col">Longitude</th>
+                <th scope="col">Date</th>
+            </tr>
+        </thead>
+        <tbody>
+
+        @for(destination <- traveller.getDestinations) {
+            <tr>
+                <th scope="row">@destination.getName</th>
+                <td>@destination.getType</td>
+                <td>@destination.getCountry</td>
+                <td>@destination.getCity</td>
+                <td>@destination.getDistrict</td>
+                <td>@destination.getLatitude</td>
+                <td>@destination.getLongitude</td>
+                <td>@destination.getDate</td>
+            </tr>
+        }
+        </tbody>
+
+    </table>
+
+    @if(traveller.getUsername == HomeController.getCurrentTraveller().getUsername) {
+    <div class="col-sm">
+        <form action = "@routes.HomeController.createDestination()">
+            <input id="createDestination" type="submit" class="btn btn-primary" value="Add a destination to the profile">
+        </form>
+    </div>
+    }
+
+
+}

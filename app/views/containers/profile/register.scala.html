@@ -1,0 +1,30 @@
+@import formdata.TravellerFormData
+@import java.util
+@(travellerForm: Form[TravellerFormData], genders:util.List[String], today: String, countries:util.Map[String, Boolean])
+
+@import helper._
+
+@main("Index") {
+    <div class="container">
+        <div class="well">
+        @form(routes.HomeController.registrationComplete()  , 'class -> "form-horizontal") {
+            @components.profile.createProfileFieldset(travellerForm, genders, today, countries)
+        }
+        </div>
+
+        @if(flash.containsKey("success")) {
+            <div class="well">
+                <div id="success-message" class="text-success">
+                @flash.get("success")
+                </div>
+            </div>
+        }
+        @if(flash.containsKey("error")) {
+            <div class="well">
+                <div id="error-message" class="text-danger">
+                @flash.get("error")
+                </div>
+            </div>
+        }
+    </div>
+}

@@ -1,0 +1,27 @@
+# Routes
+# This file defines all HomeController routes (Higher priority routes first)
+# ~~~~
+
+# Root
+GET / controllers.HomeController.getRoot
+
+# Create profile
+GET /register                            controllers.HomeController.registerTraveller()
+POST /register                           controllers.HomeController.registrationComplete(request: Request)
+
+# View profile
+GET        /profiles/:username           controllers.ProfileController.viewProfile(username: String)
+GET        /profiles                 controllers.HomeController.viewAllProfiles()
+
+# Map static resources from the /public folder to the /assets URL path
+GET     /assets/*file               controllers.Assets.at(path="/public", file)
+
+# Login
+GET     /login                        controllers.HomeController.loginHome
+POST    /login                        controllers.HomeController.submitLogin(request: Request)
+
+# Destinations
+GET     /destinations               controllers.HomeController.createDestination()
+POST    /destinations               controllers.HomeController.submitDestination(request: Request)
+GET     /profiles/:username/destinations        controllers.HomeController.viewDestinations(username: String)
+

@@ -1,0 +1,69 @@
+@import java.util
+@(destinationForm: Form[formdata.DestinationFormData], typeMap: Map[String, Boolean], today: String, countries: Map[String, Boolean], traveller: Traveller)
+@import helper._
+@import views.html.bootstrap3._
+
+
+@main("Create Destination") {
+    @helper.form(action = routes.HomeController.submitDestination(), 'id -> "destinationForm") {
+        <fieldset>
+            <!-- Header -->
+            <legend>Destination</legend>
+
+                <!-- Name -->
+            @text(destinationForm("name"),
+                label = "Destination Name",
+                placeholder = "destination name",
+                help = "Please enter the destination. (required)")
+
+            @views.html.bootstrap3.select(destinationForm("country"),
+                label= "Country",
+                optionMap= countries,
+                isMultiple= false,
+                help= "Select a country")
+
+            @text(destinationForm("city"),
+                label = "City",
+                placeholder = "city",
+            )
+
+            @text(destinationForm("district"),
+                label = "District",
+                placeholder = "district",
+            )
+
+            @text(destinationForm("latitude"),
+                label = "Latitude",
+                placeholder = "latitude"
+            )
+
+            @text(destinationForm("longitude"),
+                label = "Longitude",
+                placeholder = "longitude"
+            )
+
+            @views.html.bootstrap3.select(destinationForm("type"),
+                label = "Type",
+                optionMap = typeMap,
+                isMultiple = false,
+                help = "Select a type")
+
+            @datepicker(destinationForm("date"),
+                label = "Date",
+                placeholder = "01/01/2000",
+                max = today,
+                help = "Please select the event date. (required)")
+
+
+
+
+
+        </fieldset>
+
+        <div class="form-group actions">
+            <div class="col-sm-offset-2 col-sm-10">
+                <input id="submit" type="submit" value="Submit" class="btn btn-primary"/>
+            </div>
+        </div>
+    }
+}

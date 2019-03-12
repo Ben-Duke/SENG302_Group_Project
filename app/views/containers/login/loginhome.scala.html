@@ -1,0 +1,38 @@
+@(loginForm: Form[formdata.LoginFormData])
+@import helper._
+@import views.html.bootstrap3._
+
+@main("Login") {
+    @helper.form(action = routes.HomeController.submitLogin(), 'id -> "loginForm") {
+        <fieldset>
+                <!-- Header -->
+            <legend> Login</legend>
+
+                <!-- Name -->
+            @text(loginForm("username"),
+                label = "Username",
+                placeholder = "Traveller name",
+                help = "Please enter your Username. (required)")
+
+            @password(loginForm("password"),
+                label = "Password",
+                placeholder = "Password",
+                help = "Please enter your Password. (required)")
+
+        </fieldset>
+
+        <div class="form-group actions">
+            <div class="col-sm-offset-2 col-sm-10">
+
+                <input id="submit" type="submit" value="Submit" class="btn btn-primary"/>
+                <button id="cancel" class="btn cancel">Cancel</button>
+            </div>
+        </div>
+    }
+        <div class="col-sm-offset-2">
+            <form action = "@routes.HomeController.registerTraveller()">
+                <input id="signUp" type="submit" class="btn btn-link" value="New? Sign up here.">
+            </form>
+        </div>
+}
+

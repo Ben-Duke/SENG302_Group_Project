@@ -1,0 +1,29 @@
+@import helper._
+
+@(userForm : Form[User], travellerTypes : List[TravellerType], user : User)
+
+<h1>Edit traveller types :^)</h1>
+
+@form(action = helper.CSRF(routes.TravellerTypeController.submitUpdateTravellerType)) {
+    @select(
+        field = userForm("travellertypes"),
+        options = travellerTypes.map(travellerType => travellerType.ttypeid.toString -> travellerType.travellerTypeName),
+        '_label -> "Select traveller types to add:"
+    )
+    <input type="submit" value="Add traveller type">
+}
+
+@form(action = helper.CSRF(routes.TravellerTypeController.deleteUpdateTravellerType)) {
+@select(
+    field = userForm("travellertypesdelete"),
+    options = user.getTravellerTypes().map(travellerType => travellerType.ttypeid.toString -> travellerType.travellerTypeName),
+    '_label -> "Select traveller types to delete:"
+)
+<input type="submit" value="Remove traveller type">
+}
+
+@for(travellerType <- user.travellerTypes) {
+    <p>Traveller type: @travellerType.travellerTypeName</p>
+}
+
+<a href="@routes.HomeController.showhome()">Back to home</a>

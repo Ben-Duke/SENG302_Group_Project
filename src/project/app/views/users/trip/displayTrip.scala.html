@@ -1,0 +1,16 @@
+@(trip : Trip, visits : List[Visit])
+@import helper._
+
+<html>
+    <head>
+        <title>@trip.tripName</title>
+    </head>
+    <body>
+        <h1>Your trip details: >.<</h1>
+        @for(visit <- visits) {
+            <p>Visit name: @visit.visitName | Arrival time: @visit.arrival | Departure time: @visit.departure</p>
+        }
+
+        <a href="@routes.HomeController.showhome()">Back to home</a>
+    </body>
+</html>

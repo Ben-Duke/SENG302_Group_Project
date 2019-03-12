@@ -1,0 +1,117 @@
+# Routes
+# This file defines all application routes (Higher priority routes first)
+# ~~~~
+
+# Home page
+
+#Renders user index page
+GET     /                           controllers.UserController.userindex()
+
+#Renders user index page
+GET     /users                      controllers.UserController.userindex()
+
+#Renders register page
+GET     /users/register             controllers.RegisterController.createuser()
+
+#Handles register request
+POST    /users/register             controllers.RegisterController.saveuser(request:Request)
+
+#Renders login page
+GET     /users/login                controllers.LoginController.login()
+
+#Handles login request
+POST    /users/login                controllers.LoginController.loginrequest(request:Request)
+
+#Renders create profile page
+GET     /users/profile/update       controllers.ProfileController.createprofile(request: Request)
+
+#Handles updating profile
+POST    /users/profile/update       controllers.ProfileController.updateprofile(request: Request)
+
+#Renders page for updating nationality and passport
+GET     /users/profile/update/natpass       controllers.ProfileController.updateNatPass(request: Request)
+
+#Handles adding nationality
+POST    /users/profile/update/natpass/addnat       controllers.ProfileController.submitUpdateNationality(request: Request)
+
+#Handles deleting nationality
+POST    /users/profile/update/natpass/delnat       controllers.ProfileController.deleteNationality(request: Request)
+
+#Handles adding passport
+POST    /users/profile/update/natpass/addpass       controllers.ProfileController.submitUpdatePassport(request: Request)
+
+#Handles deleting passport
+POST    /users/profile/update/natpass/delpass       controllers.ProfileController.deletePassport(request: Request)
+
+#Renders page for searching travel partners
+GET     /users/profile/search       controllers.TravelPartnerController.renderFilterPage(request: Request)
+
+#Handles searching for travel partners
+POST    /users/profile/search       controllers.TravelPartnerController.searchByAttribute(request: Request)
+
+#Renders page for creating trips
+GET     /users/trips/create         controllers.TripController.createtrip(request: Request)
+
+#Handles creating trips
+POST    /users/trips/create         controllers.TripController.savetrip(request: Request)
+
+#Handles deleting visits from a trip
+POST    /users/trips/edit/:id/delete    controllers.TripController.deletevisit(request: Request, id:Integer)
+
+#Handles swapping visits in a trip
+POST    /users/trips/edit/:id/swap  controllers.TripController.swapvisits(request: Request, id:Integer)
+
+#Renders page for editing a trip
+GET     /users/trips/edit/:id        controllers.TripController.edittrip(request: Request, id:Integer)
+
+#Handles adding a visit to a trip
+POST    /users/trips/edit/:id       controllers.TripController.addvisit(request: Request, id:Integer)
+
+#Renders page that displays a given trip
+GET     /users/trips/:id            controllers.TripController.displaytrip(request: Request, id:Integer)
+
+#Renders page that displays the home page where users can navigate to other pages
+GET     /users/home                 controllers.HomeController.showhome(request:Request)
+
+#Handles logout request from the user
+GET     /users/logout               controllers.LoginController.logoutrequest(request:Request)
+
+#Renders page for user to update traveller type
+GET     /users/profile/ttypes       controllers.TravellerTypeController.updateTravellerType(request:Request)
+
+#Handles adding a traveller type
+POST     /users/profile/ttypes      controllers.TravellerTypeController.submitUpdateTravellerType(request:Request)
+
+#Handles deleting a traveller type
+POST     /users/profile/delete      controllers.TravellerTypeController.deleteUpdateTravellerType(request:Request)
+
+#Renders page for displaying a given user's profile (used for debugging)
+GET     /users/profile/:id          controllers.ProfileController.showProfile(request : Request, id : Integer)
+
+# Map static resources from the /public folder to the /assets URL path
+GET     /assets/*file               controllers.Assets.at(path="/public", file)
+
+
+
+#Destinations
+
+#Renders index page for destinations
+GET     /users/destinations             controllers.DestinationController.indexDestination(request : Request)
+
+#Renders page for displaying a given destination
+GET     /users/destinations/:id         controllers.DestinationController.viewDestination(request : Request, id : Integer)
+
+#Renders page for creating destinations
+GET     /users/destinations/create/     controllers.DestinationController.createDestination(request : Request)
+
+#Renders page for editing destinations
+GET     /users/destinations/edit/:id    controllers.DestinationController.editDestination(request : Request, id : Integer)
+
+#Handles updating a destination
+POST    /users/destinations/update/:id  controllers.DestinationController.updateDestination(request : Request, id : Integer)
+
+#Handles creating a destination
+POST    /users/destinations/save        controllers.DestinationController.saveDestination(request : Request)
+
+#Handles deleting a destination
+GET     /users/destinations/delete/:id   controllers.DestinationController.deleteDestination(request : Request, id : Integer)

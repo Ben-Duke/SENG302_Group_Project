@@ -1,0 +1,17 @@
+@(userFrom : Form[User])
+@import helper._
+
+<html>
+    <head>
+        <title>Register user</title>
+    </head>
+    <body>
+        <h1>REGISTER</h1>
+        @helper.form(action = helper.CSRF(routes.RegisterController.saveuser())){
+            @helper.inputText(userFrom("username"), '_label -> "Email")
+            @helper.inputText(userFrom("password"), 'type -> "Password", '_label -> "Password")
+
+            <input type="submit" value="Create user">
+            }
+    </body>
+</html>

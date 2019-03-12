@@ -1,0 +1,17 @@
+@(userFrom : Form[User])
+@import helper._
+
+<html>
+    <head>
+        <title>Login</title>
+    </head>
+    <body>
+        <h1>Login</h1>
+        @helper.form(action = helper.CSRF(routes.LoginController.loginrequest())){
+            @helper.inputText(userFrom("username"), '_label -> "Email")
+            @helper.inputText(userFrom("password"), 'type -> "password", '_label -> "Password")
+
+            <input type="submit" value="Login">
+            }
+    </body>
+</html>

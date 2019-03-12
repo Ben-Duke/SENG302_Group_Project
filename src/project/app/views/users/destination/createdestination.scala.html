@@ -1,0 +1,22 @@
+@(destForm : Form[Destination])
+@import helper._
+
+<html>
+    <head>
+        <title>Create Destination</title>
+    </head>
+    <body>
+        <h1>Create Destination</h1>
+        @helper.form(action = helper.CSRF(routes.DestinationController.saveDestination())) {
+            @helper.inputText(destForm("destName"), '_label -> "Destination Name: ")
+            @helper.inputText(destForm("destType"), '_label -> "Destination Type: ")
+            @helper.inputText(destForm("district"), '_label -> "District: ")
+            @helper.inputText(destForm("country"), '_label -> "Country: ")
+            @helper.inputText(destForm("latitude"), '_label -> "Latitude: ")
+            @helper.inputText(destForm("longitude"), '_label -> "Longitude: ")
+            <input type="submit" value="Create destination">
+        }
+
+        <a href="@routes.DestinationController.indexDestination()">Cancel</a>
+    </body>
+</html>

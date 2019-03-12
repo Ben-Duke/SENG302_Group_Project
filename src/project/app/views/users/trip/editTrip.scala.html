@@ -1,0 +1,53 @@
+@import views.html.helper.form
+@import views.html.helper.select
+@(visitForm : Form[Visit], trip : Trip, destinations : List[Destination], visits : List[Visit])
+@import helper._
+
+<h1>Edit trip XD</h1>
+
+@form(action = helper.CSRF(routes.TripController.addvisit(trip.tripid))) {
+    @select(
+        field = visitForm("destination"),
+        options = destinations.map(destination => destination.destid.toString -> destination.destName),
+        '_label -> "Destination"
+    )
+    @helper.inputDate(visitForm("arrival"), '_label -> "Arrival date: " )
+    @helper.inputDate(visitForm("departure"), '_label -> "Departure date: " )
+    <input type="submit" value="Add destination">
+}
+@if(visits.isEmpty){
+    <p>You currently do not have any destinations.</p>
+} else{
+    @form(action = helper.CSRF(routes.TripController.deletevisit(trip.tripid))) {
+        @select(
+            field = visitForm("visitid"),
+            options = visits.map(visit => visit.visitid.toString -> visit.visitName),
+            '_label -> "Destination"
+        )
+        <input type="submit" value="Remove destination">
+    }
+}
+
+@if(visits.isEmpty){
+    <p>You currently do not have any destinations.</p>
+} else{
+    @form(action = helper.CSRF(routes.TripController.swapvisits(trip.tripid))) {
+        @select(
+            field = visitForm("visitid1"),
+            options = visits.map(visit => visit.visitid.toString -> visit.visitName),
+            '_label -> "First Destination to swap:"
+        )
+        @select(
+            field = visitForm("visitid2"),
+            options = visits.map(visit => visit.visitid.toString -> visit.visitName),
+            '_label -> "Second Destination to swap:"
+        )
+        <input type="submit" value="Swap destination order">
+    }
+}
+
+@for(visit <- trip.visits) {
+    <p>Destination: @visit.visitName</p>
+}
+
+<a href="@routes.HomeController.showhome()">Back to home</a>

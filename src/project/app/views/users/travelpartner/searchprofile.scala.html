@@ -1,0 +1,25 @@
+@import helper._
+
+@import play.data.DynamicForm
+@(dynamicForm : DynamicForm, travellerTypes : List[TravellerType], nationalities : List[Nationality])
+
+<h1>Update filters owo</h1>
+
+@form(action = helper.CSRF(routes.TravelPartnerController.searchByAttribute)) {
+    @select(
+        field = dynamicForm("travellertype"),
+        options = travellerTypes.map(travellerType => travellerType.ttypeid.toString -> travellerType.travellerTypeName),
+        '_label -> "Select traveller types to add:"
+    )
+    @helper.inputRadioGroup(
+        dynamicForm("gender"),
+        options = options("Male"->"Male","Female"->"Female", "Other"->"Other"), '_label -> "Gender: ")
+    @helper.select(dynamicForm("nationality"),
+        options = nationalities.map(nationality => nationality.natid.toString -> nationality.nationalityName),
+        '_label -> "Nationality: ")
+    @helper.inputDate(dynamicForm("agerange1"), '_label -> "Date range 1: " )
+    @helper.inputDate(dynamicForm("agerange2"), '_label -> "Date range 2: " )
+    <input type="submit" value="Search by filters">
+}
+
+<a href="@routes.HomeController.showhome()">Back to home</a>

@@ -1,0 +1,32 @@
+@(user: User)
+
+<html>
+    <head>
+        <title>Home</title>
+    </head>
+    <body>
+        <h1>Home page</h1>
+        <p>Welcome, @user.username</p>
+        <p>Here is your current profile</p>
+        <p>First Name: @user.fName</p>
+        <p>Last Name: @user.lName</p>
+        <p>Gender: @user.gender</p>
+        <p>Date of Birth: @user.dateOfBirth</p>
+        @for(passport <- user.passports) {
+            <p>Passport: @passport.passportName</p>
+        }
+        @for(nationality <- user.nationality) {
+            <p>Nationality: @nationality.nationalityName</p>
+        }
+        <p>Creation date: @user.creationDate</p>
+        @for(travellerType <- user.travellerTypes) {
+            <p>Traveller type: @travellerType.travellerTypeName</p>
+        }
+        <a href="@routes.ProfileController.createprofile()">Update profile</a>
+        <a href="@routes.LoginController.logoutrequest()">Logout</a>
+        <a href="@routes.TravellerTypeController.updateTravellerType()">Update traveller type</a>
+        <a href="@routes.DestinationController.indexDestination()">Destinations</a>
+        <a href="@routes.TripController.createtrip()">Create trip</a>
+        <a href="@routes.TravelPartnerController.renderFilterPage()">Search profile</a>
+    </body>
+</html>

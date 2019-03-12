@@ -1,0 +1,25 @@
+@(destinations: List[Destination])
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Destinations</title>
+    </head>
+    <body>
+        <h1>Destinations</h1>
+        <a href="@routes.HomeController.showhome()">Home</a>
+        <a href="@routes.DestinationController.createDestination()">New</a>
+        <br>
+        @for(destination <- destinations) {
+            <p>
+                @destination.getDestName()
+                @destination.getDestType()
+                @destination.getCountry()
+            </p>
+            <a href="@routes.DestinationController.viewDestination(destination.getDestId)">View</a>
+            <a href="@routes.DestinationController.deleteDestination(destination.getDestId())">Delete</a>
+            <br>
+        }
+    </body>
+</html>

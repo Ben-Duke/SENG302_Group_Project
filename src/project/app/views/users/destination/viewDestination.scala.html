@@ -1,0 +1,23 @@
+@(destination: Destination)
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Title</title>
+    </head>
+    <body>
+        <h1>Name: @destination.getDestName()</h1>
+        <p>
+            Type: @destination.getDestType()
+            Country: @destination.getCountry()
+            District: @destination.getDistrict()
+            Latitude: @destination.getLatitude()
+            Longitude: @destination.getLongitude()
+            <a href="@routes.DestinationController.editDestination(destination.getDestId())">Edit</a>
+            <a href="@routes.DestinationController.deleteDestination(destination.getDestId())">Delete</a>
+        </p>
+        <a href="@routes.DestinationController.indexDestination()">Done</a>
+
+    </body>
+</html>

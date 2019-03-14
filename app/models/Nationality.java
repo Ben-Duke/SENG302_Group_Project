@@ -22,6 +22,8 @@ public class Nationality extends Model {
     @ManyToMany(mappedBy = "nationality")
     public List<User> users;
 
+    public String getNationalityName() { return nationalityName; }
+
     public List<User> getUsers() {
         return users;
     }

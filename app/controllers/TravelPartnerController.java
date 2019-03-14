@@ -28,17 +28,36 @@ public class TravelPartnerController {
     FormFactory formFactory;
 
     /**
-     * Renders the page to search for users by attributes.
+     * Initiates the form teh will take the search parameters.
+     * Retrieves a list of all traveler types and all nationalities.
+     * Renders the searchprofile page.
+     *
+     * @param resultProfiles all the profile resulting from the users search.
+     *                       This will be empty when the user first enters the page
+     * @return renders the search profile page
+     */
+    private Result displayRenderedFilterPage(List<User> resultProfiles) {
+
+        DynamicForm dynamicForm = formFactory.form();
+        List<TravellerType> travellerTypes = TravellerType.find.all();
+        List<Nationality> nationalities = Nationality.find.all();
+
+        return ok(searchprofile.render(dynamicForm, travellerTypes, nationalities, resultProfiles));
+    }
+
+
+    /**
+     * This method is called when the user first hits the searchprofile page.
+     * Initialises an empty User list as there user has not searched anything yet.
      * @param request the http request
      * @return the filter page
      */
     public Result renderFilterPage(Http.Request request){
         User user = User.getCurrentUser(request);
         if (user != null) {
-            DynamicForm dynamicForm = formFactory.form();
-            List<TravellerType> travellerTypes = TravellerType.find.all();
-            List<Nationality> nationalities = Nationality.find.all();
-            return ok(searchprofile.render(dynamicForm, travellerTypes, nationalities));
+            List<User> resultProfiles = new ArrayList<>();
+
+            return displayRenderedFilterPage(resultProfiles);
         }
         else{
             return unauthorized("Oops, you are not logged in");
@@ -90,18 +109,24 @@ public class TravelPartnerController {
                 userLists.add(userTravellerType);
             }
 
-            List<User> userList = UtilityFunctions.retainFromLists(userLists);
+            List<User> resultProfiles = UtilityFunctions.retainFromLists(userLists);
             //remove the current user from the list
-            if(userList.contains(user)){
-                userList.remove(user);
+            if(resultProfiles.contains(user)){
+                resultProfiles.remove(user);
             }
-            if(userList.size() == 0){
+            if(resultProfiles.size() == 0){
                 return badRequest("No users found!");
             }
-            return ok("user found! This will later be converted to show the user's profile: " + userList.toString());
+            //Redisplay the page, but this time with the search results
+            return displayRenderedFilterPage(resultProfiles);
+//            return ok("user found! This will later be converted to show the user's profile: " + userList.toString());
         }
         else{
             return unauthorized("Oops, you're not logged in!");
         }
     }
+
+
+
+
 }

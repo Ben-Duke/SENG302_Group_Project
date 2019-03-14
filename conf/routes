@@ -49,6 +49,7 @@ GET     /users/profile/search       controllers.TravelPartnerController.renderFi
 #Handles searching for travel partners
 POST    /users/profile/search       controllers.TravelPartnerController.searchByAttribute(request: Request)
 
+
 #Renders page for creating trips
 GET     /users/trips/create         controllers.TripController.createtrip(request: Request)
 
@@ -113,5 +114,5 @@ POST    /users/destinations/update/:id  controllers.DestinationController.update
 #Handles creating a destination
 POST    /users/destinations/save        controllers.DestinationController.saveDestination(request : Request)
 
-#Handles deleting a destination
+#Handles deleting a destination //TODO needs to be changed from get request
 GET     /users/destinations/delete/:id   controllers.DestinationController.deleteDestination(request : Request, id : Integer)

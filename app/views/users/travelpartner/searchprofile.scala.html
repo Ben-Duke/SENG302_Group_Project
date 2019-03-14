@@ -1,9 +1,9 @@
 @import helper._
 
 @import play.data.DynamicForm
-@(dynamicForm : DynamicForm, travellerTypes : List[TravellerType], nationalities : List[Nationality])
+@(dynamicForm : DynamicForm, travellerTypes : List[TravellerType], nationalities : List[Nationality], resultProfiles : List[User])
 
-<h1>Update filters owo</h1>
+<h1>Update filters</h1>
 
 @form(action = helper.CSRF(routes.TravelPartnerController.searchByAttribute)) {
     @select(
@@ -20,6 +20,29 @@
     @helper.inputDate(dynamicForm("agerange1"), '_label -> "Date range 1: " )
     @helper.inputDate(dynamicForm("agerange2"), '_label -> "Date range 2: " )
     <input type="submit" value="Search by filters">
+
+    @if(resultProfiles.size > 0) {
+        <table style="width:100%">
+            <tr>
+                <th align="left">Username</th>
+                <th align="left">Gender</th>
+                <th align="left">Nationalities</th>
+                <th align="left">DOB</th>
+                <th align="left">Traveler types</th>
+            </tr>
+
+            @for(profile <- resultProfiles) {
+                <tr>
+                    <td>@profile.getUsername()</td>
+                    <td>@profile.getGender()</td>
+                    <td>@for(nationality <- profile.getNationality()) {<p>@nationality.nationalityName</p>}</td>
+                    <td>@profile.getDateOfBirth()</td>
+                    <td>@for(travellerType <- profile.getTravellerTypes()) {<p>@travellerType.travellerTypeName</p>}</td>
+                </tr>
+            }
+        </table>
+    }
+
 }
 
 <a href="@routes.HomeController.showhome()">Back to home</a>

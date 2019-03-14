@@ -6,6 +6,8 @@ scalaVersion := "2.12.8"
 
 lazy val myProject = (project in file(".")).enablePlugins(PlayJava, PlayEbean)
 
+
+
 libraryDependencies += guice
 libraryDependencies += jdbc
 libraryDependencies += "com.h2database" % "h2" % "1.4.197"

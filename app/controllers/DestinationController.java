@@ -236,7 +236,7 @@ public class DestinationController extends Controller {
 
                     oldDestination.update();
 
-                    return redirect(routes.DestinationController.viewDestination(oldDestination.getDestId()));
+                    return redirect(routes.DestinationController.indexDestination());
 
                 } else {
                     return unauthorized("Not your destination. You cant edit.");

@@ -1,22 +1,68 @@
 @(destForm : Form[Destination], destination: Destination)
 @import helper._
+@import views.html.bootstrap3._
 
-<html>
-    <head>
-        <title>Create Destination</title>
-    </head>
-    <body>
-        <h1>Update Destination</h1>
-        @helper.form(action = helper.CSRF(routes.DestinationController.updateDestination(destination.getDestId()))) {
-            @helper.inputText(destForm("destName"))
-            @helper.inputText(destForm("destType"))
-            @helper.inputText(destForm("district"))
-            @helper.inputText(destForm("country"))
-            @helper.inputText(destForm("latitude"))
-            @helper.inputText(destForm("longitude"))
-            <input type="submit" value="Update destination">
-        }
+@main("Destinations") {
 
-        <a href="@routes.DestinationController.indexDestination()">Cancel</a>
-    </body>
-</html>
+
+<nav class="navbar navbar-custom">
+
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="@routes.HomeController.showhome()">Home</a>
+        </div>
+        <ul class="nav navbar-nav">
+            <li class="active"><a href="#">Destinations</a></li>
+            <li><a href="@routes.DestinationController.createDestination()">New</a></li>
+        </ul>
+    </div>
+</nav>
+
+<h1>Edit Destination</h1>
+@helper.form(action = helper.CSRF(routes.DestinationController.updateDestination(destination.getDestId()))) {
+
+<fieldset>
+
+    <!-- Name -->
+    @text(destForm("destName"),
+    label = "Destination Name",
+    placeholder = "destination name",
+    help = "Please enter the destination. (required)")
+
+    @text(destForm("country"),
+    label = "Country",
+    placeholder = "country"
+    )
+
+    @text(destForm("district"),
+    label = "District",
+    placeholder = "district",
+    )
+
+    @text(destForm("latitude"),
+    label = "Latitude",
+    placeholder = "latitude"
+    )
+
+    @text(destForm("longitude"),
+    label = "Longitude",
+    placeholder = "longitude"
+    )
+
+    @text(destForm("destType"),
+    label = "Type",
+    placeholder = "type"
+    )
+
+</fieldset>
+<p>
+<div class="form-group actions">
+    <div class="col-sm-offset-2 col-sm-10">
+        <input id="submit" type="submit" value="Submit" class="btn btn-primary"/>
+        <a class="btn btn-danger" href="@routes.DestinationController.indexDestination()" role="button">Cancel</a>
+    </div>
+</div>
+</p>
+
+}
+}

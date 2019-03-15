@@ -16,10 +16,7 @@ import javax.inject.Inject;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.SortedMap;
+import java.util.*;
 
 import static play.mvc.Results.*;
 
@@ -42,9 +39,13 @@ public class TravelPartnerController {
         DynamicForm dynamicForm = formFactory.form();
         List<TravellerType> travellerTypes = TravellerType.find.all();
         List<Nationality> nationalities = Nationality.find.all();
+        Map<String, Boolean> genderMap = new TreeMap<>();
+        genderMap.put("Male", true);
+        genderMap.put("Female", true);
+        genderMap.put("Other", true);
 
 
-        return ok(searchprofile.render(dynamicForm, travellerTypes, nationalities, resultProfiles));
+        return ok(searchprofile.render(dynamicForm, travellerTypes, nationalities, genderMap, resultProfiles));
     }
 
 
@@ -74,15 +75,30 @@ public class TravelPartnerController {
      * @return List of users or error message
      */
     public Result searchByAttribute(Http.Request request){
+
+
         DynamicForm filterForm = formFactory.form().bindFromRequest();
         String travellerType = filterForm.get("travellertype");
         String nationality = filterForm.get("nationality");
+
+        List<String> genderSelections = new ArrayList<>();
+        genderSelections.add(filterForm.get("gender[0"));
+        genderSelections.add(filterForm.get("gender[1"));
+        genderSelections.add(filterForm.get("gender[2"));
+
+
+
+
         String gender = filterForm.get("gender");
+
+
+
         //change into slider thing in the future i guesss
         String agerange1 = filterForm.get("agerange1");
         String agerange2 = filterForm.get("agerange2");
         Date date1 = null;
         Date date2 = null;
+
         if(agerange1 != null && agerange2 != null) {
             try {
                 date1 = new SimpleDateFormat("yyyy-MM-dd").parse(agerange1);

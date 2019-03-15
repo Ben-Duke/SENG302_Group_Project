@@ -1,7 +1,8 @@
 @import helper._
+@import views.html.bootstrap3._
 
 @import play.data.DynamicForm
-@(dynamicForm : DynamicForm, travellerTypes : List[TravellerType], nationalities : List[Nationality], resultProfiles : List[User])
+@(dynamicForm : DynamicForm, travellerTypes : List[TravellerType], nationalities : List[Nationality], genderMap: Map[String, Boolean], resultProfiles : List[User])
 
 @main("Search") {
 
@@ -24,14 +25,15 @@
 
 
 
-        @select(
-        field = dynamicForm("travellertype"),
-        options = travellerTypes.map(travellerType => travellerType.ttypeid.toString -> travellerType.travellerTypeName),
-        '_label -> "Select traveller types to add:"
+
+
+    @checkboxes(dynamicForm("gender"),
+        label = "Gender",
+        checkboxMap = genderMap,
+        help = "Select the genders you would like to include in your search results"
     )
-    @helper.inputRadioGroup(
-        dynamicForm("gender"),
-        options = options("Male"->"Male","Female"->"Female", "Other"->"Other"), '_label -> "Gender: ")
+
+
     @helper.select(dynamicForm("nationality"),
         options = nationalities.map(nationality => nationality.natid.toString -> nationality.nationalityName),
         '_label -> "Nationality: ")

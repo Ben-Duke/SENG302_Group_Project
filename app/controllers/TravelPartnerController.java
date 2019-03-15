@@ -19,6 +19,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.SortedMap;
 
 import static play.mvc.Results.*;
 
@@ -41,6 +42,7 @@ public class TravelPartnerController {
         DynamicForm dynamicForm = formFactory.form();
         List<TravellerType> travellerTypes = TravellerType.find.all();
         List<Nationality> nationalities = Nationality.find.all();
+
 
         return ok(searchprofile.render(dynamicForm, travellerTypes, nationalities, resultProfiles));
     }

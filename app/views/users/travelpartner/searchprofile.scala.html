@@ -3,10 +3,28 @@
 @import play.data.DynamicForm
 @(dynamicForm : DynamicForm, travellerTypes : List[TravellerType], nationalities : List[Nationality], resultProfiles : List[User])
 
-<h1>Update filters</h1>
+@main("Search") {
 
-@form(action = helper.CSRF(routes.TravelPartnerController.searchByAttribute)) {
-    @select(
+
+    <nav class="navbar navbar-custom">
+
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="@routes.HomeController.showhome()">Home</a>
+            </div>
+            <ul class="nav navbar-nav">
+                <li class="active"><a href="#">Search</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <h1>Search</h1>
+
+    @form(action = helper.CSRF(routes.TravelPartnerController.searchByAttribute)) {
+
+
+
+        @select(
         field = dynamicForm("travellertype"),
         options = travellerTypes.map(travellerType => travellerType.ttypeid.toString -> travellerType.travellerTypeName),
         '_label -> "Select traveller types to add:"
@@ -46,3 +64,4 @@
 }
 
 <a href="@routes.HomeController.showhome()">Back to home</a>
+}

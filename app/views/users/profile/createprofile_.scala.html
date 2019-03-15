@@ -1,0 +1,32 @@
+@import java.util
+@import helper._
+@import formdata.UserFormData
+@(userForm : Form[UserFormData], genders:util.List[String])
+
+
+
+
+@main("Index") {
+    <div class="container">
+        <div class="well">
+        @form(helper.CSRF(routes.RegisterController.saveuser()) , 'class -> "form-horizontal") {
+            @createProfileFieldset(userForm, genders)
+        }
+        </div>
+
+        @if(flash.containsKey("success")) {
+            <div class="well">
+                <div id="success-message" class="text-success">
+                @flash.get("success")
+                </div>
+            </div>
+        }
+        @if(flash.containsKey("error")) {
+            <div class="well">
+                <div id="error-message" class="text-danger">
+                @flash.get("error")
+                </div>
+            </div>
+        }
+    </div>
+}

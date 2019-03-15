@@ -1,17 +1,22 @@
 package controllers;
 
+import formdata.UserFormData;
 import io.ebean.ExpressionList;
 import models.User;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.Http;
 import play.mvc.Result;
 import play.mvc.Controller;
-import views.html.home.home;
-import views.html.users.createUser;
-import views.html.users.*;
-import javax.inject.Inject;
+import views.html.users.profile.createprofile_;
+import factories.UserFactory;
 
+import javax.inject.Inject;
+import factories.UserFactory;
+
+import java.util.Arrays;
 import java.util.regex.Pattern;
 
 import static play.mvc.Results.badRequest;
@@ -25,14 +30,19 @@ public class RegisterController {
 
     @Inject
     FormFactory formFactory;
+    //private final Logger logger = LoggerFactory.getLogger("application");
+
+
+    UserFactory factory = new UserFactory();
 
     /**
      * Renders the create user page where users can register.
      * @return create user page
      */
     public Result createuser(){
-        Form<User> userForm = formFactory.form(User.class);
-        return ok(createUser.render(userForm));
+        Form<UserFormData> userForm = formFactory.form(UserFormData.class);
+        String[] gendersArray = {"Male", "Female", "Other"};
+        return ok(createprofile_.render(userForm, Arrays.asList(gendersArray)));
     }
 
     /**
@@ -47,30 +57,16 @@ public class RegisterController {
      * @return the home page
      */
     public Result saveuser(Http.Request request){
-        Form<User> userForm = formFactory.form(User.class).bindFromRequest();
-        User user = userForm.get();
 
-        String email = user.getUsername().toLowerCase();
-        String password = user.getPassword();
+        Form<UserFormData> userForm = formFactory.form(UserFormData.class).bindFromRequest();
+        UserFormData user = userForm.get();
 
-        // checking if the username exists already in db
-        ExpressionList<User> usersExpressionList = User.find.query().where().eq("username", user.getUsername().toLowerCase());
-        if (usersExpressionList.findCount() > 0) {
-            return badRequest("Http error 400: Username already taken");
-        }
 
-        if (! this.isEmailValid(email)) {
-            return badRequest("Http error 400: The username entered is not a valid email address.");
-        }
+        int userid = factory.createUser(user);
 
-        if (! this.isValidPassword(password)) {
-            return badRequest("Http error 400: The password entered is invalid. The password length must be between (inclusive) " +
-                    "8 and 128.");
-        }
 
-        user.save();
-        //return redirect(routes.UserController.userindex());
-        return redirect(routes.HomeController.showhome()).addingToSession(request, "connected", Integer.toString(user.getUserid()));
+      //  logger.debug(""+ factory.getCurrentUser(request));
+       return redirect(routes.HomeController.showhome()).addingToSession(request, "connected", Integer.toString(userid))
     }
 
     /**

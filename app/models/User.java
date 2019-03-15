@@ -1,5 +1,6 @@
 package models;
 
+import io.ebean.ExpressionList;
 import io.ebean.Finder;
 import io.ebean.Model;
 import io.ebean.annotation.CreatedTimestamp;
@@ -10,6 +11,8 @@ import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
+
+import static play.mvc.Results.badRequest;
 
 @Entity
 public class User extends Model {
@@ -190,6 +193,11 @@ public class User extends Model {
         this.dateOfBirth = dateOfBirth;
     }
 
+    public List<User> getUsers() {
+        List<User> users= User.find.all();
+        return  users;
+    }
+
     public String getGender() {
         return gender;
     }
@@ -295,5 +303,25 @@ public class User extends Model {
             return user;
         }
         return null;
+    }
+
+    public static int getCurrentUser(Http.Request request, String intsig) {
+        String userId = request.session().getOptional("connected").orElse(null);
+        if (userId != null) {
+            User user = User.find.query().where().eq("userid", userId).findOne();
+            return user.getUserid();
+        }
+        return -1;
+    }
+
+    public static int checkUser(String username){
+        ExpressionList<User> usersExpressionList = User.find.query().where().eq("username", username.toLowerCase());
+        int userPresent = 0;
+        if (usersExpressionList.findCount() > 0) {
+            userPresent = 1;
+        }
+        return userPresent;
+
+
     }
 }

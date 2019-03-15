@@ -35,9 +35,9 @@
                 <tr>
                     <td>@profile.getUsername()</td>
                     <td>@profile.getGender()</td>
-                    <td>@for(nationality <- profile.getNationality()) {<p>@nationality.nationalityName</p>}</td>
+                    <td>@for(nationality <- profile.getNationality()) {<p>@nationality.getNationalityName()</p>}</td>
                     <td>@profile.getDateOfBirth()</td>
-                    <td>@for(travellerType <- profile.getTravellerTypes()) {<p>@travellerType.travellerTypeName</p>}</td>
+                    <td>@for(travellerType <- profile.getTravellerTypes()) {<p>@travellerType.getTravellerTypeName()</p>}</td>
                 </tr>
             }
         </table>

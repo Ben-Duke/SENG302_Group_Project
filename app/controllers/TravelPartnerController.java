@@ -41,10 +41,18 @@ public class TravelPartnerController {
 
         DynamicForm dynamicForm = formFactory.form();
         List<TravellerType> travellerTypes = TravellerType.find.all();
+        List<String> convertedTravellertypes = new ArrayList<>();
+        convertedTravellertypes.add("");
+        for (TravellerType traveller : travellerTypes) {
+            convertedTravellertypes.add(traveller.travellerTypeName);
+        }
+
         List<Nationality> nationalities = Nationality.find.all();
 
 
-        return ok(searchprofile.render(dynamicForm, travellerTypes, nationalities, resultProfiles));
+
+
+        return ok(searchprofile.render(dynamicForm, convertedTravellertypes, nationalities, resultProfiles));
     }
 
 
@@ -76,6 +84,10 @@ public class TravelPartnerController {
     public Result searchByAttribute(Http.Request request){
         DynamicForm filterForm = formFactory.form().bindFromRequest();
         String travellerType = filterForm.get("travellertype");
+
+        System.out.println("Traveller Type:");
+        System.out.println(travellerType);
+
         String nationality = filterForm.get("nationality");
         String gender = filterForm.get("gender");
         //change into slider thing in the future i guesss
@@ -95,8 +107,18 @@ public class TravelPartnerController {
         if (user != null) {
             ArrayList<List<User>> userLists = new ArrayList<>();
             if(nationality != null) {
-                List<User> userNationality = Nationality.find.byId(Integer.parseInt(nationality)).getUsers();
-                userLists.add(userNationality);
+                if (nationality.equals("1")) {
+                    System.out.println(User.find.all());
+                    List<User> userNationality = User.find.all();
+                    userLists.add(userNationality);
+                } else {
+                    List<User> userNationality = Nationality.find.byId(Integer.parseInt(nationality)).getUsers();
+                    userLists.add(userNationality);
+                }
+
+
+
+
             }
             if(gender != null){
                 List<User> userGender = User.find.query().where().eq("gender", gender).findList();
@@ -107,8 +129,20 @@ public class TravelPartnerController {
                 userLists.add(userAgeRange);
             }
             if(travellerType != null){
-                List<User> userTravellerType = TravellerType.find.byId(Integer.parseInt(travellerType)).getUsers();
-                userLists.add(userTravellerType);
+                if (travellerType.equals("")) {
+                    List<User> userTravellerType = User.find.all();
+                    userLists.add(userTravellerType);
+                } else {
+                    //TODO change traveller type query to adapt with string
+                    List<TravellerType> travellerTypes = TravellerType.find.query().where().eq("travellerTypeName", travellerType).findList();
+                    System.out.println("Traveller type: " + travellerType);
+                    System.out.println("Types List:    " + travellerTypes.get(0).ttypeid);
+                    List<User> userTravellerType = TravellerType.find.byId(travellerTypes.get(0).ttypeid).getUsers();
+                    userLists.add(userTravellerType);
+                }
+
+
+
             }
 
             List<User> resultProfiles = UtilityFunctions.retainFromLists(userLists);

@@ -85,8 +85,6 @@ public class TravelPartnerController {
         DynamicForm filterForm = formFactory.form().bindFromRequest();
         String travellerType = filterForm.get("travellertype");
 
-        System.out.println("Traveller Type:");
-        System.out.println(travellerType);
 
         String nationality = filterForm.get("nationality");
         String gender = filterForm.get("gender");
@@ -128,6 +126,8 @@ public class TravelPartnerController {
                 List<User> userAgeRange = User.find.query().where().gt("dateOfBirth", date1).lt("dateOfBirth", date2).findList();
                 userLists.add(userAgeRange);
             }
+
+
             if(travellerType != null){
                 if (travellerType.equals("")) {
                     List<User> userTravellerType = User.find.all();
@@ -135,14 +135,12 @@ public class TravelPartnerController {
                 } else {
                     //TODO change traveller type query to adapt with string
                     List<TravellerType> travellerTypes = TravellerType.find.query().where().eq("travellerTypeName", travellerType).findList();
-                    System.out.println("Traveller type: " + travellerType);
-                    System.out.println("Types List:    " + travellerTypes.get(0).ttypeid);
-                    List<User> userTravellerType = TravellerType.find.byId(travellerTypes.get(0).ttypeid).getUsers();
-                    userLists.add(userTravellerType);
+                    if (travellerTypes.size() > 0) {
+                        List<User> userTravellerType = TravellerType.find.byId(travellerTypes.get(0).ttypeid).getUsers();
+                        userLists.add(userTravellerType);
+                    }
+
                 }
-
-
-
             }
 
             List<User> resultProfiles = UtilityFunctions.retainFromLists(userLists);
@@ -153,6 +151,7 @@ public class TravelPartnerController {
             if(resultProfiles.size() == 0){
                 return badRequest("No users found!");
             }
+            System.out.println(resultProfiles.size());
             //Redisplay the page, but this time with the search results
             return displayRenderedFilterPage(resultProfiles);
 //            return ok("user found! This will later be converted to show the user's profile: " + userList.toString());

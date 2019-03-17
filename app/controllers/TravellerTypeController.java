@@ -40,6 +40,7 @@ public class TravellerTypeController {
                 // Duplicate traveller types do not get added. No error msg shown.
             }
             List<TravellerType> travellerTypes = TravellerType.find.all();
+
             return ok(updatetraveller.render(userForm, travellerTypes, user));
         }
         else{

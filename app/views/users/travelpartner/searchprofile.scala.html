@@ -1,14 +1,32 @@
 @import helper._
 
 @import play.data.DynamicForm
-@(dynamicForm : DynamicForm, travellerTypes : List[TravellerType], nationalities : List[Nationality], resultProfiles : List[User])
+@(dynamicForm : DynamicForm, travellerTypes : List[String], nationalities : List[Nationality], resultProfiles : List[User])
 
-<h1>Update filters</h1>
+@main("Search") {
 
-@form(action = helper.CSRF(routes.TravelPartnerController.searchByAttribute)) {
-    @select(
+
+    <nav class="navbar navbar-custom">
+
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="@routes.HomeController.showhome()">Home</a>
+            </div>
+            <ul class="nav navbar-nav">
+                <li class="active"><a href="#">Search</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <h1>Search</h1>
+
+    @form(action = helper.CSRF(routes.TravelPartnerController.searchByAttribute)) {
+
+
+
+        @select(
         field = dynamicForm("travellertype"),
-        options = travellerTypes.map(travellerType => travellerType.ttypeid.toString -> travellerType.travellerTypeName),
+        options = travellerTypes.map(travellerType => travellerType -> travellerType),
         '_label -> "Select traveller types to add:"
     )
     @helper.inputRadioGroup(
@@ -22,27 +40,37 @@
     <input type="submit" value="Search by filters">
 
     @if(resultProfiles.size > 0) {
-        <table style="width:100%">
-            <tr>
-                <th align="left">Username</th>
-                <th align="left">Gender</th>
-                <th align="left">Nationalities</th>
-                <th align="left">DOB</th>
-                <th align="left">Traveler types</th>
-            </tr>
 
+
+        <table class="table">
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">Username</th>
+                    <th scope="col">Gender</th>
+                    <th scope="col">Nationalities</th>
+                    <th scope="col">DOB</th>
+                    <th scope="col">Traveller types</th>
+                </tr>
+            </thead>
+            <tbody>
             @for(profile <- resultProfiles) {
                 <tr>
-                    <td>@profile.getUsername()</td>
+                    <th scope ="row">@profile.getUsername()</th>
                     <td>@profile.getGender()</td>
                     <td>@for(nationality <- profile.getNationality()) {<p>@nationality.getNationalityName()</p>}</td>
                     <td>@profile.getDateOfBirth()</td>
                     <td>@for(travellerType <- profile.getTravellerTypes()) {<p>@travellerType.getTravellerTypeName()</p>}</td>
+
                 </tr>
-            }
+
+
+                <br>
+                }
+            </tbody>
         </table>
     }
 
 }
 
 <a href="@routes.HomeController.showhome()">Back to home</a>
+}

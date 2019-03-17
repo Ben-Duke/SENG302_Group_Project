@@ -1,25 +1,53 @@
 @(destinations: List[Destination])
 
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <title>Destinations</title>
-    </head>
-    <body>
-        <h1>Destinations</h1>
-        <a href="@routes.HomeController.showhome()">Home</a>
-        <a href="@routes.DestinationController.createDestination()">New</a>
-        <br>
+@import helper._
+@import views.html.bootstrap3._
+
+@main("Destinations") {
+
+
+    <nav class="navbar navbar-custom">
+
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="@routes.HomeController.showhome()">Home</a>
+            </div>
+            <ul class="nav navbar-nav">
+                <li class="active"><a href="#">Destinations</a></li>
+                <li><a href="@routes.DestinationController.createDestination()">New</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <h1>Destinations</h1>
+
+
+    <table class="table">
+        <thead class="thead-dark">
+            <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Type</th>
+                <th scope="col">Country</th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
         @for(destination <- destinations) {
-            <p>
-                @destination.getDestName()
-                @destination.getDestType()
-                @destination.getCountry()
-            </p>
-            <a href="@routes.DestinationController.viewDestination(destination.getDestId)">View</a>
-            <a href="@routes.DestinationController.deleteDestination(destination.getDestId())">Delete</a>
+            <tr>
+                <th scope ="row">@destination.getDestName()</th>
+                <td>@destination.getDestType()</td>
+                <td>@destination.getCountry()</td>
+                <td><a class="btn btn-link" href="@routes.DestinationController.viewDestination(destination.getDestId)" role="button">View</a></td>
+                <td><a class="btn btn-link" href="@routes.DestinationController.deleteDestination(destination.getDestId())" role="button">Delete</a></td>
+
+            </tr>
+
+
             <br>
-        }
-    </body>
-</html>
+            }
+        </tbody>
+    </table>
+
+
+}

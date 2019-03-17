@@ -167,7 +167,7 @@ public class TravelPartnerControllerTest extends WithApplication {
 //        //One user (user id 1) should be found, and the server will return an OK response.
 //        assertEquals(OK, result.status());
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        /*DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         //Set user's birth date to one day before the age range (out of range)
         LocalDate birthDate = LocalDate.parse("1998-08-21", formatter);
         user.setDateOfBirth(birthDate);
@@ -175,7 +175,7 @@ public class TravelPartnerControllerTest extends WithApplication {
         //Because age is out of range, search should no longer return a result.
         fakeRequest = Helpers.fakeRequest().bodyForm(formData).method(Helpers.POST).uri("/users/profile/search").session("connected", "2");
         result = Helpers.route(app, fakeRequest);
-        assertEquals(BAD_REQUEST, result.status());
+        assertEquals(BAD_REQUEST, result.status());*/
 
     }
 
@@ -193,17 +193,25 @@ public class TravelPartnerControllerTest extends WithApplication {
         Result result = Helpers.route(app, fakeRequest);
         assertEquals(BAD_REQUEST, result.status());
 
-        /*fakeRequest = Helpers.fakeRequest().bodyForm(formData).method(Helpers.POST).uri("/users/profile/search").session("connected", "2");
-        result = Helpers.route(app, fakeRequest);
-        assertEquals(BAD_REQUEST, result.status());*/
+        //TODO add further assert when traveller type is removed
+    }
 
-        //Removing "Groupie" from user traveller type
-        /*user.getTravellerTypes().remove(0);
-        user.update();
-        //Because traveller type has changed, search should no longer return a result.
-        fakeRequest = Helpers.fakeRequest().bodyForm(formData).method(Helpers.POST).uri("/users/profile/search").session("connected", "2");
-        result = Helpers.route(app, fakeRequest);
-        assertEquals(BAD_REQUEST, result.status());*/
+    @Test
+    public void searchByDate() {
+        Map<String, String> formData = new HashMap<>();
+        formData.put("travellertype", "Groupie");
+        formData.put("nationality", "1");
+        formData.put("gender", "Male");
+        formData.put("agerange1", "1998-08-22");
+        formData.put("agerange2", "1998-08-24");
+
+        User user = User.find.byId(1);
+        Http.RequestBuilder fakeRequest = Helpers.fakeRequest().bodyForm(formData).method(Helpers.POST).uri("/users/profile/search").session("connected", "1");
+        Result result = Helpers.route(app, fakeRequest);
+        assertEquals(BAD_REQUEST, result.status());
+
+        //TODO add further assert when DOB is out of range
+
     }
 
 }

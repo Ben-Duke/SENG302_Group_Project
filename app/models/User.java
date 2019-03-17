@@ -31,6 +31,7 @@ public class User extends Model {
         this.lName = lName;
         this.dateOfBirth = dateOfBirth;
         this.gender = gender;
+        this.isAdmin = false;
     }
 
     public User(String username){
@@ -104,9 +105,18 @@ public class User extends Model {
 
     public static Finder<Integer,User> find = new Finder<>(User.class);
 
+    public Boolean isAdmin = false;
+
+
 
     //GETTERS AND SETTERS
 
+    //TODO change to return actual isAdmin when it is stored in db
+    public Boolean getIsAdmin() {return isAdmin;}
+
+    public void setAdmin(Boolean admin) {
+        isAdmin = admin;
+    }
 
     public Integer getUserid() {
         return userid;

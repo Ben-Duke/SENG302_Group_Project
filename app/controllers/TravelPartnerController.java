@@ -93,14 +93,26 @@ public class TravelPartnerController {
         String agerange2 = filterForm.get("agerange2");
         Date date1 = null;
         Date date2 = null;
-        if(agerange1 != null && agerange2 != null) {
+
+
+        if(agerange1.equals("") || agerange2.equals("")) {
             try {
-                date1 = new SimpleDateFormat("yyyy-MM-dd").parse(agerange1);
-                date2 = new SimpleDateFormat("yyyy-MM-dd").parse(agerange2);
+                if (agerange1.equals("") && !agerange2.equals("")) {
+                    date1 = new Date(Long.MIN_VALUE);
+                    date2 = new SimpleDateFormat("yyyy-MM-dd").parse(agerange2);
+                } else if (agerange2.equals("") && !agerange1.equals("")) {
+                    date1 = new SimpleDateFormat("yyyy-MM-dd").parse(agerange1);
+                    date2 = new Date();
+                } else if (!agerange1.equals("") && !agerange2.equals("")){
+                    date1 = new SimpleDateFormat("yyyy-MM-dd").parse(agerange1);
+                    date2 = new SimpleDateFormat("yyyy-MM-dd").parse(agerange2);
+                }
             } catch (ParseException e) {
-                //don't do anything here
+                //Do Nothing
+                System.out.println(e);
             }
         }
+
         User user = User.getCurrentUser(request);
         if (user != null) {
             ArrayList<List<User>> userLists = new ArrayList<>();
@@ -122,6 +134,8 @@ public class TravelPartnerController {
                 List<User> userGender = User.find.query().where().eq("gender", gender).findList();
                 userLists.add(userGender);
             }
+
+
             if(date1 != null && date2 != null){
                 List<User> userAgeRange = User.find.query().where().gt("dateOfBirth", date1).lt("dateOfBirth", date2).findList();
                 userLists.add(userAgeRange);
@@ -133,7 +147,6 @@ public class TravelPartnerController {
                     List<User> userTravellerType = User.find.all();
                     userLists.add(userTravellerType);
                 } else {
-                    //TODO change traveller type query to adapt with string
                     List<TravellerType> travellerTypes = TravellerType.find.query().where().eq("travellerTypeName", travellerType).findList();
                     if (travellerTypes.size() > 0) {
                         List<User> userTravellerType = TravellerType.find.byId(travellerTypes.get(0).ttypeid).getUsers();

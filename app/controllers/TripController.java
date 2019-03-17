@@ -6,6 +6,7 @@ import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.Http;
 import play.mvc.Result;
+import views.html.users.trip.AddTripDestinations;
 import views.html.users.trip.createTrip;
 import views.html.users.trip.displayTrip;
 import views.html.users.trip.editTrip;
@@ -73,14 +74,35 @@ public class TripController {
         if (user != null) {
             trip.setUser(user);
             trip.save();
+            return redirect(routes.TripController.AddTripDestinations(trip.tripid));
+
         }
         else{
             return unauthorized("Oops, you are not logged in");
         }
         //return redirect(routes.UserController.userindex());
-        return redirect(routes.TripController.createtrip());
     }
 
+    public Result AddTripDestinations(Http.Request request, Integer tripid) {
+        Trip trip = Trip.find.byId(tripid);
+        User user = User.getCurrentUser(request);
+        if (user != null) {
+            List<Destination> destinations = user.getDestinations();
+            if (trip != null) {
+                Form<Visit> visitForm = formFactory.form(Visit.class);
+                List<Visit> visits = trip.getVisits();
+                visits.sort(Comparator.comparing(Visit::getVisitorder));
+                return ok(AddTripDestinations.render(visitForm, trip, destinations, visits));
+            }
+            else{
+                return unauthorized("Oops, invalid trip ID");
+            }
+        }
+        else{
+            return unauthorized("Oops, you are not logged in");
+        }
+//        return ok("edittrip");
+    }
     /**
      * Handles the request to add destinations to a trip.
      * Destinations with an arrival and departure timestamp are stored in the form of a Visit.
@@ -157,7 +179,7 @@ public class TripController {
             return unauthorized("Oops, you are not logged in");
         }
         //return redirect(routes.UserController.userindex());
-        return redirect(routes.TripController.edittrip(tripid));
+        return redirect(routes.TripController.AddTripDestinations(tripid));
     }
 
     /**

@@ -53,6 +53,8 @@ POST    /users/profile/search       controllers.TravelPartnerController.searchBy
 #Renders page for creating trips
 GET     /users/trips/create         controllers.TripController.createtrip(request: Request)
 
+GET     /users/trips/addDestinations    controllers.TripController.AddTripDestinations(request: Request, id:Integer)
+
 #Handles creating trips
 POST    /users/trips/create         controllers.TripController.savetrip(request: Request)
 

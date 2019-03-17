@@ -1,28 +1,16 @@
 @(tripForm : Form[Trip], user : User)
 @import helper._
+@import views.html.bootstrap3._
 
-<html>
-    <head>
-        <title>Destination</title>
-    </head>
-    <body>
-        <h1>Create your Trip :P</h1>
-        @helper.form(action = helper.CSRF(routes.TripController.savetrip())){
+
+@main("Trips") {
+
+    <h1>Create your Trip</h1>
+        @form(action = helper.CSRF(routes.TripController.savetrip)){
             @helper.inputText(tripForm("tripName"), '_label -> "Trip Name: ")
             <input type="submit" value="Create trip">
         }
-        @for(trip <- user.trips) {
-            <p>Trip name: @trip.tripName</p>
-            @trip.tripid
-            @if(trip.visits.size < 2){
-                <p>You need to have at least two destinations in your trip! Press edit trip to add more</p>
-            }
-            @helper.form(action = helper.CSRF(routes.TripController.edittrip(trip.tripid))){
-                <input type="submit" value="Edit trip">
-                }
-            <a href="@routes.TripController.displaytrip(trip.tripid)">View trip</a>
-        }
-            <b></b>
         <a href="@routes.HomeController.showhome()">Back to home</a>
-    </body>
-</html>
+}
+
+

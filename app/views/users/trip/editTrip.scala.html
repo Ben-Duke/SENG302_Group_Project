@@ -3,6 +3,7 @@
 @(visitForm : Form[Visit], trip : Trip, destinations : List[Destination], visits : List[Visit])
 @import helper._
 
+
 <h1>Edit trip XD</h1>
 
 @form(action = helper.CSRF(routes.TripController.addvisit(trip.tripid))) {

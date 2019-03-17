@@ -195,6 +195,9 @@
       </map>
     </option>
   </component>
+  <component name="ProjectCodeStyleConfiguration">
+    <option name="PREFERRED_PROJECT_CODE_STYLE" value="Default" />
+  </component>
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/SENG302 TEAM UPDATE ME.iml" filepath="$PROJECT_DIR$/.idea/modules/SENG302 TEAM UPDATE ME.iml" />

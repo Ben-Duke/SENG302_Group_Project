@@ -9,11 +9,23 @@ import models.User;
 
 import java.util.List;
 
+/**
+ * A class to handle accessing the database for login related things.
+ */
 public class LoginFactory {
     public LoginFactory() {
 
     }
 
+    /**
+     * Method to check if a username/email and password pair matches a user in
+     * the database.
+     *
+     * @param email A String, the email to check.
+     * @param password A String, the password to check
+     * @return A boolean, true if there is a user with that email and password,
+     *         false otherwise.
+     */
     public boolean isPasswordMatch(String email, String password){
         ExpressionList<User> usersExpressionList;
         usersExpressionList = User.find.query()
@@ -38,15 +50,20 @@ public class LoginFactory {
 //        return userId;
 //    }
 
+    /**
+     * Method to get a users unique ID from their username (email).
+     *
+     * @param userName A String, the users username(email).
+     * @return An int representing the user's userID. Returns -1 if not found.
+     */
     public static int getUserId(String userName) {
         int userId = -1;
 
-        List<User> users = User.find.all();
+        List<User> users = User.find.query()
+                            .where().eq("username", userName.toLowerCase());
 
-        for(int i = 0; i < users.size();i++){
-            if(users.get(i).username.equals(userName)){
-                userId = users.get(i).getUserid();
-            }
+        if (users.size() == 1) {
+            userId = users.get(0).getUserId();
         }
 
         return userId;

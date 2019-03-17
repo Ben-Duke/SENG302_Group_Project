@@ -9,6 +9,14 @@ import java.util.ArrayList;
 import java.util.List;
 import factories.LoginFactory;
 
+/**
+ * A Form class to contain and validate user data entered on the login page.<br>
+ *
+ * Validation requirements:<br>
+ *     username field is not empty<br>
+ *     password field is notempty<br>
+ *     there is a username && password match in the database for these inputs.<br>
+ */
 @Constraints.Validate
 public class LoginFormData implements Constraints.Validatable<List<ValidationError>> {
 
@@ -21,6 +29,18 @@ public class LoginFormData implements Constraints.Validatable<List<ValidationErr
         return this.username;
     }
 
+    /**
+     * Method to validate the Form data.
+     *
+     * Validation requirements:<br>
+     *  *     username field is not empty<br>
+     *  *     password field is notempty<br>
+     *  *     there is a username && password match in the database for these
+     *        inputs.<br>
+     *
+     * @return A List<E> containing all the validation errors. Or null if no
+     *         errors exist.
+     */
     @Override
     public List<ValidationError> validate() {
 
@@ -39,21 +59,16 @@ public class LoginFormData implements Constraints.Validatable<List<ValidationErr
         if (hasUserNameData && hasPasswordData) {
             LoginFactory loginFactory = new LoginFactory();
             if (! loginFactory.isPasswordMatch(username, password)) {
-                errors.add(new ValidationError("username", "Incorrect login information"));
-                errors.add(new ValidationError("password", "Incorrect login information"));
+                String errorStr = "Incorrect login information";
+                errors.add(new ValidationError("username", errorStr));
+                errors.add(new ValidationError("password", errorStr));
             }
         }
 
-
-
-
-
-
-
         if (errors.size() > 0) {
             return errors;
+        } else {
+            return null;
         }
-        return null;
     }
 }
-

@@ -20,13 +20,18 @@ import javax.inject.Inject;
 
 import static play.mvc.Results.*;
 
+/**
+ * A controller class for handing user logins.
+ */
 public class LoginController {
 
     @Inject
     FormFactory formFactory;
     private final Logger logger = LoggerFactory.getLogger("application");
+
     /**
      * Renders the login page where the user can log in.
+     *
      * @return The login page.
      */
     public Result login(){
@@ -39,13 +44,15 @@ public class LoginController {
      * Handles the user's login request.
      * If the username is not found in the database then returns an error.
      * If the username is found but the password does not match then returns an error.
-     * If the username and password matches then stores the user's login session and redirects the user to the home page.
+     * If the username and password matches then stores the user's login session
+     *      and redirects the user to the home page.
      * @param request The HTTP request
      * @return The home page or login error page
      */
     public Result loginrequest(Http.Request request)
     {
-        Form<LoginFormData> userLoginForm = formFactory.form(LoginFormData.class).bindFromRequest();
+        Form<LoginFormData> userLoginForm = formFactory.form(LoginFormData.class)
+                                            .bindFromRequest();
         if (userLoginForm.hasErrors()) {
             // redirect user to same login page with some errors.
             // TODO show incorrect login info error
@@ -63,11 +70,14 @@ public class LoginController {
     }
 
     /**
-     * Logs the user out by removing them from the session and redirecting them  to the user index page.
+     * Logs the user out by removing them from the session and redirecting them
+     * to the user index page.
+     *
      * @param request The HTTP request
      * @return The user index page
      */
     public Result logoutrequest(Http.Request request){
-        return redirect(routes.UserController.userindex()).removingFromSession(request, "connected");
+        return redirect(routes.UserController.userindex())
+                              .removingFromSession(request, "connected");
     }
 }

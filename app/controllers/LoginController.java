@@ -6,6 +6,8 @@ import factories.LoginFactory;
 import io.ebean.Ebean;
 import io.ebean.ExpressionList;
 import models.User;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.Http;
@@ -22,7 +24,7 @@ public class LoginController {
 
     @Inject
     FormFactory formFactory;
-
+    private final Logger logger = LoggerFactory.getLogger("application");
     /**
      * Renders the login page where the user can log in.
      * @return The login page.
@@ -49,10 +51,12 @@ public class LoginController {
             // TODO show incorrect login info error
             return badRequest(loginPage.render(userLoginForm));
         } else {
+            String username = userLoginForm.get().username;
             LoginFactory loginFactory = new LoginFactory();
+            logger.debug("---"+ LoginFactory.getUserId(username));
             return redirect(routes.HomeController.showhome())
                     .addingToSession(request, "connected",
-                            Integer.toString(loginFactory.getUserId(userLoginForm)));
+                            Integer.toString(LoginFactory.getUserId(username)));
         }
 
 

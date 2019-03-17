@@ -1,5 +1,7 @@
 package formdata;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import play.data.validation.Constraints;
 import play.data.validation.ValidationError;
 
@@ -14,7 +16,10 @@ public class LoginFormData implements Constraints.Validatable<List<ValidationErr
     public String password;
     public Boolean user = false;
     private List<ValidationError> errors = new ArrayList<>();
-
+    private final Logger logger = LoggerFactory.getLogger("application");
+    public String getUsername(){
+        return this.username;
+    }
 
     @Override
     public List<ValidationError> validate() {

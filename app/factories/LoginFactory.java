@@ -7,6 +7,8 @@ import play.data.Form;
 import play.data.FormFactory;
 import models.User;
 
+import java.util.List;
+
 public class LoginFactory {
     public LoginFactory() {
 
@@ -20,16 +22,30 @@ public class LoginFactory {
         return usersExpressionList.findCount() > 1;
     }
 
-    public int getUserId(Form<User> loginFormData) {
-        int userId;
-        User user = loginFormData.get();
-        ExpressionList<User> usersExpressionList;
-        usersExpressionList = User.find.query()
-                .where().eq("username", user.getUsername().toLowerCase());
+//    public static int getUserId(String userName) {
+//        int userId = -1;
+//
+//        ExpressionList<User> usersExpressionList;
+//        usersExpressionList = User.find.query()
+//                .where().eq("username", userName.toLowerCase());
+//
+//        if (usersExpressionList.findCount() > 1) {
+//            User userfound = usersExpressionList.findOne();
+//            userId = userfound.getUserid();
+//        }
+//
+//        return userId;
+//    }
 
-        if (usersExpressionList.findCount() > 1) {
-            User user = usersExpressionList.findOne();
-            userId = user.getUserid();
+    public static int getUserId(String userName) {
+        int userId = -1;
+
+        List<User> users = User.find.all();
+
+        for(int i = 0; i < users.size();i++){
+            if(users.get(i).username.equals(userName)){
+                userId = users.get(i).getUserid();
+            }
         }
 
         return userId;

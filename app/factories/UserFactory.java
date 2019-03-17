@@ -10,18 +10,22 @@ import java.util.List;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class UserFactory {
 
     public UserFactory(){}
-
+    private final Logger logger = LoggerFactory.getLogger("application");
 
 
     public boolean checkpassword(String email, String password){
         ExpressionList<User> usersExpressionList = User.find.query()
-                .where().eq("username", userLoggingInFormData.getUsername().toLowerCase());
+                .where().eq("username", email);
 
-        return 1;
+        logger.debug("made it here need to look into query");
+
+        return true;
     }
 
     public int checkusername(String username){

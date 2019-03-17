@@ -19,7 +19,7 @@ import java.time.format.DateTimeFormatter;
 
 
 public class UserFactory {
-
+    private static Logger logger = LoggerFactory.getLogger("application");
     public UserFactory(){//Just used to instanciate
          }
 
@@ -60,29 +60,34 @@ public class UserFactory {
         LocalDate date = LocalDate.parse(dob, formatter);
 
 
+        if(checkUsername(username)!=1){
         User user = new User(username, password, firstName, lastName, date, gender);
 
-        user.save();
-        for(int i =0; i < tType.size(); i++){
 
-            int tTypeId = getTTypeId(tType.get(i));
-            UpdateTravellerType(user, tTypeId);
+
+            user.save();
+            for (int i = 0; i < tType.size(); i++) {
+
+                int tTypeId = getTTypeId(tType.get(i));
+                UpdateTravellerType(user, tTypeId);
+            }
+            //Passport loop
+            for (int j = 0; j < passports.size(); j++) {
+
+                int passportId = getPassportId(passports.get(j));
+                UpdatePassport(user, passportId);
+            }
+
+            for (int k = 0; k < nationalities.size(); k++) {
+
+                int natId = getNatId(nationalities.get(k));
+                UpdateNationality(user, natId);
+            }
+
+
+            return user.getUserid();
         }
-        //Passport loop
-        for(int j =0; j < passports.size(); j++){
-
-            int passportId = getPassportId(passports.get(j));
-            UpdatePassport(user, passportId);
-        }
-
-        for(int k =0; k < nationalities.size(); k++){
-
-            int natId = getNatId(nationalities.get(k));
-            UpdateNationality(user, natId);
-        }
-
-
-        return user.getUserid();
+        return -1;
     }
 
     /**Get a list of all passports.
@@ -302,8 +307,8 @@ public class UserFactory {
         for (int i = 0; i < users.size(); i++) {
 
             userName = users.get(i).getUsername();
-
-            if(userName.equals( username)){
+            logger.debug(userName + " " + "Username is " + userName + " " + userName.toLowerCase().equals(username.toLowerCase()));
+            if(userName.toLowerCase().equals(username.toLowerCase())){
                 present = 1;
             }
         }

@@ -77,7 +77,8 @@ public class UserFormData implements Constraints.Validatable<List<ValidationErro
         }
         if (username == null || username.length() == 0) {
             errors.add(new ValidationError("username", "No username was given"));
-        } else if (UserFactory.checkUsername(username) == 1) {
+        }
+        if (UserFactory.checkUsername(username) == 1) {
             errors.add(new ValidationError("username", "Username is taken"));
         }
         if (password.length() == 0) {

@@ -20,9 +20,7 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import static play.mvc.Results.badRequest;
-import static play.mvc.Results.ok;
-import static play.mvc.Results.redirect;
+import static play.mvc.Results.*;
 
 /**
  * A Controller class for the user registration page.
@@ -67,17 +65,21 @@ public class RegisterController {
     public Result saveuser(Http.Request request){
 
         Form<UserFormData> userForm = formFactory.form(UserFormData.class).bindFromRequest();
-        if (userForm.hasErrors()) {
+
+         if (userForm.hasErrors()) {
             Map<String, Boolean> tTypes = UserFactory.getTTypesList();
             Map<String, Boolean> passports = UserFactory.getPassports();
             Map<String, Boolean> nationalities = UserFactory.getNatList();
             String[] gendersArray = {"Male", "Female", "Other"};
+
             return badRequest(createprofile_.render(userForm, Arrays.asList(gendersArray), tTypes, passports, nationalities));
         }
         else{
             UserFormData user = userForm.get();
-            int userid = factory.createUser(user);
-            return redirect(routes.HomeController.showhome()).addingToSession(request, "connected", Integer.toString(userid));
+
+                int userid = factory.createUser(user);
+                return redirect(routes.HomeController.showhome()).addingToSession(request, "connected", Integer.toString(userid));
+
         }
 
     }

@@ -24,9 +24,6 @@
     @form(action = helper.CSRF(routes.TravelPartnerController.searchByAttribute)) {
 
 
-
-
-
     @checkboxes(dynamicForm("gender"),
         label = "Gender",
         checkboxMap = genderMap,
@@ -51,16 +48,26 @@
                 <th align="left">Traveler types</th>
             </tr>
 
-            @for(profile <- resultProfiles) {
-                <tr>
-                    <td>@profile.getUsername()</td>
-                    <td>@profile.getGender()</td>
-                    <td>@for(nationality <- profile.getNationality()) {<p>@nationality.getNationalityName()</p>}</td>
-                    <td>@profile.getDateOfBirth()</td>
-                    <td>@for(travellerType <- profile.getTravellerTypes()) {<p>@travellerType.getTravellerTypeName()</p>}</td>
-                </tr>
-            }
+            @if(resultProfiles.get(0) != null) {
+                @for(profile <- resultProfiles) {
+                    <tr>
+                        <td>@profile.getUsername()</td>
+                        <td>@profile.getGender()</td>
+                        <td>@for(nationality <- profile.getNationality()) {
+                            <p>@nationality.getNationalityName()</p>
+                        }</td>
+                        <td>@profile.getDateOfBirth()</td>
+                        <td>@for(travellerType <- profile.getTravellerTypes()) {
+                            <p>@travellerType.getTravellerTypeName()</p>
+                        }</td>
+                    </tr>
+                }
         </table>
+            } else {
+        </table>
+                <h2>No results found</h2>
+            }
+
     }
 
 }

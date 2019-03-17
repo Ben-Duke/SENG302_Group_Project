@@ -67,6 +67,41 @@ public class TravelPartnerController {
         }
     }
 
+
+    private List<User> nationalityResults(DynamicForm filterForm) {
+
+        String nationality = filterForm.get("nationality");
+
+        if (nationality != null) {
+            List<User> results = Nationality.find.byId(Integer.parseInt(nationality)).getUsers();
+            return results;
+        }
+        return new ArrayList<>();
+    }
+
+    private List<User> genderResults(DynamicForm filterForm) {
+
+        List<String> genderSelections = new ArrayList<>();
+        genderSelections.add(filterForm.get("gender[0"));
+        genderSelections.add(filterForm.get("gender[1"));
+        genderSelections.add(filterForm.get("gender[2"));
+
+        List<User> results = new ArrayList<>();
+
+        for (String gender: genderSelections) {
+            if (gender != null) {
+
+                List<User> query = User.find.query().where().eq("gender", gender).findList();
+                for (User user: query) {
+                    results.add(user);
+                }
+            }
+        }
+
+        return results;
+    }
+
+
     /**
      * Handles the request to search users by attributes.
      * If the user's attributes fits within the given input, the user is added to a list which is returned.
@@ -78,66 +113,73 @@ public class TravelPartnerController {
 
 
         DynamicForm filterForm = formFactory.form().bindFromRequest();
-        String travellerType = filterForm.get("travellertype");
-        String nationality = filterForm.get("nationality");
-
-        List<String> genderSelections = new ArrayList<>();
-        genderSelections.add(filterForm.get("gender[0"));
-        genderSelections.add(filterForm.get("gender[1"));
-        genderSelections.add(filterForm.get("gender[2"));
+//        String travellerType = filterForm.get("travellertype");
 
 
 
 
-        String gender = filterForm.get("gender");
+
+
+
+
+
+
+
+
+//        String gender = filterForm.get("gender");
 
 
 
         //change into slider thing in the future i guesss
-        String agerange1 = filterForm.get("agerange1");
-        String agerange2 = filterForm.get("agerange2");
-        Date date1 = null;
-        Date date2 = null;
+//        String agerange1 = filterForm.get("agerange1");
+//        String agerange2 = filterForm.get("agerange2");
+//        Date date1 = null;
+//        Date date2 = null;
+//
+//        if(agerange1 != null && agerange2 != null) {
+//            try {
+//                date1 = new SimpleDateFormat("yyyy-MM-dd").parse(agerange1);
+//                date2 = new SimpleDateFormat("yyyy-MM-dd").parse(agerange2);
+//            } catch (ParseException e) {
+//                //don't do anything here
+//            }
+//        }
 
-        if(agerange1 != null && agerange2 != null) {
-            try {
-                date1 = new SimpleDateFormat("yyyy-MM-dd").parse(agerange1);
-                date2 = new SimpleDateFormat("yyyy-MM-dd").parse(agerange2);
-            } catch (ParseException e) {
-                //don't do anything here
-            }
-        }
+
         User user = User.getCurrentUser(request);
+
         if (user != null) {
             ArrayList<List<User>> userLists = new ArrayList<>();
-            if(nationality != null) {
-                List<User> userNationality = Nationality.find.byId(Integer.parseInt(nationality)).getUsers();
-                userLists.add(userNationality);
-            }
-            if(gender != null){
-                List<User> userGender = User.find.query().where().eq("gender", gender).findList();
-                userLists.add(userGender);
-            }
-            if(date1 != null && date2 != null){
-                List<User> userAgeRange = User.find.query().where().gt("dateOfBirth", date1).lt("dateOfBirth", date2).findList();
-                userLists.add(userAgeRange);
-            }
-            if(travellerType != null){
-                List<User> userTravellerType = TravellerType.find.byId(Integer.parseInt(travellerType)).getUsers();
-                userLists.add(userTravellerType);
-            }
+
+            userLists.add(nationalityResults(filterForm));
+            userLists.add(genderResults(filterForm));
+
 
             List<User> resultProfiles = UtilityFunctions.retainFromLists(userLists);
+
+
             //remove the current user from the list
             if(resultProfiles.contains(user)){
                 resultProfiles.remove(user);
             }
+
             if(resultProfiles.size() == 0){
-                return badRequest("No users found!");
+                resultProfiles.add(null);
             }
+
             //Redisplay the page, but this time with the search results
             return displayRenderedFilterPage(resultProfiles);
-//            return ok("user found! This will later be converted to show the user's profile: " + userList.toString());
+
+
+//            if(date1 != null && date2 != null){
+//                List<User> userAgeRange = User.find.query().where().gt("dateOfBirth", date1).lt("dateOfBirth", date2).findList();
+//                userLists.add(userAgeRange);
+//            }
+//            if(travellerType != null){
+//                List<User> userTravellerType = TravellerType.find.byId(Integer.parseInt(travellerType)).getUsers();
+//                userLists.add(userTravellerType);
+//            }
+
         }
         else{
             return unauthorized("Oops, you're not logged in!");

@@ -24,20 +24,22 @@ public class LoginFormData implements Constraints.Validatable<List<ValidationErr
     @Override
     public List<ValidationError> validate() {
 
+        boolean hasUserNameData = ! (username == null || username.length() == 0);
+        boolean hasPasswordData = ! (password == null || password.length() == 0);
 
-        if (username == null || username.length() == 0) {
+        if (! hasUserNameData) {
             errors.add(new ValidationError("username", "No username was given"));
         }
 
-        if (password == null || password.length() == 0) {
+        if (! hasPasswordData) {
             errors.add(new ValidationError("password", "No password was given"));
         }
 
         // checking for correct password
-        if ((username == null || username.length() == 0) &&
-                (password == null || password.length() == 0)) {
+        if (hasUserNameData && hasPasswordData) {
             LoginFactory loginFactory = new LoginFactory();
             if (! loginFactory.isPasswordMatch(username, password)) {
+                errors.add(new ValidationError("username", "Incorrect login information"));
                 errors.add(new ValidationError("password", "Incorrect login information"));
             }
         }

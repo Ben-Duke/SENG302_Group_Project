@@ -17,9 +17,10 @@ public class LoginFactory {
     public boolean isPasswordMatch(String email, String password){
         ExpressionList<User> usersExpressionList;
         usersExpressionList = User.find.query()
-                              .where().eq("username", email.toLowerCase());
+                              .where().eq("username", email.toLowerCase())
+        .and().eq("password", password);
 
-        return usersExpressionList.findCount() > 1;
+        return usersExpressionList.findCount() > 0;
     }
 
 //    public static int getUserId(String userName) {

@@ -1,8 +1,7 @@
 @import helper._
-@import views.html.bootstrap3._
 
 @import play.data.DynamicForm
-@(dynamicForm : DynamicForm, travellerTypes : List[TravellerType], nationalities : List[Nationality], genderMap: Map[String, Boolean], resultProfiles : List[User])
+@(dynamicForm : DynamicForm, travellerTypes : List[TravellerType], nationalities : List[Nationality], resultProfiles : List[User])
 
 @main("Search") {
 
@@ -24,13 +23,15 @@
     @form(action = helper.CSRF(routes.TravelPartnerController.searchByAttribute)) {
 
 
-    @checkboxes(dynamicForm("gender"),
-        label = "Gender",
-        checkboxMap = genderMap,
-        help = "Select the genders you would like to include in your search results"
+
+        @select(
+        field = dynamicForm("travellertype"),
+        options = travellerTypes.map(travellerType => travellerType.ttypeid.toString -> travellerType.travellerTypeName),
+        '_label -> "Select traveller types to add:"
     )
-
-
+    @helper.inputRadioGroup(
+        dynamicForm("gender"),
+        options = options("Male"->"Male","Female"->"Female", "Other"->"Other"), '_label -> "Gender: ")
     @helper.select(dynamicForm("nationality"),
         options = nationalities.map(nationality => nationality.natid.toString -> nationality.nationalityName),
         '_label -> "Nationality: ")
@@ -48,26 +49,16 @@
                 <th align="left">Traveler types</th>
             </tr>
 
-            @if(resultProfiles.get(0) != null) {
-                @for(profile <- resultProfiles) {
-                    <tr>
-                        <td>@profile.getUsername()</td>
-                        <td>@profile.getGender()</td>
-                        <td>@for(nationality <- profile.getNationality()) {
-                            <p>@nationality.getNationalityName()</p>
-                        }</td>
-                        <td>@profile.getDateOfBirth()</td>
-                        <td>@for(travellerType <- profile.getTravellerTypes()) {
-                            <p>@travellerType.getTravellerTypeName()</p>
-                        }</td>
-                    </tr>
-                }
-        </table>
-            } else {
-        </table>
-                <h2>No results found</h2>
+            @for(profile <- resultProfiles) {
+                <tr>
+                    <td>@profile.getUsername()</td>
+                    <td>@profile.getGender()</td>
+                    <td>@for(nationality <- profile.getNationality()) {<p>@nationality.getNationalityName()</p>}</td>
+                    <td>@profile.getDateOfBirth()</td>
+                    <td>@for(travellerType <- profile.getTravellerTypes()) {<p>@travellerType.getTravellerTypeName()</p>}</td>
+                </tr>
             }
-
+        </table>
     }
 
 }

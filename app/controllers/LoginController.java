@@ -1,5 +1,8 @@
 package controllers;
 
+import formdata.LoginFormData;
+import factories.LoginFactory;
+
 import io.ebean.Ebean;
 import io.ebean.ExpressionList;
 import models.User;
@@ -9,6 +12,7 @@ import play.mvc.Http;
 import play.mvc.Result;
 import views.html.home.home;
 import views.html.users.login;
+import views.html.users.login_page.loginPage;
 
 import javax.inject.Inject;
 
@@ -24,8 +28,8 @@ public class LoginController {
      * @return The login page.
      */
     public Result login(){
-        Form<User> userForm = formFactory.form(User.class);
-        return ok(login.render(userForm));
+        Form<LoginFormData> loginFormData = formFactory.form(LoginFormData.class);
+        return ok(loginPage.render(loginFormData));
     }
 
 
@@ -39,25 +43,18 @@ public class LoginController {
      */
     public Result loginrequest(Http.Request request)
     {
-        Form<User> userForm = formFactory.form(User.class).bindFromRequest();
-        User userLoggingIn = userForm.get();
-        ExpressionList<User> usersExpressionList = User.find.query().where().eq("username", userLoggingIn.getUsername().toLowerCase());
-
-        if (usersExpressionList.findCount() > 1) { // checking if there are somehow duplicate users of the same username.
-            return internalServerError("Internal server error processing login request");
+        Form<LoginFormData> userLoginForm = formFactory.form(LoginFormData.class).bindFromRequest();
+        if (userLoginForm.hasErrors()) {
+            // redirect user to same login page with some errors.
+            // TODO show incorrect login info error
+            return badRequest(loginPage.render(userLoginForm));
         } else {
-            User user = usersExpressionList.findOne();
-            if(user == null){
-                return notFound("User not found");
-
-            }
-            if(user.authenticate(userLoggingIn.password)){
-                return redirect(routes.HomeController.showhome()).addingToSession(request, "connected", Integer.toString(user.getUserid()));
-            }
-            else{
-                return notFound("Invalid password");
-            }
+            LoginFactory loginFactory = new LoginFactory();
+            return redirect(routes.HomeController.showhome())
+                    .addingToSession(request, "connected",
+                            Integer.toString(loginFactory.getUserId(userLoginForm)));
         }
+
 
     }
 

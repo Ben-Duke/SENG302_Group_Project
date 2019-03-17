@@ -6,6 +6,7 @@
         <title>Login</title>
     </head>
     <body>
+
         <h1>Login</h1>
         @helper.form(action = helper.CSRF(routes.LoginController.loginrequest())){
             @helper.inputText(userFrom("username"), '_label -> "Email")

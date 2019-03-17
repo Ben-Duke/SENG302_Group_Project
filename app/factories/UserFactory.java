@@ -1,5 +1,6 @@
 package factories;
 import formdata.UserFormData;
+import io.ebean.ExpressionList;
 import models.User;
 import play.data.Form;
 import play.mvc.Http;
@@ -16,7 +17,10 @@ public class UserFactory {
 
 
 
-    public int checkpassword(){
+    public boolean checkpassword(String email, String password){
+        ExpressionList<User> usersExpressionList = User.find.query()
+                .where().eq("username", userLoggingInFormData.getUsername().toLowerCase());
+
         return 1;
     }
 

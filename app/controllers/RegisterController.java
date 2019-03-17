@@ -66,7 +66,7 @@ public class RegisterController {
 
 
       //  logger.debug(""+ factory.getCurrentUser(request));
-       return redirect(routes.HomeController.showhome()).addingToSession(request, "connected", Integer.toString(userid))
+       return redirect(routes.HomeController.showhome()).addingToSession(request, "connected", Integer.toString(userid));
     }
 
     /**

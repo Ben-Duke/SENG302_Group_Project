@@ -5,6 +5,7 @@ import play.data.validation.ValidationError;
 
 import java.util.ArrayList;
 import java.util.List;
+import factories.LoginFactory;
 
 @Constraints.Validate
 public class LoginFormData implements Constraints.Validatable<List<ValidationError>> {
@@ -23,25 +24,24 @@ public class LoginFormData implements Constraints.Validatable<List<ValidationErr
             errors.add(new ValidationError("username", "No username was given"));
         }
 
-//        if (password == null || password.length() == 0) {
-//            errors.add(new ValidationError("password", "No password was given"));
-//        } else if (!(username == null || username.length() == 0)) {
-//            //todo make request to factories to see if user is there
-//            for (Traveller traveller : HomeController.getTravellers()) {
-//                if (traveller.getUsername().equals(username)) {
-//                    user = true;
-//                    //todo make request to factories to see if user and password match
-//                    if (traveller.getPassword().equals(password)) {
-//                        break;
-//                    } else {
-//                        errors.add(new ValidationError("password", "Wrong password for this username"));
-//                    }
-//                }
-//            }
-//            if (user == false) {
-//                errors.add(new ValidationError("username", "There is no profile associated to this username"));
-//            }
-//        }
+        if (password == null || password.length() == 0) {
+            errors.add(new ValidationError("password", "No password was given"));
+        }
+
+        // checking for correct password
+        if ((username == null || username.length() == 0) &&
+                (password == null || password.length() == 0)) {
+            LoginFactory loginFactory = new LoginFactory();
+            if (! loginFactory.isPasswordMatch(username, password)) {
+                errors.add(new ValidationError("password", "Incorrect login information"));
+            }
+        }
+
+
+
+
+
+
 
         if (errors.size() > 0) {
             return errors;

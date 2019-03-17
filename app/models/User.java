@@ -111,7 +111,7 @@ public class User extends Model {
     //GETTERS AND SETTERS
 
 
-    public Integer getUserid() {
+    public int getUserid() {
         return userid;
     }
 

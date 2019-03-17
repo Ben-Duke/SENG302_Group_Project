@@ -59,11 +59,11 @@ public class LoginFactory {
     public static int getUserId(String userName) {
         int userId = -1;
 
-        List<User> users = User.find.query()
+        ExpressionList<User> users = User.find.query()
                             .where().eq("username", userName.toLowerCase());
 
-        if (users.size() == 1) {
-            userId = users.get(0).getUserId();
+        if (users.findCount() == 1) {
+            userId = users.findOne().getUserid();
         }
 
         return userId;

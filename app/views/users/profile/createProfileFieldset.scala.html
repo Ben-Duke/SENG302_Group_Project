@@ -1,6 +1,6 @@
 @import java.util
 @import formdata.UserFormData
-@(userForm: Form[UserFormData], genders: util.List[String])
+@(userForm: Form[UserFormData], genders: util.List[String], tTypes:util.Map[String, Boolean], passports:util.Map[String, Boolean], nationalities:util.Map[String, Boolean])
 
 
 @import views.html.bootstrap3._
@@ -44,6 +44,28 @@
         label = "Date of birth",
         placeholder = "01/01/2000",
         help = "Please select your Date of birth. (required)")
+
+        <!-- Traveller types -->
+    @select(userForm("travellerTypes"),
+        label = "Traveller Type",
+        optionMap = tTypes,
+        isMultiple = true,
+        help = "Select multiple Using ctrl or cmd. please select at least one.")
+
+        <!-- Passports -->
+    @select(userForm("passports"),
+        label = "Passports",
+        optionMap = passports,
+        isMultiple = true,
+        help = "Select multiple Using ctrl or cmd. please select at least one.")
+
+        <!-- Passports -->
+    @select(userForm("nationalities"),
+        label = "Nationalities",
+        optionMap = nationalities,
+        isMultiple = true,
+        help = "Select multiple Using ctrl or cmd. please select at least one.")
+
 
 
 

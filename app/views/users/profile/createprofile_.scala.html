@@ -1,7 +1,7 @@
 @import java.util
 @import helper._
 @import formdata.UserFormData
-@(userForm : Form[UserFormData], genders:util.List[String])
+@(userForm : Form[UserFormData], genders:util.List[String], tTypes:util.Map[String, Boolean], passports:util.Map[String, Boolean], nationalities:util.Map[String, Boolean])
 
 
 
@@ -10,7 +10,7 @@
     <div class="container">
         <div class="well">
         @form(helper.CSRF(routes.RegisterController.saveuser()) , 'class -> "form-horizontal") {
-            @createProfileFieldset(userForm, genders)
+            @createProfileFieldset(userForm, genders, tTypes, passports, nationalities)
         }
         </div>
 

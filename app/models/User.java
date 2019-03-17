@@ -115,11 +115,7 @@ public class User extends Model {
         return userid;
     }
 
-    /*
-    public void setUserid(Integer userid) {
-        this.userid = userid;
-    }
-    */
+
 
     public String getUsername(){
         return username;
@@ -305,7 +301,12 @@ public class User extends Model {
         return null;
     }
 
-    public static int getCurrentUser(Http.Request request, String intsig) {
+    /** Returns the id of the user and returns it if for some reason the user doesnt exist it will return -1.
+     *
+     * @param request
+     * @return userid on success or -1.
+     */
+    public static int getCurrentUserById(Http.Request request) {
         String userId = request.session().getOptional("connected").orElse(null);
         if (userId != null) {
             User user = User.find.query().where().eq("userid", userId).findOne();

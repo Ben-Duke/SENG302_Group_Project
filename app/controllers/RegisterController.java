@@ -1,7 +1,7 @@
 package controllers;
 
 import formdata.UserFormData;
-import io.ebean.ExpressionList;
+
 import models.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +17,7 @@ import javax.inject.Inject;
 import factories.UserFactory;
 
 import java.util.Arrays;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 import static play.mvc.Results.badRequest;
@@ -30,11 +31,9 @@ public class RegisterController {
 
     @Inject
     FormFactory formFactory;
-    //private final Logger logger = LoggerFactory.getLogger("application");
 
 
     UserFactory factory = new UserFactory();
-
     /**
      * Renders the create user page where users can register.
      * @return create user page
@@ -42,7 +41,16 @@ public class RegisterController {
     public Result createuser(){
         Form<UserFormData> userForm = formFactory.form(UserFormData.class);
         String[] gendersArray = {"Male", "Female", "Other"};
-        return ok(createprofile_.render(userForm, Arrays.asList(gendersArray)));
+        UserFactory.addNatandPass();
+        try {
+            UserFactory.addTravelTypes();
+        }catch (Exception error){
+            //Do nothing as data is in database, otherwise error would not have happended.
+        }
+        Map<String, Boolean> tTypes = UserFactory.getTTypesList();
+        Map<String, Boolean> passports = UserFactory.getPassports();
+        Map<String, Boolean> nationalities = UserFactory.getNatList();
+        return ok(createprofile_.render(userForm, Arrays.asList(gendersArray), tTypes, passports, nationalities));
     }
 
     /**
@@ -59,14 +67,19 @@ public class RegisterController {
     public Result saveuser(Http.Request request){
 
         Form<UserFormData> userForm = formFactory.form(UserFormData.class).bindFromRequest();
-        UserFormData user = userForm.get();
+        if (userForm.hasErrors()) {
+            Map<String, Boolean> tTypes = UserFactory.getTTypesList();
+            Map<String, Boolean> passports = UserFactory.getPassports();
+            Map<String, Boolean> nationalities = UserFactory.getNatList();
+            String[] gendersArray = {"Male", "Female", "Other"};
+            return badRequest(createprofile_.render(userForm, Arrays.asList(gendersArray), tTypes, passports, nationalities));
+        }
+        else{
+            UserFormData user = userForm.get();
+            int userid = factory.createUser(user);
+            return redirect(routes.HomeController.showhome()).addingToSession(request, "connected", Integer.toString(userid));
+        }
 
-
-        int userid = factory.createUser(user);
-
-
-      //  logger.debug(""+ factory.getCurrentUser(request));
-       return redirect(routes.HomeController.showhome()).addingToSession(request, "connected", Integer.toString(userid))
     }
 
     /**

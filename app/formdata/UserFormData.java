@@ -2,6 +2,7 @@ package formdata;
 
 import play.data.validation.Constraints;
 import play.data.validation.ValidationError;
+import factories.UserFactory;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -27,15 +28,19 @@ public class UserFormData implements Constraints.Validatable<List<ValidationErro
     public String gender;
     public List<String> passports;
     public List<String> nationalities;
+    public List<String> travellerTypes;
     public String dob;
 
-    /** Required for form instantiation. */
-    public UserFormData(){}
+    /**
+     * Required for form instantiation.
+     */
+    public UserFormData() {
+    }
 
     /**
      * Creates an initialized form instance. Assumes the passed data is valid.
      */
-    public UserFormData(String username, String password, String firstName, String lastName, String gender, List<String> passports, List<String> nationalities, String dob) {
+    public UserFormData(String username, String password, String firstName, String lastName, String gender, List<String> passports, List<String> nationalities, List<String> tTypes, String dob) {
         this.username = username;
         this.password = password;
         this.firstName = firstName;
@@ -43,11 +48,13 @@ public class UserFormData implements Constraints.Validatable<List<ValidationErro
         this.gender = gender;
         this.passports = new ArrayList<>(passports);
         this.nationalities = new ArrayList<>(nationalities);
+        this.travellerTypes = new ArrayList<>(tTypes);
         this.dob = dob;
     }
 
     /**
      * A function that is called when the UserFormData is submitted and returns a list of errors if any or null.
+     *
      * @return if there are errors a list of errors will be returned if there aren't any then then
      * it will return null.
      */
@@ -58,15 +65,21 @@ public class UserFormData implements Constraints.Validatable<List<ValidationErro
         if (firstName == null || firstName.length() == 0) {
             errors.add(new ValidationError("firstName", "No first name was given"));
         }
+        if (firstName.matches(".*\\d+.*") || firstName.length() < 1) {
+            errors.add(new ValidationError("firstName", "First name needs to be only letters and be at least one letter long"));
+        }
+
 
         if (lastName == null || lastName.length() == 0) {
             errors.add(new ValidationError("lastName", "No last name was given"));
+        } else if (lastName.matches(".*\\d+.*") || lastName.length() < 1) {
+            errors.add(new ValidationError("lastName", "Last name needs to be only letters and be at least one letter long"));
         }
-
         if (username == null || username.length() == 0) {
             errors.add(new ValidationError("username", "No username was given"));
+        } else if (UserFactory.checkUsername(username) == 1) {
+            errors.add(new ValidationError("username", "Username is taken"));
         }
-
         if (password.length() == 0) {
             errors.add(new ValidationError("password", "No password was given"));
         }
@@ -96,27 +109,32 @@ public class UserFormData implements Constraints.Validatable<List<ValidationErro
             errors.add(new ValidationError("gender", "No gender was given"));
         }
 
-        //if (nationalities == null || nationalities.size() == 0) {
-        //    errors.add(new ValidationError("nationalities", "No nationality was given"));
-        //}
+        if (nationalities == null || nationalities.size() == 0) {
+            errors.add(new ValidationError("nationalities", "No nationality was given"));
+        }
+
+        if (travellerTypes == null || travellerTypes.size() == 0) {
+            errors.add(new ValidationError("travellerTypes", "No traveller types were given needs at least one"));
+        }
 
         if (errors.size() > 0) {
             return errors;
         }
+
         return null;
-
     }
 
-    @Override
-    public String toString() {
-        return "UserFormData{" +
-                "username='" + username + '\'' +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", password='" + password + '\'' +
-                ", gender='" + gender + '\'' +
-                ", passports=" + passports +
-                ", nationalities=" + nationalities +
-                '}';
-    }
+//    @Override
+//    public String toString() {
+//        return "UserFormData{" +
+//                "username='" + username + '\'' +
+//                ", firstName='" + firstName + '\'' +
+//                ", lastName='" + lastName + '\'' +
+//                ", password='" + password + '\'' +
+//                ", gender='" + gender + '\'' +
+//                ", passports=" + passports +
+//                ", nationalities=" + nationalities +
+//                '}';
+//    }
+
 }

@@ -35,8 +35,8 @@
         <table class="table table-sm">
             <thead class="thead-dark">
                 <tr>
-                    <th></th>
                     <th scope="col">Username</th>
+                    <th></th>
                     <th scope="col">First Name</th>
                     <th scope="col">Last Name</th>
                     <th scope="col">DOB</th>
@@ -47,11 +47,11 @@
             <tbody>
             @for(profile <- users) {
                 <tr>
-                    <td class="col-sm-1"> @if(profile.getIsAdmin) {<div class ="small-middle-container"><img class="thumbnail img-responsive" src="assets/images/admin.png"></div>} else {<div class ="small-middle-container"><img class="thumbnail img-responsive" src="assets/images/user.png"></div>}</td>
-                    <th class="col-sm-1">@profile.getUsername()</th>
-                    <td class="col-sm-1">@profile.getfName</td>
-                    <td class="col-sm-1">@profile.getlName</td>
-                    <td class="col-sm-1">@profile.getDateOfBirth()</td>
+                    <th class="col-sm-1" style = "width:1%">@profile.getUsername()</th>
+                    <td class="col-sm-1"style = "width:1%"> @if(profile.getIsAdmin) {<div class ="small-middle-container"><img class="thumbnail img-responsive" src="assets/images/key_2_small.png"></div>}</td>
+                    <td class="col-sm-1"style = "width:1%">@profile.getfName</td>
+                    <td class="col-sm-1"style = "width:1%">@profile.getlName</td>
+                    <td class="col-sm-1"style = "width:1%">@profile.getDateOfBirth()</td>
                     <td class="col-sm-2">@for(travellerType <- profile.getTravellerTypes()) {<p>@travellerType.getTravellerTypeName()</p>}</td>
 
 

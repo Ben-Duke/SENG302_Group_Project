@@ -210,7 +210,7 @@ public class TravelPartnerController {
                 userLists.add(ageRangeMatches);
             }
 
-
+            //Gets all common users from each search
             List<User> resultProfiles = UtilityFunctions.retainFromLists(userLists);
 
 

@@ -21,33 +21,36 @@
             </div>
         </nav>
 
-        <h1>Search</h1>
+        <div class="container-fluid">
+            <h1>Search</h1>
 
-        @form(action = helper.CSRF(routes.TravelPartnerController.searchByAttribute)) {
+            @form(action = helper.CSRF(routes.TravelPartnerController.searchByAttribute)) {
 
-            @checkboxes(
-                dynamicForm("gender"),
-                label = "Gender",
-                checkboxMap = genderMap,
-                help = "Select the genders you would like to include in your search results"
-            )
+                @checkboxes(
+                    dynamicForm("gender"),
+                    label = "Gender selection",
+                    checkboxMap = genderMap,
+                    help = "Select the genders you would like to include in your search results"
+                )
 
-            @helper.select(
-                field = dynamicForm("travellertype"),
-                options = travellerTypes.map(travellerType => travellerType -> travellerType),
-                '_label -> "Select a traveller type to add:"
-            )
+                @helper.select(
+                    field = dynamicForm("travellertype"),
+                    options = travellerTypes.map(travellerType => travellerType -> travellerType),
+                    '_label -> "Select a traveller type to add:"
+                )
 
-            @helper.select(
-                dynamicForm("nationality"),
-                options = nationalities.map(nationality => nationality -> nationality),
-                '_label -> "Select a nationality to add:"
-            )
+                @helper.select(
+                    dynamicForm("nationality"),
+                    options = nationalities.map(nationality => nationality -> nationality),
+                    '_label -> "Select a nationality to add:"
+                )
 
-            @helper.inputDate(dynamicForm("agerange1"), '_label -> "Born after:")
-            @helper.inputDate(dynamicForm("agerange2"), '_label -> "Born before:")
+                @helper.inputDate(dynamicForm("agerange1"), '_label -> "Born after:")
+                @helper.inputDate(dynamicForm("agerange2"), '_label -> "Born before:")
 
-            <input type="submit" value="Search by filters">
+                <input type="submit" value="Search by filters">
+
+        </div>
 
 
             @if(resultProfiles.size > 0) {

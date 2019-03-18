@@ -57,8 +57,6 @@ public class TravelPartnerController {
         genderMap.put("Female", true);
         genderMap.put("Other", true);
 
-
-
         return ok(searchprofile.render(dynamicForm, convertedTravellerTypes, convertedNationalities, genderMap, resultProfiles));
     }
 
@@ -81,7 +79,11 @@ public class TravelPartnerController {
         }
     }
 
-
+    /**
+     * From the form retrieve all users from the database that have the given traveler type
+     * @param filterForm the form object containing the users search selections
+     * @return A list of all users that match the traveler type
+     */
     private List<User> travelerTypeResults(DynamicForm filterForm) {
         String travellerType = filterForm.get("travellertype");
 
@@ -101,6 +103,11 @@ public class TravelPartnerController {
         return null;
     }
 
+    /**
+     * From the form retrieve all users from the database that have the given nationality
+     * @param filterForm the form object containing the users search selections
+     * @return A list of all users that match the nationality
+     */
     private List<User> nationalityResults(DynamicForm filterForm) {
 
         String nationality = filterForm.get("nationality");
@@ -119,6 +126,11 @@ public class TravelPartnerController {
         return null;
     }
 
+    /**
+     * From the form retrieve all users from the database that have the given genders selected
+     * @param filterForm the form object containing the users search selections
+     * @return A list of all users that match the genders
+     */
     private List<User> genderResults(DynamicForm filterForm) {
 
         List<String> genderSelections = new ArrayList<>();
@@ -141,6 +153,12 @@ public class TravelPartnerController {
         return results;
     }
 
+    /**
+     * From the form retrieve all users from the database that have the given date range.
+     * If one of the date selector has not been chosen then that field is not used as a bound
+     * @param filterForm the form object containing the users search selections
+     * @return A list of all users that match the date range
+     */
     private List<User> ageRangeResults(DynamicForm filterForm) {
 
         String agerange1 = filterForm.get("agerange1");
@@ -177,8 +195,8 @@ public class TravelPartnerController {
 
     /**
      * Handles the request to search users by attributes.
-     * If the user's attributes fits within the given input, the user is added to a list which is returned.
-     * If there's no users in the list then return a bad request error.
+     * Add results from all parameters to a list, find all common users between each
+     * search criteria.
      * @param request the HTTP request
      * @return List of users or error message
      */

@@ -194,7 +194,7 @@ public class TravelPartnerControllerTest extends WithApplication {
         Result result = Helpers.route(app, fakeRequest);
         assertEquals(BAD_REQUEST, result.status());
 
-        //TODO add further assert when traveller type is removed
+
     }
 
     @Test

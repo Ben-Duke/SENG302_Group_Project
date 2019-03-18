@@ -140,6 +140,7 @@ public class TravelPartnerControllerTest extends WithApplication {
         //Because gender has changed, search should no longer return a result.
         fakeRequest = Helpers.fakeRequest().bodyForm(formData).method(Helpers.POST).uri("/users/profile/search").session("connected", "2");
         result = Helpers.route(app, fakeRequest);
+//        System.out.println(result.body());
         assertEquals(BAD_REQUEST, result.status());
 
         //Reverting gender change

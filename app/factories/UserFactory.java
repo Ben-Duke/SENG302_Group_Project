@@ -325,4 +325,8 @@ public class UserFactory {
     public static int getCurrentUserById(Http.Request request) {
         return User.getCurrentUserById(request);
     }
+
+    public static int deleteNationalilty(){
+        return 1;
+    }
 }

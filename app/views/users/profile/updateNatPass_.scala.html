@@ -1,9 +1,8 @@
 @import helper._
 
 @(userForm : Form[User], nationalities : List[Nationality], passports : List[Passport], user : User)
-@main("Index"){
-    <div class="container">
-<h1>Edit passport and nationality </h1>
+
+<h1>Edit passport and nationality :x</h1>
 
 @if(user.nationality.isEmpty){
     <p>You must have at least one nationality..</p>
@@ -54,5 +53,3 @@
 }
 
 <a href="@routes.HomeController.showhome()">Back to home</a>
-    </div>
-}

@@ -20,6 +20,7 @@ import java.util.*;
 
 import static play.mvc.Results.*;
 
+
 public class TravelPartnerController {
 
     @Inject
@@ -166,22 +167,23 @@ public class TravelPartnerController {
         Date date1 = null;
         Date date2 = null;
 
-
-        if(agerange1.equals("") || agerange2.equals("")) {
-            try {
-                if (agerange1.equals("") && !agerange2.equals("")) {
-                    date1 = new Date(Long.MIN_VALUE);
-                    date2 = new SimpleDateFormat("yyyy-MM-dd").parse(agerange2);
-                } else if (agerange2.equals("") && !agerange1.equals("")) {
-                    date1 = new SimpleDateFormat("yyyy-MM-dd").parse(agerange1);
-                    date2 = new Date();
-                } else if (!agerange1.equals("") && !agerange2.equals("")){
-                    date1 = new SimpleDateFormat("yyyy-MM-dd").parse(agerange1);
-                    date2 = new SimpleDateFormat("yyyy-MM-dd").parse(agerange2);
+        if (agerange1 != null && agerange2 != null) {
+            if (agerange1.equals("") || agerange2.equals("")) {
+                try {
+                    if (agerange1.equals("") && !agerange2.equals("")) {
+                        date1 = new Date(Long.MIN_VALUE);
+                        date2 = new SimpleDateFormat("yyyy-MM-dd").parse(agerange2);
+                    } else if (agerange2.equals("") && !agerange1.equals("")) {
+                        date1 = new SimpleDateFormat("yyyy-MM-dd").parse(agerange1);
+                        date2 = new Date();
+                    } else if (!agerange1.equals("") && !agerange2.equals("")) {
+                        date1 = new SimpleDateFormat("yyyy-MM-dd").parse(agerange1);
+                        date2 = new SimpleDateFormat("yyyy-MM-dd").parse(agerange2);
+                    }
+                } catch (ParseException e) {
+                    //Do Nothing
+                    //                System.out.println(e);
                 }
-            } catch (ParseException e) {
-                //Do Nothing
-//                System.out.println(e);
             }
         }
 
@@ -203,7 +205,6 @@ public class TravelPartnerController {
     public Result searchByAttribute(Http.Request request){
 
         DynamicForm filterForm = formFactory.form().bindFromRequest();
-
 
 
         User user = User.getCurrentUser(request);
@@ -237,6 +238,7 @@ public class TravelPartnerController {
                 resultProfiles.remove(user);
             }
 
+            //For the view to display no results
             if(resultProfiles.size() == 0){
                 resultProfiles.add(null);
             }

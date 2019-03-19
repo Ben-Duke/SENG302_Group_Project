@@ -8,19 +8,6 @@
 
 @main("Search") {
 
-
-    <nav class="navbar navbar-custom">
-
-        <div class="container-fluid">
-            <div class="navbar-header">
-                <a class="navbar-brand" href="@routes.HomeController.showhome()">Home</a>
-            </div>
-            <ul class="nav navbar-nav">
-                <li class="active"><a href="#">Search</a></li>
-            </ul>
-        </div>
-    </nav>
-
     <div class="container-fluid">
         <h1>Search</h1>
 
@@ -53,7 +40,7 @@
     </div>
 
 
-        @if(resultProfiles.size > 0) {
+        @if(resultProfiles.nonEmpty) {
 
             <table class="table" id="searchResultsTable">
                 <thead class="thead-dark">
@@ -95,6 +82,11 @@
 
 <script>
 
+    //n = 0, sorting by username
+    //n = 2, sorting by gender
+    //n = 3, sorting by the travelers first nationality
+    //n = 4, sorting by date of birth
+    //n = 5, sorting by the travelers first traveler type
     function sortTable(n) {
         var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
         table = document.getElementById("searchResultsTable");
@@ -115,6 +107,8 @@
                 /* Get the two elements you want to compare,
                 one from current row and one from the next: */
                 if (n == 2 || n == 4) {
+                    /*This is for the nationality and traveler type columns, the first traveler type
+                    or nationality is taken */
                     x = rows[i].getElementsByTagName("TD")[n].getElementsByTagName("P")[0];
                     y = rows[i + 1].getElementsByTagName("TD")[n].getElementsByTagName("P")[0];
                 } else {

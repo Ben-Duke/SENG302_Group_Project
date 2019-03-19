@@ -28,9 +28,12 @@ public class UserFactory {
          }
 
 
-    public boolean checkpassword(String email, String password){
+    public boolean checkpassword(String email, String password) {
         ExpressionList<User> usersExpressionList = User.find.query()
                 .where().eq("username", email).and().eq("password", password);
+
+        return usersExpressionList.findCount() == 1;
+    }
 
     /**
      * adds all of the following traveller types to the database

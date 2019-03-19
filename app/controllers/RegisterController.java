@@ -5,6 +5,7 @@ import io.ebean.ExpressionList;
 import models.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.Marker;
 import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.Http;
@@ -17,11 +18,10 @@ import javax.inject.Inject;
 import factories.UserFactory;
 
 import java.util.Arrays;
+import java.util.Map;
 import java.util.regex.Pattern;
 
-import static play.mvc.Results.badRequest;
-import static play.mvc.Results.ok;
-import static play.mvc.Results.redirect;
+import static play.mvc.Results.*;
 
 /**
  * A Controller class for the user registration page.
@@ -30,11 +30,314 @@ public class RegisterController {
 
     @Inject
     FormFactory formFactory;
-    //private final Logger logger = LoggerFactory.getLogger("application");
+    Logger logger = new Logger() {
+        @Override
+        public String getName() {
+            return null;
+        }
 
+        @Override
+        public boolean isTraceEnabled() {
+            return false;
+        }
+
+        @Override
+        public void trace(String msg) {
+
+        }
+
+        @Override
+        public void trace(String format, Object arg) {
+
+        }
+
+        @Override
+        public void trace(String format, Object arg1, Object arg2) {
+
+        }
+
+        @Override
+        public void trace(String format, Object... arguments) {
+
+        }
+
+        @Override
+        public void trace(String msg, Throwable t) {
+
+        }
+
+        @Override
+        public boolean isTraceEnabled(Marker marker) {
+            return false;
+        }
+
+        @Override
+        public void trace(Marker marker, String msg) {
+
+        }
+
+        @Override
+        public void trace(Marker marker, String format, Object arg) {
+
+        }
+
+        @Override
+        public void trace(Marker marker, String format, Object arg1, Object arg2) {
+
+        }
+
+        @Override
+        public void trace(Marker marker, String format, Object... argArray) {
+
+        }
+
+        @Override
+        public void trace(Marker marker, String msg, Throwable t) {
+
+        }
+
+        @Override
+        public boolean isDebugEnabled() {
+            return false;
+        }
+
+        @Override
+        public void debug(String msg) {
+
+        }
+
+        @Override
+        public void debug(String format, Object arg) {
+
+        }
+
+        @Override
+        public void debug(String format, Object arg1, Object arg2) {
+
+        }
+
+        @Override
+        public void debug(String format, Object... arguments) {
+
+        }
+
+        @Override
+        public void debug(String msg, Throwable t) {
+
+        }
+
+        @Override
+        public boolean isDebugEnabled(Marker marker) {
+            return false;
+        }
+
+        @Override
+        public void debug(Marker marker, String msg) {
+
+        }
+
+        @Override
+        public void debug(Marker marker, String format, Object arg) {
+
+        }
+
+        @Override
+        public void debug(Marker marker, String format, Object arg1, Object arg2) {
+
+        }
+
+        @Override
+        public void debug(Marker marker, String format, Object... arguments) {
+
+        }
+
+        @Override
+        public void debug(Marker marker, String msg, Throwable t) {
+
+        }
+
+        @Override
+        public boolean isInfoEnabled() {
+            return false;
+        }
+
+        @Override
+        public void info(String msg) {
+
+        }
+
+        @Override
+        public void info(String format, Object arg) {
+
+        }
+
+        @Override
+        public void info(String format, Object arg1, Object arg2) {
+
+        }
+
+        @Override
+        public void info(String format, Object... arguments) {
+
+        }
+
+        @Override
+        public void info(String msg, Throwable t) {
+
+        }
+
+        @Override
+        public boolean isInfoEnabled(Marker marker) {
+            return false;
+        }
+
+        @Override
+        public void info(Marker marker, String msg) {
+
+        }
+
+        @Override
+        public void info(Marker marker, String format, Object arg) {
+
+        }
+
+        @Override
+        public void info(Marker marker, String format, Object arg1, Object arg2) {
+
+        }
+
+        @Override
+        public void info(Marker marker, String format, Object... arguments) {
+
+        }
+
+        @Override
+        public void info(Marker marker, String msg, Throwable t) {
+
+        }
+
+        @Override
+        public boolean isWarnEnabled() {
+            return false;
+        }
+
+        @Override
+        public void warn(String msg) {
+
+        }
+
+        @Override
+        public void warn(String format, Object arg) {
+
+        }
+
+        @Override
+        public void warn(String format, Object... arguments) {
+
+        }
+
+        @Override
+        public void warn(String format, Object arg1, Object arg2) {
+
+        }
+
+        @Override
+        public void warn(String msg, Throwable t) {
+
+        }
+
+        @Override
+        public boolean isWarnEnabled(Marker marker) {
+            return false;
+        }
+
+        @Override
+        public void warn(Marker marker, String msg) {
+
+        }
+
+        @Override
+        public void warn(Marker marker, String format, Object arg) {
+
+        }
+
+        @Override
+        public void warn(Marker marker, String format, Object arg1, Object arg2) {
+
+        }
+
+        @Override
+        public void warn(Marker marker, String format, Object... arguments) {
+
+        }
+
+        @Override
+        public void warn(Marker marker, String msg, Throwable t) {
+
+        }
+
+        @Override
+        public boolean isErrorEnabled() {
+            return false;
+        }
+
+        @Override
+        public void error(String msg) {
+
+        }
+
+        @Override
+        public void error(String format, Object arg) {
+
+        }
+
+        @Override
+        public void error(String format, Object arg1, Object arg2) {
+
+        }
+
+        @Override
+        public void error(String format, Object... arguments) {
+
+        }
+
+        @Override
+        public void error(String msg, Throwable t) {
+
+        }
+
+        @Override
+        public boolean isErrorEnabled(Marker marker) {
+            return false;
+        }
+
+        @Override
+        public void error(Marker marker, String msg) {
+
+        }
+
+        @Override
+        public void error(Marker marker, String format, Object arg) {
+
+        }
+
+        @Override
+        public void error(Marker marker, String format, Object arg1, Object arg2) {
+
+        }
+
+        @Override
+        public void error(Marker marker, String format, Object... arguments) {
+
+        }
+
+        @Override
+        public void error(Marker marker, String msg, Throwable t) {
+
+        }
+    };
 
     UserFactory factory = new UserFactory();
-
     /**
      * Renders the create user page where users can register.
      * @return create user page
@@ -42,7 +345,16 @@ public class RegisterController {
     public Result createuser(){
         Form<UserFormData> userForm = formFactory.form(UserFormData.class);
         String[] gendersArray = {"Male", "Female", "Other"};
-        return ok(createprofile_.render(userForm, Arrays.asList(gendersArray)));
+        UserFactory.addNatandPass();
+        try {
+            UserFactory.addTravelTypes();
+        }catch (Exception error){
+            //Do nothing as data is in database, otherwise error would not have happended.
+        }
+        Map<String, Boolean> tTypes = UserFactory.getTTypesList();
+        Map<String, Boolean> passports = UserFactory.getPassports();
+        Map<String, Boolean> nationalities = UserFactory.getNatList();
+        return ok(createprofile_.render(userForm, Arrays.asList(gendersArray), tTypes, passports, nationalities));
     }
 
     /**
@@ -59,14 +371,23 @@ public class RegisterController {
     public Result saveuser(Http.Request request){
 
         Form<UserFormData> userForm = formFactory.form(UserFormData.class).bindFromRequest();
-        UserFormData user = userForm.get();
 
+         if (userForm.hasErrors()) {
+            Map<String, Boolean> tTypes = UserFactory.getTTypesList();
+            Map<String, Boolean> passports = UserFactory.getPassports();
+            Map<String, Boolean> nationalities = UserFactory.getNatList();
+            String[] gendersArray = {"Male", "Female", "Other"};
 
-        int userid = factory.createUser(user);
+            return badRequest(createprofile_.render(userForm, Arrays.asList(gendersArray), tTypes, passports, nationalities));
+        }
+        else{
+            UserFormData user = userForm.get();
 
+                int userid = factory.createUser(user);
+                return redirect(routes.HomeController.showhome()).addingToSession(request, "connected", Integer.toString(userid));
 
-      //  logger.debug(""+ factory.getCurrentUser(request));
-       return redirect(routes.HomeController.showhome()).addingToSession(request, "connected", Integer.toString(userid));
+        }
+
     }
 
     /**

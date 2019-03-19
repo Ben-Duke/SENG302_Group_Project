@@ -31,5 +31,15 @@ public class Passport extends Model {
         this.users = users;
     }
 
-    public static Finder<Integer,Passport> find = new Finder<>(Passport.class);
+    public Integer getPassportId() {
+        return passid;
+    }
+
+    public String getName(){
+        return passportName;
+    }
+
+    public final static Finder<String,Passport> findByName = new Finder<>(Passport.class);
+
+    public final static Finder<Integer,Passport> find = new Finder<>(Passport.class);
 }

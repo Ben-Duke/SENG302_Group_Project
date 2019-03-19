@@ -115,7 +115,7 @@ public class ProfileController {
         return unauthorized("Oops, you are not logged in");
     }
 
-        /**
+    /**
      * If the user is logged in, renders the update traveller type page,
      * where the user can add or remove traveller types.
      * If the user is not logged in, returns an error.

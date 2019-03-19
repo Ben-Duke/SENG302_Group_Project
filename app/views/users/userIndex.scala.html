@@ -1,19 +1,22 @@
 @(users: List[User])
 
-<html>
-    <head>
-        <title>All users</title>
-    </head>
-    <body>
-        <h1>All users</h1>
+    @main("Index") {
+        <div class="container">
+            <head>
+                <title>All users</title>
+            </head>
+            <body>
+                <h1>All users</h1>
 
-        @for(user <- users){
-            <p>Email: @user.username</p>
-            <p>ID: @user.userid</p>
-        }
-        <a href="@routes.RegisterController.createuser()">Create User</a>
-            <a href="@routes.HomeController.showhome()">Show Home</a>
-            <a href="@routes.LoginController.logoutrequest()">Logout</a>
-            <a href="@routes.LoginController.login()">Login</a>
-    </body>
-</html>
+                @for(user <- users) {
+                    <p>Email: @user.username</p>
+                    <p>First Name: @user.getfName()</p>
+                    <p>Last Name: @user.getlName()</p>
+                }
+                <a href="@routes.RegisterController.createuser()">Create User</a>
+                <a href="@routes.HomeController.showhome()">Show Home</a>
+                <a href="@routes.LoginController.logoutrequest()">Logout</a>
+                <a href="@routes.LoginController.login()">Login</a>
+            </body>
+        </div>
+    }

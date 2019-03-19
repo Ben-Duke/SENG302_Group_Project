@@ -1,22 +1,27 @@
 package controllers;
 
-import io.ebean.ExpressionList;
+import formdata.UserFormData;
+
 import models.User;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Marker;
 import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.Http;
 import play.mvc.Result;
 import play.mvc.Controller;
-import views.html.home.home;
-import views.html.users.createUser;
-import views.html.users.*;
-import javax.inject.Inject;
+import views.html.users.profile.createprofile_;
+import factories.UserFactory;
 
+import javax.inject.Inject;
+import factories.UserFactory;
+
+import java.util.Arrays;
+import java.util.Map;
 import java.util.regex.Pattern;
 
-import static play.mvc.Results.badRequest;
-import static play.mvc.Results.ok;
-import static play.mvc.Results.redirect;
+import static play.mvc.Results.*;
 
 /**
  * A Controller class for the user registration page.
@@ -25,14 +30,331 @@ public class RegisterController {
 
     @Inject
     FormFactory formFactory;
+    Logger logger = new Logger() {
+        @Override
+        public String getName() {
+            return null;
+        }
 
+        @Override
+        public boolean isTraceEnabled() {
+            return false;
+        }
+
+        @Override
+        public void trace(String msg) {
+
+        }
+
+        @Override
+        public void trace(String format, Object arg) {
+
+        }
+
+        @Override
+        public void trace(String format, Object arg1, Object arg2) {
+
+        }
+
+        @Override
+        public void trace(String format, Object... arguments) {
+
+        }
+
+        @Override
+        public void trace(String msg, Throwable t) {
+
+        }
+
+        @Override
+        public boolean isTraceEnabled(Marker marker) {
+            return false;
+        }
+
+        @Override
+        public void trace(Marker marker, String msg) {
+
+        }
+
+        @Override
+        public void trace(Marker marker, String format, Object arg) {
+
+        }
+
+        @Override
+        public void trace(Marker marker, String format, Object arg1, Object arg2) {
+
+        }
+
+        @Override
+        public void trace(Marker marker, String format, Object... argArray) {
+
+        }
+
+        @Override
+        public void trace(Marker marker, String msg, Throwable t) {
+
+        }
+
+        @Override
+        public boolean isDebugEnabled() {
+            return false;
+        }
+
+        @Override
+        public void debug(String msg) {
+
+        }
+
+        @Override
+        public void debug(String format, Object arg) {
+
+        }
+
+        @Override
+        public void debug(String format, Object arg1, Object arg2) {
+
+        }
+
+        @Override
+        public void debug(String format, Object... arguments) {
+
+        }
+
+        @Override
+        public void debug(String msg, Throwable t) {
+
+        }
+
+        @Override
+        public boolean isDebugEnabled(Marker marker) {
+            return false;
+        }
+
+        @Override
+        public void debug(Marker marker, String msg) {
+
+        }
+
+        @Override
+        public void debug(Marker marker, String format, Object arg) {
+
+        }
+
+        @Override
+        public void debug(Marker marker, String format, Object arg1, Object arg2) {
+
+        }
+
+        @Override
+        public void debug(Marker marker, String format, Object... arguments) {
+
+        }
+
+        @Override
+        public void debug(Marker marker, String msg, Throwable t) {
+
+        }
+
+        @Override
+        public boolean isInfoEnabled() {
+            return false;
+        }
+
+        @Override
+        public void info(String msg) {
+
+        }
+
+        @Override
+        public void info(String format, Object arg) {
+
+        }
+
+        @Override
+        public void info(String format, Object arg1, Object arg2) {
+
+        }
+
+        @Override
+        public void info(String format, Object... arguments) {
+
+        }
+
+        @Override
+        public void info(String msg, Throwable t) {
+
+        }
+
+        @Override
+        public boolean isInfoEnabled(Marker marker) {
+            return false;
+        }
+
+        @Override
+        public void info(Marker marker, String msg) {
+
+        }
+
+        @Override
+        public void info(Marker marker, String format, Object arg) {
+
+        }
+
+        @Override
+        public void info(Marker marker, String format, Object arg1, Object arg2) {
+
+        }
+
+        @Override
+        public void info(Marker marker, String format, Object... arguments) {
+
+        }
+
+        @Override
+        public void info(Marker marker, String msg, Throwable t) {
+
+        }
+
+        @Override
+        public boolean isWarnEnabled() {
+            return false;
+        }
+
+        @Override
+        public void warn(String msg) {
+
+        }
+
+        @Override
+        public void warn(String format, Object arg) {
+
+        }
+
+        @Override
+        public void warn(String format, Object... arguments) {
+
+        }
+
+        @Override
+        public void warn(String format, Object arg1, Object arg2) {
+
+        }
+
+        @Override
+        public void warn(String msg, Throwable t) {
+
+        }
+
+        @Override
+        public boolean isWarnEnabled(Marker marker) {
+            return false;
+        }
+
+        @Override
+        public void warn(Marker marker, String msg) {
+
+        }
+
+        @Override
+        public void warn(Marker marker, String format, Object arg) {
+
+        }
+
+        @Override
+        public void warn(Marker marker, String format, Object arg1, Object arg2) {
+
+        }
+
+        @Override
+        public void warn(Marker marker, String format, Object... arguments) {
+
+        }
+
+        @Override
+        public void warn(Marker marker, String msg, Throwable t) {
+
+        }
+
+        @Override
+        public boolean isErrorEnabled() {
+            return false;
+        }
+
+        @Override
+        public void error(String msg) {
+
+        }
+
+        @Override
+        public void error(String format, Object arg) {
+
+        }
+
+        @Override
+        public void error(String format, Object arg1, Object arg2) {
+
+        }
+
+        @Override
+        public void error(String format, Object... arguments) {
+
+        }
+
+        @Override
+        public void error(String msg, Throwable t) {
+
+        }
+
+        @Override
+        public boolean isErrorEnabled(Marker marker) {
+            return false;
+        }
+
+        @Override
+        public void error(Marker marker, String msg) {
+
+        }
+
+        @Override
+        public void error(Marker marker, String format, Object arg) {
+
+        }
+
+        @Override
+        public void error(Marker marker, String format, Object arg1, Object arg2) {
+
+        }
+
+        @Override
+        public void error(Marker marker, String format, Object... arguments) {
+
+        }
+
+        @Override
+        public void error(Marker marker, String msg, Throwable t) {
+
+        }
+    };
+
+    UserFactory factory = new UserFactory();
     /**
      * Renders the create user page where users can register.
      * @return create user page
      */
     public Result createuser(){
-        Form<User> userForm = formFactory.form(User.class);
-        return ok(createUser.render(userForm));
+        Form<UserFormData> userForm = formFactory.form(UserFormData.class);
+        String[] gendersArray = {"Male", "Female", "Other"};
+        UserFactory.addNatandPass();
+        try {
+            UserFactory.addTravelTypes();
+        }catch (Exception error){
+            //Do nothing as data is in database, otherwise error would not have happended.
+        }
+        Map<String, Boolean> tTypes = UserFactory.getTTypesList();
+        Map<String, Boolean> passports = UserFactory.getPassports();
+        Map<String, Boolean> nationalities = UserFactory.getNatList();
+        return ok(createprofile_.render(userForm, Arrays.asList(gendersArray), tTypes, passports, nationalities));
     }
 
     /**
@@ -47,30 +369,25 @@ public class RegisterController {
      * @return the home page
      */
     public Result saveuser(Http.Request request){
-        Form<User> userForm = formFactory.form(User.class).bindFromRequest();
-        User user = userForm.get();
 
-        String email = user.getUsername().toLowerCase();
-        String password = user.getPassword();
+        Form<UserFormData> userForm = formFactory.form(UserFormData.class).bindFromRequest();
 
-        // checking if the username exists already in db
-        ExpressionList<User> usersExpressionList = User.find.query().where().eq("username", user.getUsername().toLowerCase());
-        if (usersExpressionList.findCount() > 0) {
-            return badRequest("Http error 400: Username already taken");
+         if (userForm.hasErrors()) {
+            Map<String, Boolean> tTypes = UserFactory.getTTypesList();
+            Map<String, Boolean> passports = UserFactory.getPassports();
+            Map<String, Boolean> nationalities = UserFactory.getNatList();
+            String[] gendersArray = {"Male", "Female", "Other"};
+
+            return badRequest(createprofile_.render(userForm, Arrays.asList(gendersArray), tTypes, passports, nationalities));
+        }
+        else{
+            UserFormData user = userForm.get();
+
+                int userid = factory.createUser(user);
+                return redirect(routes.HomeController.showhome()).addingToSession(request, "connected", Integer.toString(userid));
+
         }
 
-        if (! this.isEmailValid(email)) {
-            return badRequest("Http error 400: The username entered is not a valid email address.");
-        }
-
-        if (! this.isValidPassword(password)) {
-            return badRequest("Http error 400: The password entered is invalid. The password length must be between (inclusive) " +
-                    "8 and 128.");
-        }
-
-        user.save();
-        //return redirect(routes.UserController.userindex());
-        return redirect(routes.HomeController.showhome()).addingToSession(request, "connected", Integer.toString(user.getUserid()));
     }
 
     /**

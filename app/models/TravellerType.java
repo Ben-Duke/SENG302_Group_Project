@@ -55,4 +55,6 @@ public class TravellerType extends Model {
 
     public static Finder<Integer,TravellerType> find = new Finder<>(TravellerType.class);
 
+
+
 }

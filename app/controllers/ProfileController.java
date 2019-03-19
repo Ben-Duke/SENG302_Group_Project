@@ -266,6 +266,7 @@ public class ProfileController {
             Passport passport = new Passport(obj.getDisplayCountry());
             passport.save();
         }
+
     }
 
 }

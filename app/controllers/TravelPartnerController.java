@@ -19,6 +19,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.SortedMap;
 
 import static play.mvc.Results.*;
 
@@ -40,9 +41,18 @@ public class TravelPartnerController {
 
         DynamicForm dynamicForm = formFactory.form();
         List<TravellerType> travellerTypes = TravellerType.find.all();
+        List<String> convertedTravellertypes = new ArrayList<>();
+        convertedTravellertypes.add("");
+        for (TravellerType traveller : travellerTypes) {
+            convertedTravellertypes.add(traveller.travellerTypeName);
+        }
+
         List<Nationality> nationalities = Nationality.find.all();
 
-        return ok(searchprofile.render(dynamicForm, travellerTypes, nationalities, resultProfiles));
+
+
+
+        return ok(searchprofile.render(dynamicForm, convertedTravellertypes, nationalities, resultProfiles));
     }
 
 
@@ -74,6 +84,8 @@ public class TravelPartnerController {
     public Result searchByAttribute(Http.Request request){
         DynamicForm filterForm = formFactory.form().bindFromRequest();
         String travellerType = filterForm.get("travellertype");
+
+
         String nationality = filterForm.get("nationality");
         String gender = filterForm.get("gender");
         //change into slider thing in the future i guesss
@@ -81,32 +93,67 @@ public class TravelPartnerController {
         String agerange2 = filterForm.get("agerange2");
         Date date1 = null;
         Date date2 = null;
-        if(agerange1 != null && agerange2 != null) {
+
+
+        if(agerange1.equals("") || agerange2.equals("")) {
             try {
-                date1 = new SimpleDateFormat("yyyy-MM-dd").parse(agerange1);
-                date2 = new SimpleDateFormat("yyyy-MM-dd").parse(agerange2);
+                if (agerange1.equals("") && !agerange2.equals("")) {
+                    date1 = new Date(Long.MIN_VALUE);
+                    date2 = new SimpleDateFormat("yyyy-MM-dd").parse(agerange2);
+                } else if (agerange2.equals("") && !agerange1.equals("")) {
+                    date1 = new SimpleDateFormat("yyyy-MM-dd").parse(agerange1);
+                    date2 = new Date();
+                } else if (!agerange1.equals("") && !agerange2.equals("")){
+                    date1 = new SimpleDateFormat("yyyy-MM-dd").parse(agerange1);
+                    date2 = new SimpleDateFormat("yyyy-MM-dd").parse(agerange2);
+                }
             } catch (ParseException e) {
-                //don't do anything here
+                //Do Nothing
+                System.out.println(e);
             }
         }
+
         User user = User.getCurrentUser(request);
         if (user != null) {
             ArrayList<List<User>> userLists = new ArrayList<>();
             if(nationality != null) {
-                List<User> userNationality = Nationality.find.byId(Integer.parseInt(nationality)).getUsers();
-                userLists.add(userNationality);
+                if (nationality.equals("1")) {
+                    System.out.println(User.find.all());
+                    List<User> userNationality = User.find.all();
+                    userLists.add(userNationality);
+                } else {
+                    List<User> userNationality = Nationality.find.byId(Integer.parseInt(nationality)).getUsers();
+                    userLists.add(userNationality);
+                }
+
+
+
+
             }
             if(gender != null){
                 List<User> userGender = User.find.query().where().eq("gender", gender).findList();
                 userLists.add(userGender);
             }
+
+
             if(date1 != null && date2 != null){
                 List<User> userAgeRange = User.find.query().where().gt("dateOfBirth", date1).lt("dateOfBirth", date2).findList();
                 userLists.add(userAgeRange);
             }
+
+
             if(travellerType != null){
-                List<User> userTravellerType = TravellerType.find.byId(Integer.parseInt(travellerType)).getUsers();
-                userLists.add(userTravellerType);
+                if (travellerType.equals("")) {
+                    List<User> userTravellerType = User.find.all();
+                    userLists.add(userTravellerType);
+                } else {
+                    List<TravellerType> travellerTypes = TravellerType.find.query().where().eq("travellerTypeName", travellerType).findList();
+                    if (travellerTypes.size() > 0) {
+                        List<User> userTravellerType = TravellerType.find.byId(travellerTypes.get(0).ttypeid).getUsers();
+                        userLists.add(userTravellerType);
+                    }
+
+                }
             }
 
             List<User> resultProfiles = UtilityFunctions.retainFromLists(userLists);
@@ -117,6 +164,7 @@ public class TravelPartnerController {
             if(resultProfiles.size() == 0){
                 return badRequest("No users found!");
             }
+            System.out.println(resultProfiles.size());
             //Redisplay the page, but this time with the search results
             return displayRenderedFilterPage(resultProfiles);
 //            return ok("user found! This will later be converted to show the user's profile: " + userList.toString());

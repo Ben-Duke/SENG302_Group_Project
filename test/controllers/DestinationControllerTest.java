@@ -376,7 +376,7 @@ public class DestinationControllerTest extends WithApplication {
         assertEquals(SEE_OTHER, result.status());
         assertEquals("Summoner's Rift", User.find.byId(1).getDestinations().get(0).getDestName());
         assertEquals("Yes", User.find.byId(1).getDestinations().get(0).getDestType());
-        assertEquals("Angola", User.find.byId(1).getDestinations().get(0).getDistrict());
+        assertEquals("Demicia", User.find.byId(1).getDestinations().get(0).getDistrict());
         assertEquals("Angola", User.find.byId(1).getDestinations().get(0).getCountry());
         assertEquals(50.0, User.find.byId(1).getDestinations().get(0).getLatitude(), 0.01);
         assertEquals(-50.0, User.find.byId(1).getDestinations().get(0).getLongitude(), 0.01);

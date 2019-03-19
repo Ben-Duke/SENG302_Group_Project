@@ -42,6 +42,14 @@ create table passport (
   constraint pk_passport primary key (passid)
 );
 
+create table photo (
+  photo_id                      integer auto_increment not null,
+  url                           varchar(255),
+  is_public                     boolean default false not null,
+  user                          integer,
+  constraint pk_photo primary key (photo_id)
+);
+
 create table traveller_type (
   ttypeid                       integer auto_increment not null,
   traveller_type_name           varchar(255),
@@ -104,6 +112,9 @@ alter table computer add constraint fk_computer_company_id foreign key (company_
 create index ix_destination_user on destination (user);
 alter table destination add constraint fk_destination_user foreign key (user) references user (userid) on delete restrict on update restrict;
 
+create index ix_photo_user on photo (user);
+alter table photo add constraint fk_photo_user foreign key (user) references user (userid) on delete restrict on update restrict;
+
 create index ix_trip_user on trip (user);
 alter table trip add constraint fk_trip_user foreign key (user) references user (userid) on delete restrict on update restrict;
 
@@ -139,6 +150,9 @@ drop index if exists ix_computer_company_id;
 
 alter table destination drop constraint if exists fk_destination_user;
 drop index if exists ix_destination_user;
+
+alter table photo drop constraint if exists fk_photo_user;
+drop index if exists ix_photo_user;
 
 alter table trip drop constraint if exists fk_trip_user;
 drop index if exists ix_trip_user;
@@ -176,6 +190,8 @@ drop table if exists destination;
 drop table if exists nationality;
 
 drop table if exists passport;
+
+drop table if exists photo;
 
 drop table if exists traveller_type;
 

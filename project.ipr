@@ -74,6 +74,9 @@
       </map>
     </option>
   </component>
+  <component name="ProjectCodeStyleConfiguration">
+    <option name="PREFERRED_PROJECT_CODE_STYLE" value="Default" />
+  </component>
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/SENG302 TEAM UPDATE ME.iml" filepath="$PROJECT_DIR$/.idea/modules/SENG302 TEAM UPDATE ME.iml" />
@@ -113,6 +116,7 @@
   </component>
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$/../.." vcs="Git" />
+    <mapping directory="$PROJECT_DIR$" vcs="Git" />
   </component>
   <component name="libraryTable">
     <library name="sbt: aopalliance:aopalliance:1.0:jar">

@@ -42,7 +42,7 @@ public class UtilityFunctions {
     }
 
     /**
-     * Checks a String only contains alphabetic characters. Does not support special characters (only a-z & A-Z & space).
+     * Checks a String only contains alphabetic characters. Does not support special characters (only a-z & A-Z).
      *
      * Accepts the empty String.
      *
@@ -50,7 +50,7 @@ public class UtilityFunctions {
      * @return A boolean, true if String only contains non-special alphabetic characters, false otherwise.
      */
     public static boolean isStringAllAlphabetic(String inputString) {
-        String alphabeticRegexString = "^$|[a-zA-Z ]*";
+        String alphabeticRegexString = "^$|[a-zA-Z]*";
         return Pattern.matches(alphabeticRegexString, inputString);
     }
 
@@ -85,7 +85,7 @@ public class UtilityFunctions {
     }
 
     /**
-     * Checks if a String is alphanumeric (contains only chars a-z && A-Z && 0-9 && [space]).
+     * Checks if a String is alphanumeric (contains only chars a-z && A-Z && 0-9).
      *
      * Accepts the empty String
      *
@@ -93,7 +93,7 @@ public class UtilityFunctions {
      * @return A boolean, true if String is alphanumeric, false otherwise.
      */
     public static boolean isStringAlphaNumeric(String inputString) {
-        String alphanumericRegex = "^$|[a-zA-Z0-9 ]*"; // regex specifying a word
+        String alphanumericRegex = "^$|[a-zA-Z0-9]*"; // regex specifying a word
         return Pattern.matches(alphanumericRegex, inputString);
     }
 

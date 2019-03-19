@@ -328,7 +328,7 @@ public class DestinationControllerTest extends WithApplication {
         formData.put("destName", "Summoner's Rift");
         formData.put("destType", "Yes");
         formData.put("district", "Demacia");
-        formData.put("country", "Runeterra");
+        formData.put("country", "Angola");
         formData.put("latitude", "50.0");
         formData.put("longitude", "-50.0");
         Http.RequestBuilder request = Helpers.fakeRequest().bodyForm(formData).method(POST).uri("/users/destinations/update/5").session("connected", "1");
@@ -345,7 +345,7 @@ public class DestinationControllerTest extends WithApplication {
         formData.put("destName", "Summoner's Rift");
         formData.put("destType", "Yes");
         formData.put("district", "Demacia");
-        formData.put("country", "Runeterra");
+        formData.put("country", "Angola");
         formData.put("latitude", "50.0");
         formData.put("longitude", "-50.0");
         Http.RequestBuilder request = Helpers.fakeRequest().bodyForm(formData).method(POST).uri("/users/destinations/update/3").session("connected", "1");

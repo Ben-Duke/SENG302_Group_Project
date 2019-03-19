@@ -4,13 +4,12 @@ import io.ebean.Finder;
 import io.ebean.Model;
 
 import javax.persistence.*;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 
 @Entity
 public class Destination extends Model {
 
-    public Destination(String destName, String destType, String district, String country, float latitude, float longitude, User user){
+    public Destination(String destName, String destType, String district, String country, double latitude, double longitude, User user){
         this.destName = destName;
         this.user = user;
         this.destType = destType;
@@ -28,8 +27,8 @@ public class Destination extends Model {
     public String destType;
     public String district;
     public String country;
-    public float latitude;
-    public float longitude;
+    public double latitude;
+    public double longitude;
 
     @ManyToOne
     @JoinColumn(name = "user", referencedColumnName = "userid")
@@ -47,8 +46,8 @@ public class Destination extends Model {
     public String getDestType() { return destType; }
     public String getDistrict() { return district; }
     public String getCountry() { return country; }
-    public float getLatitude() { return latitude; }
-    public float getLongitude() { return longitude; }
+    public double getLatitude() { return latitude; }
+    public double getLongitude() { return longitude; }
 
     public User getUser() { return user; }
 
@@ -58,8 +57,8 @@ public class Destination extends Model {
     public void setDestType(String destType) { this.destType = destType; }
     public void setDistrict(String district) { this.district = district; }
     public void setCountry(String country) { this.country = country; }
-    public void setLatitude(float latitude) { this.latitude = latitude; }
-    public void setLongitude(float longitude) { this.longitude = longitude; }
+    public void setLatitude(double latitude) { this.latitude = latitude; }
+    public void setLongitude(double longitude) { this.longitude = longitude; }
 
     public void setUser(User user) { this.user = user; }
 
@@ -91,5 +90,31 @@ public class Destination extends Model {
         return this.user.getUserid() == userid;
     }
 
+    public static Map<String, Boolean> getIsoCountries() {
+        List<String> countries = new ArrayList<>();
+        String[] locales = Locale.getISOCountries();
+        for (String countryCode : locales) {
+            Locale obj = new Locale("", countryCode);
+            countries.add(obj.getDisplayName());
+        }
+
+        SortedMap<String, Boolean> countryMap = new TreeMap<>();
+        for (String country : countries) {
+            countryMap.put(country, false);
+        }
+        countryMap.remove("");
+        return countryMap;
+    }
+
+    public static boolean validateCountryType(String country) {
+        if (country == null) {
+            System.out.println("null pointer found");
+            return false;
+        }
+        Map<String, Boolean> countryMap = getIsoCountries();
+        return countryMap.containsKey(country);
+
+
+    }
 
 }

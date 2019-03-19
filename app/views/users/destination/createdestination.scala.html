@@ -1,4 +1,4 @@
-@(destForm : Form[Destination])
+@(destForm : Form[Destination], countryMap: Map[String, Boolean])
 @import helper._
 @import views.html.bootstrap3.text
 
@@ -9,7 +9,7 @@
                 <a class="navbar-brand" href="@routes.HomeController.showhome()">Home</a>
             </div>
             <ul class="nav navbar-nav">
-                <li class="active"><a href="#">Destinations</a></li>
+                <li class="active"><a href="@routes.DestinationController.indexDestination()">Destinations</a></li>
                 <li><a href="@routes.DestinationController.createDestination()">New</a></li>
             </ul>
         </div>
@@ -23,9 +23,11 @@
                 placeholder = "destination name",
                 help = "Please enter the destination. (required)")
 
-            @text(destForm("country"),
+            @views.html.bootstrap3.select(destForm("country"),
                 label = "Country",
-                placeholder = "country"
+                optionMap = countryMap,
+                isMultiple = false,
+                help= "Select a country"
             )
 
             @text(destForm("district"),

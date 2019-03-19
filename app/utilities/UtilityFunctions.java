@@ -2,7 +2,7 @@ package utilities;
 
 import models.User;
 
-import java.util.List;
+import java.util.*;
 import java.util.regex.Pattern;
 
 /**
@@ -42,7 +42,7 @@ public class UtilityFunctions {
     }
 
     /**
-     * Checks a String only contains alphabetic characters. Does not support special characters (only a-z & A-Z).
+     * Checks a String only contains alphabetic characters. Does not support special characters (only a-z & A-Z & space).
      *
      * Accepts the empty String.
      *
@@ -50,7 +50,7 @@ public class UtilityFunctions {
      * @return A boolean, true if String only contains non-special alphabetic characters, false otherwise.
      */
     public static boolean isStringAllAlphabetic(String inputString) {
-        String alphabeticRegexString = "^$|[a-zA-Z]*";
+        String alphabeticRegexString = "^$|[a-zA-Z ]*";
         return Pattern.matches(alphabeticRegexString, inputString);
     }
 
@@ -85,7 +85,7 @@ public class UtilityFunctions {
     }
 
     /**
-     * Checks if a String is alphanumeric (contains only chars a-z && A-Z && 0-9).
+     * Checks if a String is alphanumeric (contains only chars a-z && A-Z && 0-9 && [space]).
      *
      * Accepts the empty String
      *
@@ -93,7 +93,7 @@ public class UtilityFunctions {
      * @return A boolean, true if String is alphanumeric, false otherwise.
      */
     public static boolean isStringAlphaNumeric(String inputString) {
-        String alphanumericRegex = "^$|[a-zA-Z0-9]*"; // regex specifying a word
+        String alphanumericRegex = "^$|[a-zA-Z0-9 ]*"; // regex specifying a word
         return Pattern.matches(alphanumericRegex, inputString);
     }
 
@@ -133,4 +133,44 @@ public class UtilityFunctions {
     }
 
 //    public static boolean isStringDate TODO
+
+    /**
+     * A function that is called when any form needs a list of countries
+     *
+     * @return A map of all countries and a boolean set to false
+     */
+
+//    public static Map<String, Boolean> getIsoCountries() {
+//        List<String> countries = new ArrayList<>();
+//        String[] locales = Locale.getISOCountries();
+//        for (String countryCode : locales) {
+//            Locale obj = new Locale("", countryCode);
+//            countries.add(obj.getDisplayName());
+//        }
+//
+//        SortedMap<String, Boolean> countryMap = new TreeMap<>();
+//        for (String country : countries) {
+//            countryMap.put(country, false);
+//        }
+//        countryMap.remove("");
+//        return countryMap;
+//    }
+
+//    /**
+//     * Returns true if the given string is a country from Locale.getAvailableLocales()
+//     * @param country the country to check
+//     * @return true if the country is real, else false
+//     */
+//    public static boolean validateCountryType(String country) {
+//        if (country == null) {
+//            System.out.println("null pointer found");
+//            return false;
+//        }
+//        Map<String, Boolean> countryMap = getIsoCountries();
+//        return countryMap.containsKey(country);
+//
+//
+//    }
+
+
 }

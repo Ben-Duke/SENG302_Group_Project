@@ -13,6 +13,7 @@ import javax.inject.Inject;
 import java.util.*;
 
 
+import utilities.UtilityFunctions;
 import views.html.users.destination.*;
 
 public class DestinationController extends Controller {
@@ -29,41 +30,43 @@ public class DestinationController extends Controller {
      */
     private Result validateDestination(DynamicForm destForm) {
 
-        String destName = destForm.get("destName");
+        System.out.println(destForm);
+
+        String destName = destForm.get("destName").trim();
         String destType = destForm.get("destType");
         String country = destForm.get("country");
-        String district = destForm.get("district");
+        System.out.println(country);
+        String district = destForm.get("district").trim();
         String latitude = destForm.get("latitude");
         String longitude = destForm.get("longitude");
 
-//        if (! destName.matches("^[a-zA-Z0-9]+$") || destName.length() < 1) {
-//            return notAcceptable("ERROR: Destination name should only contain alphanumeric characters.");
-//        }
-//        if (! destType.matches("^[a-zA-Z0-9]+$") || destType.length() < 1) {
-//            return notAcceptable("ERROR: Destination type should only contain alphanumeric characters.");
-//        }
-//        Set<String> isoCountries = new HashSet<>(Arrays.asList(Locale.getISOCountries()));
-//        if (! isoCountries.contains(country)) {
-//            return notAcceptable("ERROR: The country you entered is not valid");
-//        }
-//        if (! district.matches("^[a-zA-Z0-9]+$") || district.length() < 1) {
-//            return notAcceptable("ERROR: District should only contain alphanumeric characters.");
-//        }
+        if (! UtilityFunctions.isStringAllAlphabetic(destName) || destName.length() < 1) {
+            return notAcceptable("ERROR: Destination name should only contain alphanumeric characters and must not be empty.");
+        }
+        if (! Destination.validateCountryType(country)) {
+            return notAcceptable("ERROR: Country should be a real country");
+        }
+        if (! UtilityFunctions.isStringAllAlphabetic(district) || district.length() < 1) {
+            return notAcceptable("ERROR: District should only contain alphanumeric characters and must not be empty.");
+        }
         try {
-            Float.parseFloat(latitude);
+            Double.parseDouble(latitude);
         } catch (NumberFormatException e) {
             return notAcceptable("ERROR: Entered latitude is not a number");
         }
-        if (! (Float.parseFloat(latitude) >= -90 && Float.parseFloat(latitude) <= 90)) {
+        if (! (Double.parseDouble(latitude) >= -90 && Double.parseDouble(latitude) <= 90)) {
             return notAcceptable("ERROR: Entered latitude must be between -90 and 90");
         }
         try {
-            Float.parseFloat(longitude);
+            Double.parseDouble(longitude);
         } catch (NumberFormatException e) {
             return notAcceptable("ERROR: Entered longitude is not a number");
         }
-        if (! (Float.parseFloat(longitude) >= -180 && Float.parseFloat(longitude) <= 180)) {
+        if (! (Double.parseDouble(longitude) >= -180 && Double.parseDouble(longitude) <= 180)) {
             return notAcceptable("ERROR: Entered longitude must be between -180 and 180");
+        }
+        if (! destType.matches("^[a-zA-Z0-9]+$") || destType.length() < 1) {
+            return notAcceptable("ERROR: Destination type should only contain alphanumeric characters and must not be empty.");
         }
 
         return null;
@@ -120,7 +123,7 @@ public class DestinationController extends Controller {
         if (user != null) {
             Form<Destination> destForm = formFactory.form(Destination.class);
 
-            return ok(createdestination.render(destForm));
+            return ok(createdestination.render(destForm, Destination.getIsoCountries()));
         }
         return unauthorized("Oops, you are not logged in");
     }
@@ -149,8 +152,6 @@ public class DestinationController extends Controller {
                 return validationResult;
             }
             //If program gets past this point then inputted destination is valid
-
-            System.out.println("\nHello2\n");
 
             Destination destination = formFactory.form(Destination.class).bindFromRequest().get();
 
@@ -183,7 +184,7 @@ public class DestinationController extends Controller {
 
                     Form<Destination> destForm = formFactory.form(Destination.class).fill(destination);
 
-                    return ok(editDestination.render(destForm, destination));
+                    return ok(editDestination.render(destForm, destination, Destination.getIsoCountries()));
 
                 } else {
                     return unauthorized("Not your destination. You cant edit.");

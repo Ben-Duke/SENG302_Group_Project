@@ -140,37 +140,36 @@ public class UtilityFunctions {
      * @return A map of all countries and a boolean set to false
      */
 
-//    public static Map<String, Boolean> getIsoCountries() {
-//        List<String> countries = new ArrayList<>();
-//        String[] locales = Locale.getISOCountries();
-//        for (String countryCode : locales) {
-//            Locale obj = new Locale("", countryCode);
-//            countries.add(obj.getDisplayName());
-//        }
-//
-//        SortedMap<String, Boolean> countryMap = new TreeMap<>();
-//        for (String country : countries) {
-//            countryMap.put(country, false);
-//        }
-//        countryMap.remove("");
-//        return countryMap;
-//    }
+    public static Map<String, Boolean> getIsoCountries() {
+        List<String> countries = new ArrayList<>();
+        String[] locales = Locale.getISOCountries();
+        for (String countryCode : locales) {
+            Locale obj = new Locale("", countryCode);
+            countries.add(obj.getDisplayName());
+        }
 
-//    /**
-//     * Returns true if the given string is a country from Locale.getAvailableLocales()
-//     * @param country the country to check
-//     * @return true if the country is real, else false
-//     */
-//    public static boolean validateCountryType(String country) {
-//        if (country == null) {
-//            System.out.println("null pointer found");
-//            return false;
-//        }
-//        Map<String, Boolean> countryMap = getIsoCountries();
-//        return countryMap.containsKey(country);
-//
-//
-//    }
+        SortedMap<String, Boolean> countryMap = new TreeMap<>();
+        for (String country : countries) {
+            countryMap.put(country, false);
+        }
+        countryMap.remove("");
+        return countryMap;
+    }
+
+    /**
+     * Returns true if the given string is a country from Locale.getAvailableLocales()
+     * @param country the country to check
+     * @return true if the country is real, else false
+     */
+    public static boolean validateCountryType(String country) {
+        if (country == null) { ;
+            return false;
+        }
+        Map<String, Boolean> countryMap = getIsoCountries();
+        return countryMap.containsKey(country);
+
+
+    }
 
 
 }

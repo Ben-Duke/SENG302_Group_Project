@@ -30,12 +30,10 @@ public class DestinationController extends Controller {
      */
     private Result validateDestination(DynamicForm destForm) {
 
-        System.out.println(destForm);
 
         String destName = destForm.get("destName").trim();
         String destType = destForm.get("destType");
         String country = destForm.get("country");
-        System.out.println(country);
         String district = destForm.get("district").trim();
         String latitude = destForm.get("latitude");
         String longitude = destForm.get("longitude");
@@ -43,7 +41,7 @@ public class DestinationController extends Controller {
         if (! UtilityFunctions.isStringAllAlphabetic(destName) || destName.length() < 1) {
             return notAcceptable("ERROR: Destination name should only contain alphanumeric characters and must not be empty.");
         }
-        if (! Destination.validateCountryType(country)) {
+        if (! UtilityFunctions.validateCountryType(country)) {
             return notAcceptable("ERROR: Country should be a real country");
         }
         if (! UtilityFunctions.isStringAllAlphabetic(district) || district.length() < 1) {
@@ -123,7 +121,7 @@ public class DestinationController extends Controller {
         if (user != null) {
             Form<Destination> destForm = formFactory.form(Destination.class);
 
-            return ok(createdestination.render(destForm, Destination.getIsoCountries()));
+            return ok(createdestination.render(destForm, UtilityFunctions.getIsoCountries()));
         }
         return unauthorized("Oops, you are not logged in");
     }
@@ -184,7 +182,7 @@ public class DestinationController extends Controller {
 
                     Form<Destination> destForm = formFactory.form(Destination.class).fill(destination);
 
-                    return ok(editDestination.render(destForm, destination, Destination.getIsoCountries()));
+                    return ok(editDestination.render(destForm, destination, UtilityFunctions.getIsoCountries()));
 
                 } else {
                     return unauthorized("Not your destination. You cant edit.");
@@ -267,7 +265,7 @@ public class DestinationController extends Controller {
 
             if (destination != null) {
                 if (destination.isUserOwner(user.userid)) {
-                    if(destination.visits.size() == 0) {
+                    if(destination.visits.isEmpty()) {
                         destination.delete();
                     }
                     else{

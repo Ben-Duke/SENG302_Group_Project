@@ -87,34 +87,9 @@ public class Destination extends Model {
      * @return true if userid is the owner of the entity, false if owner has a different user id.
      */
     public boolean isUserOwner(Integer userid){
-        return this.user.getUserid() == userid;
+        return this.user.getUserid().equals(userid);
     }
 
-    public static Map<String, Boolean> getIsoCountries() {
-        List<String> countries = new ArrayList<>();
-        String[] locales = Locale.getISOCountries();
-        for (String countryCode : locales) {
-            Locale obj = new Locale("", countryCode);
-            countries.add(obj.getDisplayName());
-        }
 
-        SortedMap<String, Boolean> countryMap = new TreeMap<>();
-        for (String country : countries) {
-            countryMap.put(country, false);
-        }
-        countryMap.remove("");
-        return countryMap;
-    }
-
-    public static boolean validateCountryType(String country) {
-        if (country == null) {
-            System.out.println("null pointer found");
-            return false;
-        }
-        Map<String, Boolean> countryMap = getIsoCountries();
-        return countryMap.containsKey(country);
-
-
-    }
 
 }

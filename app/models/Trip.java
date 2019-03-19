@@ -1,5 +1,6 @@
 package models;
 
+import formdata.TripFormData;
 import io.ebean.Ebean;
 import io.ebean.Finder;
 import io.ebean.Model;
@@ -10,11 +11,6 @@ import java.util.List;
 
 @Entity
 public class Trip extends Model {
-
-    public Trip(String tripName, User user){
-        this.tripName = tripName;
-        this.user = user;
-    }
 
     @Id
     public Integer tripid;
@@ -32,6 +28,17 @@ public class Trip extends Model {
     @ManyToOne
     @JoinColumn(name = "user", referencedColumnName = "userid")
     public User user;
+
+    public static Trip makeInstance(TripFormData formData, User user){
+        Trip trip = new Trip();
+        trip.tripName = formData.tripName;
+        trip.user = user;
+        return trip;
+    }
+
+    public Trip(){
+    }
+
 
     public Integer getTripid() {
         return tripid;
@@ -76,13 +83,13 @@ public class Trip extends Model {
         this.visits.add(visit);
     }
 
-    public LocalDate getTripStart(){
-        LocalDate startDate = Ebean.find(Visit.class).where().eq("trip", this).orderBy("arrival DESC").findList().get(0).getArrival();
+    public String getTripStart(){
+        String startDate = Ebean.find(Visit.class).where().eq("trip", this).orderBy("arrival DESC").findList().get(0).getArrival();
         return startDate;
     }
 
-    public LocalDate getTripEnd(){
-        LocalDate endDate = Ebean.find(Visit.class).where().eq("trip", this).orderBy("departure ASC").findList().get(0).getDeparture();
+    public String getTripEnd(){
+        String endDate = Ebean.find(Visit.class).where().eq("trip", this).orderBy("departure ASC").findList().get(0).getDeparture();
         return endDate;
     }
 

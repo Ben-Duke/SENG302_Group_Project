@@ -8,8 +8,7 @@ import play.mvc.Http;
 
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Entity
 public class User extends Model {
@@ -98,6 +97,14 @@ public class User extends Model {
 
     @OneToMany(mappedBy = "user")
     public List<Destination> destinations;
+
+    public Map<String, Boolean> getMappedDestinations() {
+        SortedMap<String, Boolean> destMap = new TreeMap<>();
+        for (Destination destination : destinations) {
+            destMap.put(destination.getDestName(), false);
+        }
+        return destMap;
+    }
 
     @ManyToMany
     public List<TravellerType> travellerTypes;

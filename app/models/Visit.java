@@ -1,5 +1,6 @@
 package models;
 
+import formdata.VisitFormData;
 import io.ebean.Finder;
 import io.ebean.Model;
 
@@ -10,25 +11,7 @@ import java.time.LocalDate;
 @Entity
 public class Visit extends Model {
 
-    public Visit(Destination destination, Trip trip, Integer visitorder, LocalDate arrival, LocalDate departure){
-        this.destination = destination;
-        this.trip = trip;
-        this.visitorder = visitorder;
-        this.arrival = arrival;
-        this.departure = departure;
-        this.visitName = destination.getDestName();
-    }
-
-    public Visit(Destination destination, Trip trip, Integer visitorder){
-        this.destination = destination;
-        this.trip = trip;
-        this.visitorder = visitorder;
-        this.visitName = destination.getDestName();
-    }
-
-    /**
-     * The ID of the visit. This is the primary key.
-     */
+    public Integer visitorder;
     @Id
     public Integer visitid;
 
@@ -40,13 +23,31 @@ public class Visit extends Model {
     @JoinColumn(name = "trip", referencedColumnName = "tripid")
     public Trip trip;
 
-    public Integer visitorder;
+    public String arrival;
 
-    public LocalDate arrival;
-
-    public LocalDate departure;
+    public String departure;
 
     public String visitName;
+
+
+
+    public static Visit makeInstance(VisitFormData formData){
+        Visit visit = new Visit();
+        visit.trip = formData.trip;
+        visit.destination = formData.destination;
+        visit.visitorder = formData.visitorder;
+        visit.arrival = formData.arrival;
+        visit.departure = formData.departure;
+        visit.visitName = formData.visitName;
+        return visit;
+    }
+
+    /**
+     * The ID of the visit. This is the primary key.
+     */
+    public Visit() {
+    }
+
 
     public static Finder<Integer,Visit> find = new Finder<>(Visit.class);
 
@@ -83,19 +84,19 @@ public class Visit extends Model {
         this.visitorder = visitorder;
     }
 
-    public LocalDate getArrival() {
+    public String getArrival() {
         return arrival;
     }
 
-    public void setArrival(LocalDate arrival) {
+    public void setArrival(String arrival) {
         this.arrival = arrival;
     }
 
-    public LocalDate getDeparture() {
+    public String getDeparture() {
         return departure;
     }
 
-    public void setDeparture(LocalDate departure) {
+    public void setDeparture(String departure) {
         this.departure = departure;
     }
 

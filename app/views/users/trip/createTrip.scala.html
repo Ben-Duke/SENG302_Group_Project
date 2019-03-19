@@ -1,16 +1,32 @@
-@(tripForm : Form[Trip], user : User)
+@(tripForm : Form[formdata.TripFormData], user : User)
 @import helper._
 @import views.html.bootstrap3._
 
 
 @main("Trips") {
+    @helper.form(action = helper.CSRF(routes.TripController.savetrip())){
+        <fieldset>
+            <!-- Header -->
+            <legend>Trip</legend>
 
-    <h1>Create your Trip</h1>
-        @form(action = helper.CSRF(routes.TripController.savetrip)){
-            @helper.inputText(tripForm("tripName"), '_label -> "Trip Name: ")
-            <input type="submit" value="Create trip">
-        }
-        <a href="@routes.HomeController.showhome()">Back to home</a>
-}
+            <!-- Name -->
+            @text(tripForm("tripName"),
+                label = "Trip Name",
+                placeholder = "trip name",
+                help = "Please enter the Trip Name. (required)")
+
+
+
+
+    </fieldset>
+
+        <div class="form-group actions">
+         <div class="col-sm-offset-2 col-sm-10">
+             <input id="submit" type="submit" value="Submit" class="btn btn-primary"/>
+          </div>
+        </div>
+    }
+ }
+
 
 

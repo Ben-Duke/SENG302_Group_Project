@@ -105,16 +105,17 @@ public class User extends Model {
     @ManyToMany
     public List<TravellerType> travellerTypes;
 
-    public List<Photo> getPhotos() {
-        return photos;
-    }
-
-    public void setPhotos(List<Photo> photos) {
-        this.photos = photos;
+    /**
+     * Get's a List<UserPhoto> containing all the photos of the user.
+     *
+     * @return A List<UserPhoto> containing all the photos of the user.
+     */
+    public List<UserPhoto> getUserPhotos() {
+        return userPhotos;
     }
 
     @OneToMany(mappedBy = "user")
-    public List<Photo> photos;
+    public List<UserPhoto> userPhotos;
 
     public static Finder<Integer,User> find = new Finder<>(User.class);
 

@@ -1,0 +1,78 @@
+@import java.util
+@import formdata.UserFormData
+@(userForm: Form[UserFormData], genders: util.List[String], tTypes:util.Map[String, Boolean], passports:util.Map[String, Boolean], nationalities:util.Map[String, Boolean])
+
+
+@import views.html.bootstrap3._
+
+<fieldset>
+        <!-- Header -->
+    <legend id="legend">Traveller registration</legend>
+
+        <!-- FirstName -->
+    @text(userForm("firstName"),
+        label = "First name",
+        placeholder = "first name",
+        help = "Please enter your first name. (required)")
+
+        <!-- LastName -->
+    @text(userForm("lastName"),
+        label = "Last name",
+        placeholder = "last name",
+        help = "Please enter your last name. (required)")
+
+        <!-- Username -->
+    @text(userForm("username"),
+        label = "Username",
+        placeholder = "traveller name",
+        help = "Please enter your Username. (required)")
+
+        <!-- Password -->
+    @password(userForm("password"),
+        label = "Password",
+        placeholder = "password",
+        help = "Please enter your Password. (required)")
+
+        <!-- Gender -->
+    @radiobuttons(userForm("gender"),
+        label = "Gender",
+        buttonNameList = genders,
+        help = "Please select your gender. (required)")
+
+        <!-- Date of birth -->
+    @datepicker(userForm("dob"),
+        label = "Date of birth",
+        placeholder = "01/01/2000",
+        help = "Please select your Date of birth. (required)")
+
+        <!-- Traveller types -->
+    @select(userForm("travellerTypes"),
+        label = "Traveller Type",
+        optionMap = tTypes,
+        isMultiple = true,
+        help = "Select multiple Using ctrl or cmd. please select at least one.")
+
+        <!-- Passports -->
+    @select(userForm("passports"),
+        label = "Passports",
+        optionMap = passports,
+        isMultiple = true,
+        help = "Select multiple Using ctrl or cmd. please select at least one.")
+
+        <!-- Passports -->
+    @select(userForm("nationalities"),
+        label = "Nationalities",
+        optionMap = nationalities,
+        isMultiple = true,
+        help = "Select multiple Using ctrl or cmd. please select at least one.")
+
+
+
+
+    <div class="form-group actions">
+        <div class="col-sm-offset-2 col-sm-10">
+            <input id="submit" type="submit" value="Submit" class="btn btn-primary"/>
+        </div>
+    </div>
+
+</fieldset>

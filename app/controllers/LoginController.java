@@ -1,19 +1,13 @@
 package controllers;
 
-import formdata.LoginFormData;
 import factories.LoginFactory;
-
-import io.ebean.Ebean;
-import io.ebean.ExpressionList;
-import models.User;
+import formdata.LoginFormData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.Http;
 import play.mvc.Result;
-import views.html.home.home;
-import views.html.users.login;
 import views.html.users.login_page.loginPage;
 
 import javax.inject.Inject;
@@ -55,11 +49,9 @@ public class LoginController {
                                             .bindFromRequest();
         if (userLoginForm.hasErrors()) {
             // redirect user to same login page with some errors.
-            // TODO show incorrect login info error
             return badRequest(loginPage.render(userLoginForm));
         } else {
             String username = userLoginForm.get().username;
-            LoginFactory loginFactory = new LoginFactory();
             logger.debug("---"+ LoginFactory.getUserId(username));
             return redirect(routes.HomeController.showhome())
                     .addingToSession(request, "connected",

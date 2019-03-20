@@ -1,20 +1,14 @@
 package factories;
 
 import io.ebean.ExpressionList;
-import formdata.LoginFormData;
-
-import play.data.Form;
-import play.data.FormFactory;
 import models.User;
-
-import java.util.List;
 
 /**
  * A class to handle accessing the database for login related things.
  */
 public class LoginFactory {
     public LoginFactory() {
-
+        // Required default constructor -> not entirely sure, just copying Ben
     }
 
     /**
@@ -34,21 +28,6 @@ public class LoginFactory {
 
         return usersExpressionList.findCount() > 0;
     }
-
-//    public static int getUserId(String userName) {
-//        int userId = -1;
-//
-//        ExpressionList<User> usersExpressionList;
-//        usersExpressionList = User.find.query()
-//                .where().eq("username", userName.toLowerCase());
-//
-//        if (usersExpressionList.findCount() > 1) {
-//            User userfound = usersExpressionList.findOne();
-//            userId = userfound.getUserid();
-//        }
-//
-//        return userId;
-//    }
 
     /**
      * Method to get a users unique ID from their username (email).

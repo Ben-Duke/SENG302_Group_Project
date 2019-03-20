@@ -25,6 +25,12 @@ public class LoginFormData implements Constraints.Validatable<List<ValidationErr
     public Boolean user = false;
     private List<ValidationError> errors = new ArrayList<>();
     private final Logger logger = LoggerFactory.getLogger("application");
+
+    /**
+     * Method to get  the (String) username from the  form.
+     *
+     * @return A String representing the username in the form.
+     */
     public String getUsername(){
         return this.username;
     }
@@ -65,7 +71,7 @@ public class LoginFormData implements Constraints.Validatable<List<ValidationErr
             }
         }
 
-        if (errors.size() > 0) {
+        if (errors.isEmpty()) {
             return errors;
         } else {
             return null; //requirement of the inherited validate method (I think)

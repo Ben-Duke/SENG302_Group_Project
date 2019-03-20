@@ -26,17 +26,11 @@ import static play.mvc.Results.*;
 
 public class TripController extends Controller {
 
-    private final Form<VisitFormData> visitForm;
-    private final Form<TripFormData> tripForm;
-
 
     @Inject
-    public TripController(FormFactory formFactory) {
-        visitForm = formFactory.form(VisitFormData.class);
-        tripForm = formFactory.form(TripFormData.class);
+    FormFactory formFactory;
 
 
-    }
 
     /**
      * If the user is logged in, renders the create trip page.
@@ -47,7 +41,7 @@ public class TripController extends Controller {
     public Result createtrip(Http.Request request){
         User user = User.getCurrentUser(request);
         if (user != null) {
-            Form<TripFormData> incomingForm = tripForm.bindFromRequest(request);
+            Form<TripFormData> incomingForm = formFactory.form(TripFormData.class).bindFromRequest(request);
             return ok(createTrip.render(incomingForm, user));
         }
         else{
@@ -58,6 +52,8 @@ public class TripController extends Controller {
     public Result displaytrip(Http.Request request, Integer tripid){
         User user = User.getCurrentUser(request);
         if (user != null) {
+
+
             Trip trip = Trip.find.byId(tripid);
             if(trip.isUserOwner(user.getUserid())) {
                 List<Visit> visits = trip.getVisits();
@@ -82,15 +78,16 @@ public class TripController extends Controller {
      * @return create trip page or error page
      */
     public Result savetrip(Http.Request request){
-        Form<TripFormData> incomingForm = tripForm.bindFromRequest(request);
         User user = User.getCurrentUser(request);
         if (user != null) {
+            Form<TripFormData> incomingForm = formFactory.form(TripFormData.class).bindFromRequest(request);
+            if (incomingForm.hasErrors()) {
+                return badRequest(createTrip.render(incomingForm, user));
+            }
             TripFormData created = incomingForm.get();
             Trip createdTrip = Trip.makeInstance(created, user);
-            System.out.println(createdTrip.user);
             createdTrip.save();
             return redirect(routes.TripController.AddTripDestinations(createdTrip.tripid));
-
         }
         else{
             return unauthorized("Oops, you are not logged in");
@@ -105,10 +102,10 @@ public class TripController extends Controller {
         today.setTime(today.getTime());
         if (user != null) {
             if (trip != null) {
-                Form<VisitFormData> incomingForm = visitForm.bindFromRequest(request);
+                Form<VisitFormData> incomingForm = formFactory.form(VisitFormData.class).bindFromRequest(request);
                 List<Visit> visits = trip.getVisits();
                 visits.sort(Comparator.comparing(Visit::getVisitorder));
-                return ok(AddTripDestinations.render(visitForm, trip, user.getMappedDestinations(), visits, today.toString()));
+                return ok(AddTripDestinations.render(incomingForm, trip, user.getMappedDestinations(), visits, today.toString()));
             }
             else{
                 return unauthorized("Oops, invalid trip ID");
@@ -130,61 +127,43 @@ public class TripController extends Controller {
      * @return edit trip page or error page
      */
     public Result addvisit(Http.Request request, Integer tripid){
-        Form<VisitFormData> incomingForm = visitForm.bindFromRequest(request);
+        Form<VisitFormData> incomingForm = formFactory.form(VisitFormData.class).bindFromRequest(request);
         User user = User.getCurrentUser(request);
-        if (user != null) { ;
-            VisitFormData created = incomingForm.get();
-            System.out.println(created.destination.destName);
-            try {
+        if (user != null) {
+            if (incomingForm.hasErrors()) {
+                Date today = new Date();
+                today.setTime(today.getTime());
                 Trip trip = Trip.find.byId(tripid);
-                if(trip.isUserOwner(user.getUserid())) {
-                    Integer visitSize = 0;
-                    if (trip.getVisits() != null) {
-                        visitSize = trip.getVisits().size();
-                    }
-                    Integer removedVisits = 0;
-                    if (trip.getRemovedVisits() != null) {
-                        removedVisits = trip.getRemovedVisits();
-                    }
-                    Integer visitOrder = visitSize + 1 + removedVisits;
-                    Destination dest = Destination.find.byId(Integer.parseInt(created.destination.destName));
-                    List<Visit> visits = trip.getVisits();
-                    Visit visit = Visit.makeInstance(created);
-                    if(hasRepeatDest(visits, visit, "ADD")){
-                        return badRequest("You cannot visit the same destination twice in a row!");
-                    }
-                    visit.save();
-                }
-                else{
-                    return unauthorized("Oops, this is not your trip.");
-                }
-            } catch (Exception e) {
-                Trip trip = Trip.find.byId(tripid);
-                if(trip.isUserOwner(user.getUserid())) {
-                    Integer visitSize = 0;
-                    if (trip.getVisits() != null) {
-                        visitSize = trip.getVisits().size();
-                    }
-                    Integer removedVisits = 0;
-                    if (trip.getRemovedVisits() != null) {
-                        removedVisits = trip.getRemovedVisits();
-                    }
-                    Integer visitOrder = visitSize + 1 + removedVisits;
-                    Destination dest = Destination.find.byId(Integer.parseInt(created.destination.destName));
-                    List<Visit> visits = trip.getVisits();
-                    Visit visit = Visit.makeInstance(created);
-                    if(hasRepeatDest(visits, visit, "ADD")){
-                        return badRequest("You cannot visit the same destination twice in a row!");
-                    }
-                    visit.save();
-                }
-                else{
-                    return unauthorized("Oops, this is not your trip.");
-                }
-                //return badRequest("ERROR: Please enter the date correctly.");
+                List<Visit> visits = trip.getVisits();
+                visits.sort(Comparator.comparing(Visit::getVisitorder));
+                return badRequest(AddTripDestinations.render(incomingForm, trip, user.getMappedDestinations(), visits, today.toString()));
             }
-        }
-        else{
+            VisitFormData created = incomingForm.get();
+            Trip trip = Trip.find.byId(tripid);
+            if (trip.isUserOwner(user.getUserid())) {
+                Integer visitSize = 0;
+                if (trip.getVisits() != null) {
+                    visitSize = trip.getVisits().size();
+                }
+                List<Visit> visits = trip.getVisits();
+                Visit visit = new Visit();
+                for (Destination destination : user.getDestinations()) {
+                    if (destination.getDestName().equals(created.destName)) {
+                        visit = Visit.makeInstance(created, destination, trip, visitSize);
+                    }
+                }
+
+                if (hasRepeatDest(visits, visit, "ADD")) {
+                    Date today = new Date();
+                    today.setTime(today.getTime());
+                    return badRequest(AddTripDestinations.render(incomingForm, trip, user.getMappedDestinations(), visits, today.toString()));
+                }
+                visit.save();
+            } else {
+                return unauthorized("Oops, this is not your trip.");
+            }
+
+        } else{
             return unauthorized("Oops, you are not logged in");
         }
         //return redirect(routes.UserController.userindex());
@@ -205,7 +184,7 @@ public class TripController extends Controller {
         if (user != null) {
             List<Destination> destinations = user.getDestinations();
             if (trip != null) {
-                Form<VisitFormData> incomingForm = visitForm.bindFromRequest(request);
+                Form<VisitFormData> incomingForm = formFactory.form(VisitFormData.class).bindFromRequest(request);
                 List<Visit> visits = trip.getVisits();
                 visits.sort(Comparator.comparing(Visit::getVisitorder));
                 return ok(editTrip.render(incomingForm, trip, destinations, visits));
@@ -230,7 +209,7 @@ public class TripController extends Controller {
      * @return edit trip page or error page
      */
     public Result deletevisit(Http.Request request, Integer tripid){
-        Form<VisitFormData> incomingForm = visitForm.bindFromRequest(request);
+        Form<VisitFormData> incomingForm = formFactory.form(VisitFormData.class).bindFromRequest(request);
         VisitFormData created = incomingForm.get();
         String visitID = created.visitName;
         User user = User.getCurrentUser(request);
@@ -271,7 +250,7 @@ public class TripController extends Controller {
      * @return edit trip page or error page
      */
     public Result swapvisits(Http.Request request, Integer tripid){
-        Form<VisitFormData> incomingForm = visitForm.bindFromRequest(request);
+        Form<VisitFormData> incomingForm = formFactory.form(VisitFormData.class).bindFromRequest(request);
         VisitFormData created = incomingForm.get();
         String visitID1 = created.visitName;
         String visitID2 = created.visitName;

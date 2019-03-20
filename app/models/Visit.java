@@ -31,14 +31,14 @@ public class Visit extends Model {
 
 
 
-    public static Visit makeInstance(VisitFormData formData){
+    public static Visit makeInstance(VisitFormData formData, Destination destination, Trip trip, Integer visitorder){
         Visit visit = new Visit();
-        visit.trip = formData.trip;
-        visit.destination = formData.destination;
-        visit.visitorder = formData.visitorder;
+        visit.trip = trip;
+        visit.destination = destination;
+        visit.visitorder = visitorder;
         visit.arrival = formData.arrival;
         visit.departure = formData.departure;
-        visit.visitName = formData.visitName;
+        visit.visitName = destination.destName;
         return visit;
     }
 

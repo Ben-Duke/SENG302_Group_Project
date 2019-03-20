@@ -7,6 +7,7 @@ import io.ebean.Model;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -33,6 +34,8 @@ public class Trip extends Model {
         Trip trip = new Trip();
         trip.tripName = formData.tripName;
         trip.user = user;
+        trip.removedVisits = 0;
+        trip.visits = new ArrayList<Visit>();
         return trip;
     }
 

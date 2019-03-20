@@ -4,29 +4,29 @@
 
 
 @main("Trips") {
-    @helper.form(action = helper.CSRF(routes.TripController.savetrip())){
+    @helper.form(action = helper.CSRF(routes.TripController.savetrip())) {
         <fieldset>
-            <!-- Header -->
-            <legend>Trip</legend>
+                <!-- Header -->
+            <legend>Create Trip</legend>
 
-            <!-- Name -->
+                <!-- Name -->
             @text(tripForm("tripName"),
                 label = "Trip Name",
                 placeholder = "trip name",
                 help = "Please enter the Trip Name. (required)")
 
 
-
-
-    </fieldset>
+        </fieldset>
 
         <div class="form-group actions">
-         <div class="col-sm-offset-2 col-sm-10">
-             <input id="submit" type="submit" value="Submit" class="btn btn-primary"/>
-          </div>
+            <label class="col-md-4 control-label" for="submit"></label>
+            <div class="col-sm-offset-2 col-sm-10">
+                <input id="submit" type="submit" value="Add Trip" class="btn btn-primary"/>
+                <a href= "@routes.HomeController.showhome()" id="cancel" name="cancel" class="btn btn-default">Cancel</a>
+            </div>
         </div>
     }
- }
+}
 
 
 

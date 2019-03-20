@@ -1,76 +1,156 @@
 @import helper._
+@import views.html.bootstrap3._
 
 @import play.data.DynamicForm
-@(dynamicForm : DynamicForm, travellerTypes : List[String], nationalities : List[Nationality], resultProfiles : List[User])
+
+@(dynamicForm : DynamicForm, travellerTypes : List[String], nationalities : List[String], genderMap: Map[String, Boolean], resultProfiles : List[User])
+
 
 @main("Search") {
 
+    <div class="container-fluid">
+        <h1>Search</h1>
 
-    <nav class="navbar navbar-custom">
+        @form(action = helper.CSRF(routes.TravelPartnerController.searchByAttribute)) {
 
-        <div class="container-fluid">
-            <div class="navbar-header">
-                <a class="navbar-brand" href="@routes.HomeController.showhome()">Home</a>
-            </div>
-            <ul class="nav navbar-nav">
-                <li class="active"><a href="#">Search</a></li>
-            </ul>
-        </div>
-    </nav>
+            @checkboxes(
+                dynamicForm("gender"),
+                label = "Gender selection",
+                checkboxMap = genderMap,
+                help = "Select the genders you would like to include in your search results"
+            )
 
-    <h1>Search</h1>
+            @helper.select(
+                field = dynamicForm("travellertype"),
+                options = travellerTypes.map(travellerType => travellerType -> travellerType),
+                '_label -> "Select a traveller type to add:"
+            )
 
-    @form(action = helper.CSRF(routes.TravelPartnerController.searchByAttribute)) {
+            @helper.select(
+                dynamicForm("nationality"),
+                options = nationalities.map(nationality => nationality -> nationality),
+                '_label -> "Select a nationality to add:"
+            )
 
+            @helper.inputDate(dynamicForm("agerange1"), '_label -> "Born after:")
+            @helper.inputDate(dynamicForm("agerange2"), '_label -> "Born before:")
 
+            <input type="submit" value="Search by filters">
 
-        @select(
-        field = dynamicForm("travellertype"),
-        options = travellerTypes.map(travellerType => travellerType -> travellerType),
-        '_label -> "Select traveller types to add:"
-    )
-    @helper.inputRadioGroup(
-        dynamicForm("gender"),
-        options = options("Male"->"Male","Female"->"Female", "Other"->"Other"), '_label -> "Gender: ")
-    @helper.select(dynamicForm("nationality"),
-        options = nationalities.map(nationality => nationality.natid.toString -> nationality.nationalityName),
-        '_label -> "Nationality: ")
-    @helper.inputDate(dynamicForm("agerange1"), '_label -> "Date range 1: " )
-    @helper.inputDate(dynamicForm("agerange2"), '_label -> "Date range 2: " )
-    <input type="submit" value="Search by filters">
-
-    @if(resultProfiles.size > 0) {
+    </div>
 
 
-        <table class="table">
-            <thead class="thead-dark">
-                <tr>
-                    <th scope="col">Username</th>
-                    <th scope="col">Gender</th>
-                    <th scope="col">Nationalities</th>
-                    <th scope="col">DOB</th>
-                    <th scope="col">Traveller types</th>
-                </tr>
-            </thead>
-            <tbody>
-            @for(profile <- resultProfiles) {
-                <tr>
-                    <th scope ="row">@profile.getUsername()</th>
-                    <td>@profile.getGender()</td>
-                    <td>@for(nationality <- profile.getNationality()) {<p>@nationality.getNationalityName()</p>}</td>
-                    <td>@profile.getDateOfBirth()</td>
-                    <td>@for(travellerType <- profile.getTravellerTypes()) {<p>@travellerType.getTravellerTypeName()</p>}</td>
+        @if(resultProfiles.nonEmpty) {
 
-                </tr>
+            <table class="table" id="searchResultsTable">
+                <thead class="thead-dark">
+                    <tr>
+                        <th scope="col" onClick="sortTable(0)" style="cursor: pointer;">Username</th>
+                        <th scope="col" onClick="sortTable(1)" style="cursor: pointer;">Gender</th>
+                        <th scope="col" onClick="sortTable(2)" style="cursor: pointer;">Nationalities</th>
+                        <th scope="col" onClick="sortTable(3)" style="cursor: pointer;">DOB</th>
+                        <th scope="col" onClick="sortTable(4)" style="cursor: pointer;">Traveller types</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @if(resultProfiles.get(0) != null) {
+                    @for(profile <- resultProfiles) {
+                        <tr>
+                            <td scope="row">@profile.getUsername()</td>
+                            <td>@profile.getGender()</td>
+                            <td>@for(nationality <- profile.getNationality()) {
+                                <p>@nationality.getNationalityName()</p>
+                            }</td>
+                            <td>@profile.getDateOfBirth()</td>
+                            <td>@for(travellerType <- profile.getTravellerTypes()) {
+                                <p>@travellerType.getTravellerTypeName()</p>
+                            }</td>
+                        </tr>
+                        }
+                </tbody>
+            </table>
+        } else {
+                </tbody>
+            </table>
+            <h2 align="center">No results found</h2>
+            }
 
+        }
 
-                <br>
-                }
-            </tbody>
-        </table>
     }
-
 }
 
-<a href="@routes.HomeController.showhome()">Back to home</a>
-}
+<script>
+
+    //n = 0, sorting by username
+    //n = 2, sorting by gender
+    //n = 3, sorting by the travelers first nationality
+    //n = 4, sorting by date of birth
+    //n = 5, sorting by the travelers first traveler type
+    function sortTable(n) {
+        var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+        table = document.getElementById("searchResultsTable");
+        switching = true;
+        // Set the sorting direction to ascending:
+        dir = "asc";
+        /* Make a loop that will continue until
+        no switching has been done: */
+        while (switching) {
+            // Start by saying: no switching is done:
+            switching = false;
+            rows = table.rows;
+            /* Loop through all table rows (except the
+            first, which contains table headers): */
+            for (i = 1; i < (rows.length - 1); i++) {
+                // Start by saying there should be no switching:
+                shouldSwitch = false;
+                /* Get the two elements you want to compare,
+                one from current row and one from the next: */
+                if (n == 2 || n == 4) {
+                    /*This is for the nationality and traveler type columns, the first traveler type
+                    or nationality is taken */
+                    x = rows[i].getElementsByTagName("TD")[n].getElementsByTagName("P")[0];
+                    y = rows[i + 1].getElementsByTagName("TD")[n].getElementsByTagName("P")[0];
+                } else {
+                    x = rows[i].getElementsByTagName("TD")[n];
+                    y = rows[i + 1].getElementsByTagName("TD")[n];
+                }
+
+                // console.log(dir);
+                // console.log(x.innerHTML.toLowerCase() +" "+ y.innerHTML.toLowerCase());
+                // console.log(x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase());
+
+                /* Check if the two rows should switch place,
+                based on the direction, asc or desc: */
+                if (dir == "asc") {
+                    if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                        // If so, mark as a switch and break the loop:
+                        shouldSwitch = true;
+                        break;
+                    }
+                } else if (dir == "desc") {
+                    if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+                        // If so, mark as a switch and break the loop:
+                        shouldSwitch = true;
+                        break;
+                    }
+                }
+            }
+            if (shouldSwitch) {
+                /* If a switch has been marked, make the switch
+                and mark that a switch has been done: */
+                rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                switching = true;
+                // Each time a switch is done, increase this count by 1:
+                switchcount ++;
+            } else {
+                /* If no switching has been done AND the direction is "asc",
+                set the direction to "desc" and run the while loop again. */
+                if (switchcount == 0 && dir == "asc") {
+                    dir = "desc";
+                    switching = true;
+                }
+            }
+        }
+    }
+</script>

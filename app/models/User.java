@@ -114,7 +114,6 @@ public class User extends Model {
 
     //GETTERS AND SETTERS
 
-    //TODO change to return actual isAdmin when it is stored in db
     public Boolean getIsAdmin() {return isAdmin;}
 
     public void setAdmin(Boolean admin) {

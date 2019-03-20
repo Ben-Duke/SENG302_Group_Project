@@ -90,7 +90,7 @@ public class ProfileController {
             }
 
 
-            if (admin.equals("true")) {
+            if (admin != null && admin.equals("true")) {
                 user.setAdmin(true);
             }  else {
                 user.setAdmin(false);

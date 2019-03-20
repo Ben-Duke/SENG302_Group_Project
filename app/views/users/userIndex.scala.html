@@ -4,40 +4,29 @@
 
     <body>
 
-        <nav class="navbar navbar-custom">
 
-            <div class="container-fluid">
-                <div class="navbar-header">
-                    <a class="navbar-brand" href="/">TravelEA</a>
-                </div>
-                <ul class="nav navbar-nav">
-                    <li><a href="@routes.RegisterController.createuser()">Create User</a></li>
-                    <li><a href="@routes.HomeController.showhome()">Home</a></li>
-                    <li class="dropdown">
-                        <a class="dropdown-toggle" data-toggle="dropdown">Profile
-                            <span class="caret"></span></a>
-                        <ul class="dropdown-menu">
-                            <li><a href="@routes.LoginController.login()">Login</a></li>
-                            <li><a href="@routes.LoginController.logoutrequest()">Logout</a></li>
-                        </ul>
-                    </li>
-                </ul>
-
-
-            </div>
-        </nav>
 
 
 
         <h1>All users</h1>
 
+        <br>
+
+        <form>
+            <button class="btn btn-default" formaction="@routes.RegisterController.createuser()">Create User</button>
+            <button class="btn btn-default" formaction="@routes.LoginController.login()">Login</button>
+        </form>
+
+
+
+
 
         <table class="table table-sm">
             <thead class="thead-dark">
                 <tr>
-                    <th scope="col">Username</th>
-                    <th></th>
+
                     <th scope="col">First Name</th>
+                    <th></th>
                     <th scope="col">Last Name</th>
                     <th scope="col">DOB</th>
                     <th scope="col">Traveller types</th>
@@ -47,9 +36,8 @@
             <tbody>
             @for(profile <- users) {
                 <tr>
-                    <th class="col-sm-1" style = "width:1%">@profile.getUsername()</th>
+                    <th class="col-sm-1"style = "width:1%">@profile.getfName</th>
                     <td class="col-sm-1"style = "width:1%"> @if(profile.getIsAdmin) {<div class ="small-middle-container"><img class="thumbnail img-responsive" src="assets/images/key_2_small.png"></div>}</td>
-                    <td class="col-sm-1"style = "width:1%">@profile.getfName</td>
                     <td class="col-sm-1"style = "width:1%">@profile.getlName</td>
                     <td class="col-sm-1"style = "width:1%">@profile.getDateOfBirth()</td>
                     <td class="col-sm-2">@for(travellerType <- profile.getTravellerTypes()) {<p>@travellerType.getTravellerTypeName()</p>}</td>

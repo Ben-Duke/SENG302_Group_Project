@@ -19,6 +19,27 @@
     </head>
     <body>
 
+    <nav class="navbar navbar-custom">
+
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="#">TravelEA</a>
+            </div>
+            <ul class="nav navbar-nav">
+                <li><a href="@routes.HomeController.showhome()">Home</a></li>
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown">Profile
+                        <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="@routes.LoginController.logoutrequest()">Logout</a></li>
+                    </ul>
+                </li>
+            </ul>
+
+
+        </div>
+    </nav>
+
         @content
         <script src="http://code.jquery.com/jquery.min.js"></script>
         <script src="http://maxcdn.bootstrapcdn.com/bootstiv /3.3.2/js/bootstrap.min.js"></script>

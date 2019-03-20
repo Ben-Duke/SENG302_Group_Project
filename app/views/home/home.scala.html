@@ -1,36 +1,74 @@
 @(user: User)
     @import views.html.bootstrap3._
     @main("Index"){
-        <div class="container">
+
 
     <head>
         <title>Home</title>
     </head>
-    <body>
-        <h1>Home page</h1>
-        <p>Welcome, @user.username</p>
-        <p>Here is your current profile</p>
-        <p>First Name: @user.fName</p>
-        <p>Last Name: @user.lName</p>
-        <p>Gender: @user.gender</p>
-        <p>Date of Birth: @user.dateOfBirth</p>
-        @for(passport <- user.passports) {
-            <p>Passport: @passport.passportName</p>
-        }
-        @for(nationality <- user.nationality) {
-            <p>Nationality: @nationality.nationalityName</p>
-        }
-        <p>Creation date: @user.creationDate</p>
-        @for(travellerType <- user.travellerTypes) {
-            <p>Traveller type: @travellerType.travellerTypeName</p>
-        }
-        <a href="@routes.ProfileController.createprofile()">Update profile</a>
-        <a href="@routes.LoginController.logoutrequest()">Logout</a>
-        <a href="@routes.TravellerTypeController.updateTravellerType()">Update traveller type</a>
-        <a href="@routes.DestinationController.indexDestination()">Destinations</a>
-        <a href="@routes.TripController.createtrip()">Create trip</a>
-        <a href="@routes.TravelPartnerController.renderFilterPage()">Search profile</a>
-    </body>
+
+
+    <div class="container">
+        <h1>@user.fName @user.lName @if(user.getIsAdmin) {<img class="img"  width = "60" height="50" src="../assets/images/key_2_small.png"> } </h1>
 
     </div>
+
+
+
+
+    <br>
+
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4">
+                <h2>Profile</h2>
+                <p>Gender: @user.gender</p>
+                <p>Date of Birth: @user.dateOfBirth</p>
+                @for(passport <- user.passports) {
+                <p>Passport: @passport.passportName</p>
+                }
+                @for(nationality <- user.nationality) {
+                <p>Nationality: @nationality.nationalityName</p>
+                }
+                <p>Creation date: @user.creationDate</p>
+                @for(travellerType <- user.travellerTypes) {
+                <p>Traveller type: @travellerType.travellerTypeName</p>
+                <form>
+                    <button class="btn btn-default" formaction="@routes.ProfileController.createprofile()">Update profile</button>
+                    <button class="btn btn-default" formaction="@routes.TravellerTypeController.updateTravellerType()">Update traveller type</button>
+                </form>
+                }
+            </div>
+            <div class="col-md-4">
+                <h2>Trips</h2>
+                <form>
+                    <div class="list-group">
+                        @for(trip <- user.getTrips) {
+                        <a href="#" class="list-group-item list-group-item-action">
+                            @trip.tripName
+                        </a>
+                        }
+                    </div>
+                    <button class="btn btn-default" formaction="@routes.DestinationController.indexDestination()">Destinations</button>
+                    <button class="btn btn-default" formaction="@routes.TripController.createtrip()">Create trip</button>
+                </form>
+            </div>
+            <div class="col-md-4">
+                <h2>Insights</h2>
+                <form>
+                    <button class="btn btn-default" formaction="@routes.TravelPartnerController.renderFilterPage()">Search profile</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+
+
+        </form>
+
     }

@@ -1,22 +1,47 @@
 @(users: List[User])
 
-    @main("Index") {
-        <div class="container">
-            <head>
-                <title>All users</title>
-            </head>
-            <body>
-                <h1>All users</h1>
+@main("All Users") {
 
-                @for(user <- users) {
-                    <p>Email: @user.username</p>
-                    <p>First Name: @user.getfName()</p>
-                    <p>Last Name: @user.getlName()</p>
+    <body>
+
+        <h1>All users</h1>
+
+        <br>
+
+        <form>
+            <button class="btn btn-default" formaction="@routes.RegisterController.createuser()">Create User</button>
+            <button class="btn btn-default" formaction="@routes.LoginController.login()">Login</button>
+        </form>
+
+
+        <table class="table table-sm">
+            <thead class="thead-dark">
+                <tr>
+
+                    <th scope="col">First Name</th>
+                    <th></th>
+                    <th scope="col">Last Name</th>
+                    <th scope="col">DOB</th>
+                    <th scope="col">Traveller types</th>
+
+                </tr>
+            </thead>
+            <tbody>
+            @for(profile <- users) {
+                <tr>
+                    <th class="col-sm-1"style = "width:1%">@profile.getfName</th>
+                    <td class="col-sm-1"style = "width:1%"> @if(profile.isAdmin) {<div class ="small-middle-container"><img class="thumbnail img-responsive" src="assets/images/key_2_small.png"></div>}</td>
+                    <td class="col-sm-1"style = "width:1%">@profile.getlName</td>
+                    <td class="col-sm-1"style = "width:1%">@profile.getDateOfBirth()</td>
+                    <td class="col-sm-2">@for(travellerType <- profile.getTravellerTypes()) {<p>@travellerType.getTravellerTypeName()</p>}</td>
+
+                </tr>
+
+
+                <br>
                 }
-                <a href="@routes.RegisterController.createuser()">Create User</a>
-                <a href="@routes.HomeController.showhome()">Show Home</a>
-                <a href="@routes.LoginController.logoutrequest()">Logout</a>
-                <a href="@routes.LoginController.login()">Login</a>
-            </body>
-        </div>
-    }
+            </tbody>
+        </table>
+
+    </body>
+}

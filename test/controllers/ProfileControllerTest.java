@@ -83,7 +83,6 @@ public class ProfileControllerTest extends WithApplication {
     @Test
     public void updateprofile() {
         User user = User.find.byId(1);
-        user.setAdmin(true);
         user.update();
         assertEquals("Gavin", user.getfName());
         assertEquals("Ong", user.getlName());
@@ -96,7 +95,6 @@ public class ProfileControllerTest extends WithApplication {
         formData.put("lName", "Cena");
         formData.put("gender", "Female");
         formData.put("dateOfBirth", "1969-04-20");
-        formData.put("admin", "true");
         Http.RequestBuilder request = Helpers.fakeRequest().bodyForm(formData).method(Helpers.POST).uri("/users/profile/update").session("connected", "1");
         Result result = route(app, request);
         assertEquals(SEE_OTHER, result.status());

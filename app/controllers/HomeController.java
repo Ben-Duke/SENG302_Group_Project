@@ -1,7 +1,6 @@
 package controllers;
 
 import models.User;
-import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.Http;
 import play.mvc.Result;

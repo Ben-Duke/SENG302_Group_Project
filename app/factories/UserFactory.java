@@ -6,6 +6,7 @@ import io.ebean.Update;
 import models.Nationality;
 import models.Passport;
 import models.TravellerType;
+import io.ebean.ExpressionList;
 import models.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,9 +18,11 @@ import play.mvc.Result;
 import java.util.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import play.data.Form;
-import play.data.FormFactory;
-import javax.inject.Inject;
+
+
+import java.util.ArrayList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class UserFactory {
     private static Logger logger = LoggerFactory.getLogger("application");
@@ -31,6 +34,12 @@ public class UserFactory {
          }
 
 
+    public boolean checkpassword(String email, String password) {
+        ExpressionList<User> usersExpressionList = User.find.query()
+                .where().eq("username", email).and().eq("password", password);
+
+        return usersExpressionList.findCount() == 1;
+    }
 
     /**
      * adds all of the following traveller types to the database

@@ -22,8 +22,8 @@ GET     /users/login                controllers.LoginController.login()
 #Handles login request
 POST    /users/login                controllers.LoginController.loginrequest(request:Request)
 
-#Renders create profile page
-GET     /users/profile/update       controllers.ProfileController.createprofile(request: Request)
+#Renders update profile page
+GET     /users/profile/update       controllers.ProfileController.updateProfile(request: Request)
 
 #Handles updating profile
 POST    /users/profile/update       controllers.ProfileController.updateprofile(request: Request)

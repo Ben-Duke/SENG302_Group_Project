@@ -24,7 +24,7 @@
         @for(travellerType <- user.travellerTypes) {
             <p>Traveller type: @travellerType.travellerTypeName</p>
         }
-        <a href="@routes.ProfileController.createprofile()">Update profile</a>
+        <a href="@routes.ProfileController.updateProfile()">Update profile</a>
         <a href="@routes.LoginController.logoutrequest()">Logout</a>
         <a href="@routes.TravellerTypeController.updateTravellerType()">Update traveller type</a>
         <a href="@routes.DestinationController.indexDestination()">Destinations</a>

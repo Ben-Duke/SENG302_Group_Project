@@ -7,8 +7,8 @@ import play.data.FormFactory;
 import play.mvc.Http;
 import play.mvc.Result;
 import views.html.users.profile.showProfile;
-import views.html.users.profile.createprofile;
 import views.html.users.profile.updateNatPass;
+import views.html.users.profile.updateProfile;
 
 import javax.inject.Inject;
 
@@ -30,11 +30,11 @@ public class ProfileController {
      * @param request The HTTP request
      * @return create profile page or error page
      */
-    public Result createprofile(Http.Request request){
+    public Result updateProfile(Http.Request request){
         User user = User.getCurrentUser(request);
         if (user != null) {
             Form<User> userForm = formFactory.form(User.class).fill(user);
-            return ok(createprofile.render(userForm));
+            return ok(updateProfile.render(userForm));
         }
         else{
             return unauthorized("Oops, you are not logged in");

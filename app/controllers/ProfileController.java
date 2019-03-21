@@ -1,11 +1,18 @@
 package controllers;
 
+import factories.UserFactory;
+import formdata.NatFormData;
+import formdata.UserFormData;
 import models.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Marker;
 import play.data.DynamicForm;
 import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.Http;
 import play.mvc.Result;
+import views.html.users.profile.createprofile_;
 import views.html.users.profile.showProfile;
 import views.html.users.profile.createprofile;
 import views.html.users.profile.updateNatPass;
@@ -14,12 +21,15 @@ import javax.inject.Inject;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import static play.mvc.Results.*;
 
 public class ProfileController {
+    public static Logger logger = LoggerFactory.getLogger("application");
 
     @Inject
     FormFactory formFactory;
@@ -126,7 +136,7 @@ public class ProfileController {
     public Result updateNatPass(Http.Request request){
         User user = User.getCurrentUser(request);
         if (user != null) {
-            Form<User> userForm = formFactory.form(User.class).fill(user);
+            Form<NatFormData> userForm = formFactory.form(NatFormData.class);
             try {
                 addNatandPass();
             } catch (io.ebean.DuplicateKeyException e) {
@@ -187,7 +197,7 @@ public class ProfileController {
                 user.addPassport(passport);
                 user.update();
             } catch (io.ebean.DuplicateKeyException e) {
-                return unauthorized("Oops, you have already have this passport");
+                //return unauthorized("Oops, you have already have this passport");
             }
         }
         else{
@@ -206,22 +216,37 @@ public class ProfileController {
      * @return update traveller type page or error page
      */
     public Result deleteNationality(Http.Request request){
-        DynamicForm userForm = formFactory.form().bindFromRequest();
-        String nationalityID = userForm.get("nationalitydelete");
-        User user = User.getCurrentUser(request);
-        if (user != null) {
-            try {
-                Nationality nationality = Nationality.find.byId(Integer.parseInt(nationalityID));
-                user.deleteNationality(nationality);
-                user.update();
-            } catch (NumberFormatException e) {
-                return  unauthorized("Oops, you do not have any nationalities to delete");
+
+        Form<NatFormData> userForm = formFactory.form(NatFormData.class).bindFromRequest();
+        //DynamicForm userForm = formFactory.form().bindFromRequest();
+
+
+        if (userForm.hasErrors()) {
+           logger.debug("Yay it say the error");
+            User user = User.getCurrentUser(request);
+            List<Nationality> nationalities = Nationality.find.all();
+            List<Passport> passports = Passport.find.all();
+
+            return badRequest(updateNatPass.render(userForm, nationalities, passports, user));
+        }else {
+
+
+            String nationalityID = userForm.get().nationalitydelete;
+            User user = User.getCurrentUser(request);
+            if (user != null) {
+                try {
+                    Nationality nationality = Nationality.find.byId(Integer.parseInt(nationalityID));
+                    user.deleteNationality(nationality);
+                    user.update();
+                } catch (NumberFormatException e) {
+                    //return  unauthorized("Oops, you do not have any nationalities to delete");
+                }
+            } else {
+                return unauthorized("Oops, you are not logged in");
             }
+            //return redirect(routes.UserController.userindex());
+
         }
-        else{
-            return unauthorized("Oops, you are not logged in");
-        }
-        //return redirect(routes.UserController.userindex());
         return redirect(routes.ProfileController.updateNatPass());
     }
 
@@ -243,7 +268,7 @@ public class ProfileController {
                 user.deletePassport(passport);
                 user.update();
             } catch (NumberFormatException e) {
-                return  unauthorized("Oops, you do not have any passports to delete");
+                //return  unauthorized("Oops, you do not have any passports to delete");
             }
         }
         else{

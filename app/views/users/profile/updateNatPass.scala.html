@@ -1,13 +1,10 @@
 @import helper._
-
-@(userForm : Form[User], nationalities : List[Nationality], passports : List[Passport], user : User)
+@import formdata.NatFormData
+@(userForm : Form[NatFormData], nationalities : List[Nationality], passports : List[Passport], user : User)
 @main("Index"){
     <div class="container">
 <h1>Edit passport and nationality </h1>
 
-@if(user.nationality.isEmpty){
-    <p>You must have at least one nationality..</p>
-}
 
 @form(action = helper.CSRF(routes.ProfileController.submitUpdatePassport)) {
     @select(

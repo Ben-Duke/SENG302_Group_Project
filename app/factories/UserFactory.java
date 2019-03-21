@@ -63,8 +63,6 @@ public class UserFactory {
         if(checkUsername(username)!=1){
         User user = new User(username, password, firstName, lastName, date, gender);
 
-
-
             user.save();
             for (int i = 0; i < tType.size(); i++) {
 
@@ -72,10 +70,12 @@ public class UserFactory {
                 UpdateTravellerType(user, tTypeId);
             }
             //Passport loop
+            if(passports != null) {
             for (int j = 0; j < passports.size(); j++) {
 
                 int passportId = getPassportId(passports.get(j));
                 UpdatePassport(user, passportId);
+            }
             }
 
             for (int k = 0; k < nationalities.size(); k++) {

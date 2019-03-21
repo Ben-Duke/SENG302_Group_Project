@@ -120,7 +120,7 @@ public class User extends Model {
         isAdmin = admin;
     }
 
-    public Integer getUserid() {
+    public int getUserid() {
         return userid;
     }
 

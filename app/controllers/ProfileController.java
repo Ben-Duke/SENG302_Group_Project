@@ -1,5 +1,6 @@
 package controllers;
 
+import formdata.LoginFormData;
 import models.*;
 import play.data.DynamicForm;
 import play.data.Form;
@@ -25,16 +26,16 @@ public class ProfileController {
     FormFactory formFactory;
 
     /**
-     * If the user is logged in, renders the create profile page.
+     * If the user is logged in, renders the update profile page.
      * If the user is not logged in, returns an error.
      * @param request The HTTP request
-     * @return create profile page or error page
+     * @return update profile page or error page
      */
     public Result updateProfile(Http.Request request){
         User user = User.getCurrentUser(request);
         if (user != null) {
-            Form<User> userForm = formFactory.form(User.class).fill(user);
-            return ok(updateProfile.render(userForm));
+            Form<LoginFormData> loginFormData = formFactory.form(LoginFormData.class);
+            return ok(updateProfile.render(loginFormData));
         }
         else{
             return unauthorized("Oops, you are not logged in");
@@ -49,7 +50,7 @@ public class ProfileController {
      * @param request The HTTP request
      * @return home page or error page
      */
-    public Result updateprofile(Http.Request request){
+    public Result updateProfileRequest(Http.Request request){
         //Form<User> userForm = formFactory.form(User.class).bindFromRequest();
         DynamicForm profileForm = formFactory.form().bindFromRequest();
         String fName = profileForm.get("fName");

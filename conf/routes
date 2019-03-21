@@ -26,7 +26,7 @@ POST    /users/login                controllers.LoginController.loginrequest(req
 GET     /users/profile/update       controllers.ProfileController.updateProfile(request: Request)
 
 #Handles updating profile
-POST    /users/profile/update       controllers.ProfileController.updateprofile(request: Request)
+POST    /users/profile/update       controllers.ProfileController.updateProfileRequest(request: Request)
 
 #Renders page for updating nationality and passport
 GET     /users/profile/update/natpass       controllers.ProfileController.updateNatPass(request: Request)

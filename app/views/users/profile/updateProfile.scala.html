@@ -1,4 +1,6 @@
-@(userForm : Form[User])
+@import formdata.UpdateUserFormData
+
+@(userForm : Form[UpdateUserFormData], )
 @import helper._
     @import views.html.bootstrap3._
     @main("Index"){
@@ -8,7 +10,7 @@
     </head>
     <body>
         <h1>Update your profile</h1>
-        @helper.form(action = helper.CSRF(routes.ProfileController.updateprofile())){
+        @helper.form(action = helper.CSRF(routes.ProfileController.updateProfile())){
             @helper.inputText(userForm("fName"),'_label -> "First Name:")
             @helper.inputText(userForm("lName"),'_label -> "Last Name:")
             @helper.inputRadioGroup(

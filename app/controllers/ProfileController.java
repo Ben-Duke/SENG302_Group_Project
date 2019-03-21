@@ -66,6 +66,7 @@ public class ProfileController {
         String lName = profileForm.get("lName");
         String gender = profileForm.get("gender");
         String dateofbirth = profileForm.get("dateOfBirth");
+        String admin = profileForm.get("admin");
         User user = User.getCurrentUser(request);
         if (user != null) {
 
@@ -97,6 +98,14 @@ public class ProfileController {
                 }
                 user.setDateOfBirth(birthDate);
             }
+
+
+            if (admin != null && admin.equals("true")) {
+                user.setAdmin(true);
+            }  else {
+                user.setAdmin(false);
+            }
+
             user.update();
         }
         else{

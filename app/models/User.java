@@ -1,5 +1,6 @@
 package models;
 
+import io.ebean.ExpressionList;
 import io.ebean.Finder;
 import io.ebean.Model;
 import io.ebean.annotation.CreatedTimestamp;
@@ -10,6 +11,8 @@ import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
+
+import static play.mvc.Results.badRequest;
 
 @Entity
 public class User extends Model {
@@ -112,11 +115,7 @@ public class User extends Model {
         return userid;
     }
 
-    /*
-    public void setUserid(Integer userid) {
-        this.userid = userid;
-    }
-    */
+
 
     public String getUsername(){
         return username;
@@ -188,6 +187,11 @@ public class User extends Model {
 
     public void setDateOfBirth(LocalDate dateOfBirth){
         this.dateOfBirth = dateOfBirth;
+    }
+
+    public List<User> getUsers() {
+        List<User> users= User.find.all();
+        return  users;
     }
 
     public String getGender() {
@@ -295,5 +299,30 @@ public class User extends Model {
             return user;
         }
         return null;
+    }
+
+    /** Returns the id of the user and returns it if for some reason the user doesnt exist it will return -1.
+     *
+     * @param request
+     * @return userid on success or -1.
+     */
+    public static int getCurrentUserById(Http.Request request) {
+        String userId = request.session().getOptional("connected").orElse(null);
+        if (userId != null) {
+            User user = User.find.query().where().eq("userid", userId).findOne();
+            return user.getUserid();
+        }
+        return -1;
+    }
+
+    public static int checkUser(String username){
+        ExpressionList<User> usersExpressionList = User.find.query().where().eq("username", username.toLowerCase());
+        int userPresent = 0;
+        if (usersExpressionList.findCount() > 0) {
+            userPresent = 1;
+        }
+        return userPresent;
+
+
     }
 }

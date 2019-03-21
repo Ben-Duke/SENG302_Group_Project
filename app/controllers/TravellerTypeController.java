@@ -8,7 +8,7 @@ import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.Http;
 import play.mvc.Result;
-import views.html.users.profile.createprofile;
+import views.html.users.profile.updateProfile;
 import views.html.users.travellertype.updatetraveller;
 
 import javax.inject.Inject;

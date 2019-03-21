@@ -1,6 +1,8 @@
 package controllers;
 
+import factories.UserFactory;
 import formdata.LoginFormData;
+import formdata.UpdateUserFormData;
 import models.*;
 import play.data.DynamicForm;
 import play.data.Form;
@@ -34,8 +36,12 @@ public class ProfileController {
     public Result updateProfile(Http.Request request){
         User user = User.getCurrentUser(request);
         if (user != null) {
-            Form<LoginFormData> loginFormData = formFactory.form(LoginFormData.class);
-            return ok(updateProfile.render(loginFormData));
+            UpdateUserFormData updateUserFormData = UserFactory.getUpdateUserFormDataForm(request);
+
+            Form<UpdateUserFormData> updateUserForm = formFactory.form(UpdateUserFormData.class).fill(updateUserFormData);
+
+
+            return ok(updateProfile.render(updateUserForm));
         }
         else{
             return unauthorized("Oops, you are not logged in");

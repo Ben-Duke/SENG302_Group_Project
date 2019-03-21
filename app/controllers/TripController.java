@@ -41,7 +41,7 @@ public class TripController extends Controller {
     public Result createtrip(Http.Request request){
         User user = User.getCurrentUser(request);
         if (user != null) {
-            Form<TripFormData> incomingForm = formFactory.form(TripFormData.class).bindFromRequest(request);
+            Form<TripFormData> incomingForm = formFactory.form(TripFormData.class);
             return ok(createTrip.render(incomingForm, user));
         }
         else{
@@ -81,6 +81,11 @@ public class TripController extends Controller {
         User user = User.getCurrentUser(request);
         if (user != null) {
             Form<TripFormData> incomingForm = formFactory.form(TripFormData.class).bindFromRequest(request);
+            for (Trip trip: user.getTrips()) {
+                if (incomingForm.get().tripName.equals(trip.getTripName())) {
+                    return ok(createTrip.render(incomingForm, user));
+                }
+            }
             if (incomingForm.hasErrors()) {
                 return badRequest(createTrip.render(incomingForm, user));
             }
@@ -102,7 +107,7 @@ public class TripController extends Controller {
         today.setTime(today.getTime());
         if (user != null) {
             if (trip != null) {
-                Form<VisitFormData> incomingForm = formFactory.form(VisitFormData.class).bindFromRequest(request);
+                Form<VisitFormData> incomingForm = formFactory.form(VisitFormData.class);
                 List<Visit> visits = trip.getVisits();
                 visits.sort(Comparator.comparing(Visit::getVisitorder));
                 return ok(AddTripDestinations.render(incomingForm, trip, user.getMappedDestinations(), visits, today.toString()));

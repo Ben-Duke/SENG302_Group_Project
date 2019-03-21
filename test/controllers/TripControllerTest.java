@@ -1,5 +1,7 @@
 package controllers;
 
+import formdata.TripFormData;
+import formdata.VisitFormData;
 import models.Destination;
 import models.Trip;
 import models.User;
@@ -53,7 +55,8 @@ public class TripControllerTest extends WithApplication {
         User user = new User("testUser");
         user.save();
         //Initialises a test trip with name "testTrip" and saves it to the database.
-        Trip trip = new Trip("testTrip", user);
+        TripFormData tripForm = new TripFormData("testTrip", user);
+        Trip trip = Trip.makeInstance(tripForm, user);
         trip.save();
         Destination destination = new Destination("University of Canterbury",
                 "University",
@@ -151,8 +154,8 @@ public class TripControllerTest extends WithApplication {
         assertEquals(SEE_OTHER, result.status());
         //"Newly created Visit with name "University of Canterbury" should be the first index in the trip
         assertEquals("University of Canterbury", User.find.byId(1).getTrips().get(0).getVisits().get(0).getVisitName());
-        assertEquals("2019-04-20", User.find.byId(1).getTrips().get(0).getVisits().get(0).getArrival().format(formatter));
-        assertEquals("2019-06-09", User.find.byId(1).getTrips().get(0).getVisits().get(0).getDeparture().format(formatter));
+        assertEquals("2019-04-20", User.find.byId(1).getTrips().get(0).getVisits().get(0).getArrival());
+        assertEquals("2019-06-09", User.find.byId(1).getTrips().get(0).getVisits().get(0).getDeparture());
     }
 
     /**
@@ -179,10 +182,11 @@ public class TripControllerTest extends WithApplication {
     @Test
     public void deletevisit() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        LocalDate arrival = LocalDate.parse("2019-04-20", formatter);
-        LocalDate departure = LocalDate.parse("2019-06-09", formatter);
+        String arrival = "2019-04-20";
+        String departure = "2019-06-09";
         //University of Canterbury, testTrip, visitOrder = 1
-        Visit visit = new Visit(Destination.find.byId(1), Trip.find.byId(1), 1, arrival, departure);
+        VisitFormData visitformdata = new VisitFormData(Destination.find.byId(1).getDestName(), arrival, departure, Trip.find.byId(1).tripName);
+        Visit visit = Visit.makeInstance(visitformdata, Destination.find.byId(1), Trip.find.byId(1), 1 );
         visit.save();
         //There should be 1 row in trips, which is the visit that was put in.
         assertEquals(1, User.find.byId(1).getTrips().get(0).getVisits().size());
@@ -205,15 +209,16 @@ public class TripControllerTest extends WithApplication {
     @Test
     public void swapvisits() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        LocalDate arrival1 = LocalDate.parse("2019-04-20", formatter);
-        LocalDate departure1 = LocalDate.parse("2019-06-09", formatter);
-        LocalDate arrival2 = LocalDate.parse("2018-04-20", formatter);
-        LocalDate departure2 = LocalDate.parse("2018-06-09", formatter);
+        String arrival1 = "2019-04-20";
+        String departure1 = "2019-06-09";
+        String arrival2 = "2018-04-20";
+        String departure2 = "2018-06-09";
         //University of Canterbury, testTrip, visitOrder = 1
-        Visit visit1 = new Visit(Destination.find.byId(1), Trip.find.byId(1), 1, arrival1, departure1);
-        visit1.save();
+        VisitFormData visitformdata1 = new VisitFormData(Destination.find.byId(1).getDestName(), arrival1, departure1, Trip.find.byId(1).tripName);
+        Visit visit1 = Visit.makeInstance(visitformdata1, Destination.find.byId(1), Trip.find.byId(1), 1 );        visit1.save();
         //University of Banterbury, testTrip, visitOrder = 2
-        Visit visit2 = new Visit(Destination.find.byId(2), Trip.find.byId(1), 2, arrival2, departure2);
+        VisitFormData visitformdata2 = new VisitFormData(Destination.find.byId(2).getDestName(), arrival1, departure1, Trip.find.byId(1).tripName);
+        Visit visit2 = Visit.makeInstance(visitformdata2, Destination.find.byId(2), Trip.find.byId(1), 2 );        visit2.save();
         visit2.save();
         //University of Canterbury should be on the first row and University of Banterbury should be on the second row before swap
         List<Visit> visitsBeforeSwap = User.find.byId(1).getTrips().get(0).getVisits();
@@ -243,18 +248,21 @@ public class TripControllerTest extends WithApplication {
     @Test
     public void hasRepeatDest() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        LocalDate arrival1 = LocalDate.parse("2019-04-20", formatter);
-        LocalDate departure1 = LocalDate.parse("2019-06-09", formatter);
-        LocalDate arrival2 = LocalDate.parse("2018-04-20", formatter);
-        LocalDate departure2 = LocalDate.parse("2018-06-09", formatter);
+        String arrival1 = "2019-04-20";
+        String departure1 = "2019-06-09";
+        String arrival2 = "2018-04-20";
+        String departure2 = "2018-06-09";
         //University of Canterbury, testTrip, visitOrder = 1
-        Visit visit1 = new Visit(Destination.find.byId(1), Trip.find.byId(1), 1, arrival1, departure1);
+        VisitFormData visitformdata1 = new VisitFormData(Destination.find.byId(1).getDestName(), arrival1, departure1, Trip.find.byId(1).tripName);
+        Visit visit1 = Visit.makeInstance(visitformdata1, Destination.find.byId(1), Trip.find.byId(1), 1 );
         visit1.save();
         //University of Banterbury, testTrip, visitOrder = 2
-        Visit visit2 = new Visit(Destination.find.byId(2), Trip.find.byId(1), 2, arrival2, departure2);
+        VisitFormData visitformdata2 = new VisitFormData(Destination.find.byId(2).getDestName(), arrival2, departure2, Trip.find.byId(1).tripName);
+        Visit visit2 = Visit.makeInstance(visitformdata2, Destination.find.byId(2), Trip.find.byId(1), 2 );
         visit2.save();
         //University of Canterbury (same destination), testTrip, visitOrder = 3, arrival and departure currently broken
-        Visit visit3 = new Visit(Destination.find.byId(1), Trip.find.byId(1), 3, arrival1, departure1);
+        VisitFormData visitformdata3 = new VisitFormData(Destination.find.byId(1).getDestName(), arrival1, departure1, Trip.find.byId(1).tripName);
+        Visit visit3 = Visit.makeInstance(visitformdata3, Destination.find.byId(1), Trip.find.byId(1), 3 );
         visit3.save();
         //Get the list of visits and sort it by order. Current list: [Canterbury, Banterbury, Canterbury]
         List<Visit> visits = User.find.byId(1).getTrips().get(0).getVisits();
@@ -268,12 +276,12 @@ public class TripControllerTest extends WithApplication {
         //Test if the second row of the list can be deleted, making it [Canterbury, Canterbury] which is valid (should return false)
         assertFalse(tripController.hasRepeatDest(visits, visits.get(2), "DELETE"));
         //University of Canterbury (same destination), testTrip, visitOrder = 4, arrival and departure currently broken
-        Visit visit4 = new Visit(Destination.find.byId(1), Trip.find.byId(1), 4, arrival1, departure1);
-        //Test if the University of Canterbury can be added, making it [Canterbury, Banterbury, Canterbury, Canterbury] which is invalid (should return true)
+        VisitFormData visitformdata4 = new VisitFormData(Destination.find.byId(1).getDestName(), arrival1, departure1, Trip.find.byId(1).tripName);
+        Visit visit4 = Visit.makeInstance(visitformdata4, Destination.find.byId(1), Trip.find.byId(1), 4 );        //Test if the University of Canterbury can be added, making it [Canterbury, Banterbury, Canterbury, Canterbury] which is invalid (should return true)
         assertTrue(tripController.hasRepeatDest(visits, visit4, "ADD"));
         //University of Canterbury (same destination), testTrip, visitOrder = 4, arrival and departure currently broken
-        Visit visit5 = new Visit(Destination.find.byId(2), Trip.find.byId(1), 5, arrival1, departure1);
-        //Test if the University of Banterbury can be added, making it [Canterbury, Banterbury, Canterbury, Banterbury] which is valid (should return false)
+        VisitFormData visitformdata5 = new VisitFormData(Destination.find.byId(2).getDestName(), arrival1, departure1, Trip.find.byId(1).tripName);
+        Visit visit5 = Visit.makeInstance(visitformdata5, Destination.find.byId(2), Trip.find.byId(1), 5 );        //Test if the University of Banterbury can be added, making it [Canterbury, Banterbury, Canterbury, Banterbury] which is valid (should return false)
         assertFalse(tripController.hasRepeatDest(visits, visit5, "ADD"));
         //TO BE DONE
         //Test if the University of Canterbury can be swapped into the middle of the list (index 1). This assumes that the input list is already swapped.
@@ -310,21 +318,25 @@ public class TripControllerTest extends WithApplication {
     @Test
     public void hasRepeatDestSwap() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        LocalDate arrival1 = LocalDate.parse("2019-04-20", formatter);
-        LocalDate departure1 = LocalDate.parse("2019-06-09", formatter);
-        LocalDate arrival2 = LocalDate.parse("2018-04-20", formatter);
-        LocalDate departure2 = LocalDate.parse("2018-06-09", formatter);
+        String arrival1 = "2019-04-20";
+        String departure1 = "2019-06-09";
+        String arrival2 = "2018-04-20";
+        String departure2 = "2018-06-09";
         //University of Canterbury, testTrip, visitOrder = 1
-        Visit visit1 = new Visit(Destination.find.byId(1), Trip.find.byId(1), 1, arrival1, departure1);
+        VisitFormData visitformdata1 = new VisitFormData(Destination.find.byId(1).getDestName(), arrival1, departure1, Trip.find.byId(1).tripName);
+        Visit visit1 = Visit.makeInstance(visitformdata1, Destination.find.byId(1), Trip.find.byId(1), 1 );
         visit1.save();
         //University of Banterbury, testTrip, visitOrder = 2
-        Visit visit2 = new Visit(Destination.find.byId(2), Trip.find.byId(1), 2, arrival2, departure2);
+        VisitFormData visitformdata2 = new VisitFormData(Destination.find.byId(2).getDestName(), arrival2, departure2, Trip.find.byId(1).tripName);
+        Visit visit2 = Visit.makeInstance(visitformdata2, Destination.find.byId(2), Trip.find.byId(1), 2 );
         visit2.save();
         //University of Canterbury (same destination), testTrip, visitOrder = 3, arrival and departure currently broken
-        Visit visit3 = new Visit(Destination.find.byId(1), Trip.find.byId(1), 3, arrival1, departure1);
+        VisitFormData visitformdata3 = new VisitFormData(Destination.find.byId(1).getDestName(), arrival1, departure1, Trip.find.byId(1).tripName);
+        Visit visit3 = Visit.makeInstance(visitformdata3, Destination.find.byId(1), Trip.find.byId(1), 3 );
         visit3.save();
         //Panem, testTrip, visitOrder = 4, arrival and departure currently broken
-        Visit visit4 = new Visit(Destination.find.byId(3), Trip.find.byId(1), 4, arrival1, departure1);
+        VisitFormData visitformdata4 = new VisitFormData(Destination.find.byId(3).getDestName(), arrival1, departure1, Trip.find.byId(1).tripName);
+        Visit visit4 = Visit.makeInstance(visitformdata4, Destination.find.byId(3), Trip.find.byId(1), 4 );
         visit4.save();
         //Get the list of visits and sort it by order. Current list: Canterbury, Banterbury, Canterbury, Panem.
         List<Visit> visits = User.find.byId(1).getTrips().get(0).getVisits();

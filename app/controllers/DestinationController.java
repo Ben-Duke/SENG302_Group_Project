@@ -3,6 +3,7 @@ package controllers;
 import models.Destination;
 import models.User;
 
+
 import play.data.DynamicForm;
 import play.data.Form;
 import play.data.FormFactory;

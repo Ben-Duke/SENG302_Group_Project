@@ -16,9 +16,9 @@
             @helper.inputRadioGroup(
                 updateUserForm("gender"),
             options = options("Male"->"Male","Female"->"Female", "Other"->"Other"), '_label -> "Gender: ")
-            @helper.inputDate(userForm("dateOfBirth"), '_label -> "Date of Birth: " )
+            @helper.inputDate(updateUserForm("dateOfBirth"), '_label -> "Date of Birth: " )
             @helper.checkbox(
-                userForm("admin"), '_label -> "Admin: ")
+                updateUserForm("admin"), '_label -> "Admin: ")
             @helper.inputDate(updateUserForm("dateOfBirth"), '_label -> "Date of Birth: " )
             <input type="submit" value="Update profile">
             }

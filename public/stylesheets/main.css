@@ -18,9 +18,19 @@
 .navbar-custom .navbar-nav>.dropdown>a:hover .caret { border-top-color: #ffffff}
 .navbar-custom .navbar-nav>.dropdown>a .caret { border-bottom-color: #999999}
 .navbar-custom .navbar-nav>.dropdown>a:hover .caret { border-bottom-color: #ffffff}
+.row {margin-top: 10px;}
 .small-middle-container{
     margin: auto;
     width: 50%;
+}
+.img-responsive {
+     max-width: 100%;
+     height: auto;
+     justify-content: right;
+     margin-top: 100px;
+}
+.flex-container {
+    margin-top: 50px;
 }
 
 

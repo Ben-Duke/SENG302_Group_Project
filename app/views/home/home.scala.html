@@ -63,26 +63,24 @@
             </div>
         </div>
         <div class="flex-container">
-            <style>
-                .flex-container {
-                    display: flex;
-                    flex-direction: row-reverse;
-                    flex-wrap: wrap;
-                    justify-content: center;
-                }
-            </style>
             <div class="row">
                 <!--This is where eventually the real photos will be added for thumbnailing -->
-                @for(num <- 1 to 108) {
-                    <img class="img-thumbnail" width="60" src="@routes.Assets.at("images/Generic.png")">
-                }
+                    <img class="img-thumbnail" id="generic" width="60" src="@routes.Assets.at("images/Generic.png")">
             </div>
         </div>
-        <div class="col-md-4">
+        <div id="myModal" class="modal">
+            <span class="close">&times;</span>
+            <img class="modal-content" >
+        </div>
+        <div class="row">
+            <button class="btn btn-default">Add Photo</button>
+        </div>
+        <div class="flex-container">
         @for(num <- 1 to 100) {
-            <img class="img-responsive"  src="@routes.Assets.at("images/Generic.png")">
+            <img class="img-responsive" src="@routes.Assets.at("images/Generic.png")">
             }
         </div>
+
     </div>
 
     }

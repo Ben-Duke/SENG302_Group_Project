@@ -15,6 +15,8 @@
             userForm("gender"),
             options = options("Male"->"Male","Female"->"Female", "Other"->"Other"), '_label -> "Gender: ")
             @helper.inputDate(userForm("dateOfBirth"), '_label -> "Date of Birth: " )
+            @helper.checkbox(
+                userForm("admin"), '_label -> "Admin: ")
             <input type="submit" value="Update profile">
             }
         <a href="@routes.HomeController.showhome()">Back to home</a>

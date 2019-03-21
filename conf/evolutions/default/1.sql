@@ -3,6 +3,13 @@
 
 # --- !Ups
 
+create table admin (
+  admin_id                      integer auto_increment not null,
+  user_id                       integer,
+  is_default                    boolean default false not null,
+  constraint pk_admin primary key (admin_id)
+);
+
 create table company (
   id                            bigint auto_increment not null,
   name                          varchar(255),
@@ -65,7 +72,6 @@ create table user (
   gender                        varchar(255),
   f_name                        varchar(255),
   l_name                        varchar(255),
-  is_admin                      boolean,
   creation_date                 timestamp not null,
   constraint pk_user primary key (userid)
 );
@@ -181,6 +187,8 @@ drop index if exists ix_visit_destination;
 
 alter table visit drop constraint if exists fk_visit_trip;
 drop index if exists ix_visit_trip;
+
+drop table if exists admin;
 
 drop table if exists company;
 

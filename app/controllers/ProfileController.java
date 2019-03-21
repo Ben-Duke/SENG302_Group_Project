@@ -50,13 +50,11 @@ public class ProfileController {
      * @return home page or error page
      */
     public Result updateprofile(Http.Request request){
-        //Form<User> userForm = formFactory.form(User.class).bindFromRequest();
         DynamicForm profileForm = formFactory.form().bindFromRequest();
         String fName = profileForm.get("fName");
         String lName = profileForm.get("lName");
         String gender = profileForm.get("gender");
         String dateofbirth = profileForm.get("dateOfBirth");
-        String admin = profileForm.get("admin");
         User user = User.getCurrentUser(request);
         if (user != null) {
 
@@ -87,13 +85,6 @@ public class ProfileController {
                     return badRequest("ERROR: Please enter the date correctly.");
                 }
                 user.setDateOfBirth(birthDate);
-            }
-
-
-            if (admin != null && admin.equals("true")) {
-                user.setAdmin(true);
-            }  else {
-                user.setAdmin(false);
             }
 
             user.update();

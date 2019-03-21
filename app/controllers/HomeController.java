@@ -1,5 +1,6 @@
 package controllers;
 
+import models.Admin;
 import models.User;
 import play.data.FormFactory;
 import play.mvc.Http;
@@ -7,6 +8,8 @@ import play.mvc.Result;
 import views.html.home.home;
 
 import javax.inject.Inject;
+
+import java.util.List;
 
 import static play.mvc.Results.*;
 
@@ -25,6 +28,7 @@ public class HomeController {
      */
     public Result showhome(Http.Request request) {
         User user = User.getCurrentUser(request);
+        List<Admin> admins = Admin.find.all();
         if (user != null){
             if(user.hasEmptyField()){
                 return redirect(routes.ProfileController.createprofile());
@@ -34,7 +38,7 @@ public class HomeController {
                 return redirect(routes.ProfileController.updateNatPass());
             }
             else {
-                return ok(home.render(user));
+                return ok(home.render(user, admins));
             }
         }
         return unauthorized("Oops, you are not logged in");

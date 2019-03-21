@@ -1,5 +1,6 @@
 package controllers;
 
+import models.Admin;
 import models.User;
 import play.mvc.Result;
 import views.html.users.userIndex;
@@ -17,6 +18,7 @@ public class UserController {
      */
     public Result userindex(){
         List<User> users = User.find.all();
-        return ok(userIndex.render(users));
+        List<Admin> admins = Admin.find.all();
+        return ok(userIndex.render(users, admins));
     }
 }

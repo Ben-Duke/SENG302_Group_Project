@@ -34,6 +34,7 @@ public class User extends Model {
         this.lName = lName;
         this.dateOfBirth = dateOfBirth;
         this.gender = gender;
+        this.isAdmin = false;
     }
 
     public User(String username){
@@ -107,9 +108,17 @@ public class User extends Model {
 
     public static Finder<Integer,User> find = new Finder<>(User.class);
 
+    //TODO remove this attribute along with getters, setters and checkboxes in create/update user story[229] tasks[1284,1301]
+    public Boolean isAdmin = false;
+
 
     //GETTERS AND SETTERS
 
+    public Boolean isAdmin() {return isAdmin;}
+
+    public void setAdmin(Boolean admin) {
+        isAdmin = admin;
+    }
 
     public int getUserid() {
         return userid;

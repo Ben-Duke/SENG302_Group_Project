@@ -8,13 +8,19 @@
     </head>
 
     <div class="container">
-        <h1>@user.fName @user.lName @if(user.isAdmin) {<img class="img"  width = "60" height="50" src="../assets/images/key_2_small.png"> } </h1>
-
+        <div class="text-center">
+            <h1>@user.fName @user.lName @if(user.isAdmin) {<img class="img"  width = "60" height="50" src="../../../public/images/key_2_small.png"> } </h1>
+        </div>
     </div>
 
     <br>
 
     <div class="container">
+        <div class="row">
+            <div class="text-center">
+                <img class="img-circle" width = "150" src="@routes.Assets.at("images/Generic.png")">
+            </div>
+        </div>
         <div class="row">
             <div class="col-md-4">
                 <h2>Profile</h2>
@@ -55,6 +61,27 @@
                     <button class="btn btn-default" formaction="@routes.TravelPartnerController.renderFilterPage()">Search profile</button>
                 </form>
             </div>
+        </div>
+        <div class="flex-container">
+            <style>
+                .flex-container {
+                    display: flex;
+                    flex-direction: row-reverse;
+                    flex-wrap: wrap;
+                    justify-content: center;
+                }
+            </style>
+            <div class="row">
+                <!--This is where eventually the real photos will be added for thumbnailing -->
+                @for(num <- 1 to 108) {
+                    <img class="img-thumbnail" width="60" src="@routes.Assets.at("images/Generic.png")">
+                }
+            </div>
+        </div>
+        <div class="col-md-4">
+        @for(num <- 1 to 100) {
+            <img class="img-responsive"  src="@routes.Assets.at("images/Generic.png")">
+            }
         </div>
     </div>
 

@@ -87,7 +87,8 @@ public class ProfileController {
             }
             if (dateofbirth.length() < 8) {
                 return unauthorized("ERROR: Please enter the date correctly.");
-            } else {
+            }
+            else {
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
                 //convert String to LocalDate
                 LocalDate birthDate;
@@ -142,10 +143,15 @@ public class ProfileController {
      * @param request The HTTP request
      * @return create profile page or error page
      */
-    public Result updateNatPass(Http.Request request){
+    public Result updateNatPass(Http.Request request ){
         User user = User.getCurrentUser(request);
         if (user != null) {
-            Form<NatFormData> userForm = formFactory.form(NatFormData.class);
+            NatFormData formData = new NatFormData();
+            //Make construc at some point
+            formData.userId = user.getUserid();
+            Form<NatFormData> userForm = formFactory.form(NatFormData.class).fill(formData);
+
+
             try {
                 addNatandPass();
             } catch (io.ebean.DuplicateKeyException e) {
@@ -227,16 +233,18 @@ public class ProfileController {
     public Result deleteNationality(Http.Request request){
 
         Form<NatFormData> userForm = formFactory.form(NatFormData.class).bindFromRequest();
-        //DynamicForm userForm = formFactory.form().bindFromRequest();
+        logger.debug(userForm.toString());
 
+        logger.debug("value() = "+userForm.value().get().userId);
 
         if (userForm.hasErrors()) {
-           logger.debug("Yay it say the error");
+           logger.debug("found errors");
             User user = User.getCurrentUser(request);
             List<Nationality> nationalities = Nationality.find.all();
             List<Passport> passports = Passport.find.all();
 
             return badRequest(updateNatPass.render(userForm, nationalities, passports, user));
+
         }else {
 
 

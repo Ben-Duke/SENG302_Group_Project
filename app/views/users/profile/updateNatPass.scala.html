@@ -37,10 +37,19 @@
     <input type="submit" value="Add nationality">
 }
 
-@form(action = helper.CSRF(routes.ProfileController.deleteNationality)) {
+@form(action = helper.CSRF(routes.ProfileController.deleteNationality) ) {
+
+    <input type="hidden" name="userId" value=@user.getUserid()>
+
+
+
+
     @select(
+
         field = userForm("nationalitydelete"),
+
         options = user.nationality.map(nationality => nationality.natid.toString -> nationality.nationalityName),
+
         '_label -> "Select nationality to delete:"
     )
     <input type="submit" value="Remove nationality">

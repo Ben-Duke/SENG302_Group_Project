@@ -317,6 +317,13 @@ public class UserFactory {
 
     }
 
+    public static int getNatsForUserbyId(int userId){
+        int count = 0;
+        User user = User.find.query().where().eq("userid", userId).findOne();
+        count = user.nationality.size();
+        return count;
+    }
+
     /** Returns a user id if they exist any number less than zero indicates the username is not in the database
      *
      * @param request

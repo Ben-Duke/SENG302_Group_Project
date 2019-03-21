@@ -16,7 +16,9 @@ import play.mvc.Result;
 import play.test.Helpers;
 import play.test.WithApplication;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.*;
@@ -165,27 +167,7 @@ public class RegisterControllerTest extends WithApplication {
                 "sHBJHUW6gc1xuprv4sABKZEIA9zKczr9f1e#TAnAbA_7CMv%s3cc"));
     }
 
-    @Test
-    public void saveUserWithDuplicateUsername(){
-        database = Databases.inMemory();
-        Evolutions.applyEvolutions(database, Evolutions.forDefault(new Evolution(
-                1,
-                "create table test (id bigint not null, name varchar(255));",
-                "drop table test;"
-        )));
-        User user = new User("testAccount@uclive.ac.nz");
-        user.save();
-        User user2 = new User("testAccount2@uclive.ac.nz");
-        user2.save();
-        Map<String, String> formData = new HashMap<>();
-        formData.put("username", "testAccount@uclive.ac.nz");
-        formData.put("password", "hunter22");
-        Http.RequestBuilder request = Helpers.fakeRequest().bodyForm(formData).method(Helpers.POST).uri("/users/register");
-        Result result = Helpers.route(app, request);
-        assertEquals(BAD_REQUEST, result.status());
-        Evolutions.cleanupEvolutions(database);
-        database.shutdown();
-    }
+
 
     @Test
     public void createuser() {
@@ -210,8 +192,19 @@ public class RegisterControllerTest extends WithApplication {
         user2.save();
         assertEquals(2, User.find.all().size());
         Map<String, String> formData = new HashMap<>();
+
+
         formData.put("username", "testAccount3@uclive.ac.nz");
         formData.put("password", "hunter22");
+        //Added in
+        formData.put("firstName", "doe");
+        formData.put("lastName", "test");
+        formData.put("passports", "");
+        formData.put("nationalities", "");
+        formData.put("travellerTypes", "");
+        formData.put("gender", "Male");
+        formData.put("dob", "1990-09-09");
+
         Http.RequestBuilder request = Helpers.fakeRequest().bodyForm(formData).method(Helpers.POST).uri("/users/register");
         Result result = Helpers.route(app, request);
         assertEquals(SEE_OTHER, result.status());
@@ -220,3 +213,5 @@ public class RegisterControllerTest extends WithApplication {
         database.shutdown();
     }
 }
+
+

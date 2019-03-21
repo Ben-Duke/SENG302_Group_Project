@@ -80,6 +80,7 @@ public class Destination extends Model {
         if (!country.equals(dest2.getCountry())) {
             return false;
         }
+
         return true;
     }
 

@@ -1,6 +1,8 @@
 @(user: User)
+    @import views.html.bootstrap3._
+    @main("Index"){
+        <div class="container">
 
-<html>
     <head>
         <title>Home</title>
     </head>
@@ -29,4 +31,6 @@
         <a href="@routes.TripController.createtrip()">Create trip</a>
         <a href="@routes.TravelPartnerController.renderFilterPage()">Search profile</a>
     </body>
-</html>
+
+    </div>
+    }

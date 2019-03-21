@@ -7,17 +7,12 @@
         <title>Home</title>
     </head>
 
-
     <div class="container">
-        <h1>@user.fName @user.lName @if(user.getIsAdmin) {<img class="img"  width = "60" height="50" src="../assets/images/key_2_small.png"> } </h1>
+        <h1>@user.fName @user.lName @if(user.isAdmin) {<img class="img"  width = "60" height="50" src="../assets/images/key_2_small.png"> } </h1>
 
     </div>
 
-
-
-
     <br>
-
 
     <div class="container">
         <div class="row">
@@ -62,13 +57,5 @@
             </div>
         </div>
     </div>
-
-
-
-
-
-
-
-        </form>
 
     }

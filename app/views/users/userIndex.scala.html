@@ -4,10 +4,6 @@
 
     <body>
 
-
-
-
-
         <h1>All users</h1>
 
         <br>
@@ -16,9 +12,6 @@
             <button class="btn btn-default" formaction="@routes.RegisterController.createuser()">Create User</button>
             <button class="btn btn-default" formaction="@routes.LoginController.login()">Login</button>
         </form>
-
-
-
 
 
         <table class="table table-sm">
@@ -37,11 +30,10 @@
             @for(profile <- users) {
                 <tr>
                     <th class="col-sm-1"style = "width:1%">@profile.getfName</th>
-                    <td class="col-sm-1"style = "width:1%"> @if(profile.getIsAdmin) {<div class ="small-middle-container"><img class="thumbnail img-responsive" src="assets/images/key_2_small.png"></div>}</td>
+                    <td class="col-sm-1"style = "width:1%"> @if(profile.isAdmin) {<div class ="small-middle-container"><img class="thumbnail img-responsive" src="assets/images/key_2_small.png"></div>}</td>
                     <td class="col-sm-1"style = "width:1%">@profile.getlName</td>
                     <td class="col-sm-1"style = "width:1%">@profile.getDateOfBirth()</td>
                     <td class="col-sm-2">@for(travellerType <- profile.getTravellerTypes()) {<p>@travellerType.getTravellerTypeName()</p>}</td>
-
 
                 </tr>
 
@@ -50,7 +42,6 @@
                 }
             </tbody>
         </table>
-
 
     </body>
 }

@@ -1,4 +1,4 @@
-@(field: Field, label: String = "CHANGEME", placeholder: String = "", help: String = "Please enter a Date", max: String)
+@(field: Field, label: String = "CHANGEME", placeholder: String = "", help: String = "Please enter a Date")
 
 <div class="form-group @if(field.hasErrors) {has-error}">
     <label class="col-sm-2 control-label">@label</label>
@@ -7,8 +7,6 @@
         id="datepicker"
         name="@field.id"
         class="form-control"
-        min="1-01-1900"
-        max= "03-05-2019"
         name="@field.id"
         format="%d-%m-%y"
         value="@field.value.orNull"

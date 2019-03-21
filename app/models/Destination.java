@@ -9,6 +9,8 @@ import java.util.*;
 @Entity
 public class Destination extends Model {
 
+    public Destination() {}
+
     public Destination(String destName, String destType, String district, String country, double latitude, double longitude, User user){
         this.destName = destName;
         this.user = user;

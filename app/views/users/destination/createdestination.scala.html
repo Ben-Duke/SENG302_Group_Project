@@ -1,6 +1,8 @@
-@(destForm : Form[Destination], countryMap: Map[String, Boolean])
+@import formdata.DestinationFormData
 @import helper._
 @import views.html.bootstrap3.text
+@import java.util
+@(destForm : Form[DestinationFormData], countryMap: Map[String, Boolean])
 
 @main("Destinations") {
     <nav class="navbar navbar-custom">

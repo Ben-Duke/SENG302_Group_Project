@@ -1,4 +1,5 @@
-@(destForm : Form[Destination], destination: Destination, countryMap: Map[String, Boolean])
+@import formdata.DestinationFormData
+@(destForm : Form[DestinationFormData], destination: DestinationFormData, countryMap: Map[String, Boolean], destId: Integer)
 @import helper._
 @import views.html.bootstrap3._
 
@@ -19,7 +20,7 @@
 </nav>
 
 <h1>Edit Destination</h1>
-@helper.form(action = helper.CSRF(routes.DestinationController.updateDestination(destination.getDestId()))) {
+@helper.form(action = helper.CSRF(routes.DestinationController.updateDestination(destId))) {
 
 <fieldset>
 

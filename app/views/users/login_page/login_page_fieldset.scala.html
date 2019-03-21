@@ -1,0 +1,31 @@
+@import java.util
+@import formdata.LoginFormData
+@(loginForm : Form[LoginFormData])
+
+@import views.html.bootstrap3._
+
+<fieldset>
+
+        <!-- Header -->
+    <legend id="legend">Login</legend>
+
+        <!-- email -->
+    @text(loginForm("username"),
+        label = "Email",
+        placeholder = "me@john.doe",
+        help = "Please enter your Email. (required)")
+
+
+        <!-- Password -->
+    @password(loginForm("password"),
+        label = "Password",
+        placeholder = "password",
+        help = "Please enter your Password. (required)")
+
+    <div class="form-group actions">
+        <div class="col-sm-offset-2 col-sm-10">
+            <input id="submit" type="submit" value="Submit" class="btn btn-primary"/>
+        </div>
+    </div>
+
+</fieldset>

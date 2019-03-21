@@ -9,6 +9,8 @@ import play.mvc.Result;
 import views.html.users.trip.createTrip;
 import views.html.users.trip.displayTrip;
 import views.html.users.trip.editTrip;
+import views.html.users.trip.editVisit;
+
 import javax.inject.Inject;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -47,6 +49,8 @@ public class TripController {
             if(trip.isUserOwner(user.getUserid())) {
                 List<Visit> visits = trip.getVisits();
                 visits.sort(Comparator.comparing(Visit::getVisitorder));
+//                Visit firstVisit = visits.get(0);
+//                visits.remove(0);
                 return ok(displayTrip.render(trip, visits));
             }
             else{
@@ -79,6 +83,80 @@ public class TripController {
         }
         //return redirect(routes.UserController.userindex());
         return redirect(routes.TripController.createtrip());
+    }
+
+    public Result editvisit(Http.Request request, Integer visitid){
+        User user = User.getCurrentUser(request);
+        if (user != null) {
+            Visit visit = Visit.find.byId(visitid);
+            Form<Visit> visitForm = formFactory.form(Visit.class).fill(visit);
+            List<Destination> destinations = user.getDestinations();
+            return ok(editVisit.render(visitForm,visit,destinations));
+        }
+        else{
+            return unauthorized("Oops, you are not logged in");
+        }
+    }
+
+    public Result updateVisit(Http.Request request, Integer visitid){
+        DynamicForm visitForm = formFactory.form().bindFromRequest();
+        User user = User.getCurrentUser(request);
+        if (user != null) {
+            String destID = visitForm.get("destination");
+            String arrival = visitForm.get("arrival");
+            String departure = visitForm.get("departure");
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            //convert String to LocalDate
+            LocalDate arrivalDate;
+            LocalDate departureDate;
+            try {
+                Visit visit = Visit.find.byId(visitid);
+                arrivalDate = LocalDate.parse(arrival, formatter);
+                departureDate = LocalDate.parse(departure, formatter);
+                Trip trip = visit.getTrip();
+                if(trip.isUserOwner(user.getUserid())) {
+                    Destination dest = Destination.find.byId(Integer.parseInt(destID));
+                    visit.setDestination(dest);
+                    visit.setArrival(arrivalDate);
+                    visit.setDeparture(departureDate);
+                    if(hasRepeatDest(trip.getVisits(), visit, "ADD")){
+                        return badRequest("You cannot visit the same destination twice in a row!");
+                    }
+                    visit.update();
+                    List<Visit> visits = trip.getVisits();
+                    visits.sort(Comparator.comparing(Visit::getVisitorder));
+//                    Visit firstVisit = visits.get(0);
+//                    visits.remove(0);
+                    return ok(displayTrip.render(trip,visits));
+                }
+                else{
+                    return unauthorized("Oops, this is not your trip.");
+                }
+            } catch (Exception e) {
+                Visit visit = Visit.find.byId(visitid);
+                Trip trip = visit.getTrip();
+                if (trip.isUserOwner(user.getUserid())) {
+                    Destination dest = Destination.find.byId(Integer.parseInt(destID));
+                    List<Visit> visits = trip.getVisits();
+                    visit.setDestination(dest);
+                    if (hasRepeatDest(visits, visit, "ADD")) {
+                        return badRequest("You cannot visit the same destination twice in a row!");
+                    }
+                    visit.update();
+                    visits = trip.getVisits();
+                    visits.sort(Comparator.comparing(Visit::getVisitorder));
+//                    Visit firstVisit = visits.get(0);
+//                    visits.remove(0);
+                    return ok(displayTrip.render(trip,visits));
+                }
+                else{
+                    return unauthorized("Oops, this is not your trip.");
+                }
+            }
+        }
+        else{
+            return unauthorized("Oops, you are not logged in");
+        }
     }
 
     /**
@@ -333,3 +411,16 @@ public class TripController {
         return false;
     }
 }
+
+/*
+                <script>
+                    var text = "";
+                    var i = 1;
+                    while (i <= @visits.size){
+                        text += "<li data-target=\"#myslider\" data-slide-to=\"" + i + "\"></li>";
+                        console.log(text);
+                        i++;
+                    }
+                    document.getElementById("myslider").innerHTML = text;
+                </script>
+ */

@@ -3,51 +3,68 @@
 @(visitForm : Form[Visit], trip : Trip, destinations : List[Destination], visits : List[Visit])
 @import helper._
 
-<h1>Edit trip XD</h1>
 
-@form(action = helper.CSRF(routes.TripController.addvisit(trip.tripid))) {
-    @select(
-        field = visitForm("destination"),
-        options = destinations.map(destination => destination.destid.toString -> destination.destName),
-        '_label -> "Destination"
-    )
-    @helper.inputDate(visitForm("arrival"), '_label -> "Arrival date: " )
-    @helper.inputDate(visitForm("departure"), '_label -> "Departure date: " )
-    <input type="submit" value="Add destination">
-}
-@if(visits.isEmpty){
-    <p>You currently do not have any destinations.</p>
-} else{
-    @form(action = helper.CSRF(routes.TripController.deletevisit(trip.tripid))) {
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+            <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    </head>
+
+<body>
+    <h1>Edit trip XD</h1>
+
+    @form(action = helper.CSRF(routes.TripController.addvisit(trip.tripid)), 'class -> "form-select") {
         @select(
-            field = visitForm("visitid"),
-            options = visits.map(visit => visit.visitid.toString -> visit.visitName),
+            field = visitForm("destination"),
+            options = destinations.map(destination => destination.destid.toString -> destination.destName),
             '_label -> "Destination"
         )
-        <input type="submit" value="Remove destination">
+        @helper.inputDate(visitForm("arrival"), '_label -> "Arrival date: ", 'class -> "input-group date", 'id -> "datetimepicker" )
+        @helper.inputDate(visitForm("departure"), '_label -> "Departure date: " )
+        <input type="submit" value="Add destination">
     }
-}
-
-@if(visits.isEmpty){
-    <p>You currently do not have any destinations.</p>
-} else{
-    @form(action = helper.CSRF(routes.TripController.swapvisits(trip.tripid))) {
-        @select(
-            field = visitForm("visitid1"),
-            options = visits.map(visit => visit.visitid.toString -> visit.visitName),
-            '_label -> "First Destination to swap:"
-        )
-        @select(
-            field = visitForm("visitid2"),
-            options = visits.map(visit => visit.visitid.toString -> visit.visitName),
-            '_label -> "Second Destination to swap:"
-        )
-        <input type="submit" value="Swap destination order">
+    @if(visits.isEmpty){
+        <p>You currently do not have any destinations.</p>
+    } else{
+        @form(action = helper.CSRF(routes.TripController.deletevisit(trip.tripid))) {
+            @select(
+                field = visitForm("visitid"),
+                options = visits.map(visit => visit.visitid.toString -> visit.visitName),
+                '_label -> "Destination"
+            )
+            <input type="submit" value="Remove destination">
+        }
     }
-}
 
-@for(visit <- trip.visits) {
-    <p>Destination: @visit.visitName</p>
-}
+    @if(visits.isEmpty){
+        <p>You currently do not have any destinations.</p>
+    } else{
+        @form(action = helper.CSRF(routes.TripController.swapvisits(trip.tripid))) {
+            @select(
+                field = visitForm("visitid1"),
+                options = visits.map(visit => visit.visitid.toString -> visit.visitName),
+                '_label -> "First Destination to swap:"
+            )
+            @select(
+                field = visitForm("visitid2"),
+                options = visits.map(visit => visit.visitid.toString -> visit.visitName),
+                '_label -> "Second Destination to swap:"
+            )
+            <input type="submit" value="Swap destination order">
+        }
+    }
 
-<a href="@routes.HomeController.showhome()">Back to home</a>
+    @for(visit <- trip.visits) {
+        <p>Destination: @visit.visitName</p>
+    }
+
+    <a class="btn btn-primary" href="@routes.TripController.createtrip()">Back to trip menu</a>
+
+    <script
+    src="http://code.jquery.com/jquery-1.12.4.min.js"
+    integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ="
+    crossorigin="anonymous"></script>
+        <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+</body>

@@ -24,16 +24,16 @@
                 <p>Passport: @passport.passportName</p>
                 }
                 @for(nationality <- user.nationality) {
-                <p>Nationality: @nationality.nationalityName</p>
+                    <p>Nationality: @nationality.nationalityName</p>
                 }
                 <p>Creation date: @user.creationDate</p>
                 @for(travellerType <- user.travellerTypes) {
-                <p>Traveller type: @travellerType.travellerTypeName</p>
+                    <p>Traveller type: @travellerType.travellerTypeName</p>
+                }
                 <form>
                     <button class="btn btn-default" formaction="@routes.ProfileController.createprofile()">Update profile</button>
                     <button class="btn btn-default" formaction="@routes.TravellerTypeController.updateTravellerType()">Update traveller type</button>
                 </form>
-                }
             </div>
             <div class="col-md-4">
                 <h2>Trips</h2>

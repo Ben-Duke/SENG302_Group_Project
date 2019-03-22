@@ -45,7 +45,7 @@
             <table class="table" id="searchResultsTable">
                 <thead class="thead-dark">
                     <tr>
-                        <th scope="col" onClick="sortTable(0)" style="cursor: pointer;">Username</th>
+                        <th scope="col" onClick="sortTable(0)" style="cursor: pointer;">Name</th>
                         <th scope="col" onClick="sortTable(1)" style="cursor: pointer;">Gender</th>
                         <th scope="col" onClick="sortTable(2)" style="cursor: pointer;">Nationalities</th>
                         <th scope="col" onClick="sortTable(3)" style="cursor: pointer;">DOB</th>
@@ -56,7 +56,7 @@
                 @if(resultProfiles.get(0) != null) {
                     @for(profile <- resultProfiles) {
                         <tr>
-                            <td scope="row">@profile.getUsername()</td>
+                            <td scope="row">@profile.getfName()</td>
                             <td>@profile.getGender()</td>
                             <td>@for(nationality <- profile.getNationality()) {
                                 <p>@nationality.getNationalityName()</p>

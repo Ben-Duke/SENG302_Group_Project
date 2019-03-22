@@ -1,0 +1,53 @@
+@import java.util
+@import formdata.UpdateUserFormData
+@import views.html.bootstrap3._
+
+@import views.html.helper.inputRadioGroup
+@import views.html.helper.options
+@import views.html.helper.checkbox
+@import views.html.helper.inputDate
+@(updateUserForm : Form[UpdateUserFormData])
+
+
+
+<fieldset>
+        <!-- Header -->
+    <legend id="legend">Update Profile</legend>
+
+    <!-- FirstName -->
+    @text(userForm("firstName"),
+        label = "First name",
+        placeholder = "first name",
+        help = "Please enter your first name. (required)")
+
+
+        <!-- LastName -->
+    @text(userForm("lastName"),
+        label = "Last name",
+        placeholder = "last name",
+        help = "Please enter your last name. (required)")
+    help = "Please enter your last name. (required)")
+
+        <!-- Gender -->
+    @radiobuttons(userForm("gender"),
+        label = "Gender",
+        buttonNameList = genders,
+        help = "Please select your gender. (required)")
+
+        <!-- admin -->
+    @checkbox(updateUserForm("admin"))
+
+
+        <!-- Date of birth -->
+    @datepicker(updateUserForm("dob"),
+        label = "Date of birth",
+        placeholder = "01/01/2000",
+        help = "Please select your Date of birth. (required)")
+
+    <div class="form-group actions">
+        <div class="col-sm-offset-2 col-sm-10">
+            <input id="submit" type="submit" value="Update profile" class="btn btn-primary"/>
+        </div>
+    </div>
+
+</fieldset>

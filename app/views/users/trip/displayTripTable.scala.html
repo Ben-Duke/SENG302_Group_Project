@@ -1,0 +1,30 @@
+@(trip : Trip)
+
+@main("Trip destinations") {
+    <h1>Trip destinations</h1>
+
+    <table class = "table">
+        <thead class="thead-dark">
+            <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Type</th>
+                <th scope="col">Country</th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @for(visit <- trip.getOrderedVisits){
+                <tr>
+                    <th scope ="row">@visit.getDestination().getDestName()</th>
+                    <td>@visit.getDestination().getDestType()</td>
+                    <td>@visit.getDestination().getCountry()</td>
+
+                </tr>
+
+                <br>
+            }
+
+        </tbody>
+    </table>
+}

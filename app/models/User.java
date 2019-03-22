@@ -9,8 +9,7 @@ import play.mvc.Http;
 
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import static play.mvc.Results.badRequest;
 
@@ -34,6 +33,7 @@ public class User extends Model {
         this.lName = lName;
         this.dateOfBirth = dateOfBirth;
         this.gender = gender;
+        this.isAdmin = false;
     }
 
     public User(String username){
@@ -102,14 +102,30 @@ public class User extends Model {
     @OneToMany(mappedBy = "user")
     public List<Destination> destinations;
 
+    public Map<String, Boolean> getMappedDestinations() {
+        SortedMap<String, Boolean> destMap = new TreeMap<>();
+        for (Destination destination : destinations) {
+            destMap.put(destination.getDestName(), false);
+        }
+        return destMap;
+    }
+
     @ManyToMany
     public List<TravellerType> travellerTypes;
 
     public static Finder<Integer,User> find = new Finder<>(User.class);
 
+    //TODO remove this attribute along with getters, setters and checkboxes in create/update user story[229] tasks[1284,1301]
+    public Boolean isAdmin = false;
+
 
     //GETTERS AND SETTERS
 
+    public Boolean isAdmin() {return isAdmin;}
+
+    public void setAdmin(Boolean admin) {
+        isAdmin = admin;
+    }
 
     public Integer getUserid() {
         return userid;

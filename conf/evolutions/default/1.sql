@@ -65,6 +65,7 @@ create table user (
   gender                        varchar(255),
   f_name                        varchar(255),
   l_name                        varchar(255),
+  is_admin                      boolean,
   creation_date                 timestamp not null,
   constraint pk_user primary key (userid)
 );
@@ -89,11 +90,11 @@ create table user_traveller_type (
 
 create table visit (
   visitid                       integer auto_increment not null,
+  visitorder                    integer,
   destination                   integer,
   trip                          integer,
-  visitorder                    integer,
-  arrival                       date,
-  departure                     date,
+  arrival                       varchar(255),
+  departure                     varchar(255),
   visit_name                    varchar(255),
   constraint pk_visit primary key (visitid)
 );

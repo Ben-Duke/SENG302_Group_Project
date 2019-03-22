@@ -19,11 +19,10 @@
                         <div class="modal-body">
                             <p>Trip name: @trip.tripName</p>
                             <p>Destinations:</p>
-                            @for(visit <- trip){
+                            @for(visit <- trip.visits){
                                 <p>@visit.visitName | Arrival time: @visit.arrival | Departure time: @visit.departure</p>
-                            }
                             <a href=@routes.TripController.editvisit(visit.visitid) class="btn btn-primary">Edit destination</a>
-                                <!-- <button onclick="location.href='@routes.TripController.editvisit(visit.visitid)'" type="button">Edit destination</button> -->
+                            }
                         </div>
                     </div>
                 </div>

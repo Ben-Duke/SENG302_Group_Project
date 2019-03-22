@@ -17,6 +17,7 @@
 
     <div class="container">
         <div class="row">
+            <!-- The profile picture, currently a placeholder -->
             <div class="text-center">
                 <img class="img-circle" width = "150" src="@routes.Assets.at("images/Generic.png")">
             </div>
@@ -67,39 +68,30 @@
         </div>
         <div>
             <div id="modal-picture" class="modal">
-                <span class="close">&times;</span>
                 <img class="modal-content" id="img01">
-                <div id="caption"></div>
             </div>
+            <!-- defines the number of photos the user has stored in the database. Currently hardcoded until tasks are finished -->
             @defining(3) { numberOfPhotos =>
                 @for(num <- 1 to numberOfPhotos) {
-                        <!--This is where eventually the real photos will be added for thumbnailing -->
                     <img class="img-thumbnail" id=@{num + "-img"} width="60" src="@{routes.Assets.at("images/" + num + "-img.png")}" alt="User Image">
                 }
                 <script>
                         // Get the modal
                         var modal = document.getElementById('modal-picture');
+                        // When the user clicks, they quit the modal view
                         modal.onclick = function () {
                             this.style.display = "none";
                         };
 
-                        // Get the image and insert it inside the modal - use its "alt" text as a caption
-
+                        // Get the image and insert it inside the modal
                         var images = document.getElementsByClassName("img-thumbnail");
                         var modalImg = document.getElementById("img01");
-                        for (i=0; i<@numberOfPhotos; i++) {
-                            images[i].onclick = function(){
+                        // loops through each thumbnail and adds the event listener
+                        for (i = 0; i < @numberOfPhotos; i++) {
+                            images[i].onclick = function() {
                                 modal.style.display = "block";
                                 modalImg.src = this.src;
                             };
-                        }
-
-                        // Get the <span> element that closes the modal
-                        var span = document.getElementsByClassName("close")[0];
-
-                        // When the user clicks on <span> (x), close the modal
-                        span.onclick = function() {
-                            modal.style.display = "none";
                         }
                 </script>
             }

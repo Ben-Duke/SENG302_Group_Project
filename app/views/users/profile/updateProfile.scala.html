@@ -11,12 +11,11 @@
     <body>
         <h1>Update your profile</h1>
         @helper.form(action = helper.CSRF(routes.ProfileController.updateProfile())){
-            @helper.inputText(updateUserForm("fName"),'_label -> "First Name:")
-            @helper.inputText(updateUserForm("lName"),'_label -> "Last Name:")
+            @helper.inputText(updateUserForm("firstName"),'_label -> "First Name:")
+            @helper.inputText(updateUserForm("lastName"),'_label -> "Last Name:")
             @helper.inputRadioGroup(
                 updateUserForm("gender"),
             options = options("Male"->"Male","Female"->"Female", "Other"->"Other"), '_label -> "Gender: ")
-            @helper.inputDate(updateUserForm("dateOfBirth"), '_label -> "Date of Birth: " )
             @helper.checkbox(
                 updateUserForm("admin"), '_label -> "Admin: ")
             @helper.inputDate(updateUserForm("dateOfBirth"), '_label -> "Date of Birth: " )

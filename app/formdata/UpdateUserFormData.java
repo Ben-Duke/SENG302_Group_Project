@@ -17,7 +17,7 @@ public class UpdateUserFormData implements Constraints.Validatable<List<Validati
     public String firstName;
     public String lastName;
     public String gender;
-    public String dob;
+    public String dateOfBirth;
 
 
     public UpdateUserFormData() {
@@ -28,7 +28,7 @@ public class UpdateUserFormData implements Constraints.Validatable<List<Validati
         this.firstName = user.getfName();
         this.lastName = user.getlName();
         this.gender = user.getGender();
-        this.dob = user.getDateOfBirth().toString();
+        this.dateOfBirth = user.getDateOfBirth().toString();
     }
 
     @Override
@@ -49,7 +49,7 @@ public class UpdateUserFormData implements Constraints.Validatable<List<Validati
                     "Please select a gender."));
         }
 
-        if (dob.length() < 8) {
+        if (dateOfBirth.length() < 8) {
             errors.add(new ValidationError("dateOfBirth",
                     "Please enter the date correctly."));
         }

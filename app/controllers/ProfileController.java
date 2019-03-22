@@ -57,59 +57,47 @@ public class ProfileController {
      * @return home page or error page
      */
     public Result updateProfileRequest(Http.Request request){
-        //Form<User> userForm = formFactory.form(User.class).bindFromRequest();
-        DynamicForm profileForm = formFactory.form().bindFromRequest();
-        String fName = profileForm.get("fName");
-        String lName = profileForm.get("lName");
-        String gender = profileForm.get("gender");
-        String dateofbirth = profileForm.get("dateOfBirth");
-        String admin = profileForm.get("admin");
+        Form<UpdateUserFormData> updateProfileForm = formFactory
+                            .form(UpdateUserFormData.class).bindFromRequest();
+
+        // checking if a user is logged in.
         User user = User.getCurrentUser(request);
         if (user != null) {
-
-            if (fName.matches(".*\\d+.*") || fName.length() < 1) {
-                return unauthorized("ERROR: First name should only contain alphabets.");
-            } else {
-                user.setfName(fName);
-            }
-            if (lName.matches(".*\\d+.*") || lName.length() < 1) {
-                return unauthorized("ERROR: Last name should only contain alphabets.");
-            } else {
-                user.setlName(lName);
-            }
-            if (gender == null) {
-                return unauthorized("ERROR: Please select a gender.");
-            } else {
-                user.setGender(gender);
-            }
-            if (dateofbirth.length() < 8) {
-                return unauthorized("ERROR: Please enter the date correctly.");
-            } else {
+            if (! updateProfileForm.hasErrors()) {
+                // good update user information request
+                // processing it
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-                //convert String to LocalDate
-                LocalDate birthDate;
-                try {
-                    birthDate = LocalDate.parse(dateofbirth, formatter);
-                } catch (Exception e) {
-                    return badRequest("ERROR: Please enter the date correctly.");
-                }
+                
+
+                String firstName = updateProfileForm.get().firstName;
+                String lastName = updateProfileForm.get().lastName;
+                String gender = updateProfileForm.get().gender;
+                String dateOfBirth = updateProfileForm.get().dateOfBirth;
+                LocalDate birthDate = LocalDate.parse(dateOfBirth, formatter);
+                String admin = updateProfileForm.get().admin;
+
+                user.setfName(firstName);
+                user.setlName(lastName);
+                user.setGender(gender);
                 user.setDateOfBirth(birthDate);
+
+                if (admin != null && admin.equals("true")) {
+                    user.setAdmin(true);
+                }  else {
+                    user.setAdmin(false);
+                }
+
+                user.update();
+                // Show the user their home page
+                return redirect(routes.HomeController.showhome());
+
+            } else {
+                //bad request, errors present
+                return badRequest(updateProfile.render(updateProfileForm));
             }
-
-
-            if (admin != null && admin.equals("true")) {
-                user.setAdmin(true);
-            }  else {
-                user.setAdmin(false);
-            }
-
-            user.update();
-        }
-        else{
+        } else{
             return unauthorized("Oops, you are not logged in");
         }
-        //return redirect(routes.UserController.userindex());
-        return redirect(routes.HomeController.showhome());
     }
 
     /**

@@ -83,7 +83,7 @@ public class ProfileControllerTest extends WithApplication {
     @Test
     public void updateprofile() {
         User user = User.find.byId(1);
-        user.setAdmin(true);
+        //user.setAdmin(true);
         user.update();
         assertEquals("Gavin", user.getfName());
         assertEquals("Ong", user.getlName());

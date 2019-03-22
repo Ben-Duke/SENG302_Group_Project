@@ -15,7 +15,15 @@ libraryDependencies += "org.glassfish.jaxb" % "jaxb-runtime" % "2.3.2"
 libraryDependencies += "org.awaitility" % "awaitility" % "2.0.0" % Test
 libraryDependencies += "org.assertj" % "assertj-core" % "3.6.2" % Test
 libraryDependencies += "org.mockito" % "mockito-core" % "2.1.0" % Test
+
 testOptions in Test += Tests.Argument(TestFrameworks.JUnit, "-a", "-v")
 
 javacOptions ++= Seq("-Xlint:unchecked", "-Xlint:deprecation")
+
+libraryDependencies ++= Seq (
+  "io.cucumber" % "cucumber-core" % "4.2.0" % "test" ,
+  "io.cucumber" % "cucumber-jvm" % "4.2.0" % "test" ,
+  "io.cucumber" % "cucumber-junit" % "4.2.0" % "test" ,
+  "io.cucumber" % "cucumber-java" % "4.2.0"
+)
 

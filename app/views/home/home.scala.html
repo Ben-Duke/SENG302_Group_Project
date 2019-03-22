@@ -1,3 +1,4 @@
+@import play.filters.csrf.AddCSRFToken
 @(user: User)
     @import views.html.bootstrap3._
     @main("Index"){
@@ -62,9 +63,44 @@
                 </form>
             </div>
         </div>
-        <div class="row">
-            <button class="btn btn-default">Add Photo</button>
+
+
+        <br>
+
+            <!-- Trigger the modal with a button -->
+        <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">AddPhoto</button>
+
+            <!-- Modal -->
+        <div id="myModal" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+
+                    <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">Upload a new photo </h4>
+                    </div>
+
+                    <div class="modal-body">
+                    @helper.form(action = routes.HomeController.upload, 'enctype -> "multipart/form-data") {
+                        @helper.CSRF.formField
+                        <input type="file" name="picture">
+
+                        <p>
+                            <input type="submit" value="Upload">
+                        </p>
+
+                    }
+                    </div>
+                </div>
+
+            </div>
         </div>
+
+
+        <br>
+
+
         <div>
             @for(num <- 1 to 100) {
                 <!--This is where eventually the real photos will be added for thumbnailing -->

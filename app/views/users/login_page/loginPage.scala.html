@@ -1,0 +1,16 @@
+@import java.util
+@import helper._
+@import formdata.LoginFormData
+
+@(userForm : Form[LoginFormData])
+
+@main("Index") {
+    <div class="container">
+        <div class="well">
+        @form(helper.CSRF(routes.LoginController.loginrequest()) , 'class -> "form-horizontal") {
+            @login_page_fieldset(userForm)
+        }
+        </div>
+
+    </div>
+}

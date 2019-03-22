@@ -71,11 +71,10 @@
                 <img class="modal-content" id="img01">
                 <div id="caption"></div>
             </div>
-            <!-- <img src="@routes.Assets.at("images/key_2_small.png")" width="1000px"> -->
             @defining(3) { numberOfPhotos =>
                 @for(num <- 1 to numberOfPhotos) {
                         <!--This is where eventually the real photos will be added for thumbnailing -->
-                    <img class="img-thumbnail" id=@{num + "-img"} width="60" src="@{routes.Assets.at("images/" + num + "-img.png")}" alt="A Placeholder Caption">
+                    <img class="img-thumbnail" id=@{num + "-img"} width="60" src="@{routes.Assets.at("images/" + num + "-img.png")}" alt="User Image">
                 }
                 <script>
                         // Get the modal
@@ -88,12 +87,10 @@
 
                         var images = document.getElementsByClassName("img-thumbnail");
                         var modalImg = document.getElementById("img01");
-                        var captionText = document.getElementById("caption");
                         for (i=0; i<@numberOfPhotos; i++) {
                             images[i].onclick = function(){
                                 modal.style.display = "block";
                                 modalImg.src = this.src;
-                                captionText.innerHTML = this.alt;
                             };
                         }
 

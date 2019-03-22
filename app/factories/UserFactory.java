@@ -334,6 +334,61 @@ public class UserFactory {
         return count;
     }
 
+    public static List<Passport> getUserPassports(int id){
+        return User.find.query().where().eq("userid", id).findOne().passports;
+    }
+
+    public static List<Nationality> getUserNats(int id){
+        return User.find.query().where().eq("userid", id).findOne().nationality;
+    }
+
+    public static void addPassportToUser(int id, String passportID){
+
+        Passport passport = Passport.find.byId(Integer.parseInt(passportID));
+
+        try {
+            User user = User.find.query().where().eq("userid", id).findOne();
+            user.addPassport(passport);
+            user.update();
+        } catch (io.ebean.DuplicateKeyException e) {
+            //return unauthorized("Oops, you have already have this passport");
+        }
+    }
+
+    public static void deletePassportOnUser(int id, String passportID){
+
+
+        try {
+            Passport passport = Passport.find.byId(Integer.parseInt(passportID));
+            User user = User.find.query().where().eq("userid", id).findOne();
+            user.deletePassport(passport);
+            user.update();
+        } catch (NumberFormatException e) {
+            //return  unauthorized("Oops, you do not have any passports to delete");
+        }
+    }
+
+    public static void deleteNatsOnUser(int id, String nationalityID){
+        User user = User.find.query().where().eq("userid", id).findOne();
+        try {
+            Nationality nationality = Nationality.find.byId(Integer.parseInt(nationalityID));
+            user.deleteNationality(nationality);
+            user.update();
+        } catch (NumberFormatException e) {
+            //return  unauthorized("Oops, you do not have any nationalities to delete");
+        }
+    }
+
+    public static void addNatsOnUser(int id, String nationalityID){
+        User user = User.find.query().where().eq("userid", id).findOne();
+        try {
+            Nationality nationality = Nationality.find.byId(Integer.parseInt(nationalityID));
+            user.addNationality(nationality);
+            user.update();
+        } catch (io.ebean.DuplicateKeyException e) {
+        }
+    }
+
     /** Returns a user id if they exist any number less than zero indicates the username is not in the database
      *
      * @param request
@@ -342,6 +397,8 @@ public class UserFactory {
     public static int getCurrentUserById(Http.Request request) {
         return User.getCurrentUserById(request);
     }
+
+
 
     public static int deleteNationalilty(){
         return 1;

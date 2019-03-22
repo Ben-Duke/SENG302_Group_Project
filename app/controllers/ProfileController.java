@@ -144,11 +144,14 @@ public class ProfileController {
      * @return create profile page or error page
      */
     public Result updateNatPass(Http.Request request ){
-        User user = User.getCurrentUser(request);
-        if (user != null) {
+       // User user = User.getCurrentUser(request);
+
+        int userId = UserFactory.getCurrentUserById(request);
+        if (userId != -1) {
             NatFormData formData = new NatFormData();
             //Make construc at some point
-            formData.userId = user.getUserid();
+            //formData.userId = user.getUserid();
+            formData.userId = userId;
             Form<NatFormData> userForm = formFactory.form(NatFormData.class).fill(formData);
 
 
@@ -159,7 +162,11 @@ public class ProfileController {
             }
             List<Nationality> nationalities = Nationality.find.all();
             List<Passport> passports = Passport.find.all();
-            return ok(updateNatPass.render(userForm, nationalities, passports, user));
+
+
+
+            //return ok(updateNatPass.render(userForm, nationalities, passports, userId));
+            return ok(updateNatPass.render(userForm, nationalities, passports, userId));
         }
         else{
             return unauthorized("Oops, you are not logged in");
@@ -177,15 +184,12 @@ public class ProfileController {
     public Result submitUpdateNationality(Http.Request request){
         DynamicForm userForm = formFactory.form().bindFromRequest();
         String nationalityID = userForm.get("nationality");
-        User user = User.getCurrentUser(request);
-        if (user != null) {
-            Nationality nationality = Nationality.find.byId(Integer.parseInt(nationalityID));
-            try {
-                user.addNationality(nationality);
-                user.update();
-            } catch (io.ebean.DuplicateKeyException e) {
-                return unauthorized("Oops, you have already have this nationality");
-            }
+        int user = UserFactory.getCurrentUserById(request);
+        if (user != -1) {
+
+            //Nationality nationality = Nationality.find.byId(Integer.parseInt(nationalityID));
+            UserFactory.addNatsOnUser(user, nationalityID);
+
         }
         else{
             return unauthorized("Oops, you are not logged in");
@@ -205,15 +209,10 @@ public class ProfileController {
     public Result submitUpdatePassport(Http.Request request){
         DynamicForm userForm = formFactory.form().bindFromRequest();
         String passportID = userForm.get("passport");
-        User user = User.getCurrentUser(request);
-        if (user != null) {
-            Passport passport = Passport.find.byId(Integer.parseInt(passportID));
-            try {
-                user.addPassport(passport);
-                user.update();
-            } catch (io.ebean.DuplicateKeyException e) {
-                //return unauthorized("Oops, you have already have this passport");
-            }
+        int userId = UserFactory.getCurrentUserById(request);
+        if (userId != -1) {
+            UserFactory.addPassportToUser(userId, passportID);
+
         }
         else{
             return unauthorized("Oops, you are not logged in");
@@ -239,31 +238,22 @@ public class ProfileController {
 
         if (userForm.hasErrors()) {
            logger.debug("found errors");
-            User user = User.getCurrentUser(request);
+            int user = UserFactory.getCurrentUserById(request);
             List<Nationality> nationalities = Nationality.find.all();
             List<Passport> passports = Passport.find.all();
 
             return badRequest(updateNatPass.render(userForm, nationalities, passports, user));
 
         }else {
-
-
             String nationalityID = userForm.get().nationalitydelete;
-            User user = User.getCurrentUser(request);
-            if (user != null) {
-                try {
-                    Nationality nationality = Nationality.find.byId(Integer.parseInt(nationalityID));
-                    user.deleteNationality(nationality);
-                    user.update();
-                } catch (NumberFormatException e) {
-                    //return  unauthorized("Oops, you do not have any nationalities to delete");
-                }
+            int userId = UserFactory.getCurrentUserById(request);
+            if (userId != -1) {
+                UserFactory.deleteNatsOnUser(userId, nationalityID);
             } else {
                 return unauthorized("Oops, you are not logged in");
             }
-            //return redirect(routes.UserController.userindex());
-
         }
+        logger.debug("redirect");
         return redirect(routes.ProfileController.updateNatPass());
     }
 
@@ -278,15 +268,9 @@ public class ProfileController {
     public Result deletePassport(Http.Request request){
         DynamicForm userForm = formFactory.form().bindFromRequest();
         String passportID = userForm.get("passportdelete");
-        User user = User.getCurrentUser(request);
-        if (user != null) {
-            try {
-                Passport passport = Passport.find.byId(Integer.parseInt(passportID));
-                user.deletePassport(passport);
-                user.update();
-            } catch (NumberFormatException e) {
-                //return  unauthorized("Oops, you do not have any passports to delete");
-            }
+        int userId = UserFactory.getCurrentUserById(request);
+        if (userId != -1) {
+            UserFactory.deletePassportOnUser(userId, passportID);
         }
         else{
             return unauthorized("Oops, you are not logged in");

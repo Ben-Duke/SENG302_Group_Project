@@ -1,6 +1,7 @@
 @import helper._
 @import formdata.NatFormData
-@(userForm : Form[NatFormData], nationalities : List[Nationality], passports : List[Passport], user : User)
+@import factories.UserFactory
+@(userForm : Form[NatFormData], nationalities : List[Nationality], passports : List[Passport], id : Int)
 @main("Index"){
     <div class="container">
 <h1>Edit passport and nationality </h1>
@@ -18,13 +19,13 @@
 @form(action = helper.CSRF(routes.ProfileController.deletePassport)) {
 @select(
     field = userForm("passportdelete"),
-    options = user.passports.map(passport => passport.passid.toString -> passport.passportName),
+    options = UserFactory.getUserPassports(id).map(passport => passport.passid.toString -> passport.passportName),
     '_label -> "Select passports to delete:"
 )
 <input type="submit" value="Remove passport">
 }
 
-@for(passport <- user.passports) {
+@for(passport <- UserFactory.getUserPassports(id)) {
     <p>Passport: @passport.passportName</p>
 }
 
@@ -39,7 +40,7 @@
 
 @form(action = helper.CSRF(routes.ProfileController.deleteNationality) ) {
 
-    <input type="hidden" name="userId" value=@user.getUserid()>
+    <input type="hidden" name="userId" value=@id>
 
 
 
@@ -48,14 +49,14 @@
 
         field = userForm("nationalitydelete"),
 
-        options = user.nationality.map(nationality => nationality.natid.toString -> nationality.nationalityName),
+        options = UserFactory.getUserNats(id).map(nationality => nationality.natid.toString -> nationality.nationalityName),
 
         '_label -> "Select nationality to delete:"
     )
     <input type="submit" value="Remove nationality">
 }
 
-@for(nationality <- user.nationality) {
+@for(nationality <- UserFactory.getUserNats(id)) {
     <p>Nationality: @nationality.nationalityName</p>
 }
 

@@ -113,6 +113,18 @@ public class User extends Model {
     @ManyToMany
     public List<TravellerType> travellerTypes;
 
+    /**
+     * Get's a List<UserPhoto> containing all the photos of the user.
+     *
+     * @return A List<UserPhoto> containing all the photos of the user.
+     */
+    public List<UserPhoto> getUserPhotos() {
+        return userPhotos;
+    }
+
+    @OneToMany(mappedBy = "user")
+    public List<UserPhoto> userPhotos;
+
     public static Finder<Integer,User> find = new Finder<>(User.class);
 
     //TODO remove this attribute along with getters, setters and checkboxes in create/update user story[229] tasks[1284,1301]
@@ -127,7 +139,7 @@ public class User extends Model {
         isAdmin = admin;
     }
 
-    public Integer getUserid() {
+    public int getUserid() {
         return userid;
     }
 

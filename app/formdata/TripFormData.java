@@ -28,7 +28,7 @@ public class TripFormData implements Constraints.Validatable<List<ValidationErro
         List<ValidationError> errors = new ArrayList<>();
 
         if (tripName == null || tripName.length() == 0) {
-            errors.add(new ValidationError("tripName","Destination Name field is empty"));
+            errors.add(new ValidationError("tripName","Trip name field is empty"));
         }
 
         if (errors.size() > 0) {

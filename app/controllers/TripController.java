@@ -81,13 +81,14 @@ public class TripController extends Controller {
         User user = User.getCurrentUser(request);
         if (user != null) {
             Form<TripFormData> incomingForm = formFactory.form(TripFormData.class).bindFromRequest(request);
+
+            if (incomingForm.hasErrors()) {
+                return badRequest(createTrip.render(incomingForm, user));
+            }
             for (Trip trip: user.getTrips()) {
                 if (incomingForm.get().tripName.equals(trip.getTripName())) {
                     return ok(createTrip.render(incomingForm, user));
                 }
-            }
-            if (incomingForm.hasErrors()) {
-                return badRequest(createTrip.render(incomingForm, user));
             }
             TripFormData created = incomingForm.get();
             Trip createdTrip = Trip.makeInstance(created, user);
@@ -120,6 +121,18 @@ public class TripController extends Controller {
             return unauthorized("Oops, you are not logged in");
         }
 //        return ok("edittrip");
+    }
+
+    public Result cancelTrip(Http.Request request, Integer tripid) {
+        Trip trip = Trip.find.byId(tripid);
+        User user = User.getCurrentUser(request);
+        if (user != null) {
+            trip.delete();
+            return redirect(routes.TripController.createtrip());
+        }
+        else{
+            return unauthorized("Oops, you are not logged in");
+        }
     }
     /**
      * Handles the request to add destinations to a trip.
@@ -214,9 +227,8 @@ public class TripController extends Controller {
      * @return edit trip page or error page
      */
     public Result deletevisit(Http.Request request, Integer tripid){
-        Form<VisitFormData> incomingForm = formFactory.form(VisitFormData.class).bindFromRequest(request);
-        VisitFormData created = incomingForm.get();
-        String visitID = created.visitName;
+        DynamicForm visitForm = formFactory.form().bindFromRequest();
+        String visitID = visitForm.get("visitid");
         User user = User.getCurrentUser(request);
         if (user != null) {
             Trip trip = Trip.find.query().where().eq("tripid", tripid).findOne();
@@ -245,6 +257,7 @@ public class TripController extends Controller {
         return redirect(routes.TripController.edittrip(tripid));
     }
 
+
     /**
      * Handles the request to swap two destinations from a trip. The two destinations are the two forms selected by the
      * user. Swaps two destination (which gets converted into a visit) from the trip that the user is editing by
@@ -255,10 +268,9 @@ public class TripController extends Controller {
      * @return edit trip page or error page
      */
     public Result swapvisits(Http.Request request, Integer tripid){
-        Form<VisitFormData> incomingForm = formFactory.form(VisitFormData.class).bindFromRequest(request);
-        VisitFormData created = incomingForm.get();
-        String visitID1 = created.visitName;
-        String visitID2 = created.visitName;
+        DynamicForm visitForm = formFactory.form().bindFromRequest();
+        String visitID1 = visitForm.get("visitid1");
+        String visitID2 = visitForm.get("visitid2");
         User user = User.getCurrentUser(request);
         if (user != null) {
             Visit visit1 = Visit.find.byId(Integer.parseInt(visitID1));
@@ -295,7 +307,7 @@ public class TripController extends Controller {
                 Integer index = visits.indexOf(visit);
                 if(index != 0 && (index + 1 != visits.size())) {
                     if (visits.get(index - 1).getVisitName().equalsIgnoreCase(visits.get(index + 1).getVisitName())) {
-                                return true;
+                        return true;
                     }
                 }
             }

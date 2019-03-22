@@ -62,25 +62,28 @@
                 </form>
             </div>
         </div>
+        <div class="row">
+            <button class="btn btn-default">Add Photo</button>
+        </div>
         <div>
+            @for(num <- 1 to 100) {
                 <!--This is where eventually the real photos will be added for thumbnailing -->
-            <img id="myImg" width="60" src="@routes.Assets.at("images/Generic.png")" alt="A Placehholder caption">
-
-            <div id="myModal" class="modal">
+                <img class="img-thumbnail" id=@{num +"-img"} width="60" src=@{routes.Assets.at("images/" + num + "-img.png")} alt="A Placeholder Caption">
+            }
+            <div id="modal-picture" class="modal">
                 <span class="close">&times;</span>
                 <img class="modal-content" id="img01">
                 <div id="caption"></div>
             </div>
             <script>
                     // Get the modal
-                    var modal = document.getElementById('myModal');
+                    var modal = document.getElementById('modal-picture');
                     modal.onclick = function () {
-                        console.log("memes");
                         this.style.display = "none";
                     };
 
                     // Get the image and insert it inside the modal - use its "alt" text as a caption
-                    var img = document.getElementById('myImg');
+                    var img = document.getElementById('1-img');
                     var modalImg = document.getElementById("img01");
                     var captionText = document.getElementById("caption");
                     img.onclick = function(){
@@ -99,15 +102,6 @@
                     }
             </script>
         </div>
-        <div class="row">
-            <button class="btn btn-default">Add Photo</button>
-        </div>
-        <div class="flex-container">
-        @for(num <- 1 to 2) {
-            <img class="img-responsive" src="@routes.Assets.at("images/Generic.png")">
-            }
-        </div>
-
-    </div>
+     </div>
 
     }

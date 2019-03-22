@@ -1,26 +1,98 @@
 @(user: User)
+    @import views.html.bootstrap3._
+    @main("Index"){
 
-<head>
-    <meta charset="UTF-8">
-    <title>Profile</title>
-</head>
-<body>
-    <h1>Profile page</h1>
-    <p>Here is your current profile</p>
-    <p>First Name: @user.fName</p>
-    <p>Last Name: @user.lName</p>
-    <p>Gender: @user.gender</p>
-    <p>Date of Birth: @user.dateOfBirth</p>
-    @for(passport <- user.passports) {
-    <p>Passport: @passport.passportName</p>
+
+        <head>
+            <title>View Profile</title>
+        </head>
+
+        <div class="container">
+            <div class="text-center">
+                <h1>@user.getfName() @user.getlName() @if(user.isAdmin) {<img class="img"  width = "60" height="50" src="../../../public/images/key_2_small.png"> }</h1>
+            </div>
+        </div>
+
+        <br>
+
+        <div class="container">
+            <div class="row">
+                <div class="text-center">
+                    <img class="img-circle" width = "150" src="@routes.Assets.at("images/Generic.png")">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    <h2>Profile</h2>
+                    <p>Gender: @user.gender</p>
+                    <p>Date of Birth: @user.dateOfBirth</p>
+                    @for(nationality <- user.nationality) {
+                        <p>Nationality: @nationality.nationalityName</p>
+                    }
+                    <p>Creation date: @user.creationDate</p>
+                    @for(travellerType <- user.travellerTypes) {
+                        <p>Traveller type: @travellerType.travellerTypeName</p>
+                    }
+                </div>
+                <div class="col-md-4">
+                    <h2>Trips</h2>
+                    <form>
+                        <div class="list-group">
+                        @for(trip <- user.getTrips) {
+                            @*(@if (trip.isPublic()) {*@
+                                <a href="@routes.TripController.displaytrip(trip.getTripid)" class="list-group-item list-group-item-action">
+                                @trip.tripName
+                                </a>
+                            @*}*@
+                        }
+                        </div>
+                    </form>
+                </div>
+                <div class="col-md-4">
+                    <h2>Travel Partner</h2>
+                    <form>
+                        <button class="btn btn-default">Send Partner Request</button>
+                    </form>
+                </div>
+            </div>
+
+            <div>
+                @for(num <- 1 to 100) {
+                        <!--This is where eventually the real photos will be added for thumbnailing -->
+                    <img class="img-thumbnail" id=@{num +"-img"} width="60" src=@{routes.Assets.at("images/" + num + "-img.png")} alt="A Placeholder Caption">
+                }
+                <div id="modal-picture" class="modal">
+                    <span class="close">&times;</span>
+                    <img class="modal-content" id="img01">
+                    <div id="caption"></div>
+                </div>
+                <script>
+                        // Get the modal
+                        var modal = document.getElementById('modal-picture');
+                        modal.onclick = function () {
+                            this.style.display = "none";
+                        };
+
+                        // Get the image and insert it inside the modal - use its "alt" text as a caption
+                        var img = document.getElementById('1-img');
+                        var modalImg = document.getElementById("img01");
+                        var captionText = document.getElementById("caption");
+                        img.onclick = function(){
+                            modal.style.display = "block";
+                            modalImg.src = this.src;
+                            captionText.innerHTML = this.alt;
+                        };
+
+
+                        // Get the <span> element that closes the modal
+                        var span = document.getElementsByClassName("close")[0];
+
+                        // When the user clicks on <span> (x), close the modal
+                        span.onclick = function() {
+                            modal.style.display = "none";
+                        }
+                </script>
+            </div>
+        </div>
+
     }
-    @for(nationality <- user.nationality) {
-    <p>Nationality: @nationality.nationalityName</p>
-    }
-    <p>Creation date: @user.creationDate</p>
-    @for(travellerType <- user.travellerTypes) {
-    <p>Traveller type: @travellerType.travellerTypeName</p>
-    }
-    <a href="@routes.HomeController.showhome()">Back to home</a>
-</body>
-</html>

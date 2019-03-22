@@ -114,12 +114,17 @@ public class ProfileController {
      * @return the view profile page or an unauthorized message is no user is logged in.
      */
     public Result showProfile(Http.Request request, Integer userId) {
-        String userid = request.session().getOptional("connected").orElse(null);
 
-        if (userid != null) {
+        User user = User.getCurrentUser(request);
 
-            User user = User.find.byId(userId);
-            return ok(showProfile.render(user));
+        if (user != null) {
+
+            User otherUser = User.find.byId(userId);
+            if (otherUser == null) {
+                return badRequest("User does not exist");
+            }
+
+            return ok(showProfile.render(otherUser));
         }
         return unauthorized("Oops, you are not logged in");
     }

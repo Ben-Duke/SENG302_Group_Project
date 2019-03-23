@@ -9,12 +9,12 @@
                 <table class="table table-hover" id="myTable">
                     <thead>
                         <tr>
-                            <th scope="col" class="text-center">#</th>
                             <th scope="col">Name</th>
                             <th scope="col">Type</th>
                             <th scope="col">Country</th>
                             <th scope="col">Arrival</th>
                             <th scope="col">Departure</th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -39,8 +39,16 @@
         <script src="https://code.jquery.com/ui/1.12.0/jquery-ui.min.js"></script>
         <script src="https://getbootstrap.com/dist/js/bootstrap.min.js"></script>
 
-    <script type="text/javascript">
-            $('tbody').sortable();
-    </script>
+        <script type="text/javascript">
+                $('tbody').sortable();
+        </script>
+        @*<script type="text/javascript">*@
+            @*$(document).ready(function() {*@
+                @*$("#result").click(function () {*@
+                    @*var result = $('#myTable tbody').sortable("toArray", {attribute: 'id'});*@
+                    @*console.log(result);*@
+                @*});*@
+            @*});*@
+        @*</script>*@
     </body>
 }

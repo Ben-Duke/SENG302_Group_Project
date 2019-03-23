@@ -10,11 +10,7 @@ import play.data.FormFactory;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
-import views.html.users.trip.AddTripDestinations;
-import views.html.users.trip.createTrip;
-import views.html.users.trip.displayTrip;
-import views.html.users.trip.editTrip;
-import views.html.users.trip.editVisit;
+import views.html.users.trip.*;
 
 import javax.inject.Inject;
 import java.time.LocalDate;
@@ -60,7 +56,8 @@ public class TripController extends Controller {
             if(trip.isUserOwner(user.getUserid())) {
                 List<Visit> visits = trip.getVisits();
                 visits.sort(Comparator.comparing(Visit::getVisitorder));
-                return ok(displayTrip.render(trip, visits));
+                //return ok(displayTrip.render(trip, visits));
+                return ok(displayTripTable.render(trip));
             }
             else{
                 return unauthorized("Oops, this is not your trip.");
@@ -145,7 +142,8 @@ public class TripController extends Controller {
                     visits.sort(Comparator.comparing(Visit::getVisitorder));
 //                    Visit firstVisit = visits.get(0);
 //                    visits.remove(0);
-                    return ok(displayTrip.render(trip,visits));
+                    // return ok(displayTrip.render(trip,visits));
+                    return ok(displayTripTable.render(trip));
                 }
                 else{
                     return unauthorized("Oops, this is not your trip.");
@@ -165,7 +163,8 @@ public class TripController extends Controller {
                     visits.sort(Comparator.comparing(Visit::getVisitorder));
 //                    Visit firstVisit = visits.get(0);
 //                    visits.remove(0);
-                    return ok(displayTrip.render(trip,visits));
+                    //return ok(displayTrip.render(trip,visits));
+                    return ok(displayTripTable.render(trip));
                 }
                 else{
                     return unauthorized("Oops, this is not your trip.");

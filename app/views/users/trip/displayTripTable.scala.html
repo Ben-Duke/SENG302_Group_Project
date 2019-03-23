@@ -2,29 +2,45 @@
 
 @main("Trip destinations") {
     <h1>Trip destinations</h1>
+    <body>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <table class="table table-hover" id="myTable">
+                    <thead>
+                        <tr>
+                            <th scope="col" class="text-center">#</th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Type</th>
+                            <th scope="col">Country</th>
+                            <th scope="col">Arrival</th>
+                            <th scope="col">Departure</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @for(visit <- trip.getOrderedVisits){
+                        <tr>
+                            <th scope ="row">@visit.getDestination().getDestName()</th>
+                            <td>@visit.getDestination().getDestType()</td>
+                            <td>@visit.getDestination().getCountry()</td>
+                            <td>@visit.getArrival()</td>
+                            <td>@visit.getDeparture()</td>
+                            <td><a href=@routes.TripController.editvisit(visit.visitid) class="btn btn-primary">Edit destination</a></td>
+                        </tr>
+                        <br>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 
-    <table class = "table">
-        <thead class="thead-dark">
-            <tr>
-                <th scope="col">Name</th>
-                <th scope="col">Type</th>
-                <th scope="col">Country</th>
-                <th></th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @for(visit <- trip.getOrderedVisits){
-                <tr>
-                    <th scope ="row">@visit.getDestination().getDestName()</th>
-                    <td>@visit.getDestination().getDestType()</td>
-                    <td>@visit.getDestination().getCountry()</td>
+        <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+        <script src="https://code.jquery.com/ui/1.12.0/jquery-ui.min.js"></script>
+        <script src="https://getbootstrap.com/dist/js/bootstrap.min.js"></script>
 
-                </tr>
-
-                <br>
-            }
-
-        </tbody>
-    </table>
+    <script type="text/javascript">
+            $('tbody').sortable();
+    </script>
+    </body>
 }

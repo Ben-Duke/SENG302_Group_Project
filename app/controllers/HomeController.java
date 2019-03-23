@@ -46,24 +46,29 @@ public class HomeController {
         return unauthorized("Oops, you are not logged in");
     }
 
+    /**
+     * The upload POST action to upload a picture taking the image multipart form data and mapping it to file data and then
+     * adding this to the images directory.
+     * @param request the HTTP request
+     * @return the homepage or an error page
+     */
     public Result upload(Http.Request request) {
         User user = User.getCurrentUser(request);
+        //Get the photo data from the multipart form data encoding
         Http.MultipartFormData<Files.TemporaryFile> body = request.body().asMultipartFormData();
         Http.MultipartFormData.FilePart<Files.TemporaryFile> picture = body.getFile("picture");
-        System.out.println("Uploaded");
         if (picture != null) {
             String fileName = picture.getFilename();
-            System.out.println(fileName);
             long fileSize = picture.getFileSize();
             String contentType = picture.getContentType();
-            System.out.println(contentType);
             Files.TemporaryFile file = picture.getRef();
-            System.out.println(Paths.get(".").toAbsolutePath().normalize().toString());
-            file.copyTo(Paths.get(Paths.get(".").toAbsolutePath().normalize().toString() + "/public/images/" + fileName ), true);
-            System.out.println("Done!");
-            //UserPhoto newPhoto = new UserPhoto(fileName, false, user);
-            //newPhoto.update();
-            user.update();
+            //Add the path to the filename given by the uploaded picture
+            fileName = Paths.get(".").toAbsolutePath().normalize().toString() + "/public/images/user_photos/" + fileName;
+            //Save the file, replacing the existing one if the name is taken
+            file.copyTo(Paths.get(fileName ), true);
+            UserPhoto newPhoto = new UserPhoto(fileName, false, user);
+            newPhoto.save();
+            //user.update();
             return ok(home.render(user));
         }
         return unauthorized("Oops, you are not logged in");

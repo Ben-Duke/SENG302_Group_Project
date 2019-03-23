@@ -1,9 +1,11 @@
 package controllers;
 
-import java.util.Date;
 import formdata.TripFormData;
 import formdata.VisitFormData;
-import models.*;
+import models.Destination;
+import models.Trip;
+import models.User;
+import models.Visit;
 import play.data.DynamicForm;
 import play.data.Form;
 import play.data.FormFactory;
@@ -14,15 +16,12 @@ import views.html.users.trip.AddTripDestinations;
 import views.html.users.trip.createTrip;
 import views.html.users.trip.displayTrip;
 import views.html.users.trip.editTrip;
+
 import javax.inject.Inject;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
-import java.util.Map;
-
-import static play.mvc.Results.*;
 
 public class TripController extends Controller {
 
@@ -98,7 +97,6 @@ public class TripController extends Controller {
         else{
             return unauthorized("Oops, you are not logged in");
         }
-        //return redirect(routes.UserController.userindex());
     }
 
     public Result AddTripDestinations(Http.Request request, Integer tripid) {
@@ -120,7 +118,6 @@ public class TripController extends Controller {
         else{
             return unauthorized("Oops, you are not logged in");
         }
-//        return ok("edittrip");
     }
 
     public Result cancelTrip(Http.Request request, Integer tripid) {
@@ -184,7 +181,6 @@ public class TripController extends Controller {
         } else{
             return unauthorized("Oops, you are not logged in");
         }
-        //return redirect(routes.UserController.userindex());
         return redirect(routes.TripController.AddTripDestinations(tripid));
     }
 
@@ -214,7 +210,6 @@ public class TripController extends Controller {
         else{
             return unauthorized("Oops, you are not logged in");
         }
-//        return ok("edittrip");
     }
 
 
@@ -253,7 +248,6 @@ public class TripController extends Controller {
         else{
             return unauthorized("Oops, you are not logged in");
         }
-        //return redirect(routes.UserController.userindex());
         return redirect(routes.TripController.edittrip(tripid));
     }
 
@@ -296,7 +290,6 @@ public class TripController extends Controller {
         else{
             return unauthorized("Oops, you are not logged in");
         }
-        //return redirect(routes.UserController.userindex());
         return redirect(routes.TripController.edittrip(tripid));
     }
 
@@ -313,7 +306,7 @@ public class TripController extends Controller {
             }
         }
         if(operation.equalsIgnoreCase("ADD")){
-            if(visits.size() > 0) {
+            if(! visits.isEmpty()) {
                 visits.sort(Comparator.comparing(Visit::getVisitorder));
                 if (visits.get(visits.size() - 1).visitName.equalsIgnoreCase(visit.getVisitName())) {
                     //probably the wrong status header

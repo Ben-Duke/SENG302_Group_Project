@@ -6,7 +6,6 @@ import io.ebean.Finder;
 import io.ebean.Model;
 
 import javax.persistence.*;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -76,10 +75,7 @@ public class Trip extends Model {
     }
 
     public void deleteVisit(Visit visit){
-        System.out.println(visit.visitName);
-        System.out.println(this.visits.size());
         this.visits.remove(visit);
-        System.out.println(this.visits.size());
     }
 
     public void addVisit(Visit visit){

@@ -4,9 +4,10 @@ import formdata.VisitFormData;
 import io.ebean.Finder;
 import io.ebean.Model;
 
-import javax.persistence.*;
-import java.sql.Timestamp;
-import java.time.LocalDate;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
 @Entity
 public class Visit extends Model {

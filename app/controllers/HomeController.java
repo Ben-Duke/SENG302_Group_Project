@@ -11,6 +11,7 @@ import views.html.users.userIndex;
 
 import javax.inject.Inject;
 
+import java.io.IOException;
 import java.nio.file.Paths;
 
 import static play.mvc.Controller.request;
@@ -63,12 +64,17 @@ public class HomeController {
             String contentType = picture.getContentType();
             Files.TemporaryFile file = picture.getRef();
             //Add the path to the filename given by the uploaded picture
-            fileName = Paths.get(".").toAbsolutePath().normalize().toString() + "/public/images/user_photos/" + fileName;
+            String pathName = Paths.get(".").toAbsolutePath().normalize().toString() + "/public/images/user_photos/user_" + user.getUserid() + "/" + fileName;
             //Save the file, replacing the existing one if the name is taken
-            file.copyTo(Paths.get(fileName ), true);
+            try {
+                java.nio.file.Files.createDirectories(Paths.get(Paths.get(".").toAbsolutePath().normalize().toString() + "/public/images/user_photos/user_" + user.getUserid() + "/"));
+            } catch (IOException e) {
+                System.out.println(e);
+            }
+            file.copyTo(Paths.get(pathName ), true);
+            //DB saving
             UserPhoto newPhoto = new UserPhoto(fileName, false, user);
             newPhoto.save();
-            //user.update();
             return ok(home.render(user));
         }
         return unauthorized("Oops, you are not logged in");

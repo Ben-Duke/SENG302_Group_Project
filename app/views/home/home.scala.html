@@ -47,7 +47,7 @@
                 <form>
                     <div class="list-group">
                         @for(trip <- user.getTrips) {
-                        <a href="@routes.TripController.displaytrip(trip.getTripid)" class="list-group-item list-group-item-action">
+                        <a href="@routes.TripController.displaytrip(trip.getTripid,"")" class="list-group-item list-group-item-action">
                             @trip.tripName
                         </a>
                         }

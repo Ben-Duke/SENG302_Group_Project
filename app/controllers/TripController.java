@@ -1,8 +1,13 @@
 package controllers;
 
-import java.util.Date;
+import java.util.*;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import factories.TripFactory;
 import formdata.TripFormData;
 import formdata.VisitFormData;
+import io.ebean.Transaction;
 import models.*;
 import play.data.DynamicForm;
 import play.data.Form;
@@ -15,10 +20,6 @@ import views.html.users.trip.*;
 import javax.inject.Inject;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
 
 import static play.mvc.Results.*;
 
@@ -27,6 +28,8 @@ public class TripController extends Controller {
 
     @Inject
     FormFactory formFactory;
+
+    TripFactory tripFactory = new TripFactory();
 
 
 
@@ -47,17 +50,15 @@ public class TripController extends Controller {
         }
     }
 
-    public Result displaytrip(Http.Request request, Integer tripid){
+    public Result displaytrip(Http.Request request, Integer tripid, String message){
         User user = User.getCurrentUser(request);
         if (user != null) {
-
-
             Trip trip = Trip.find.byId(tripid);
             if(trip.isUserOwner(user.getUserid())) {
                 List<Visit> visits = trip.getVisits();
                 visits.sort(Comparator.comparing(Visit::getVisitorder));
                 //return ok(displayTrip.render(trip, visits));
-                return ok(displayTripTable.render(trip));
+                return ok(displayTripTable.render(trip,message));
             }
             else{
                 return unauthorized("Oops, this is not your trip.");
@@ -143,7 +144,7 @@ public class TripController extends Controller {
 //                    Visit firstVisit = visits.get(0);
 //                    visits.remove(0);
                     // return ok(displayTrip.render(trip,visits));
-                    return ok(displayTripTable.render(trip));
+                    return ok(displayTripTable.render(trip,""));
                 }
                 else{
                     return unauthorized("Oops, this is not your trip.");
@@ -164,7 +165,7 @@ public class TripController extends Controller {
 //                    Visit firstVisit = visits.get(0);
 //                    visits.remove(0);
                     //return ok(displayTrip.render(trip,visits));
-                    return ok(displayTripTable.render(trip));
+                    return ok(displayTripTable.render(trip,""));
                 }
                 else{
                     return unauthorized("Oops, this is not your trip.");
@@ -289,18 +290,19 @@ public class TripController extends Controller {
      * @param tripid The trip ID that the user is editing.
      * @return edit trip page or error page
      */
-    public Result deletevisit(Http.Request request, Integer tripid){
-        Form<VisitFormData> incomingForm = formFactory.form(VisitFormData.class).bindFromRequest(request);
-        VisitFormData created = incomingForm.get();
-        String visitID = created.visitName;
+    public Result deletevisit(Http.Request request, Integer visitid){
+        //Form<VisitFormData> incomingForm = formFactory.form(VisitFormData.class).bindFromRequest(request);
+        //VisitFormData created = incomingForm.get();
+        Visit visit = Visit.find.byId(visitid);
         User user = User.getCurrentUser(request);
-        if (user != null) {
-            Trip trip = Trip.find.query().where().eq("tripid", tripid).findOne();
+        //change later
+        if (user != null && visit != null) {
+            Trip trip = visit.getTrip();
             if(trip.isUserOwner(user.getUserid())) {
-                Visit visit = Visit.find.query().where().eq("visitid", Integer.parseInt(visitID)).findOne();
                 List<Visit> visits = trip.getVisits();
                 if(hasRepeatDest(visits, visit, "DELETE")){
-                    return badRequest("You cannot visit the same destination twice in a row!");
+                    //flash("danger", "You cannot visit the same destination twice in a row!");
+                    return badRequest();
                 }
                 visit.delete();
                 Integer removedVisits = 0;
@@ -311,14 +313,16 @@ public class TripController extends Controller {
                 trip.update();
             }
             else{
-                return unauthorized("Oops, this is not your trip. ya-yeet.");
+                //flash("danger", "You are not the owner of this trip.");
+                return unauthorized();
             }
         }
         else{
-            return unauthorized("Oops, you are not logged in");
+            //flash("danger", "You are not logged in.");
+            return unauthorized();
         }
-        //return redirect(routes.UserController.userindex());
-        return redirect(routes.TripController.edittrip(tripid));
+        //flash("success", "Destination deleted.");
+        return ok();
     }
 
     /**
@@ -331,6 +335,32 @@ public class TripController extends Controller {
      * @return edit trip page or error page
      */
     public Result swapvisits(Http.Request request, Integer tripid){
+        //System.out.println(request.body().asJson());
+        ArrayList<String> list = new ObjectMapper().convertValue(request.body().asJson(), ArrayList.class);
+        if(tripFactory.swapVisitsList(list)){
+            return ok();
+        }
+        else{
+            return badRequest();
+        }
+//        try (Transaction transaction = Visit.db().beginTransaction()) {
+//            Integer size = list.size();
+//            for(int i = 0; i < size; i++){
+//                Integer currentVisitId = Integer.parseInt(list.get(i));
+//                Visit visit = Visit.find.byId(currentVisitId);
+////                if(i < size - 2){
+////                    Visit visit2 = Visit.find.byId(currentVisitId+1);
+////                    if(visit.getVisitName().equalsIgnoreCase(visit2.getVisitName())){
+////                        result = false;
+////                    }
+////                }
+//                visit.setVisitorder(i);
+//                visit.update();
+//            }
+//            transaction.commit();
+//        }
+//        System.out.println(inputString);
+        /*
         Form<VisitFormData> incomingForm = formFactory.form(VisitFormData.class).bindFromRequest(request);
         VisitFormData created = incomingForm.get();
         String visitID1 = created.visitName;
@@ -361,7 +391,7 @@ public class TripController extends Controller {
             return unauthorized("Oops, you are not logged in");
         }
         //return redirect(routes.UserController.userindex());
-        return redirect(routes.TripController.edittrip(tripid));
+        */
     }
 
     public boolean hasRepeatDest(List<Visit> visits, Visit visit, String operation){

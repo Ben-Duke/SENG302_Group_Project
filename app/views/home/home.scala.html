@@ -8,13 +8,20 @@
     </head>
 
     <div class="container">
-        <h1>@user.fName @user.lName @if(user.isAdmin) {<img class="img"  width = "60" height="50" src="../assets/images/key_2_small.png"> } </h1>
-
+        <div class="text-center">
+            <h1>@user.fName @user.lName @if(user.isAdmin) {<img class="img"  width = "60" height="50" src="../../../public/images/key_2_small.png"> } </h1>
+        </div>
     </div>
 
     <br>
 
     <div class="container">
+        <div class="row">
+            <!-- The profile picture, currently a placeholder -->
+            <div class="text-center">
+                <img class="img-circle" width = "150" src="@routes.Assets.at("images/Generic.png")">
+            </div>
+        </div>
         <div class="row">
             <div class="col-md-4">
                 <h2>Profile</h2>
@@ -56,6 +63,39 @@
                 </form>
             </div>
         </div>
-    </div>
+        <div class="row">
+            <button class="btn btn-default">Add Photo</button>
+        </div>
+        <div>
+            <div id="modal-picture" class="modal">
+                <img class="modal-content" id="img01">
+            </div>
+            <!-- defines the number of photos the user has stored in the database. Currently hardcoded until tasks are finished -->
+            @defining(3) { numberOfPhotos =>
+                @for(num <- 1 to numberOfPhotos) {
+                    <img class="img-thumbnail" id=@{num + "-img"} width="60" src="@{routes.Assets.at("images/" + num + "-img.png")}" alt="User Image">
+                }
+                <script>
+                        // Get the modal
+                        var modal = document.getElementById('modal-picture');
+                        // When the user clicks, they quit the modal view
+                        modal.onclick = function () {
+                            this.style.display = "none";
+                        };
+
+                        // Get the image and insert it inside the modal
+                        var images = document.getElementsByClassName("img-thumbnail");
+                        var modalImg = document.getElementById("img01");
+                        // loops through each thumbnail and adds the event listener
+                        for (i = 0; i < @numberOfPhotos; i++) {
+                            images[i].onclick = function() {
+                                modal.style.display = "block";
+                                modalImg.src = this.src;
+                            };
+                        }
+                </script>
+            }
+        </div>
+     </div>
 
     }

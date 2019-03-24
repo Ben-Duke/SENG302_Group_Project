@@ -19,47 +19,70 @@ public class AdminController extends Controller {
 
 
     /**
-     * Gets all the current users destinations renders the index page displaying them.
+     * Gets all the users and admins renders the index Admin page displaying them.
      *
      * @param request the http request
-     * @return the destinations index page which displays all the users destinations
-     * or an unauthorized message is no user is logged in.
+     * @return the admin index page which displays all the users and admins.
+     * or an unauthorized message is "Oops, you are not authorised.".
      */
     public Result indexAdmin(Http.Request request) {
         User currentUser = User.getCurrentUser(request);
-        Admin currentAdmin = Admin.find.byId(currentUser.userid);
-        if (currentUser != null && currentAdmin != null) {
-            List<Admin> admins = Admin.find.all();
-            List<User> users = User.find.all();
-            List<User> adminUsers = new ArrayList<>();
-            for (int i = 0; i < admins.size(); i++) {
-                User user1 = User.find.byId(admins.get(i).userId);
-                users.remove(user1);
-                adminUsers.add(user1);
+        if (currentUser != null) {
+            Admin currentAdmin = Admin.find.byId(currentUser.userid);
+            if (currentAdmin != null) {
+                List<Admin> admins = Admin.find.all();
+                List<User> users = User.find.all();
+                List<User> adminUsers = new ArrayList<>();
+                for (int i = 0; i < admins.size(); i++) {
+                    User user1 = User.find.byId(admins.get(i).userId);
+                    users.remove(user1);
+                    adminUsers.add(user1);
+                }
+                return ok(indexAdmin.render(currentUser, users, admins, adminUsers));
             }
-            return ok(indexAdmin.render(currentUser, users, admins, adminUsers));
+
         }
         return unauthorized("Oops, you are not authorised.");
     }
 
-    public Result adminToUser(Http.Request request, Integer userId) {
+    /**
+     *  The method to remove a user from the admins and re-render the index Admin.
+     *
+     * @param request The http request
+     * @param requestedUserId The user id of the Admin being removed.
+     * @return the admin index page which displays all the users and admins.
+     * or an unauthorized message is "Oops, you are not authorised.".
+     */
+    public Result adminToUser(Http.Request request, Integer requestedUserId) {
         User currentUser = User.getCurrentUser(request);
-        Admin currentAdmin = Admin.find.byId(currentUser.userid);
-        if (currentUser != null && currentAdmin != null && currentAdmin.userId != userId) {
-            Admin admin1 = Admin.find.query().where().eq("userId", userId).findOne();
-            admin1.delete();
-            return redirect(routes.AdminController.indexAdmin());
+        if (currentUser != null) {
+            Admin currentAdmin = Admin.find.byId(currentUser.userid);
+            if (currentAdmin != null && currentAdmin.userId != requestedUserId) {
+                Admin admin1 = Admin.find.query().where().eq("userId", requestedUserId).findOne();
+                admin1.delete();
+                return redirect(routes.AdminController.indexAdmin());
+            }
         }
         return unauthorized("Oops, you are not authorised.");
     }
 
-    public Result userToAdmin(Http.Request request, Integer userId) {
+    /**
+     *  The method to make a user an admin and re-render the index Admin.
+     *
+     * @param request The http request
+     * @param requestedUserId The user id of the User being made Admin.
+     * @return the admin index page which displays all the users and admins.
+     * or an unauthorized message is "Oops, you are not authorised.".
+     */
+    public Result userToAdmin(Http.Request request, Integer requestedUserId) {
         User currentUser = User.getCurrentUser(request);
-        Admin currentAdmin = Admin.find.byId(currentUser.userid);
-        if (currentUser != null && currentAdmin != null && currentAdmin.userId != userId) {
-            Admin admin = new Admin(userId, false);
-            admin.insert();
-            return redirect(routes.AdminController.indexAdmin());
+        if (currentUser != null) {
+            Admin currentAdmin = Admin.find.byId(currentUser.userid);
+            if (currentAdmin != null && currentUser.userid != requestedUserId) {
+                Admin admin = new Admin(requestedUserId, false);
+                admin.insert();
+                return redirect(routes.AdminController.indexAdmin());
+            }
         }
         return unauthorized("Oops, you are not authorised.");
     }

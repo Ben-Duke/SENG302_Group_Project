@@ -28,7 +28,7 @@ public class AdminController extends Controller {
     public Result indexAdmin(Http.Request request) {
         User currentUser = User.getCurrentUser(request);
         if (currentUser != null) {
-            Admin currentAdmin = Admin.find.byId(currentUser.userid);
+            Admin currentAdmin = Admin.find.query().where().eq("userId", currentUser.userid).findOne();;
             if (currentAdmin != null) {
                 List<Admin> admins = Admin.find.all();
                 List<User> users = User.find.all();
@@ -56,7 +56,7 @@ public class AdminController extends Controller {
     public Result adminToUser(Http.Request request, Integer requestedUserId) {
         User currentUser = User.getCurrentUser(request);
         if (currentUser != null) {
-            Admin currentAdmin = Admin.find.byId(currentUser.userid);
+            Admin currentAdmin = Admin.find.query().where().eq("userId", currentUser.userid).findOne();
             if (currentAdmin != null && currentAdmin.userId != requestedUserId) {
                 Admin admin1 = Admin.find.query().where().eq("userId", requestedUserId).findOne();
                 admin1.delete();
@@ -76,8 +76,10 @@ public class AdminController extends Controller {
      */
     public Result userToAdmin(Http.Request request, Integer requestedUserId) {
         User currentUser = User.getCurrentUser(request);
+        System.out.println(currentUser);
         if (currentUser != null) {
-            Admin currentAdmin = Admin.find.byId(currentUser.userid);
+            Admin currentAdmin = Admin.find.query().where().eq("userId", currentUser.userid).findOne();
+            System.out.println(currentAdmin);
             if (currentAdmin != null && currentUser.userid != requestedUserId) {
                 Admin admin = new Admin(requestedUserId, false);
                 admin.insert();

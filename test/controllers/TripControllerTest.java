@@ -328,7 +328,9 @@ public class TripControllerTest extends WithApplication {
     /**
      * Unit tests for method to detect repeat destinations when swapping.
      * Returns true if a repeat destination is formed from swapping two visits in a list, false otherwise.
+     * TEMPORARILY COMMENTED OUT BECAUSE A DIFFERENT IMPLEMENTATION IS BEING USED
      */
+    /*
     @Test
     public void hasRepeatDestSwap() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -371,4 +373,5 @@ public class TripControllerTest extends WithApplication {
         //Swaps visit3 and visit4, making [Canterbury, Banterbury, Panem, Canterbury] which is valid so should return false
         assertFalse(tripController.hasRepeatDestSwap(visits, visit3, visit4));
     }
+    */
 }

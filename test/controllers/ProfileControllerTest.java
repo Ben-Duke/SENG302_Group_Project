@@ -157,7 +157,6 @@ public class ProfileControllerTest extends WithApplication {
         assertEquals(2, user.nationality.size());
         Http.RequestBuilder request = Helpers.fakeRequest().bodyForm(formData).method(Helpers.POST).uri("/users/profile/update/natpass/addnat").session("connected", "1");
         Result result = route(app, request);
-//        assertEquals(UNAUTHORIZED, result.status());
         assertEquals(2, user.nationality.size());
     }
 

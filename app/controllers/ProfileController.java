@@ -12,10 +12,7 @@ import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.Http;
 import play.mvc.Result;
-import views.html.users.profile.createprofile_;
-import views.html.users.profile.showProfile;
-import views.html.users.profile.createprofile;
-import views.html.users.profile.updateNatPass;
+import views.html.users.profile.*;
 
 import javax.inject.Inject;
 
@@ -112,7 +109,6 @@ public class ProfileController {
         else{
             return unauthorized("Oops, you are not logged in");
         }
-        //return redirect(routes.UserController.userindex());
         return redirect(routes.HomeController.showhome());
     }
 
@@ -146,7 +142,7 @@ public class ProfileController {
     public Result updateNatPass(Http.Request request ){
        // User user = User.getCurrentUser(request);
 
-        int userId = UserFactory.getCurrentUserById(request);
+        int userId = UserFactory.getCurrentUserId(request);
         if (userId != -1) {
             NatFormData formData = new NatFormData();
             //Make construc at some point
@@ -159,13 +155,15 @@ public class ProfileController {
                 addNatandPass();
             } catch (io.ebean.DuplicateKeyException e) {
                 // Duplicate nationalities do not get added. No error msg shown.
+                // Front end allows you to add one but wont get saved unless it is not on the
+                //user already.
             }
             List<Nationality> nationalities = Nationality.find.all();
             List<Passport> passports = Passport.find.all();
 
 
 
-            //return ok(updateNatPass.render(userForm, nationalities, passports, userId));
+
             return ok(updateNatPass.render(userForm, nationalities, passports, userId));
         }
         else{
@@ -184,7 +182,7 @@ public class ProfileController {
     public Result submitUpdateNationality(Http.Request request){
         DynamicForm userForm = formFactory.form().bindFromRequest();
         String nationalityID = userForm.get("nationality");
-        int user = UserFactory.getCurrentUserById(request);
+        int user = UserFactory.getCurrentUserId(request);
         if (user != -1) {
 
             //Nationality nationality = Nationality.find.byId(Integer.parseInt(nationalityID));
@@ -209,7 +207,7 @@ public class ProfileController {
     public Result submitUpdatePassport(Http.Request request){
         DynamicForm userForm = formFactory.form().bindFromRequest();
         String passportID = userForm.get("passport");
-        int userId = UserFactory.getCurrentUserById(request);
+        int userId = UserFactory.getCurrentUserId(request);
         if (userId != -1) {
             UserFactory.addPassportToUser(userId, passportID);
 
@@ -238,7 +236,7 @@ public class ProfileController {
 
         if (userForm.hasErrors()) {
            logger.debug("found errors");
-            int user = UserFactory.getCurrentUserById(request);
+            int user = UserFactory.getCurrentUserId(request);
             List<Nationality> nationalities = Nationality.find.all();
             List<Passport> passports = Passport.find.all();
 
@@ -246,7 +244,7 @@ public class ProfileController {
 
         }else {
             String nationalityID = userForm.get().nationalitydelete;
-            int userId = UserFactory.getCurrentUserById(request);
+            int userId = UserFactory.getCurrentUserId(request);
             if (userId != -1) {
                 UserFactory.deleteNatsOnUser(userId, nationalityID);
             } else {
@@ -268,14 +266,14 @@ public class ProfileController {
     public Result deletePassport(Http.Request request){
         DynamicForm userForm = formFactory.form().bindFromRequest();
         String passportID = userForm.get("passportdelete");
-        int userId = UserFactory.getCurrentUserById(request);
+        int userId = UserFactory.getCurrentUserId(request);
         if (userId != -1) {
             UserFactory.deletePassportOnUser(userId, passportID);
         }
         else{
             return unauthorized("Oops, you are not logged in");
         }
-        //return redirect(routes.UserController.userindex());
+
         return redirect(routes.ProfileController.updateNatPass());
     }
 

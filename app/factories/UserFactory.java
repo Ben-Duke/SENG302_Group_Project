@@ -88,9 +88,9 @@ public class UserFactory {
             }
             }
 
-            for (int k = 0; k < nationalities.size(); k++) {
+            for (String natname: nationalities) {
 
-                int natId = getNatId(nationalities.get(k));
+                int natId = getNatId(natname);
                 UpdateNationality(user, natId);
             }
 
@@ -342,9 +342,9 @@ public class UserFactory {
         return User.find.query().where().eq("userid", id).findOne().nationality;
     }
 
-    public static void addPassportToUser(int id, String passportID){
+    public static void addPassportToUser(int id, String passportId){
 
-        Passport passport = Passport.find.byId(Integer.parseInt(passportID));
+        Passport passport = Passport.find.byId(Integer.parseInt(passportId));
 
         try {
             User user = User.find.query().where().eq("userid", id).findOne();
@@ -355,11 +355,11 @@ public class UserFactory {
         }
     }
 
-    public static void deletePassportOnUser(int id, String passportID){
+    public static void deletePassportOnUser(int id, String passportId){
 
 
         try {
-            Passport passport = Passport.find.byId(Integer.parseInt(passportID));
+            Passport passport = Passport.find.byId(Integer.parseInt(passportId));
             User user = User.find.query().where().eq("userid", id).findOne();
             user.deletePassport(passport);
             user.update();
@@ -368,10 +368,10 @@ public class UserFactory {
         }
     }
 
-    public static void deleteNatsOnUser(int id, String nationalityID){
+    public static void deleteNatsOnUser(int id, String nationalityId){
         User user = User.find.query().where().eq("userid", id).findOne();
         try {
-            Nationality nationality = Nationality.find.byId(Integer.parseInt(nationalityID));
+            Nationality nationality = Nationality.find.byId(Integer.parseInt(nationalityId));
             user.deleteNationality(nationality);
             user.update();
         } catch (NumberFormatException e) {
@@ -379,10 +379,10 @@ public class UserFactory {
         }
     }
 
-    public static void addNatsOnUser(int id, String nationalityID){
+    public static void addNatsOnUser(int id, String nationalityId){
         User user = User.find.query().where().eq("userid", id).findOne();
         try {
-            Nationality nationality = Nationality.find.byId(Integer.parseInt(nationalityID));
+            Nationality nationality = Nationality.find.byId(Integer.parseInt(nationalityId));
             user.addNationality(nationality);
             user.update();
         } catch (io.ebean.DuplicateKeyException e) {
@@ -394,8 +394,8 @@ public class UserFactory {
      * @param request
      * @return an int -1 indicates there are no entries in the database that have that user.
      */
-    public static int getCurrentUserById(Http.Request request) {
-        return User.getCurrentUserById(request);
+    public static int getCurrentUserId(Http.Request request) {
+        return User.getCurrentUserId(request);
     }
 
 

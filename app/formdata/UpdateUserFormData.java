@@ -7,10 +7,15 @@ import play.data.validation.ValidationError;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static play.mvc.Results.unauthorized;
 
+/**
+ * A class to hold data from the client that is entered when updating a users basic
+ * profile. Validates the data.
+ */
 @Constraints.Validate
 public class UpdateUserFormData implements Constraints.Validatable<List<ValidationError>> {
 
@@ -20,64 +25,86 @@ public class UpdateUserFormData implements Constraints.Validatable<List<Validati
     public String lastName;
     public String gender;
     public String dateOfBirth;
-    public String admin;
 
 
+    /**
+     * Empty constructor, requirement of implementing Constraints.Validatable
+     */
     public UpdateUserFormData() {
 
     }
 
-    public String getFirstName() {
-        return this.firstName;
-    }
-
+    /**
+     * Constructs a UpdateUserFormData object from a User object. Used to pre-load
+     * a web page with existing User data.
+     *
+     * @param user The User whose data to enter into the form.
+     */
     public UpdateUserFormData(User user) {
         this.firstName = user.getfName();
         this.lastName = user.getlName();
         this.gender = user.getGender();
-        this.dateOfBirth = user.getDateOfBirth().toString();
+        if (user.getDateOfBirth() == null) {
+            this.dateOfBirth = "null";
+        } else {
+            this.dateOfBirth = user.getDateOfBirth().toString();
+        }
     }
 
+    /**
+     * A method to validate the entered data. Checks for nulls and that the data
+     * is sensible.
+     *
+     * @return A List<ValidationError> of all the errors (empty if no errors).
+     */
     @Override
     public List<ValidationError> validate() {
 
-        if (firstName.matches(".*\\d+.*") || firstName.length() < 1) {
+        if (firstName == null ||
+                                     (! firstName.matches("[a-zA-Z\\s]+")) ||
+                                        firstName.length() < 1) {
             errors.add(new ValidationError("firstName",
-                                "First name should only contain alphabets."));
+                                "First name should only contain alphabetical " +
+                                        "letters."));
         }
 
-        if (lastName.matches(".*\\d+.*") || lastName.length() < 1) {
+        if (lastName == null ||
+                                     (! lastName.matches("[a-zA-Z\\s]+")) ||
+                                        lastName.length() < 1) {
             errors.add(new ValidationError("lastName",
-                    "Last name should only contain alphabets."));
+                    "Last name should only contain alphabetical " +
+                                                                  "letters."));
         }
 
+        String[] gendersArray = {"Male", "Female", "Other"};
+        List gendersList = Arrays.asList(gendersArray);
+        String genderErrorStr = "Please select a gender.";
         if (gender == null) {
-            errors.add(new ValidationError("gender",
-                    "Please select a gender."));
+            errors.add(new ValidationError("gender", genderErrorStr));
+        } else if (! gendersList.contains(gender)) {
+            errors.add(new ValidationError("gender", genderErrorStr));
         }
 
-        if (dateOfBirth.length() < 8) {
-            errors.add(new ValidationError("dateOfBirth",
-                    "Please enter the date correctly."));
+        String dateOfBirthErrorStr = "Please enter the date correctly.";
+        if (dateOfBirth == null) {
+            errors.add(new ValidationError("dateOfBirth", dateOfBirthErrorStr));
         } else {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            //convert String to LocalDate
-            LocalDate birthDate;
-            try {
-                birthDate = LocalDate.parse(dateOfBirth, formatter);
-            } catch (Exception e) {
-                errors.add(new ValidationError("dateOfBirth",
-                        "Please enter the date correctly."));
+            if (dateOfBirth.length() < 8) {
+                errors.add(new ValidationError("dateOfBirth", dateOfBirthErrorStr));
+            } else {
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                //convert String to LocalDate
+                LocalDate birthDate;
+                try {
+                    // not useless, if this fails it throws an error
+                    birthDate = LocalDate.parse(dateOfBirth, formatter);
+                } catch (Exception e) {
+                    errors.add(new ValidationError("dateOfBirth", dateOfBirthErrorStr));
+                }
             }
         }
 
-
-
-        if (! errors.isEmpty()) {
-            return errors;
-        } else {
-            return null; //requirement of the inherited validate method (I think)
-        }
+        return errors;
     }
 
 }

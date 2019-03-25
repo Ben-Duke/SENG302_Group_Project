@@ -1,14 +1,16 @@
 @import formdata.UpdateUserFormData
 @import helper._
 @import views.html.bootstrap3._
+@import java.util
 
-@(updateUserForm : Form[UpdateUserFormData])
+@import views.html.users.profile.updateProfileFieldSet
+@(updateUserForm : Form[UpdateUserFormData], genders: util.List[String])
 
 @main("Index") {
     <div class="container">
         <div class="well">
-        @form(helper.CSRF(routes.ProfileController.updateProfile()) , 'class -> "form-horizontal") {
-            @updateProfileFieldSet(updateUserForm)
+        @form(helper.CSRF(routes.ProfileController.updateProfileRequest()) , 'class -> "form-horizontal") {
+            @updateProfileFieldSet(updateUserForm, genders)
         }
         </div>
 

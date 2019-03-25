@@ -4,9 +4,9 @@ Feature: in order to administrate the system
 
   Scenario: Attempt to delete default administrator
     Given there is a default administrator with userId=1
-    When I try to delete the default administrator
-    Then an error message is shown advising me that I can't delete the default admin
-    And the default administrator is not deleted
+    When I try to delete the default administrator with userId=1
+    Then an error message is shown advising me that I can't delete the default admin with userId=1
+    And the default administrator with userId=1 is not deleted
 
   Scenario: Default administrator missing on start up
     Given there is no default administrator
@@ -18,4 +18,5 @@ Feature: in order to administrate the system
     When the system starts up
     Then no new default administrator is created
 
+    Scenario: Default administrator removed from the database
 

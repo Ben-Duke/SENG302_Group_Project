@@ -71,7 +71,7 @@ public class LoginFormData implements Constraints.Validatable<List<ValidationErr
             }
         }
 
-        if (errors.isEmpty()) {
+        if (! errors.isEmpty()) {
             return errors;
         } else {
             return null; //requirement of the inherited validate method (I think)

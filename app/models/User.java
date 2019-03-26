@@ -263,6 +263,11 @@ public class User extends Model {
         return trips;
     }
 
+    /**
+     * Gets a list of the user's trips, sorted by the earliest arrival date of their visits within each trip.
+     * If there are no arrival dates set within a trip, the trip is placed at the bottom of the list.
+     * @return the list of sorted trips
+     */
     public List<Trip> getTripsSorted()
     {
         HashMap<Trip,LocalDate> datesMap = new HashMap<>();
@@ -399,6 +404,11 @@ public class User extends Model {
         return orderedTripList;
     }
 
+    /**
+     * Sorts a hashmap with localdate as values and returns the sorted hashmap, sorted by earliest date
+     * @param map The hashmap to sort
+     * @return The sorted hashmap
+     */
     private static HashMap sortByValues(HashMap map) {
         List list = new LinkedList(map.entrySet());
         // Defined Custom Comparator here

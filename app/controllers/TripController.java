@@ -49,6 +49,9 @@ public class TripController extends Controller {
     FormFactory formFactory;
 
 
+    /**
+     * The trip factory
+     */
     TripFactory tripFactory = new TripFactory();
     VisitFactory visitfactory = new VisitFactory();
 
@@ -70,6 +73,15 @@ public class TripController extends Controller {
         }
     }
 
+    /**
+     * Renders the page to display visits of a trip given by the trip id.
+     * Users can swap visit destinations by drag and dropping them with their mouse, which should be saved within the
+     * database.
+     * @param request
+     * @param tripid the trip id
+     * @param message an error message if there is one
+     * @return display visits page
+     */
     public Result displaytrip(Http.Request request, Integer tripid, String message){
         User user = User.getCurrentUser(request);
         if (user != null) {
@@ -120,6 +132,12 @@ public class TripController extends Controller {
         //return redirect(routes.UserController.userindex());
     }
 
+    /**
+     * Renders the page to edit a visit given by the visit id.
+     * @param request the HTTP request
+     * @param visitid the visit id
+     * @return the edit visit page
+     */
     public Result editvisit(Http.Request request, Integer visitid){
         User user = User.getCurrentUser(request);
         if (user != null) {
@@ -133,6 +151,13 @@ public class TripController extends Controller {
         }
     }
 
+    /**
+     * Handles the update visit request. Updates a visit with the given form details. If the updated visit would cause
+     * two of the same destinations to be visited in a row, cancels the update and returns bad request.
+     * @param request the HTTP request
+     * @param visitid the vistID of the visit
+     * @return OK or Bad request
+     */
     public Result updateVisit(Http.Request request, Integer visitid){
         DynamicForm visitForm = formFactory.form().bindFromRequest();
         User user = User.getCurrentUser(request);
@@ -155,7 +180,7 @@ public class TripController extends Controller {
                     //Arrivaldate and departure date TBD
                     visit.setArrival(arrival);
                     visit.setDeparture(departure);
-                    if(hasRepeatDest(trip.getVisits(), visit, "SWAP")){
+                    if(tripFactory.hasRepeatDest(trip.getVisits(), visit, "SWAP")){
                         return badRequest("You cannot visit the same destination twice in a row!");
                     }
                     visit.update();
@@ -171,7 +196,7 @@ public class TripController extends Controller {
                     Destination dest = Destination.find.byId(Integer.parseInt(destID));
                     List<Visit> visits = trip.getVisits();
                     visit.setDestination(dest);
-                    if (hasRepeatDest(visits, visit, "ADD")) {
+                    if (tripFactory.hasRepeatDest(visits, visit, "ADD")) {
                         return badRequest("You cannot visit the same destination twice in a row!");
                     }
                     visit.update();
@@ -267,7 +292,7 @@ public class TripController extends Controller {
                         visit = visitfactory.createVisit(created, destination, trip, visitSize);
                     }
                 }
-                if (hasRepeatDest(visits, visit, "ADD")) {
+                if (tripFactory.hasRepeatDest(visits, visit, "ADD")) {
                     Date today = new Date();
                     today.setTime(today.getTime());
                     return badRequest(AddTripDestinations.render(incomingForm.withError("destName", "Cannot have repeated destinations"), trip, user.getMappedDestinations(), visits, today.toString()));
@@ -334,7 +359,7 @@ public class TripController extends Controller {
             Trip trip = visit.getTrip();
             if(trip.isUserOwner(user.getUserid())) {
                 List<Visit> visits = trip.getVisits();
-                if(hasRepeatDest(visits, visit, "DELETE")){
+                if(tripFactory.hasRepeatDest(visits, visit, "DELETE")){
                     //flash("danger", "You cannot visit the same destination twice in a row!");
                     return badRequest();
                 }
@@ -361,9 +386,8 @@ public class TripController extends Controller {
 
 
     /**
-     * Handles the request to swap two destinations from a trip. The two destinations are the two forms selected by the
-     * user. Swaps two destination (which gets converted into a visit) from the trip that the user is editing by
-     * swapping their visit order, then redirects the user to the edit trip page.
+     * Handles the request to swap two destinations from a trip. If the swapped list has repeat destinations or the
+     * user is not logged in or they are trying to swap a visit which does not belong to them, sends a bad request.
      * Displays an error if the user is not logged in.
      * @param request The HTTP request
      * @param tripid The trip ID that the user is editing.
@@ -372,75 +396,17 @@ public class TripController extends Controller {
     public Result swapvisits(Http.Request request, Integer tripid){
         //System.out.println(request.body().asJson());
         ArrayList<String> list = new ObjectMapper().convertValue(request.body().asJson(), ArrayList.class);
-        if(tripFactory.swapVisitsList(list)){
-            return ok();
+        User user = User.getCurrentUser(request);
+        if (user != null) {
+            if (tripFactory.swapVisitsList(list, user.getUserid())) {
+                return ok();
+            } else {
+                return badRequest();
+            }
         }
         else{
-            return badRequest();
+            return unauthorized();
         }
-    }
-
-    public boolean hasRepeatDest(List<Visit> visits, Visit visit, String operation){
-        if(operation.equalsIgnoreCase("DELETE")) {
-            if(visits.size() > 2) {
-                visits.sort(Comparator.comparing(Visit::getVisitorder));
-                Integer index = visits.indexOf(visit);
-                if(index != 0 && (index + 1 != visits.size())) {
-                    if (visits.get(index - 1).getVisitName().equalsIgnoreCase(visits.get(index + 1).getVisitName())) {
-                        return true;
-                    }
-                }
-            }
-        }
-        if(operation.equalsIgnoreCase("ADD")){
-            if(! visits.isEmpty()) {
-                visits.sort(Comparator.comparing(Visit::getVisitorder));
-                if (visits.get(visits.size() - 1).visitName.equalsIgnoreCase(visit.getVisitName())) {
-                    //probably the wrong status header
-                    return true;
-                }
-            }
-        }
-        if(operation.equalsIgnoreCase("SWAP")){
-            visits.sort(Comparator.comparing(Visit::getVisitorder));
-            Integer index = visits.indexOf(visit);
-            if(index != 0){
-                if(!(visits.get(index - 1).getVisitName().equalsIgnoreCase(visit.getVisitName()))) {
-                    if (visits.size() != index + 1) {
-                        if(visits.get(index + 1).getVisitName().equalsIgnoreCase(visit.getVisitName())){
-                            return true;
-                        }
-                    }
-                }
-                else{
-                    return true;
-                }
-            }
-            else{
-                if(visits.get(index + 1).getVisitName().equalsIgnoreCase(visit.getVisitName())){
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    public boolean hasRepeatDestSwap(List<Visit> visits, Visit visit1, Visit visit2){
-        visits.sort(Comparator.comparing(Visit::getVisitorder));
-        if(visits.size() > 2) {
-            Integer index1 = visits.indexOf(visit1);
-            Integer index2 = visits.indexOf(visit2);
-            Collections.swap(visits, index1, index2);
-            Integer temp1 = index1;
-            index1 = index2;
-            index2 = temp1;
-            visit1 = visits.get(index1);
-            visit2 = visits.get(index2);
-            if(hasRepeatDest(visits, visit1, "SWAP") || hasRepeatDest(visits, visit2, "SWAP")){
-                return true;
-            }
-        }
-        return false;
     }
 }
 

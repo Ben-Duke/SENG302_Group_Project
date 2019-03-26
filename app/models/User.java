@@ -314,7 +314,7 @@ public class User extends Model {
      * @param request
      * @return userid on success or -1.
      */
-    public static int getCurrentUserById(Http.Request request) {
+    public static int getCurrentUserId(Http.Request request) {
         String userId = request.session().getOptional("connected").orElse(null);
         if (userId != null) {
             User user = User.find.query().where().eq("userid", userId).findOne();
@@ -331,6 +331,15 @@ public class User extends Model {
         }
         return userPresent;
 
+    }
 
+    public boolean userIsAdmin() {
+        List<Admin> admins = Admin.find.all();
+        for (Admin admin : admins) {
+            if (admin.userId == userid) {
+                return true;
+            }
+        }
+        return false;
     }
 }

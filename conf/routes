@@ -22,11 +22,21 @@ GET     /users/login                controllers.LoginController.login()
 #Handles login request
 POST    /users/login                controllers.LoginController.loginrequest(request:Request)
 
-#Renders create profile page
-GET     /users/profile/update       controllers.ProfileController.createprofile(request: Request)
+#Renders update profile page
+GET     /users/profile/update       controllers.ProfileController.updateProfile(request: Request)
+
+#Renders admin page
+GET     /users/admin                controllers.AdminController.indexAdmin(request: Request)
+
+#Handles deleting admin
+GET     /users/admin/remove/:id     controllers.AdminController.adminToUser(request: Request, id: Integer)
+
+#Handles creating admin
+GET     /users/admin/make/:id       controllers.AdminController.userToAdmin(request: Request, id: Integer)
+
 
 #Handles updating profile
-POST    /users/profile/update       controllers.ProfileController.updateprofile(request: Request)
+POST    /users/profile/update       controllers.ProfileController.updateProfileRequest(request: Request)
 
 #Renders page for updating nationality and passport
 GET     /users/profile/update/natpass       controllers.ProfileController.updateNatPass(request: Request)
@@ -74,6 +84,8 @@ GET     /users/trips/:id            controllers.TripController.displaytrip(reque
 #Renders page that displays the home page where users can navigate to other pages
 GET     /users/home                 controllers.HomeController.showhome(request:Request)
 
+POST    /users/home         controllers.HomeController.upload(request:Request)
+
 #Handles logout request from the user
 GET     /users/logout               controllers.LoginController.logoutrequest(request:Request)
 
@@ -116,3 +128,4 @@ POST    /users/destinations/save        controllers.DestinationController.saveDe
 
 #Handles deleting a destination //TODO needs to be changed from get request
 GET     /users/destinations/delete/:id   controllers.DestinationController.deleteDestination(request : Request, id : Integer)
+

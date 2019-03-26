@@ -3,6 +3,13 @@
 
 # --- !Ups
 
+create table admin (
+  id                            bigint auto_increment not null,
+  user_id                       integer,
+  is_default                    boolean default false not null,
+  constraint pk_admin primary key (id)
+);
+
 create table company (
   id                            bigint auto_increment not null,
   name                          varchar(255),
@@ -65,7 +72,6 @@ create table user (
   gender                        varchar(255),
   f_name                        varchar(255),
   l_name                        varchar(255),
-  is_admin                      boolean,
   creation_date                 timestamp not null,
   constraint pk_user primary key (userid)
 );
@@ -86,6 +92,14 @@ create table user_traveller_type (
   user_userid                   integer not null,
   traveller_type_ttypeid        integer not null,
   constraint pk_user_traveller_type primary key (user_userid,traveller_type_ttypeid)
+);
+
+create table user_photo (
+  photo_id                      integer auto_increment not null,
+  url                           varchar(255),
+  is_public                     boolean default false not null,
+  user                          integer,
+  constraint pk_user_photo primary key (photo_id)
 );
 
 create table visit (
@@ -126,6 +140,9 @@ alter table user_traveller_type add constraint fk_user_traveller_type_user forei
 create index ix_user_traveller_type_traveller_type on user_traveller_type (traveller_type_ttypeid);
 alter table user_traveller_type add constraint fk_user_traveller_type_traveller_type foreign key (traveller_type_ttypeid) references traveller_type (ttypeid) on delete restrict on update restrict;
 
+create index ix_user_photo_user on user_photo (user);
+alter table user_photo add constraint fk_user_photo_user foreign key (user) references user (userid) on delete restrict on update restrict;
+
 create index ix_visit_destination on visit (destination);
 alter table visit add constraint fk_visit_destination foreign key (destination) references destination (destid) on delete restrict on update restrict;
 
@@ -162,11 +179,16 @@ drop index if exists ix_user_traveller_type_user;
 alter table user_traveller_type drop constraint if exists fk_user_traveller_type_traveller_type;
 drop index if exists ix_user_traveller_type_traveller_type;
 
+alter table user_photo drop constraint if exists fk_user_photo_user;
+drop index if exists ix_user_photo_user;
+
 alter table visit drop constraint if exists fk_visit_destination;
 drop index if exists ix_visit_destination;
 
 alter table visit drop constraint if exists fk_visit_trip;
 drop index if exists ix_visit_trip;
+
+drop table if exists admin;
 
 drop table if exists company;
 
@@ -189,6 +211,8 @@ drop table if exists user_nationality;
 drop table if exists user_passport;
 
 drop table if exists user_traveller_type;
+
+drop table if exists user_photo;
 
 drop table if exists visit;
 

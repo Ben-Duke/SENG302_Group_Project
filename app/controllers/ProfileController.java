@@ -155,8 +155,7 @@ public class ProfileController extends Controller {
         int userId = UserFactory.getCurrentUserId(request);
         if (userId != -1) {
             NatFormData formData = new NatFormData();
-            //Make construc at some point
-            //formData.userId = user.getUserid();
+
             formData.userId = userId;
             Form<NatFormData> userForm = formFactory.form(NatFormData.class).fill(formData);
 
@@ -195,14 +194,14 @@ public class ProfileController extends Controller {
         int user = UserFactory.getCurrentUserId(request);
         if (user != -1) {
 
-            //Nationality nationality = Nationality.find.byId(Integer.parseInt(nationalityID));
+
             UserFactory.addNatsOnUser(user, nationalityID);
 
         }
         else{
             return unauthorized(notLoggedInErrorStr);
         }
-        //return redirect(routes.UserController.userindex());
+
         return redirect(routes.ProfileController.updateNatPass());
     }
 

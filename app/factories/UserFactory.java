@@ -97,9 +97,9 @@ public class UserFactory {
             }
             }
 
-            for (String natname: nationalities) {
+            for (String natName: nationalities) {
 
-                int natId = getNatId(natname);
+                int natId = getNatId(natName);
                 UpdateNationality(user, natId);
             }
 

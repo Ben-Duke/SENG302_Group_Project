@@ -1,108 +1,115 @@
 package controllers;
 
-import models.*;
+import factories.UserFactory;
+import formdata.UpdateUserFormData;
+import models.Nationality;
+import models.Passport;
+import models.User;
 import play.data.DynamicForm;
 import play.data.Form;
 import play.data.FormFactory;
+import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
-import views.html.users.profile.showProfile;
-import views.html.users.profile.createprofile;
-import views.html.users.profile.updateNatPass;
+import views.html.users.profile.*;
 
 import javax.inject.Inject;
-
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
-import static play.mvc.Results.*;
-
-public class ProfileController {
-
+/**
+ * A Class to handle interactions from the client to the frontend.
+ */
+public class ProfileController extends Controller {
     @Inject
     FormFactory formFactory;
+    private String notLoggedInErrorStr = "Oops, you are not logged in";
 
     /**
-     * If the user is logged in, renders the create profile page.
+     * If the user is logged in, renders the update profile page.
      * If the user is not logged in, returns an error.
      * @param request The HTTP request
-     * @return create profile page or error page
+     * @return update profile page or error page
      */
-    public Result createprofile(Http.Request request){
+    public Result updateProfile(Http.Request request){
         User user = User.getCurrentUser(request);
         if (user != null) {
-            Form<User> userForm = formFactory.form(User.class).fill(user);
-            return ok(createprofile.render(userForm));
+            UpdateUserFormData updateUserFormData = UserFactory
+                                            .getUpdateUserFormDataForm(request);
+
+            Form<UpdateUserFormData> updateUserForm = formFactory
+                        .form(UpdateUserFormData.class).fill(updateUserFormData);
+
+            String[] gendersArray = {"Male", "Female", "Other"};
+            List gendersList = Arrays.asList(gendersArray);
+
+            return ok(updateProfile.render(updateUserForm, gendersList));
         }
         else{
-            return unauthorized("Oops, you are not logged in");
+            return unauthorized(notLoggedInErrorStr);
         }
     }
 
 
     /**
      * Handles the update profile request.
-     * If the user is logged in, their profile is updated with the form values and they are redirected to the home page.
+     * If the user is logged in, their profile is updated with the form values
+     * and they are redirected to the home page.
      * If the user is not logged in, an error message is displayed.
      * @param request The HTTP request
      * @return home page or error page
      */
-    public Result updateprofile(Http.Request request){
-        //Form<User> userForm = formFactory.form(User.class).bindFromRequest();
-        DynamicForm profileForm = formFactory.form().bindFromRequest();
-        String fName = profileForm.get("fName");
-        String lName = profileForm.get("lName");
-        String gender = profileForm.get("gender");
-        String dateofbirth = profileForm.get("dateOfBirth");
-        String admin = profileForm.get("admin");
+    public Result updateProfileRequest(Http.Request request){
+        Form<UpdateUserFormData> updateProfileForm = formFactory
+                            .form(UpdateUserFormData.class).bindFromRequest();
+
+        // checking if a user is logged in.
         User user = User.getCurrentUser(request);
         if (user != null) {
+            if (! updateProfileForm.hasErrors()) {
+                // good update user information request
+                // processing it
+                this.updateUserProfile(updateProfileForm, user);
+                return redirect(routes.HomeController.showhome());
 
-            if (fName.matches(".*\\d+.*") || fName.length() < 1) {
-                return unauthorized("ERROR: First name should only contain alphabets.");
             } else {
-                user.setfName(fName);
+                //bad request, errors present
+                String[] gendersArray = {"Male", "Female", "Other"};
+                List gendersList = Arrays.asList(gendersArray);
+                return badRequest(updateProfile.render(updateProfileForm, gendersList));
             }
-            if (lName.matches(".*\\d+.*") || lName.length() < 1) {
-                return unauthorized("ERROR: Last name should only contain alphabets.");
-            } else {
-                user.setlName(lName);
-            }
-            if (gender == null) {
-                return unauthorized("ERROR: Please select a gender.");
-            } else {
-                user.setGender(gender);
-            }
-            if (dateofbirth.length() < 8) {
-                return unauthorized("ERROR: Please enter the date correctly.");
-            } else {
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-                //convert String to LocalDate
-                LocalDate birthDate;
-                try {
-                    birthDate = LocalDate.parse(dateofbirth, formatter);
-                } catch (Exception e) {
-                    return badRequest("ERROR: Please enter the date correctly.");
-                }
-                user.setDateOfBirth(birthDate);
-            }
-
-
-            if (admin != null && admin.equals("true")) {
-                user.setAdmin(true);
-            }  else {
-                user.setAdmin(false);
-            }
-
-            user.update();
+        } else{
+            return unauthorized(notLoggedInErrorStr);
         }
-        else{
-            return unauthorized("Oops, you are not logged in");
-        }
-        //return redirect(routes.UserController.userindex());
-        return redirect(routes.HomeController.showhome());
+    }
+
+    /**
+     * Method to update a user using a UpdateUserFormData and user object.
+     *
+     * @param updateProfileForm A Form<UpdateUserFormData> containing the users
+     *                          new information.
+     * @param user The User to update.
+     */
+    public void updateUserProfile(Form<UpdateUserFormData> updateProfileForm,
+                                                                    User user) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+        String firstName = updateProfileForm.get().firstName;
+        String lastName = updateProfileForm.get().lastName;
+        String gender = updateProfileForm.get().gender;
+        String dateOfBirth = updateProfileForm.get().dateOfBirth;
+        LocalDate birthDate = LocalDate.parse(dateOfBirth, formatter);
+
+        user.setfName(firstName);
+        user.setlName(lastName);
+        user.setGender(gender);
+        user.setDateOfBirth(birthDate);
+
+        user.update();
+        // Show the user their home page
     }
 
     /**
@@ -126,7 +133,7 @@ public class ProfileController {
 
             return ok(showProfile.render(otherUser));
         }
-        return unauthorized("Oops, you are not logged in");
+        return unauthorized(notLoggedInErrorStr);
     }
 
     /**
@@ -151,7 +158,7 @@ public class ProfileController {
             return ok(updateNatPass.render(userForm, nationalities, passports, user));
         }
         else{
-            return unauthorized("Oops, you are not logged in");
+            return unauthorized(notLoggedInErrorStr);
         }
     }
 
@@ -177,9 +184,8 @@ public class ProfileController {
             }
         }
         else{
-            return unauthorized("Oops, you are not logged in");
+            return unauthorized(notLoggedInErrorStr);
         }
-        //return redirect(routes.UserController.userindex());
         return redirect(routes.ProfileController.updateNatPass());
     }
 
@@ -205,9 +211,8 @@ public class ProfileController {
             }
         }
         else{
-            return unauthorized("Oops, you are not logged in");
+            return unauthorized(notLoggedInErrorStr);
         }
-        //return redirect(routes.UserController.userindex());
         return redirect(routes.ProfileController.updateNatPass());
     }
 
@@ -233,9 +238,8 @@ public class ProfileController {
             }
         }
         else{
-            return unauthorized("Oops, you are not logged in");
+            return unauthorized(notLoggedInErrorStr);
         }
-        //return redirect(routes.UserController.userindex());
         return redirect(routes.ProfileController.updateNatPass());
     }
 
@@ -261,9 +265,8 @@ public class ProfileController {
             }
         }
         else{
-            return unauthorized("Oops, you are not logged in");
+            return unauthorized(notLoggedInErrorStr);
         }
-        //return redirect(routes.UserController.userindex());
         return redirect(routes.ProfileController.updateNatPass());
     }
 

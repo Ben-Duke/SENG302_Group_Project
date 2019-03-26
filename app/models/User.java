@@ -331,6 +331,15 @@ public class User extends Model {
         }
         return userPresent;
 
+    }
 
+    public boolean userIsAdmin() {
+        List<Admin> admins = Admin.find.all();
+        for (Admin admin : admins) {
+            if (admin.userId == userid) {
+                return true;
+            }
+        }
+        return false;
     }
 }

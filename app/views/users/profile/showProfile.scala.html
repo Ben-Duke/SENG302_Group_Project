@@ -1,6 +1,6 @@
 @(user: User)
     @import views.html.bootstrap3._
-    @main("Index"){
+    @main("Index") {
 
 
         <head>
@@ -8,7 +8,7 @@
         </head>
 
         <div class="container">
-            <h1>@user.fName @user.lName @for(admin <- admins) { @if(user.userid == admin.userId) {<img class="img"  width = "60" height="50" src="../assets/images/key_2_small.png"> } </h1>}
+            <h1>@user.fName @user.lName @if(user.userIsAdmin) {<img class="img"  width = "60" height="50" src="../assets/images/key_2_small.png"> } </h1>
         </div>
 
         <br>
@@ -28,16 +28,19 @@
                         <p>Nationality: @nationality.nationalityName</p>
                     }
                     <p>Creation date: @user.creationDate</p>
+                    <ul class="list-group">
                     @for(travellerType <- user.travellerTypes) {
-                        <p>Traveller type: @travellerType.travellerTypeName</p>
+                        <li class="list-group-item" style = "width: 300px;">
+                        @travellerType.travellerTypeName </li>
                     }
+                    </ul>
                 </div>
                 <div class="col-md-4">
                     <h2>Trips</h2>
                     <form>
                         <div class="list-group">
                         @for(trip <- user.getTrips) {
-                            @if(trip.getIsPublic()) {
+                            @if(trip.getIsPublic) {
                                 <a href="@routes.TripController.displaytrip(trip.getTripid)" class="list-group-item list-group-item-action">
                                     @trip.tripName
                                 </a>
@@ -47,10 +50,11 @@
                     </form>
                 </div>
                 <div class="col-md-4">
-                    <h2>Travel Partner</h2>
-                    <form>
-                        <button class="btn btn-default">Send Partner Request</button>
-                    </form>
+                    @*For the future*@
+                    @*<h2>Travel Partner</h2>*@
+                    @*<form>*@
+                        @*<button class="btn btn-default">Send Partner Request</button>*@
+                    @*</form>*@
                 </div>
             </div>
 
@@ -59,9 +63,10 @@
                     <img class="modal-content" id="img01">
                 </div>
                     <!-- defines the number of photos the user has stored in the database. Currently hardcoded until tasks are finished -->
-                @defining(3) { numberOfPhotos =>
-                @for(num <- 1 to numberOfPhotos) {
-                    <img class="img-thumbnail" id=@{num + "-img"} width="60" src="@{routes.Assets.at("images/" + num + "-img.png")}" alt="User Image">
+                @for(photo <- user.getUserPhotos) {
+                    @if(photo.isPublic) {
+                        <img class="img-thumbnail" id=@{photo.getUrl} width="60" src="@{routes.Assets.at("images/user_photos/user_" + user.getUserid + "/") + photo.getUrl}" alt="User Image">
+                    }
                 }
                 <script>
                         // Get the modal
@@ -75,14 +80,13 @@
                         var images = document.getElementsByClassName("img-thumbnail");
                         var modalImg = document.getElementById("img01");
                         // loops through each thumbnail and adds the event listener
-                        for (i = 0; i < @numberOfPhotos; i++) {
+                        for (i = 0; i < @user.getUserPhotos.length; i++) {
                             images[i].onclick = function() {
                                 modal.style.display = "block";
                                 modalImg.src = this.src;
                             };
                         }
                 </script>
-                }
             </div>
         </div>
 

@@ -2,6 +2,7 @@ package controllers;
 
 import factories.UserFactory;
 import formdata.UpdateUserFormData;
+import models.Admin;
 import models.Nationality;
 import models.Passport;
 import models.User;
@@ -127,6 +128,7 @@ public class ProfileController extends Controller {
         if (user != null) {
 
             User otherUser = User.find.byId(userId);
+
             if (otherUser == null) {
                 return badRequest("User does not exist");
             }

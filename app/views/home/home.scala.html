@@ -1,5 +1,5 @@
 @import play.filters.csrf.AddCSRFToken
-@(user: User, admins: List[Admin])
+@(user: User)
     @import views.html.bootstrap3._
     @main("Index"){
 
@@ -9,7 +9,7 @@
     </head>
 
     <div class="container">
-        <h1>@user.fName @user.lName @for(admin <- admins) { @if(user.userid == admin.userId) {<img class="img"  width = "60" height="50" src="../assets/images/key_2_small.png"> } </h1>}
+        <h1>@user.fName @user.lName @if(user.userIsAdmin) {<img class="img"  width = "60" height="50" src="../assets/images/key_2_small.png"> } </h1>
     </div>
 
     <br>
@@ -30,19 +30,20 @@
                 <p>Passport: @passport.passportName</p>
                 }
                 @for(nationality <- user.nationality) {
-                    <p>Nationality: @nationality.nationalityName</p>
+                <p>Nationality: @nationality.nationalityName</p>
                 }
                 <p>Creation date: @user.creationDate</p>
+                <p>Traveller Types:</p>
+                <ul class="list-group">
                 @for(travellerType <- user.travellerTypes) {
-                    <p>Traveller type: @travellerType.travellerTypeName</p>
+                    <li class="list-group-item" style = "width: 300px;">
+                        @travellerType.travellerTypeName </li>
                 }
+                </ul>
                 <form>
                     <button class="btn btn-default" formaction="@routes.ProfileController.updateProfile()">Update profile</button>
-                    <button class="btn btn-default" formaction="@routes.TravellerTypeController.updateTravellerType()">Update traveller type</button>
-                    @for(admin <- admins) {
-                    @if(user.getUserid == admin.getUserId){
-                    <button class="btn btn-default" formaction="@routes.AdminController.indexAdmin()">Admin</button>
-                    }
+                    @if(user.userIsAdmin) {
+                        <button class="btn btn-default" formaction="@routes.AdminController.indexAdmin()">Admin</button>
                     }
                 </form>
             </div>
@@ -94,13 +95,11 @@
                         <input type="file" name="picture" required>
 
                         <br>
-
                         <p>
                             <input type="submit" value="Upload">
                         </p>
 
                     }
-
 
                     </div>
                 </div>

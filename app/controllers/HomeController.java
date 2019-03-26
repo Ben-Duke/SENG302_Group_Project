@@ -36,7 +36,7 @@ public class HomeController {
      */
     public Result showhome(Http.Request request) {
         User user = User.getCurrentUser(request);
-        List<Admin> admins = Admin.find.all();
+
         if (user != null){
             if(user.hasEmptyField()){
                 return redirect(routes.ProfileController.updateProfile());
@@ -45,7 +45,7 @@ public class HomeController {
             } else if(! user.hasNationality()){
                 return redirect(routes.ProfileController.updateNatPass());
             } else {
-                return ok(home.render(user, admins));
+                return ok(home.render(user));
             }
         }
         return unauthorized("Oops, you are not logged in");
@@ -59,7 +59,6 @@ public class HomeController {
      */
     public Result upload(Http.Request request) {
         User user = User.getCurrentUser(request);
-        List<Admin> admins = Admin.find.all();
         //Get the photo data from the multipart form data encoding
         Http.MultipartFormData<Files.TemporaryFile> body = request.body().asMultipartFormData();
         Http.MultipartFormData.FilePart<Files.TemporaryFile> picture = body.getFile("picture");
@@ -80,11 +79,11 @@ public class HomeController {
                 }
                 file.copyTo(Paths.get(pathName ), true);
                 //DB saving
-                UserPhoto newPhoto = new UserPhoto(fileName, false, user);
+                UserPhoto newPhoto = new UserPhoto(fileName, true, user);
                 newPhoto.save();
-                return ok(home.render(user, admins));
+                return ok(home.render(user));
             }
         }
-        return badRequest(home.render(user, admins));
+        return badRequest(home.render(user));
     }
 }

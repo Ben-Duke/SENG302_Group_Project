@@ -3,6 +3,7 @@ package controllers;
 import java.util.Date;
 
 import factories.TripFactory;
+import factories.VisitFactory;
 import formdata.TripFormData;
 import formdata.VisitFormData;
 import models.*;
@@ -31,6 +32,8 @@ public class TripController extends Controller {
 
 
     TripFactory tripfactory = new TripFactory();
+    VisitFactory visitfactory = new VisitFactory();
+
 
     /**
      * If the user is logged in, renders the create trip page.
@@ -172,14 +175,14 @@ public class TripController extends Controller {
                 Visit visit = new Visit();
                 for (Destination destination : user.getDestinations()) {
                     if (destination.getDestName().equals(created.destName)) {
-                        visit = Visit.makeInstance(created, destination, trip, visitSize);
+                        visit = visitfactory.createVisit(created, destination, trip, visitSize);
                     }
                 }
 
                 if (hasRepeatDest(visits, visit, "ADD")) {
                     Date today = new Date();
                     today.setTime(today.getTime());
-                    return badRequest(AddTripDestinations.render(incomingForm.withError("destName", "Cannot have repeated destinations in this trip"), trip, user.getMappedDestinations(), visits, today.toString()));
+                    return badRequest(AddTripDestinations.render(incomingForm, trip, user.getMappedDestinations(), visits, today.toString()));
                 }
                 visit.save();
             } else {
@@ -189,9 +192,11 @@ public class TripController extends Controller {
         } else{
             return unauthorized("Oops, you are not logged in");
         }
-        //return redirect(routes.UserController.userindex());
         return redirect(routes.TripController.AddTripDestinations(tripid));
     }
+
+
+
 
     /**
      * If the user is logged in, renders the edit trip page. Users can add, swap or remove destinations from their

@@ -37,7 +37,7 @@
                 @for(travellerType <- user.travellerTypes) {
                 <p>Traveller type: @travellerType.travellerTypeName</p>
                 <form>
-                    <button class="btn btn-default" formaction="@routes.ProfileController.createprofile()">Update profile</button>
+                    <button class="btn btn-default" formaction="@routes.ProfileController.updateProfile()">Update profile</button>
                     <button class="btn btn-default" formaction="@routes.TravellerTypeController.updateTravellerType()">Update traveller type</button>
                 </form>
                 }

@@ -105,7 +105,7 @@ public class Destination extends Model {
      * @return true if userid is the owner of the entity, false if owner has a different user id.
      */
     public boolean isUserOwner(Integer userid){
-        return this.user.getUserid().equals(userid);
+        return this.user.getUserid() == userid;
     }
 
 

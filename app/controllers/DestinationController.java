@@ -183,7 +183,7 @@ public class DestinationController extends Controller {
                 if (destination.isUserOwner(user.userid)) {
 
                     Form<Destination> destForm = formFactory.form(Destination.class).fill(destination);
-                    Map typeList = Destination.getTypeList();
+                    Map<String, Boolean> typeList = Destination.getTypeList();
                     typeList.replace(destination.getDestType(), true);
 
                     return ok(editDestination.render(destForm, destination, UtilityFunctions.getIsoCountries(), typeList));

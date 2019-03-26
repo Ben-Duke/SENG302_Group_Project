@@ -1,4 +1,4 @@
-@(destForm : Form[Destination], countryMap: Map[String, Boolean]), typeMap: Map[String, Boolean])
+@(destForm : Form[Destination], countryMap: Map[String, Boolean], typeMap: Map[String, Boolean])
 @import helper._
 @import views.html.bootstrap3.text
 
@@ -65,8 +65,8 @@
                 </div>
             </div>
         </p>
+        }
     }
-}
 
         <a href="@routes.DestinationController.indexDestination()">Cancel</a>
     </body>

@@ -7,6 +7,7 @@ import io.ebean.Model;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @Entity
@@ -72,6 +73,12 @@ public class Trip extends Model {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public List<Visit> getOrderedVisits(){
+        List<Visit> visits = this.getVisits();
+        visits.sort(Comparator.comparing(Visit::getVisitorder));
+        return visits;
     }
 
     public void deleteVisit(Visit visit){

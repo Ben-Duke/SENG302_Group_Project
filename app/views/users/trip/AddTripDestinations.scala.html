@@ -48,7 +48,7 @@
                 @if(trip.visits.size < 2){
                     <h4>You need to have at least two destinations in your trip</h4>
                 } else {
-                    <a href="@routes.TripController.displaytrip(trip.tripid)"id="viewTrip" name="view" class="btn btn-default">View Trip</a>
+                    <a href="@routes.TripController.displaytrip(trip.tripid,"")"id="viewTrip" name="view" class="btn btn-default">View Trip</a>
                 }
             </div>
         </div>

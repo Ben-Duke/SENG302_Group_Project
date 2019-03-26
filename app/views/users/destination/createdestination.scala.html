@@ -1,4 +1,4 @@
-@(destForm : Form[Destination], countryMap: Map[String, Boolean])
+@(destForm : Form[Destination], countryMap: Map[String, Boolean]), typeMap: Map[String, Boolean])
 @import helper._
 @import views.html.bootstrap3.text
 
@@ -49,6 +49,13 @@
                 label = "Type",
                 placeholder = "type"
             )
+
+            @views.html.bootstrap3.select(destForm("destType"),
+                label = "Type",
+                optionMap = typeMap,
+                isMultiple = false,
+                help = "Select a type")
+        </fieldset>
         </fieldset>
         <p>
             <div class="form-group actions">
@@ -61,3 +68,6 @@
     }
 }
 
+        <a href="@routes.DestinationController.indexDestination()">Cancel</a>
+    </body>
+</html>

@@ -1,4 +1,4 @@
-@(destForm : Form[Destination], destination: Destination, countryMap: Map[String, Boolean])
+@(destForm : Form[Destination], destination: Destination, countryMap: Map[String, Boolean], typeMap: Map[String, Boolean])
 @import helper._
 @import views.html.bootstrap3._
 
@@ -51,10 +51,11 @@
     placeholder = "longitude"
     )
 
-    @text(destForm("destType"),
+    @views.html.bootstrap3.select(destForm("destType"),
     label = "Type",
-    placeholder = "type"
-    )
+    optionMap = typeMap,
+    isMultiple = false,
+    help = "Select a type")
 
 </fieldset>
 <p>

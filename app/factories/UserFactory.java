@@ -1,14 +1,18 @@
 package factories;
 import controllers.routes;
+import formdata.UpdateUserFormData;
 import formdata.UserFormData;
+import io.ebean.Update;
 import models.Nationality;
 import models.Passport;
 import models.TravellerType;
+import io.ebean.ExpressionList;
 import models.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import play.data.DynamicForm;
 import play.data.Form;
+import play.data.FormFactory;
 import play.mvc.Http;
 import play.mvc.Result;
 
@@ -17,13 +21,28 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 
+import java.util.ArrayList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.inject.Inject;
 
 public class UserFactory {
     private static Logger logger = LoggerFactory.getLogger("application");
+
+    @Inject
+    static FormFactory formFactory;
+
     public UserFactory(){//Just used to instanciate
          }
 
 
+    public boolean checkpassword(String email, String password) {
+        ExpressionList<User> usersExpressionList = User.find.query()
+                .where().eq("username", email).and().eq("password", password);
+
+        return usersExpressionList.findCount() == 1;
+    }
 
     /**
      * adds all of the following traveller types to the database
@@ -63,8 +82,6 @@ public class UserFactory {
         if(checkUsername(username)!=1){
         User user = new User(username, password, firstName, lastName, date, gender);
 
-
-
             user.save();
             for (int i = 0; i < tType.size(); i++) {
 
@@ -72,15 +89,17 @@ public class UserFactory {
                 UpdateTravellerType(user, tTypeId);
             }
             //Passport loop
+            if(passports != null) {
             for (int j = 0; j < passports.size(); j++) {
 
                 int passportId = getPassportId(passports.get(j));
                 UpdatePassport(user, passportId);
             }
+            }
 
-            for (int k = 0; k < nationalities.size(); k++) {
+            for (String natName: nationalities) {
 
-                int natId = getNatId(nationalities.get(k));
+                int natId = getNatId(natName);
                 UpdateNationality(user, natId);
             }
 
@@ -317,16 +336,93 @@ public class UserFactory {
 
     }
 
+    public static int getNatsForUserbyId(int userId){
+        int count = 0;
+        User user = User.find.query().where().eq("userid", userId).findOne();
+        count = user.nationality.size();
+        return count;
+    }
+
+    public static List<Passport> getUserPassports(int id){
+        return User.find.query().where().eq("userid", id).findOne().passports;
+    }
+
+    public static List<Nationality> getUserNats(int id){
+        return User.find.query().where().eq("userid", id).findOne().nationality;
+    }
+
+    public static void addPassportToUser(int id, String passportId){
+
+        Passport passport = Passport.find.byId(Integer.parseInt(passportId));
+
+        try {
+            User user = User.find.query().where().eq("userid", id).findOne();
+            user.addPassport(passport);
+            user.update();
+        } catch (io.ebean.DuplicateKeyException e) {
+            //return unauthorized("Oops, you have already have this passport");
+        }
+    }
+
+    public static void deletePassportOnUser(int id, String passportId){
+
+
+        try {
+            Passport passport = Passport.find.byId(Integer.parseInt(passportId));
+            User user = User.find.query().where().eq("userid", id).findOne();
+            user.deletePassport(passport);
+            user.update();
+        } catch (NumberFormatException e) {
+            //return  unauthorized("Oops, you do not have any passports to delete");
+        }
+    }
+
+    public static void deleteNatsOnUser(int id, String nationalityId){
+        User user = User.find.query().where().eq("userid", id).findOne();
+        try {
+            Nationality nationality = Nationality.find.byId(Integer.parseInt(nationalityId));
+            user.deleteNationality(nationality);
+            user.update();
+        } catch (NumberFormatException e) {
+            //return  unauthorized("Oops, you do not have any nationalities to delete");
+        }
+    }
+
+    public static void addNatsOnUser(int id, String nationalityId){
+        User user = User.find.query().where().eq("userid", id).findOne();
+        try {
+            Nationality nationality = Nationality.find.byId(Integer.parseInt(nationalityId));
+            user.addNationality(nationality);
+            user.update();
+        } catch (io.ebean.DuplicateKeyException e) {
+        }
+    }
+
     /** Returns a user id if they exist any number less than zero indicates the username is not in the database
      *
      * @param request
      * @return an int -1 indicates there are no entries in the database that have that user.
      */
-    public static int getCurrentUserById(Http.Request request) {
-        return User.getCurrentUserById(request);
+    public static int getCurrentUserId(Http.Request request) {
+        return User.getCurrentUserId(request);
     }
+
+
 
     public static int deleteNationalilty(){
         return 1;
+    }
+
+    public static UpdateUserFormData getUpdateUserFormDataForm(Http.Request request) {
+        User user = User.getCurrentUser(request);
+
+        if (user != null) {
+            UpdateUserFormData updateUserFormDataForm = new UpdateUserFormData(user);
+            return updateUserFormDataForm;
+//            Form<UpdateUserFormData> updateUserForm = formFactory.form(UpdateUserFormData.class).fill(updateUserFormDataForm);
+//            return updateUserForm;
+        } else {
+            return null;
+        }
     }
 }

@@ -105,13 +105,21 @@ public class User extends Model {
     @ManyToMany
     public List<TravellerType> travellerTypes;
 
+    /**
+     * Get's a List<UserPhoto> containing all the photos of the user.
+     *
+     * @return A List<UserPhoto> containing all the photos of the user.
+     */
+    public List<UserPhoto> getUserPhotos() {
+        return userPhotos;
+    }
+
+    @OneToMany(mappedBy = "user")
+    public List<UserPhoto> userPhotos;
+
     public static Finder<Integer,User> find = new Finder<>(User.class);
 
-
-    //GETTERS AND SETTERS
-
-
-    public Integer getUserid() {
+    public int getUserid() {
         return userid;
     }
 
@@ -306,7 +314,7 @@ public class User extends Model {
      * @param request
      * @return userid on success or -1.
      */
-    public static int getCurrentUserById(Http.Request request) {
+    public static int getCurrentUserId(Http.Request request) {
         String userId = request.session().getOptional("connected").orElse(null);
         if (userId != null) {
             User user = User.find.query().where().eq("userid", userId).findOne();

@@ -3,6 +3,7 @@ package controllers;
 import models.Destination;
 import models.User;
 
+
 import play.data.DynamicForm;
 import play.data.Form;
 import play.data.FormFactory;
@@ -122,7 +123,7 @@ public class DestinationController extends Controller {
         if (user != null) {
             Form<Destination> destForm = formFactory.form(Destination.class);
 
-            return ok(createdestination.render(destForm, UtilityFunctions.getIsoCountries()));
+            return ok(createdestination.render(destForm, UtilityFunctions.getIsoCountries(), Destination.getTypeList()));
         }
         return unauthorized("Oops, you are not logged in");
     }
@@ -182,8 +183,10 @@ public class DestinationController extends Controller {
                 if (destination.isUserOwner(user.userid)) {
 
                     Form<Destination> destForm = formFactory.form(Destination.class).fill(destination);
+                    Map typeList = Destination.getTypeList();
+                    typeList.replace(destination.getDestType(), true);
 
-                    return ok(editDestination.render(destForm, destination, UtilityFunctions.getIsoCountries()));
+                    return ok(editDestination.render(destForm, destination, UtilityFunctions.getIsoCountries(), typeList));
 
                 } else {
                     return unauthorized("Not your destination. You cant edit.");

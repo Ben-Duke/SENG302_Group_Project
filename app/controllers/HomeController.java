@@ -35,7 +35,7 @@ public class HomeController {
         User user = User.getCurrentUser(request);
         if (user != null) {
             if (user.hasEmptyField()) {
-                return redirect(routes.ProfileController.createprofile());
+                return redirect(routes.ProfileController.updateProfile());
             } else if (!user.hasTravellerTypes()) {
                 return redirect(routes.TravellerTypeController.updateTravellerType());
             } else if (!user.hasNationality()) {

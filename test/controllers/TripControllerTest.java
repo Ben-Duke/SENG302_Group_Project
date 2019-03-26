@@ -289,19 +289,19 @@ public class TripControllerTest extends WithApplication {
         //Instantiate trip controller to test methods
         TripController tripController = new TripController();
         //Test if the first row of the list can be deleted, making it [Banterbury, Canterbury] which is valid (should return false)
-        assertFalse(tripController.hasRepeatDest(visits, visits.get(0), "DELETE"));
+        assertFalse(tripfactory.hasRepeatDest(visits, visits.get(0), "DELETE"));
         //Test if the second row of the list can be deleted, making it [Canterbury, Canterbury] which is invalid (should return true)
-        assertTrue(tripController.hasRepeatDest(visits, visits.get(1), "DELETE"));
+        assertTrue(tripfactory.hasRepeatDest(visits, visits.get(1), "DELETE"));
         //Test if the second row of the list can be deleted, making it [Canterbury, Canterbury] which is valid (should return false)
-        assertFalse(tripController.hasRepeatDest(visits, visits.get(2), "DELETE"));
+        assertFalse(tripfactory.hasRepeatDest(visits, visits.get(2), "DELETE"));
         //University of Canterbury (same destination), testTrip, visitOrder = 4, arrival and departure currently broken
         VisitFormData visitformdata4 = new VisitFormData(Destination.find.byId(1).getDestName(), arrival1, departure1, Trip.find.byId(1).tripName);
         Visit visit4 = visitfactory.createVisit(visitformdata4, Destination.find.byId(1), Trip.find.byId(1), 4 );        //Test if the University of Canterbury can be added, making it [Canterbury, Banterbury, Canterbury, Canterbury] which is invalid (should return true)
-        assertTrue(tripController.hasRepeatDest(visits, visit4, "ADD"));
+        assertTrue(tripfactory.hasRepeatDest(visits, visit4, "ADD"));
         //University of Canterbury (same destination), testTrip, visitOrder = 4, arrival and departure currently broken
         VisitFormData visitformdata5 = new VisitFormData(Destination.find.byId(2).getDestName(), arrival1, departure1, Trip.find.byId(1).tripName);
         Visit visit5 = visitfactory.createVisit(visitformdata5, Destination.find.byId(2), Trip.find.byId(1), 5 );        //Test if the University of Banterbury can be added, making it [Canterbury, Banterbury, Canterbury, Banterbury] which is valid (should return false)
-        assertFalse(tripController.hasRepeatDest(visits, visit5, "ADD"));
+        assertFalse(tripfactory.hasRepeatDest(visits, visit5, "ADD"));
         //TO BE DONE
         //Test if the University of Canterbury can be swapped into the middle of the list (index 1). This assumes that the input list is already swapped.
         visit2.setDestination(Destination.find.byId(1));
@@ -309,25 +309,25 @@ public class TripControllerTest extends WithApplication {
         visits = User.find.byId(1).getTrips().get(0).getVisits();
         visits.sort(Comparator.comparing(Visit::getVisitorder));
         //Current list is [Canterbury, Canterbury, Canterbury] which is invalid for all indices (should return true)
-        assertTrue(tripController.hasRepeatDest(visits, visit1, "SWAP"));
-        assertTrue(tripController.hasRepeatDest(visits, visit2, "SWAP"));
-        assertTrue(tripController.hasRepeatDest(visits, visit3, "SWAP"));
+        assertTrue(tripfactory.hasRepeatDest(visits, visit1, "SWAP"));
+        assertTrue(tripfactory.hasRepeatDest(visits, visit2, "SWAP"));
+        assertTrue(tripfactory.hasRepeatDest(visits, visit3, "SWAP"));
         visit3.setDestination(Destination.find.byId(2));
         visit3.update();
         visits = User.find.byId(1).getTrips().get(0).getVisits();
         visits.sort(Comparator.comparing(Visit::getVisitorder));
         //Current list is [Canterbury, Canterbury, Banterbury] which is invalid for index 0, index 1 and valid for index 2
-        assertTrue(tripController.hasRepeatDest(visits, visit1, "SWAP"));
-        assertTrue(tripController.hasRepeatDest(visits, visit2, "SWAP"));
-        assertFalse(tripController.hasRepeatDest(visits, visit3, "SWAP"));
+        assertTrue(tripfactory.hasRepeatDest(visits, visit1, "SWAP"));
+        assertTrue(tripfactory.hasRepeatDest(visits, visit2, "SWAP"));
+        assertFalse(tripfactory.hasRepeatDest(visits, visit3, "SWAP"));
         visit1.setDestination(Destination.find.byId(2));
         visit1.update();
         visits = User.find.byId(1).getTrips().get(0).getVisits();
         visits.sort(Comparator.comparing(Visit::getVisitorder));
         //Current list is [Banterbury, Canterbury, Banterbury] which is valid for index 0, index 1 and index 2
-        assertFalse(tripController.hasRepeatDest(visits, visit1, "SWAP"));
-        assertFalse(tripController.hasRepeatDest(visits, visit2, "SWAP"));
-        assertFalse(tripController.hasRepeatDest(visits, visit3, "SWAP"));
+        assertFalse(tripfactory.hasRepeatDest(visits, visit1, "SWAP"));
+        assertFalse(tripfactory.hasRepeatDest(visits, visit2, "SWAP"));
+        assertFalse(tripfactory.hasRepeatDest(visits, visit3, "SWAP"));
     }
 
     /**

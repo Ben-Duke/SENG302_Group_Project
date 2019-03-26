@@ -11,7 +11,7 @@ import play.data.FormFactory;
 import play.mvc.Http;
 import play.mvc.Result;
 import play.mvc.Controller;
-import views.html.users.profile.createprofile_;
+import views.html.users.profile.*;
 import factories.UserFactory;
 
 import javax.inject.Inject;

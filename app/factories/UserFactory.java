@@ -1,6 +1,8 @@
 package factories;
 import controllers.routes;
+import formdata.UpdateUserFormData;
 import formdata.UserFormData;
+import io.ebean.Update;
 import models.Nationality;
 import models.Passport;
 import models.TravellerType;
@@ -10,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import play.data.DynamicForm;
 import play.data.Form;
+import play.data.FormFactory;
 import play.mvc.Http;
 import play.mvc.Result;
 
@@ -22,8 +25,14 @@ import java.util.ArrayList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
+
 public class UserFactory {
     private static Logger logger = LoggerFactory.getLogger("application");
+
+    @Inject
+    static FormFactory formFactory;
+
     public UserFactory(){//Just used to instanciate
          }
 
@@ -338,5 +347,18 @@ public class UserFactory {
 
     public static int deleteNationalilty(){
         return 1;
+    }
+
+    public static UpdateUserFormData getUpdateUserFormDataForm(Http.Request request) {
+        User user = User.getCurrentUser(request);
+
+        if (user != null) {
+            UpdateUserFormData updateUserFormDataForm = new UpdateUserFormData(user);
+            return updateUserFormDataForm;
+//            Form<UpdateUserFormData> updateUserForm = formFactory.form(UpdateUserFormData.class).fill(updateUserFormDataForm);
+//            return updateUserForm;
+        } else {
+            return null;
+        }
     }
 }

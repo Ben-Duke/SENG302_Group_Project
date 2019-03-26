@@ -94,7 +94,7 @@ public class TripController extends Controller {
                 }
             }
             TripFormData created = incomingForm.get();
-            int tripid = tripfactory.createTrip(created);
+            int tripid = tripfactory.createTrip(created, user);
             return redirect(routes.TripController.AddTripDestinations(tripid));
         }
         else{

@@ -8,13 +8,7 @@ import play.mvc.Http;
 import javax.persistence.*;
 
 @Entity
-public class Admin extends Model {
-
-    /**
-     * The ID of the admin. This is the primary key.
-     */
-    @Id
-    public Integer adminId;
+public class Admin extends BaseModel {
 
     /**
      * The ID of the user. This is the foreign key to user.
@@ -37,14 +31,6 @@ public class Admin extends Model {
     public Admin(Integer userId, boolean isDefault){
         this.userId = userId;
         this.isDefault = isDefault;
-    }
-
-    public Integer getAdminId() {
-        return adminId;
-    }
-
-    public void setAdminId(Integer adminId) {
-        this.adminId = adminId;
     }
 
     public Integer getUserId() {

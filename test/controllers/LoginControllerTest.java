@@ -85,16 +85,16 @@ public class LoginControllerTest extends WithApplication {
 //        Result result = Helpers.route(app, request);
 //        assertEquals(NOT_FOUND, result.status());
 //    }
-
-    @Test
-    public void loginrequestWithValidUsernameWithValidPassword() {
-        Map<String, String> formData = new HashMap<>();
-        formData.put("username", "gon12@uclive.ac.nz");
-        formData.put("password", "hunter22");
-        Http.RequestBuilder request = Helpers.fakeRequest().bodyForm(formData).method(Helpers.POST).uri("/users/login");
-        Result result = Helpers.route(app, request);
-        assertEquals(SEE_OTHER, result.status());
-    }
+//
+//    @Test
+//    public void loginrequestWithValidUsernameWithValidPassword() {
+//        Map<String, String> formData = new HashMap<>();
+//        formData.put("username", "gon12@uclive.ac.nz");
+//        formData.put("password", "hunter22");
+//        Http.RequestBuilder request = Helpers.fakeRequest().bodyForm(formData).method(Helpers.POST).uri("/users/login");
+//        Result result = Helpers.route(app, request);
+//        assertEquals(SEE_OTHER, result.status());
+//    }
 
     @Test
     public void logoutrequest() {

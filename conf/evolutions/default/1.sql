@@ -4,10 +4,10 @@
 # --- !Ups
 
 create table admin (
-  admin_id                      integer auto_increment not null,
+  id                            bigint auto_increment not null,
   user_id                       integer,
   is_default                    boolean default false not null,
-  constraint pk_admin primary key (admin_id)
+  constraint pk_admin primary key (id)
 );
 
 create table company (

@@ -13,10 +13,9 @@ public class VisitFactory {
         visit.trip = trip;
         visit.destination = destination;
         visit.visitorder = visitorder;
-        visit.arrival = visitformdata.arrival;
-        visit.departure = visitformdata.departure;
+        visit.setArrival(visitformdata.arrival);
+        visit.setDeparture(visitformdata.departure);
         visit.visitName = destination.destName;
-        visit.save();
         return visit;
     }
 }

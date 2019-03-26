@@ -9,6 +9,7 @@ import play.mvc.Http;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import static play.mvc.Results.badRequest;
@@ -352,5 +353,22 @@ public class User extends Model {
         return userPresent;
 
 
+    }
+
+    public static List getOrderedTripList(User user) {
+        List<Trip> orderedTripList = new ArrayList<Trip>();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        for (Trip trip: user.getTrips()) {
+            String arrival = trip.getTripStart();
+            LocalDate arrivalDate = LocalDate.parse(arrival, formatter);
+            for (Trip finalTrip: orderedTripList) {
+                if (arrival.compareTo(finalTrip.getTripStart()) < 0) {
+                    return orderedTripList;
+                }
+
+            }
+
+        }
+        return orderedTripList;
     }
 }

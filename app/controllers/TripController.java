@@ -178,11 +178,10 @@ public class TripController extends Controller {
                         visit = visitfactory.createVisit(created, destination, trip, visitSize);
                     }
                 }
-
                 if (hasRepeatDest(visits, visit, "ADD")) {
                     Date today = new Date();
                     today.setTime(today.getTime());
-                    return badRequest(AddTripDestinations.render(incomingForm, trip, user.getMappedDestinations(), visits, today.toString()));
+                    return badRequest(AddTripDestinations.render(incomingForm.withError("destName", "Cannot have repeated destinations"), trip, user.getMappedDestinations(), visits, today.toString()));
                 }
                 visit.save();
             } else {
@@ -212,7 +211,7 @@ public class TripController extends Controller {
         if (user != null) {
             List<Destination> destinations = user.getDestinations();
             if (trip != null) {
-                Form<VisitFormData> incomingForm = formFactory.form(VisitFormData.class).bindFromRequest(request);
+                Form<VisitFormData> incomingForm = formFactory.form(VisitFormData.class);
                 List<Visit> visits = trip.getVisits();
                 visits.sort(Comparator.comparing(Visit::getVisitorder));
                 return ok(editTrip.render(incomingForm, trip, destinations, visits));
@@ -237,7 +236,7 @@ public class TripController extends Controller {
      * @return edit trip page or error page
      */
     public Result deletevisit(Http.Request request, Integer tripid){
-        DynamicForm visitForm = formFactory.form().bindFromRequest();
+        DynamicForm visitForm = formFactory.form().bindFromRequest(request);
         String visitID = visitForm.get("visitid");
         User user = User.getCurrentUser(request);
         if (user != null) {

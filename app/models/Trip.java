@@ -109,6 +109,8 @@ public class Trip extends Model {
         return false;
     }
 
+
+
     /**
      * Checks if the given user id (of the currently logged in user) is the same as the owner of the entity.
      * @param userid the user id to be tested

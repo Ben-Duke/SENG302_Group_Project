@@ -1,6 +1,7 @@
 package controllers;
 
 import factories.TripFactory;
+import factories.VisitFactory;
 import formdata.TripFormData;
 import formdata.VisitFormData;
 import models.Destination;
@@ -42,10 +43,9 @@ public class TripControllerTest extends WithApplication {
      */
     Database database;
 
-    FormFactory formFactory;
-
 
     TripFactory tripfactory = new TripFactory();
+    VisitFactory visitfactory = new VisitFactory();
 
     /**
      * Sets up the fake database before each test
@@ -63,7 +63,7 @@ public class TripControllerTest extends WithApplication {
         user.save();
         //Initialises a test trip with name "testTrip" and saves it to the database.
         TripFormData tripForm = new TripFormData("testTrip", user);
-        int tripid = tripfactory.createTrip(tripForm);
+        int tripid = tripfactory.createTrip(tripForm, user);
         Destination destination = new Destination("University of Canterbury",
                 "University",
                 "Ilam",
@@ -148,7 +148,7 @@ public class TripControllerTest extends WithApplication {
         String departure = "2019-06-09";
         //University of Canterbury
         VisitFormData visitformdata = new VisitFormData(Destination.find.byId(1).getDestName(), arrival, departure, Trip.find.byId(1).tripName);
-        Visit visit = Visit.makeInstance(visitformdata, Destination.find.byId(1), Trip.find.byId(1), 1 );
+        Visit visit = visitfactory.createVisit(visitformdata, Destination.find.byId(1), Trip.find.byId(1), 1 );
         visit.save();
         formData.put("destination", Destination.find.byId(1).getDestName());
         formData.put("arrival", arrival);
@@ -190,7 +190,7 @@ public class TripControllerTest extends WithApplication {
         String departure = "2019-06-09";
         //University of Canterbury, testTrip, visitOrder = 1
         VisitFormData visitformdata = new VisitFormData(Destination.find.byId(1).getDestName(), arrival, departure, Trip.find.byId(1).tripName);
-        Visit visit = Visit.makeInstance(visitformdata, Destination.find.byId(1), Trip.find.byId(1), 1 );
+        Visit visit = visitfactory.createVisit(visitformdata, Destination.find.byId(1), Trip.find.byId(1), 1 );
         visit.save();
         //There should be 1 row in trips, which is the visit that was put in.
         assertEquals(1, User.find.byId(1).getTrips().get(0).getVisits().size());
@@ -218,11 +218,11 @@ public class TripControllerTest extends WithApplication {
         String departure2 = "2018-06-09";
         //University of Canterbury, testTrip, visitOrder = 1
         VisitFormData visitformdata1 = new VisitFormData(Destination.find.byId(1).getDestName(), arrival1, departure1, Trip.find.byId(1).tripName);
-        Visit visit1 = Visit.makeInstance(visitformdata1, Destination.find.byId(1), Trip.find.byId(1), 1 );
+        Visit visit1 = visitfactory.createVisit(visitformdata1, Destination.find.byId(1), Trip.find.byId(1), 1 );
         visit1.save();
         //University of Banterbury, testTrip, visitOrder = 2
         VisitFormData visitformdata2 = new VisitFormData(Destination.find.byId(2).getDestName(), arrival1, departure1, Trip.find.byId(1).tripName);
-        Visit visit2 = Visit.makeInstance(visitformdata2, Destination.find.byId(2), Trip.find.byId(1), 2 );
+        Visit visit2 = visitfactory.createVisit(visitformdata2, Destination.find.byId(2), Trip.find.byId(1), 2 );
         visit2.save();
         visit2.save();
         //University of Canterbury should be on the first row and University of Banterbury should be on the second row before swap
@@ -259,15 +259,15 @@ public class TripControllerTest extends WithApplication {
         String departure2 = "2018-06-09";
         //University of Canterbury, testTrip, visitOrder = 1
         VisitFormData visitformdata1 = new VisitFormData(Destination.find.byId(1).getDestName(), arrival1, departure1, Trip.find.byId(1).tripName);
-        Visit visit1 = Visit.makeInstance(visitformdata1, Destination.find.byId(1), Trip.find.byId(1), 1 );
+        Visit visit1 = visitfactory.createVisit(visitformdata1, Destination.find.byId(1), Trip.find.byId(1), 1 );
         visit1.save();
         //University of Banterbury, testTrip, visitOrder = 2
         VisitFormData visitformdata2 = new VisitFormData(Destination.find.byId(2).getDestName(), arrival2, departure2, Trip.find.byId(1).tripName);
-        Visit visit2 = Visit.makeInstance(visitformdata2, Destination.find.byId(2), Trip.find.byId(1), 2 );
+        Visit visit2 = visitfactory.createVisit(visitformdata2, Destination.find.byId(2), Trip.find.byId(1), 2 );
         visit2.save();
         //University of Canterbury (same destination), testTrip, visitOrder = 3, arrival and departure currently broken
         VisitFormData visitformdata3 = new VisitFormData(Destination.find.byId(1).getDestName(), arrival1, departure1, Trip.find.byId(1).tripName);
-        Visit visit3 = Visit.makeInstance(visitformdata3, Destination.find.byId(1), Trip.find.byId(1), 3 );
+        Visit visit3 = visitfactory.createVisit(visitformdata3, Destination.find.byId(1), Trip.find.byId(1), 3 );
         visit3.save();
         //Get the list of visits and sort it by order. Current list: [Canterbury, Banterbury, Canterbury]
         List<Visit> visits = User.find.byId(1).getTrips().get(0).getVisits();
@@ -282,11 +282,11 @@ public class TripControllerTest extends WithApplication {
         assertFalse(tripController.hasRepeatDest(visits, visits.get(2), "DELETE"));
         //University of Canterbury (same destination), testTrip, visitOrder = 4, arrival and departure currently broken
         VisitFormData visitformdata4 = new VisitFormData(Destination.find.byId(1).getDestName(), arrival1, departure1, Trip.find.byId(1).tripName);
-        Visit visit4 = Visit.makeInstance(visitformdata4, Destination.find.byId(1), Trip.find.byId(1), 4 );        //Test if the University of Canterbury can be added, making it [Canterbury, Banterbury, Canterbury, Canterbury] which is invalid (should return true)
+        Visit visit4 = visitfactory.createVisit(visitformdata4, Destination.find.byId(1), Trip.find.byId(1), 4 );        //Test if the University of Canterbury can be added, making it [Canterbury, Banterbury, Canterbury, Canterbury] which is invalid (should return true)
         assertTrue(tripController.hasRepeatDest(visits, visit4, "ADD"));
         //University of Canterbury (same destination), testTrip, visitOrder = 4, arrival and departure currently broken
         VisitFormData visitformdata5 = new VisitFormData(Destination.find.byId(2).getDestName(), arrival1, departure1, Trip.find.byId(1).tripName);
-        Visit visit5 = Visit.makeInstance(visitformdata5, Destination.find.byId(2), Trip.find.byId(1), 5 );        //Test if the University of Banterbury can be added, making it [Canterbury, Banterbury, Canterbury, Banterbury] which is valid (should return false)
+        Visit visit5 = visitfactory.createVisit(visitformdata5, Destination.find.byId(2), Trip.find.byId(1), 5 );        //Test if the University of Banterbury can be added, making it [Canterbury, Banterbury, Canterbury, Banterbury] which is valid (should return false)
         assertFalse(tripController.hasRepeatDest(visits, visit5, "ADD"));
         //TO BE DONE
         //Test if the University of Canterbury can be swapped into the middle of the list (index 1). This assumes that the input list is already swapped.
@@ -329,19 +329,19 @@ public class TripControllerTest extends WithApplication {
         String departure2 = "2018-06-09";
         //University of Canterbury, testTrip, visitOrder = 1
         VisitFormData visitformdata1 = new VisitFormData(Destination.find.byId(1).getDestName(), arrival1, departure1, Trip.find.byId(1).tripName);
-        Visit visit1 = Visit.makeInstance(visitformdata1, Destination.find.byId(1), Trip.find.byId(1), 1 );
+        Visit visit1 = visitfactory.createVisit(visitformdata1, Destination.find.byId(1), Trip.find.byId(1), 1 );
         visit1.save();
         //University of Banterbury, testTrip, visitOrder = 2
         VisitFormData visitformdata2 = new VisitFormData(Destination.find.byId(2).getDestName(), arrival2, departure2, Trip.find.byId(1).tripName);
-        Visit visit2 = Visit.makeInstance(visitformdata2, Destination.find.byId(2), Trip.find.byId(1), 2 );
+        Visit visit2 = visitfactory.createVisit(visitformdata2, Destination.find.byId(2), Trip.find.byId(1), 2 );
         visit2.save();
         //University of Canterbury (same destination), testTrip, visitOrder = 3, arrival and departure currently broken
         VisitFormData visitformdata3 = new VisitFormData(Destination.find.byId(1).getDestName(), arrival1, departure1, Trip.find.byId(1).tripName);
-        Visit visit3 = Visit.makeInstance(visitformdata3, Destination.find.byId(1), Trip.find.byId(1), 3 );
+        Visit visit3 = visitfactory.createVisit(visitformdata3, Destination.find.byId(1), Trip.find.byId(1), 3 );
         visit3.save();
         //Panem, testTrip, visitOrder = 4, arrival and departure currently broken
         VisitFormData visitformdata4 = new VisitFormData(Destination.find.byId(3).getDestName(), arrival1, departure1, Trip.find.byId(1).tripName);
-        Visit visit4 = Visit.makeInstance(visitformdata4, Destination.find.byId(3), Trip.find.byId(1), 4 );
+        Visit visit4 = visitfactory.createVisit(visitformdata4, Destination.find.byId(3), Trip.find.byId(1), 4 );
         visit4.save();
         //Get the list of visits and sort it by order. Current list: Canterbury, Banterbury, Canterbury, Panem.
         List<Visit> visits = User.find.byId(1).getTrips().get(0).getVisits();

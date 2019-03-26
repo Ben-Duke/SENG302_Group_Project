@@ -46,7 +46,7 @@ public class LoginController {
     public Result loginrequest(Http.Request request)
     {
         Form<LoginFormData> userLoginForm = formFactory.form(LoginFormData.class)
-                                            .bindFromRequest();
+                                            .bindFromRequest(request);
         if (userLoginForm.hasErrors()) {
             // redirect user to same login page with some errors.
             return badRequest(loginPage.render(userLoginForm));

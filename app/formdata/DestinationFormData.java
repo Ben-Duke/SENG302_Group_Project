@@ -1,10 +1,7 @@
 package formdata;
 
-import models.Destination;
 import play.data.validation.Constraints;
 import play.data.validation.ValidationError;
-
-import utilities.UtilityFunctions;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,17 +20,6 @@ public class DestinationFormData implements Constraints.Validatable<List<Validat
     public String date;
     public String country;
 
-    public DestinationFormData() {}
-
-    public DestinationFormData(Destination destination) {
-        this.name = destination.destName;
-        this.district = destination.district;
-        this.latitude = String.valueOf(destination.latitude);
-        this.longitude = String.valueOf(destination.longitude);
-        this.type = destination.destType;
-        this.country = destination.country;
-    }
-
     /**
      * A function that is called when creating a destination to the the types
      *
@@ -50,16 +36,6 @@ public class DestinationFormData implements Constraints.Validatable<List<Validat
         typeMap.put("natural feature", false);
         return typeMap;
     }
-
-
-    /**
-     * A method called when creating a destination to show the countries in a select box
-     * @return A map of all countries in the world and a boolean set to false
-     */
-    public static Map<String, Boolean> getCountryList() {
-        return UtilityFunctions.getIsoCountries();
-    }
-
 
     /**
      * A function that is called when the DestinationFormData is submitted and returns a list of errors if any or null.

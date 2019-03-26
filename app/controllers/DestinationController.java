@@ -1,7 +1,5 @@
 package controllers;
 
-import factories.DestinationFactory;
-import formdata.DestinationFormData;
 import models.Destination;
 import models.User;
 
@@ -122,7 +120,7 @@ public class DestinationController extends Controller {
         User user = User.getCurrentUser(request);
 
         if (user != null) {
-            Form<DestinationFormData> destForm = formFactory.form(DestinationFormData.class);
+            Form<Destination> destForm = formFactory.form(Destination.class);
 
             return ok(createdestination.render(destForm, UtilityFunctions.getIsoCountries()));
         }
@@ -178,31 +176,24 @@ public class DestinationController extends Controller {
         User user = User.getCurrentUser(request);
 
         if (user != null) {
-            DestinationFactory destFactory = new DestinationFactory();
-            DestinationFormData destFormData = destFactory.getFormData(destId);
-            Form<DestinationFormData> destForm = destFactory.getForm(formFactory, destFormData);
-            if (destFactory != null) {
-                return ok(editDestination.render(destForm, destFormData, UtilityFunctions.getIsoCountries(), destId));
+            Destination destination = Destination.find.query().where().eq("destid", destId).findOne();
+
+            if (destination != null) {
+                if (destination.isUserOwner(user.userid)) {
+
+                    Form<Destination> destForm = formFactory.form(Destination.class).fill(destination);
+
+                    return ok(editDestination.render(destForm, destination, UtilityFunctions.getIsoCountries()));
+
+                } else {
+                    return unauthorized("Not your destination. You cant edit.");
+                }
+            } else {
+                return notFound("Destination does not exist");
             }
-//            Destination destination = Destination.find.query().where().eq("destid", destId).findOne();
-//
-//            if (destination != null) {
-//                if (destination.isUserOwner(user.userid)) {
-//
-//                    Form<Destination> destForm = formFactory.form(Destination.class).fill(destination);
-//
-//                    return ok(editDestination.render(destForm, destination, UtilityFunctions.getIsoCountries()));
-//
-//                } else {
-//                    return unauthorized("Not your destination. You cant edit.");
-//                }
-//            } else {
-//                return notFound("Destination does not exist");
-//            }
         } else {
             return unauthorized("Oops, you are not logged in");
         }
-        return null;
     }
 
     /**
@@ -293,7 +284,5 @@ public class DestinationController extends Controller {
 
         return redirect(routes.DestinationController.indexDestination());
     }
+
 }
-
-
-

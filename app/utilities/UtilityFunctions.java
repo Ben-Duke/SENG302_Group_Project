@@ -162,7 +162,7 @@ public class UtilityFunctions {
      * @return true if the country is real, else false
      */
     public static boolean validateCountryType(String country) {
-        if (country == null) {
+        if (country == null) { ;
             return false;
         }
         Map<String, Boolean> countryMap = getIsoCountries();

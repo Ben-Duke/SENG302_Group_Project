@@ -98,6 +98,17 @@ public class UpdateUserFormData implements Constraints.Validatable<List<Validati
                 try {
                     // not useless, if this fails it throws an error
                     birthDate = LocalDate.parse(dateOfBirth, formatter);
+
+                    LocalDate dateNow = LocalDate.now();
+                    LocalDate date150YearsAgo = LocalDate.now().minusYears(150);
+
+                    if (! birthDate.isAfter(date150YearsAgo) ||
+                        ! birthDate.isBefore(dateNow)) {
+                        String dobError = "Birth date must be within the last 150 years.";
+                        errors.add(new ValidationError("dateOfBirth", dobError));
+                    }
+
+
                 } catch (Exception e) {
                     errors.add(new ValidationError("dateOfBirth", dateOfBirthErrorStr));
                 }

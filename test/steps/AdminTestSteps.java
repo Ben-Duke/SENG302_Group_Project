@@ -69,28 +69,4 @@ public class AdminTestSteps {
         // Write code here that turns the phrase above into concrete actions
         throw new cucumber.api.PendingException();
     }
-
-    @When("the system starts up")
-    public void theSystemStartsUp() {
-        // Write code here that turns the phrase above into concrete actions
-        throw new cucumber.api.PendingException();
-    }
-
-    @Then("a default administrator will be created with username {string} and password {string}")
-    public void aDefaultAdministratorWillBeCreatedWithUsernameAndPassword(String string, String string2) {
-        // Write code here that turns the phrase above into concrete actions
-        throw new cucumber.api.PendingException();
-    }
-
-    @Given("there is a default administrator")
-    public void thereIsADefaultAdministrator() {
-        // Write code here that turns the phrase above into concrete actions
-        throw new cucumber.api.PendingException();
-    }
-
-    @Then("no new default administrator is created")
-    public void noNewDefaultAdministratorIsCreated() {
-        // Write code here that turns the phrase above into concrete actions
-        throw new cucumber.api.PendingException();
-    }
 }

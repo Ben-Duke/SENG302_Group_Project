@@ -21,8 +21,6 @@ public class Trip extends Model {
 
     public String tripName;
 
-    private Boolean isTripPublic = true;
-
     @Column(columnDefinition = "integer default 0")
     public Integer removedVisits;
 
@@ -38,8 +36,6 @@ public class Trip extends Model {
     public Integer getTripid() {
         return tripid;
     }
-
-    public Boolean getIsPublic() { return isTripPublic; }
 
     public void setTripid(Integer tripid) {
         this.tripid = tripid;

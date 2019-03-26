@@ -355,20 +355,57 @@ public class User extends Model {
 
     }
 
-    public static List getOrderedTripList(User user) {
-        List<Trip> orderedTripList = new ArrayList<Trip>();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        for (Trip trip: user.getTrips()) {
-            String arrival = trip.getTripStart();
-            LocalDate arrivalDate = LocalDate.parse(arrival, formatter);
-            for (Trip finalTrip: orderedTripList) {
-                if (arrival.compareTo(finalTrip.getTripStart()) < 0) {
-                    return orderedTripList;
+    /**
+     * Gets a list of the user's trips, sorted by the earliest arrival date of their visits within each trip.
+     * If there are no arrival dates set within a trip, the trip is placed at the bottom of the list.
+     * @return the list of sorted trips
+     */
+    public List<Trip> getTripsSorted()
+    {
+        HashMap<Trip,LocalDate> datesMap = new HashMap<>();
+        for(Trip trip: trips){
+            ArrayList<LocalDate> datesList = new ArrayList<>();
+            for(Visit visit: trip.getVisits()){
+                if(visit.getArrival() != null && !(visit.getArrival().isEmpty())) {
+                    String arrival = visit.getArrival();
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                    LocalDate arrivalDate = LocalDate.parse(arrival, formatter);
+                    datesList.add(arrivalDate);
                 }
-
+                else{
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                    LocalDate arrivalDate = LocalDate.parse("2100-12-25", formatter);
+                    datesList.add(arrivalDate);
+                }
             }
-
+            Collections.sort(datesList);
+            datesMap.put(trip, datesList.get(0));
         }
-        return orderedTripList;
+        datesMap = sortByValues(datesMap);
+        Set datesSet = datesMap.keySet();
+        List<Trip> sortedTrips = new ArrayList(datesSet);
+        return sortedTrips;
+    }
+
+    private static HashMap sortByValues(HashMap map) {
+        List list = new LinkedList(map.entrySet());
+        // Defined Custom Comparator here
+        Collections.sort(list, new Comparator() {
+            public int compare(Object o1, Object o2) {
+                return ((Comparable) ((Map.Entry) (o1)).getValue())
+                        .compareTo(((Map.Entry) (o2)).getValue());
+            }
+        });
+
+        // Here I am copying the sorted list in HashMap
+        // using LinkedHashMap to preserve the insertion order
+        HashMap sortedHashMap = new LinkedHashMap();
+        for (Iterator it = list.iterator(); it.hasNext();) {
+            Map.Entry entry = (Map.Entry) it.next();
+            sortedHashMap.put(entry.getKey(), entry.getValue());
+        }
+        return sortedHashMap;
     }
 }
+
+

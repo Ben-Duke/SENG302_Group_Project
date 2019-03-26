@@ -47,7 +47,7 @@
                 <h2>Trips</h2>
                 <form>
                     <div class="list-group">
-                        @for(trip <- user.getTrips) {
+                        @for(trip <- user.getTripsSorted()) {
                         <a href="@routes.TripController.displaytrip(trip.tripid)" class="list-group-item list-group-item-action">
                             @trip.tripName
                         </a>

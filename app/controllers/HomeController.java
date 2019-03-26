@@ -39,7 +39,7 @@ public class HomeController {
         List<Admin> admins = Admin.find.all();
         if (user != null){
             if(user.hasEmptyField()){
-                return redirect(routes.ProfileController.updateprofile());
+                return redirect(routes.ProfileController.updateProfile());
             } else if (! user.hasTravellerTypes()) {
                 return redirect(routes.TravellerTypeController.updateTravellerType());
             } else if(! user.hasNationality()){
@@ -59,6 +59,7 @@ public class HomeController {
      */
     public Result upload(Http.Request request) {
         User user = User.getCurrentUser(request);
+        List<Admin> admins = Admin.find.all();
         //Get the photo data from the multipart form data encoding
         Http.MultipartFormData<Files.TemporaryFile> body = request.body().asMultipartFormData();
         Http.MultipartFormData.FilePart<Files.TemporaryFile> picture = body.getFile("picture");
@@ -81,9 +82,9 @@ public class HomeController {
                 //DB saving
                 UserPhoto newPhoto = new UserPhoto(fileName, false, user);
                 newPhoto.save();
-                return ok(home.render(user));
+                return ok(home.render(user, admins));
             }
         }
-        return badRequest(home.render(user));
+        return badRequest(home.render(user, admins));
     }
 }

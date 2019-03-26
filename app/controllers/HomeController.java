@@ -65,6 +65,7 @@ public class HomeController {
             Files.TemporaryFile file = picture.getRef();
             if (contentType.contains("image")) {
                 //Add the path to the filename given by the uploaded picture
+
                 String pathName = Paths.get(".").toAbsolutePath().normalize().toString() + "/public/images/user_photos/user_" + user.getUserid() + "/" + fileName;
                 //Save the file, replacing the existing one if the name is taken
                 try {

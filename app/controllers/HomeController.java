@@ -63,20 +63,22 @@ public class HomeController {
             long fileSize = picture.getFileSize();
             String contentType = picture.getContentType();
             Files.TemporaryFile file = picture.getRef();
-            //Add the path to the filename given by the uploaded picture
-            String pathName = Paths.get(".").toAbsolutePath().normalize().toString() + "/public/images/user_photos/user_" + user.getUserid() + "/" + fileName;
-            //Save the file, replacing the existing one if the name is taken
-            try {
-                java.nio.file.Files.createDirectories(Paths.get(Paths.get(".").toAbsolutePath().normalize().toString() + "/public/images/user_photos/user_" + user.getUserid() + "/"));
-            } catch (IOException e) {
-                System.out.println(e);
+            if (contentType.contains("image")) {
+                //Add the path to the filename given by the uploaded picture
+                String pathName = Paths.get(".").toAbsolutePath().normalize().toString() + "/public/images/user_photos/user_" + user.getUserid() + "/" + fileName;
+                //Save the file, replacing the existing one if the name is taken
+                try {
+                    java.nio.file.Files.createDirectories(Paths.get(Paths.get(".").toAbsolutePath().normalize().toString() + "/public/images/user_photos/user_" + user.getUserid() + "/"));
+                } catch (IOException e) {
+                    System.out.println(e);
+                }
+                file.copyTo(Paths.get(pathName ), true);
+                //DB saving
+                UserPhoto newPhoto = new UserPhoto(fileName, false, user);
+                newPhoto.save();
+                return ok(home.render(user));
             }
-            file.copyTo(Paths.get(pathName ), true);
-            //DB saving
-            UserPhoto newPhoto = new UserPhoto(fileName, false, user);
-            newPhoto.save();
-            return ok(home.render(user));
         }
-        return unauthorized("Oops, you are not logged in");
+        return badRequest(home.render(user));
     }
 }

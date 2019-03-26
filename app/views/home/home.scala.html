@@ -68,11 +68,14 @@
 
         <br>
 
+
+
             <!-- Trigger the modal with a button -->
-        <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Add Photo</button>
+        <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#addPhotoModal">Add Photo</button>
+
 
             <!-- Modal -->
-        <div id="myModal" class="modal fade" role="dialog">
+        <div id="addPhotoModal" class="modal fade" role="dialog">
             <div class="modal-dialog">
 
                     <!-- Modal content-->
@@ -83,9 +86,9 @@
                     </div>
 
                     <div class="modal-body">
-                    @helper.form(action = routes.HomeController.upload, 'enctype -> "multipart/form-data") {
+                    @helper.form(action = routes.HomeController.upload, 'id -> "myForm", 'enctype -> "multipart/form-data") {
                         @helper.CSRF.formField
-                        <input type="file" name="picture">
+                        <input type="file" name="picture" required>
 
                         <br>
 
@@ -94,10 +97,13 @@
                         </p>
 
                     }
+
+
                     </div>
                 </div>
-
             </div>
+
+
         </div>
 
 

@@ -2,28 +2,54 @@
 
 @(userForm : Form[User], travellerTypes : List[TravellerType], user : User)
 
-<h1>Edit traveller types :^)</h1>
+@main("Edit Traveller Types") {
+    <div class="container">
+        <div class="row">
+            <h2>Edit traveller types for @user.getfName() @user.getlName(): </h2>
+        </div>
 
-@form(action = helper.CSRF(routes.TravellerTypeController.submitUpdateTravellerType)) {
-    @select(
-        field = userForm("travellertypes"),
-        options = travellerTypes.map(travellerType => travellerType.ttypeid.toString -> travellerType.travellerTypeName),
-        '_label -> "Select traveller types to add:"
-    )
-    <input type="submit" value="Add traveller type">
+        <div class ="row">
+            @for(travellerType <- user.travellerTypes) {
+                <div class="container">
+                @form(action = helper.CSRF(routes.TravellerTypeController.deleteUpdateTravellerType(travellerType.getTtypeid))) {
+                    <ul class="list-group">
+                        <li class="list-group-item" style = "width: 200px;">
+                            @travellerType.travellerTypeName <button type="submit" class = "close">&times</button> </li>
+                    </ul>
+
+                }
+                </div>
+                }
+        </div>
+
+        <div class="row">
+            <div class="col-md-2">
+            @form(action = helper.CSRF(routes.TravellerTypeController.submitUpdateTravellerType), 'id -> "myForm") {
+                    @select(
+                        field = userForm("travellertypes"),
+                        options = travellerTypes.map(travellerType => travellerType.ttypeid.toString -> travellerType.travellerTypeName),
+                        '_label -> "Select new type to add:"
+                    )
+                    }
+            </div>
+            <div class="col-md-2">
+                <br>
+                <input type="submit" value="Add traveller type" form="myForm" >
+            </div>
+        </div>
+
+    <div class = "row">
+        <div class="col-md-3">
+            <br>
+            <form>
+                <button class="btn btn-primary" formaction="@routes.ProfileController.updateProfile()">Save</button>
+            </form>
+        </div>
+    </div>
+
+
+    </div>
+
+
 }
 
-@form(action = helper.CSRF(routes.TravellerTypeController.deleteUpdateTravellerType)) {
-@select(
-    field = userForm("travellertypesdelete"),
-    options = user.getTravellerTypes().map(travellerType => travellerType.ttypeid.toString -> travellerType.travellerTypeName),
-    '_label -> "Select traveller types to delete:"
-)
-<input type="submit" value="Remove traveller type">
-}
-
-@for(travellerType <- user.travellerTypes) {
-    <p>Traveller type: @travellerType.travellerTypeName</p>
-}
-
-<a href="@routes.HomeController.showhome()">Back to home</a>

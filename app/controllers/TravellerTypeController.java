@@ -40,6 +40,7 @@ public class TravellerTypeController {
                 // Duplicate traveller types do not get added. No error msg shown.
             }
             List<TravellerType> travellerTypes = TravellerType.find.all();
+            travellerTypes.removeAll(user.getTravellerTypes());
 
             return ok(updatetraveller.render(userForm, travellerTypes, user));
         }
@@ -84,20 +85,19 @@ public class TravellerTypeController {
      * @param request the HTTP request
      * @return update traveller type page or error page
      */
-    public Result deleteUpdateTravellerType(Http.Request request){
+    public Result deleteUpdateTravellerType(Http.Request request, Integer typeId){
         DynamicForm userForm = formFactory.form().bindFromRequest();
-        String travellerID = userForm.get("travellertypesdelete");
         User user = User.getCurrentUser(request);
-        if (user != null) {
+        if (user != null && user.getTravellerTypes().size() > 1) {
             try {
-                TravellerType travellerType = TravellerType.find.byId(Integer.parseInt(travellerID));
+                TravellerType travellerType = TravellerType.find.byId(typeId);
                 user.deleteTravellerType(travellerType);
                 user.update();
             } catch (NumberFormatException e) {
                 return  unauthorized("Oops, you do not have any traveller types to delete");
             }
         }
-        else{
+        else if (user == null){
             return unauthorized("Oops, you are not logged in");
         }
         //return redirect(routes.UserController.userindex());

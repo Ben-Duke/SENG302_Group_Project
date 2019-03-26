@@ -86,7 +86,7 @@ GET     /users/profile/ttypes       controllers.TravellerTypeController.updateTr
 POST     /users/profile/ttypes      controllers.TravellerTypeController.submitUpdateTravellerType(request:Request)
 
 #Handles deleting a traveller type
-POST     /users/profile/delete      controllers.TravellerTypeController.deleteUpdateTravellerType(request:Request)
+POST     /users/profile/delete      controllers.TravellerTypeController.deleteUpdateTravellerType(request:Request, typeId:Integer)
 
 #Renders page for displaying a given user's profile (used for debugging)
 GET     /users/profile/:id          controllers.ProfileController.showProfile(request : Request, id : Integer)

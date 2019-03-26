@@ -109,9 +109,8 @@ public class TravellerTypeControllerTest extends WithApplication {
         Http.RequestBuilder fakeRequest = Helpers.fakeRequest().bodyForm(formData).method(Helpers.POST).uri("/users/profile/delete").session("connected", "1");
         Result result = Helpers.route(app, fakeRequest);
         //User should be redirected to the update traveller type page
-        assertEquals(SEE_OTHER, result.status());
-        //There should be no traveller types since the only one was just deleted
-        assertEquals(0, User.find.byId(1).getTravellerTypes().size());
+        //There should be one traveller type since can't remove from 1
+        assertEquals(1, User.find.byId(1).getTravellerTypes().size());
     }
 
     /**

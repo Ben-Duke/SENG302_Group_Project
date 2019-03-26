@@ -25,6 +25,16 @@ POST    /users/login                controllers.LoginController.loginrequest(req
 #Renders update profile page
 GET     /users/profile/update       controllers.ProfileController.updateProfile(request: Request)
 
+#Renders admin page
+GET     /users/admin                controllers.AdminController.indexAdmin(request: Request)
+
+#Handles deleting admin
+GET     /users/admin/remove/:id     controllers.AdminController.adminToUser(request: Request, id: Integer)
+
+#Handles creating admin
+GET     /users/admin/make/:id       controllers.AdminController.userToAdmin(request: Request, id: Integer)
+
+
 #Handles updating profile
 POST    /users/profile/update       controllers.ProfileController.updateProfileRequest(request: Request)
 

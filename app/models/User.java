@@ -266,17 +266,19 @@ public class User extends Model {
     public List<Trip> getTripsSorted()
     {
         HashMap<Trip,LocalDate> datesMap = new HashMap<>();
-        ArrayList<LocalDate> datesList = new ArrayList<>();
         for(Trip trip: trips){
+            ArrayList<LocalDate> datesList = new ArrayList<>();
             for(Visit visit: trip.getVisits()){
-                if(visit.getArrival() != null) {
+                if(visit.getArrival() != null && !(visit.getArrival().isEmpty())) {
                     String arrival = visit.getArrival();
                     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
                     LocalDate arrivalDate = LocalDate.parse(arrival, formatter);
                     datesList.add(arrivalDate);
                 }
                 else{
-                    datesList.add(null);
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                    LocalDate arrivalDate = LocalDate.parse("2100-12-25", formatter);
+                    datesList.add(arrivalDate);
                 }
             }
             Collections.sort(datesList);

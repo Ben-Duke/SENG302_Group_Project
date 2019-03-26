@@ -17,6 +17,7 @@ import java.nio.file.Paths;
 
 import static play.mvc.Controller.request;
 import java.util.List;
+import java.util.Map;
 
 import static play.mvc.Results.*;
 
@@ -60,6 +61,12 @@ public class HomeController {
     public Result upload(Http.Request request) {
         User user = User.getCurrentUser(request);
         //Get the photo data from the multipart form data encoding
+        Map<String, String[]> datapart = request.body().asMultipartFormData().asFormUrlEncoded();
+        boolean isPublic = false;
+        if (datapart.get("private") == null) {
+            isPublic = true;
+        }
+
         Http.MultipartFormData<Files.TemporaryFile> body = request.body().asMultipartFormData();
         Http.MultipartFormData.FilePart<Files.TemporaryFile> picture = body.getFile("picture");
         if (picture != null) {
@@ -79,7 +86,7 @@ public class HomeController {
                 }
                 file.copyTo(Paths.get(pathName ), true);
                 //DB saving
-                UserPhoto newPhoto = new UserPhoto(fileName, true, user);
+                UserPhoto newPhoto = new UserPhoto(fileName, isPublic, user);
                 newPhoto.save();
                 return ok(home.render(user));
             }

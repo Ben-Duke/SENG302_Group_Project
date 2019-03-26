@@ -97,6 +97,8 @@
                         <br>
                         <p>
                             <input type="submit" value="Upload">
+                            @helper.CSRF.formField
+                            <input type="checkbox" name="private" value="private"> Make photo private
                         </p>
 
                     }

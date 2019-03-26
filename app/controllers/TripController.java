@@ -42,6 +42,8 @@ public class TripController extends Controller {
     @Inject
     FormFactory formFactory;
 
+    TripFactory tripFactory = new TripFactory();
+
 
 
     /**

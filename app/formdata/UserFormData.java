@@ -91,7 +91,8 @@ public class UserFormData implements Constraints.Validatable<List<ValidationErro
         if (dob.isEmpty()) {
             errors.add(new ValidationError("dob", "Please enter a date"));
 
-        } else {
+        }
+        else {
             LocalDate now = LocalDate.now();
             String min = "1900-01-01";
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");

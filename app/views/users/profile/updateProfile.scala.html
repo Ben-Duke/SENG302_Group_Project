@@ -1,0 +1,23 @@
+@import formdata.UpdateUserFormData
+@import helper._
+@import views.html.bootstrap3._
+@import java.util
+
+@import views.html.users.profile.updateProfileFieldSet
+@(updateUserForm : Form[UpdateUserFormData], genders: util.List[String])
+
+@main("Index") {
+    <div class="container">
+        <div class="well">
+        @form(helper.CSRF(routes.ProfileController.updateProfileRequest()) , 'class -> "form-horizontal") {
+            @updateProfileFieldSet(updateUserForm, genders)
+        }
+        </div>
+
+        <a href="@routes.HomeController.showhome()">Back to home</a>
+        <br>
+        <a href="@routes.TravellerTypeController.updateTravellerType()">Update traveller type</a>
+        <br>
+        <a href="@routes.ProfileController.updateNatPass()">Update passport/nationality</a>
+    </div>
+}

@@ -1,12 +1,8 @@
 package formdata;
 
-import models.Destination;
-import models.Trip;
-import models.Visit;
 import play.data.validation.Constraints;
 import play.data.validation.ValidationError;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,7 +34,7 @@ public class VisitFormData implements Constraints.Validatable<List<ValidationErr
 
         }
 
-        if (errors.size() > 0) {
+        if (! errors.isEmpty()) {
             return errors;
         }
 

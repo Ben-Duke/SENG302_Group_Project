@@ -7,6 +7,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import factories.TripFactory;
 import formdata.TripFormData;
 import formdata.VisitFormData;
+import models.Destination;
+import models.Trip;
+import models.User;
+import models.Visit;
 import io.ebean.Transaction;
 import models.*;
 import play.data.DynamicForm;
@@ -15,9 +19,18 @@ import play.data.FormFactory;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
+import views.html.users.trip.AddTripDestinations;
+import views.html.users.trip.createTrip;
+import views.html.users.trip.displayTrip;
+import views.html.users.trip.editTrip;
+
 import views.html.users.trip.*;
 
 import javax.inject.Inject;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
@@ -28,8 +41,6 @@ public class TripController extends Controller {
 
     @Inject
     FormFactory formFactory;
-
-    TripFactory tripFactory = new TripFactory();
 
 
 
@@ -81,13 +92,14 @@ public class TripController extends Controller {
         User user = User.getCurrentUser(request);
         if (user != null) {
             Form<TripFormData> incomingForm = formFactory.form(TripFormData.class).bindFromRequest(request);
+
+            if (incomingForm.hasErrors()) {
+                return badRequest(createTrip.render(incomingForm, user));
+            }
             for (Trip trip: user.getTrips()) {
                 if (incomingForm.get().tripName.equals(trip.getTripName())) {
                     return ok(createTrip.render(incomingForm, user));
                 }
-            }
-            if (incomingForm.hasErrors()) {
-                return badRequest(createTrip.render(incomingForm, user));
             }
             TripFormData created = incomingForm.get();
             Trip createdTrip = Trip.makeInstance(created, user);
@@ -97,7 +109,6 @@ public class TripController extends Controller {
         else{
             return unauthorized("Oops, you are not logged in");
         }
-        //return redirect(routes.UserController.userindex());
     }
 
     public Result editvisit(Http.Request request, Integer visitid){
@@ -191,7 +202,18 @@ public class TripController extends Controller {
         else{
             return unauthorized("Oops, you are not logged in");
         }
-//        return ok("edittrip");
+    }
+
+    public Result cancelTrip(Http.Request request, Integer tripid) {
+        Trip trip = Trip.find.byId(tripid);
+        User user = User.getCurrentUser(request);
+        if (user != null) {
+            trip.delete();
+            return redirect(routes.TripController.createtrip());
+        }
+        else{
+            return unauthorized("Oops, you are not logged in");
+        }
     }
     /**
      * Handles the request to add destinations to a trip.
@@ -243,7 +265,6 @@ public class TripController extends Controller {
         } else{
             return unauthorized("Oops, you are not logged in");
         }
-        //return redirect(routes.UserController.userindex());
         return redirect(routes.TripController.AddTripDestinations(tripid));
     }
 
@@ -273,7 +294,6 @@ public class TripController extends Controller {
         else{
             return unauthorized("Oops, you are not logged in");
         }
-//        return ok("edittrip");
     }
 
 
@@ -320,6 +340,7 @@ public class TripController extends Controller {
         return ok();
     }
 
+
     /**
      * Handles the request to swap two destinations from a trip. The two destinations are the two forms selected by the
      * user. Swaps two destination (which gets converted into a visit) from the trip that the user is editing by
@@ -347,13 +368,13 @@ public class TripController extends Controller {
                 Integer index = visits.indexOf(visit);
                 if(index != 0 && (index + 1 != visits.size())) {
                     if (visits.get(index - 1).getVisitName().equalsIgnoreCase(visits.get(index + 1).getVisitName())) {
-                                return true;
+                        return true;
                     }
                 }
             }
         }
         if(operation.equalsIgnoreCase("ADD")){
-            if(visits.size() > 0) {
+            if(! visits.isEmpty()) {
                 visits.sort(Comparator.comparing(Visit::getVisitorder));
                 if (visits.get(visits.size() - 1).visitName.equalsIgnoreCase(visit.getVisitName())) {
                     //probably the wrong status header

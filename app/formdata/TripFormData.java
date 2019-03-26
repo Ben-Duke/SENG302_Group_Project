@@ -1,12 +1,9 @@
 package formdata;
 
-import models.Destination;
 import models.User;
-import models.Visit;
 import play.data.validation.Constraints;
 import play.data.validation.ValidationError;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,10 +25,10 @@ public class TripFormData implements Constraints.Validatable<List<ValidationErro
         List<ValidationError> errors = new ArrayList<>();
 
         if (tripName == null || tripName.length() == 0) {
-            errors.add(new ValidationError("tripName","Destination Name field is empty"));
+            errors.add(new ValidationError("tripName","Trip name field is empty"));
         }
 
-        if (errors.size() > 0) {
+        if (! errors.isEmpty()) {
             return errors;
         }
 

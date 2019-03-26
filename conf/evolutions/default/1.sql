@@ -52,6 +52,7 @@ create table traveller_type (
 create table trip (
   tripid                        integer auto_increment not null,
   trip_name                     varchar(255),
+  is_trip_public                boolean,
   removed_visits                integer default 0,
   user                          integer,
   constraint pk_trip primary key (tripid)

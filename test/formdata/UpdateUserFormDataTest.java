@@ -16,7 +16,7 @@ public class UpdateUserFormDataTest {
 
     @Test
     public void validateNoErrorsMale() {
-        LocalDate localDateNow = LocalDate.now();
+        LocalDate localDateNow = LocalDate.now().minusYears(10);
         User user = new User("test",
                 "testtesttest",
                 "test",
@@ -31,7 +31,7 @@ public class UpdateUserFormDataTest {
 
     @Test
     public void validateNoErrorsFemale() {
-        LocalDate localDateNow = LocalDate.now();
+        LocalDate localDateNow = LocalDate.now().minusYears(10);
         User user = new User("test",
                 "testtesttest",
                 "test",
@@ -46,7 +46,7 @@ public class UpdateUserFormDataTest {
 
     @Test
     public void validateEmptyFirstName() {
-        LocalDate localDateNow = LocalDate.now();
+        LocalDate localDateNow = LocalDate.now().minusYears(10);
         User user = new User("test",
                 "testtesttest",
                 "",
@@ -61,7 +61,7 @@ public class UpdateUserFormDataTest {
 
     @Test
     public void validateFirstNameNull() {
-        LocalDate localDateNow = LocalDate.now();
+        LocalDate localDateNow = LocalDate.now().minusYears(10);
         User user = new User("test",
                 "testtesttest",
                 null,
@@ -76,7 +76,7 @@ public class UpdateUserFormDataTest {
 
     @Test
     public void validateFirstNameNumber() {
-        LocalDate localDateNow = LocalDate.now();
+        LocalDate localDateNow = LocalDate.now().minusYears(10);
         User user = new User("test",
                 "testtesttest",
                 "1",
@@ -91,7 +91,7 @@ public class UpdateUserFormDataTest {
 
     @Test
     public void validateFirstNameSymbol() {
-        LocalDate localDateNow = LocalDate.now();
+        LocalDate localDateNow = LocalDate.now().minusYears(10);
         User user = new User("test",
                 "testtesttest",
                 "%%@@#",
@@ -106,7 +106,7 @@ public class UpdateUserFormDataTest {
 
     @Test
     public void validateEmptyLastName() {
-        LocalDate localDateNow = LocalDate.now();
+        LocalDate localDateNow = LocalDate.now().minusYears(10);
         User user = new User("test",
                 "testtesttest",
                 "test",
@@ -121,7 +121,7 @@ public class UpdateUserFormDataTest {
 
     @Test
     public void validateLastNameNull() {
-        LocalDate localDateNow = LocalDate.now();
+        LocalDate localDateNow = LocalDate.now().minusYears(10);
         User user = new User("test",
                 "testtesttest",
                 "test",
@@ -136,7 +136,7 @@ public class UpdateUserFormDataTest {
 
     @Test
     public void validateLastNameNumber() {
-        LocalDate localDateNow = LocalDate.now();
+        LocalDate localDateNow = LocalDate.now().minusYears(10);
         User user = new User("test",
                 "testtesttest",
                 "test",
@@ -151,7 +151,7 @@ public class UpdateUserFormDataTest {
 
     @Test
     public void validateLastNameSymbol() {
-        LocalDate localDateNow = LocalDate.now();
+        LocalDate localDateNow = LocalDate.now().minusYears(10);
         User user = new User("test",
                 "testtesttest",
                 "test",
@@ -166,7 +166,7 @@ public class UpdateUserFormDataTest {
 
     @Test
     public void validateGenderNull() {
-        LocalDate localDateNow = LocalDate.now();
+        LocalDate localDateNow = LocalDate.now().minusYears(10);
         User user = new User("test",
                 "testtesttest",
                 "test",
@@ -181,7 +181,7 @@ public class UpdateUserFormDataTest {
 
     @Test
     public void validateGenderBadAlphabeticalLong() {
-        LocalDate localDateNow = LocalDate.now();
+        LocalDate localDateNow = LocalDate.now().minusYears(10);
         User user = new User("test",
                 "testtesttest",
                 "test",
@@ -196,7 +196,7 @@ public class UpdateUserFormDataTest {
 
     @Test
     public void validateGenderBadAlphabeticalShort() {
-        LocalDate localDateNow = LocalDate.now();
+        LocalDate localDateNow = LocalDate.now().minusYears(10);
         User user = new User("test",
                 "testtesttest",
                 "test",
@@ -211,7 +211,7 @@ public class UpdateUserFormDataTest {
 
     @Test
     public void validateGenderBadAlphabeticalNumber() {
-        LocalDate localDateNow = LocalDate.now();
+        LocalDate localDateNow = LocalDate.now().minusYears(10);
         User user = new User("test",
                 "testtesttest",
                 "test",
@@ -226,7 +226,7 @@ public class UpdateUserFormDataTest {
 
     @Test
     public void validateGenderBadAlphabeticalSymbol() {
-        LocalDate localDateNow = LocalDate.now();
+        LocalDate localDateNow = LocalDate.now().minusYears(10);
         User user = new User("test",
                 "testtesttest",
                 "test",
@@ -241,7 +241,7 @@ public class UpdateUserFormDataTest {
 
     @Test
     public void validateBirthDateNull() {
-        LocalDate localDateNow = LocalDate.now();
+        LocalDate localDateNow = LocalDate.now().minusYears(10);
         User user = new User("test",
                 "testtesttest",
                 "test",

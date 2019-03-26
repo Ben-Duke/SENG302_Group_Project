@@ -31,7 +31,7 @@ release-artifacts:
  only:
     - tags
 
-update-sonar:
+Update-sonar:
     stage: deploy
     script:
         - sonar-scanner

@@ -1,10 +1,16 @@
 package controllers;
 
+import akka.http.impl.util.JavaMapping;
+import akka.stream.javadsl.FileIO;
+import akka.stream.javadsl.Source;
+import akka.util.ByteString;
 import models.*;
+import org.hamcrest.CoreMatchers;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import play.Application;
+import play.api.test.CSRFTokenHelper;
 import play.db.Database;
 import play.db.Databases;
 import play.db.evolutions.Evolution;
@@ -15,10 +21,17 @@ import play.mvc.Result;
 import play.test.Helpers;
 import play.test.WithApplication;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Collections;
 
+import static org.apache.commons.io.FileUtils.getFile;
 import static org.junit.Assert.*;
+import static play.mvc.Http.HttpVerbs.POST;
 import static play.mvc.Http.Status.*;
 import static play.test.Helpers.GET;
 import static play.test.Helpers.route;
@@ -119,6 +132,29 @@ public class HomeControllerTest extends WithApplication {
         Result result = route(app, request);
         assertEquals(OK, result.status());
     }
+
+    /**
+     * Test of file upload with a test file imagetest.png
+     * @throws IOException
+     */
+    @Test
+    public void photoUpload() throws IOException {
+        createUser();
+        File file = getFile(Paths.get(".").toAbsolutePath().normalize().toString() + "/test/resources/imagetest.png");
+        Http.MultipartFormData.Part<Source<ByteString, ?>> part = new Http.MultipartFormData.FilePart<>("picture", "imagetest.png", "image/png", FileIO.fromPath(file.toPath()), Files.size(file.toPath()));
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(POST)
+                .uri("/users/home").session("connected", "4")
+                .bodyRaw(Collections.singletonList(part),
+                        play.libs.Files.singletonTemporaryFileCreator(),
+                        app.asScala().materializer());
+        CSRFTokenHelper.addCSRFToken(request);
+        Result result = route(app, request);
+        assertEquals(OK, result.status());
+
+    }
+
+
 
     public void createUser(){
         TravellerTypeController tTC = new TravellerTypeController();

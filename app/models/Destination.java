@@ -6,6 +6,8 @@ import io.ebean.Model;
 import javax.persistence.*;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.TreeMap;
 
 @Entity
 public class Destination extends Model {
@@ -20,6 +22,20 @@ public class Destination extends Model {
         this.longitude = longitude;
     }
 
+    /**
+     * A function that is called when creating a destination to the the types
+     *
+     * @return A map of all destination types and a boolean set to false
+     */
+    public static Map<String, Boolean> getTypeList() {
+        Map<String, Boolean> typeMap = new TreeMap<>();
+        typeMap.put("Accomodation", false);
+        typeMap.put("Cafe/Restaurant", false);
+        typeMap.put("Attraction", false);
+        typeMap.put("Event", false);
+        typeMap.put("Natural Spot", false);
+        return typeMap;
+    }
 
     @Id
     public Integer destid;

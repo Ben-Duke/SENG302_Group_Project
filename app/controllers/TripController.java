@@ -1,6 +1,8 @@
 package controllers;
 
 import java.util.Date;
+
+import factories.TripFactory;
 import formdata.TripFormData;
 import formdata.VisitFormData;
 import models.*;
@@ -15,12 +17,9 @@ import views.html.users.trip.createTrip;
 import views.html.users.trip.displayTrip;
 import views.html.users.trip.editTrip;
 import javax.inject.Inject;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 
 import static play.mvc.Results.*;
 
@@ -31,6 +30,7 @@ public class TripController extends Controller {
     FormFactory formFactory;
 
 
+    TripFactory tripfactory = new TripFactory();
 
     /**
      * If the user is logged in, renders the create trip page.
@@ -87,13 +87,12 @@ public class TripController extends Controller {
             }
             for (Trip trip: user.getTrips()) {
                 if (incomingForm.get().tripName.equals(trip.getTripName())) {
-                    return ok(createTrip.render(incomingForm, user));
+                    return ok(createTrip.render(incomingForm.withError("tripName", "Cannot have duplicate trip names"), user));
                 }
             }
             TripFormData created = incomingForm.get();
-            Trip createdTrip = Trip.makeInstance(created, user);
-            createdTrip.save();
-            return redirect(routes.TripController.AddTripDestinations(createdTrip.tripid));
+            int tripid = tripfactory.createTrip(created);
+            return redirect(routes.TripController.AddTripDestinations(tripid));
         }
         else{
             return unauthorized("Oops, you are not logged in");
@@ -127,6 +126,12 @@ public class TripController extends Controller {
         Trip trip = Trip.find.byId(tripid);
         User user = User.getCurrentUser(request);
         if (user != null) {
+            if (trip.hasVisit()) {
+                List<Visit> visits = trip.getVisits();
+                for(Visit visit: visits) {
+                    visit.delete();
+                }
+            }
             trip.delete();
             return redirect(routes.TripController.createtrip());
         }
@@ -174,7 +179,7 @@ public class TripController extends Controller {
                 if (hasRepeatDest(visits, visit, "ADD")) {
                     Date today = new Date();
                     today.setTime(today.getTime());
-                    return badRequest(AddTripDestinations.render(incomingForm, trip, user.getMappedDestinations(), visits, today.toString()));
+                    return badRequest(AddTripDestinations.render(incomingForm.withError("destName", "Cannot have repeated destinations in this trip"), trip, user.getMappedDestinations(), visits, today.toString()));
                 }
                 visit.save();
             } else {

@@ -1,6 +1,7 @@
 package formdata;
 
 import models.Destination;
+import models.Trip;
 import models.User;
 import models.Visit;
 import play.data.validation.Constraints;

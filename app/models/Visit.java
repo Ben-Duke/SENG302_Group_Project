@@ -12,6 +12,10 @@ import java.time.LocalDate;
 public class Visit extends Model {
 
     public Integer visitorder;
+
+    /**
+     * The ID of the visit. This is the primary key.
+     */
     @Id
     public Integer visitid;
 
@@ -42,9 +46,7 @@ public class Visit extends Model {
         return visit;
     }
 
-    /**
-     * The ID of the visit. This is the primary key.
-     */
+
     public Visit() {
     }
 

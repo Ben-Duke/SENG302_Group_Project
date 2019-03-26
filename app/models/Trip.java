@@ -30,10 +30,10 @@ public class Trip extends Model {
     @JoinColumn(name = "user", referencedColumnName = "userid")
     public User user;
 
-    public static Trip makeInstance(TripFormData formData, User user){
+    public static Trip makeInstance(TripFormData formData){
         Trip trip = new Trip();
         trip.tripName = formData.tripName;
-        trip.user = user;
+        trip.user = formData.user;
         trip.removedVisits = 0;
         trip.visits = new ArrayList<Visit>();
         return trip;
@@ -115,6 +115,8 @@ public class Trip extends Model {
         }
         return false;
     }
+
+
 
     /**
      * Checks if the given user id (of the currently logged in user) is the same as the owner of the entity.

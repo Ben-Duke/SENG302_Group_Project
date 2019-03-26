@@ -5,6 +5,10 @@ import java.util.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import factories.TripFactory;
+import java.util.Date;
+
+import factories.TripFactory;
+import factories.VisitFactory;
 import formdata.TripFormData;
 import formdata.VisitFormData;
 import models.Destination;
@@ -12,6 +16,7 @@ import models.Trip;
 import models.User;
 import models.Visit;
 import io.ebean.Transaction;
+import models.*;
 import models.*;
 import play.data.DynamicForm;
 import play.data.Form;
@@ -29,10 +34,11 @@ import views.html.users.trip.*;
 import javax.inject.Inject;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+
+import static play.mvc.Results.*;
 
 import static play.mvc.Results.*;
 
@@ -42,8 +48,9 @@ public class TripController extends Controller {
     @Inject
     FormFactory formFactory;
 
-    TripFactory tripFactory = new TripFactory();
 
+    TripFactory tripFactory = new TripFactory();
+    VisitFactory visitfactory = new VisitFactory();
 
 
     /**
@@ -100,17 +107,17 @@ public class TripController extends Controller {
             }
             for (Trip trip: user.getTrips()) {
                 if (incomingForm.get().tripName.equals(trip.getTripName())) {
-                    return ok(createTrip.render(incomingForm, user));
+                    return ok(createTrip.render(incomingForm.withError("tripName", "Cannot have duplicate trip names"), user));
                 }
             }
             TripFormData created = incomingForm.get();
-            Trip createdTrip = Trip.makeInstance(created, user);
-            createdTrip.save();
-            return redirect(routes.TripController.AddTripDestinations(createdTrip.tripid));
+            int tripid = tripFactory.createTrip(created, user);
+            return redirect(routes.TripController.AddTripDestinations(tripid));
         }
         else{
             return unauthorized("Oops, you are not logged in");
         }
+        //return redirect(routes.UserController.userindex());
     }
 
     public Result editvisit(Http.Request request, Integer visitid){
@@ -204,12 +211,19 @@ public class TripController extends Controller {
         else{
             return unauthorized("Oops, you are not logged in");
         }
+//        return ok("edittrip");
     }
 
     public Result cancelTrip(Http.Request request, Integer tripid) {
         Trip trip = Trip.find.byId(tripid);
         User user = User.getCurrentUser(request);
         if (user != null) {
+            if (trip.hasVisit()) {
+                List<Visit> visits = trip.getVisits();
+                for(Visit visit: visits) {
+                    visit.delete();
+                }
+            }
             trip.delete();
             return redirect(routes.TripController.createtrip());
         }
@@ -250,14 +264,13 @@ public class TripController extends Controller {
                 Visit visit = new Visit();
                 for (Destination destination : user.getDestinations()) {
                     if (destination.getDestName().equals(created.destName)) {
-                        visit = Visit.makeInstance(created, destination, trip, visitSize);
+                        visit = visitfactory.createVisit(created, destination, trip, visitSize);
                     }
                 }
-
                 if (hasRepeatDest(visits, visit, "ADD")) {
                     Date today = new Date();
                     today.setTime(today.getTime());
-                    return badRequest(AddTripDestinations.render(incomingForm, trip, user.getMappedDestinations(), visits, today.toString()));
+                    return badRequest(AddTripDestinations.render(incomingForm.withError("destName", "Cannot have repeated destinations"), trip, user.getMappedDestinations(), visits, today.toString()));
                 }
                 visit.save();
             } else {
@@ -269,6 +282,9 @@ public class TripController extends Controller {
         }
         return redirect(routes.TripController.AddTripDestinations(tripid));
     }
+
+
+
 
     /**
      * If the user is logged in, renders the edit trip page. Users can add, swap or remove destinations from their
@@ -284,7 +300,7 @@ public class TripController extends Controller {
         if (user != null) {
             List<Destination> destinations = user.getDestinations();
             if (trip != null) {
-                Form<VisitFormData> incomingForm = formFactory.form(VisitFormData.class).bindFromRequest(request);
+                Form<VisitFormData> incomingForm = formFactory.form(VisitFormData.class);
                 List<Visit> visits = trip.getVisits();
                 visits.sort(Comparator.comparing(Visit::getVisitorder));
                 return ok(editTrip.render(incomingForm, trip, destinations, visits));
@@ -296,6 +312,7 @@ public class TripController extends Controller {
         else{
             return unauthorized("Oops, you are not logged in");
         }
+//        return ok("edittrip");
     }
 
 

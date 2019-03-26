@@ -72,6 +72,7 @@ create table user (
   gender                        varchar(255),
   f_name                        varchar(255),
   l_name                        varchar(255),
+  is_admin                      boolean,
   creation_date                 timestamp not null,
   constraint pk_user primary key (userid)
 );

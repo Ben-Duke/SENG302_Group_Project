@@ -13,6 +13,10 @@ import javax.persistence.ManyToOne;
 public class Visit extends Model {
 
     public Integer visitorder;
+
+    /**
+     * The ID of the visit. This is the primary key.
+     */
     @Id
     public Integer visitid;
 
@@ -32,20 +36,6 @@ public class Visit extends Model {
 
 
 
-    public static Visit makeInstance(VisitFormData formData, Destination destination, Trip trip, Integer visitorder){
-        Visit visit = new Visit();
-        visit.trip = trip;
-        visit.destination = destination;
-        visit.visitorder = visitorder;
-        visit.arrival = formData.arrival;
-        visit.departure = formData.departure;
-        visit.visitName = destination.destName;
-        return visit;
-    }
-
-    /**
-     * The ID of the visit. This is the primary key.
-     */
     public Visit() {
     }
 

@@ -314,7 +314,7 @@ public class User extends Model {
      * @param request
      * @return userid on success or -1.
      */
-    public static int getCurrentUserId(Http.Request request) {
+    public static int getCurrentUserById(Http.Request request) {
         String userId = request.session().getOptional("connected").orElse(null);
         if (userId != null) {
             User user = User.find.query().where().eq("userid", userId).findOne();

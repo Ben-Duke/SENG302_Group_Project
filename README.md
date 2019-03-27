@@ -10,9 +10,20 @@ Open terminal
 ```bash
 git clone https://eng-git.canterbury.ac.nz/seng302-2019/team-800
 ```
-Change directory to the root directory of the project.
+Change directory to the root directory of the project and execute:
 ```bash
 sbt dist
+```
+Unzip snapshot files from target/universal folder of your application to a chosen directory
+
+(For Unix users: Then make the file executable)
+```bash
+chmod +x /path/to/bin/team-800
+```
+
+And run the server 
+```bash
+/path/to/bin/team-800 -Dplay.http.secret.key="{insert secret key}" -Dplay.evolutions.db.autoApply=true
 ```
 And open <http://localhost:9000/>
 

@@ -4,10 +4,7 @@ import io.ebean.Finder;
 import io.ebean.Model;
 
 import javax.persistence.*;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 @Entity
 public class Destination extends Model {
@@ -35,6 +32,28 @@ public class Destination extends Model {
         typeMap.put("Event", false);
         typeMap.put("Natural Spot", false);
         return typeMap;
+    }
+
+    /**
+     * A function that is called when any form needs a list of countries
+     *
+     * @return A map of all countries and a boolean set to false
+     */
+
+    public static Map<String, Boolean> getIsoCountries() {
+        List<String> countries = new ArrayList<>();
+        String[] locales = Locale.getISOCountries();
+        for (String countryCode : locales) {
+            Locale obj = new Locale("", countryCode);
+            countries.add(obj.getDisplayName());
+        }
+
+        Map<String, Boolean> countryMap = new TreeMap<>();
+        for (String country : countries) {
+            countryMap.put(country, false);
+        }
+        countryMap.remove("");
+        return countryMap;
     }
 
     @Id

@@ -45,11 +45,6 @@
                 placeholder = "longitude"
             )
 
-            @text(destForm("destType"),
-                label = "Type",
-                placeholder = "type"
-            )
-
             @views.html.bootstrap3.select(destForm("destType"),
                 label = "Type",
                 optionMap = typeMap,

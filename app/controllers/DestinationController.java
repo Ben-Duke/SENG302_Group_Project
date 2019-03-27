@@ -43,9 +43,7 @@ public class DestinationController extends Controller {
 //        if (! UtilityFunctions.isStringAllAlphabetic(destName) || destName.length() < 1) {
 //            return notAcceptable("ERROR: Destination name should only contain alphanumeric characters and must not be empty.");
 //        }
-        if (! UtilityFunctions.validateCountryType(country)) {
-            return notAcceptable("ERROR: Country should be a real country");
-        }
+
         if (! UtilityFunctions.isStringAllAlphabetic(district) || district.length() < 1) {
             return notAcceptable("ERROR: District should only contain alphanumeric characters and must not be empty.");
         }
@@ -123,7 +121,7 @@ public class DestinationController extends Controller {
         if (user != null) {
             Form<Destination> destForm = formFactory.form(Destination.class);
 
-            return ok(createdestination.render(destForm, UtilityFunctions.getIsoCountries(), Destination.getTypeList()));
+            return ok(createdestination.render(destForm, Destination.getIsoCountries(), Destination.getTypeList()));
         }
         return unauthorized("Oops, you are not logged in");
     }
@@ -183,10 +181,14 @@ public class DestinationController extends Controller {
                 if (destination.isUserOwner(user.userid)) {
 
                     Form<Destination> destForm = formFactory.form(Destination.class).fill(destination);
+
                     Map<String, Boolean> typeList = Destination.getTypeList();
                     typeList.replace(destination.getDestType(), true);
 
-                    return ok(editDestination.render(destForm, destination, UtilityFunctions.getIsoCountries(), typeList));
+                    Map<String, Boolean> countryList = Destination.getIsoCountries();
+                    typeList.replace(destination.getCountry(), true);
+
+                    return ok(editDestination.render(destForm, destination, countryList, typeList));
 
                 } else {
                     return unauthorized("Not your destination. You cant edit.");

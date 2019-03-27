@@ -26,6 +26,8 @@ public class Trip extends Model {
 
     public static Finder<Integer,Trip> find = new Finder<>(Trip.class);
 
+    public boolean isPublic = true;
+
     @ManyToOne
     @JoinColumn(name = "user", referencedColumnName = "userid")
     public User user;
@@ -62,6 +64,8 @@ public class Trip extends Model {
     public List<Visit> getVisits() {
         return visits;
     }
+
+    public boolean getIsPublic() { return isPublic; }
 
     public void setVisits(List<Visit> visits) {
         this.visits = visits;

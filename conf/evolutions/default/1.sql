@@ -60,6 +60,7 @@ create table trip (
   tripid                        integer auto_increment not null,
   trip_name                     varchar(255),
   removed_visits                integer default 0,
+  is_public                     boolean default false not null,
   user                          integer,
   constraint pk_trip primary key (tripid)
 );

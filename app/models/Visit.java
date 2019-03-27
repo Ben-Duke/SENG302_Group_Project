@@ -1,30 +1,18 @@
 package models;
 
+import formdata.VisitFormData;
 import io.ebean.Finder;
 import io.ebean.Model;
 
-import javax.persistence.*;
-import java.sql.Timestamp;
-import java.time.LocalDate;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
 @Entity
 public class Visit extends Model {
 
-    public Visit(Destination destination, Trip trip, Integer visitorder, LocalDate arrival, LocalDate departure){
-        this.destination = destination;
-        this.trip = trip;
-        this.visitorder = visitorder;
-        this.arrival = arrival;
-        this.departure = departure;
-        this.visitName = destination.getDestName();
-    }
-
-    public Visit(Destination destination, Trip trip, Integer visitorder){
-        this.destination = destination;
-        this.trip = trip;
-        this.visitorder = visitorder;
-        this.visitName = destination.getDestName();
-    }
+    public Integer visitorder;
 
     /**
      * The ID of the visit. This is the primary key.
@@ -40,13 +28,17 @@ public class Visit extends Model {
     @JoinColumn(name = "trip", referencedColumnName = "tripid")
     public Trip trip;
 
-    public Integer visitorder;
+    public String arrival;
 
-    public LocalDate arrival;
-
-    public LocalDate departure;
+    public String departure;
 
     public String visitName;
+
+
+
+    public Visit() {
+    }
+
 
     public static Finder<Integer,Visit> find = new Finder<>(Visit.class);
 
@@ -83,19 +75,19 @@ public class Visit extends Model {
         this.visitorder = visitorder;
     }
 
-    public LocalDate getArrival() {
+    public String getArrival() {
         return arrival;
     }
 
-    public void setArrival(LocalDate arrival) {
+    public void setArrival(String arrival) {
         this.arrival = arrival;
     }
 
-    public LocalDate getDeparture() {
+    public String getDeparture() {
         return departure;
     }
 
-    public void setDeparture(LocalDate departure) {
+    public void setDeparture(String departure) {
         this.departure = departure;
     }
 

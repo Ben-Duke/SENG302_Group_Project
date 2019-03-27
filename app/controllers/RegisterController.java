@@ -27,6 +27,7 @@ import static play.mvc.Results.*;
  * A Controller class for the user registration page.
  */
 public class RegisterController {
+    public static Logger logger = LoggerFactory.getLogger("application");
 
     @Inject
     FormFactory formFactory;
@@ -49,7 +50,7 @@ public class RegisterController {
         Map<String, Boolean> tTypes = UserFactory.getTTypesList();
         Map<String, Boolean> passports = UserFactory.getPassports();
         Map<String, Boolean> nationalities = UserFactory.getNatList();
-        return ok(createprofileregister.render(userForm, Arrays.asList(gendersArray), tTypes, passports, nationalities));
+        return ok(createprofile_.render(userForm, Arrays.asList(gendersArray), tTypes, passports, nationalities));
     }
 
     /**
@@ -73,7 +74,7 @@ public class RegisterController {
             Map<String, Boolean> nationalities = UserFactory.getNatList();
             String[] gendersArray = {"Male", "Female", "Other"};
 
-            return badRequest(createprofileregister.render(userForm, Arrays.asList(gendersArray), tTypes, passports, nationalities));
+            return badRequest(createprofile_.render(userForm, Arrays.asList(gendersArray), tTypes, passports, nationalities));
         }
         else{
             UserFormData user = userForm.get();

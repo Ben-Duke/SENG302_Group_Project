@@ -9,8 +9,8 @@ import play.mvc.Http;
 
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.util.Date;
-import java.util.List;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 import static play.mvc.Results.badRequest;
 
@@ -34,6 +34,7 @@ public class User extends Model {
         this.lName = lName;
         this.dateOfBirth = dateOfBirth;
         this.gender = gender;
+        this.isAdmin = false;
     }
 
     public User(String username){
@@ -102,6 +103,14 @@ public class User extends Model {
     @OneToMany(mappedBy = "user")
     public List<Destination> destinations;
 
+    public Map<String, Boolean> getMappedDestinations() {
+        SortedMap<String, Boolean> destMap = new TreeMap<>();
+        for (Destination destination : destinations) {
+            destMap.put(destination.getDestName(), false);
+        }
+        return destMap;
+    }
+
     @ManyToMany
     public List<TravellerType> travellerTypes;
 
@@ -118,6 +127,18 @@ public class User extends Model {
     public List<UserPhoto> userPhotos;
 
     public static Finder<Integer,User> find = new Finder<>(User.class);
+
+    //TODO remove this attribute along with getters, setters and checkboxes in create/update user story[229] tasks[1284,1301]
+    public Boolean isAdmin = false;
+
+
+    //GETTERS AND SETTERS
+
+    public Boolean isAdmin() {return isAdmin;}
+
+    public void setAdmin(Boolean admin) {
+        isAdmin = admin;
+    }
 
     public int getUserid() {
         return userid;
@@ -242,6 +263,7 @@ public class User extends Model {
         return trips;
     }
 
+
     public void setTrips(List<Trip> trips) {
         this.trips = trips;
     }
@@ -333,4 +355,58 @@ public class User extends Model {
 
 
     }
+
+    /**
+     * Gets a list of the user's trips, sorted by the earliest arrival date of their visits within each trip.
+     * If there are no arrival dates set within a trip, the trip is placed at the bottom of the list.
+     * @return the list of sorted trips
+     */
+    public List<Trip> getTripsSorted()
+    {
+        HashMap<Trip,LocalDate> datesMap = new HashMap<>();
+        for(Trip trip: trips){
+            ArrayList<LocalDate> datesList = new ArrayList<>();
+            for(Visit visit: trip.getVisits()){
+                if(visit.getArrival() != null && !(visit.getArrival().isEmpty())) {
+                    String arrival = visit.getArrival();
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                    LocalDate arrivalDate = LocalDate.parse(arrival, formatter);
+                    datesList.add(arrivalDate);
+                }
+                else{
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                    LocalDate arrivalDate = LocalDate.parse("2100-12-25", formatter);
+                    datesList.add(arrivalDate);
+                }
+            }
+            Collections.sort(datesList);
+            datesMap.put(trip, datesList.get(0));
+        }
+        datesMap = sortByValues(datesMap);
+        Set datesSet = datesMap.keySet();
+        List<Trip> sortedTrips = new ArrayList(datesSet);
+        return sortedTrips;
+    }
+
+    private static HashMap sortByValues(HashMap map) {
+        List list = new LinkedList(map.entrySet());
+        // Defined Custom Comparator here
+        Collections.sort(list, new Comparator() {
+            public int compare(Object o1, Object o2) {
+                return ((Comparable) ((Map.Entry) (o1)).getValue())
+                        .compareTo(((Map.Entry) (o2)).getValue());
+            }
+        });
+
+        // Here I am copying the sorted list in HashMap
+        // using LinkedHashMap to preserve the insertion order
+        HashMap sortedHashMap = new LinkedHashMap();
+        for (Iterator it = list.iterator(); it.hasNext();) {
+            Map.Entry entry = (Map.Entry) it.next();
+            sortedHashMap.put(entry.getKey(), entry.getValue());
+        }
+        return sortedHashMap;
+    }
 }
+
+

@@ -38,13 +38,12 @@ public class DestinationController extends Controller {
         String latitude = destForm.get("latitude");
         String longitude = destForm.get("longitude");
 
-        //todo add a validation method that works for destNames with apostrophes and spaces
         if (destName.length() < 1) {
-            return notAcceptable("ERROR: Destination name should only contain alphanumeric characters and must not be empty.");
+            return notAcceptable("ERROR: Destination name  must not be empty.");
         }
 
-        if (! UtilityFunctions.isStringAllAlphabetic(district) || district.length() < 1) {
-            return notAcceptable("ERROR: District should only contain alphanumeric characters and must not be empty.");
+        if (district.length() < 1) {
+            return notAcceptable("ERROR: District must not be empty.");
         }
         try {
             Double.parseDouble(latitude);
@@ -62,8 +61,8 @@ public class DestinationController extends Controller {
         if (! (Double.parseDouble(longitude) >= -180 && Double.parseDouble(longitude) <= 180)) {
             return notAcceptable("ERROR: Entered longitude must be between -180 and 180");
         }
-        if (! destType.matches("^[a-zA-Z0-9]+$") || destType.length() < 1) {
-            return notAcceptable("ERROR: Destination type should only contain alphanumeric characters and must not be empty.");
+        if (destType.length() < 1) {
+            return notAcceptable("ERROR: Destination type must not be empty.");
         }
 
         return null;

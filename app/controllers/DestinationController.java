@@ -14,6 +14,7 @@ import javax.inject.Inject;
 import java.util.*;
 
 
+import utilities.UtilityFunctions;
 import views.html.users.destination.*;
 
 public class DestinationController extends Controller {
@@ -30,41 +31,38 @@ public class DestinationController extends Controller {
      */
     private Result validateDestination(DynamicForm destForm) {
 
-        String destName = destForm.get("destName");
+
+        String destName = destForm.get("destName").trim();
         String destType = destForm.get("destType");
-        String country = destForm.get("country");
-        String district = destForm.get("district");
+        String district = destForm.get("district").trim();
         String latitude = destForm.get("latitude");
         String longitude = destForm.get("longitude");
 
-//        if (! destName.matches("^[a-zA-Z0-9]+$") || destName.length() < 1) {
-//            return notAcceptable("ERROR: Destination name should only contain alphanumeric characters.");
-//        }
-//        if (! destType.matches("^[a-zA-Z0-9]+$") || destType.length() < 1) {
-//            return notAcceptable("ERROR: Destination type should only contain alphanumeric characters.");
-//        }
-//        Set<String> isoCountries = new HashSet<>(Arrays.asList(Locale.getISOCountries()));
-//        if (! isoCountries.contains(country)) {
-//            return notAcceptable("ERROR: The country you entered is not valid");
-//        }
-//        if (! district.matches("^[a-zA-Z0-9]+$") || district.length() < 1) {
-//            return notAcceptable("ERROR: District should only contain alphanumeric characters.");
-//        }
+        if (destName.length() < 1) {
+            return notAcceptable("ERROR: Destination name  must not be empty.");
+        }
+
+        if (district.length() < 1) {
+            return notAcceptable("ERROR: District must not be empty.");
+        }
         try {
-            Float.parseFloat(latitude);
+            Double.parseDouble(latitude);
         } catch (NumberFormatException e) {
             return notAcceptable("ERROR: Entered latitude is not a number");
         }
-        if (! (Float.parseFloat(latitude) >= -90 && Float.parseFloat(latitude) <= 90)) {
+        if (! (Double.parseDouble(latitude) >= -90 && Double.parseDouble(latitude) <= 90)) {
             return notAcceptable("ERROR: Entered latitude must be between -90 and 90");
         }
         try {
-            Float.parseFloat(longitude);
+            Double.parseDouble(longitude);
         } catch (NumberFormatException e) {
             return notAcceptable("ERROR: Entered longitude is not a number");
         }
-        if (! (Float.parseFloat(longitude) >= -180 && Float.parseFloat(longitude) <= 180)) {
+        if (! (Double.parseDouble(longitude) >= -180 && Double.parseDouble(longitude) <= 180)) {
             return notAcceptable("ERROR: Entered longitude must be between -180 and 180");
+        }
+        if (destType.length() < 1) {
+            return notAcceptable("ERROR: Destination type must not be empty.");
         }
 
         return null;
@@ -121,7 +119,7 @@ public class DestinationController extends Controller {
         if (user != null) {
             Form<Destination> destForm = formFactory.form(Destination.class);
 
-            return ok(createdestination.render(destForm, Destination.getTypeList()));
+            return ok(createdestination.render(destForm, Destination.getIsoCountries(), Destination.getTypeList()));
         }
         return unauthorized("Oops, you are not logged in");
     }
@@ -150,7 +148,6 @@ public class DestinationController extends Controller {
                 return validationResult;
             }
             //If program gets past this point then inputted destination is valid
-
 
             Destination destination = formFactory.form(Destination.class).bindFromRequest().get();
 
@@ -182,10 +179,14 @@ public class DestinationController extends Controller {
                 if (destination.isUserOwner(user.userid)) {
 
                     Form<Destination> destForm = formFactory.form(Destination.class).fill(destination);
-                    Map typeList = Destination.getTypeList();
+
+                    Map<String, Boolean> typeList = Destination.getTypeList();
                     typeList.replace(destination.getDestType(), true);
 
-                    return ok(editDestination.render(destForm, destination, typeList));
+                    Map<String, Boolean> countryList = Destination.getIsoCountries();
+                    typeList.replace(destination.getCountry(), true);
+
+                    return ok(editDestination.render(destForm, destination, countryList, typeList));
 
                 } else {
                     return unauthorized("Not your destination. You cant edit.");
@@ -268,7 +269,7 @@ public class DestinationController extends Controller {
 
             if (destination != null) {
                 if (destination.isUserOwner(user.userid)) {
-                    if(destination.visits.size() == 0) {
+                    if(destination.visits.isEmpty()) {
                         destination.delete();
                     }
                     else{

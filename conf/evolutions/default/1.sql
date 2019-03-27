@@ -31,8 +31,8 @@ create table destination (
   dest_type                     varchar(255),
   district                      varchar(255),
   country                       varchar(255),
-  latitude                      float not null,
-  longitude                     float not null,
+  latitude                      double not null,
+  longitude                     double not null,
   user                          integer,
   constraint pk_destination primary key (destid)
 );
@@ -60,6 +60,7 @@ create table trip (
   tripid                        integer auto_increment not null,
   trip_name                     varchar(255),
   removed_visits                integer default 0,
+  is_public                     boolean default false not null,
   user                          integer,
   constraint pk_trip primary key (tripid)
 );
@@ -72,6 +73,7 @@ create table user (
   gender                        varchar(255),
   f_name                        varchar(255),
   l_name                        varchar(255),
+  is_admin                      boolean,
   creation_date                 timestamp not null,
   constraint pk_user primary key (userid)
 );
@@ -104,11 +106,11 @@ create table user_photo (
 
 create table visit (
   visitid                       integer auto_increment not null,
+  visitorder                    integer,
   destination                   integer,
   trip                          integer,
-  visitorder                    integer,
-  arrival                       date,
-  departure                     date,
+  arrival                       varchar(255),
+  departure                     varchar(255),
   visit_name                    varchar(255),
   constraint pk_visit primary key (visitid)
 );

@@ -27,8 +27,6 @@ import static play.mvc.Results.*;
  * A Controller class for the user registration page.
  */
 public class RegisterController {
-    public static Logger logger = LoggerFactory.getLogger("application");
-
     @Inject
     FormFactory formFactory;
     Logger logger = new Logger() {

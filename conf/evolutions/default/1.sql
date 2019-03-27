@@ -31,8 +31,8 @@ create table destination (
   dest_type                     varchar(255),
   district                      varchar(255),
   country                       varchar(255),
-  latitude                      float not null,
-  longitude                     float not null,
+  latitude                      double not null,
+  longitude                     double not null,
   user                          integer,
   constraint pk_destination primary key (destid)
 );

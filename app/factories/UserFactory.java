@@ -172,7 +172,6 @@ public class UserFactory {
      * and.
      * @param user pass in the user that needs to have pass ports added
      * @param passportId this is the id of the pasport that needs to be added
-     * @return
      */
     public void UpdatePassport(User user, int passportId){
         if (user != null) {
@@ -193,14 +192,13 @@ public class UserFactory {
      * and.
      * @param user pass in the user that needs to have pass ports added
      * @param natId this is the id of the pasport that needs to be added
-     * @return
      */
     public void UpdateNationality(User user, int natId){
         if (user != null) {
             Nationality nationality = Nationality.find.byId(natId);
             if(natId != -1){
                 try {
-                    user.addNationality(nationality);  ;
+                    user.addNationality(nationality);
                     user.update();
                 } catch (io.ebean.DuplicateKeyException e) {
 

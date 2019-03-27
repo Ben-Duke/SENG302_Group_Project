@@ -1,4 +1,4 @@
-@(destForm : Form[Destination], destination: Destination, typeMap: Map[String, Boolean])
+@(destForm : Form[Destination], destination: Destination, countryMap: Map[String, Boolean], typeMap: Map[String, Boolean])
 @import helper._
 @import views.html.bootstrap3._
 
@@ -29,9 +29,11 @@
     placeholder = "destination name",
     help = "Please enter the destination. (required)")
 
-    @text(destForm("country"),
-    label = "Country",
-    placeholder = "country"
+    @views.html.bootstrap3.select(destForm("country"),
+        label = "Country",
+        optionMap = countryMap,
+        isMultiple = false,
+        help= "Select a country",
     )
 
     @text(destForm("district"),

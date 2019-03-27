@@ -380,7 +380,9 @@ public class User extends Model {
                 }
             }
             Collections.sort(datesList);
-            datesMap.put(trip, datesList.get(0));
+            if (! datesList.isEmpty()) {
+                datesMap.put(trip, datesList.get(0));
+            }
         }
         datesMap = sortByValues(datesMap);
         Set datesSet = datesMap.keySet();

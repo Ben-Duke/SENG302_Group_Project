@@ -36,17 +36,6 @@ And open <http://localhost:9000/>
 
         Password: admin
 
-* Default User 1:
-
-        Email: user1@admin.com
-        
-        Password: user1
-        
-* Default User 2:
-
-        Email: user2@admin.com
-        
-        Password: user2
 
 ## How to use
 * Create/Login using the buttons on the main page.

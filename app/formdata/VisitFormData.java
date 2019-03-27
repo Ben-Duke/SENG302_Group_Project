@@ -40,27 +40,9 @@ public class VisitFormData implements Constraints.Validatable<List<ValidationErr
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             LocalDate arrivalDate = LocalDate.parse(arrival, formatter);
             LocalDate departureDate = LocalDate.parse(departure, formatter);
-            if ((arrivalDate.compareTo(now) > 0) || (departureDate.compareTo(now) > 0)) {
-                errors.add(new ValidationError("arrival", "Please provide a date before the present date"));
-                errors.add(new ValidationError("departure", "Please provide a date before the present date"));
-            }
-            if((arrivalDate.compareTo(departureDate)) > 0) {
+            if ((arrivalDate.compareTo(departureDate)) > 0) {
                 errors.add(new ValidationError("arrival", "Please provide an arrival date after the departure date"));
                 errors.add(new ValidationError("departure", "Please provide an arrival date after the departure date"));
-            }
-        } else if ((!arrival.isEmpty())) {
-            LocalDate now = LocalDate.now();
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            LocalDate arrivalDate = LocalDate.parse(arrival, formatter);
-            if ((arrivalDate.compareTo(now) > 0)) {
-                errors.add(new ValidationError("arrival", "Please provide a date before the present date"));
-            }
-        } else if ((!departure.isEmpty())) {
-            LocalDate now = LocalDate.now();
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            LocalDate departureDate = LocalDate.parse(departure, formatter);
-            if ((departureDate.compareTo(now) > 0)) {
-                errors.add(new ValidationError("departure", "Please provide a date before the present date"));
             }
         }
 

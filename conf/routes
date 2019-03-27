@@ -25,6 +25,16 @@ POST    /users/login                controllers.LoginController.loginrequest(req
 #Renders update profile page
 GET     /users/profile/update       controllers.ProfileController.updateProfile(request: Request)
 
+#Renders admin page
+GET     /users/admin                controllers.AdminController.indexAdmin(request: Request)
+
+#Handles deleting admin
+GET     /users/admin/remove/:id     controllers.AdminController.adminToUser(request: Request, id: Integer)
+
+#Handles creating admin
+GET     /users/admin/make/:id       controllers.AdminController.userToAdmin(request: Request, id: Integer)
+
+
 #Handles updating profile
 POST    /users/profile/update       controllers.ProfileController.updateProfileRequest(request: Request)
 
@@ -86,7 +96,7 @@ GET     /users/profile/ttypes       controllers.TravellerTypeController.updateTr
 POST     /users/profile/ttypes      controllers.TravellerTypeController.submitUpdateTravellerType(request:Request)
 
 #Handles deleting a traveller type
-POST     /users/profile/delete      controllers.TravellerTypeController.deleteUpdateTravellerType(request:Request)
+POST     /users/profile/delete      controllers.TravellerTypeController.deleteUpdateTravellerType(request:Request, typeId:Integer)
 
 #Renders page for displaying a given user's profile (used for debugging)
 GET     /users/profile/:id          controllers.ProfileController.showProfile(request : Request, id : Integer)

@@ -121,7 +121,7 @@ public class DestinationController extends Controller {
         if (user != null) {
             Form<Destination> destForm = formFactory.form(Destination.class);
 
-            return ok(createdestination.render(destForm));
+            return ok(createdestination.render(destForm, Destination.getTypeList()));
         }
         return unauthorized("Oops, you are not logged in");
     }
@@ -151,7 +151,6 @@ public class DestinationController extends Controller {
             }
             //If program gets past this point then inputted destination is valid
 
-            System.out.println("\nHello2\n");
 
             Destination destination = formFactory.form(Destination.class).bindFromRequest().get();
 
@@ -183,8 +182,10 @@ public class DestinationController extends Controller {
                 if (destination.isUserOwner(user.userid)) {
 
                     Form<Destination> destForm = formFactory.form(Destination.class).fill(destination);
+                    Map typeList = Destination.getTypeList();
+                    typeList.replace(destination.getDestType(), true);
 
-                    return ok(editDestination.render(destForm, destination));
+                    return ok(editDestination.render(destForm, destination, typeList));
 
                 } else {
                     return unauthorized("Not your destination. You cant edit.");
@@ -237,7 +238,7 @@ public class DestinationController extends Controller {
 
                     oldDestination.update();
 
-                    return redirect(routes.DestinationController.viewDestination(oldDestination.getDestId()));
+                    return redirect(routes.DestinationController.indexDestination());
 
                 } else {
                     return unauthorized("Not your destination. You cant edit.");

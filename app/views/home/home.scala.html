@@ -1,7 +1,7 @@
 @import play.filters.csrf.AddCSRFToken
 @(user: User, admins: List[Admin])
-    @import views.html.bootstrap3._
-    @main("Index"){
+@import views.html.bootstrap3._
+@main("Index"){
 
 
     <head>
@@ -9,14 +9,14 @@
     </head>
 
     <div class="container">
-        <h1>@user.fName @user.lName @for(admin <- admins) { @if(user.userid == admin.userId) {<img class="img"  width = "60" height="50" src="../assets/images/key_2_small.png"> } </h1>}
+        <h1>@user.fName @user.lName @for(admin <- admins) { @if(user.userid == admin.userId) {<img class="img"  width = "60" height="50" src="@routes.Assets.at("images/key_2_small.png")"> } </h1>}
     </div>
 
     <br>
 
     <div class="container">
         <div class="row">
-            <!-- The profile picture, currently a placeholder -->
+                <!-- The profile picture, currently a placeholder -->
             <div class="text-center">
                 <img class="img-circle" width = "150" src="@routes.Assets.at("images/Generic.png")">
             </div>
@@ -27,37 +27,34 @@
                 <p>Gender: @user.gender</p>
                 <p>Date of Birth: @user.dateOfBirth</p>
                 @for(passport <- user.passports) {
-                <p>Passport: @passport.passportName</p>
+                    <p>Passport: @passport.passportName</p>
                 }
                 @for(nationality <- user.nationality) {
-                <p>Nationality: @nationality.nationalityName</p>
+                    <p>Nationality: @nationality.nationalityName</p>
                 }
                 <p>Creation date: @user.creationDate</p>
-                <p>Traveller Types:</p>
-                <ul class="list-group">
                 @for(travellerType <- user.travellerTypes) {
-                    <li class="list-group-item" style = "width: 300px;">
-                        @travellerType.travellerTypeName </li>
+                    <p>Traveller type: @travellerType.travellerTypeName</p>
+                    <form>
+                        <button class="btn btn-default" formaction="@routes.ProfileController.updateProfile()">Update profile</button>
+                        <button class="btn btn-default" formaction="@routes.TravellerTypeController.updateTravellerType()">Update traveller type</button>
+                        @for(admin <- admins) {
+                            @if(user.getUserid == admin.getUserId){
+                                <button class="btn btn-default" formaction="@routes.AdminController.indexAdmin()">Admin</button>
+                            }
+                        }
+                    </form>
                 }
-                </ul>
-                <form>
-                    <button class="btn btn-default" formaction="@routes.ProfileController.updateProfile()">Update profile</button>
-                    @for(admin <- admins) {
-                    @if(user.getUserid == admin.getUserId){
-                    <button class="btn btn-default" formaction="@routes.AdminController.indexAdmin()">Admin</button>
-                    }
-                    }
-                </form>
             </div>
             <div class="col-md-4">
                 <h2>Trips</h2>
                 <form>
                     <div class="list-group">
-                        @for(trip <- user.getTrips) {
-                        <a href="@routes.TripController.displaytrip(trip.getTripid)" class="list-group-item list-group-item-action">
-                            @trip.tripName
+                    @for(trip <- user.getTripsSorted) {
+                        <a href="@routes.TripController.displaytrip(trip.tripid,"")" class="list-group-item list-group-item-action">
+                        @trip.tripName
                         </a>
-                        }
+                    }
                     </div>
                     <button class="btn btn-default" formaction="@routes.DestinationController.indexDestination()">Destinations</button>
                     <button class="btn btn-default" formaction="@routes.TripController.createtrip()">Create trip</button>
@@ -120,30 +117,30 @@
             <div id="modal-picture" class="modal">
                 <img class="modal-content" id="img01">
             </div>
-            <!-- defines the number of photos the user has stored in the database. Currently hardcoded until tasks are finished -->
-                @for(photo <- user.getUserPhotos) {
-                    <img class="img-thumbnail" id=@{photo.getUrl} width="60" src="@{routes.Assets.at("images/user_photos/user_" + user.getUserid + "/") + photo.getUrl}" alt="User Image">
-                }
-                <script>
-                        // Get the modal
-                        var modal = document.getElementById('modal-picture');
-                        // When the user clicks, they quit the modal view
-                        modal.onclick = function () {
-                            this.style.display = "none";
+                <!-- defines the number of photos the user has stored in the database. Currently hardcoded until tasks are finished -->
+            @for(photo <- user.getUserPhotos) {
+                <img class="img-thumbnail" id=@{photo.getUrl} width="60" src="@{routes.Assets.at("images/user_photos/user_" + user.getUserid + "/") + photo.getUrl}" alt="User Image">
+            }
+            <script>
+                    // Get the modal
+                    var modal = document.getElementById('modal-picture');
+                    // When the user clicks, they quit the modal view
+                    modal.onclick = function () {
+                        this.style.display = "none";
+                    };
+
+                    // Get the image and insert it inside the modal
+                    var images = document.getElementsByClassName("img-thumbnail");
+                    var modalImg = document.getElementById("img01");
+                    // loops through each thumbnail and adds the event listener
+                    for (i = 0; i < @user.getUserPhotos.length; i++) {
+                        images[i].onclick = function() {
+                            modal.style.display = "block";
+                            modalImg.src = this.src;
                         };
-
-                        // Get the image and insert it inside the modal
-                        var images = document.getElementsByClassName("img-thumbnail");
-                        var modalImg = document.getElementById("img01");
-                        // loops through each thumbnail and adds the event listener
-                        for (i = 0; i < @user.getUserPhotos.length; i++) {
-                            images[i].onclick = function() {
-                                modal.style.display = "block";
-                                modalImg.src = this.src;
-                            };
-                        }
-                </script>
+                    }
+            </script>
         </div>
-     </div>
+    </div>
 
-    }
+}

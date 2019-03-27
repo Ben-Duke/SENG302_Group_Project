@@ -82,6 +82,8 @@ public class UserFactory {
         if(checkUsername(username)!=1){
         User user = new User(username, password, firstName, lastName, date, gender);
 
+
+
             user.save();
             for (int i = 0; i < tType.size(); i++) {
 
@@ -89,17 +91,15 @@ public class UserFactory {
                 UpdateTravellerType(user, tTypeId);
             }
             //Passport loop
-            if(passports != null) {
             for (int j = 0; j < passports.size(); j++) {
 
                 int passportId = getPassportId(passports.get(j));
                 UpdatePassport(user, passportId);
             }
-            }
 
-            for (String natName: nationalities) {
+            for (int k = 0; k < nationalities.size(); k++) {
 
-                int natId = getNatId(natName);
+                int natId = getNatId(nationalities.get(k));
                 UpdateNationality(user, natId);
             }
 
@@ -172,7 +172,6 @@ public class UserFactory {
      * and.
      * @param user pass in the user that needs to have pass ports added
      * @param passportId this is the id of the pasport that needs to be added
-     * @return
      */
     public void UpdatePassport(User user, int passportId){
         if (user != null) {
@@ -193,14 +192,13 @@ public class UserFactory {
      * and.
      * @param user pass in the user that needs to have pass ports added
      * @param natId this is the id of the pasport that needs to be added
-     * @return
      */
     public void UpdateNationality(User user, int natId){
         if (user != null) {
             Nationality nationality = Nationality.find.byId(natId);
             if(natId != -1){
                 try {
-                    user.addNationality(nationality);  ;
+                    user.addNationality(nationality);
                     user.update();
                 } catch (io.ebean.DuplicateKeyException e) {
 
@@ -336,78 +334,14 @@ public class UserFactory {
 
     }
 
-    public static int getNatsForUserbyId(int userId){
-        int count = 0;
-        User user = User.find.query().where().eq("userid", userId).findOne();
-        count = user.nationality.size();
-        return count;
-    }
-
-    public static List<Passport> getUserPassports(int id){
-        return User.find.query().where().eq("userid", id).findOne().passports;
-    }
-
-    public static List<Nationality> getUserNats(int id){
-        return User.find.query().where().eq("userid", id).findOne().nationality;
-    }
-
-    public static void addPassportToUser(int id, String passportId){
-
-        Passport passport = Passport.find.byId(Integer.parseInt(passportId));
-
-        try {
-            User user = User.find.query().where().eq("userid", id).findOne();
-            user.addPassport(passport);
-            user.update();
-        } catch (io.ebean.DuplicateKeyException e) {
-            //return unauthorized("Oops, you have already have this passport");
-        }
-    }
-
-    public static void deletePassportOnUser(int id, String passportId){
-
-
-        try {
-            Passport passport = Passport.find.byId(Integer.parseInt(passportId));
-            User user = User.find.query().where().eq("userid", id).findOne();
-            user.deletePassport(passport);
-            user.update();
-        } catch (NumberFormatException e) {
-            //return  unauthorized("Oops, you do not have any passports to delete");
-        }
-    }
-
-    public static void deleteNatsOnUser(int id, String nationalityId){
-        User user = User.find.query().where().eq("userid", id).findOne();
-        try {
-            Nationality nationality = Nationality.find.byId(Integer.parseInt(nationalityId));
-            user.deleteNationality(nationality);
-            user.update();
-        } catch (NumberFormatException e) {
-            //return  unauthorized("Oops, you do not have any nationalities to delete");
-        }
-    }
-
-    public static void addNatsOnUser(int id, String nationalityId){
-        User user = User.find.query().where().eq("userid", id).findOne();
-        try {
-            Nationality nationality = Nationality.find.byId(Integer.parseInt(nationalityId));
-            user.addNationality(nationality);
-            user.update();
-        } catch (io.ebean.DuplicateKeyException e) {
-        }
-    }
-
     /** Returns a user id if they exist any number less than zero indicates the username is not in the database
      *
      * @param request
      * @return an int -1 indicates there are no entries in the database that have that user.
      */
-    public static int getCurrentUserId(Http.Request request) {
-        return User.getCurrentUserId(request);
+    public static int getCurrentUserById(Http.Request request) {
+        return User.getCurrentUserById(request);
     }
-
-
 
     public static int deleteNationalilty(){
         return 1;

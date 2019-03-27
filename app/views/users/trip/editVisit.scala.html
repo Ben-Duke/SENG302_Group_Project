@@ -1,0 +1,17 @@
+@import views.html.helper.form
+@import views.html.helper.select
+@(visitForm : Form[Visit], visit : Visit, destinations : List[Destination])
+@import helper._
+
+@main("Edit destination") {
+    @form(action = helper.CSRF(routes.TripController.updateVisit(visit.visitid))) {
+        @select(
+            field = visitForm("destination"),
+            options = destinations.map(destination => destination.destid.toString -> destination.destName),
+            '_label -> "Destination"
+        )
+        @helper.inputDate(visitForm("arrival"), '_label -> "Arrival date: " )
+        @helper.inputDate(visitForm("departure"), '_label -> "Departure date: " )
+        <input type="submit" value="Update destination">
+    }
+}

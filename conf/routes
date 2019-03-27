@@ -63,14 +63,18 @@ POST    /users/profile/search       controllers.TravelPartnerController.searchBy
 #Renders page for creating trips
 GET     /users/trips/create         controllers.TripController.createtrip(request: Request)
 
+GET     /users/trips/cancel         controllers.TripController.cancelTrip(request: Request, id:Integer)
+
+GET     /users/trips/addDestinations    controllers.TripController.AddTripDestinations(request: Request, id:Integer)
+
 #Handles creating trips
 POST    /users/trips/create         controllers.TripController.savetrip(request: Request)
 
 #Handles deleting visits from a trip
-POST    /users/trips/edit/:id/delete    controllers.TripController.deletevisit(request: Request, id:Integer)
+DELETE    /users/trips/edit/:id    controllers.TripController.deletevisit(request: Request, id:Integer)
 
 #Handles swapping visits in a trip
-POST    /users/trips/edit/:id/swap  controllers.TripController.swapvisits(request: Request, id:Integer)
+PUT    /users/trips/edit/:id      controllers.TripController.swapvisits(request: Request, id:Integer)
 
 #Renders page for editing a trip
 GET     /users/trips/edit/:id        controllers.TripController.edittrip(request: Request, id:Integer)
@@ -78,8 +82,14 @@ GET     /users/trips/edit/:id        controllers.TripController.edittrip(request
 #Handles adding a visit to a trip
 POST    /users/trips/edit/:id       controllers.TripController.addvisit(request: Request, id:Integer)
 
+#Renders page for editing a visit of a trip
+GET    /users/trips/visit/edit/:id       controllers.TripController.editvisit(request: Request, id:Integer)
+
+#Handles editing a visit of a trip
+POST    /users/trips/visit/edit/:id       controllers.TripController.updateVisit(request: Request, id:Integer)
+
 #Renders page that displays a given trip
-GET     /users/trips/:id            controllers.TripController.displaytrip(request: Request, id:Integer)
+GET     /users/trips/:id            controllers.TripController.displaytrip(request: Request, id:Integer, message:String)
 
 #Renders page that displays the home page where users can navigate to other pages
 GET     /users/home                 controllers.HomeController.showhome(request:Request)

@@ -1,5 +1,4 @@
 # Ignore Play! working directory #
-bin/
 /db
 .eclipse
 /lib/
@@ -143,21 +142,6 @@ com_crashlytics_export_strings.xml
 crashlytics.properties
 crashlytics-build.properties
 fabric.properties
-
-# Eclipse
-.metadata
-bin/
-tmp/
-*.tmp
-*.bak
-*.swp
-*~.nib
-local.properties
-.settings/
-.loadpath
-
-# Eclipse Core
-.project
 
 # External tool builders
 .externalToolBuilders/

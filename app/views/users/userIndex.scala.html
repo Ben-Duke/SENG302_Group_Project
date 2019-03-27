@@ -40,8 +40,13 @@
 
                 <br>
                 }
+
             </tbody>
         </table>
+
+        @if(users.size == 0) {<div class="alert alert-info">
+            <strong>No Users to show!</strong>
+        </div>}
 
     </body>
 }

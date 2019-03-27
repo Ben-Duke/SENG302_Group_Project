@@ -36,8 +36,6 @@
                 @for(travellerType <- user.travellerTypes) {
                     <p>Traveller type: @travellerType.travellerTypeName</p>
                     <form>
-                        <button class="btn btn-default" formaction="@routes.ProfileController.updateProfile()">Update profile</button>
-                        <button class="btn btn-default" formaction="@routes.TravellerTypeController.updateTravellerType()">Update traveller type</button>
                         @for(admin <- admins) {
                             @if(user.getUserid == admin.getUserId){
                                 <button class="btn btn-default" formaction="@routes.AdminController.indexAdmin()">Admin</button>
@@ -45,6 +43,8 @@
                         }
                     </form>
                 }
+                <button class="btn btn-default" formaction="@routes.ProfileController.updateProfile()">Update profile</button>
+                <button class="btn btn-default" formaction="@routes.TravellerTypeController.updateTravellerType()">Update traveller type</button>
             </div>
             <div class="col-md-4">
                 <h2>Trips</h2>

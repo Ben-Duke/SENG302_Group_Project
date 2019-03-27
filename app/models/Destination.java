@@ -27,6 +27,9 @@ public class Destination extends Model {
     public static Map<String, Boolean> getTypeList() {
         Map<String, Boolean> typeMap = new TreeMap<>();
         typeMap.put("Accomodation", false);
+        typeMap.put("Town", false);
+        typeMap.put("Country", false);
+        typeMap.put("Monument", false);
         typeMap.put("Cafe/Restaurant", false);
         typeMap.put("Attraction", false);
         typeMap.put("Event", false);

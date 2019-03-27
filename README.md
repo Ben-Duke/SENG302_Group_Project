@@ -1,27 +1,44 @@
-# SENG302 Project Template
+# TravelEA - Team 800
 Basic Play project using sbt build and basic GitLab CI.
-It is a requirement that your product can be packaged to a deliverable form using the `sbt dist` command.
-Remember to set up your GitLab CI server (refer to the student guide for instructions).
 
 ## Basic Project Structure
-* app/ Your application source
-* doc/ User and design documentation
-* doc/examples/ Demo example files for use with your application
+* app/ Application source
 * conf/ configuration files required to ensure the project builds properly
 
 ## How to run
-Start the Play app:
+Open terminal
 ```bash
-sbt run
+git clone https://eng-git.canterbury.ac.nz/seng302-2019/team-800
+```
+Change directory to the root directory of the project and execute:
+```bash
+sbt dist
+```
+Unzip snapshot files from target/universal folder of your application to a chosen directory
+
+(For Unix users: Then make the file executable)
+```bash
+chmod +x /path/to/bin/team-800
+```
+
+And run the server 
+```bash
+/path/to/bin/team-800 -Dplay.http.secret.key="{insert secret key}" -Dplay.evolutions.db.autoApply=true
 ```
 And open <http://localhost:9000/>
 
-## Todo
-* In the `build.sbt` file, you will need to ensure you update the name (on line 1) to your appropriate Team Number and Name
-* Remember to set up your GitLab CI server (refer to the student guide on Learn for instructions).
+## Login details
+* Default admin:
 
-### Reference
-* [Play documentation](https://playframework.com/documentation/latest/Home](https://playframework.com/documentation/latest/Home)
-* [EBean](https://www.playframework.com/documentation/latest/JavaEbean) is a Java ORM library that uses SQL.The documentation can be found [here](https://ebean-orm.github.io/).
-* For Java Forms, Please see [here](<https://playframework.com/documentation/latest/JavaForms>).
+        Email: admin@admin.com
 
+        Password: admin
+
+
+## How to use
+* Create/Login using the buttons on the main page.
+* Once logged in successfully, you will be directed to your profile page.
+* You can perform all profile actions from the profile page.
+* The admin button is only visible if you are an admin.
+* To get back to the main page Logout from the navigation bar.
+* Note: Home/TravelEA buttons navigate to the profile page but only if you are logged in.

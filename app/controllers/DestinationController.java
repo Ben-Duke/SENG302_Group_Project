@@ -14,7 +14,6 @@ import javax.inject.Inject;
 import java.util.*;
 
 
-import utilities.UtilityFunctions;
 import views.html.users.destination.*;
 
 public class DestinationController extends Controller {
@@ -184,7 +183,7 @@ public class DestinationController extends Controller {
                     typeList.replace(destination.getDestType(), true);
 
                     Map<String, Boolean> countryList = Destination.getIsoCountries();
-                    typeList.replace(destination.getCountry(), true);
+                    countryList.replace(destination.getCountry(), true);
 
                     return ok(editDestination.render(destForm, destination, countryList, typeList));
 

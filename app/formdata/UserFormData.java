@@ -76,10 +76,10 @@ public class UserFormData implements Constraints.Validatable<List<ValidationErro
             errors.add(new ValidationError("lastName", "Last name needs to be only letters and be at least one letter long"));
         }
         if (username == null || username.length() == 0) {
-            errors.add(new ValidationError("username", "No username was given"));
+            errors.add(new ValidationError("username", "No email was given"));
         }
         if (UserFactory.checkUsername(username) == 1) {
-            errors.add(new ValidationError("username", "Username is taken"));
+            errors.add(new ValidationError("username", "Email already registered"));
         }
         if (password.length() == 0) {
             errors.add(new ValidationError("password", "No password was given"));

@@ -54,7 +54,7 @@ public class LoginFormData implements Constraints.Validatable<List<ValidationErr
         boolean hasPasswordData = ! (password == null || password.length() == 0);
 
         if (! hasUserNameData) {
-            errors.add(new ValidationError("username", "No username was given"));
+            errors.add(new ValidationError("username", "No email was given"));
         }
 
         if (! hasPasswordData) {

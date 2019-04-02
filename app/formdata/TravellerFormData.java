@@ -64,7 +64,7 @@ public class TravellerFormData implements Constraints.Validatable<List<Validatio
         }
 
         if (username == null || username.length() == 0) {
-            errors.add(new ValidationError("username", "No username was given"));
+            errors.add(new ValidationError("username", "No email was given"));
         }
 
         if (password.length() == 0) {

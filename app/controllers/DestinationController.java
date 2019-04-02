@@ -37,6 +37,7 @@ public class DestinationController extends Controller {
         String district = destForm.get("district").trim();
         String latitude = destForm.get("latitude");
         String longitude = destForm.get("longitude");
+        String country = destForm.get("country");
 
         if (destName.length() < 1) {
             return notAcceptable("ERROR: Destination name  must not be empty.");
@@ -63,6 +64,9 @@ public class DestinationController extends Controller {
         }
         if (destType.length() < 1) {
             return notAcceptable("ERROR: Destination type must not be empty.");
+        }
+        if (country.length() < 1) {
+            return notAcceptable("ERROR: Destination country must not be empty.");
         }
 
         return null;
@@ -184,12 +188,12 @@ public class DestinationController extends Controller {
                     typeList.replace(destination.getDestType(), true);
 
                     Map<String, Boolean> countryList = Destination.getIsoCountries();
-                    typeList.replace(destination.getCountry(), true);
+                    countryList.replace(destination.getCountry(), true);
 
                     return ok(editDestination.render(destForm, destination, countryList, typeList));
 
                 } else {
-                    return unauthorized("Not your destination. You cant edit.");
+                    return unauthorized("Not your destination. You can't edit.");
                 }
             } else {
                 return notFound("Destination does not exist");

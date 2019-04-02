@@ -33,16 +33,22 @@
                     <p>Nationality: @nationality.nationalityName</p>
                 }
                 <p>Creation date: @user.creationDate</p>
-                @for(travellerType <- user.travellerTypes) {
-                    <p>Traveller type: @travellerType.travellerTypeName</p>
-                    <form>
-                        <button class="btn btn-default" formaction="@routes.ProfileController.updateProfile()">Update profile</button>
-                        <button class="btn btn-default" formaction="@routes.TravellerTypeController.updateTravellerType()">Update traveller type</button>
-                        @if(user.userIsAdmin) {
-                            <button class="btn btn-default" formaction="@routes.AdminController.indexAdmin()">Admin</button>
-                        }
-                    </form>
-                }
+                <p>Traveller type(s):
+                    <div class="col-sm-offset-4">
+                        <ul class="list-group" >
+                            @for(travellerType <- user.travellerTypes) {
+                                <li class="list-group-item">@travellerType.travellerTypeName</li>
+                            }
+                        </ul>
+                    </div>
+                </p>
+                <form>
+                    <button class="btn btn-default" formaction="@routes.ProfileController.updateProfile()">Update profile</button>
+                    <button class="btn btn-default" formaction="@routes.TravellerTypeController.updateTravellerType()">Update traveller type</button>
+                    @if(user.userIsAdmin) {
+                    <button class="btn btn-default" formaction="@routes.AdminController.indexAdmin()">Admin</button>
+                    }
+                </form>
             </div>
             <div class="col-md-4">
                 <h2>Trips</h2>

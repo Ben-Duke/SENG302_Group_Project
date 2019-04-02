@@ -86,14 +86,15 @@ public class TripController extends Controller {
         User user = User.getCurrentUser(request);
         if (user != null) {
             Trip trip = Trip.find.byId(tripid);
+            List<Visit> visits = trip.getVisits();
+            visits.sort(Comparator.comparing(Visit::getVisitorder));
             if(trip.isUserOwner(user.getUserid())) {
-                List<Visit> visits = trip.getVisits();
-                visits.sort(Comparator.comparing(Visit::getVisitorder));
                 //return ok(displayTrip.render(trip, visits));
                 return ok(displayTripTable.render(trip,message));
             }
             else{
-                return unauthorized("Oops, this is not your trip.");
+                return ok(displayTrip.render(trip, visits));
+//                return unauthorized("Oops, this is not your trip.");
             }
         }
         else{
@@ -337,7 +338,6 @@ public class TripController extends Controller {
         else{
             return unauthorized("Oops, you are not logged in");
         }
-//        return ok("edittrip");
     }
 
 

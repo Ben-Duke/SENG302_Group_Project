@@ -48,7 +48,7 @@ public class HomeController {
                 return ok(home.render(user));
             }
         }
-        return unauthorized("Oops, you are not logged in");
+        return redirect(routes.UserController.userindex());
     }
 
     /**

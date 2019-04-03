@@ -21,7 +21,7 @@ import java.util.List;
  */
 @Constraints.Validate
 public class UserFormData implements Constraints.Validatable<List<ValidationError>> {
-    public String username;
+    public String email;
     public String firstName;
     public String lastName;
     public String password;
@@ -40,8 +40,8 @@ public class UserFormData implements Constraints.Validatable<List<ValidationErro
     /**
      * Creates an initialized form instance. Assumes the passed data is valid.
      */
-    public UserFormData(String username, String password, String firstName, String lastName, String gender, List<String> passports, List<String> nationalities, List<String> tTypes, String dob) {
-        this.username = username;
+    public UserFormData(String email, String password, String firstName, String lastName, String gender, List<String> passports, List<String> nationalities, List<String> tTypes, String dob) {
+        this.email = email;
         this.password = password;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -75,11 +75,11 @@ public class UserFormData implements Constraints.Validatable<List<ValidationErro
         } else if (lastName.matches(".*\\d+.*") || lastName.length() < 1) {
             errors.add(new ValidationError("lastName", "Last name needs to be only letters and be at least one letter long"));
         }
-        if (username == null || username.length() == 0) {
-            errors.add(new ValidationError("username", "No email was given"));
+        if (email == null || email.length() == 0) {
+            errors.add(new ValidationError("email", "No email was given"));
         }
-        if (UserFactory.checkUsername(username) == 1) {
-            errors.add(new ValidationError("username", "Email already registered"));
+        if (UserFactory.checkEmail(email) == 1) {
+            errors.add(new ValidationError("email", "Email already registered"));
         }
         if (password.length() == 0) {
             errors.add(new ValidationError("password", "No password was given"));
@@ -128,7 +128,7 @@ public class UserFormData implements Constraints.Validatable<List<ValidationErro
 //    @Override
 //    public String toString() {
 //        return "UserFormData{" +
-//                "username='" + username + '\'' +
+//                "email='" + email + '\'' +
 //                ", firstName='" + firstName + '\'' +
 //                ", lastName='" + lastName + '\'' +
 //                ", password='" + password + '\'' +

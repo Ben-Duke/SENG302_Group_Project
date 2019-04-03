@@ -20,7 +20,7 @@ import java.util.List;
  */
 @Constraints.Validate
 public class TravellerFormData implements Constraints.Validatable<List<ValidationError>> {
-    public String username;
+    public String email;
     public String firstName;
     public String lastName;
     public String password;
@@ -35,8 +35,8 @@ public class TravellerFormData implements Constraints.Validatable<List<Validatio
     /**
      * Creates an initialized form instance. Assumes the passed data is valid.
      */
-    public TravellerFormData(String username, String password, String firstName, String lastName, String gender, List<String> passports, List<String> nationalities, String dob) {
-        this.username = username;
+    public TravellerFormData(String email, String password, String firstName, String lastName, String gender, List<String> passports, List<String> nationalities, String dob) {
+        this.email = email;
         this.password = password;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -63,8 +63,8 @@ public class TravellerFormData implements Constraints.Validatable<List<Validatio
             errors.add(new ValidationError("lastName", "No last name was given"));
         }
 
-        if (username == null || username.length() == 0) {
-            errors.add(new ValidationError("username", "No email was given"));
+        if (email == null || email.length() == 0) {
+            errors.add(new ValidationError("email", "No email was given"));
         }
 
         if (password.length() == 0) {
@@ -110,7 +110,7 @@ public class TravellerFormData implements Constraints.Validatable<List<Validatio
     @Override
     public String toString() {
         return "TravellerFormData{" +
-                "username='" + username + '\'' +
+                "email='" + email + '\'' +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", password='" + password + '\'' +

@@ -56,6 +56,7 @@ public class UserPhoto extends Model {
         return url;
     }
 
+
     /**
      * Method to get the url for a photo with its full path
      * @return the full path string for the file

@@ -25,6 +25,8 @@ public class UpdateUserFormData implements Constraints.Validatable<List<Validati
     public String lastName;
     public String gender;
     public String dateOfBirth;
+    public String username;
+    public String password;
 
 
     /**
@@ -44,6 +46,8 @@ public class UpdateUserFormData implements Constraints.Validatable<List<Validati
         this.firstName = user.getfName();
         this.lastName = user.getlName();
         this.gender = user.getGender();
+        this.username = user.getUsername();
+        this.password = user.getPassword();
         if (user.getDateOfBirth() == null) {
             this.dateOfBirth = "null";
         } else {

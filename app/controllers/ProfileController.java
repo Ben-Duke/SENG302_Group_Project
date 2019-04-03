@@ -102,11 +102,15 @@ public class ProfileController extends Controller {
         String gender = updateProfileForm.get().gender;
         String dateOfBirth = updateProfileForm.get().dateOfBirth;
         LocalDate birthDate = LocalDate.parse(dateOfBirth, formatter);
+        String username = updateProfileForm.get().username;
+        String password = updateProfileForm.get().password;
 
         user.setfName(firstName);
         user.setlName(lastName);
         user.setGender(gender);
         user.setDateOfBirth(birthDate);
+        user.setUsername(username);
+        user.setPassword(password);
 
         user.update();
         // Show the user their home page

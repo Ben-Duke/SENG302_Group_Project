@@ -14,6 +14,21 @@
         <!-- Header -->
     <legend id="legend">Update Profile</legend>
 
+
+
+        <!-- FirstName -->
+        @text(updateUserForm("username"),
+            label = "Email",
+            placeholder = "Email",
+            help = "Please enter your email. (required)")
+
+
+            @password(updateUserForm("password"),
+                label = "Password",
+                placeholder = "password",
+                help = "Please enter your password. (required)")
+
+
     <!-- FirstName -->
     @text(updateUserForm("firstName"),
         label = "First name",

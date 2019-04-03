@@ -70,7 +70,7 @@ public class TripController extends Controller {
      * @param message an error message if there is one
      * @return display visits page
      */
-    public Result displayTrip(Http.Request request, Integer tripId, String message){
+    public Result displaytrip(Http.Request request, Integer tripId, String message){
         User user = User.getCurrentUser(request);
         if (user != null) {
             Trip trip = Trip.find.byId(tripId);

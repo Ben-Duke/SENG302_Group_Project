@@ -25,7 +25,7 @@ chmod +x ./bin/team-800
 
 And run the server 
 ```bash
-./bin/team-800 -Dplay.http.secret.key="bmcsykbm3[IAkc3XKZnWCAEX[K[RmtJMDmJCe9Nhy;?UDpNu`p9`fuW@^h5tcwlQ" -Dplay.evolutions.db.autoApply=true
+./bin/team-800 -Dplay.http.secret.key="bmcsykbm3[IAkc3XKZnWCAEX[K[RmtJMDmJCe9Nhy;?UDpNupp99fuW@^h5tcwlQ"
 ```
 And open <http://localhost:9000/>
 

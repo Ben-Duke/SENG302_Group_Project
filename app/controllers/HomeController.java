@@ -95,6 +95,11 @@ public class HomeController {
         return badRequest(home.render(user));
     }
 
+    /**Serve an image file with a get request
+     * @param httpRequest the HTTP request
+     * @param path the full path name of the file to serve
+     * @return a java file with the photo
+     */
     public Result index(Http.Request httpRequest, String path) {
         return ok(new java.io.File(path));
     }

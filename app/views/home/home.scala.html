@@ -120,7 +120,7 @@
             </div>
                 <!-- defines the number of photos the user has stored in the database. Currently hardcoded until tasks are finished -->
             @for(photo <- user.getUserPhotos) {
-                <img class="img-thumbnail" id=@{photo.getUrl} width="60" src="@{routes.HomeController.index(photo.getUrl)}" alt="User Image">
+                <img class="img-thumbnail" id=@{photo.getUrl} width="60" src="@{routes.HomeController.index(photo.getUrlWithPath)}" alt="User Image">
             }
             <script>
                     // Get the modal

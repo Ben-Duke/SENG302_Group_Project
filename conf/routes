@@ -89,7 +89,7 @@ GET    /users/trips/visit/edit/:id       controllers.TripController.editvisit(re
 POST    /users/trips/visit/edit/:id       controllers.TripController.updateVisit(request: Request, id:Integer)
 
 #Renders page that displays a given trip
-GET     /users/trips/:id            controllers.TripController.displaytrip(request: Request, id:Integer, message:String)
+GET     /users/trips/:id            displayTrip(request: Request, id:Integer, message:String)
 
 #Renders page that displays the home page where users can navigate to other pages
 GET     /users/home                 controllers.HomeController.showhome(request:Request)

@@ -67,7 +67,7 @@ public class Visit extends Model {
         this.trip = trip;
     }
 
-    public Integer getVisitorder() {
+    public Integer getVisitOrder() {
         return visitorder;
     }
 

@@ -87,22 +87,6 @@ public class RegisterController {
     }
 
     /**
-     * Method to check if the email entered by the user is a valid email. Is only a basic check with regex, doesn't
-     * catch all emails and doesn't check if the email actually exists.
-     *
-     * Email regex sourced online from here:
-     * https://howtodoinjava.com/regex/java-regex-validate-email-address/
-     * Courtesy of Lokesh Gupta
-     *
-     * @param email A String, the email to check.
-     * @return A boolean, true if the email is valid, false otherwise.
-     */
-    public boolean isEmailValid(String email) {
-        String emailRegex = "^[\\w!#$%&'*+/=?`{|}~^-]+(?:\\.[\\w!#$%&'*+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$";
-        return Pattern.matches(emailRegex, email);
-    }
-
-    /**
      * A method to check whether the user entered password is valid.
      *
      * Currently this is just a basic check if it's length.

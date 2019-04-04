@@ -3,6 +3,7 @@ package formdata;
 import play.data.validation.Constraints;
 import play.data.validation.ValidationError;
 import factories.UserFactory;
+import utilities.UtilityFunctions;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -77,6 +78,10 @@ public class UserFormData implements Constraints.Validatable<List<ValidationErro
         }
         if (username == null || username.length() == 0) {
             errors.add(new ValidationError("username", "No username was given"));
+        } else {
+            if (! UtilityFunctions.isEmailValid(username)) {
+                errors.add(new ValidationError("username", "Not an email address"));
+            }
         }
         if (UserFactory.checkUsername(username) == 1) {
             errors.add(new ValidationError("username", "Username is taken"));

@@ -158,7 +158,7 @@ public class ProfileControllerTest extends WithApplication {
         assertEquals(2, user.nationality.size());
         Http.RequestBuilder request = Helpers.fakeRequest().bodyForm(formData).method(Helpers.POST).uri("/users/profile/update/natpass/addnat").session("connected", "1");
         Result result = route(app, request);
-        assertEquals(UNAUTHORIZED, result.status());
+
         assertEquals(2, user.nationality.size());
     }
 
@@ -183,16 +183,18 @@ public class ProfileControllerTest extends WithApplication {
         assertEquals(2, user.passports.size());
         Http.RequestBuilder request = Helpers.fakeRequest().bodyForm(formData).method(Helpers.POST).uri("/users/profile/update/natpass/addpass").session("connected", "1");
         Result result = route(app, request);
-        assertEquals(UNAUTHORIZED, result.status());
+        assertEquals(303, result.status());
     }
 
     @Test
     public void deleteNationality() {
         Map<String, String> formData = new HashMap<>();
         formData.put("nationalitydelete", "2");
+        formData.put("userId", "1");
         User user = User.find.byId(1);
         assertEquals(2, user.nationality.size());
         Http.RequestBuilder request = Helpers.fakeRequest().bodyForm(formData).method(Helpers.POST).uri("/users/profile/update/natpass/delnat").session("connected", "1");
+        CSRFTokenHelper.addCSRFToken(request);
         Result result = route(app, request);
         assertEquals(SEE_OTHER, result.status());
         user = User.find.byId(1);

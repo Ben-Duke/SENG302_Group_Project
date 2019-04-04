@@ -126,7 +126,7 @@ public class UserFactory {
      * @param user pass in the user that needs to have pass ports added
      * @param passportId this is the id of the pasport that needs to be added
      */
-    public void UpdatePassport(User user, int passportId){
+    public void updatePassport(User user, int passportId){
         if (user != null) {
             Passport passport = Passport.find.byId(passportId);
             if(passportId != -1){
@@ -166,7 +166,7 @@ public class UserFactory {
      * @param user pass in the user that needs to have pass ports added
      * @param  travellerId this is the id of the pasport that needs to be added
      */
-    public void UpdateTravellerType(User user, int travellerId){
+    public void updateTravellerType(User user, int travellerId){
         if (user != null) {
             TravellerType travellerType = TravellerType.find.byId(travellerId);
 
@@ -280,24 +280,23 @@ public class UserFactory {
         User user = new User(email, password, firstName, lastName, date, gender);
 
 
-
             user.save();
             for (int i = 0; i < tType.size(); i++) {
 
                 int tTypeId = getTTypeId(tType.get(i));
-                UpdateTravellerType(user, tTypeId);
+                updateTravellerType(user, tTypeId);
             }
             //Passport loop
             for (int j = 0; j < passports.size(); j++) {
 
                 int passportId = getPassportId(passports.get(j));
-                UpdatePassport(user, passportId);
+                updatePassport(user, passportId);
             }
 
             for (int k = 0; k < nationalities.size(); k++) {
 
                 int natId = getNatId(nationalities.get(k));
-                UpdateNationality(user, natId);
+                updateNationality(user, natId);
             }
 
 

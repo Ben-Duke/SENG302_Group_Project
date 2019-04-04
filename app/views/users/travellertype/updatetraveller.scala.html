@@ -13,8 +13,8 @@
                 <div class="container">
                 @form(action = helper.CSRF(routes.TravellerTypeController.deleteUpdateTravellerType(travellerType.getTtypeid))) {
                     <ul class="list-group">
-                        <li class="list-group-item" style = "width: 200px;">
-                            @travellerType.travellerTypeName <button type="submit" class = "close">&times</button> </li>
+                        <li class="list-group-item" style = "width: 220px;">
+                            @travellerType.travellerTypeName <button type="submit" style="position:absolute; top:5px;bottom:5px;right:5px;margin:0;" class = "btn btn-danger">&times</button> </li>
                     </ul>
 
                 }

@@ -18,17 +18,22 @@ import static play.mvc.Results.badRequest;
 public class User extends Model {
 
     /**
-     * The constructor for the User that takes the parameters, username, password, first name, last name, date of birth,
+     * The email of the User
+     */
+    public String email;
+
+    /**
+     * The constructor for the User that takes the parameters, email, password, first name, last name, date of birth,
      * gender, nationality and passport.
-     * @param username
+     * @param email
      * @param password
      * @param fName A String parameter that is used to set the first name of the User.
      * @param lName A String parameter that is used to set the last name of the User.
      * @param dateOfBirth A LocalDate parameter that is used to set the User's dob.
      * @param gender A String paramters that is used to set the gender of the User.
      */
-    public User(String username, String password, String fName, String lName, LocalDate dateOfBirth, String gender){
-        this.username = username.toLowerCase();
+    public User(String email, String password, String fName, String lName, LocalDate dateOfBirth, String gender){
+        this.email = email.toLowerCase();
         this.password = password;
         this.fName = fName;
         this.lName = lName;
@@ -37,13 +42,8 @@ public class User extends Model {
         this.isAdmin = false;
     }
 
-    public User(String username){
-        this.username = username.toLowerCase();
-    }
-
-    public User(String username, String password){
-        this.username = username.toLowerCase();
-        this.password = password;
+    public User(String email){
+        this.email = email.toLowerCase();
     }
 
     /**
@@ -52,10 +52,10 @@ public class User extends Model {
     @Id
     public Integer userid;
 
-    /**
-     * The username of the User
-     */
-    public String username;
+    public User(String email, String password){
+        this.email = email.toLowerCase();
+        this.password = password;
+    }
     //TOdo to be ENCRYPTED I THINK - gav
     /**
      * The password of the user
@@ -144,10 +144,15 @@ public class User extends Model {
         return userid;
     }
 
+    public static int checkUser(String email){
+        ExpressionList<User> usersExpressionList = User.find.query().where().eq("email", email.toLowerCase());
+        int userPresent = 0;
+        if (usersExpressionList.findCount() > 0) {
+            userPresent = 1;
+        }
+        return userPresent;
 
 
-    public String getUsername(){
-        return username;
     }
 
     public String getPassword(){
@@ -186,8 +191,8 @@ public class User extends Model {
         this.passports.remove(passport);
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public String getEmail(){
+        return email;
     }
 
     public void setPassword(String password) {
@@ -345,15 +350,8 @@ public class User extends Model {
         return -1;
     }
 
-    public static int checkUser(String username){
-        ExpressionList<User> usersExpressionList = User.find.query().where().eq("username", username.toLowerCase());
-        int userPresent = 0;
-        if (usersExpressionList.findCount() > 0) {
-            userPresent = 1;
-        }
-        return userPresent;
-
-
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     /**

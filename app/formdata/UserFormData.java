@@ -113,19 +113,18 @@ public class UserFormData implements Constraints.Validatable<List<ValidationErro
             errors.add(new ValidationError("gender", "No gender was given"));
         }
 
-        if (nationalities == null || nationalities.size() == 0) {
+        if (nationalities == null || nationalities.isEmpty()) {
             errors.add(new ValidationError("nationalities", "No nationality was given"));
         }
 
-        if (travellerTypes == null || travellerTypes.size() == 0) {
+        if (travellerTypes == null || travellerTypes.isEmpty()) {
             errors.add(new ValidationError("travellerTypes", "No traveller types were given needs at least one"));
         }
 
-        if (errors.size() > 0) {
+        if (errors.isEmpty()) {
             return errors;
         }
 
         return null;
-        }
     }
 }

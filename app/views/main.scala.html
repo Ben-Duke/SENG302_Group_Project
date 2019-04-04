@@ -21,11 +21,23 @@
           <script src="http://cdnjs.cloudflare.com/ajax/libs/respond.js/1.4.2/respond.js"></script>
 
 
+
         <![endif]-->
+
+        <script>
+        $(document).ready(function(){
+            $(document.body).css('padding-top', $('#topnavbar').height() + 10);
+            $(window).resize(function(){
+                $(document.body).css('padding-top', $('#topnavbar').height() + 10);
+            });
+        });
+         </script>
+
     </head>
     <body>
 
-        <nav class="navbar navbar-custom">
+
+        <nav class="navbar navbar-custom navbar-fixed-top" id="topnavbar">
 
             <div class="container-fluid">
                 <div class="navbar-header">

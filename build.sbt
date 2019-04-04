@@ -4,6 +4,9 @@ version := "0.0.1-SNAPSHOT"
 
 scalaVersion := "2.12.8"
 
+maintainer := "s302team800@cosc.canterbury.ac.nz"
+
+
 lazy val myProject = (project in file(".")).enablePlugins(PlayJava, PlayEbean)
 
 libraryDependencies += guice

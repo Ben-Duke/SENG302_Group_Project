@@ -1,8 +1,6 @@
 package factories;
-import controllers.routes;
 import formdata.UpdateUserFormData;
 import formdata.UserFormData;
-import io.ebean.Update;
 import models.Nationality;
 import models.Passport;
 import models.TravellerType;
@@ -10,20 +8,13 @@ import io.ebean.ExpressionList;
 import models.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import play.data.DynamicForm;
-import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.Http;
-import play.mvc.Result;
 
 import java.util.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
-
-import java.util.ArrayList;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 
@@ -37,11 +28,28 @@ public class UserFactory {
          }
 
 
-    public boolean checkpassword(String email, String password) {
-        ExpressionList<User> usersExpressionList = User.find.query()
-                .where().eq("username", email).and().eq("password", password);
+    /**Returns 1 if in the database and 0 if not in the database
+     *
+     * @param email
+     * @return 0 if email is not present or 1 if email is present.
+     */
+    public static int checkEmail(String email) {
 
-        return usersExpressionList.findCount() == 1;
+        List<User> users = User.find.all();
+
+        int present = 0;
+        String userEmail;
+        for (int i = 0; i < users.size(); i++) {
+
+            userEmail = users.get(i).getEmail();
+            logger.debug(userEmail + " " + "email is " + userEmail + " " + userEmail.toLowerCase().equals(email.toLowerCase()));
+            if(userEmail.toLowerCase().equals(email.toLowerCase())){
+                present = 1;
+            }
+        }
+
+        return present;
+
     }
 
     /**
@@ -58,7 +66,7 @@ public class UserFactory {
         (new TravellerType("Backpacker")).save();
     }
 
-    public static void deleteNatsOnUser(int id, String nationalityId){
+    public static void deleteNatsOnUser(int id, String nationalityId) {
         User user = User.find.query().where().eq("userid", id).findOne();
         try {
             Nationality nationality = Nationality.find.byId(Integer.parseInt(nationalityId));
@@ -67,6 +75,14 @@ public class UserFactory {
         } catch (NumberFormatException e) {
             //return  unauthorized("Oops, you do not have any nationalities to delete");
         }
+    }
+    /** Returns a user id if they exist any number less than zero indicates the email is not in the database
+     *
+     * @param request
+     * @return an int -1 indicates there are no entries in the database that have that user.
+     */
+    public static int getCurrentUserById(Http.Request request) {
+        return User.getCurrentUserById(request);
     }
 
     /**Get a list of all passports.
@@ -270,37 +286,62 @@ public class UserFactory {
         }
     }
 
-    /**Returns 1 if in the database and 0 if not in the database
-     *
-     * @param username
-     * @return 0 if username is not present or 1 if username is present.
-     */
-    public static int checkUsername(String username) {
+    public boolean checkpassword(String email, String password) {
+        ExpressionList<User> usersExpressionList = User.find.query()
+                .where().eq("email", email).and().eq("password", password);
 
-        List<User> users = User.find.all();
-
-        int present = 0;
-        String userName;
-        for (int i = 0; i < users.size(); i++) {
-
-            userName = users.get(i).getUsername();
-            logger.debug(userName + " " + "Username is " + userName + " " + userName.toLowerCase().equals(username.toLowerCase()));
-            if(userName.toLowerCase().equals(username.toLowerCase())){
-                present = 1;
-            }
-        }
-
-        return present;
-
+        return usersExpressionList.findCount() == 1;
     }
 
-    /** Returns a user id if they exist any number less than zero indicates the username is not in the database
+    /**Tells model to create a user based on the data it is being passed
      *
-     * @param request
-     * @return an int -1 indicates there are no entries in the database that have that user.
+     * @param userForm formdata containing primitive data type like int, String etc which has been passed from
+     *                 the front end
+     * @return returns the user Id that has been created
      */
-    public static int getCurrentUserById(Http.Request request) {
-        return User.getCurrentUserById(request);
+    public int createUser(UserFormData userForm){
+
+        String email = userForm.email;
+        String password = userForm.password;
+        String firstName = userForm.firstName;
+        String lastName = userForm.lastName;
+        String gender = userForm.gender;
+        List<String> tType = userForm.travellerTypes;
+        List<String> passports = userForm.passports;
+        List<String> nationalities = userForm.nationalities;
+        String dob =  userForm.dob;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate date = LocalDate.parse(dob, formatter);
+
+
+        if(checkEmail(email)!=1){
+        User user = new User(email, password, firstName, lastName, date, gender);
+
+
+
+            user.save();
+            for (int i = 0; i < tType.size(); i++) {
+
+                int tTypeId = getTTypeId(tType.get(i));
+                UpdateTravellerType(user, tTypeId);
+            }
+            //Passport loop
+            for (int j = 0; j < passports.size(); j++) {
+
+                int passportId = getPassportId(passports.get(j));
+                UpdatePassport(user, passportId);
+            }
+
+            for (int k = 0; k < nationalities.size(); k++) {
+
+                int natId = getNatId(nationalities.get(k));
+                UpdateNationality(user, natId);
+            }
+
+
+            return user.getUserid();
+        }
+        return -1;
     }
 
     public static int getNatsForUserbyId(int userId){
@@ -358,58 +399,7 @@ public class UserFactory {
         return User.getCurrentUserById(request);
         }
 
-    /**Tells model to create a user based on the data it is being passed
-     *
-     * @param userForm formdata containing primitive data type like int, String etc which has been passed from
-     *                 the front end
-     * @return returns the user Id that has been created
-     */
-    public int createUser(UserFormData userForm){
 
-        String username = userForm.username;
-        String password = userForm.password;
-        String firstName = userForm.firstName;
-        String lastName = userForm.lastName;
-        String gender = userForm.gender;
-        List<String> tType = userForm.travellerTypes;
-        List<String> passports = userForm.passports;
-        List<String> nationalities = userForm.nationalities;
-        String dob =  userForm.dob;
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        LocalDate date = LocalDate.parse(dob, formatter);
-
-
-        if(checkUsername(username)!=1){
-        User user = new User(username, password, firstName, lastName, date, gender);
-
-
-
-            user.save();
-            for (int i = 0; i < tType.size(); i++) {
-
-                int tTypeId = getTTypeId(tType.get(i));
-                UpdateTravellerType(user, tTypeId);
-            }
-            //Passport loop
-            for (int j = 0; j < passports.size(); j++) {
-
-                int passportId = getPassportId(passports.get(j));
-                UpdatePassport(user, passportId);
-            }
-
-            for (String natName: nationalities) {
-
-                    int natId = getNatId(natName);
-
-                    UpdateNationality(user, natId);
-                }
-
-
-
-                return user.getUserid();
-        }
-        return -1;
-    }
 
 
     public static UpdateUserFormData getUpdateUserFormDataForm(Http.Request request) {

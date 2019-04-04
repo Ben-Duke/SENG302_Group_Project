@@ -15,6 +15,7 @@ import play.mvc.Http;
 import play.mvc.Result;
 import play.test.Helpers;
 import play.test.WithApplication;
+import utilities.UtilityFunctions;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -213,10 +214,8 @@ public class ProfileControllerTest extends WithApplication {
     }
 
     public void createUser(){
-        TravellerTypeController tTC = new TravellerTypeController();
-        tTC.addTravelTypes();
-        ProfileController pC = new ProfileController();
-        pC.addNatandPass();
+        UtilityFunctions.addTravellerTypes();
+        UtilityFunctions.addNatAndPass();
         TravellerType travellerType1 = TravellerType.find.byId(1);
         TravellerType travellerType2 = TravellerType.find.byId(2);
         Nationality nationality1 = Nationality.find.byId(1);

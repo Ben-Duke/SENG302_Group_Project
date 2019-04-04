@@ -2,6 +2,7 @@ package controllers;
 
 import models.*;
 import play.mvc.Result;
+import utilities.UtilityFunctions;
 import views.html.users.userIndex;
 
 import java.time.LocalDate;
@@ -18,8 +19,8 @@ public class UserController {
      * @return the user index page
      */
     public Result userindex(){
-        addNatAndPass();
-        addTravellerTypes();
+        UtilityFunctions.addNatAndPass();
+        UtilityFunctions.addTravellerTypes();
         List<User> users = User.find.all();
         if (users.isEmpty()) {
             addDefaultUsers();
@@ -52,28 +53,5 @@ public class UserController {
         admin.save();
     }
 
-    public void addNatAndPass() {
-        if (Nationality.find.all().isEmpty()) {
-            String[] locales = Locale.getISOCountries();
-            for (String countryCode : locales) {
-                Locale obj = new Locale("", countryCode);
-                Nationality nationality = new Nationality(obj.getDisplayCountry());
-                nationality.save();
-                Passport passport = new Passport(obj.getDisplayCountry());
-                passport.save();
-            }
-        }
-    }
 
-    public void addTravellerTypes() {
-        if (TravellerType.find.all().isEmpty()) {
-            (new TravellerType("Groupie")).save();
-            (new TravellerType("Thrillseeker")).save();
-            (new TravellerType("Gap Year")).save();
-            (new TravellerType("Frequent Weekender")).save();
-            (new TravellerType("Holidaymaker")).save();
-            (new TravellerType("Business Traveller")).save();
-            (new TravellerType("Backpacker")).save();
-        }
-    }
 }

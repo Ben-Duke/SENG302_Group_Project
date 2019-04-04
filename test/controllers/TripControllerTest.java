@@ -12,7 +12,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import play.Application;
-import play.data.FormFactory;
 import play.db.Database;
 import play.db.Databases;
 import play.db.evolutions.Evolution;
@@ -24,7 +23,6 @@ import play.mvc.Result;
 import play.test.Helpers;
 import play.test.WithApplication;
 
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -242,7 +240,7 @@ public class TripControllerTest extends WithApplication {
         visit2.save();
         //University of Canterbury should be on the first row and University of Banterbury should be on the second row before swap
         List<Visit> visitsBeforeSwap = User.find.byId(1).getTrips().get(0).getVisits();
-        visitsBeforeSwap.sort(Comparator.comparing(Visit::getVisitorder));
+        visitsBeforeSwap.sort(Comparator.comparing(Visit::getVisitOrder));
         assertEquals("University of Canterbury", visitsBeforeSwap.get(0).getVisitName());
         assertEquals("University of Banterbury", visitsBeforeSwap.get(1).getVisitName());
         Map<String, String> formData = new HashMap<>();
@@ -257,7 +255,7 @@ public class TripControllerTest extends WithApplication {
         assertEquals(SEE_OTHER, result.status());
         //University of Banterbury should be on the first row and University of Canterbury should be on the second row after swap
         List<Visit> visitsAfterSwap = User.find.byId(1).getTrips().get(0).getVisits();
-        visitsAfterSwap.sort(Comparator.comparing(Visit::getVisitorder));
+        visitsAfterSwap.sort(Comparator.comparing(Visit::getVisitOrder));
         assertEquals("University of Banterbury", visitsAfterSwap.get(0).getVisitName());
         assertEquals("University of Canterbury", visitsAfterSwap.get(1).getVisitName());
     }
@@ -286,7 +284,7 @@ public class TripControllerTest extends WithApplication {
         visit3.save();
         //Get the list of visits and sort it by order. Current list: [Canterbury, Banterbury, Canterbury]
         List<Visit> visits = User.find.byId(1).getTrips().get(0).getVisits();
-        visits.sort(Comparator.comparing(Visit::getVisitorder));
+        visits.sort(Comparator.comparing(Visit::getVisitOrder));
         //Instantiate trip controller to test methods
         TripController tripController = new TripController();
         //Test if the first row of the list can be deleted, making it [Banterbury, Canterbury] which is valid (should return false)
@@ -308,7 +306,7 @@ public class TripControllerTest extends WithApplication {
         visit2.setDestination(Destination.find.byId(1));
         visit2.update();
         visits = User.find.byId(1).getTrips().get(0).getVisits();
-        visits.sort(Comparator.comparing(Visit::getVisitorder));
+        visits.sort(Comparator.comparing(Visit::getVisitOrder));
         //Current list is [Canterbury, Canterbury, Canterbury] which is invalid for all indices (should return true)
         assertTrue(tripfactory.hasRepeatDest(visits, visit1, "SWAP"));
         assertTrue(tripfactory.hasRepeatDest(visits, visit2, "SWAP"));
@@ -316,7 +314,7 @@ public class TripControllerTest extends WithApplication {
         visit3.setDestination(Destination.find.byId(2));
         visit3.update();
         visits = User.find.byId(1).getTrips().get(0).getVisits();
-        visits.sort(Comparator.comparing(Visit::getVisitorder));
+        visits.sort(Comparator.comparing(Visit::getVisitOrder));
         //Current list is [Canterbury, Canterbury, Banterbury] which is invalid for index 0, index 1 and valid for index 2
         assertTrue(tripfactory.hasRepeatDest(visits, visit1, "SWAP"));
         assertTrue(tripfactory.hasRepeatDest(visits, visit2, "SWAP"));
@@ -324,7 +322,7 @@ public class TripControllerTest extends WithApplication {
         visit1.setDestination(Destination.find.byId(2));
         visit1.update();
         visits = User.find.byId(1).getTrips().get(0).getVisits();
-        visits.sort(Comparator.comparing(Visit::getVisitorder));
+        visits.sort(Comparator.comparing(Visit::getVisitOrder));
         //Current list is [Banterbury, Canterbury, Banterbury] which is valid for index 0, index 1 and index 2
         assertFalse(tripfactory.hasRepeatDest(visits, visit1, "SWAP"));
         assertFalse(tripfactory.hasRepeatDest(visits, visit2, "SWAP"));
@@ -362,7 +360,7 @@ public class TripControllerTest extends WithApplication {
         visit4.save();
         //Get the list of visits and sort it by order. Current list: Canterbury, Banterbury, Canterbury, Panem.
         List<Visit> visits = User.find.byId(1).getTrips().get(0).getVisits();
-        visits.sort(Comparator.comparing(Visit::getVisitorder));
+        visits.sort(Comparator.comparing(Visit::getVisitOrder));
         TripController tripController = new TripController();
         //Swaps visit1 and visit2, making [Banterbury, Canterbury, Canterbury, Panem] which is invalid so should return true
         assertTrue(tripController.hasRepeatDestSwap(visits, visit1, visit2));

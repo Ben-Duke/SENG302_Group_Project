@@ -4,10 +4,10 @@ import models.*;
 import play.mvc.Result;
 import utilities.UtilityFunctions;
 import views.html.users.userIndex;
+import views.html.users.*;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Locale;
 
 import static play.mvc.Results.ok;
 

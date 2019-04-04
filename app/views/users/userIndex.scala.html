@@ -2,51 +2,20 @@
 
 @main("All Users") {
 
-    <body>
+    <body style = background-image:url("./assets/images/background.jpg");>
+        <link rel="stylesheet" type="text/css"
+        href='@routes.Assets.at("stylesheets/userIndex.css")'>
 
-        <h1>All users</h1>
 
-        <br>
+
+    <div class = "loginform">
+        <h2>Welcome to TravelEA</h2>
 
         <form>
             <button class="btn btn-default" formaction="@routes.RegisterController.createuser()">Create User</button>
             <button class="btn btn-default" formaction="@routes.LoginController.login()">Login</button>
         </form>
-
-
-        <table class="table table-sm">
-            <thead class="thead-dark">
-                <tr>
-
-                    <th scope="col">First Name</th>
-                    <th></th>
-                    <th scope="col">Last Name</th>
-                    <th scope="col">DOB</th>
-                    <th scope="col">Traveller types</th>
-
-                </tr>
-            </thead>
-            <tbody>
-            @for(profile <- users) {
-                <tr>
-                    <th class="col-sm-1"style = "width:1%">@profile.getfName</th>
-                    <td class="col-sm-1"style = "width:1%">@for(admin <- admins) { @if(profile.userid == admin.userId) {<img class="img"  width = "60" height="50" src="../assets/images/key_2_small.png"></div>}}</td>
-                    <td class="col-sm-1"style = "width:1%">@profile.getlName</td>
-                    <td class="col-sm-1"style = "width:1%">@profile.getDateOfBirth()</td>
-                    <td class="col-sm-2">@for(travellerType <- profile.getTravellerTypes()) {<p>@travellerType.getTravellerTypeName()</p>}</td>
-
-                </tr>
-
-
-                <br>
-                }
-
-            </tbody>
-        </table>
-
-        @if(users.size == 0) {<div class="alert alert-info">
-            <strong>No Users to show!</strong>
-        </div>}
+    </div>
 
     </body>
 }

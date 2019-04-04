@@ -27,21 +27,39 @@
                 <p>Email: @user.username</p>
                 <p>Gender: @user.gender</p>
                 <p>Date of Birth: @user.dateOfBirth</p>
-                @for(passport <- user.passports) {
-                    <p>Passport: @passport.passportName</p>
-                }
-                @for(nationality <- user.nationality) {
-                    <p>Nationality: @nationality.nationalityName</p>
-                }
-                <p>Creation date: @user.creationDate</p>
-                @for(travellerType <- user.travellerTypes) {
-                    <p>Traveller type: @travellerType.travellerTypeName</p>
-                    <form>
-                        @if(user.userIsAdmin) {
-                            <button class="btn btn-default" formaction="@routes.AdminController.indexAdmin()">Admin</button>
+                <p>Passport(s):
+                    <div class="col-sm-offset-4">
+                        <ul class="list-group" >
+                            @for(passport <- user.passports) {
+                            <li class="list-group-item">@passport.passportName</li>
+                            }
+                        </ul>
+                    </div>
+                </p>
+                <p>Nationalit(y/ies):
+                    <ul class="list-group col-sm-offset-4" >
+                        @for(nationality <- user.nationality) {
+                        <li class="list-group-item">@nationality.nationalityName</li>
                         }
-                    </form>
-                }
+                    </ul>
+                </p>
+                <p>Traveller type(s):
+                    <div class="col-sm-offset-4">
+                        <ul class="list-group" >
+                            @for(travellerType <- user.travellerTypes) {
+                                <li class="list-group-item">@travellerType.travellerTypeName</li>
+                            }
+                        </ul>
+                    </div>
+                </p>
+                <p>Creation date: @user.creationDate</p>
+                <form>
+                    <button class="btn btn-default" formaction="@routes.ProfileController.updateProfile()">Update profile</button>
+                    <button class="btn btn-default" formaction="@routes.TravellerTypeController.updateTravellerType()">Update traveller type</button>
+                    @if(user.userIsAdmin) {
+                    <button class="btn btn-default" formaction="@routes.AdminController.indexAdmin()">Admin</button>
+                    }
+                </form>
             </div>
             <div class="col-md-4">
                 <h2>Trips</h2>

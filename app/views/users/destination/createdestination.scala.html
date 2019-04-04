@@ -3,7 +3,17 @@
 @import views.html.bootstrap3.text
 
 @main("Destinations") {
-
+    <nav class="navbar navbar-custom">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="@routes.HomeController.showhome()">Home</a>
+            </div>
+            <ul class="nav navbar-nav">
+                <li class="active"><a href="@routes.DestinationController.indexDestination()">Destinations</a></li>
+                <li><a href="@routes.DestinationController.createDestination()">New</a></li>
+            </ul>
+        </div>
+    </nav>
     <h1>Create Destination</h1>
     @helper.form(action = helper.CSRF(routes.DestinationController.saveDestination())){
         <fieldset>
@@ -51,6 +61,5 @@
         </p>
         }
     }
-
     </body>
 </html>

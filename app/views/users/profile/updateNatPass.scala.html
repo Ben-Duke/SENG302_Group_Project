@@ -1,58 +1,63 @@
+@import formdata.NatFormData
+@import factories.UserFactory
 @import helper._
+@(userForm : Form[NatFormData], nationalities : List[Nationality], passports : List[Passport], id : Int)
 
-@(userForm : Form[User], nationalities : List[Nationality], passports : List[Passport], user : User)
+
+<h1>Edit passport and nationality</h1>
+
 @main("Index"){
+
     <div class="container">
-<h1>Edit passport and nationality </h1>
 
-@if(user.nationality.isEmpty){
-    <p>You must have at least one nationality..</p>
-}
+    @form(action = helper.CSRF(routes.ProfileController.submitUpdatePassport)) {
+        @select(
+            field = userForm("passport"),
+            options = passports.map(passport => passport.passid.toString -> passport.passportName),
+            '_label -> "Select passports to add:"
+        )
+        <input type="submit" value="Add passport">
+    }
 
-@form(action = helper.CSRF(routes.ProfileController.submitUpdatePassport)) {
-    @select(
-        field = userForm("passport"),
-        options = passports.map(passport => passport.passid.toString -> passport.passportName),
-        '_label -> "Select passports to add:"
-    )
-    <input type="submit" value="Add passport">
-}
+    @form(action = helper.CSRF(routes.ProfileController.deletePassport)) {
+        @select(
+            field = userForm("passportdelete"),
+            options = UserFactory.getUserPassports(id).map(passport => passport.passid.toString -> passport.passportName),
+            '_label -> "Select passports to delete:"
+        )
+        <input type="submit" value="Remove passport">
+    }
 
-@form(action = helper.CSRF(routes.ProfileController.deletePassport)) {
-@select(
-    field = userForm("passportdelete"),
-    options = user.passports.map(passport => passport.passid.toString -> passport.passportName),
-    '_label -> "Select passports to delete:"
-)
-<input type="submit" value="Remove passport">
-}
+    @for(passport <- UserFactory.getUserPassports(id)) {
+        <p>Passport: @passport.passportName</p>
+    }
 
-@for(passport <- user.passports) {
-    <p>Passport: @passport.passportName</p>
-}
+    @form(action = helper.CSRF(routes.ProfileController.submitUpdateNationality)) {
+        @select(
+            field = userForm("nationality"),
+            options = nationalities.map(nationality => nationality.natid.toString -> nationality.nationalityName),
+            '_label -> "Select nationality to add:"
+        )
+        <input type="submit" value="Add nationality">
+    }
 
-@form(action = helper.CSRF(routes.ProfileController.submitUpdateNationality)) {
-    @select(
-        field = userForm("nationality"),
-        options = nationalities.map(nationality => nationality.natid.toString -> nationality.nationalityName),
-        '_label -> "Select nationality to add:"
-    )
-    <input type="submit" value="Add nationality">
-}
+    @form(action = helper.CSRF(routes.ProfileController.deleteNationality) ) {
 
-@form(action = helper.CSRF(routes.ProfileController.deleteNationality)) {
-    @select(
-        field = userForm("nationalitydelete"),
-        options = user.nationality.map(nationality => nationality.natid.toString -> nationality.nationalityName),
-        '_label -> "Select nationality to delete:"
-    )
-    <input type="submit" value="Remove nationality">
-}
+        <input type="hidden" name="userId" value=@id>
 
-@for(nationality <- user.nationality) {
-    <p>Nationality: @nationality.nationalityName</p>
-}
+        @select(
+            field = userForm("nationalitydelete"),
+            options = UserFactory.getUserNats(id).map(nationality => nationality.natid.toString -> nationality.nationalityName),
+            '_label -> "Select nationality to delete:",
 
-<a href="@routes.HomeController.showhome()">Back to home</a>
+        )
+        <input type="submit" value="Remove nationality">
+    }
+
+    @for(nationality <- UserFactory.getUserNats(id)) {
+        <p>Nationality: @nationality.nationalityName</p>
+    }
+
+    <a href="@routes.HomeController.showhome()">Back to home</a>
     </div>
 }

@@ -58,55 +58,15 @@ public class UserFactory {
         (new TravellerType("Backpacker")).save();
     }
 
-    /**Tells model to create a user based on the data it is being passed
-     *
-     * @param userForm formdata containing primitive data type like int, String etc which has been passed from
-     *                 the front end
-     * @return returns the user Id that has been created
-     */
-    public int createUser(UserFormData userForm){
-
-        String username = userForm.username;
-        String password = userForm.password;
-        String firstName = userForm.firstName;
-        String lastName = userForm.lastName;
-        String gender = userForm.gender;
-        List<String> tType = userForm.travellerTypes;
-        List<String> passports = userForm.passports;
-        List<String> nationalities = userForm.nationalities;
-        String dob =  userForm.dob;
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        LocalDate date = LocalDate.parse(dob, formatter);
-
-
-        if(checkUsername(username)!=1){
-        User user = new User(username, password, firstName, lastName, date, gender);
-
-
-
-            user.save();
-            for (int i = 0; i < tType.size(); i++) {
-
-                int tTypeId = getTTypeId(tType.get(i));
-                UpdateTravellerType(user, tTypeId);
-            }
-            //Passport loop
-            for (int j = 0; j < passports.size(); j++) {
-
-                int passportId = getPassportId(passports.get(j));
-                UpdatePassport(user, passportId);
-            }
-
-            for (int k = 0; k < nationalities.size(); k++) {
-
-                int natId = getNatId(nationalities.get(k));
-                UpdateNationality(user, natId);
-            }
-
-
-            return user.getUserid();
+    public static void deleteNatsOnUser(int id, String nationalityId){
+        User user = User.find.query().where().eq("userid", id).findOne();
+        try {
+            Nationality nationality = Nationality.find.byId(Integer.parseInt(nationalityId));
+            user.deleteNationality(nationality);
+            user.update();
+        } catch (NumberFormatException e) {
+            //return  unauthorized("Oops, you do not have any nationalities to delete");
         }
-        return -1;
     }
 
     /**Get a list of all passports.
@@ -343,9 +303,114 @@ public class UserFactory {
         return User.getCurrentUserById(request);
     }
 
-    public static int deleteNationalilty(){
-        return 1;
+    public static int getNatsForUserbyId(int userId){
+        int count = 0;
+        User user = User.find.query().where().eq("userid", userId).findOne();
+        count = user.nationality.size();
+        return count;
     }
+
+    public static List<Passport> getUserPassports(int id){
+        return User.find.query().where().eq("userid", id).findOne().passports;
+    }
+
+    public static List<Nationality> getUserNats(int id){
+        return User.find.query().where().eq("userid", id).findOne().nationality;
+    }
+
+    public static void addPassportToUser(int id, String passportId){
+
+        Passport passport = Passport.find.byId(Integer.parseInt(passportId));
+
+        try {
+            User user = User.find.query().where().eq("userid", id).findOne();
+            user.addPassport(passport);
+            user.update();
+        } catch (io.ebean.DuplicateKeyException e) {
+            //return unauthorized("Oops, you have already have this passport");
+        }
+    }
+
+    public static void deletePassportOnUser(int id, String passportId){
+
+
+        try {
+            Passport passport = Passport.find.byId(Integer.parseInt(passportId));
+            User user = User.find.query().where().eq("userid", id).findOne();
+            user.deletePassport(passport);
+            user.update();
+        } catch (NumberFormatException e) {
+            //return  unauthorized("Oops, you do not have any passports to delete");
+        }
+    }
+
+    public static void addNatsOnUser(int id, String nationalityId){
+        User user = User.find.query().where().eq("userid", id).findOne();
+        try {
+            Nationality nationality = Nationality.find.byId(Integer.parseInt(nationalityId));
+            user.addNationality(nationality);
+            user.update();
+        } catch (io.ebean.DuplicateKeyException e) {
+        }
+    }
+
+    public static int getCurrentUserId(Http.Request request) {
+        return User.getCurrentUserById(request);
+        }
+
+    /**Tells model to create a user based on the data it is being passed
+     *
+     * @param userForm formdata containing primitive data type like int, String etc which has been passed from
+     *                 the front end
+     * @return returns the user Id that has been created
+     */
+    public int createUser(UserFormData userForm){
+
+        String username = userForm.username;
+        String password = userForm.password;
+        String firstName = userForm.firstName;
+        String lastName = userForm.lastName;
+        String gender = userForm.gender;
+        List<String> tType = userForm.travellerTypes;
+        List<String> passports = userForm.passports;
+        List<String> nationalities = userForm.nationalities;
+        String dob =  userForm.dob;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate date = LocalDate.parse(dob, formatter);
+
+
+        if(checkUsername(username)!=1){
+        User user = new User(username, password, firstName, lastName, date, gender);
+
+
+
+            user.save();
+            for (int i = 0; i < tType.size(); i++) {
+
+                int tTypeId = getTTypeId(tType.get(i));
+                UpdateTravellerType(user, tTypeId);
+            }
+            //Passport loop
+            for (int j = 0; j < passports.size(); j++) {
+
+                int passportId = getPassportId(passports.get(j));
+                UpdatePassport(user, passportId);
+            }
+
+            for (String natName: nationalities) {
+
+                    int natId = getNatId(natName);
+
+                    UpdateNationality(user, natId);
+                }
+
+
+
+                return user.getUserid();
+        }
+        return -1;
+    }
+
 
     public static UpdateUserFormData getUpdateUserFormDataForm(Http.Request request) {
         User user = User.getCurrentUser(request);

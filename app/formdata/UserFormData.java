@@ -125,17 +125,6 @@ public class UserFormData implements Constraints.Validatable<List<ValidationErro
         return null;
     }
 
-//    @Override
-//    public String toString() {
-//        return "UserFormData{" +
-//                "username='" + username + '\'' +
-//                ", firstName='" + firstName + '\'' +
-//                ", lastName='" + lastName + '\'' +
-//                ", password='" + password + '\'' +
-//                ", gender='" + gender + '\'' +
-//                ", passports=" + passports +
-//                ", nationalities=" + nationalities +
-//                '}';
-//    }
+
 
 }

@@ -76,6 +76,7 @@ public class TripController extends Controller {
             Trip trip = Trip.find.byId(tripId);
             List<Visit> visits = trip.getVisits();
             visits.sort(Comparator.comparing(Visit::getVisitOrder));
+
             if(trip.isUserOwner(user.getUserid())) {
                 return ok(displayTripTable.render(trip, message));
             }
@@ -211,10 +212,15 @@ public class TripController extends Controller {
         today.setTime(today.getTime());
         if (user != null) {
             if (trip != null) {
-                Form<VisitFormData> incomingForm = formFactory.form(VisitFormData.class);
-                List<Visit> visits = trip.getVisits();
-                visits.sort(Comparator.comparing(Visit::getVisitOrder));
-                return ok(AddTripDestinations.render(incomingForm, trip, user.getMappedDestinations(), visits, today.toString()));
+                if (trip.isUserOwner(user.getUserid())) {
+                    Form<VisitFormData> incomingForm = formFactory.form(VisitFormData.class);
+                    List<Visit> visits = trip.getVisits();
+                    visits.sort(Comparator.comparing(Visit::getVisitOrder));
+                    return ok(AddTripDestinations.render(incomingForm, trip, user.getMappedDestinations(), visits, today.toString()));
+
+                } else {
+                    return unauthorized("Not your trip");
+                }
             }
             else{
                 return unauthorized("Oops, invalid trip ID");
@@ -223,21 +229,20 @@ public class TripController extends Controller {
         else{
             return unauthorized("Oops, you are not logged in");
         }
-//        return ok("edittrip");
     }
 
     public Result cancelTrip(Http.Request request, Integer tripid) {
         Trip trip = Trip.find.byId(tripid);
         User user = User.getCurrentUser(request);
         if (user != null) {
-            if (trip.hasVisit()) {
-                List<Visit> visits = trip.getVisits();
-                for(Visit visit: visits) {
-                    visit.delete();
+                if (trip.hasVisit()) {
+                    List<Visit> visits = trip.getVisits();
+                    for (Visit visit : visits) {
+                        visit.delete();
+                    }
                 }
-            }
-            trip.delete();
-            return redirect(routes.TripController.createtrip());
+                trip.delete();
+                return redirect(routes.TripController.createtrip());
         }
         else{
             return unauthorized("Oops, you are not logged in");
@@ -312,10 +317,15 @@ public class TripController extends Controller {
         if (user != null) {
             List<Destination> destinations = user.getDestinations();
             if (trip != null) {
-                Form<VisitFormData> incomingForm = formFactory.form(VisitFormData.class);
-                List<Visit> visits = trip.getVisits();
-                visits.sort(Comparator.comparing(Visit::getVisitOrder));
-                return ok(editTrip.render(incomingForm, trip, destinations, visits));
+                if(trip.isUserOwner(user.getUserid())) {
+                    Form<VisitFormData> incomingForm = formFactory.form(VisitFormData.class);
+                    List<Visit> visits = trip.getVisits();
+                    visits.sort(Comparator.comparing(Visit::getVisitOrder));
+                    return ok(editTrip.render(incomingForm, trip, destinations, visits));
+
+                } else {
+                    return unauthorized("Not your trip");
+                }
             }
             else{
                 return unauthorized("Oops, invalid trip ID");
@@ -376,18 +386,23 @@ public class TripController extends Controller {
      * user is not logged in or they are trying to swap a visit which does not belong to them, sends a bad request.
      * Displays an error if the user is not logged in.
      * @param request The HTTP request
-     * @param tripid The trip ID that the user is editing.
+     * @param tripId The trip ID that the user is editing.
      * @return edit trip page or error page
      */
-    public Result swapvisits(Http.Request request, Integer tripid){
+    public Result swapvisits(Http.Request request, Integer tripId){
         //System.out.println(request.body().asJson());
         ArrayList<String> list = new ObjectMapper().convertValue(request.body().asJson(), ArrayList.class);
         User user = User.getCurrentUser(request);
+        Trip trip = Trip.find.byId(tripId);
         if (user != null) {
-            if (tripFactory.swapVisitsList(list, user.getUserid())) {
-                return ok();
+            if(trip.isUserOwner(user.getUserid())) {
+                if (tripFactory.swapVisitsList(list, user.getUserid())) {
+                    return ok();
+                } else {
+                    return badRequest();
+                }
             } else {
-                return badRequest();
+                return unauthorized("Not your trip");
             }
         }
         else{

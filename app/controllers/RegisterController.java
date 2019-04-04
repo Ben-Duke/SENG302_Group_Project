@@ -69,10 +69,30 @@ public class RegisterController {
         Form<UserFormData> userForm = formFactory.form(UserFormData.class).bindFromRequest();
 
          if (userForm.hasErrors()) {
-            Map<String, Boolean> tTypes = UserFactory.getTTypesList();
-            Map<String, Boolean> passports = UserFactory.getPassports();
-            Map<String, Boolean> nationalities = UserFactory.getNatList();
-            String[] gendersArray = {"Male", "Female", "Other"};
+             // Get the entry maps for the select boxes
+             Map<String, Boolean> tTypes = UserFactory.getTTypesList();
+             Map<String, Boolean> passports = UserFactory.getPassports();
+             Map<String, Boolean> nationalities = UserFactory.getNatList();
+             String[] gendersArray = {"Male", "Female", "Other"};
+
+             // Loop through the raw data and identify any previous selections the user has made
+             // If a selection exists, get the selected string and modify the corresponding entry map value to true
+             // to show that the item is selected.
+             Map<String, String> selectBoxData = userForm.rawData();
+             for (int i = 0; i < selectBoxData.size(); i++) {
+                 if (selectBoxData.containsKey("nationalities[" + i + "]")) {
+                     String value = selectBoxData.get("nationalities[" + i+ "]");
+                     nationalities.replace(value, true);
+                 }
+                 if (selectBoxData.containsKey("passports[" + i + "]")) {
+                     String value = userForm.rawData().get("passports[" + i + "]");
+                     passports.replace(value, true);
+                 }
+                 if (selectBoxData.containsKey("travellerTypes[" + i + "]")) {
+                     String value = userForm.rawData().get("travellerTypes[" + i + "]");
+                     tTypes.replace(value, true);
+                 }
+             }
 
             return badRequest(createprofile_.render(userForm, Arrays.asList(gendersArray), tTypes, passports, nationalities));
         }

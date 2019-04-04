@@ -42,8 +42,8 @@ public class UserFactory {
         for (int i = 0; i < users.size(); i++) {
 
             userEmail = users.get(i).getEmail();
-            logger.debug(userEmail + " " + "email is " + userEmail + " " + userEmail.toLowerCase().equals(email.toLowerCase()));
-            if(userEmail.toLowerCase().equals(email.toLowerCase())){
+            logger.debug(userEmail + " email is " + userEmail + " " + userEmail.equalsIgnoreCase(email));
+            if(userEmail.equalsIgnoreCase(email)){
                 present = 1;
             }
         }
@@ -52,19 +52,6 @@ public class UserFactory {
 
     }
 
-    /**
-     * adds all of the following traveller types to the database
-     * @throws io.ebean.DuplicateKeyException if a type has already been added to the database
-     */
-    public static void addTravelTypes() throws io.ebean.DuplicateKeyException {
-        (new TravellerType("Groupie")).save();
-        (new TravellerType("Thrillseeker")).save();
-        (new TravellerType("Gap Year")).save();
-        (new TravellerType("Frequent Weekender")).save();
-        (new TravellerType("Holidaymaker")).save();
-        (new TravellerType("Business Traveller")).save();
-        (new TravellerType("Backpacker")).save();
-    }
 
     /** Returns a user id if they exist any number less than zero indicates the email is not in the database
      *
@@ -159,7 +146,7 @@ public class UserFactory {
      * @param user pass in the user that needs to have pass ports added
      * @param natId this is the id of the pasport that needs to be added
      */
-    public void UpdateNationality(User user, int natId){
+    public void updateNationality(User user, int natId){
         if (user != null) {
             Nationality nationality = Nationality.find.byId(natId);
             if(natId != -1){
@@ -178,7 +165,6 @@ public class UserFactory {
      * and.
      * @param user pass in the user that needs to have pass ports added
      * @param  travellerId this is the id of the pasport that needs to be added
-     * @return none
      */
     public void UpdateTravellerType(User user, int travellerId){
         if (user != null) {
@@ -261,20 +247,6 @@ public class UserFactory {
         return id;
     }
 
-    /**
-     * adds all of the following traveller types to the database
-     * @throws io.ebean.DuplicateKeyException if a type has already been added to the database
-     */
-    public static  void addNatandPass() throws io.ebean.DuplicateKeyException {
-        String[] locales = Locale.getISOCountries();
-        for (String countryCode : locales) {
-            Locale obj = new Locale("", countryCode);
-            Nationality nationality = new Nationality(obj.getDisplayCountry());
-            nationality.save();
-            Passport passport = new Passport(obj.getDisplayCountry());
-            passport.save();
-        }
-    }
 
     public boolean checkpassword(String email, String password) {
         ExpressionList<User> usersExpressionList = User.find.query()
@@ -342,10 +314,7 @@ public class UserFactory {
         User user = User.getCurrentUser(request);
 
         if (user != null) {
-            UpdateUserFormData updateUserFormDataForm = new UpdateUserFormData(user);
-            return updateUserFormDataForm;
-//            Form<UpdateUserFormData> updateUserForm = formFactory.form(UpdateUserFormData.class).fill(updateUserFormDataForm);
-//            return updateUserForm;
+            return new UpdateUserFormData(user);
         } else {
             return null;
         }

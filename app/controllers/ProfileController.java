@@ -149,11 +149,6 @@ public class ProfileController extends Controller {
         User user = User.getCurrentUser(request);
         if (user != null) {
             Form<User> userForm = formFactory.form(User.class).fill(user);
-            try {
-                addNatandPass();
-            } catch (io.ebean.DuplicateKeyException e) {
-                // Duplicate nationalities do not get added. No error msg shown.
-            }
             List<Nationality> nationalities = Nationality.find.all();
             List<Passport> passports = Passport.find.all();
             return ok(updateNatPass.render(userForm, nationalities, passports, user));
@@ -269,22 +264,6 @@ public class ProfileController extends Controller {
             return unauthorized(notLoggedInErrorStr);
         }
         return redirect(routes.ProfileController.updateNatPass());
-    }
-
-    /**
-     * adds all of the following traveller types to the database
-     * @throws io.ebean.DuplicateKeyException if a type has already been added to the database
-     */
-    public void addNatandPass() throws io.ebean.DuplicateKeyException {
-        String[] locales = Locale.getISOCountries();
-        for (String countryCode : locales) {
-            Locale obj = new Locale("", countryCode);
-            Nationality nationality = new Nationality(obj.getDisplayCountry());
-            nationality.save();
-            Passport passport = new Passport(obj.getDisplayCountry());
-            passport.save();
-        }
-
     }
 
 }

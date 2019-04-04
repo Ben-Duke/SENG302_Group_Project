@@ -1,12 +1,12 @@
 package controllers;
 
-import models.Admin;
-import models.User;
+import models.*;
 import play.mvc.Result;
 import views.html.users.userIndex;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Locale;
 
 import static play.mvc.Results.ok;
 
@@ -18,19 +18,62 @@ public class UserController {
      * @return the user index page
      */
     public Result userindex(){
+        addNatAndPass();
+        addTravellerTypes();
         List<User> users = User.find.all();
-        if (users.size() == 0) {
-            User user = new User("admin@admin.com", "admin", "admin", "admin", LocalDate.now(), "male");
-            user.save();
-            User user1 = new User("user1@admin.com", "user1", "user1", "user1", LocalDate.now(), "male");
-            user1.save();
-            User user2 = new User("user2@admin.com", "user2", "user2", "user2", LocalDate.now(), "male");
-            user2.save();
-            Admin admin = new Admin(user.userid, true);
-            admin.save();
+        if (users.isEmpty()) {
+            addDefaultUsers();
         }
         users = User.find.all();
         List<Admin> admins = Admin.find.all();
         return ok(userIndex.render(users, admins));
+    }
+
+    public void addDefaultUsers() {
+        User user = new User("admin@admin.com", "admin", "admin", "admin", LocalDate.now(), "male");
+        user.setDateOfBirth(LocalDate.of(2019, 2, 18));
+        user.setTravellerTypes(TravellerType.find.all().subList(5, 6)); // Business Traveller
+        user.setNationality(Nationality.find.all().subList(0, 2)); // First two countries alphabetically
+        user.save();
+
+        User user1 = new User("user1@admin.com", "user1", "John", "Doe", LocalDate.now(), "male");
+        user1.setDateOfBirth(LocalDate.of(2019, 2, 18));
+        user1.setTravellerTypes(TravellerType.find.all().subList(5, 6)); // Business Traveller
+        user1.setNationality(Nationality.find.all().subList(0, 2)); // First two countries alphabetically
+        user1.save();
+
+        User user2 = new User("user2@admin.com", "user2", "James", "Doe", LocalDate.now(), "male");
+        user2.setDateOfBirth(LocalDate.of(2019, 2, 18));
+        user2.setTravellerTypes(TravellerType.find.all().subList(5, 6)); // Business Traveller
+        user2.setNationality(Nationality.find.all().subList(0, 2)); // First two countries alphabetically
+        user2.save();
+
+        Admin admin = new Admin(user.userid, true);
+        admin.save();
+    }
+
+    public void addNatAndPass() {
+        if (Nationality.find.all().isEmpty()) {
+            String[] locales = Locale.getISOCountries();
+            for (String countryCode : locales) {
+                Locale obj = new Locale("", countryCode);
+                Nationality nationality = new Nationality(obj.getDisplayCountry());
+                nationality.save();
+                Passport passport = new Passport(obj.getDisplayCountry());
+                passport.save();
+            }
+        }
+    }
+
+    public void addTravellerTypes() {
+        if (TravellerType.find.all().isEmpty()) {
+            (new TravellerType("Groupie")).save();
+            (new TravellerType("Thrillseeker")).save();
+            (new TravellerType("Gap Year")).save();
+            (new TravellerType("Frequent Weekender")).save();
+            (new TravellerType("Holidaymaker")).save();
+            (new TravellerType("Business Traveller")).save();
+            (new TravellerType("Backpacker")).save();
+        }
     }
 }

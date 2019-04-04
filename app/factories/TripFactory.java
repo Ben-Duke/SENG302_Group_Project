@@ -65,7 +65,7 @@ public class TripFactory {
     public boolean hasRepeatDest(List<Visit> visits, Visit visit, String operation) {
         if (operation.equalsIgnoreCase("DELETE")) {
             if (visits.size() > 2) {
-                visits.sort(Comparator.comparing(Visit::getVisitorder));
+                visits.sort(Comparator.comparing(Visit::getVisitOrder));
                 Integer index = visits.indexOf(visit);
                 if (index != 0 && (index + 1 != visits.size())) {
                     if (visits.get(index - 1).getVisitName().equalsIgnoreCase(visits.get(index + 1).getVisitName())) {
@@ -76,7 +76,7 @@ public class TripFactory {
         }
         if (operation.equalsIgnoreCase("ADD")) {
             if (!visits.isEmpty()) {
-                visits.sort(Comparator.comparing(Visit::getVisitorder));
+                visits.sort(Comparator.comparing(Visit::getVisitOrder));
                 if (visits.get(visits.size() - 1).visitName.equalsIgnoreCase(visit.getVisitName())) {
                     //probably the wrong status header
                     return true;
@@ -84,7 +84,7 @@ public class TripFactory {
             }
         }
         if (operation.equalsIgnoreCase("SWAP")) {
-            visits.sort(Comparator.comparing(Visit::getVisitorder));
+            visits.sort(Comparator.comparing(Visit::getVisitOrder));
             Integer index = visits.indexOf(visit);
             if (index != 0) {
                 if (!(visits.get(index - 1).getVisitName().equalsIgnoreCase(visit.getVisitName()))) {
@@ -106,7 +106,7 @@ public class TripFactory {
     }
 
     public boolean hasRepeatDestSwap(List<Visit> visits, Visit visit1, Visit visit2) {
-        visits.sort(Comparator.comparing(Visit::getVisitorder));
+        visits.sort(Comparator.comparing(Visit::getVisitOrder));
         if (visits.size() > 2) {
             Integer index1 = visits.indexOf(visit1);
             Integer index2 = visits.indexOf(visit2);

@@ -342,4 +342,80 @@ public class UtilityFunctionsTest {
     @Test
     public void validateType() {
     }
+
+    @Test
+    public void isEmailValidEmptyString() {
+        assertFalse(UtilityFunctions.isEmailValid(""));
+    }
+
+    @Test
+    public void isEmailValidNoAtSymbol() {
+        assertFalse(UtilityFunctions.isEmailValid("test"));
+    }
+
+    @Test
+    public void isEmailValidNoDomain() {
+        assertFalse(UtilityFunctions.isEmailValid("test@"));
+    }
+
+    @Test
+    public void isEmailValidWithInvalidDomainExtension() {
+        assertFalse(UtilityFunctions.isEmailValid("test@."));
+    }
+
+    @Test
+    public void isEmailValidWithTooManyDomainPeriodsInARowAfter() {
+        assertFalse(UtilityFunctions.isEmailValid("test@test."));
+    }
+
+    @Test
+    public void isEmailValidWithTooManyDomainPeriodsInARowBefore() {
+        assertFalse(UtilityFunctions.isEmailValid("test@.test"));
+    }
+
+    @Test
+    public void isEmailValidNoUsername() {
+        assertFalse(UtilityFunctions.isEmailValid("@test.com"));
+    }
+
+    @Test
+    public void isEmailValidWithInvalidUsername() {
+        assertFalse(UtilityFunctions.isEmailValid(".@test.com"));
+    }
+
+    @Test
+    public void isEmailValidWithMultiplePeriodsInARowInUsername() {
+        assertFalse(UtilityFunctions.isEmailValid("test.@test.com"));
+    }
+
+    @Test
+    public void isEmailValidTopLevelDomain() {
+        assertFalse(UtilityFunctions.isEmailValid("test@test"));
+    }
+
+    @Test
+    public void isEmailValidWithUniEmail() {
+        assertTrue(UtilityFunctions.isEmailValid("lsh73@uclive.ac.nz"));
+    }
+
+    @Test
+    public void isEmailValidSecondLevelDomain() {
+        assertTrue(UtilityFunctions.isEmailValid("test@test.test"));
+    }
+
+    @Test
+    public void isEmailValidUsernameShort() {
+        assertTrue(UtilityFunctions.isEmailValid("t@test.test"));
+    }
+
+    @Test
+    public void isEmailValidLong() {
+        assertTrue(UtilityFunctions.isEmailValid("ilushmleviruasjkdoaasdasdasdasdasdasdasdasdasdasdasdasd" +
+                "asddasdadkjahmikueijawasdasdasdjadiaksjdiajsduahduadjyagsduyah@test.test"));
+    }
+
+    @Test
+    public void isEmailValidPeriodInUsername() {
+        assertTrue(UtilityFunctions.isEmailValid("te.st@test.test"));
+    }
 }

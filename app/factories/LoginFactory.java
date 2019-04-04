@@ -12,7 +12,26 @@ public class LoginFactory {
     }
 
     /**
-     * Method to check if a username/email and password pair matches a user in
+     * Method to get a users unique ID from their email (email).
+     *
+     * @param email A String, the users email(email).
+     * @return An int representing the user's userID. Returns -1 if not found.
+     */
+    public static int getUserId(String email) {
+        int userId = -1;
+
+        ExpressionList<User> users = User.find.query()
+                            .where().eq("email", email.toLowerCase());
+
+        if (users.findCount() == 1) {
+            userId = users.findOne().getUserid();
+        }
+
+        return userId;
+    }
+
+    /**
+     * Method to check if a email/email and password pair matches a user in
      * the database.
      *
      * @param email A String, the email to check.
@@ -23,28 +42,9 @@ public class LoginFactory {
     public boolean isPasswordMatch(String email, String password){
         ExpressionList<User> usersExpressionList;
         usersExpressionList = User.find.query()
-                              .where().eq("username", email.toLowerCase())
+                              .where().eq("email", email.toLowerCase())
         .and().eq("password", password);
 
         return usersExpressionList.findCount() > 0;
-    }
-
-    /**
-     * Method to get a users unique ID from their username (email).
-     *
-     * @param userName A String, the users username(email).
-     * @return An int representing the user's userID. Returns -1 if not found.
-     */
-    public static int getUserId(String userName) {
-        int userId = -1;
-
-        ExpressionList<User> users = User.find.query()
-                            .where().eq("username", userName.toLowerCase());
-
-        if (users.findCount() == 1) {
-            userId = users.findOne().getUserid();
-        }
-
-        return userId;
     }
 }

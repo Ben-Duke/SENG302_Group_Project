@@ -19,7 +19,6 @@ public class UserController {
      */
     public Result userindex(){
         List<User> users = User.find.all();
-        List<Admin> admins = Admin.find.all();
         if (users.size() == 0) {
             User user = new User("admin@admin.com", "admin", "admin", "admin", LocalDate.now(), "male");
             user.save();
@@ -31,7 +30,7 @@ public class UserController {
             admin.save();
         }
         users = User.find.all();
-        admins = Admin.find.all();
+        List<Admin> admins = Admin.find.all();
         return ok(userIndex.render(users, admins));
     }
 }

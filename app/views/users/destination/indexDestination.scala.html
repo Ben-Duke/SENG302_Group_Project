@@ -3,20 +3,7 @@
 @main("Destinations") {
 
 
-<nav class="navbar navbar-custom">
-
-    <div class="container-fluid">
-        <div class="navbar-header">
-            <a class="navbar-brand" href="@routes.HomeController.showhome()">Home</a>
-        </div>
-        <ul class="nav navbar-nav">
-            <li class="active"><a href="#">Destinations</a></li>
-            <li><a href="@routes.DestinationController.createDestination()">New</a></li>
-        </ul>
-    </div>
-</nav>
-
-<h1>Destinations</h1>
+<h1>Destinations <a class="btn btn-primary col-sm-offset-8" href="@routes.DestinationController.createDestination()" role="button">Create Destination</a></h1>
 
 
 <table class="table">

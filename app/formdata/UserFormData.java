@@ -3,6 +3,7 @@ package formdata;
 import play.data.validation.Constraints;
 import play.data.validation.ValidationError;
 import factories.UserFactory;
+import utilities.UtilityFunctions;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -77,6 +78,8 @@ public class UserFormData implements Constraints.Validatable<List<ValidationErro
         }
         if (email == null || email.length() == 0) {
             errors.add(new ValidationError("email", "No email was given"));
+        } else if (!UtilityFunctions.isEmailValid(email)) {
+            errors.add(new ValidationError("email", "Not an email address"));
         }
         if (UserFactory.checkEmail(email) == 1) {
             errors.add(new ValidationError("email", "Email already registered"));
@@ -123,19 +126,6 @@ public class UserFormData implements Constraints.Validatable<List<ValidationErro
         }
 
         return null;
+        }
     }
-
-//    @Override
-//    public String toString() {
-//        return "UserFormData{" +
-//                "email='" + email + '\'' +
-//                ", firstName='" + firstName + '\'' +
-//                ", lastName='" + lastName + '\'' +
-//                ", password='" + password + '\'' +
-//                ", gender='" + gender + '\'' +
-//                ", passports=" + passports +
-//                ", nationalities=" + nationalities +
-//                '}';
-//    }
-
 }

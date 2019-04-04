@@ -1,5 +1,6 @@
 package controllers;
 
+import akka.http.javadsl.model.HttpRequest;
 import models.Admin;
 import models.User;
 import models.UserPhoto;
@@ -48,7 +49,7 @@ public class HomeController {
                 return ok(home.render(user));
             }
         }
-        return unauthorized("Oops, you are not logged in");
+        return redirect(routes.UserController.userindex());
     }
 
     /**
@@ -77,10 +78,10 @@ public class HomeController {
             if (contentType.contains("image")) {
                 //Add the path to the filename given by the uploaded picture
 
-                String pathName = Paths.get(".").toAbsolutePath().normalize().toString() + "/public/images/user_photos/user_" + user.getUserid() + "/" + fileName;
+                String pathName = Paths.get(".").toAbsolutePath().normalize().toString() + "/../user_photos/user_" + user.getUserid() + "/" + fileName;
                 //Save the file, replacing the existing one if the name is taken
                 try {
-                    java.nio.file.Files.createDirectories(Paths.get(Paths.get(".").toAbsolutePath().normalize().toString() + "/public/images/user_photos/user_" + user.getUserid() + "/"));
+                    java.nio.file.Files.createDirectories(Paths.get(Paths.get(".").toAbsolutePath().normalize().toString() + "/../user_photos/user_" + user.getUserid() + "/"));
                 } catch (IOException e) {
                     System.out.println(e);
                 }
@@ -92,5 +93,14 @@ public class HomeController {
             }
         }
         return badRequest(home.render(user));
+    }
+
+    /**Serve an image file with a get request
+     * @param httpRequest the HTTP request
+     * @param path the full path name of the file to serve
+     * @return a java file with the photo
+     */
+    public Result index(Http.Request httpRequest, String path) {
+        return ok(new java.io.File(path));
     }
 }

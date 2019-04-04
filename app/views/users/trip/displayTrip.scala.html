@@ -1,75 +1,53 @@
 @(trip : Trip, visits : List[Visit])
 @import helper._
 
-<html>
-    <head>
-        <title>@trip.tripName</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-            <!-- Latest compiled and minified CSS -->
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-    </head>
-    <body>
+@main("Trip View") {
         @for(visit <- visits) {
             <div class="modal" id=@visit.visitName>
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
                             <h2 class="modal-title">@visit.visitName</h2>
-                    </div>
+                        </div>
                         <div class="modal-body">
                             <p>Visit name: @visit.visitName | Arrival time: @visit.arrival | Departure time: @visit.departure</p>
-                            <a href=@routes.TripController.editvisit(visit.visitid) class="btn btn-primary">Edit destination</a>
-                            <!-- <button onclick="location.href='@routes.TripController.editvisit(visit.visitid)'" type="button">Edit destination</button> -->
-                    </div>
+                        </div>
                     </div>
                 </div>
             </div>
         }
-        <div class="carousel slide" id="myslider" data-ride="carousel">
-            <ol class="carousel-indicators">
-                <li data-target="#myslider" data-slide-to="0" class="active"></li>
-                <li data-target="#myslider" data-slide-to="1"></li>
-                <li data-target="#myslider" data-slide-to="2"></li>
-            </ol>
-            <div class="carousel-inner">
-                @for(visit <- visits) {
-                    @if(visit == visits.get(0)){
-                        <div class="item active">
-                    } else{
-                        <div class="item">
+        <div class="container">
+            <div class="carousel slide" id="myslider" data-ride="carousel">
+                <ol class="carousel-indicators">
+                    <li data-target="#myslider" data-slide-to="0" class="active"></li>
+                    @for(i <- 1 to visits.length -1) {
+                        <li data-target="#myslider" data-slide-to="@i"></li>
+                    }
+                </ol>
+                <div class="carousel-inner">
+                    @for(visit <- visits) {
+                        @if(visit == visits.get(0)){
+                    <div class="item active">
+                        } else{
+                    <div class="item">
                         }
                         <a href="#" data-toggle="modal" data-target=#@visit.visitName>
-                            @if(visit.visitName.equalsIgnoreCase("vietnam")){
-                                <img src="http://static.asiawebdirect.com/m/bangkok/portals/vietnam/homepage/ha-long-bay/pagePropertiesImage/ha-long-bay.jpg.jpg"/>
-                            } else{
                             <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Colosseum_in_Rome%2C_Italy_-_April_2007.jpg">
-                            }
                         </a>
                         <div class="carousel-caption">
                             <h2>Destination: @visit.visitName</h2>
+                            <h3>Arrival: @visit.arrival</h3>
+                            <h3>Departure: @visit.departure</h3>
                         </div>
                     </div>
-                }
+                    }
+                </div>
+                <a class ="left carousel-control" href="#myslider" data-slide="prev">
+                    <span class="glyphicon glyphicon-chevron-left"></span>
+                </a>
+                <a class ="right carousel-control" href="#myslider" data-slide="next">
+                    <span class="glyphicon glyphicon-chevron-right"></span>
+                </a>
             </div>
-            <a class ="left carousel-control" href="#myslider" data-slide="prev">
-                <span class="glyphicon glyphicon-chevron-left"></span>
-            </a>
-            <a class ="right carousel-control" href="#myslider" data-slide="next">
-                <span class="glyphicon glyphicon-chevron-right"></span>
-            </a>
         </div>
-
-        <a href="@routes.HomeController.showhome()">Back to home</a>
-
-        <script
-        src="http://code.jquery.com/jquery-1.12.4.min.js"
-        integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ="
-        crossorigin="anonymous"></script>
-            <!-- Latest compiled and minified JavaScript -->
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-    </body>
-</html>
-
-    <!-- Optional theme -->
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
-
+}

@@ -161,7 +161,6 @@ public class ProfileController extends Controller {
             }
             List<Nationality> nationalities = Nationality.find.all();
             List<Passport> passports = Passport.find.all();
-            System.out.println(passports.size());
             return ok(updateNatPass.render(userForm, nationalities, passports, userId));
         }
         else{
@@ -227,11 +226,12 @@ public class ProfileController extends Controller {
 
         if (userForm.hasErrors()) {
 
-            int user = UserFactory.getCurrentUserId(request);
-            List<Nationality> nationalities = Nationality.find.all();
-            List<Passport> passports = Passport.find.all();
-
-            return badRequest(updateNatPass.render(userForm, nationalities, passports, user));
+//            int user = UserFactory.getCurrentUserId(request);
+//            List<Nationality> nationalities = Nationality.find.all();
+//            List<Passport> passports = Passport.find.all();
+            flash("error", "Need at least one nationality, " +
+                    "please add another nationality before deleting the one you selected");
+            //return badRequest(updateNatPass.render(userForm, nationalities, passports, user));
 
         }else {
             String nationalityID = userForm.get().nationalitydelete;

@@ -9,54 +9,95 @@
 @main("Index"){
 
     <div class="container">
+        <div class="well">
+            <div class="row">
+                <div class="col-md-4">
+                    <p><h3><b>Passport(s):</b></h3>
+                    <div class="col-sm">
+                        <ul class="list-group" >
+                            @for(passport <- UserFactory.getUserPassports(id)) {
+                                <li class="list-group-item">@passport.passportName</li>
+                            }
+                        </ul>
+                    </div>
+                    </p>
 
-    @form(action = helper.CSRF(routes.ProfileController.submitUpdatePassport)) {
-        @select(
-            field = userForm("passport"),
-            options = passports.map(passport => passport.passid.toString -> passport.passportName),
-            '_label -> "Select passports to add:"
-        )
-        <input type="submit" value="Add passport">
-    }
+                </div>
 
-    @form(action = helper.CSRF(routes.ProfileController.deletePassport)) {
-        @select(
-            field = userForm("passportdelete"),
-            options = UserFactory.getUserPassports(id).map(passport => passport.passid.toString -> passport.passportName),
-            '_label -> "Select passports to delete:"
-        )
-        <input type="submit" value="Remove passport">
-    }
+                <div class="col-md-4">
+                    @form(action = helper.CSRF(routes.ProfileController.submitUpdatePassport)) {
+                    @select(
+                    field = userForm("passport"),
+                    options = passports.map(passport => passport.passid.toString -> passport.passportName),
+                    '_label -> "Select passports to add:"
+                    )
+                    <input type="submit" value="Add passport">
+                    }
+                </div>
+                <div class="col-md-4">
+                    @form(action = helper.CSRF(routes.ProfileController.deletePassport)) {
+                    @select(
+                    field = userForm("passportdelete"),
+                    options = UserFactory.getUserPassports(id).map(passport => passport.passid.toString -> passport.passportName),
+                    '_label -> "Select passports to delete:"
+                    )
+                    <input type="submit" value="Remove passport">
+                    }
+                </div>
+            </div>
+        </div>
 
-    @for(passport <- UserFactory.getUserPassports(id)) {
-        <p>Passport: @passport.passportName</p>
-    }
 
-    @form(action = helper.CSRF(routes.ProfileController.submitUpdateNationality)) {
-        @select(
-            field = userForm("nationality"),
-            options = nationalities.map(nationality => nationality.natid.toString -> nationality.nationalityName),
-            '_label -> "Select nationality to add:"
-        )
-        <input type="submit" value="Add nationality">
-    }
+        <div class="well">
+            <div class="row">
+                <div class="col-md-4">
+                    <p><h3><b>Nationality(s):</b></h3>
+                    <ul class="list-group" >
+                        @for(nationality <- UserFactory.getUserNats(id)) {
+                        <li class="list-group-item">@nationality.nationalityName</li>
+                        }
+                    </ul>
+                    </p>
 
-    @form(action = helper.CSRF(routes.ProfileController.deleteNationality) ) {
 
-        <input type="hidden" name="userId" value=@id>
+                </div>
 
-        @select(
-            field = userForm("nationalitydelete"),
-            options = UserFactory.getUserNats(id).map(nationality => nationality.natid.toString -> nationality.nationalityName),
-            '_label -> "Select nationality to delete:",
+                <div class="col-md-4">
+                    @form(action = helper.CSRF(routes.ProfileController.submitUpdateNationality)) {
+                    @select(
+                    field = userForm("nationality"),
+                    options = nationalities.map(nationality => nationality.natid.toString -> nationality.nationalityName),
+                    '_label -> "Select nationality to add:"
+                    )
+                    <input type="submit" value="Add nationality">
+                    }
+                </div>
+                <div class="col-md-4">
+                    @form(action = helper.CSRF(routes.ProfileController.deleteNationality) ) {
 
-        )
-        <input type="submit" value="Remove nationality">
-    }
+                    <input type="hidden" name="userId" value=@id>
 
-    @for(nationality <- UserFactory.getUserNats(id)) {
-        <p>Nationality: @nationality.nationalityName</p>
-    }
+                    @select(
+                    field = userForm("nationalitydelete"),
+                    options = UserFactory.getUserNats(id).map(nationality => nationality.natid.toString -> nationality.nationalityName),
+                    '_label -> "Select nationality to delete:",
+
+                    )
+                    <input type="submit" value="Remove nationality">
+                    }
+
+                    @if(flash.containsKey("error")) {
+                    <div class="well">
+                        <div id="error-message" class="text-danger">
+                            @flash.get("error")
+                        </div>
+                    </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+
 
     <a href="@routes.HomeController.showhome()">Back to home</a>
     </div>

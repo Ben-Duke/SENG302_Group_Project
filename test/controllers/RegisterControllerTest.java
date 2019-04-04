@@ -118,7 +118,7 @@ public class RegisterControllerTest extends WithApplication {
 //        Map<String, String> formData = new HashMap<>();
 //
 //
-//        formData.put("username", "testAccount3@uclive.ac.nz");
+//        formData.put("email", "testAccount3@uclive.ac.nz");
 //        formData.put("password", "hunter22");
 //        //Added in
 //        formData.put("firstName", "doe");

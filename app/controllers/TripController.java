@@ -2,12 +2,10 @@ package controllers;
 
 import java.util.*;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import factories.TripFactory;
 import java.util.Date;
 
-import factories.TripFactory;
 import factories.VisitFactory;
 import formdata.TripFormData;
 import formdata.VisitFormData;
@@ -15,9 +13,6 @@ import models.Destination;
 import models.Trip;
 import models.User;
 import models.Visit;
-import io.ebean.Transaction;
-import models.*;
-import models.*;
 import play.data.DynamicForm;
 import play.data.Form;
 import play.data.FormFactory;
@@ -32,15 +27,8 @@ import views.html.users.trip.editTrip;
 import views.html.users.trip.*;
 
 import javax.inject.Inject;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-
-import static play.mvc.Results.*;
-
-import static play.mvc.Results.*;
 
 public class TripController extends Controller {
 
@@ -78,22 +66,21 @@ public class TripController extends Controller {
      * Users can swap visit destinations by drag and dropping them with their mouse, which should be saved within the
      * database.
      * @param request
-     * @param tripid the trip id
+     * @param tripId the trip id
      * @param message an error message if there is one
      * @return display visits page
      */
-    public Result displaytrip(Http.Request request, Integer tripid, String message){
+    public Result displaytrip(Http.Request request, Integer tripId, String message){
         User user = User.getCurrentUser(request);
         if (user != null) {
-            Trip trip = Trip.find.byId(tripid);
+            Trip trip = Trip.find.byId(tripId);
+            List<Visit> visits = trip.getVisits();
+            visits.sort(Comparator.comparing(Visit::getVisitOrder));
             if(trip.isUserOwner(user.getUserid())) {
-                List<Visit> visits = trip.getVisits();
-                visits.sort(Comparator.comparing(Visit::getVisitorder));
-                //return ok(displayTrip.render(trip, visits));
-                return ok(displayTripTable.render(trip,message));
+                return ok(displayTripTable.render(trip, message));
             }
             else{
-                return unauthorized("Oops, this is not your trip.");
+                return ok(displayTrip.render(trip, visits));
             }
         }
         else{
@@ -201,7 +188,7 @@ public class TripController extends Controller {
                     }
                     visit.update();
                     visits = trip.getVisits();
-                    visits.sort(Comparator.comparing(Visit::getVisitorder));
+                    visits.sort(Comparator.comparing(Visit::getVisitOrder));
 //                    Visit firstVisit = visits.get(0);
 //                    visits.remove(0);
                     //return ok(displayTrip.render(trip,visits));
@@ -226,7 +213,7 @@ public class TripController extends Controller {
             if (trip != null) {
                 Form<VisitFormData> incomingForm = formFactory.form(VisitFormData.class);
                 List<Visit> visits = trip.getVisits();
-                visits.sort(Comparator.comparing(Visit::getVisitorder));
+                visits.sort(Comparator.comparing(Visit::getVisitOrder));
                 return ok(AddTripDestinations.render(incomingForm, trip, user.getMappedDestinations(), visits, today.toString()));
             }
             else{
@@ -275,7 +262,7 @@ public class TripController extends Controller {
                 today.setTime(today.getTime());
                 Trip trip = Trip.find.byId(tripid);
                 List<Visit> visits = trip.getVisits();
-                visits.sort(Comparator.comparing(Visit::getVisitorder));
+                visits.sort(Comparator.comparing(Visit::getVisitOrder));
                 return badRequest(AddTripDestinations.render(incomingForm, trip, user.getMappedDestinations(), visits, today.toString()));
             }
             VisitFormData created = incomingForm.get();
@@ -327,7 +314,7 @@ public class TripController extends Controller {
             if (trip != null) {
                 Form<VisitFormData> incomingForm = formFactory.form(VisitFormData.class);
                 List<Visit> visits = trip.getVisits();
-                visits.sort(Comparator.comparing(Visit::getVisitorder));
+                visits.sort(Comparator.comparing(Visit::getVisitOrder));
                 return ok(editTrip.render(incomingForm, trip, destinations, visits));
             }
             else{
@@ -337,7 +324,6 @@ public class TripController extends Controller {
         else{
             return unauthorized("Oops, you are not logged in");
         }
-//        return ok("edittrip");
     }
 
 
@@ -427,8 +413,8 @@ public class TripController extends Controller {
                 if(hasRepeatDestSwap(visits, visit1, visit2)){
                     return badRequest("You cannot visit the same destination twice in a row!");
                 }
-                Integer visit1OrderNumber = visit1.getVisitorder();
-                Integer visit2OrderNumber = visit2.getVisitorder();
+                Integer visit1OrderNumber = visit1.getVisitOrder();
+                Integer visit2OrderNumber = visit2.getVisitOrder();
                 visit1.setVisitorder(visit2OrderNumber);
                 visit2.setVisitorder(visit1OrderNumber);
                 visit1.update();

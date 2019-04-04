@@ -14,6 +14,7 @@ server.pid
 /dist/
 .cache
 *.log
+team-800.ipr
 
 # Things that don't belong under source control see https://github.com/github/gitignore
 

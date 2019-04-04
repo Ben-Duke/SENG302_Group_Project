@@ -14,7 +14,6 @@ import javax.inject.Inject;
 import java.util.*;
 
 
-import utilities.UtilityFunctions;
 import views.html.users.destination.*;
 
 public class DestinationController extends Controller {

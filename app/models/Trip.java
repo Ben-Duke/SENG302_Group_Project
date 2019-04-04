@@ -81,7 +81,7 @@ public class Trip extends Model {
 
     public List<Visit> getOrderedVisits(){
         List<Visit> visits = this.getVisits();
-        visits.sort(Comparator.comparing(Visit::getVisitorder));
+        visits.sort(Comparator.comparing(Visit::getVisitOrder));
         return visits;
     }
 

@@ -4,11 +4,14 @@
 @(userForm : Form[NatFormData], nationalities : List[Nationality], passports : List[Passport], id : Int)
 
 
-<h1>Edit passport and nationality</h1>
+
 
 @main("Index"){
 
     <div class="container">
+
+        <h1>Edit passport and nationality</h1>
+
         <div class="well">
             <div class="row">
                 <div class="col-md-4">
@@ -26,22 +29,22 @@
 
                 <div class="col-md-4">
                     @form(action = helper.CSRF(routes.ProfileController.submitUpdatePassport)) {
-                    @select(
-                    field = userForm("passport"),
-                    options = passports.map(passport => passport.passid.toString -> passport.passportName),
-                    '_label -> "Select passports to add:"
-                    )
-                    <input type="submit" value="Add passport">
+                        @select(
+                            field = userForm("passport"),
+                            options = passports.map(passport => passport.passid.toString -> passport.passportName),
+                            '_label -> "Select passports to add:"
+                        )
+                        <input type="submit" value="Add passport">
                     }
                 </div>
                 <div class="col-md-4">
                     @form(action = helper.CSRF(routes.ProfileController.deletePassport)) {
-                    @select(
-                    field = userForm("passportdelete"),
-                    options = UserFactory.getUserPassports(id).map(passport => passport.passid.toString -> passport.passportName),
-                    '_label -> "Select passports to delete:"
-                    )
-                    <input type="submit" value="Remove passport">
+                        @select(
+                            field = userForm("passportdelete"),
+                            options = UserFactory.getUserPassports(id).map(passport => passport.passid.toString -> passport.passportName),
+                            '_label -> "Select passports to delete:"
+                        )
+                        <input type="submit" value="Remove passport">
                     }
                 </div>
             </div>
@@ -54,7 +57,7 @@
                     <p><h3><b>Nationality(s):</b></h3>
                     <ul class="list-group" >
                         @for(nationality <- UserFactory.getUserNats(id)) {
-                        <li class="list-group-item">@nationality.nationalityName</li>
+                            <li class="list-group-item">@nationality.nationalityName</li>
                         }
                     </ul>
                     </p>
@@ -64,26 +67,25 @@
 
                 <div class="col-md-4">
                     @form(action = helper.CSRF(routes.ProfileController.submitUpdateNationality)) {
-                    @select(
-                    field = userForm("nationality"),
-                    options = nationalities.map(nationality => nationality.natid.toString -> nationality.nationalityName),
-                    '_label -> "Select nationality to add:"
-                    )
-                    <input type="submit" value="Add nationality">
+                        @select(
+                            field = userForm("nationality"),
+                            options = nationalities.map(nationality => nationality.natid.toString -> nationality.nationalityName),
+                            '_label -> "Select nationality to add:"
+                        )
+                        <input type="submit" value="Add nationality">
                     }
                 </div>
                 <div class="col-md-4">
                     @form(action = helper.CSRF(routes.ProfileController.deleteNationality) ) {
 
-                    <input type="hidden" name="userId" value=@id>
+                        <input type="hidden" name="userId" value=@id>
 
-                    @select(
-                    field = userForm("nationalitydelete"),
-                    options = UserFactory.getUserNats(id).map(nationality => nationality.natid.toString -> nationality.nationalityName),
-                    '_label -> "Select nationality to delete:",
-
-                    )
-                    <input type="submit" value="Remove nationality">
+                        @select(
+                            field = userForm("nationalitydelete"),
+                            options = UserFactory.getUserNats(id).map(nationality => nationality.natid.toString -> nationality.nationalityName),
+                            '_label -> "Select nationality to delete:",
+                        )
+                        <input type="submit" value="Remove nationality">
                     }
 
                     @if(flash.containsKey("error")) {

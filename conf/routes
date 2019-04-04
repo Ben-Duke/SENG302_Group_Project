@@ -94,6 +94,8 @@ GET     /users/trips/:id            controllers.TripController.displaytrip(reque
 #Renders page that displays the home page where users can navigate to other pages
 GET     /users/home                 controllers.HomeController.showhome(request:Request)
 
+GET     /index                      controllers.HomeController.index(request: Request, path:String)
+
 POST    /users/home         controllers.HomeController.upload(request:Request)
 
 #Handles logout request from the user

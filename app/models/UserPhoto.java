@@ -6,6 +6,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import java.nio.file.Paths;
 
 /**
  * A class to hold information a user photograph.
@@ -53,6 +54,14 @@ public class UserPhoto extends Model {
      */
     public String getUrl() {
         return url;
+    }
+
+    /**
+     * Method to get the url for a photo with its full path
+     * @return the full path string for the file
+     */
+    public String getUrlWithPath() {
+        return Paths.get(".").toAbsolutePath().normalize().toString() + "/../user_photos/user_" + user.getUserid() + "/" + url;
     }
 
     /**

@@ -91,11 +91,14 @@ public class UserFactory {
                 UpdateTravellerType(user, tTypeId);
             }
             //Passport loop
-            for (int j = 0; j < passports.size(); j++) {
+            if (passports != null) {
+                for (int j = 0; j < passports.size(); j++) {
 
-                int passportId = getPassportId(passports.get(j));
-                UpdatePassport(user, passportId);
+                    int passportId = getPassportId(passports.get(j));
+                    UpdatePassport(user, passportId);
+                }
             }
+
 
             for (int k = 0; k < nationalities.size(); k++) {
 

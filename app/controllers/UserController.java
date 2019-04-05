@@ -3,7 +3,7 @@ package controllers;
 import models.Admin;
 import models.User;
 import play.mvc.Result;
-import views.html.users.userIndex;
+import views.html.users.*;
 
 import java.time.LocalDate;
 import java.util.List;

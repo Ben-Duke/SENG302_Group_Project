@@ -8,7 +8,7 @@ import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.Http;
 import play.mvc.Result;
-import views.html.users.loginpage.loginPage;
+import views.html.users.loginpage.*;
 
 import javax.inject.Inject;
 
@@ -36,9 +36,9 @@ public class LoginController {
 
     /**
      * Handles the user's login request.
-     * If the username is not found in the database then returns an error.
-     * If the username is found but the password does not match then returns an error.
-     * If the username and password matches then stores the user's login session
+     * If the email is not found in the database then returns an error.
+     * If the email is found but the password does not match then returns an error.
+     * If the email and password matches then stores the user's login session
      *      and redirects the user to the home page.
      * @param request The HTTP request
      * @return The home page or login error page
@@ -51,11 +51,11 @@ public class LoginController {
             // redirect user to same login page with some errors.
             return badRequest(loginPage.render(userLoginForm));
         } else {
-            String username = userLoginForm.get().username;
-            logger.debug("---"+ LoginFactory.getUserId(username));
+            String email = userLoginForm.get().email;
+            logger.debug("---"+ LoginFactory.getUserId(email));
             return redirect(routes.HomeController.showhome())
                     .addingToSession(request, "connected",
-                            Integer.toString(LoginFactory.getUserId(username)));
+                            Integer.toString(LoginFactory.getUserId(email)));
         }
 
 

@@ -6,8 +6,6 @@ import models.Passport;
 import models.TravellerType;
 import io.ebean.ExpressionList;
 import models.User;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import play.data.FormFactory;
 import play.mvc.Http;
 
@@ -19,7 +17,6 @@ import java.time.format.DateTimeFormatter;
 import javax.inject.Inject;
 
 public class UserFactory {
-    private static Logger logger = LoggerFactory.getLogger("application");
 
     @Inject
     static FormFactory formFactory;
@@ -42,7 +39,6 @@ public class UserFactory {
         for (int i = 0; i < users.size(); i++) {
 
             userEmail = users.get(i).getEmail();
-            logger.debug(userEmail + " email is " + userEmail + " " + userEmail.equalsIgnoreCase(email));
             if(userEmail.equalsIgnoreCase(email)){
                 present = 1;
             }

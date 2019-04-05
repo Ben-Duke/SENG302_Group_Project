@@ -52,7 +52,6 @@ public class LoginController {
             return badRequest(loginPage.render(userLoginForm));
         } else {
             String email = userLoginForm.get().email;
-            logger.debug("---"+ LoginFactory.getUserId(email));
             return redirect(routes.HomeController.showhome())
                     .addingToSession(request, "connected",
                             Integer.toString(LoginFactory.getUserId(email)));

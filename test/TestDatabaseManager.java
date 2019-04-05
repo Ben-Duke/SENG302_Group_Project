@@ -1,6 +1,7 @@
 import controllers.ProfileController;
 import controllers.TravellerTypeController;
 import models.*;
+import sun.security.krb5.internal.crypto.Des;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -11,6 +12,8 @@ public class TestDatabaseManager {
         addTravellerTypes();
         addNationalitiesAndPassports();
         populateUsers();
+        addTrips();
+        addDestinationsAndVisits();
     }
 
     public void populateUsers(){
@@ -87,4 +90,108 @@ public class TestDatabaseManager {
         ProfileController pC = new ProfileController();
         pC.addNatandPass();
     }
+
+
+    /**
+     * Populates the database with destinations added to users 2,3 and 4.
+     * The destinations are then used to create visits for trips 1,2,3,4,5 and 6.
+     */
+    public void addDestinationsAndVisits() {
+        // Adds destinations for user2
+        Destination destination1 = new Destination(
+                "Christchurch", "Town", "Canterbury", "New Zealand", -43.5321, 172.6362, User.find.byId(2));
+        destination1.save();
+
+        Destination destination2 = new Destination(
+                "Wellington", "Town", "Wellington", "New Zealand", -41.2866, 174.7756, User.find.byId(2));
+        destination2.save();
+
+        Destination destination3 = new Destination(
+                "The Wok", "Cafe/Restaurant", "Canterbury", "New Zealand", -43.523593, 172.582971, User.find.byId(2));
+        destination3.save();
+
+
+        // Adds destinations for user3
+        Destination destination4 = new Destination(
+                "Hanmer Springs Thermal Pools", "Attraction", "North Canterbury", "New Zealand", -42.522791, 172.828944, User.find.byId(3));
+        destination4.save();
+
+        Destination destination5 = new Destination(
+                "Le Mans 24 hour race", "Event", "Le Mans", "France", 47.956221, 0.207828, User.find.byId(3));
+        destination5.save();
+        Destination destination6 = new Destination(
+                "Great Pyramid of Giza", "Attraction", "Giza", "Egypt", 29.979481, 31.134159, User.find.byId(3));
+        destination6.save();
+
+        //Adds destinations for user4
+        Destination destination7 = new Destination(
+                "Niagara Falls", "Natural Spot", "New York", "United States", 29.979481, 31.134159, User.find.byId(4));
+        destination7.save();
+        Destination destination8 = new Destination(
+                "Vatican City", "Country", "Rome", "Vatican City", 41.903133, 12.454341, User.find.byId(4));
+        destination8.save();
+        Destination destination9 = new Destination(
+                "Lincoln Memorial", "Monument", "Washington DC", "United States", 38.889406, -77.050155, User.find.byId(4));
+        destination9.save();
+
+
+        Trip trip1 = Trip.find.query().where().eq("tripName", "Trip to New Zealand").findOne();
+        Trip trip2 = Trip.find.query().where().eq("tripName", "Christchurch to Wellington, to The Wok and back").findOne();
+        Trip trip3 = Trip.find.query().where().eq("tripName", "World Tour").findOne();
+        Trip trip4 = Trip.find.query().where().eq("tripName", "Pyramid to Race and back again").findOne();
+        Trip trip5 = Trip.find.query().where().eq("tripName", "See the pope, the president and come back").findOne();
+        Trip trip6 = Trip.find.query().where().eq("tripName", "Waterfall walk and see the president").findOne();
+
+        new Visit("2018-05-04", "2018-05-06", trip1, destination1).save();
+        new Visit("2018-05-06", "2018-05-08", trip1, destination2).save();
+
+        new Visit(null, null, trip2, destination1).save();
+        new Visit(null, null, trip2, destination2).save();
+        new Visit(null, null, trip2, destination3).save();
+        new Visit( null, null, trip2, destination1).save();
+
+
+        new Visit("2003-08-12", null, trip3, destination4).save();
+        new Visit(null, null, trip3, destination5).save();
+        new Visit( null, null, trip3, destination6).save();
+
+        new Visit(null, "2019-04-05", trip4, destination6).save();
+        new Visit(null, null, trip4, destination5).save();
+        new Visit( null, null, trip4, destination6).save();
+
+        new Visit(null, null, trip5, destination8).save();
+        new Visit(null, null, trip5, destination9).save();
+        new Visit( null, null, trip5, destination8).save();
+
+        new Visit(null, null, trip6, destination7).save();
+        new Visit(null, null, trip6, destination9).save();
+
+
+
+    }
+
+    /**
+     * Populates the databsae with trips added to users 2,3 and 4.
+     */
+    public void addTrips(){
+        //Add trips for user2
+        Trip trip1 = new Trip("Trip to New Zealand", true, User.find.byId(2));
+        trip1.save();
+        Trip trip2 = new Trip("Christchurch to Wellington, to The Wok and back", false, User.find.byId(2));
+        trip2.save();
+
+        // Add trips to user 3
+        Trip trip3 = new Trip("World Tour", true, User.find.byId(3));
+        trip3.save();
+        Trip trip4 = new Trip("Pyramid to Race and back again", false, User.find.byId(3));
+        trip4.save();
+
+        //Add trips to user 4
+        Trip trip5 = new Trip("See the pope, the president and come back", true, User.find.byId(4));
+        trip5.save();
+        Trip trip6 = new Trip("Waterfall walk and see the president", false, User.find.byId(4));
+        trip6.save();
+
+    }
+
 }

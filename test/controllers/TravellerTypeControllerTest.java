@@ -13,6 +13,7 @@ import play.mvc.Http;
 import play.mvc.Result;
 import play.test.Helpers;
 import play.test.WithApplication;
+import utilities.UtilityFunctions;
 
 import java.util.HashMap;
 import java.util.List;
@@ -46,8 +47,7 @@ public class TravellerTypeControllerTest extends WithApplication {
         //Initialises a test user with name "testUser" and saves it to the database.
         User user = new User("testUser");
         user.save();
-        TravellerTypeController tTC= new TravellerTypeController();
-        tTC.addTravelTypes();
+        UtilityFunctions.addTravellerTypes();
     }
 
     /**
@@ -125,8 +125,7 @@ public class TravellerTypeControllerTest extends WithApplication {
         }
         assertEquals(0, TravellerType.find.all().size());
         //Add travel types
-        TravellerTypeController tTC = new TravellerTypeController();
-        tTC.addTravelTypes();
+        UtilityFunctions.addTravellerTypes();
         assertEquals(7, TravellerType.find.all().size());
     }
 }

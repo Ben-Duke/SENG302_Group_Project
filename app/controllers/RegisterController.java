@@ -1,25 +1,19 @@
 package controllers;
 
 import formdata.UserFormData;
-import io.ebean.ExpressionList;
-import models.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.Marker;
 import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.Http;
 import play.mvc.Result;
-import play.mvc.Controller;
 import views.html.users.profile.*;
 import factories.UserFactory;
 
 import javax.inject.Inject;
-import factories.UserFactory;
 
 import java.util.Arrays;
 import java.util.Map;
-import java.util.regex.Pattern;
 
 import static play.mvc.Results.*;
 
@@ -41,12 +35,7 @@ public class RegisterController {
     public Result createuser(){
         Form<UserFormData> userForm = formFactory.form(UserFormData.class);
         String[] gendersArray = {"Male", "Female", "Other"};
-        UserFactory.addNatandPass();
-        try {
-            UserFactory.addTravelTypes();
-        }catch (Exception error){
-            //Do nothing as data is in database, otherwise error would not have happended.
-        }
+
         Map<String, Boolean> tTypes = UserFactory.getTTypesList();
         Map<String, Boolean> passports = UserFactory.getPassports();
         Map<String, Boolean> nationalities = UserFactory.getNatList();

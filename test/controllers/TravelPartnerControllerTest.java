@@ -15,6 +15,7 @@ import play.mvc.Http;
 import play.mvc.Result;
 import play.test.Helpers;
 import play.test.WithApplication;
+import utilities.UtilityFunctions;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -45,10 +46,8 @@ public class TravelPartnerControllerTest extends WithApplication {
                 "create table test (id bigint not null, name varchar(255));",
                 "drop table test;"
         )));
-        TravellerTypeController tTC = new TravellerTypeController();
-        tTC.addTravelTypes();
-        ProfileController pC = new ProfileController();
-        pC.addNatandPass();
+        UtilityFunctions.addNatAndPass();
+        UtilityFunctions.addTravellerTypes();
         TravellerType travellerType1 = TravellerType.find.byId(1);
         TravellerType travellerType2 = TravellerType.find.byId(2);
         TravellerType travellerType3 = TravellerType.find.byId(3);

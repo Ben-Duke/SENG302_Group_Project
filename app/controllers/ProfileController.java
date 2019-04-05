@@ -41,6 +41,7 @@ public class ProfileController extends Controller {
             UpdateUserFormData updateUserFormData = UserFactory
                                             .getUpdateUserFormDataForm(request);
 
+
             Form<UpdateUserFormData> updateUserForm = formFactory
                         .form(UpdateUserFormData.class).fill(updateUserFormData);
 
@@ -66,7 +67,6 @@ public class ProfileController extends Controller {
     public Result updateProfileRequest(Http.Request request){
         Form<UpdateUserFormData> updateProfileForm = formFactory
                             .form(UpdateUserFormData.class).bindFromRequest();
-
         // checking if a user is logged in.
         User user = User.getCurrentUser(request);
         if (user != null) {
@@ -103,11 +103,15 @@ public class ProfileController extends Controller {
         String gender = updateProfileForm.get().gender;
         String dateOfBirth = updateProfileForm.get().dateOfBirth;
         LocalDate birthDate = LocalDate.parse(dateOfBirth, formatter);
+        String username = updateProfileForm.get().username;
+        String password = updateProfileForm.get().password;
 
         user.setfName(firstName);
         user.setlName(lastName);
         user.setGender(gender);
         user.setDateOfBirth(birthDate);
+        user.setEmail(username);
+        user.setPassword(password);
 
         user.update();
         // Show the user their home page

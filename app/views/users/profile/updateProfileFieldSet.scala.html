@@ -14,6 +14,21 @@
         <!-- Header -->
     <legend id="legend">Update Profile</legend>
 
+
+
+        <!-- FirstName -->
+        @text(updateUserForm("username"),
+            label = "Email",
+            placeholder = "Email",
+            help = "Please enter your email. (required)")
+
+
+            @password(updateUserForm("password"),
+                label = "Password",
+                placeholder = "password",
+                help = "Please enter your password. (required)")
+
+
     <!-- FirstName -->
     @text(updateUserForm("firstName"),
         label = "First name",
@@ -40,8 +55,21 @@
         placeholder = "01/01/2000",
         help = "Please select your Date of birth. (required)")
 
+    <div id="hiddenExistingEmail" style="display: none;">
+        @text(updateUserForm("existingUsername"),
+        label = "Email",
+        placeholder = "Email",
+        help = "Please enter your email. (required)")
+    </div>
+
+
+
+
+
+
 
     <div class="form-group actions">
+
         <div class="col-sm-offset-2 col-sm-10">
             <input id="submit" type="submit" value="Update Profile" class="btn btn-primary"/>
         </div>

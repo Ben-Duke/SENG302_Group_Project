@@ -1,0 +1,19 @@
+.body{
+
+    background-image:url("");
+}
+.loginform{
+
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-right: -50%;
+    transform: translate(-50%, -50%);
+    background-color: #ffd39e;
+    border: 1px solid #888;
+    width: 20%;
+    padding: 16px;
+
+    border-radius: 15px 15px 15px 15px;
+
+}

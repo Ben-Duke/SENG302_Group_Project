@@ -82,17 +82,18 @@ public class TravellerTypeController {
         if (user == null) {
             return unauthorized("Oops, you are not logged in");
         } else if (! (user.getTravellerTypes().size() > 1)) {
-            flash("error", "STOP YOU ARE BREAKING THE LAW");
-            return null;
+            flash("error", "Need at least one traveller type, " +
+                    "please add another traveller type before deleting the one you selected");
         } else {
             try {
                 TravellerType travellerType = TravellerType.find.byId(typeId);
                 user.deleteTravellerType(travellerType);
                 user.update();
-                return redirect(routes.TravellerTypeController.updateTravellerType());
+
             } catch (NumberFormatException e) {
                 return unauthorized("Oops, you do not have any traveller types to delete");
             }
         }
+        return redirect(routes.TravellerTypeController.updateTravellerType());
     }
 }

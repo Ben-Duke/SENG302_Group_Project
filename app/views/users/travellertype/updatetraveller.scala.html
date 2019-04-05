@@ -11,13 +11,20 @@
         <div class ="row">
             @for(travellerType <- user.travellerTypes) {
                 <div class="container">
-                @form(action = helper.CSRF(routes.TravellerTypeController.deleteUpdateTravellerType(travellerType.getTtypeid))) {
-                    <ul class="list-group">
-                        <li class="list-group-item" style = "width: 220px;">
-                            @travellerType.travellerTypeName <button type="submit" style="position:absolute; top:5px;bottom:5px;right:5px;margin:0;" class = "btn btn-danger">&times</button> </li>
-                    </ul>
+                    @form(action = helper.CSRF(routes.TravellerTypeController.deleteUpdateTravellerType(travellerType.getTtypeid))) {
+                        <ul class="list-group">
+                            <li class="list-group-item" style = "width: 220px;">
+                                @travellerType.travellerTypeName <button type="submit" style="position:absolute; top:5px;bottom:5px;right:5px;margin:0;" class = "btn btn-danger">&times</button> </li>
+                        </ul>
 
-                }
+                    }
+                    @if(flash.containsKey("error")) {
+                        <div class="well">
+                            <div id="error-message" class="text-danger">
+                            @flash.get("error")
+                            </div>
+                        </div>
+                    }
                 </div>
                 }
         </div>

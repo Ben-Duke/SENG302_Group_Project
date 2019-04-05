@@ -40,6 +40,7 @@ public class ProfileController extends Controller {
             UpdateUserFormData updateUserFormData = UserFactory
                                             .getUpdateUserFormDataForm(request);
 
+
             Form<UpdateUserFormData> updateUserForm = formFactory
                         .form(UpdateUserFormData.class).fill(updateUserFormData);
 
@@ -65,7 +66,6 @@ public class ProfileController extends Controller {
     public Result updateProfileRequest(Http.Request request){
         Form<UpdateUserFormData> updateProfileForm = formFactory
                             .form(UpdateUserFormData.class).bindFromRequest();
-
         // checking if a user is logged in.
         User user = User.getCurrentUser(request);
         if (user != null) {

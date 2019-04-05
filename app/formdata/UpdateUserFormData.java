@@ -1,8 +1,10 @@
 package formdata;
 
+import factories.UserFactory;
 import models.User;
 import play.data.validation.Constraints;
 import play.data.validation.ValidationError;
+import utilities.UtilityFunctions;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -28,6 +30,9 @@ public class UpdateUserFormData implements Constraints.Validatable<List<Validati
     public String username;
     public String password;
 
+    public String existingUsername;
+
+
 
     /**
      * Empty constructor, requirement of implementing Constraints.Validatable
@@ -47,6 +52,7 @@ public class UpdateUserFormData implements Constraints.Validatable<List<Validati
         this.lastName = user.getlName();
         this.gender = user.getGender();
         this.username = user.getUsername();
+        this.existingUsername = user.getUsername();
         this.password = user.getPassword();
         if (user.getDateOfBirth() == null) {
             this.dateOfBirth = "null";
@@ -78,6 +84,26 @@ public class UpdateUserFormData implements Constraints.Validatable<List<Validati
             errors.add(new ValidationError("lastName",
                     "Last name should only contain alphabetical " +
                                                                   "letters."));
+        }
+
+
+        if (username == null || username.length() == 0) {
+            errors.add(new ValidationError("username", "No username was given"));
+        } else {
+            if (! UtilityFunctions.isEmailValid(username)) {
+                errors.add(new ValidationError("username", "Not an email address"));
+            }
+        }
+
+
+        if (!username.equals(existingUsername) && UserFactory.checkUsername(username) == 1) {
+            errors.add(new ValidationError("username", "Username is taken"));
+        }
+
+
+
+        if (password.length() == 0) {
+            errors.add(new ValidationError("password", "No password was given"));
         }
 
         String[] gendersArray = {"Male", "Female", "Other"};

@@ -110,7 +110,7 @@ public class ProfileController extends Controller {
         user.setlName(lastName);
         user.setGender(gender);
         user.setDateOfBirth(birthDate);
-        user.setUsername(username);
+        user.setEmail(username);
         user.setPassword(password);
 
         user.update();

@@ -51,8 +51,8 @@ public class UpdateUserFormData implements Constraints.Validatable<List<Validati
         this.firstName = user.getfName();
         this.lastName = user.getlName();
         this.gender = user.getGender();
-        this.username = user.getUsername();
-        this.existingUsername = user.getUsername();
+        this.username = user.getEmail();
+        this.existingUsername = user.getEmail();
         this.password = user.getPassword();
         if (user.getDateOfBirth() == null) {
             this.dateOfBirth = "null";
@@ -96,7 +96,7 @@ public class UpdateUserFormData implements Constraints.Validatable<List<Validati
         }
 
 
-        if (!username.equals(existingUsername) && UserFactory.checkUsername(username) == 1) {
+        if (!username.equals(existingUsername) && UserFactory.checkEmail(username) == 1) {
             errors.add(new ValidationError("username", "Username is taken"));
         }
 

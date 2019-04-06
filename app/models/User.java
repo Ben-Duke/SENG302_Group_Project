@@ -18,12 +18,12 @@ import static play.mvc.Results.badRequest;
 public class User extends Model {
 
     /**
-     * The email of the User
+     * The formEmail of the User
      */
     public String email;
 
     /**
-     * The constructor for the User that takes the parameters, email, password, first name, last name, date of birth,
+     * The constructor for the User that takes the parameters, formEmail, password, first name, last name, date of birth,
      * gender, nationality and passport.
      * @param email
      * @param password
@@ -145,7 +145,7 @@ public class User extends Model {
     }
 
     public static int checkUser(String email){
-        ExpressionList<User> usersExpressionList = User.find.query().where().eq("email", email.toLowerCase());
+        ExpressionList<User> usersExpressionList = User.find.query().where().eq("formEmail", email.toLowerCase());
         int userPresent = 0;
         if (usersExpressionList.findCount() > 0) {
             userPresent = 1;

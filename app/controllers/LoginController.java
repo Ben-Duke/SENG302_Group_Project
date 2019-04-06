@@ -36,9 +36,9 @@ public class LoginController {
 
     /**
      * Handles the user's login request.
-     * If the email is not found in the database then returns an error.
-     * If the email is found but the password does not match then returns an error.
-     * If the email and password matches then stores the user's login session
+     * If the formEmail is not found in the database then returns an error.
+     * If the formEmail is found but the password does not match then returns an error.
+     * If the formEmail and password matches then stores the user's login session
      *      and redirects the user to the home page.
      * @param request The HTTP request
      * @return The home page or login error page

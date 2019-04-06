@@ -28,7 +28,7 @@ public class UserFactory {
     /**Returns 1 if in the database and 0 if not in the database
      *
      * @param email
-     * @return 0 if email is not present or 1 if email is present.
+     * @return 0 if formEmail is not present or 1 if formEmail is present.
      */
     public static int checkEmail(String email) {
 
@@ -56,10 +56,10 @@ public class UserFactory {
             user.deleteNationality(nationality);
             user.update();
         } catch (NumberFormatException e) {
-            //return  unauthorized("Oops, you do not have any nationalities to delete");
+
         }
     }
-    /** Returns a user id if they exist any number less than zero indicates the email is not in the database
+    /** Returns a user id if they exist any number less than zero indicates the formEmail is not in the database
      *
      * @param request
      * @return an int -1 indicates there are no entries in the database that have that user.
@@ -256,7 +256,7 @@ public class UserFactory {
 
     public boolean checkpassword(String email, String password) {
         ExpressionList<User> usersExpressionList = User.find.query()
-                .where().eq("email", email).and().eq("password", password);
+                .where().eq("formEmail", email).and().eq("password", password);
 
         return usersExpressionList.findCount() == 1;
     }

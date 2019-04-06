@@ -91,7 +91,7 @@ public class UpdateUserFormData implements Constraints.Validatable<List<Validati
             errors.add(new ValidationError("username", "No username was given"));
         } else {
             if (! UtilityFunctions.isEmailValid(username)) {
-                errors.add(new ValidationError("username", "Not an email address"));
+                errors.add(new ValidationError("username", "Not an formEmail address"));
             }
         }
 

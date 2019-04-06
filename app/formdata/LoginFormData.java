@@ -13,9 +13,9 @@ import factories.LoginFactory;
  * A Form class to contain and validate user data entered on the login page.<br>
  *
  * Validation requirements:<br>
- *     email field is not empty<br>
+ *     formEmail field is not empty<br>
  *     password field is notempty<br>
- *     there is a email && password match in the database for these inputs.<br>
+ *     there is a formEmail && password match in the database for these inputs.<br>
  */
 @Constraints.Validate
 public class LoginFormData implements Constraints.Validatable<List<ValidationError>> {
@@ -27,9 +27,9 @@ public class LoginFormData implements Constraints.Validatable<List<ValidationErr
     private final Logger logger = LoggerFactory.getLogger("application");
 
     /**
-     * Method to get  the (String) email from the  form.
+     * Method to get  the (String) formEmail from the  form.
      *
-     * @return A String representing the email in the form.
+     * @return A String representing the formEmail in the form.
      */
     public String getEmail(){
         return this.email;
@@ -39,9 +39,9 @@ public class LoginFormData implements Constraints.Validatable<List<ValidationErr
      * Method to validate the Form data.
      *
      * Validation requirements:<br>
-     *  *     email field is not empty<br>
+     *  *     formEmail field is not empty<br>
      *  *     password field is notempty<br>
-     *  *     there is a email && password match in the database for these
+     *  *     there is a formEmail && password match in the database for these
      *        inputs.<br>
      *
      * @return A List<E> containing all the validation errors. Or null if no
@@ -54,7 +54,7 @@ public class LoginFormData implements Constraints.Validatable<List<ValidationErr
         boolean hasPasswordData = ! (password == null || password.length() == 0);
 
         if (! hasEmailData) {
-            errors.add(new ValidationError("email", "No email was given"));
+            errors.add(new ValidationError("formEmail", "No formEmail was given"));
         }
 
         if (! hasPasswordData) {
@@ -66,7 +66,7 @@ public class LoginFormData implements Constraints.Validatable<List<ValidationErr
             LoginFactory loginFactory = new LoginFactory();
             if (! loginFactory.isPasswordMatch(email, password)) {
                 String errorStr = "Incorrect login information";
-                errors.add(new ValidationError("email", errorStr));
+                errors.add(new ValidationError("formEmail", errorStr));
                 errors.add(new ValidationError("password", errorStr));
             }
         }

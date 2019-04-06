@@ -30,8 +30,8 @@ import static play.test.Helpers.route;
  *
  * Note on wording:
  *
- * Username refers to text of an email address before the @
- * Domain refers to the text of an email address after the @
+ * Username refers to text of an formEmail address before the @
+ * Domain refers to the text of an formEmail address after the @
  */
 public class RegisterControllerTest extends WithApplication {
 
@@ -118,7 +118,7 @@ public class RegisterControllerTest extends WithApplication {
 //        Map<String, String> formData = new HashMap<>();
 //
 //
-//        formData.put("email", "testAccount3@uclive.ac.nz");
+//        formData.put("formEmail", "testAccount3@uclive.ac.nz");
 //        formData.put("password", "hunter22");
 //        //Added in
 //        formData.put("firstName", "doe");

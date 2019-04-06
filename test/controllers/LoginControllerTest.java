@@ -69,7 +69,7 @@ public class LoginControllerTest extends WithApplication {
 //    @Test
 //    public void loginrequestWithInvalidUsername() {
 //        Map<String, String> formData = new HashMap<>();
-//        formData.put("email", "testAccount3@uclive.ac.nz");
+//        formData.put("formEmail", "testAccount3@uclive.ac.nz");
 //        formData.put("password", "hunter22");
 //        Http.RequestBuilder request = Helpers.fakeRequest().bodyForm(formData).method(Helpers.POST).uri("/users/login");
 //        Result result = Helpers.route(app, request);
@@ -79,7 +79,7 @@ public class LoginControllerTest extends WithApplication {
 //    @Test
 //    public void loginrequestWithValidUsernameButInvalidPassword() {
 //        Map<String, String> formData = new HashMap<>();
-//        formData.put("email", "gon12@uclive.ac.nz");
+//        formData.put("formEmail", "gon12@uclive.ac.nz");
 //        formData.put("password", "hunter234");
 //        Http.RequestBuilder request = Helpers.fakeRequest().bodyForm(formData).method(Helpers.POST).uri("/users/login");
 //        Result result = Helpers.route(app, request);
@@ -89,7 +89,7 @@ public class LoginControllerTest extends WithApplication {
 //    @Test
 //    public void loginrequestWithValidUsernameWithValidPassword() {
 //        Map<String, String> formData = new HashMap<>();
-//        formData.put("email", "gon12@uclive.ac.nz");
+//        formData.put("formEmail", "gon12@uclive.ac.nz");
 //        formData.put("password", "hunter22");
 //        Http.RequestBuilder request = Helpers.fakeRequest().bodyForm(formData).method(Helpers.POST).uri("/users/login");
 //        Result result = Helpers.route(app, request);

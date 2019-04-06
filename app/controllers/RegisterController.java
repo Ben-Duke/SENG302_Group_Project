@@ -47,7 +47,7 @@ public class RegisterController {
      * When the user registers, stores the form data in to the database, stores their login session and redirects them
      * to the home page (where they'll be redirected to the profile creation page).
      *
-     * Checks the email does not exist already, and that the email is a valid email address and the password
+     * Checks the formEmail does not exist already, and that the formEmail is a valid formEmail address and the password
      * meets some basic length requirements.
      *
      * @param request the HTTP request

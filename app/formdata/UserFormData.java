@@ -62,7 +62,6 @@ public class UserFormData implements Constraints.Validatable<List<ValidationErro
     public List<ValidationError> validate() {
         List<ValidationError> errors = new ArrayList<>();
 
-
         if (firstName == null || firstName.length() == 0) {
             errors.add(new ValidationError("firstName", "No first name was given"));
         }
@@ -70,16 +69,15 @@ public class UserFormData implements Constraints.Validatable<List<ValidationErro
             errors.add(new ValidationError("firstName", "First name needs to be only letters and be at least one letter long"));
         }
 
-
         if (lastName == null || lastName.length() == 0) {
             errors.add(new ValidationError("lastName", "No last name was given"));
         } else if (lastName.matches(".*\\d+.*") || lastName.length() < 1) {
             errors.add(new ValidationError("lastName", "Last name needs to be only letters and be at least one letter long"));
         }
         if (email == null || email.length() == 0) {
-            errors.add(new ValidationError("email", "No email was given"));
+            errors.add(new ValidationError("email", "No formEmail was given"));
         } else if (!UtilityFunctions.isEmailValid(email)) {
-            errors.add(new ValidationError("email", "Not an email address"));
+            errors.add(new ValidationError("email", "Not an formEmail address"));
         }
         if (UserFactory.checkEmail(email) == 1) {
             errors.add(new ValidationError("email", "Email already registered"));
@@ -121,10 +119,6 @@ public class UserFormData implements Constraints.Validatable<List<ValidationErro
             errors.add(new ValidationError("travellerTypes", "No traveller types were given needs at least one"));
         }
 
-        if (errors.isEmpty()) {
-            return errors;
-        }
-
-        return null;
+        return errors;
     }
 }

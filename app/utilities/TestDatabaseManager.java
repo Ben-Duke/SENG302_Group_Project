@@ -1,14 +1,25 @@
-import controllers.ProfileController;
-import controllers.TravellerTypeController;
+package utilities;
+
 import models.*;
-import sun.security.krb5.internal.crypto.Des;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
+/**
+ * Test Database Manager class. Populates the database. NOTE: Does not create the database, so it requires the database to already be running.
+ * Visit https://eng-git.canterbury.ac.nz/seng302-2019/team-800/wikis/Test-database-structure
+ * for information on the layout of the test database.
+ */
 public class TestDatabaseManager {
 
-    public void populateDatabase(){
+    public TestDatabaseManager(){
+
+    }
+
+    /**
+     * Populates the database. Call this method at the before section of each unit test.
+     */
+    public static void populateDatabase(){
         addTravellerTypes();
         addNationalitiesAndPassports();
         populateUsers();
@@ -16,7 +27,10 @@ public class TestDatabaseManager {
         addDestinationsAndVisits();
     }
 
-    public void populateUsers(){
+    /**
+     * Populates the database with users. (requires addTravellerTypes and addNationalitiesAndPassports to be called beforehand)
+     */
+    public static void populateUsers(){
         createDefaultAdmin();
         //Groupie
         TravellerType travellerType1 = TravellerType.find.query().where().eq("travellerTypeName","Groupie").findOne();
@@ -74,21 +88,28 @@ public class TestDatabaseManager {
         user3.save();
     }
 
-    public void addTravellerTypes(){
-        TravellerTypeController tTC = new TravellerTypeController();
-        tTC.addTravelTypes();
+    /**
+     * Populates the database with traveller types.
+     */
+    public static void addTravellerTypes(){
+        UtilityFunctions.addTravellerTypes();
     }
 
-    public void createDefaultAdmin(){
+    /**
+     * Creates a default admin.
+     */
+    public static void createDefaultAdmin(){
         User user = new User("admin@admin.com", "admin", "admin", "admin", LocalDate.now(), "male");
         user.save();
         Admin admin = new Admin(user.userid, true);
         admin.save();
     }
 
-    public void addNationalitiesAndPassports(){
-        ProfileController pC = new ProfileController();
-        pC.addNatandPass();
+    /**
+     * Populates the database with nationalities and pasports.
+     */
+    public static void addNationalitiesAndPassports(){
+        UtilityFunctions.addNatAndPass();
     }
 
 
@@ -96,7 +117,7 @@ public class TestDatabaseManager {
      * Populates the database with destinations added to users 2,3 and 4.
      * The destinations are then used to create visits for trips 1,2,3,4,5 and 6.
      */
-    public void addDestinationsAndVisits() {
+    public static void addDestinationsAndVisits() {
         // Adds destinations for user2
         Destination destination1 = new Destination(
                 "Christchurch", "Town", "Canterbury", "New Zealand", -43.5321, 172.6362, User.find.byId(2));
@@ -173,7 +194,7 @@ public class TestDatabaseManager {
     /**
      * Populates the databsae with trips added to users 2,3 and 4.
      */
-    public void addTrips(){
+    public static void addTrips(){
         //Add trips for user2
         Trip trip1 = new Trip("Trip to New Zealand", true, User.find.byId(2));
         trip1.save();

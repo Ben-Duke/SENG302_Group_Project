@@ -1,5 +1,8 @@
 package utilities;
 
+import models.Nationality;
+import models.Passport;
+import models.TravellerType;
 import models.User;
 
 import java.util.*;
@@ -97,25 +100,6 @@ public class UtilityFunctions {
         return Pattern.matches(alphanumericRegex, inputString);
     }
 
-    /**
-     * Validates if the input string is an actual nationality.
-     * @param inputString
-     * @return
-     */
-    public static boolean validateInvalidNationality(String inputString){
-
-        return false;
-    }
-
-    /**
-     * Validates if the input string is an actual passport type.
-     * @param inputString
-     * @return
-     */
-    public static boolean validateInvalidPassport(String inputString){
-
-        return false;
-    }
 
     /**
      * Function that validates a given input string to check if it can be converted to a given type
@@ -146,6 +130,31 @@ public class UtilityFunctions {
     public static boolean isEmailValid(String email) {
         String emailRegex = "^[\\w!#$%&'*+/=?`{|}~^-]+(?:\\.[\\w!#$%&'*+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$";
         return Pattern.matches(emailRegex, email);
+    }
+
+    public static void addNatAndPass() {
+        if (Nationality.find.all().isEmpty()) {
+            String[] locales = Locale.getISOCountries();
+            for (String countryCode : locales) {
+                Locale obj = new Locale("", countryCode);
+                Nationality nationality = new Nationality(obj.getDisplayCountry());
+                nationality.save();
+                Passport passport = new Passport(obj.getDisplayCountry());
+                passport.save();
+            }
+        }
+    }
+
+    public static void addTravellerTypes() {
+        if (TravellerType.find.all().isEmpty()) {
+            (new TravellerType("Groupie")).save();
+            (new TravellerType("Thrillseeker")).save();
+            (new TravellerType("Gap Year")).save();
+            (new TravellerType("Frequent Weekender")).save();
+            (new TravellerType("Holidaymaker")).save();
+            (new TravellerType("Business Traveller")).save();
+            (new TravellerType("Backpacker")).save();
+        }
     }
 
 }

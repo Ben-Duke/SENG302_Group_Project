@@ -41,6 +41,7 @@ public class ProfileController extends Controller {
             UpdateUserFormData updateUserFormData = UserFactory
                                             .getUpdateUserFormDataForm(request);
 
+
             Form<UpdateUserFormData> updateUserForm = formFactory
                         .form(UpdateUserFormData.class).fill(updateUserFormData);
 
@@ -66,7 +67,6 @@ public class ProfileController extends Controller {
     public Result updateProfileRequest(Http.Request request){
         Form<UpdateUserFormData> updateProfileForm = formFactory
                             .form(UpdateUserFormData.class).bindFromRequest();
-
         // checking if a user is logged in.
         User user = User.getCurrentUser(request);
         if (user != null) {
@@ -103,11 +103,15 @@ public class ProfileController extends Controller {
         String gender = updateProfileForm.get().gender;
         String dateOfBirth = updateProfileForm.get().dateOfBirth;
         LocalDate birthDate = LocalDate.parse(dateOfBirth, formatter);
+        String username = updateProfileForm.get().username;
+        String password = updateProfileForm.get().password;
 
         user.setfName(firstName);
         user.setlName(lastName);
         user.setGender(gender);
         user.setDateOfBirth(birthDate);
+        user.setEmail(username);
+        user.setPassword(password);
 
         user.update();
         // Show the user their home page
@@ -154,11 +158,6 @@ public class ProfileController extends Controller {
             formData.userId = userId;
             Form<NatFormData> userForm = formFactory.form(NatFormData.class).fill(formData);
 
-            try {
-                addNatandPass();
-            } catch (io.ebean.DuplicateKeyException e) {
-                // Duplicate nationalities do not get added. No error msg shown.
-            }
             List<Nationality> nationalities = Nationality.find.all();
             List<Passport> passports = Passport.find.all();
             return ok(updateNatPass.render(userForm, nationalities, passports, userId));
@@ -266,22 +265,6 @@ public class ProfileController extends Controller {
             return unauthorized(notLoggedInErrorStr);
         }
         return redirect(routes.ProfileController.updateNatPass());
-    }
-
-    /**
-     * adds all of the following traveller types to the database
-     * @throws io.ebean.DuplicateKeyException if a type has already been added to the database
-     */
-    public void addNatandPass() throws io.ebean.DuplicateKeyException {
-        String[] locales = Locale.getISOCountries();
-        for (String countryCode : locales) {
-            Locale obj = new Locale("", countryCode);
-            Nationality nationality = new Nationality(obj.getDisplayCountry());
-            nationality.save();
-            Passport passport = new Passport(obj.getDisplayCountry());
-            passport.save();
-        }
-
     }
 
 }

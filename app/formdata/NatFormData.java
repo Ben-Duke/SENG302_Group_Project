@@ -1,5 +1,5 @@
 package formdata;
-import factories.NatFactory;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import play.data.validation.Constraints;
@@ -38,7 +38,6 @@ public class NatFormData implements Constraints.Validatable<List<ValidationError
         if(userId != -1) {
             natcount = userFactory.getNatsForUserbyId(userId);
         }
-        logger.debug("Got to validiate");
 
         if (natcount < 2) {
             logger.debug("im validating the nats");
@@ -47,7 +46,7 @@ public class NatFormData implements Constraints.Validatable<List<ValidationError
                             "please add another nationality before deleting the one you selected."));
         }
 
-        if (errors.size() > 0) {
+        if (errors.isEmpty()) {
             return errors;
         }
 

@@ -1,6 +1,5 @@
 package controllers;
 
-import models.Nationality;
 import models.TravellerType;
 import models.User;
 import play.data.DynamicForm;
@@ -8,12 +7,10 @@ import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.Http;
 import play.mvc.Result;
-import views.html.users.profile.updateProfile;
 import views.html.users.travellertype.updatetraveller;
 
 import javax.inject.Inject;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static play.mvc.Results.*;
@@ -34,11 +31,6 @@ public class TravellerTypeController {
         User user = User.getCurrentUser(request);
         if (user != null) {
             Form<User> userForm = formFactory.form(User.class).fill(user);
-            try {
-                addTravelTypes();
-            } catch (io.ebean.DuplicateKeyException e) {
-                // Duplicate traveller types do not get added. No error msg shown.
-            }
             List<TravellerType> travellerTypes = TravellerType.find.all();
             travellerTypes.removeAll(user.getTravellerTypes());
 
@@ -73,7 +65,6 @@ public class TravellerTypeController {
         else{
             return unauthorized("Oops, you are not logged in");
         }
-        //return redirect(routes.UserController.userindex());
         return redirect(routes.TravellerTypeController.updateTravellerType());
     }
 
@@ -86,7 +77,6 @@ public class TravellerTypeController {
      * @return update traveller type page or error page
      */
     public Result deleteUpdateTravellerType(Http.Request request, Integer typeId){
-        DynamicForm userForm = formFactory.form().bindFromRequest();
         User user = User.getCurrentUser(request);
         if (user != null && user.getTravellerTypes().size() > 1) {
             try {
@@ -100,21 +90,6 @@ public class TravellerTypeController {
         else if (user == null){
             return unauthorized("Oops, you are not logged in");
         }
-        //return redirect(routes.UserController.userindex());
         return redirect(routes.TravellerTypeController.updateTravellerType());
-    }
-
-    /**
-     * adds all of the following traveller types to the database
-     * @throws io.ebean.DuplicateKeyException if a type has already been added to the database
-     */
-    public void addTravelTypes() throws io.ebean.DuplicateKeyException {
-        (new TravellerType("Groupie")).save();
-        (new TravellerType("Thrillseeker")).save();
-        (new TravellerType("Gap Year")).save();
-        (new TravellerType("Frequent Weekender")).save();
-        (new TravellerType("Holidaymaker")).save();
-        (new TravellerType("Business Traveller")).save();
-        (new TravellerType("Backpacker")).save();
     }
 }

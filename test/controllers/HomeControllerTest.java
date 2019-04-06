@@ -20,6 +20,7 @@ import play.mvc.Http;
 import play.mvc.Result;
 import play.test.Helpers;
 import play.test.WithApplication;
+import utilities.UtilityFunctions;
 
 import java.io.File;
 import java.io.IOException;
@@ -157,10 +158,8 @@ public class HomeControllerTest extends WithApplication {
 
 
     public void createUser(){
-        TravellerTypeController tTC = new TravellerTypeController();
-        tTC.addTravelTypes();
-        ProfileController pC = new ProfileController();
-        pC.addNatandPass();
+        UtilityFunctions.addNatAndPass();
+        UtilityFunctions.addTravellerTypes();
         TravellerType travellerType1 = TravellerType.find.byId(1);
         TravellerType travellerType2 = TravellerType.find.byId(2);
         Nationality nationality1 = Nationality.find.byId(1);

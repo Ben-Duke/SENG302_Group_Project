@@ -64,7 +64,7 @@ public class TravellerFormData implements Constraints.Validatable<List<Validatio
         }
 
         if (email == null || email.length() == 0) {
-            errors.add(new ValidationError("formEmail", "No formEmail was given"));
+            errors.add(new ValidationError("email", "No email was given"));
         }
 
         if (password.length() == 0) {
@@ -110,7 +110,7 @@ public class TravellerFormData implements Constraints.Validatable<List<Validatio
     @Override
     public String toString() {
         return "TravellerFormData{" +
-                "formEmail='" + email + '\'' +
+                "email='" + email + '\'' +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", password='" + password + '\'' +

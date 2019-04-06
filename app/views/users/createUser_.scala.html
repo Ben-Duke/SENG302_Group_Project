@@ -8,7 +8,7 @@
     <body>
         <h1>REGISTER</h1>
         @helper.form(action = helper.CSRF(routes.RegisterController.saveuser())){
-            @helper.inputText(userFrom("formEmail"), '_label -> "Email")
+            @helper.inputText(userFrom("email"), '_label -> "Email")
             @helper.inputText(userFrom("password"), 'type -> "Password", '_label -> "Password")
 
             <input type="submit" value="Create user">

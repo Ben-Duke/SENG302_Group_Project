@@ -75,9 +75,9 @@ public class UserFormData implements Constraints.Validatable<List<ValidationErro
             errors.add(new ValidationError("lastName", "Last name needs to be only letters and be at least one letter long"));
         }
         if (email == null || email.length() == 0) {
-            errors.add(new ValidationError("email", "No formEmail was given"));
+            errors.add(new ValidationError("email", "No email was given"));
         } else if (!UtilityFunctions.isEmailValid(email)) {
-            errors.add(new ValidationError("email", "Not an formEmail address"));
+            errors.add(new ValidationError("email", "Not an email address"));
         }
         if (UserFactory.checkEmail(email) == 1) {
             errors.add(new ValidationError("email", "Email already registered"));

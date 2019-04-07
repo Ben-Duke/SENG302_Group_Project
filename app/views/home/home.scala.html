@@ -18,7 +18,9 @@
         <div class="row">
                 <!-- The profile picture, currently a placeholder -->
             <div class="text-center">
-                <img class="img-circle" width = "150" src="@routes.Assets.at("images/Generic.png")">
+                <a href="#" data-toggle="modal" data-target="#addProfilePhoto">
+                    <img class="img-circle" width = "150" src="@routes.Assets.at("images/Generic.png")">
+                </a>
             </div>
         </div>
         <div class="row">
@@ -105,6 +107,40 @@
 
                     <div class="modal-body">
                     @helper.form(action = routes.HomeController.upload, 'id -> "myForm", 'enctype -> "multipart/form-data") {
+                        @helper.CSRF.formField
+                        <input type="file" name="picture" required>
+
+                        <br>
+
+                        <p>
+                            <input type="submit" value="Upload">
+                            @helper.CSRF.formField
+                            <input type="checkbox" name="private" value="private"> Make photo private
+                        </p>
+
+                    }
+
+
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+
+        <!-- Modal to upload a new profile picture -->
+        <div id="addProfilePhoto" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+
+                    <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">Upload a new profile picture </h4>
+                    </div>
+
+                    <div class="modal-body">
+                    @helper.form(action = routes.HomeController.uploadProfilePicture, 'id -> "myForm", 'enctype -> "multipart/form-data") {
                         @helper.CSRF.formField
                         <input type="file" name="picture" required>
 

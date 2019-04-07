@@ -98,6 +98,8 @@ GET     /index                      controllers.HomeController.index(request: Re
 
 POST    /users/home         controllers.HomeController.upload(request:Request)
 
+POST    /users/home/profilePicture         controllers.HomeController.uploadProfilePicture(request:Request)
+
 #Handles logout request from the user
 GET     /users/logout               controllers.LoginController.logoutrequest(request:Request)
 

@@ -20,6 +20,7 @@ import static play.mvc.Controller.request;
 import java.util.List;
 import java.util.Map;
 
+import static play.mvc.Http.Status.OK;
 import static play.mvc.Results.*;
 
 public class HomeController {
@@ -60,39 +61,60 @@ public class HomeController {
      */
     public Result upload(Http.Request request) {
         User user = User.getCurrentUser(request);
+        if(user != null) {
+            Map<String, String[]> datapart = request.body().asMultipartFormData().asFormUrlEncoded();
+            boolean isPublic = false;
+            if (datapart.get("private") == null) {
+                isPublic = true;
+            }
 
-        Map<String, String[]> datapart = request.body().asMultipartFormData().asFormUrlEncoded();
-        boolean isPublic = false;
-        if (datapart.get("private") == null) {
-            isPublic = true;
-        }
+            //Get the photo data from the multipart form data encoding
+            Http.MultipartFormData<Files.TemporaryFile> body = request.body().asMultipartFormData();
+            Http.MultipartFormData.FilePart<Files.TemporaryFile> picture = body.getFile("picture");
+            if (picture != null) {
+                String fileName = picture.getFilename();
+                long fileSize = picture.getFileSize();
+                String contentType = picture.getContentType();
+                Files.TemporaryFile file = picture.getRef();
+                if (contentType.contains("image")) {
+                    //Add the path to the filename given by the uploaded picture
 
-        //Get the photo data from the multipart form data encoding
-        Http.MultipartFormData<Files.TemporaryFile> body = request.body().asMultipartFormData();
-        Http.MultipartFormData.FilePart<Files.TemporaryFile> picture = body.getFile("picture");
-        if (picture != null) {
-            String fileName = picture.getFilename();
-            long fileSize = picture.getFileSize();
-            String contentType = picture.getContentType();
-            Files.TemporaryFile file = picture.getRef();
-            if (contentType.contains("image")) {
-                //Add the path to the filename given by the uploaded picture
-
-                String pathName = Paths.get(".").toAbsolutePath().normalize().toString() + "/../user_photos/user_" + user.getUserid() + "/" + fileName;
-                //Save the file, replacing the existing one if the name is taken
-                try {
-                    java.nio.file.Files.createDirectories(Paths.get(Paths.get(".").toAbsolutePath().normalize().toString() + "/../user_photos/user_" + user.getUserid() + "/"));
-                } catch (IOException e) {
-                    System.out.println(e);
+                    String pathName = Paths.get(".").toAbsolutePath().normalize().toString() + "/../user_photos/user_" + user.getUserid() + "/" + fileName;
+                    //Save the file, replacing the existing one if the name is taken
+                    try {
+                        java.nio.file.Files.createDirectories(Paths.get(Paths.get(".").toAbsolutePath().normalize().toString() + "/../user_photos/user_" + user.getUserid() + "/"));
+                    } catch (IOException e) {
+                        System.out.println(e);
+                    }
+                    file.copyTo(Paths.get(pathName), true);
+                    //DB saving
+                    UserPhoto newPhoto = new UserPhoto(fileName, isPublic, user);
+                    newPhoto.save();
+                    return ok(home.render(user));
                 }
-                file.copyTo(Paths.get(pathName ), true);
-                //DB saving
-                UserPhoto newPhoto = new UserPhoto(fileName, isPublic, user);
-                newPhoto.save();
-                return ok(home.render(user));
             }
         }
         return badRequest(home.render(user));
+    }
+
+    /**
+     * The upload POST action to upload a profile picture taking the image multipart form data and mapping it to file data and then
+     * adding this to the images directory. The current user's existing profile picture should be overwritten by this profile picture.
+     * If the overwritten picture was a personal photo, it should persist as a personal photo.
+     * If the overwritten picture was previously uploaded with this method (not a personal photo) it should not persist.
+     *
+     * TO BE DONE
+     * @param request the HTTP request
+     * @return the homepage or an error page
+     */
+    public Result uploadProfilePicture(Http.Request request) {
+        User user = User.getCurrentUser(request);
+        if(user != null) {
+            return ok(home.render(user));
+        }
+        else{
+            return badRequest(home.render(user));
+        }
     }
 
     /**Serve an image file with a get request

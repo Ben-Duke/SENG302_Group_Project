@@ -3,7 +3,7 @@
   <component name="HydraSettings">
     <option name="hydraStorePath" value="C:\Users\Admin\IdeaProjects\team-800\.hydra\idea" />
     <option name="noOfCores" value="2" />
-    <option name="projectRoot" value="C:\Users\Admin\IdeaProjects\team-800" />
+    <option name="projectRoot" value="$PROJECT_DIR$" />
     <option name="sourcePartitioner" value="auto" />
   </component>
   <component name="InspectionProjectProfileManager">
@@ -21,8 +21,8 @@
         <entry key="myProject">
           <value>
             <ProjectSettingsEntry>
-              <option name="sourceDir" value="C:\Users\Admin\IdeaProjects\team-800\app" />
-              <option name="confDir" value="C:\Users\Admin\IdeaProjects\team-800\app" />
+              <option name="sourceDir" value="$PROJECT_DIR$/app" />
+              <option name="confDir" value="$PROJECT_DIR$/app" />
               <option name="templateImports">
                 <list>
                   <option value="_root_.play.twirl.api.TwirlFeatureImports._" />
@@ -53,7 +53,7 @@
                   <option value="play.libs.F" />
                 </list>
               </option>
-              <option name="uri" value="/C:/Users/Admin/IdeaProjects/team-800" />
+              <option name="uri" value="$PROJECT_DIR$" />
             </ProjectSettingsEntry>
           </value>
         </entry>

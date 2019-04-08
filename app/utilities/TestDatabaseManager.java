@@ -19,7 +19,7 @@ public class TestDatabaseManager {
     /**
      * Populates the database. Call this method at the before section of each unit test.
      */
-    public static void populateDatabase(){
+    public void populateDatabase(){
         addTravellerTypes();
         addNationalitiesAndPassports();
         populateUsers();
@@ -30,7 +30,7 @@ public class TestDatabaseManager {
     /**
      * Populates the database with users. (requires addTravellerTypes and addNationalitiesAndPassports to be called beforehand)
      */
-    public static void populateUsers(){
+    public void populateUsers(){
         createDefaultAdmin();
         //Groupie
         TravellerType travellerType1 = TravellerType.find.query().where().eq("travellerTypeName","Groupie").findOne();
@@ -91,14 +91,14 @@ public class TestDatabaseManager {
     /**
      * Populates the database with traveller types.
      */
-    public static void addTravellerTypes(){
+    public void addTravellerTypes(){
         UtilityFunctions.addTravellerTypes();
     }
 
     /**
      * Creates a default admin.
      */
-    public static void createDefaultAdmin(){
+    public void createDefaultAdmin(){
         User user = new User("admin@admin.com", "admin", "admin", "admin", LocalDate.now(), "male");
         user.save();
         Admin admin = new Admin(user.userid, true);
@@ -108,7 +108,7 @@ public class TestDatabaseManager {
     /**
      * Populates the database with nationalities and pasports.
      */
-    public static void addNationalitiesAndPassports(){
+    public void addNationalitiesAndPassports(){
         UtilityFunctions.addNatAndPass();
     }
 
@@ -117,7 +117,7 @@ public class TestDatabaseManager {
      * Populates the database with destinations added to users 2,3 and 4.
      * The destinations are then used to create visits for trips 1,2,3,4,5 and 6.
      */
-    public static void addDestinationsAndVisits() {
+    public void addDestinationsAndVisits() {
         // Adds destinations for user2
         Destination destination1 = new Destination(
                 "Christchurch", "Town", "Canterbury", "New Zealand", -43.5321, 172.6362, User.find.byId(2));
@@ -194,7 +194,7 @@ public class TestDatabaseManager {
     /**
      * Populates the databsae with trips added to users 2,3 and 4.
      */
-    public static void addTrips(){
+    public void addTrips(){
         //Add trips for user2
         Trip trip1 = new Trip("Trip to New Zealand", true, User.find.byId(2));
         trip1.save();

@@ -52,3 +52,12 @@ function searchPublicDestination(){
         }
     }
 }
+
+function makeDestinationPublic(url){
+    if(confirm("Are you sure you want to make this destination public? You won't be able to make it private again.")){
+        location.href = url;
+    }
+    else{
+
+    }
+}

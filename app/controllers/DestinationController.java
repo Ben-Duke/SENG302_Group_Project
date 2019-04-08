@@ -292,4 +292,35 @@ public class DestinationController extends Controller {
         return redirect(routes.DestinationController.indexDestination());
     }
 
+    /**
+     * Makes a private destination from the database public, given its id.
+     *
+     * @param request the http request
+     * @param destId the id of the destination that is being made public
+     * @return redirects to the index page if successful, or a not found error,
+     * or an unauthorized message if the destination does not belong to the user.
+     */
+    public Result makeDestinationPublic(Http.Request request, Integer destId) {
+        User user = User.getCurrentUser(request);
+
+        if (user != null) {
+            Destination destination = Destination.find.query().where().eq("destid", destId).findOne();
+
+            if (destination != null) {
+                if (destination.isUserOwner(user.userid)) {
+                    //sets the destination to ublic and updates the destination
+                    destination.setIsPublic(true);
+                    destination.update();
+                } else {
+                    return unauthorized("HEY!, not yours. You cant delete. How you get access to that anyway?... FBI!!! OPEN UP!");
+                }
+            } else {
+                return notFound("Destination does not exist");
+            }
+        } else {
+            return unauthorized("Oops, you are not logged in");
+        }
+
+        return redirect(routes.DestinationController.indexDestination());
+    }
 }

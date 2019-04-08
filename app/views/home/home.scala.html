@@ -153,11 +153,9 @@
                             </div><br>
                         </div>
                         <br>
-                        <button id="save-profile">Test</button>
-                        <input type="file" accept="image/*" name="picture" required onchange="loadFile(event, '/users/home/profilePicture');"/>
+                        <input type="file" accept="image/*" name="picture" required onchange="loadFile(event);"/>
                         <p>
-                            <input type="submit" value="Upload">
-                            @helper.CSRF.formField
+                            <button id="save-profile">Upload</button>
                             <input type="checkbox" name="private" value="private"> Make photo private
                         </p>
                     </div>

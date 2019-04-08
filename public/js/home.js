@@ -50,10 +50,13 @@ function readURL(input) {
     }
 }
 var croppedCanvas;
+var filename;
 
-var loadFile = function (event, url) {
+var loadFile = function (event) {
     var output = document.getElementById('change-profile-pic');
     output.src = URL.createObjectURL(event.target.files[0]);
+    filename = event.target.files[0].name;
+    console.log("filename1 is " + filename);
     $('#change-profile-pic').cropper("destroy");
 
     var $previews = $('.preview');
@@ -97,6 +100,7 @@ var loadFile = function (event, url) {
 };
 
 $('#save-profile').click(function (eve){
+    console.log("filename2 is " + filename);
     eve.preventDefault();
     var formData = new FormData();
     // formData.append('picture', croppedCanvas.toBlob(function(blob){
@@ -108,9 +112,12 @@ $('#save-profile').click(function (eve){
     //     newImg.src = url;
     //     document.body.appendChild(newImg);
     // }, 'image/jpeg', 0.95));
+    var private = $('input[type=checkbox]').attr('checked');
     croppedCanvas.toBlob(function(blob){
-        formData.append('picture', blob, 'profilepic.png');
-        var token =  $('input[name="csrfToken"]').attr('value')
+        formData.append('picture', blob, 'filename');
+        formData.append('private', private);
+        formData.append('filename', filename);
+        var token =  $('input[name="csrfToken"]').attr('value');
         $.ajaxSetup({
             beforeSend: function(xhr) {
                 xhr.setRequestHeader('Csrf-Token', token);

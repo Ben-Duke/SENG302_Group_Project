@@ -122,6 +122,7 @@ public class Destination extends Model {
     public String getCountry() { return country; }
     public double getLatitude() { return latitude; }
     public double getLongitude() { return longitude; }
+    public boolean getIsPublic() { return isPublic;}
 
     public User getUser() { return user; }
 
@@ -133,6 +134,7 @@ public class Destination extends Model {
     public void setCountry(String country) { this.country = country; }
     public void setLatitude(double latitude) { this.latitude = latitude; }
     public void setLongitude(double longitude) { this.longitude = longitude; }
+    public void setIsPublic(boolean isPublic) { this.isPublic = isPublic; }
 
     public void setUser(User user) { this.user = user; }
 

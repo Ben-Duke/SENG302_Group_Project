@@ -84,7 +84,8 @@ public class DestinationController extends Controller {
 
         if (user != null) {
             List<Destination> destinations = user.getDestinations();
-            return ok(indexDestination.render(destinations));
+            List<Destination> allDestinations = Destination.find.all();
+            return ok(indexDestination.render(destinations, allDestinations));
 
 
         }

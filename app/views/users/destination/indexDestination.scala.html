@@ -1,4 +1,4 @@
-@(destinations: List[Destination])
+@(destinations: List[Destination], allDestinations : List[Destination])
 
 @main("Destinations") {
 
@@ -6,7 +6,7 @@
     <head>
         <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/indexDestination.css")">
     </head>
-<h1>Destinations <a class="btn btn-primary col-sm-offset-8" href="@routes.DestinationController.createDestination()" role="button">Create Destination</a></h1>
+<h1>My private destinations <a class="btn btn-primary col-sm-offset-8" href="@routes.DestinationController.createDestination()" role="button">Create Destination</a></h1>
 
     <input type="text" id="searchDestinations" onkeyup="searchDestination()" placeholder="Search for destinations">
     <table id="privateDestinations" class="table">
@@ -24,20 +24,60 @@
         </thead>
         <tbody>
         @for(destination <- destinations) {
-        <tr>
-            <th scope ="row">@destination.getDestName()</th>
-            <td>@destination.getDestType()</td>
-            <td>@destination.getCountry()</td>
-            <td>@destination.getDistrict</td>
-            <td>@destination.getLatitude</td>
-            <td>@destination.getLongitude</td>
-            <td><a class="btn btn-link" href="@routes.DestinationController.editDestination(destination.getDestId)" role="button">Edit</a></td>
-            <td><a class="btn btn-link" href="@routes.DestinationController.deleteDestination(destination.getDestId())" role="button">Delete</a></td>
+            @if(destination.getIsPublic == false){
+            <tr>
+                <th scope ="row">@destination.getDestName()</th>
+                <td>@destination.getDestType()</td>
+                <td>@destination.getCountry()</td>
+                <td>@destination.getDistrict</td>
+                <td>@destination.getLatitude</td>
+                <td>@destination.getLongitude</td>
+                <td><a class="btn btn-link" href="@routes.DestinationController.editDestination(destination.getDestId)" role="button">Edit</a></td>
+                <td><a class="btn btn-link" href="@routes.DestinationController.deleteDestination(destination.getDestId())" role="button">Delete</a></td>
 
-        </tr>
+            </tr>
 
 
-        <br>
+            <br>
+            }
+        }
+        </tbody>
+    </table>
+
+
+    <h1>My public destinations</h1>
+    <input type="text" id="searchPublicDestinations" onkeyup="searchPublicDestination()" placeholder="Search for destinations">
+    <table id="publicDestinations" class="table">
+        <thead class="thead-dark">
+            <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Type</th>
+                <th scope="col">Country</th>
+                <th scope="col">District</th>
+                <th scope="col">Latitude</th>
+                <th scope="col">Longitude</th>
+                <th scope="col">Edit</th>
+                <th scope="col">Delete</th>
+            </tr>
+        </thead>
+        <tbody>
+        @for(destination <- allDestinations) {
+            @if(destination.getIsPublic == true){
+                <tr>
+                    <th scope ="row">@destination.getDestName()</th>
+                    <td>@destination.getDestType()</td>
+                    <td>@destination.getCountry()</td>
+                    <td>@destination.getDistrict</td>
+                    <td>@destination.getLatitude</td>
+                    <td>@destination.getLongitude</td>
+                    <td><a class="btn btn-link" href="@routes.DestinationController.editDestination(destination.getDestId)" role="button">Edit</a></td>
+                    <td><a class="btn btn-link" href="@routes.DestinationController.deleteDestination(destination.getDestId())" role="button">Delete</a></td>
+
+                </tr>
+
+
+                <br>
+                }
         }
         </tbody>
     </table>

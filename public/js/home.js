@@ -49,8 +49,9 @@ function readURL(input) {
         reader.readAsDataURL(input.files[0]);
     }
 }
+var croppedCanvas;
 
-var loadFile = function (event) {
+var loadFile = function (event, url) {
     var output = document.getElementById('change-profile-pic');
     output.src = URL.createObjectURL(event.target.files[0]);
     $('#change-profile-pic').cropper("destroy");
@@ -75,7 +76,7 @@ var loadFile = function (event) {
         crop: function (e) {
             console.log("crop");
             var imageData = $(this).cropper('getImageData');
-            var croppedCanvas = $(this).cropper('getCroppedCanvas');
+            croppedCanvas = $(this).cropper('getCroppedCanvas');
             $('.preview').html('<img src="' + croppedCanvas.toDataURL() + '" class="thumb-lg img-circle" style="width:100px;height:100px;">');
             var previewAspectRatio = e.width / e.height;
             $previews.each(function (){
@@ -95,7 +96,43 @@ var loadFile = function (event) {
 
 };
 
-
+$('#save-profile').click(function (eve){
+    eve.preventDefault();
+    var formData = new FormData();
+    // formData.append('picture', croppedCanvas.toBlob(function(blob){
+    //     var newImg = document.createElement('img'),
+    //     url = URL.createObjectURL(blob);
+    //     newImg.onload = function() {
+    //         URL.revokeObjectURL(url);
+    //     };
+    //     newImg.src = url;
+    //     document.body.appendChild(newImg);
+    // }, 'image/jpeg', 0.95));
+    croppedCanvas.toBlob(function(blob){
+        formData.append('picture', blob, 'profilepic.png');
+        var token =  $('input[name="csrfToken"]').attr('value')
+        $.ajaxSetup({
+            beforeSend: function(xhr) {
+                xhr.setRequestHeader('Csrf-Token', token);
+            }
+        });
+        $.ajax({
+            type: 'POST',
+            processData: false,
+            contentType: false,
+            url:'/users/home/profilePicture',
+            data: formData,
+            success: function(data, textStatus, xhr){
+                if(xhr.status == 200) {
+                    window.location = '/users/home'
+                }
+                else{
+                    window.location = '/users/home'
+                }
+            }
+        })
+    });
+});
 
 // $("#imgInp").change(function(){
 //     readURL(this);

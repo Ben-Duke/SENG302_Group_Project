@@ -3,41 +3,45 @@
 @main("Destinations") {
 
 
+    <head>
+        <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/indexDestination.css")">
+    </head>
 <h1>Destinations <a class="btn btn-primary col-sm-offset-8" href="@routes.DestinationController.createDestination()" role="button">Create Destination</a></h1>
 
+    <input type="text" id="searchDestinations" onkeyup="searchDestination()" placeholder="Search for destinations">
+    <table id="privateDestinations" class="table">
+        <thead class="thead-dark">
+        <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Type</th>
+            <th scope="col">Country</th>
+            <th scope="col">District</th>
+            <th scope="col">Latitude</th>
+            <th scope="col">Longitude</th>
+            <th scope="col">Edit</th>
+            <th scope="col">Delete</th>
+        </tr>
+        </thead>
+        <tbody>
+        @for(destination <- destinations) {
+        <tr>
+            <th scope ="row">@destination.getDestName()</th>
+            <td>@destination.getDestType()</td>
+            <td>@destination.getCountry()</td>
+            <td>@destination.getDistrict</td>
+            <td>@destination.getLatitude</td>
+            <td>@destination.getLongitude</td>
+            <td><a class="btn btn-link" href="@routes.DestinationController.editDestination(destination.getDestId)" role="button">Edit</a></td>
+            <td><a class="btn btn-link" href="@routes.DestinationController.deleteDestination(destination.getDestId())" role="button">Delete</a></td>
 
-<table class="table">
-    <thead class="thead-dark">
-    <tr>
-        <th scope="col">Name</th>
-        <th scope="col">Type</th>
-        <th scope="col">Country</th>
-        <th scope="col">District</th>
-        <th scope="col">Latitude</th>
-        <th scope="col">Longitude</th>
-        <th scope="col">Edit</th>
-        <th scope="col">Delete</th>
-    </tr>
-    </thead>
-    <tbody>
-    @for(destination <- destinations) {
-    <tr>
-        <th scope ="row">@destination.getDestName()</th>
-        <td>@destination.getDestType()</td>
-        <td>@destination.getCountry()</td>
-        <td>@destination.getDistrict</td>
-        <td>@destination.getLatitude</td>
-        <td>@destination.getLongitude</td>
-        <td><a class="btn btn-link" href="@routes.DestinationController.editDestination(destination.getDestId)" role="button">Edit</a></td>
-        <td><a class="btn btn-link" href="@routes.DestinationController.deleteDestination(destination.getDestId())" role="button">Delete</a></td>
-
-    </tr>
+        </tr>
 
 
-    <br>
-    }
-    </tbody>
-</table>
+        <br>
+        }
+        </tbody>
+    </table>
 
+    <script src="@routes.Assets.at("js/indexDestination.js")" type="text/javascript"></script>
 
 }

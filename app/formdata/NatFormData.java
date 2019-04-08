@@ -38,19 +38,13 @@ public class NatFormData implements Constraints.Validatable<List<ValidationError
         if(userId != -1) {
             natcount = userFactory.getNatsForUserbyId(userId);
         }
-
         if (natcount < 2) {
-            logger.debug("im validating the nats");
             errors.add(
                     new ValidationError("nationalitydelete", "Need at least one nationality, " +
                             "please add another nationality before deleting the one you selected."));
         }
-
-        if (errors.isEmpty()) {
             return errors;
-        }
 
-        return null;
     }
 
 }

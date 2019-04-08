@@ -5,7 +5,13 @@ import models.Passport;
 import models.TravellerType;
 import models.User;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.*;
+import java.util.List;
 import java.util.regex.Pattern;
 
 /**
@@ -155,6 +161,28 @@ public class UtilityFunctions {
             (new TravellerType("Business Traveller")).save();
             (new TravellerType("Backpacker")).save();
         }
+    }
+
+    /**
+     * Resizes an image given by a pathname
+     * @param pathName the path to the image to be resized
+     * @return the resized buffered image
+     */
+    public static BufferedImage resizeImage(String pathName){
+        try {
+            BufferedImage newProfileImage = ImageIO.read(new File(pathName));
+            int type = newProfileImage.getType() == 0? BufferedImage.TYPE_INT_ARGB : newProfileImage.getType();
+            BufferedImage resizedImage = new BufferedImage(32, 32, type);
+            Graphics2D g = resizedImage.createGraphics();
+            g.drawImage(newProfileImage.getScaledInstance(32, 32, Image.SCALE_SMOOTH), 0, 0, 32, 32, null);
+            g.dispose();
+            return resizedImage;
+        } catch (IOException e) {
+            System.out.println(e);
+            return null;
+        }
+
+
     }
 
 }

@@ -34,7 +34,12 @@ public class Visit extends Model {
 
     public String visitName;
 
-
+    public Visit(String arrival, String departure, Trip trip, Destination destination) {
+        this.arrival = arrival;
+        this.departure = departure;
+        this.trip = trip;
+        setDestination(destination);
+    }
 
     public Visit() {
     }

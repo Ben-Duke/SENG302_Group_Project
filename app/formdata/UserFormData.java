@@ -62,14 +62,12 @@ public class UserFormData implements Constraints.Validatable<List<ValidationErro
     public List<ValidationError> validate() {
         List<ValidationError> errors = new ArrayList<>();
 
-
         if (firstName == null || firstName.length() == 0) {
             errors.add(new ValidationError("firstName", "No first name was given"));
         }
         if (firstName.matches(".*\\d+.*") || firstName.length() < 1) {
             errors.add(new ValidationError("firstName", "First name needs to be only letters and be at least one letter long"));
         }
-
 
         if (lastName == null || lastName.length() == 0) {
             errors.add(new ValidationError("lastName", "No last name was given"));
@@ -121,10 +119,6 @@ public class UserFormData implements Constraints.Validatable<List<ValidationErro
             errors.add(new ValidationError("travellerTypes", "No traveller types were given needs at least one"));
         }
 
-        if (errors.isEmpty()) {
-            return errors;
-        }
-
-        return null;
+        return errors;
     }
 }

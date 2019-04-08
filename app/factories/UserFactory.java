@@ -56,7 +56,7 @@ public class UserFactory {
             user.deleteNationality(nationality);
             user.update();
         } catch (NumberFormatException e) {
-            //return  unauthorized("Oops, you do not have any nationalities to delete");
+
         }
     }
     /** Returns a user id if they exist any number less than zero indicates the email is not in the database

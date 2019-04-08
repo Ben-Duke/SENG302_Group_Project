@@ -1,6 +1,7 @@
 package controllers;
 
 import akka.http.javadsl.model.HttpRequest;
+import factories.UserFactory;
 import models.Admin;
 import models.User;
 import models.UserPhoto;
@@ -88,7 +89,7 @@ public class HomeController {
                     }
                     file.copyTo(Paths.get(pathName), true);
                     //DB saving
-                    UserPhoto newPhoto = new UserPhoto(fileName, isPublic, user);
+                    UserPhoto newPhoto = new UserPhoto(fileName, isPublic, false, user);
                     newPhoto.save();
                     return ok(home.render(user));
                 }
@@ -103,18 +104,45 @@ public class HomeController {
      * If the overwritten picture was a personal photo, it should persist as a personal photo.
      * If the overwritten picture was previously uploaded with this method (not a personal photo) it should not persist.
      *
-     * TO BE DONE
+     * //TODO not persisting part
      * @param request the HTTP request
      * @return the homepage or an error page
      */
     public Result uploadProfilePicture(Http.Request request) {
         User user = User.getCurrentUser(request);
         if(user != null) {
-            return ok(home.render(user));
+            Map<String, String[]> datapart = request.body().asMultipartFormData().asFormUrlEncoded();
+            boolean isPublic = false;
+            if (datapart.get("private") == null) {
+                isPublic = true;
+            }
+
+            //Get the photo data from the multipart form data encoding
+            Http.MultipartFormData<Files.TemporaryFile> body = request.body().asMultipartFormData();
+            Http.MultipartFormData.FilePart<Files.TemporaryFile> picture = body.getFile("picture");
+            if (picture != null) {
+                String fileName = picture.getFilename();
+                long fileSize = picture.getFileSize();
+                String contentType = picture.getContentType();
+                Files.TemporaryFile file = picture.getRef();
+                if (contentType.contains("image")) {
+                    //Add the path to the filename given by the uploaded picture
+
+                    String pathName = Paths.get(".").toAbsolutePath().normalize().toString() + "/../user_photos/user_" + user.getUserid() + "/" + fileName;
+                    //Save the file, replacing the existing one if the name is taken
+                    try {
+                        java.nio.file.Files.createDirectories(Paths.get(Paths.get(".").toAbsolutePath().normalize().toString() + "/../user_photos/user_" + user.getUserid() + "/"));
+                    } catch (IOException e) {
+                        System.out.println(e);
+                    }
+                    file.copyTo(Paths.get(pathName), true);
+                    //DB saving
+                    UserFactory.replaceProfilePicture(user.getUserid(), new UserPhoto(fileName, isPublic, true, user));
+                    return ok(home.render(user));
+                }
+            }
         }
-        else{
-            return badRequest(home.render(user));
-        }
+        return badRequest(home.render(user));
     }
 
     /**Serve an image file with a get request
@@ -124,5 +152,11 @@ public class HomeController {
      */
     public Result index(Http.Request httpRequest, String path) {
         return ok(new java.io.File(path));
+    }
+
+    public Result serveProfilePicture(Http.Request httpRequest) {
+        User user = User.getCurrentUser(httpRequest);
+        UserPhoto profilePicture = UserFactory.getUserProfilePicture(user.getUserid());
+        return ok(new java.io.File(profilePicture.getUrlWithPath()));
     }
 }

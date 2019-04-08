@@ -1,11 +1,8 @@
 package factories;
 import formdata.UpdateUserFormData;
 import formdata.UserFormData;
-import models.Nationality;
-import models.Passport;
-import models.TravellerType;
+import models.*;
 import io.ebean.ExpressionList;
-import models.User;
 import play.data.FormFactory;
 import play.mvc.Http;
 
@@ -367,6 +364,30 @@ public class UserFactory {
         }
 
 
+    public static UserPhoto getUserProfilePicture(int userId) {
+        User user = User.find.query().where().eq("userid", userId).findOne();
+        UserPhoto userPhoto = UserPhoto.find.query().where().eq("user", user).and().eq("isProfile", true).findOne();
+       if(userPhoto != null) {
+           return  userPhoto;
+       } else {
+           return null;
+       }
+    }
+
+    public static void removeExistingProfilePicture(int userId) {
+        UserPhoto existingProfile = getUserProfilePicture(userId);
+        if (existingProfile != null) {
+            existingProfile.setProfile(false);
+            existingProfile.save();
+        }
+    }
+
+    public static void replaceProfilePicture(int userId, UserPhoto newPhoto) {
+        removeExistingProfilePicture(userId);
+        newPhoto.setProfile(true);
+        newPhoto.save();
+    }
+
 
 
     public static UpdateUserFormData getUpdateUserFormDataForm(Http.Request request) {
@@ -378,4 +399,6 @@ public class UserFactory {
             return null;
         }
     }
+
+
 }

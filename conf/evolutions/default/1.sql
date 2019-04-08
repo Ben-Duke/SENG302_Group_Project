@@ -100,6 +100,7 @@ create table user_photo (
   photo_id                      integer auto_increment not null,
   url                           varchar(255),
   is_public                     boolean default false not null,
+  is_profile                    boolean default false not null,
   user                          integer,
   constraint pk_user_photo primary key (photo_id)
 );

@@ -37,10 +37,17 @@ public class Trip extends Model {
         trip.tripName = formData.tripName;
         trip.user = formData.user;
         trip.removedVisits = 0;
-        trip.visits = new ArrayList<Visit>();
+        trip.visits = new ArrayList<>();
         return trip;
     }
 
+    public Trip(String tripName, boolean isPublic, User user) {
+        this.removedVisits = 0;
+        this.tripName = tripName;
+        this.isPublic = isPublic;
+        this.user = user;
+        this.visits = new ArrayList<>();
+    }
     public Trip(){
     }
 

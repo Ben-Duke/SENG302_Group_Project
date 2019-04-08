@@ -9,11 +9,16 @@ import play.data.FormFactory;
 import play.libs.Files;
 import play.mvc.Http;
 import play.mvc.Result;
+import utilities.UtilityFunctions;
 import views.html.home.home;
 import views.html.users.userIndex;
 
+import javax.imageio.ImageIO;
 import javax.inject.Inject;
 
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
 
@@ -98,6 +103,8 @@ public class HomeController {
         return badRequest(home.render(user));
     }
 
+
+
     /**
      * The upload POST action to upload a profile picture taking the image multipart form data and mapping it to file data and then
      * adding this to the images directory. The current user's existing profile picture should be overwritten by this profile picture.
@@ -132,10 +139,18 @@ public class HomeController {
                     //Save the file, replacing the existing one if the name is taken
                     try {
                         java.nio.file.Files.createDirectories(Paths.get(Paths.get(".").toAbsolutePath().normalize().toString() + "/../user_photos/user_" + user.getUserid() + "/"));
+                        file.copyTo(Paths.get(pathName), true);
+
+                        BufferedImage thumbnailImage = UtilityFunctions.resizeImage(pathName);
+                        ImageIO.write(thumbnailImage, "png", new File(Paths.get(".").toAbsolutePath().normalize().toString() + "/../user_photos/user_" + user.getUserid() + "/profilethumbnail.png"));
+
                     } catch (IOException e) {
                         System.out.println(e);
                     }
-                    file.copyTo(Paths.get(pathName), true);
+
+
+
+
                     //DB saving
                     UserFactory.replaceProfilePicture(user.getUserid(), new UserPhoto(fileName, isPublic, true, user));
                     return ok(home.render(user));
@@ -154,6 +169,11 @@ public class HomeController {
         return ok(new java.io.File(path));
     }
 
+    /**
+     * Serve the profile picture with a get request
+     * @param httpRequest the HTTP request
+     * @return a java file with the profile photo
+     */
     public Result serveProfilePicture(Http.Request httpRequest) {
         User user = User.getCurrentUser(httpRequest);
         UserPhoto profilePicture = UserFactory.getUserProfilePicture(user.getUserid());

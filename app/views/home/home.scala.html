@@ -11,7 +11,8 @@
     </head>
 
     <div class="container">
-        <h1>@user.fName @user.lName @if(user.userIsAdmin) {<img class="img"  width = "60" height="50" src="../assets/images/key_2_small.png"> } </h1>
+            <!-- The thumbnail in the else is being displayed to show the AC passing -->
+        <h1>@user.fName @user.lName @if(user.userIsAdmin) {<img class="img"  width = "60" height="50" src="../assets/images/key_2_small.png">} else{<img class="img"  width = "60" height="50" src="@{routes.HomeController.index(factories.UserFactory.getProfilePhotoPath(user))}">} </h1>
     </div>
 
     <br>
@@ -21,7 +22,7 @@
                 <!-- The profile picture, currently a placeholder -->
             <div class="text-center">
                 <a href="#" data-toggle="modal" data-target="#addProfilePhoto">
-                    <img class="img-circle" width = "150" src="@{routes.HomeController.serveProfilePicture()}" alt="@routes.Assets.at("images/Generic.png")">
+                    <img class="img-circle" width = "150" src="@{routes.HomeController.serveProfilePicture()}")>
                 </a>
             </div>
         </div>

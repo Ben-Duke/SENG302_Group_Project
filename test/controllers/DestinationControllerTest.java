@@ -432,4 +432,85 @@ public class DestinationControllerTest extends WithApplication {
         assertEquals(0, User.find.byId(2).getDestinations().size());
     }
 
+    /**
+     * Test to handle making a destination public with no login session
+     */
+    @Test
+    public void makeDestinationPublicWithoutLoginSession(){
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/destinations/public/1").session("connected", null);
+        Result result = route(app, request);
+        assertEquals(UNAUTHORIZED, result.status());
+    }
+
+    /**
+     * Test to handle making an invalid destination public
+     */
+    @Test
+    public void makeDestinationPublicWithLoginSessionWithInvalidDestination(){
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/destinations/public/20").session("connected", "1");
+        Result result = route(app, request);
+        assertEquals(NOT_FOUND, result.status());
+    }
+
+    /**
+     * Test to handle making a destination public when you do not own the destination
+     */
+    @Test
+    public void makeDestinationPublicWithLoginSessionWithValidDestinationWithInvalidOwner(){
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/destinations/public/1").session("connected", "2");
+        Result result = route(app, request);
+        assertEquals(UNAUTHORIZED, result.status());
+    }
+
+    /**
+     * Test to handle making a destination public when you own the destination.
+     * Destination should be changed to public and it's owner should be changed to the default admin.
+     */
+    @Test
+    public void makeDestinationPublicWithLoginSessionWithValidDestinationWithValidOwner(){
+        Destination destination = Destination.find.byId(3);
+        assertEquals(false, destination.getIsPublic());
+        assertEquals(2, destination.getUser().getUserid());
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/destinations/public/3").session("connected", "2");
+        Result result = route(app, request);
+        assertEquals(SEE_OTHER, result.status());
+        destination = Destination.find.byId(3);
+        assertEquals(true, destination.getIsPublic());
+        assertEquals(1, destination.getUser().getUserid());
+    }
+
+    /**
+     * Test to handle updating a destination with valid details after the destination has been made public.
+     * It should no longer work since the owner is now the default admin.
+     */
+    @Test
+    public void updateDestinationWithLoginSessionAndValidDestinationAndValidOwnerAfterBeingSetToPublic(){
+
+        //Set destination 3 to public
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/destinations/public/3").session("connected", "2");
+        Result result = route(app, request);
+        assertEquals(SEE_OTHER, result.status());
+
+
+        Map<String, String> formData = new HashMap<>();
+        formData.put("destName", "Summoner's Rift");
+        formData.put("destType", "Yes");
+        formData.put("district", "Demacia");
+        formData.put("country", "Angola");
+        formData.put("latitude", "50.0");
+        formData.put("longitude", "-50.0");
+        Http.RequestBuilder request2 = Helpers.fakeRequest().bodyForm(formData).method(POST).uri("/users/destinations/update/3").session("connected", "2");
+        Result result2 = route(app, request2);
+        assertEquals(UNAUTHORIZED, result2.status());
+    }
 }

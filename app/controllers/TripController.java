@@ -205,6 +205,13 @@ public class TripController extends Controller {
         }
     }
 
+    /**
+     * Renders the page to add destinations onto a new trip.
+     * This has to be separated with existing trips due to the cancel button which deletes the trip.
+     * @param request the HTTP request
+     * @param tripid the trip id of the trip
+     * @return
+     */
     public Result AddTripDestinations(Http.Request request, Integer tripid) {
         Trip trip = Trip.find.byId(tripid);
         User user = User.getCurrentUser(request);
@@ -231,6 +238,14 @@ public class TripController extends Controller {
         }
     }
 
+    /**
+     * Renders the page to add destinations onto a new trip.
+     * This has to be separated with existing trips due to the cancel button which deletes the trip.
+     * The cancel button is replaced with a back button on this page.
+     * @param request the HTTP request
+     * @param tripid the trip id of the trip
+     * @return
+     */
     public Result AddExistingTripDestinations(Http.Request request, Integer tripid) {
         Trip trip = Trip.find.byId(tripid);
         User user = User.getCurrentUser(request);
@@ -257,6 +272,13 @@ public class TripController extends Controller {
         }
     }
 
+    /**
+     * Handles the cancellation of a trip on the page to add destinations to a new trip.
+     * All visits are removed from the trip and the trip is removed from the database.
+     * @param request the HTTP request
+     * @param tripid the trip id of the trip
+     * @return
+     */
     public Result cancelTrip(Http.Request request, Integer tripid) {
         Trip trip = Trip.find.byId(tripid);
         User user = User.getCurrentUser(request);

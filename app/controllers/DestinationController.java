@@ -310,8 +310,6 @@ public class DestinationController extends Controller {
                 if (destination.isUserOwner(user.userid)) {
                     //sets the destination to public, sets the owner to the default admin and updates the destination
                     destination.setIsPublic(true);
-                    User admin = User.find.byId(1);
-                    destination.setUser(admin);
                     destination.update();
                 } else {
                     return unauthorized("HEY!, not yours. You cant delete. How you get access to that anyway?... FBI!!! OPEN UP!");

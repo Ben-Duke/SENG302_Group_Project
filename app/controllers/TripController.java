@@ -324,6 +324,11 @@ public class TripController extends Controller {
                         flash("danger", "You cannot have repeat destinations!");
                         return redirect(routes.TripController.AddTripDestinations(tripid));
                     }
+                    if(!(destination.getUser().isAdmin) && destination.getIsPublic() && !(destination.getUser().getUserid() == user.getUserid())){
+                        User admin = User.find.byId(1);
+                        destination.setUser(admin);
+                        destination.update();
+                    }
                     visit.save();
                     return redirect(routes.TripController.AddTripDestinations(tripid));
                 }

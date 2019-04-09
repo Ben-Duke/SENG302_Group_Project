@@ -487,10 +487,13 @@ public class DestinationControllerTest extends WithApplication {
         assertEquals(1, destination.getUser().getUserid());
     }
 
+
     /**
      * Test to handle updating a destination with valid details after the destination has been made public.
      * It should no longer work since the owner is now the default admin.
-     */
+     *
+     * EDIT: OOPS I misintepreted the AC. This should be done after someone else has used the public destination.
+
     @Test
     public void updateDestinationWithLoginSessionAndValidDestinationAndValidOwnerAfterBeingSetToPublic(){
 
@@ -513,4 +516,5 @@ public class DestinationControllerTest extends WithApplication {
         Result result2 = route(app, request2);
         assertEquals(UNAUTHORIZED, result2.status());
     }
+     */
 }

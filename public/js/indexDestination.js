@@ -61,3 +61,21 @@ function makeDestinationPublic(url){
 
     }
 }
+
+function showPrivateDestinations(element){
+    if(element.checked){
+        document.getElementById("hideDivPrivate").style.display = "";
+    }
+    else{
+        document.getElementById("hideDivPrivate").style.display = "none";
+    }
+}
+
+function showPublicDestinations(element){
+    if(element.checked){
+        document.getElementById("hideDivPublic").style.display = "";
+    }
+    else{
+        document.getElementById("hideDivPublic").style.display = "none";
+    }
+}

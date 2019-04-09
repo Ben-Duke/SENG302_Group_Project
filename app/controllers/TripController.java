@@ -78,7 +78,9 @@ public class TripController extends Controller {
             visits.sort(Comparator.comparing(Visit::getVisitOrder));
 
             if(trip.isUserOwner(user.getUserid())) {
-                return ok(displayTripTable.render(trip, message));
+                List<Destination> destinations = user.getDestinations();
+                List<Destination> allDestinations = Destination.find.all();
+                return ok(AddTripDestinationsTable.render(trip, message, destinations, allDestinations));
             }
             else{
                 return ok(displayTrip.render(trip, visits));
@@ -172,7 +174,7 @@ public class TripController extends Controller {
                         return badRequest("You cannot visit the same destination twice in a row!");
                     }
                     visit.update();
-                    return ok(displayTripTable.render(trip,""));
+                    return redirect(routes.TripController.displaytrip(trip.getTripid(), ""));
                 }
                 else{
                     return unauthorized("Oops, this is not your trip.");
@@ -193,7 +195,7 @@ public class TripController extends Controller {
 //                    Visit firstVisit = visits.get(0);
 //                    visits.remove(0);
                     //return ok(displayTrip.render(trip,visits));
-                    return ok(displayTripTable.render(trip,""));
+                    return redirect(routes.TripController.displaytrip(trip.getTripid(), ""));
                 }
                 else{
                     return unauthorized("Oops, this is not your trip.");
@@ -216,7 +218,10 @@ public class TripController extends Controller {
                     Form<VisitFormData> incomingForm = formFactory.form(VisitFormData.class);
                     List<Visit> visits = trip.getVisits();
                     visits.sort(Comparator.comparing(Visit::getVisitOrder));
-                    return ok(AddTripDestinations.render(incomingForm, trip, user.getMappedDestinations(), visits, today.toString()));
+                    List<Destination> destinations = user.getDestinations();
+                    List<Destination> allDestinations = Destination.find.all();
+                    //return ok(AddTripDestinations.render(incomingForm, trip, user.getMappedDestinations(), visits, today.toString()));
+                    return ok(AddTripDestinationsTable.render(trip, "", destinations, allDestinations));
 
                 } else {
                     return unauthorized("Not your trip");
@@ -247,6 +252,38 @@ public class TripController extends Controller {
         else{
             return unauthorized("Oops, you are not logged in");
         }
+    }
+
+    public Result addVisitFromTable(Http.Request request, Integer tripid, Integer destid){
+        User user = User.getCurrentUser(request);
+        if(user != null) {
+            Trip trip = Trip.find.byId(tripid);
+            if (trip.isUserOwner(user.getUserid())) {
+                Integer visitSize = 0;
+                if (trip.getVisits() != null) {
+                    visitSize = trip.getVisits().size();
+                }
+                Integer removedVisits = 0;
+                if(trip.getRemovedVisits() != null) {
+                    removedVisits = trip.getRemovedVisits();
+                }
+                Integer visitOrder = visitSize + 1 + removedVisits;
+                List<Visit> visits = trip.getVisits();
+                Destination destination = Destination.find.byId(destid);
+                if(destination != null) {
+                    Visit visit = visitfactory.createVisitTable(trip, destination, visitOrder);
+                    if (tripFactory.hasRepeatDest(visits, visit, "ADD")) {
+                        flash("danger", "You cannot have repeat destinations!");
+                        return redirect(routes.TripController.AddTripDestinations(tripid));
+                    }
+                    visit.save();
+                    return redirect(routes.TripController.AddTripDestinations(tripid));
+                }
+            } else {
+                return unauthorized("Oops, this is not your trip.");
+            }
+        }
+        return badRequest();
     }
     /**
      * Handles the request to add destinations to a trip.

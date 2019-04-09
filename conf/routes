@@ -82,6 +82,9 @@ GET     /users/trips/edit/:id        controllers.TripController.edittrip(request
 #Handles adding a visit to a trip
 POST    /users/trips/edit/:id       controllers.TripController.addvisit(request: Request, id:Integer)
 
+#Handles adding a visit to a trip (table form)
+GET    /users/trips/table/edit/:tripid/:destid       controllers.TripController.addVisitFromTable(request: Request, tripid:Integer, destid:Integer)
+
 #Renders page for editing a visit of a trip
 GET    /users/trips/visit/edit/:id       controllers.TripController.editvisit(request: Request, id:Integer)
 

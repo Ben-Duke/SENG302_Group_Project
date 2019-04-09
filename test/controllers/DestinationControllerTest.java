@@ -1,6 +1,7 @@
 package controllers;
 
 import models.Destination;
+import models.Trip;
 import models.User;
 import org.junit.After;
 import org.junit.Before;
@@ -484,18 +485,18 @@ public class DestinationControllerTest extends WithApplication {
         assertEquals(SEE_OTHER, result.status());
         destination = Destination.find.byId(3);
         assertEquals(true, destination.getIsPublic());
-        assertEquals(1, destination.getUser().getUserid());
+        assertEquals(2, destination.getUser().getUserid());
     }
 
 
     /**
      * Test to handle updating a destination with valid details after the destination has been made public.
-     * It should no longer work since the owner is now the default admin.
+     * It should still work since the owner is stil the user.
      *
      * EDIT: OOPS I misintepreted the AC. This should be done after someone else has used the public destination.
-
+     */
     @Test
-    public void updateDestinationWithLoginSessionAndValidDestinationAndValidOwnerAfterBeingSetToPublic(){
+    public void updateDestinationWithLoginSessionAndValidDestinationAndValidOwnerAfterBeingSetToPublicBeforeBeingAdded(){
 
         //Set destination 3 to public
         Http.RequestBuilder request = Helpers.fakeRequest()
@@ -514,7 +515,70 @@ public class DestinationControllerTest extends WithApplication {
         formData.put("longitude", "-50.0");
         Http.RequestBuilder request2 = Helpers.fakeRequest().bodyForm(formData).method(POST).uri("/users/destinations/update/3").session("connected", "2");
         Result result2 = route(app, request2);
+        assertEquals(SEE_OTHER, result2.status());
+    }
+
+    /**
+     * Test to handle updating a destination with valid details after the destination has been made public.
+     * It should still work since the owner is stil the user.
+     *
+     * EDIT: OOPS I misintepreted the AC. This should be done after someone else has used the public destination.
+     */
+    @Test
+    public void updateDestinationWithLoginSessionAndValidDestinationAndValidOwnerAfterBeingSetToPublicAfterBeingAddedByDifferentUser(){
+
+        //Set destination 3 to public
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/destinations/public/3").session("connected", "2");
+        Result result = route(app, request);
+        assertEquals(SEE_OTHER, result.status());
+
+        Trip trip = new Trip("testTrip", true, User.find.byId(1));
+        trip.save();
+        request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/trips/table/edit/1/3").session("connected", "1");
+        result = route(app, request);
+        assertEquals(SEE_OTHER, result.status());
+        Map<String, String> formData = new HashMap<>();
+        formData.put("destName", "Summoner's Rift");
+        formData.put("destType", "Yes");
+        formData.put("district", "Demacia");
+        formData.put("country", "Angola");
+        formData.put("latitude", "50.0");
+        formData.put("longitude", "-50.0");
+        Http.RequestBuilder request2 = Helpers.fakeRequest().bodyForm(formData).method(POST).uri("/users/destinations/update/3").session("connected", "2");
+        Result result2 = route(app, request2);
         assertEquals(UNAUTHORIZED, result2.status());
     }
-     */
+
+    @Test
+    public void updateDestinationWithLoginSessionAndValidDestinationAndValidOwnerAfterBeingSetToPublicAfterBeingAddedBySameUser(){
+
+        //Set destination 3 to public
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/destinations/public/3").session("connected", "2");
+        Result result = route(app, request);
+        assertEquals(SEE_OTHER, result.status());
+
+        Trip trip = new Trip("testTrip", true, User.find.byId(2));
+        trip.save();
+        request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/trips/table/edit/1/3").session("connected", "2");
+        result = route(app, request);
+        assertEquals(SEE_OTHER, result.status());
+        Map<String, String> formData = new HashMap<>();
+        formData.put("destName", "Summoner's Rift");
+        formData.put("destType", "Yes");
+        formData.put("district", "Demacia");
+        formData.put("country", "Angola");
+        formData.put("latitude", "50.0");
+        formData.put("longitude", "-50.0");
+        Http.RequestBuilder request2 = Helpers.fakeRequest().bodyForm(formData).method(POST).uri("/users/destinations/update/3").session("connected", "2");
+        Result result2 = route(app, request2);
+        assertEquals(SEE_OTHER, result2.status());
+    }
 }

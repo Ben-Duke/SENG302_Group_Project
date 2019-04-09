@@ -44,6 +44,7 @@ public class User extends Model {
 
     public User(String email){
         this.email = email.toLowerCase();
+        this.isAdmin = false;
     }
 
     /**
@@ -55,6 +56,7 @@ public class User extends Model {
     public User(String email, String password){
         this.email = email.toLowerCase();
         this.password = password;
+        this.isAdmin = false;
     }
     //TOdo to be ENCRYPTED I THINK - gav
     /**

@@ -302,6 +302,17 @@ public class TripController extends Controller {
         }
     }
 
+    /**
+     * Handles the request to add destinations to a new trip in the newly implemented table form.
+     * Destinations with an arrival and departure timestamp are stored in the form of a Visit, HOWEVER, they will default
+     * to null as a destination and arrival time is not specified on the table. This can be later edited.
+     * The user is then redirected to the edit trip page.
+     * If the user is not logged in, an error message is displayed.
+     * @param request The HTTP request
+     * @param tripid The trip id that the user is editing.
+     * @param destid The destination of the trip that the user is editing
+     * @return edit trip page or error page
+     */
     public Result addVisitFromTable(Http.Request request, Integer tripid, Integer destid){
         User user = User.getCurrentUser(request);
         if(user != null) {
@@ -324,7 +335,7 @@ public class TripController extends Controller {
                         flash("danger", "You cannot have repeat destinations!");
                         return redirect(routes.TripController.AddTripDestinations(tripid));
                     }
-                    if(!(destination.getUser().isAdmin) && destination.getIsPublic() && !(destination.getUser().getUserid() == user.getUserid())){
+                    if(!(destination.getUser().isAdmin()) && destination.getIsPublic() && !(destination.getUser().getUserid() == user.getUserid())){
                         User admin = User.find.byId(1);
                         destination.setUser(admin);
                         destination.update();

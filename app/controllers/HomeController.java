@@ -178,6 +178,12 @@ public class HomeController {
     public Result serveProfilePicture(Http.Request httpRequest) {
         User user = User.getCurrentUser(httpRequest);
         UserPhoto profilePicture = UserFactory.getUserProfilePicture(user.getUserid());
-        return ok(new java.io.File(profilePicture.getUrlWithPath()));
+        if(profilePicture != null) {
+            return ok(new java.io.File(profilePicture.getUrlWithPath()));
+        }
+        else{
+            //should be 404 but then console logs an error
+            return ok();
+        }
     }
 }

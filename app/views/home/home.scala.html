@@ -1,4 +1,5 @@
 @import play.filters.csrf.AddCSRFToken
+@import factories.UserFactory
 @(user: User)
 @import views.html.bootstrap3._
 @main("Index"){
@@ -12,7 +13,17 @@
 
     <div class="container">
             <!-- The thumbnail in the else is being displayed to show the AC passing -->
-        <h1>@user.fName @user.lName @if(user.userIsAdmin) {<img class="img"  width = "60" height="50" src="../assets/images/key_2_small.png">} else{<img class="img"  width = "60" height="50" src="@{routes.HomeController.index(factories.UserFactory.getProfilePhotoPath(user))}">} </h1>
+        <h1>@user.fName @user.lName
+            @if(user.userIsAdmin) {
+                <img class="img"  width = "60" height="50" src="../assets/images/key_2_small.png">
+            } else{
+                @if(UserFactory.getUserProfilePicture(user.getUserid()) != null){
+                <img class="img-circle"  width = "60" height="50" src="@{routes.HomeController.index(factories.UserFactory.getProfilePhotoPath(user))}">
+                } else {
+                    <img class="img-circle"  width = "60" height="50" src="@{routes.Assets.at("images/Generic.png")}">
+                }
+            }
+        </h1>
     </div>
 
     <br>
@@ -22,7 +33,11 @@
                 <!-- The profile picture, currently a placeholder -->
             <div class="text-center">
                 <a href="#" data-toggle="modal" data-target="#addProfilePhoto">
-                    <img class="img-circle" width = "150" height = "150" src="@{routes.HomeController.serveProfilePicture()}")>
+                    @if(UserFactory.getUserProfilePicture(user.getUserid()) != null){
+                        <img class="img-circle" width = "150" height = "150" src="@{routes.HomeController.serveProfilePicture()}")>
+                    } else {
+                        <img class="img-circle" width = "150" height = "150" src="@{routes.Assets.at("images/Generic.png")}")>
+                        }
                 </a>
             </div>
         </div>
@@ -145,7 +160,7 @@
                     <div class="modal-body">
                         <!--<input type="file" accept="image/*" name="picture" required onchange="readURL(this);"/> -->
                         <div class="profile-pic-wraper col-sm-8">
-                            <img id="change-profile-pic" src="@{routes.HomeController.serveProfilePicture()}" alt="@routes.Assets.at("images/Generic.png")"/>
+                            <img id="change-profile-pic" src="@{routes.HomeController.serveProfilePicture()}" alt="You have not uploaded a profile picture!"/>
                         </div>
                         <div class="preview-wrapper">
                             <div class="preview">

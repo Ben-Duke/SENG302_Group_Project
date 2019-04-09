@@ -98,9 +98,15 @@ GET     /users/trips/:id            controllers.TripController.displaytrip(reque
 #Renders page that displays the home page where users can navigate to other pages
 GET     /users/home                 controllers.HomeController.showhome(request:Request)
 
-GET     /index                      controllers.HomeController.index(request: Request, path:String)
+#Serve a file
+GET     /users/home/servePicture                     controllers.HomeController.index(request: Request, path:String)
+
+#Serve the profile picture
+GET     /users/home/serveProfilePicture              controllers.HomeController.serveProfilePicture(request: Request)
 
 POST    /users/home         controllers.HomeController.upload(request:Request)
+
+POST    /users/home/profilePicture         controllers.HomeController.uploadProfilePicture(request:Request)
 
 #Handles logout request from the user
 GET     /users/logout               controllers.LoginController.logoutrequest(request:Request)

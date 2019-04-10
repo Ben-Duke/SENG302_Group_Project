@@ -135,6 +135,9 @@ GET     /users/destinations/edit/:id    controllers.DestinationController.editDe
 #Handles updating a destination
 POST    /users/destinations/update/:id  controllers.DestinationController.updateDestination(request : Request, id : Integer)
 
+#Handles linking a photo to a destination
+PUT     /users/destinations/:id         controllers.DestinationController.linkPhotoToDestination(request : Request, id : Integer)
+
 #Handles creating a destination
 POST    /users/destinations/save        controllers.DestinationController.saveDestination(request : Request)
 

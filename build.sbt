@@ -17,9 +17,10 @@ libraryDependencies += "org.glassfish.jaxb" % "jaxb-runtime" % "2.3.2"
 
 libraryDependencies += "org.awaitility" % "awaitility" % "2.0.0" % Test
 libraryDependencies += "org.assertj" % "assertj-core" % "3.6.2" % Test
-libraryDependencies += "io.ebean.test" % "ebean-test-config" % "11.19.1" % Test
-libraryDependencies += "org.avaje" % "avaje-datasource" % "4.1.1"
-libraryDependencies += "io.ebean" % "ebean-datasource-api" % "4.5" % Test
+// https://mvnrepository.com/artifact/io.ebean.test/ebean-test-config
+//This creates an instance of the database which works but I don't know how to access it
+//libraryDependencies += "io.ebean.test" % "ebean-test-config" % "11.36.1" % Test
+
 libraryDependencies ++= Seq (
   "io.cucumber" % "cucumber-core" % "4.2.0" % " test ",
   "io.cucumber" % "cucumber-jvm" % "4.2.0" % " test ",
@@ -28,6 +29,7 @@ libraryDependencies ++= Seq (
   "io.cucumber" % "cucumber-guice" % "4.2.0" % " test ",
   "org.mockito" % "mockito-core" % "2.25.1" % " test "
 )
+
 testOptions in Test += Tests.Argument(TestFrameworks.JUnit, "-a", "-v")
 
 javacOptions ++= Seq("-Xlint:unchecked", "-Xlint:deprecation")

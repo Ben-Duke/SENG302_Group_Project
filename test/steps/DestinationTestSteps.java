@@ -1,47 +1,66 @@
 package steps;
 
+import com.google.inject.Inject;
+import com.typesafe.config.Config;
 import cucumber.api.java.After;
+import cucumber.api.java.Before;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
+import io.ebean.Ebean;
+import io.ebean.EbeanServer;
+import io.ebean.config.ServerConfig;
+import io.ebeaninternal.dbmigration.DdlGenerator;
+import models.Trip;
 import models.User;
 import org.junit.Assert;
 import play.Application;
+import play.api.db.evolutions.DynamicEvolutions;
 import play.db.Database;
 import play.db.Databases;
+import play.db.ebean.EbeanConfig;
 import play.db.evolutions.Evolution;
 import play.db.evolutions.Evolutions;
 import play.inject.guice.GuiceApplicationBuilder;
 import play.test.WithApplication;
+import repository.DatabaseExecutionContext;
 import utilities.TestDatabaseManager;
+
 
 public class DestinationTestSteps extends WithApplication {
 
     /**
      * The fake database
      */
-//    public static Database database;
-//
-//    @Override
-//    protected Application provideApplication() {
-//        return new GuiceApplicationBuilder().build();
-//    }
+    //Database database = Databases.inMemory();
+    Database database;
+    TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
 
-    @Given("There is a prepopulated database")
-    public void thereIsAPrepopulatedDatabase() {
+    @Override
+    protected Application provideApplication() {
+        return new GuiceApplicationBuilder().build();
+    }
+
+    @Before
+    public void setup(){
 //        database = Databases.inMemory();
 //        Evolutions.applyEvolutions(database, Evolutions.forDefault(new Evolution(
 //                1,
 //                "create table test (id bigint not null, name varchar(255));",
 //                "drop table test;"
 //        )));
-//        User user = new User("testUser");
-//        user.save();
-//        User user2 = new User("testUser2");
-//        user2.save();
-//        TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
 //        testDatabaseManager.populateDatabase();
-//        Assert.assertEquals(3, User.find.all().size());
+    }
+
+    @After
+    public void tearDown(){
+//        Evolutions.cleanupEvolutions(database);
+//        database.shutdown();
+    }
+
+    @Given("There is a prepopulated database")
+    public void thereIsAPrepopulatedDatabase() {
+        //Assert.assertEquals(4, User.find.all().size());
         throw new cucumber.api.PendingException();
     }
 
@@ -51,6 +70,7 @@ public class DestinationTestSteps extends WithApplication {
     @Given("I am logged in with user id {string}")
     public void iAmLoggedInWithUserId(String string) {
         // Write code here that turns the phrase above into concrete actions
+        //Assert.assertEquals(true, User.find.byId(Integer.parseInt(string)) != null);
         throw new cucumber.api.PendingException();
     }
 

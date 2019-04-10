@@ -753,24 +753,6 @@
         <root url="jar://$USER_HOME$/.ivy2/cache/io.cucumber/tag-expressions/srcs/tag-expressions-1.1.1-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="sbt: io.ebean.test:ebean-test-config:11.19.1:jar">
-      <CLASSES>
-        <root url="jar://$USER_HOME$/.ivy2/cache/io.ebean.test/ebean-test-config/jars/ebean-test-config-11.19.1.jar!/" />
-      </CLASSES>
-      <JAVADOC />
-      <SOURCES>
-        <root url="jar://$USER_HOME$/.ivy2/cache/io.ebean.test/ebean-test-config/srcs/ebean-test-config-11.19.1-sources.jar!/" />
-      </SOURCES>
-    </library>
-    <library name="sbt: io.ebean.test:ebean-test-docker:1.5.10:jar">
-      <CLASSES>
-        <root url="jar://$USER_HOME$/.ivy2/cache/io.ebean.test/ebean-test-docker/jars/ebean-test-docker-1.5.10.jar!/" />
-      </CLASSES>
-      <JAVADOC />
-      <SOURCES>
-        <root url="jar://$USER_HOME$/.ivy2/cache/io.ebean.test/ebean-test-docker/srcs/ebean-test-docker-1.5.10-sources.jar!/" />
-      </SOURCES>
-    </library>
     <library name="sbt: io.ebean:ebean-agent:11.27.1:jar">
       <CLASSES>
         <root url="jar://$USER_HOME$/.ivy2/cache/io.ebean/ebean-agent/jars/ebean-agent-11.27.1.jar!/" />
@@ -796,15 +778,6 @@
       <JAVADOC />
       <SOURCES>
         <root url="jar://$USER_HOME$/.ivy2/cache/io.ebean/ebean-datasource-api/srcs/ebean-datasource-api-4.3-sources.jar!/" />
-      </SOURCES>
-    </library>
-    <library name="sbt: io.ebean:ebean-datasource-api:4.5:jar">
-      <CLASSES>
-        <root url="jar://$USER_HOME$/.ivy2/cache/io.ebean/ebean-datasource-api/jars/ebean-datasource-api-4.5.jar!/" />
-      </CLASSES>
-      <JAVADOC />
-      <SOURCES>
-        <root url="jar://$USER_HOME$/.ivy2/cache/io.ebean/ebean-datasource-api/srcs/ebean-datasource-api-4.5-sources.jar!/" />
       </SOURCES>
     </library>
     <library name="sbt: io.ebean:ebean-datasource:4.3.2:jar">
@@ -1172,24 +1145,6 @@
       <JAVADOC />
       <SOURCES>
         <root url="jar://$USER_HOME$/.ivy2/cache/org.avaje/avaje-classpath-scanner/srcs/avaje-classpath-scanner-3.1.1-sources.jar!/" />
-      </SOURCES>
-    </library>
-    <library name="sbt: org.avaje:avaje-datasource-api:4.1:jar">
-      <CLASSES>
-        <root url="jar://$USER_HOME$/.ivy2/cache/org.avaje/avaje-datasource-api/jars/avaje-datasource-api-4.1.jar!/" />
-      </CLASSES>
-      <JAVADOC />
-      <SOURCES>
-        <root url="jar://$USER_HOME$/.ivy2/cache/org.avaje/avaje-datasource-api/srcs/avaje-datasource-api-4.1-sources.jar!/" />
-      </SOURCES>
-    </library>
-    <library name="sbt: org.avaje:avaje-datasource:4.1.1:jar">
-      <CLASSES>
-        <root url="jar://$USER_HOME$/.ivy2/cache/org.avaje/avaje-datasource/jars/avaje-datasource-4.1.1.jar!/" />
-      </CLASSES>
-      <JAVADOC />
-      <SOURCES>
-        <root url="jar://$USER_HOME$/.ivy2/cache/org.avaje/avaje-datasource/srcs/avaje-datasource-4.1.1-sources.jar!/" />
       </SOURCES>
     </library>
     <library name="sbt: org.awaitility:awaitility:2.0.0:jar">

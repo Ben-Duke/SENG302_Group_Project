@@ -67,6 +67,10 @@ GET     /users/trips/cancel         controllers.TripController.cancelTrip(reques
 
 GET     /users/trips/addDestinations    controllers.TripController.AddTripDestinations(request: Request, id:Integer)
 
+GET     /users/trips/display/addDestinations    controllers.TripController.AddExistingTripDestinations(request: Request, id:Integer)
+
+POST     /users/trips/display/addDestinations    controllers.TripController.addvisitExistingTrip(request: Request, id:Integer)
+
 #Handles creating trips
 POST    /users/trips/create         controllers.TripController.savetrip(request: Request)
 

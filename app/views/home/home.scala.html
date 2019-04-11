@@ -7,7 +7,7 @@
     <head>
         <title>Home</title>
     </head>
-
+    <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/home.css")">
     <div class="container">
         <h1>@user.fName @user.lName @if(user.userIsAdmin) {<img class="img"  width = "60" height="50" src="../assets/images/key_2_small.png"> } </h1>
     </div>
@@ -133,31 +133,90 @@
         <div>
             <div id="modal-picture" class="modal">
                 <img class="modal-content" id="img01">
+                @*<button class="btn btn-primary" id="linkButton" href="#" data-toggle="modal" data-photo-id="">Link to destination</button>*@
             </div>
                 <!-- defines the number of photos the user has stored in the database. Currently hardcoded until tasks are finished -->
             @for(photo <- user.getUserPhotos) {
-                <img class="img-thumbnail" id=@{photo.getUrl} width="60" src="@{routes.HomeController.index(photo.getUrlWithPath)}" alt="User Image">
+                <a href="#" data-toggle="modal" data-target="#destination-carousel">
+                    <img class="img-thumbnail" id=@{photo.getUrl} width="60" src="@{routes.HomeController.index(photo.getUrlWithPath)}" alt="User Image">
+                </a>
             }
-            <script>
-                    // Get the modal
-                    var modal = document.getElementById('modal-picture');
-                    // When the user clicks, they quit the modal view
-                    modal.onclick = function () {
-                        this.style.display = "none";
-                    };
-
-                    // Get the image and insert it inside the modal
-                    var images = document.getElementsByClassName("img-thumbnail");
-                    var modalImg = document.getElementById("img01");
-                    // loops through each thumbnail and adds the event listener
-                    for (i = 0; i < @user.getUserPhotos.length; i++) {
-                        images[i].onclick = function() {
-                            modal.style.display = "block";
-                            modalImg.src = this.src;
-                        };
-                    }
-            </script>
         </div>
-    </div>
+                <div id="destination-carousel" class="modal fade">
+                    <div class="container">
+                        <div class="carousel slide" id="myslider" data-ride="carousel">
+                            <ol class="carousel-indicators">
+                                <li data-target="#myslider" data-slide-to="0" class="active"></li>
+                                @for(i <- 1 to user.getUserPhotos().length -1) {
+                                    <li data-target="#myslider" data-slide-to="@i"></li>
+                                }
+                            </ol>
+                            <div class="carousel-inner">
+                                @for(photo <- user.getUserPhotos()) {
+                                    <!-- Sets the first image to be the first image displayed. To be changed -->
+                                    @if(photo == user.getUserPhotos().get(0)){
+                                        <div class="item active">
+                                        } else{
+                                        <div class="item">
+                                        }
+                                    @*<a href="#" data-toggle="modal" data-target=#@photo.getPhotoId()>*@
+                                        <img id="carouselImage" src="@{routes.HomeController.index(photo.getUrlWithPath)}" width="1280">
+                                    @*</a>*@
+                                    <div class="carousel-caption">
+                                        <h2>insert caption here</h2>
+                                    </div>
+                                    <button
+                                    <a class="btn btn-primary" id="linkButton" href="#" data-toggle="modal" data-target="#@photo.getPhotoId()">Link to destination</a>
+                                </div>
+                                }
+                            </div>
+                                <a class ="left carousel-control" href="#myslider" data-slide="prev">
+                                    <span class="glyphicon glyphicon-chevron-left"></span>
+                                </a>
+                                <a class ="right carousel-control" href="#myslider" data-slide="next">
+                                    <span class="glyphicon glyphicon-chevron-right"></span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    @for(photo <- user.getUserPhotos()) {
+        <div id="@photo.getPhotoId()" class="modal fade">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2>Link photo to destination</h2>
+                        @*<h2 class="modal-title">@visit.visitName</h2>*@
+                    </div>
+                    <div class="modal-body">
+                        <p>Put destination table here</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    <script>
+    var modal = document.getElementById('destination-carousel');
+            // Get the modal THIS HAS BEEN EDITED AT 1:41 PM TODAY
+            // var modal = document.getElementById('modal-picture');
+            @*var modal = document.getElementById('destination-carousel');*@
+            @*// When the user clicks, they quit the modal view*@
+            @*modal.onclick = function () {*@
+                @*this.style.display = "none";*@
+            @*};*@
 
+            @*// Get the image and insert it inside the modal*@
+            @*var images = document.getElementsByClassName("img-thumbnail");*@
+            @*var modalImg = document.getElementById("img01");*@
+            @*var modalLink = document.getElementById("linkButton");*@
+            @*// loops through each thumbnail and adds the event listener*@
+            @*for (i = 0; i < @user.getUserPhotos.length; i++) {*@
+                @*images[i].onclick = function() {*@
+                    @*modal.style.display = "block";*@
+                    @*console.log("this happened");*@
+                    @*modalImg.src = this.src;*@
+                @*};*@
+            @*}*@
+    </script>
 }

@@ -33,6 +33,7 @@ create table destination (
   country                       varchar(255),
   latitude                      double not null,
   longitude                     double not null,
+  is_public                     boolean default false not null,
   user                          integer,
   constraint pk_destination primary key (destid)
 );

@@ -18,4 +18,9 @@ public class VisitFactory {
         visit.visitName = destination.destName;
         return visit;
     }
+
+    public Visit createVisitTable(Trip trip, Destination destination, Integer visitOrder){
+        Visit visit = new Visit(null, null, trip, destination, visitOrder);
+        return visit;
+    }
 }

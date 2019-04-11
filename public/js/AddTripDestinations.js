@@ -1,0 +1,3 @@
+function showPrivateDestinations(destinations){
+    destinations = [];
+}

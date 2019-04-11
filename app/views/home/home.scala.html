@@ -166,7 +166,6 @@
                                     <div class="carousel-caption">
                                         <h2>insert caption here</h2>
                                     </div>
-                                    <button
                                     <a class="btn btn-primary" id="linkButton" href="#" data-toggle="modal" data-target="#@photo.getPhotoId()">Link to destination</a>
                                 </div>
                                 }
@@ -215,7 +214,9 @@
                                         <td>@destination.getLatitude()</td>
                                         <td>@destination.getLongitude()</td>
                                         <!-- TO BE CHANGED -->
-                                        <td><a href="@routes.DestinationController.linkPhotoToDestination(destination.getDestId)" class="btn btn-primary">Link to destination</a></td>
+                                        <td><button class="btn btn-primary" onclick="sendLinkDestinationRequest(
+                                                '@routes.DestinationController.linkPhotoToDestination(destination.getDestId())',
+                                                @photo.getPhotoId())">Link to destination</button></td>
                                     </tr>
 
 

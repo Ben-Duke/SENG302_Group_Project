@@ -86,3 +86,27 @@ function showPublicDestinations(element){
         document.getElementById("hideDivPublic").style.display = "none";
     }
 }
+
+function sendLinkDestinationRequest(url, photoid){
+    // LOOK AT ME! BETWEEN HERE AND
+    var token =  $('input[name="csrfToken"]').attr('value');
+    $.ajaxSetup({
+        beforeSend: function(xhr) {
+            xhr.setRequestHeader('Csrf-Token', token);
+        }
+    });
+    $.ajax({
+        url: url,
+        method: "PUT",
+        data: JSON.stringify({
+            photoid: '"' + photoid + '"'
+        }),
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        success:function(res){
+            $("#" + photoid).modal('hide');
+            console.log("Success!");
+        }
+    })
+}

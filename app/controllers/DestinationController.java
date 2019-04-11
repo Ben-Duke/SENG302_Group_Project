@@ -336,6 +336,8 @@ public class DestinationController extends Controller {
         if(user != null) {
             JsonNode node = request.body().asJson().get("photoid");
             String photoid = node.textValue();
+            photoid = photoid.replace("\"", "");
+            System.out.println(photoid);
             UserPhoto photo = UserPhoto.find.byId(Integer.parseInt(photoid));
             Destination destination = Destination.find.byId(destId);
             if(destination != null || photo != null) {
@@ -344,6 +346,7 @@ public class DestinationController extends Controller {
                     //You can only link a photo to a private destination if you own the private destination.
                     photo.setDestination(destination);
                     photo.update();
+                    System.out.println("SUCCESS!");
                 } else {
                     return unauthorized("Oops, this is not your photo!");
                 }

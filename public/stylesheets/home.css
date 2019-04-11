@@ -24,4 +24,26 @@
     height: 30px;
     margin: 5px;
     background-color: #5994ff;
+#change-profile .preview {
+
+}
+
+.preview-wrapper{
+    width: 100px;
+    height:100px;
+    position: absolute;
+    top: 25%;
+    right: 10%;
+    overflow: hidden;
+    border-radius: 100%;
+}
+
+preview-wrapper-original{
+    width: 100px;
+    height:100px;
+    overflow: hidden;
+    border-radius: 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 100%;
 }

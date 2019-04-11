@@ -1,11 +1,8 @@
 package factories;
 import formdata.UpdateUserFormData;
 import formdata.UserFormData;
-import models.Nationality;
-import models.Passport;
-import models.TravellerType;
+import models.*;
 import io.ebean.ExpressionList;
-import models.User;
 import play.data.FormFactory;
 import play.mvc.Http;
 
@@ -367,6 +364,53 @@ public class UserFactory {
         }
 
 
+    /**
+     * Get the user's profile picture if it exists
+     * @param userId the user id of the user whose profile picture is to be retrieved
+     * @return the UserPhoto that is the profile picture if it exists, otherwise null
+     */
+    public static UserPhoto getUserProfilePicture(int userId) {
+        User user = User.find.query().where().eq("userid", userId).findOne();
+        UserPhoto userPhoto = UserPhoto.find.query().where().eq("user", user).and().eq("isProfile", true).findOne();
+       if(userPhoto != null) {
+           return  userPhoto;
+       } else {
+           return null;
+       }
+    }
+
+    /**
+     * Remove the user's existing profile picture if it exists
+     * @param userId the user id of the user whose profile picture is to be removed
+     */
+    public static void removeExistingProfilePicture(int userId) {
+        UserPhoto existingProfile = getUserProfilePicture(userId);
+        if (existingProfile != null) {
+            existingProfile.setProfile(false);
+            existingProfile.save();
+        }
+    }
+
+    /**
+     * Replace the user's existing profile picture with an new photo
+     * @param userId the user id of the user whose profile picture is to be replaced
+     * @param newPhoto the new photo that is to become the user's profile picture
+     */
+    public static void replaceProfilePicture(int userId, UserPhoto newPhoto) {
+        removeExistingProfilePicture(userId);
+        newPhoto.setProfile(true);
+        newPhoto.save();
+    }
+
+    /**
+     * Get the path to the User's profile picture
+     * @param user the user whose profile picture path is to be retrieved
+     * @return the path to the photo
+     */
+    public static String getProfilePhotoPath(User user) {
+        return java.nio.file.Paths.get(".").toAbsolutePath().normalize().toString() + "/../user_photos/user_" + user.getUserid() + "/profilethumbnail.png";
+    }
+
 
 
     public static UpdateUserFormData getUpdateUserFormDataForm(Http.Request request) {
@@ -378,4 +422,6 @@ public class UserFactory {
             return null;
         }
     }
+
+
 }

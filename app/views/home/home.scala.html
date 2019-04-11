@@ -1,16 +1,30 @@
 @import play.filters.csrf.AddCSRFToken
+@import factories.UserFactory
 @(user: User)
 @import views.html.bootstrap3._
 @main("Index"){
 
 
     <head>
+        <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/home.css")">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropper/4.0.0/cropper.min.css">
         <title>Home</title>
     </head>
     <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/home.css")">
     <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/indexDestination.css")">
     <div class="container">
-        <h1>@user.fName @user.lName @if(user.userIsAdmin) {<img class="img"  width = "60" height="50" src="../assets/images/key_2_small.png"> } </h1>
+            <!-- The thumbnail in the else is being displayed to show the AC passing -->
+        <h1>@user.fName @user.lName
+            @if(user.userIsAdmin) {
+                <img class="img"  width = "60" height="50" src="../assets/images/key_2_small.png">
+            } else{
+                @if(UserFactory.getUserProfilePicture(user.getUserid()) != null){
+                <img class="img-circle"  width = "60" height="50" src="@{routes.HomeController.index(factories.UserFactory.getProfilePhotoPath(user))}">
+                } else {
+                    <img class="img-circle"  width = "60" height="50" src="@{routes.Assets.at("images/Generic.png")}">
+                }
+            }
+        </h1>
     </div>
 
     <br>
@@ -19,7 +33,13 @@
         <div class="row">
                 <!-- The profile picture, currently a placeholder -->
             <div class="text-center">
-                <img class="img-circle" width = "150" src="@routes.Assets.at("images/Generic.png")">
+                <a href="#" data-toggle="modal" data-target="#addProfilePhoto">
+                    @if(UserFactory.getUserProfilePicture(user.getUserid()) != null){
+                        <img class="img-circle" width = "150" height = "150" src="@{routes.HomeController.serveProfilePicture()}")>
+                    } else {
+                        <img class="img-circle" width = "150" height = "150" src="@{routes.Assets.at("images/Generic.png")}")>
+                        }
+                </a>
             </div>
         </div>
         <div class="row">
@@ -127,6 +147,40 @@
 
         </div>
 
+        <!-- Modal to upload a new profile picture -->
+        <div id="addProfilePhoto" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+
+                    <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">Upload a new profile picture </h4>
+                    </div>
+
+                    <div class="modal-body">
+                        <!--<input type="file" accept="image/*" name="picture" required onchange="readURL(this);"/> -->
+                        <div class="profile-pic-wraper col-sm-8">
+                            <img id="change-profile-pic" src="@{routes.HomeController.serveProfilePicture()}" alt="You have not uploaded a profile picture!"/>
+                        </div>
+                        <div class="preview-wrapper">
+                            <div class="preview">
+
+                            </div><br>
+                        </div>
+                        <br>
+                        <input type="file" accept="image/*" name="picture" required onchange="loadFile(event);"/>
+                        <p>
+                            <button id="save-profile">Upload</button>
+                            <input type="checkbox" name="private" value="private"> Make photo private
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+
 
         <br>
 
@@ -136,7 +190,6 @@
                 <img class="modal-content" id="img01">
                 @*<button class="btn btn-primary" id="linkButton" href="#" data-toggle="modal" data-photo-id="">Link to destination</button>*@
             </div>
-                <!-- defines the number of photos the user has stored in the database. Currently hardcoded until tasks are finished -->
             @for(photo <- user.getUserPhotos) {
                 <a href="#" data-toggle="modal" data-target="#destination-carousel">
                     <img class="img-thumbnail" id=@{photo.getUrl} width="60" src="@{routes.HomeController.index(photo.getUrlWithPath)}" alt="User Image">
@@ -286,5 +339,6 @@
                 @*};*@
             @*}*@
     </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropper/4.0.0/cropper.min.js"></script>
     <script src="@routes.Assets.at("js/indexDestination.js")" type="text/javascript"></script>
 }

@@ -561,6 +561,8 @@ public class TripController extends Controller {
             return unauthorized();
         }
     }
+
+
 }
 
 //SWAP VISITS WITHOUT THE TABLE (don't delete might come in handy in the future)

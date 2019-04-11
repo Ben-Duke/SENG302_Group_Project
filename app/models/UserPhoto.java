@@ -18,6 +18,7 @@ public class UserPhoto extends Model {
     public int photoId;
     public String url;
     public boolean isPublic;
+    public boolean isProfile;
 
     // Creating  the relation to User
     @ManyToOne
@@ -38,10 +39,19 @@ public class UserPhoto extends Model {
      * @param isPublic A boolean, true if the photo is visible to everybody, false otherwise.
      * @param user The User who owns this photograph.
      */
-    public UserPhoto(String url, boolean isPublic, User user) {
+    public UserPhoto(String url, boolean isPublic, boolean isProfile, User user) {
         this.url = url;
         this.isPublic = isPublic;
         this.user = user;
+        this.isProfile = isProfile;
+    }
+
+    /**
+     * Method to return if the photo is the profile picture
+     * @return the boolean for if the photo is the profile picture
+     */
+    public boolean isProfile() {
+        return isProfile;
     }
 
     public Destination getDestination() {
@@ -50,6 +60,13 @@ public class UserPhoto extends Model {
 
     public void setDestination(Destination destination) {
         this.destination = destination;
+    }
+    /**
+     * Method to set the photo as profile picture (or not)
+     * @param isProfile the boolean showing if the picture is the profile picture
+     */
+    public void setProfile(boolean isProfile) {
+        this.isProfile = isProfile;
     }
 
     /**
@@ -112,4 +129,7 @@ public class UserPhoto extends Model {
     public User getUser() {
         return user;
     }
+
+
+    public static Finder<Integer,UserPhoto> find = new Finder<>(UserPhoto.class);
 }

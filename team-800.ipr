@@ -681,15 +681,6 @@
         <root url="jar://$USER_HOME$/.ivy2/cache/io.cucumber/cucumber-expressions/srcs/cucumber-expressions-6.2.0-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="sbt: io.cucumber:cucumber-guice:4.2.0:jar">
-      <CLASSES>
-        <root url="jar://$USER_HOME$/.ivy2/cache/io.cucumber/cucumber-guice/jars/cucumber-guice-4.2.0.jar!/" />
-      </CLASSES>
-      <JAVADOC />
-      <SOURCES>
-        <root url="jar://$USER_HOME$/.ivy2/cache/io.cucumber/cucumber-guice/srcs/cucumber-guice-4.2.0-sources.jar!/" />
-      </SOURCES>
-    </library>
     <library name="sbt: io.cucumber:cucumber-html:0.2.7:jar">
       <CLASSES>
         <root url="jar://$USER_HOME$/.ivy2/cache/io.cucumber/cucumber-html/jars/cucumber-html-0.2.7.jar!/" />

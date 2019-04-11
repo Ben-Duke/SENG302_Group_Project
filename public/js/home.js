@@ -1,0 +1,95 @@
+var croppedCanvas;
+var filename;
+
+var loadFile = function (event) {
+    var output = document.getElementById('change-profile-pic');
+    output.src = URL.createObjectURL(event.target.files[0]);
+    filename = event.target.files[0].name;
+    console.log("filename1 is " + filename);
+    $('#change-profile-pic').cropper("destroy");
+
+    var $previews = $('.preview');
+    $('#change-profile-pic').cropper({
+        ready: function () {
+            var $clone = $(this).clone().removeClass('cropper-hidden');
+            $clone.css({
+                display: 'block',
+                width: '100%',
+                minWidth: 0,
+                minHeight: 0,
+                maxWidth: 'none',
+                maxHeight: 'none'
+            });
+            $previews.css({
+                width: '100%',
+                overflow: 'hidden'
+            }).html($clone);
+        },
+        crop: function (e) {
+            console.log("crop");
+            var imageData = $(this).cropper('getImageData');
+            croppedCanvas = $(this).cropper('getCroppedCanvas');
+            $('.preview').html('<img src="' + croppedCanvas.toDataURL() + '" class="thumb-lg img-circle" style="width:100px;height:100px;">');
+            var previewAspectRatio = e.width / e.height;
+            $previews.each(function (){
+                var $preview = $(this);
+                var previewWidth = $preview.width();
+                var previewHeight = previewWidth / previewAspectRatio;
+                var imageScaledRatio = e.width / previewWidth;
+                $preview.height(previewHeight).find('img').css({
+                    width: imageData.naturalWidth / imageScaledRatio,
+                    height: imageData.naturalHeight / imageScaledRatio,
+                    marginLeft: -e.x / imageScaledRatio,
+                    marginTop: -e.y / imageScaledRatio
+                });
+            });
+        }
+    })
+
+};
+
+$('#save-profile').click(function (eve){
+    console.log("filename2 is " + filename);
+    eve.preventDefault();
+    var formData = new FormData();
+    // formData.append('picture', croppedCanvas.toBlob(function(blob){
+    //     var newImg = document.createElement('img'),
+    //     url = URL.createObjectURL(blob);
+    //     newImg.onload = function() {
+    //         URL.revokeObjectURL(url);
+    //     };
+    //     newImg.src = url;
+    //     document.body.appendChild(newImg);
+    // }, 'image/jpeg', 0.95));
+    var private = $('input[type=checkbox]').attr('checked');
+    croppedCanvas.toBlob(function(blob){
+        formData.append('picture', blob, 'filename');
+        formData.append('private', private);
+        formData.append('filename', filename);
+        var token =  $('input[name="csrfToken"]').attr('value');
+        $.ajaxSetup({
+            beforeSend: function(xhr) {
+                xhr.setRequestHeader('Csrf-Token', token);
+            }
+        });
+        $.ajax({
+            type: 'POST',
+            processData: false,
+            contentType: false,
+            url:'/users/home/profilePicture',
+            data: formData,
+            success: function(data, textStatus, xhr){
+                if(xhr.status == 200) {
+                    window.location = '/users/home'
+                }
+                else{
+                    window.location = '/users/home'
+                }
+            }
+        })
+    });
+});
+
+// $("#imgInp").change(function(){
+//     readURL(this);
+// });

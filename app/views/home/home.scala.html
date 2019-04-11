@@ -304,7 +304,9 @@
                                         <td>@destination.getLatitude()</td>
                                         <td>@destination.getLongitude()</td>
                                             <!-- TO BE CHANGED -->
-                                        <td><a href="@routes.DestinationController.linkPhotoToDestination(destination.getDestId)" class="btn btn-primary">Link to destination</a></td>
+                                        <td><button class="btn btn-primary" onclick="sendLinkDestinationRequest(
+                                                '@routes.DestinationController.linkPhotoToDestination(destination.getDestId())',
+                                                @photo.getPhotoId())">Link to destination</button></td>
                                     </tr>
                                     <br>
                                     }
@@ -341,4 +343,5 @@
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropper/4.0.0/cropper.min.js"></script>
     <script src="@routes.Assets.at("js/indexDestination.js")" type="text/javascript"></script>
+    <script src="@routes.Assets.at("js/home.js")" type="text/javascript"></script>
 }

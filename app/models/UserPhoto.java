@@ -130,6 +130,4 @@ public class UserPhoto extends Model {
         return user;
     }
 
-
-    public static Finder<Integer,UserPhoto> find = new Finder<>(UserPhoto.class);
 }

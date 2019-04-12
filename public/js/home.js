@@ -1,6 +1,13 @@
 var croppedCanvas;
 var filename;
 
+/**
+ * This function is called when an image file is chosen and uploaded by the user.
+ * Creates a crop canvas using cropperjs where the user can crop their image, which is stored into a croppedCanvas variable.
+ * The croppedCanvas variable is updated every time the user changes the crop box.
+ * A preview image is also displayed beside the canvas with a circle preview of how the cropped canvas will look like as a profile picture.
+ * @param event the event that an image file is chosen and uploaded by the user
+ */
 var loadFile = function (event) {
     var output = document.getElementById('change-profile-pic');
     output.src = URL.createObjectURL(event.target.files[0]);
@@ -48,19 +55,15 @@ var loadFile = function (event) {
 
 };
 
+/**
+ * This function is called when the user clicks the upload button to upload the cropped canvas image to the database.
+ * Sends an AJAX post request to the backend with the photo's information to store the photo within the database.
+ * The cropped image will be used as the user's profile picture.
+ */
 $('#save-profile').click(function (eve){
     console.log("filename2 is " + filename);
     eve.preventDefault();
     var formData = new FormData();
-    // formData.append('picture', croppedCanvas.toBlob(function(blob){
-    //     var newImg = document.createElement('img'),
-    //     url = URL.createObjectURL(blob);
-    //     newImg.onload = function() {
-    //         URL.revokeObjectURL(url);
-    //     };
-    //     newImg.src = url;
-    //     document.body.appendChild(newImg);
-    // }, 'image/jpeg', 0.95));
     var private = $('input[type=checkbox]').attr('checked');
     croppedCanvas.toBlob(function(blob){
         formData.append('picture', blob, 'filename');

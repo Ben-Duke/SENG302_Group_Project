@@ -7,11 +7,10 @@
 
     <head>
         <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/home.css")">
+        <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/indexDestination.css")">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropper/4.0.0/cropper.min.css">
         <title>Home</title>
     </head>
-    <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/home.css")">
-    <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/indexDestination.css")">
     <div class="container">
             <!-- The thumbnail in the else is being displayed to show the AC passing -->
         <h1>@user.fName @user.lName
@@ -207,7 +206,7 @@
                             </ol>
                             <div class="carousel-inner">
                                 @for(photo <- user.getUserPhotos()) {
-                                    <!-- Sets the first image to be the first image displayed. To be changed -->
+                                    <!-- Sets the first image to be the first image displayed. To be changed to the image clicked-->
                                     @if(photo == user.getUserPhotos().get(0)){
                                         <div class="item active">
                                         } else{
@@ -266,7 +265,6 @@
                                         <td>@destination.getDistrict()</td>
                                         <td>@destination.getLatitude()</td>
                                         <td>@destination.getLongitude()</td>
-                                        <!-- TO BE CHANGED -->
                                         <td><button class="btn btn-primary" onclick="sendLinkDestinationRequest(
                                                 '@routes.DestinationController.linkPhotoToDestination(destination.getDestId())',
                                                 @photo.getPhotoId())">Link to destination</button></td>

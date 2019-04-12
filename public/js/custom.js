@@ -1,3 +1,11 @@
+/**
+ * Sends an ajax request to the backend to delete a visit from a trip.
+ * @param url the url to send the backend request
+ * @param rUrl on success, the url to redirect back to the display trip table page
+ * @param errorUrl the url to redirect on bad request error
+ * @param errorUrl2 the url to redirect on forbidden error
+ * @param errorUrl3 the url to redirect on any other error
+ */
 function sendDeleteVisitRequest(url, rUrl, errorUrl, errorUrl2, errorUrl3) {
 
     var data = {

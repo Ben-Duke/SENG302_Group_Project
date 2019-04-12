@@ -1,4 +1,7 @@
-//Function to search by name, type and country
+/**
+ * Function to search for private destinations.
+ * Updates the rows of tables with class "privateDestinations" depending on what's entered in the input form with class name "searchDestinations"
+ */
 function searchDestination(){
     // Declare variables
     var input, elements, filter, tables, table, tr, th, td, td2, i, txtValue, txtValue2, txtValue3;
@@ -29,6 +32,10 @@ function searchDestination(){
     }
 }
 
+/**
+ * Function to search for public destinations.
+ * Updates the rows of tables with class "publicDestinations" depending on what's entered in the input form with class name "searchPublicDestinations"
+ */
 function searchPublicDestination(){
     // Declare variables
     var input, elements, filter, tables, table, tr, th, td, td2, i, txtValue, txtValue2, txtValue3;
@@ -60,6 +67,11 @@ function searchPublicDestination(){
     }
 }
 
+/**
+ * Confirmation message to make destination public (to be later implemented, this is gold plating)
+ * not working right now
+ * @param url
+ */
 function makeDestinationPublic(url){
     if(confirm("Are you sure you want to make this destination public? You won't be able to make it private again.")){
         location.href = url;
@@ -69,6 +81,11 @@ function makeDestinationPublic(url){
     }
 }
 
+/**
+ * Function to toggle the private destinations table.
+ * Turns on or off the display of an elements with id "hideDivPrivate"
+ * @param element the checkbox
+ */
 function showPrivateDestinations(element){
     if(element.checked){
         document.getElementById("hideDivPrivate").style.display = "";
@@ -78,6 +95,11 @@ function showPrivateDestinations(element){
     }
 }
 
+/**
+ * Function to toggle the public destinations table.
+ * Turns on or off the display of an elements with id "hideDivPublic"
+ * @param element the checkbox
+ */
 function showPublicDestinations(element){
     if(element.checked){
         document.getElementById("hideDivPublic").style.display = "";
@@ -87,8 +109,13 @@ function showPublicDestinations(element){
     }
 }
 
+/**
+ * Function to link a photo with a destination
+ * Sends a PUT ajax request to the backend to link destinations to a photo (the photoid is sent)
+ * @param url to send the ajax request to
+ * @param photoid the id of the photo you want to link
+ */
 function sendLinkDestinationRequest(url, photoid){
-    // LOOK AT ME! BETWEEN HERE AND
     var token =  $('input[name="csrfToken"]').attr('value');
     $.ajaxSetup({
         beforeSend: function(xhr) {

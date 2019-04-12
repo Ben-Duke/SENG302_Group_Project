@@ -4,6 +4,7 @@ var filename;
 /**
  * This function is called when an image file is chosen and uploaded by the user.
  * Creates a crop canvas using cropperjs where the user can crop their image, which is stored into a croppedCanvas variable.
+ * The croppedCanvas variable is updated every time the user changes the crop box.
  * A preview image is also displayed beside the canvas with a circle preview of how the cropped canvas will look like as a profile picture.
  * @param event the event that an image file is chosen and uploaded by the user
  */
@@ -55,8 +56,9 @@ var loadFile = function (event) {
 };
 
 /**
- * This function is called when the user clicks the upload button to upload the cropped canvas to the database.
+ * This function is called when the user clicks the upload button to upload the cropped canvas image to the database.
  * Sends an AJAX post request to the backend with the photo's information to store the photo within the database.
+ * The cropped image will be used as the user's profile picture.
  */
 $('#save-profile').click(function (eve){
     console.log("filename2 is " + filename);

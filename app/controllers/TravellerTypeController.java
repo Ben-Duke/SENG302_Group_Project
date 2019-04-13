@@ -13,6 +13,7 @@ import javax.inject.Inject;
 
 import java.util.List;
 
+import static play.mvc.Controller.flash;
 import static play.mvc.Results.*;
 
 public class TravellerTypeController {
@@ -78,17 +79,20 @@ public class TravellerTypeController {
      */
     public Result deleteUpdateTravellerType(Http.Request request, Integer typeId){
         User user = User.getCurrentUser(request);
-        if (user != null && user.getTravellerTypes().size() > 1) {
+        if (user == null) {
+            return unauthorized("Oops, you are not logged in");
+        } else if (! (user.getTravellerTypes().size() > 1)) {
+            flash("error", "Need at least one traveller type, " +
+                    "please add another traveller type before deleting the one you selected");
+        } else {
             try {
                 TravellerType travellerType = TravellerType.find.byId(typeId);
                 user.deleteTravellerType(travellerType);
                 user.update();
+
             } catch (NumberFormatException e) {
-                return  unauthorized("Oops, you do not have any traveller types to delete");
+                return unauthorized("Oops, you do not have any traveller types to delete");
             }
-        }
-        else if (user == null){
-            return unauthorized("Oops, you are not logged in");
         }
         return redirect(routes.TravellerTypeController.updateTravellerType());
     }

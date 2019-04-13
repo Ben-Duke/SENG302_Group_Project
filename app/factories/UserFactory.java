@@ -19,7 +19,7 @@ public class UserFactory {
     static FormFactory formFactory;
 
     public UserFactory(){//Just used to instanciate
-         }
+    }
 
 
     /**Returns 1 if in the database and 0 if not in the database
@@ -56,13 +56,14 @@ public class UserFactory {
 
         }
     }
-    /** Returns a user id if they exist any number less than zero indicates the email is not in the database
+    /** Returns a User object from a userId int.
      *
-     * @param request
-     * @return an int -1 indicates there are no entries in the database that have that user.
+     * @param userId An int representing the userId to search for.
+     * @return A User object with the userId, or null  if doesn't exist.
      */
-    public static int getCurrentUserById(Http.Request request) {
-        return User.getCurrentUserById(request);
+    public static User getUserFromId(int userId) {
+        User user = User.find.query().where().eq("userid", userId).findOne();
+        return user;
     }
 
     /**Get a list of all passports.
@@ -174,13 +175,13 @@ public class UserFactory {
             TravellerType travellerType = TravellerType.find.byId(travellerId);
 
             if( travellerId != -1){
-            try {
-                user.addTravellerType(travellerType);
-                user.update();
-            } catch (io.ebean.DuplicateKeyException e) {
+                try {
+                    user.addTravellerType(travellerType);
+                    user.update();
+                } catch (io.ebean.DuplicateKeyException e) {
 
+                }
             }
-        }
         }
     }
 
@@ -280,7 +281,7 @@ public class UserFactory {
 
 
         if(checkEmail(email)!=1){
-        User user = new User(email, password, firstName, lastName, date, gender);
+            User user = new User(email, password, firstName, lastName, date, gender);
 
 
             user.save();
@@ -361,7 +362,7 @@ public class UserFactory {
 
     public static int getCurrentUserId(Http.Request request) {
         return User.getCurrentUserById(request);
-        }
+    }
 
 
     /**
@@ -372,11 +373,11 @@ public class UserFactory {
     public static UserPhoto getUserProfilePicture(int userId) {
         User user = User.find.query().where().eq("userid", userId).findOne();
         UserPhoto userPhoto = UserPhoto.find.query().where().eq("user", user).and().eq("isProfile", true).findOne();
-       if(userPhoto != null) {
-           return  userPhoto;
-       } else {
-           return null;
-       }
+        if(userPhoto != null) {
+            return  userPhoto;
+        } else {
+            return null;
+        }
     }
 
     /**

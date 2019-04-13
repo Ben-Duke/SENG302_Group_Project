@@ -361,14 +361,56 @@ public class DestinationController extends Controller {
         return ok();
     }
 
+    /**
+     * Returns a json list of traveller types associated to a destination given by a destination id
+     * @param request the HTTP request
+     * @param destId the destination id
+     * @return a json list of traveller types associated to the destination
+     */
     public Result getTravellerTypes(Http.Request request, Integer destId){
         User user = User.getCurrentUser(request);
         if(user != null){
-            //ObjectNode travellerTypes = Json.newObject();
-            //List<TravellerType> travellerTypes = TravellerType.find.all();
             return ok(Json.toJson(Destination.find.byId(destId).travellerTypes));
         } else {
             return unauthorized("Oops, you are not logged in");
         }
     }
+
+    /**
+     * Returns a json list of photos associated to a destination given by a destination id
+     * @param request the HTTP request
+     * @param destId the destination id
+     * @return a json list of traveller types associated to the destination
+     */
+    public Result getPhotos(Http.Request request, Integer destId){
+        User user = User.getCurrentUser(request);
+        if(user != null){
+            //To add: filter between private and public, but that's another task
+            List<UserPhoto> photos = Destination.find.byId(destId).userPhotos;
+            ObjectNode result = Json.newObject();
+//            for(UserPhoto photo: photos){
+//                result.put(Integer.toString(photo.getPhotoId()), new java.io.File(photo.getUrlWithPath()).toString());
+//            }
+            return ok(Json.toJson(Destination.find.byId(destId).userPhotos));
+            //return ok(result);
+        } else {
+            return unauthorized("Oops, you are not logged in");
+        }
+    }
+
+    /**
+     * Returns a photo file based on a photo with a given photo id
+     * @param request the HTTP request
+     * @return the photo file
+     */
+    public Result getPhotoFile(Http.Request request, Integer photoId){
+        User user = User.getCurrentUser(request);
+        if(user != null){
+            UserPhoto photo = UserPhoto.find.byId(photoId);
+            return ok(new java.io.File(photo.getUrlWithPath()));
+        } else {
+            return unauthorized("Oops, you are not logged in");
+        }
+    }
+
 }

@@ -1,5 +1,6 @@
 package models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.ebean.Finder;
 import io.ebean.Model;
 
@@ -108,12 +109,14 @@ public class Destination extends Model {
     public User user;
 
     @OneToMany(mappedBy = "destination")
+    @JsonIgnoreProperties("destination")
     public List<Visit> visits;
 
     @OneToMany(mappedBy = "destination")
     public List<UserPhoto> userPhotos;
 
     @ManyToMany
+    @JsonIgnoreProperties("destinations")
     public List<TravellerType> travellerTypes;
 
     public static Finder<String,Destination> findString =new Finder<>(Destination.class);

@@ -99,6 +99,7 @@ public class User extends Model {
      * The passport of the user.
      */
     @ManyToMany
+    @JsonIgnoreProperties("users")
     public List<Passport> passports;
 
     @OneToMany(mappedBy = "user")
@@ -116,6 +117,7 @@ public class User extends Model {
     }
 
     @ManyToMany
+    @JsonIgnoreProperties("users")
     public List<TravellerType> travellerTypes;
 
     /**

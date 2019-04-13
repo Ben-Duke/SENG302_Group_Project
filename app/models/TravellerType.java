@@ -29,6 +29,9 @@ public class TravellerType extends Model {
     @ManyToMany(mappedBy = "travellerTypes")
     public List<User> users;
 
+    @ManyToMany(mappedBy = "travellerTypes")
+    public List<Destination> destinations;
+
     public Integer getTtypeid() {
         return ttypeid;
     }

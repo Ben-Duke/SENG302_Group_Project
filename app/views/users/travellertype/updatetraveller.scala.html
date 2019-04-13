@@ -22,7 +22,14 @@
                             margin: 0;" class = "btn btn-danger">&times</button> </li>
                     </ul>
 
-                }
+                    }
+                    @if(flash.containsKey("error")) {
+                        <div class="well">
+                            <div id="error-message" class="text-danger">
+                            @flash.get("error")
+                            </div>
+                        </div>
+                    }
                 </div>
             }
             </div>

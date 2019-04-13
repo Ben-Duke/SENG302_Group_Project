@@ -188,7 +188,7 @@ $('#orderModal').on('show.bs.modal', function (e) {
         contentType: 'application/json',
         success: function(data) {
             var outerDivNode = document.createElement("div");
-            outerDivNode.classList.add()
+            outerDivNode.classList.add("carousel-inner");
             $.each(data, function(index, element){
                 var itemNode = document.createElement("div");
                 itemNode.classList.add("item");
@@ -197,10 +197,10 @@ $('#orderModal').on('show.bs.modal', function (e) {
                 }
                 var imgNode = document.createElement("img");
                 imgNode.src="/users/home/serveDestPicture/" + element["photoId"];
-                imgNode.width=480;
+                imgNode.width=640;
                 imgNode.height=480;
                 itemNode.appendChild(imgNode);
-                $('#carousel-images').append(itemNode);
+                outerDivNode.appendChild(itemNode);
                 // $.ajax({
                 //    type: 'GET',
                 //     url: '/users/photos/' + element["photoId"],
@@ -214,6 +214,7 @@ $('#orderModal').on('show.bs.modal', function (e) {
                 //console.log(element["urlWithPath"]);
                 //imgNode.src = element["urlWithPath"];
             });
+            $('#destslider').html(outerDivNode);
         }
     });
 });

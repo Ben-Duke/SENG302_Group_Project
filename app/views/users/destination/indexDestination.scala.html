@@ -32,8 +32,10 @@
                 <td>@destination.getDistrict</td>
                 <td>@destination.getLatitude</td>
                 <td>@destination.getLongitude</td>
-                <td><a class="btn btn-link" href="@routes.DestinationController.editDestination(destination.getDestId)" role="button">Edit</a></td>
-                <td><a class="btn btn-link" href="@routes.DestinationController.deleteDestination(destination.getDestId())" role="button">Delete</a></td>
+                <td><a href="@routes.DestinationController.editDestination(destination.getDestId())" class="btn btn-primary">
+                    Edit</a></td>
+                <td><a href="@routes.DestinationController.deleteDestination(destination.getDestId())" class="btn btn-danger">
+                    Delete</a></td>
                 <td><a href="@routes.DestinationController.makeDestinationPublic(destination.getDestId)" class="btn btn-primary">Make destination public</a></td>
             </tr>
 
@@ -68,6 +70,15 @@
                     <td>@destination.getDistrict</td>
                     <td>@destination.getLatitude</td>
                     <td>@destination.getLongitude</td>
+                    @if(destination.getUser().getUserid() == destination.user.getUserid() || destination.getUser().isAdmin()) {
+                        <td><a href="@routes.DestinationController.editDestination(destination.getDestId())" class="btn btn-primary">
+                            Edit</a></td>
+                        <td><a href="@routes.DestinationController.deleteDestination(destination.getDestId())" class="btn btn-danger">
+                            Delete</a></td>
+                    } else {
+                        <td></td>
+                        <td></td>
+                    }
                 </tr>
                 <br>
                 }

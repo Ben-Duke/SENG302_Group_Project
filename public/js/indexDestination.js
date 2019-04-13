@@ -142,7 +142,7 @@ $('#orderModal').on('show.bs.modal', function (e) {
     // do something...
     var getIdFromRow = $(event.target).closest('tr').data('id');
     //make your ajax call populate items or what even you need
-    $(this).find('#orderDetails').html($('<b> Destination Id selected: ' + getIdFromRow  + '</b>'));
+    //$(this).find('#orderDetails').html($('<b> Destination Id selected: ' + getIdFromRow  + '</b>'));
     var token =  $('input[name="csrfToken"]').attr('value');
     $.ajaxSetup({
         beforeSend: function(xhr) {

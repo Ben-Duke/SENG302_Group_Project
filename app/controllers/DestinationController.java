@@ -412,5 +412,14 @@ public class DestinationController extends Controller {
             return unauthorized("Oops, you are not logged in");
         }
     }
+    public Result getDestination(Http.Request request, Integer destId){
+        User user = User.getCurrentUser(request);
+        if(user != null){
+            Destination destination = Destination.find.byId(destId);
+            return ok(Json.toJson(destination));
+        } else{
+            return unauthorized("Oops, you are not logged in");
+        }
+    }
 
 }

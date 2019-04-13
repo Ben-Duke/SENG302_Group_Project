@@ -143,6 +143,9 @@ GET     /users/destinations             controllers.DestinationController.indexD
 #Renders page for displaying a given destination
 GET     /users/destinations/:id         controllers.DestinationController.viewDestination(request : Request, id : Integer)
 
+#Handles AJAX request to get a given destination (maybe change ^ to /users/destinations/display/:id and this one to /users/destinations/:id
+GET     /users/destinations/get/:id         controllers.DestinationController.getDestination(request : Request, id : Integer)
+
 #Renders page for creating destinations
 GET     /users/destinations/create/     controllers.DestinationController.createDestination(request : Request)
 

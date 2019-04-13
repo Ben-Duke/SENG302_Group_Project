@@ -152,69 +152,72 @@ $('#orderModal').on('show.bs.modal', function (e) {
     });
     $.ajax({
         type: 'GET',
-        url: '/users/destinations/ttypes/' + getIdFromRow,
+        url: '/users/destinations/get/' + getIdFromRow,
         contentType: 'application/json',
-        success: function(data) {
-            // $('#travellerTypes').append("<p>Traveller type(s):</p>");
-            var outerDivNode = document.createElement("div");
-            // outerDivNode.classList.
-            var parNode = document.createElement("p");
-            var parTextNode = document.createTextNode("Traveller type(s)");
-            parNode.appendChild(parTextNode);
-            outerDivNode.appendChild(parNode);
-            var ulNode = document.createElement("ul");
-            ulNode.classList.add("list-group");
-            outerDivNode.appendChild(ulNode);
+        success: function(destinationData){
+            $('#destTitle').html(destinationData["destName"]);
+            $.ajax({
+                type: 'GET',
+                url: '/users/destinations/ttypes/' + getIdFromRow,
+                contentType: 'application/json',
+                success: function(data) {
+                    // $('#travellerTypes').append("<p>Traveller type(s):</p>");
+                    var outerDivNode = document.createElement("div");
+                    // outerDivNode.classList.
+                    var parNode = document.createElement("p");
+                    var parTextNode = document.createTextNode("Traveller type(s)");
+                    parNode.appendChild(parTextNode);
+                    outerDivNode.appendChild(parNode);
+                    var ulNode = document.createElement("ul");
+                    ulNode.classList.add("list-group");
+                    outerDivNode.appendChild(ulNode);
 
-            $.each(data, function(index, element){
-                var liNode = document.createElement("li");
-                liNode.classList.add("list-group-item");
-                var liTextNode = document.createTextNode(element["travellerTypeName"]);
-                liNode.appendChild(liTextNode);
-                ulNode.appendChild(liNode);
-            });
+                    $.each(data, function(index, element){
+                        var liNode = document.createElement("li");
+                        liNode.classList.add("list-group-item");
+                        var liTextNode = document.createTextNode(element["travellerTypeName"]);
+                        liNode.appendChild(liTextNode);
+                        ulNode.appendChild(liNode);
+                    });
 
-            $('#travellerTypes').html(outerDivNode);
-        }
-    });
-    $.ajaxSetup({
-        beforeSend: function(xhr) {
-            xhr.setRequestHeader('Csrf-Token', token);
-        }
-    });
-    $.ajax({
-        type: 'GET',
-        url: '/users/destinations/photos/' + getIdFromRow,
-        contentType: 'application/json',
-        success: function(data) {
-            var outerDivNode = document.createElement("div");
-            outerDivNode.classList.add("carousel-inner");
-            $.each(data, function(index, element){
-                var itemNode = document.createElement("div");
-                itemNode.classList.add("item");
-                if(index == 0){
-                    itemNode.classList.add("active")
+                    $('#travellerTypes').html(outerDivNode);
                 }
-                var imgNode = document.createElement("img");
-                imgNode.src="/users/home/serveDestPicture/" + element["photoId"];
-                imgNode.width=640;
-                imgNode.height=480;
-                itemNode.appendChild(imgNode);
-                outerDivNode.appendChild(itemNode);
-                // $.ajax({
-                //    type: 'GET',
-                //     url: '/users/photos/' + element["photoId"],
-                //     contentType: 'image/png',
-                //     success: function(data){
-                //        imgNode.src = data;
-                //        itemNode.appendChild(imgNode);
-                //        $('#carousel-images').append(itemNode);
-                //     }
-                // });
-                //console.log(element["urlWithPath"]);
-                //imgNode.src = element["urlWithPath"];
             });
-            $('#destslider').html(outerDivNode);
+            $.ajax({
+                type: 'GET',
+                url: '/users/destinations/photos/' + getIdFromRow,
+                contentType: 'application/json',
+                success: function(data) {
+                    var outerDivNode = document.createElement("div");
+                    outerDivNode.classList.add("carousel-inner");
+                    $.each(data, function(index, element){
+                        var itemNode = document.createElement("div");
+                        itemNode.classList.add("item");
+                        if(index == 0){
+                            itemNode.classList.add("active")
+                        }
+                        var imgNode = document.createElement("img");
+                        imgNode.src="/users/home/serveDestPicture/" + element["photoId"];
+                        imgNode.width=640;
+                        imgNode.height=480;
+                        itemNode.appendChild(imgNode);
+                        outerDivNode.appendChild(itemNode);
+                        // $.ajax({
+                        //    type: 'GET',
+                        //     url: '/users/photos/' + element["photoId"],
+                        //     contentType: 'image/png',
+                        //     success: function(data){
+                        //        imgNode.src = data;
+                        //        itemNode.appendChild(imgNode);
+                        //        $('#carousel-images').append(itemNode);
+                        //     }
+                        // });
+                        //console.log(element["urlWithPath"]);
+                        //imgNode.src = element["urlWithPath"];
+                    });
+                    $('#destslider').html(outerDivNode);
+                }
+            });
         }
     });
 });

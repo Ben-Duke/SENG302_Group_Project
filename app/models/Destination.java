@@ -110,6 +110,9 @@ public class Destination extends Model {
     @OneToMany(mappedBy = "destination")
     public List<Visit> visits;
 
+    @OneToMany(mappedBy = "destination")
+    public List<UserPhoto> userPhotos;
+
     @ManyToMany
     public List<TravellerType> travellerTypes;
 

@@ -12,8 +12,8 @@
     <label><input type="checkbox" id="public" onchange="showPublicDestinations(this)" checked>Show public destinations</label>
         <div class="container-fluid" id="hideDivPrivate" aria-hidden="false">
             <h1>My private destinations <a class="btn btn-primary col-sm-offset-8" href="@routes.DestinationController.createDestination()" role="button">Create Destination</a></h1>
-            <input type="text" id="searchDestinations" onkeyup="searchDestination()" placeholder="Search for destinations">
-            <table id="privateDestinations" class="table">
+            <input type="text" class="searchDestinations" onkeyup="searchDestination()" placeholder="Search for destinations">
+            <table class="table privateDestinations">
                 <thead class="thead-dark">
                 <tr>
                     <th scope="col">Name</th>
@@ -51,8 +51,8 @@
 
     <div class="container-fluid" id="hideDivPublic" aria-hidden="false">
         <h1>Public destinations</h1>
-        <input type="text" id="searchPublicDestinations" onkeyup="searchPublicDestination()" placeholder="Search for destinations">
-        <table id="publicDestinations" class="table">
+        <input type="text" class="searchPublicDestinations" onkeyup="searchPublicDestination()" placeholder="Search for destinations">
+        <table class="table publicDestinations">
             <thead class="thead-dark">
                 <tr>
                     <th scope="col">Name</th>

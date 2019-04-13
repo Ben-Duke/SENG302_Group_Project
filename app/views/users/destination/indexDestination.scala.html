@@ -88,25 +88,25 @@
             </tbody>
         </table>
         <div id="orderModal" class="modal fade">
-            <div class="modal-dialog">
+            <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal">x</button>
                         <h3>Destination</h3>
                     </div>
-                    <div class="modal-body" id="orderDetails">
-                    </div>
                     <div class="modal-body" id="carousel">
                         <div class="container">
-                            <div class="carousel slide" id="myslider" data-ride="carousel" data-interval="false">
+                            <div class="carousel slide" id="destslider" data-ride="carousel" data-interval="false">
                                 <div class="carousel-inner" id="carousel-images">
                                 </div>
-                                <a class ="left carousel-control" href="#myslider" data-slide="prev">
+                                <div>
+                                <a class ="left carousel-control" href="#destslider" data-slide="prev">
                                     <span class="glyphicon glyphicon-chevron-left"></span>
                                 </a>
-                                <a class ="right carousel-control" href="#myslider" data-slide="next">
+                                <a class ="right carousel-control" href="#destslider" data-slide="next">
                                     <span class="glyphicon glyphicon-chevron-right"></span>
                                 </a>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -167,8 +167,6 @@
                     url: '/users/destinations/photos/' + getIdFromRow,
                     contentType: 'application/json',
                     success: function(data) {
-                        console.log(data);
-                        //var outerDivNode = document.createElement("div");
                         $.each(data, function(index, element){
                             var itemNode = document.createElement("div");
                             itemNode.classList.add("item");
@@ -176,9 +174,9 @@
                                 itemNode.classList.add("active")
                             }
                             var imgNode = document.createElement("img");
-                            console.log(element["urlWithPath"].split("team-800"));
-                            console.log(element["urlWithPath"].split("team-800")[1]);
                             imgNode.src="/users/home/serveDestPicture/" + element["photoId"];
+                            imgNode.width=480;
+                            imgNode.height=480;
                             itemNode.appendChild(imgNode);
                             $('#carousel-images').append(itemNode);
                             // $.ajax({

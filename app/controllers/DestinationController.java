@@ -365,9 +365,8 @@ public class DestinationController extends Controller {
         User user = User.getCurrentUser(request);
         if(user != null){
             //ObjectNode travellerTypes = Json.newObject();
-            //travellerTypes.put("travellerTypes", ); Destination.find.byId(destId).travellerTypes
-            List<TravellerType> travellerTypes = TravellerType.find.all();
-            return ok(Json.toJson(TravellerType.find.all()));
+            //List<TravellerType> travellerTypes = TravellerType.find.all();
+            return ok(Json.toJson(Destination.find.byId(destId).travellerTypes));
         } else {
             return unauthorized("Oops, you are not logged in");
         }

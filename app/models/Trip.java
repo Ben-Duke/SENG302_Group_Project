@@ -1,5 +1,6 @@
 package models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import formdata.TripFormData;
 import io.ebean.Ebean;
@@ -22,7 +23,7 @@ public class Trip extends Model {
     @Column(columnDefinition = "integer default 0")
     public Integer removedVisits;
 
-    @JsonIgnoreProperties("trip")
+    @JsonIgnore
     @OneToMany(mappedBy = "trip")
     public List<Visit> visits;
 
@@ -30,7 +31,7 @@ public class Trip extends Model {
 
     public boolean isPublic = true;
 
-    @JsonIgnoreProperties("trips")
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "user", referencedColumnName = "userid")
     public User user;

@@ -154,12 +154,23 @@ $('#orderModal').on('show.bs.modal', function (e) {
         url: '/users/destinations/ttypes/' + getIdFromRow,
         contentType: 'application/json',
         success: function(data) {
-            $('#travellerTypes').html($('<p> Traveller type(s): </p>'))
+            $('#travellerTypes').append("<p>Traveller type(s):</p>");
+            console.log(data);
+            var outerDivNode = document.createElement("div");
+            // outerDivNode.classList.
+            var ulNode = document.createElement("ul");
+            ulNode.classList.add("list-group");
+            outerDivNode.appendChild(ulNode);
+
             $.each(data, function(index, element){
-                $('#travellerTypes').append($('<div>', {
-                    type: element
-                }));
+                var liNode = document.createElement("li");
+                liNode.classList.add("list-group-item");
+                var liTextNode = document.createTextNode(element["travellerTypeName"]);
+                liNode.appendChild(liTextNode);
+                ulNode.appendChild(liNode);
             });
+
+            $('#travellerTypes').append(outerDivNode);
         }
     })
 });

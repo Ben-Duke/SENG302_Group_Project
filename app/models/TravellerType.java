@@ -1,5 +1,6 @@
 package models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.ebean.Finder;
 import io.ebean.Model;
@@ -27,11 +28,11 @@ public class TravellerType extends Model {
         return travellerTypeName;
     }
 
-    @JsonIgnoreProperties("travellerTypes")
+    @JsonIgnore
     @ManyToMany(mappedBy = "travellerTypes")
     public List<User> users;
 
-    @JsonIgnoreProperties("travellerTypes")
+    @JsonIgnore
     @ManyToMany(mappedBy = "travellerTypes")
     public List<Destination> destinations;
 

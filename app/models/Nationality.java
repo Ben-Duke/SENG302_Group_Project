@@ -1,5 +1,6 @@
 package models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.ebean.Finder;
 import io.ebean.Model;
@@ -21,7 +22,7 @@ public class Nationality extends Model {
     public String nationalityName;
 
     @ManyToMany(mappedBy = "nationality")
-    @JsonIgnoreProperties("nationality")
+    @JsonIgnore
     public List<User> users;
 
     public String getNationalityName() { return nationalityName; }

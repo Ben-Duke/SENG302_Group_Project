@@ -1,5 +1,6 @@
 package models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.ebean.Finder;
 import io.ebean.Model;
@@ -104,20 +105,20 @@ public class Destination extends Model {
     public double longitude;
     public boolean isPublic;
 
-    @JsonIgnoreProperties("destinations")
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "user", referencedColumnName = "userid")
     public User user;
 
-    @JsonIgnoreProperties("destination")
+    @JsonIgnore
     @OneToMany(mappedBy = "destination")
     public List<Visit> visits;
 
-    @JsonIgnoreProperties("destination")
+    @JsonIgnore
     @OneToMany(mappedBy = "destination")
     public List<UserPhoto> userPhotos;
 
-    @JsonIgnoreProperties("destinations")
+    @JsonIgnore
     @ManyToMany
     public List<TravellerType> travellerTypes;
 

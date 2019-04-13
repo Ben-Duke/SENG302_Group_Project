@@ -1,5 +1,6 @@
 package models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import formdata.VisitFormData;
 import io.ebean.Finder;
@@ -21,12 +22,12 @@ public class Visit extends Model {
     @Id
     public Integer visitid;
 
-    @JsonIgnoreProperties("visits")
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "destination", referencedColumnName = "destid")
     public Destination destination;
 
-    @JsonIgnoreProperties("visits")
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "trip", referencedColumnName = "tripid")
     public Trip trip;

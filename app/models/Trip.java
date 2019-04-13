@@ -30,6 +30,7 @@ public class Trip extends Model {
 
     public boolean isPublic = true;
 
+    @JsonIgnoreProperties("trips")
     @ManyToOne
     @JoinColumn(name = "user", referencedColumnName = "userid")
     public User user;

@@ -102,6 +102,7 @@ public class User extends Model {
     @JsonIgnoreProperties("users")
     public List<Passport> passports;
 
+    @JsonIgnoreProperties("user")
     @OneToMany(mappedBy = "user")
     public List<Trip> trips;
 

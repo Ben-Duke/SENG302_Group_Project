@@ -104,14 +104,17 @@ public class Destination extends Model {
     public double longitude;
     public boolean isPublic;
 
+    @JsonIgnoreProperties("destinations")
     @ManyToOne
     @JoinColumn(name = "user", referencedColumnName = "userid")
     public User user;
 
+    @JsonIgnoreProperties("destination")
     @OneToMany(mappedBy = "destination")
     @JsonIgnoreProperties("destination")
     public List<Visit> visits;
 
+    @JsonIgnoreProperties("destination")
     @OneToMany(mappedBy = "destination")
     public List<UserPhoto> userPhotos;
 

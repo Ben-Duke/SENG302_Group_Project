@@ -1,5 +1,6 @@
 package models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import formdata.TripFormData;
 import io.ebean.Ebean;
 import io.ebean.Finder;
@@ -21,6 +22,7 @@ public class Trip extends Model {
     @Column(columnDefinition = "integer default 0")
     public Integer removedVisits;
 
+    @JsonIgnoreProperties("trip")
     @OneToMany(mappedBy = "trip")
     public List<Visit> visits;
 

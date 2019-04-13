@@ -26,6 +26,7 @@ public class Visit extends Model {
     @JoinColumn(name = "destination", referencedColumnName = "destid")
     public Destination destination;
 
+    @JsonIgnoreProperties("visits")
     @ManyToOne
     @JoinColumn(name = "trip", referencedColumnName = "tripid")
     public Trip trip;

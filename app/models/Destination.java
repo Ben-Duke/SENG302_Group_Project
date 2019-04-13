@@ -110,6 +110,9 @@ public class Destination extends Model {
     @OneToMany(mappedBy = "destination")
     public List<Visit> visits;
 
+    @OneToMany(mappedBy = "destination")
+    public List<UserPhoto> userPhotos;
+
     public static Finder<String,Destination> findString =new Finder<>(Destination.class);
     public static Finder<Integer,Destination> find = new Finder<>(Destination.class);
 

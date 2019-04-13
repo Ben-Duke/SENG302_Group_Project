@@ -58,9 +58,9 @@ public class TestDatabaseManager {
         LocalDate birthDate2 = LocalDate.parse("1960-12-25", formatter);
         LocalDate birthDate3 = LocalDate.parse("2006-06-09", formatter);
 
-        User user = new User("testuser1@uclive.ac.nz", "hunter22", "Gavin", "Ong", birthDate1, "Male");
-        User user2 = new User("testuser2@uclive.ac.nz", "hunter22", "Caitlyn", "Jenner", birthDate2, "Female");
-        User user3 = new User("testuser3@uclive.ac.nz", "hunter22", "John", "Smith", birthDate3, "Male");
+        User user = new User("testuser1@uclive.ac.nz", "test", "Gavin", "Ong", birthDate1, "Male");
+        User user2 = new User("testuser2@uclive.ac.nz", "test", "Caitlyn", "Jenner", birthDate2, "Female");
+        User user3 = new User("testuser3@uclive.ac.nz", "test", "John", "Smith", birthDate3, "Male");
 
         user.addTravellerType(travellerType3);
 
@@ -100,6 +100,9 @@ public class TestDatabaseManager {
      */
     public void createDefaultAdmin(){
         User user = new User("admin@admin.com", "admin", "admin", "admin", LocalDate.now(), "male");
+        user.setDateOfBirth(LocalDate.of(2019, 2, 18));
+        user.setTravellerTypes(TravellerType.find.all().subList(5, 6)); // Business Traveller
+        user.setNationality(Nationality.find.all().subList(0, 2)); // First two countries alphabetically
         user.save();
         Admin admin = new Admin(user.userid, true);
         admin.save();
@@ -121,6 +124,7 @@ public class TestDatabaseManager {
         // Adds destinations for user2
         Destination destination1 = new Destination(
                 "Christchurch", "Town", "Canterbury", "New Zealand", -43.5321, 172.6362, User.find.byId(2));
+        destination1.setIsPublic(true);
         destination1.save();
 
         Destination destination2 = new Destination(
@@ -129,12 +133,14 @@ public class TestDatabaseManager {
 
         Destination destination3 = new Destination(
                 "The Wok", "Cafe/Restaurant", "Canterbury", "New Zealand", -43.523593, 172.582971, User.find.byId(2));
+        destination3.setIsPublic(true);
         destination3.save();
 
 
         // Adds destinations for user3
         Destination destination4 = new Destination(
                 "Hanmer Springs Thermal Pools", "Attraction", "North Canterbury", "New Zealand", -42.522791, 172.828944, User.find.byId(3));
+        destination4.setIsPublic(true);
         destination4.save();
 
         Destination destination5 = new Destination(
@@ -142,6 +148,7 @@ public class TestDatabaseManager {
         destination5.save();
         Destination destination6 = new Destination(
                 "Great Pyramid of Giza", "Attraction", "Giza", "Egypt", 29.979481, 31.134159, User.find.byId(3));
+        destination6.setIsPublic(true);
         destination6.save();
 
         //Adds destinations for user4
@@ -153,6 +160,7 @@ public class TestDatabaseManager {
         destination8.save();
         Destination destination9 = new Destination(
                 "Lincoln Memorial", "Monument", "Washington DC", "United States", 38.889406, -77.050155, User.find.byId(4));
+        destination9.setIsPublic(true);
         destination9.save();
 
 
@@ -163,29 +171,29 @@ public class TestDatabaseManager {
         Trip trip5 = Trip.find.query().where().eq("tripName", "See the pope, the president and come back").findOne();
         Trip trip6 = Trip.find.query().where().eq("tripName", "Waterfall walk and see the president").findOne();
 
-        new Visit("2018-05-04", "2018-05-06", trip1, destination1).save();
-        new Visit("2018-05-06", "2018-05-08", trip1, destination2).save();
+        new Visit("2018-05-04", "2018-05-06", trip1, destination1,1).save();
+        new Visit("2018-05-06", "2018-05-08", trip1, destination2,2).save();
 
-        new Visit(null, null, trip2, destination1).save();
-        new Visit(null, null, trip2, destination2).save();
-        new Visit(null, null, trip2, destination3).save();
-        new Visit( null, null, trip2, destination1).save();
+        new Visit(null, null, trip2, destination1,1).save();
+        new Visit(null, null, trip2, destination2,2).save();
+        new Visit(null, null, trip2, destination3,3).save();
+        new Visit( null, null, trip2, destination1,4).save();
 
 
-        new Visit("2003-08-12", null, trip3, destination4).save();
-        new Visit(null, null, trip3, destination5).save();
-        new Visit( null, null, trip3, destination6).save();
+        new Visit("2003-08-12", null, trip3, destination4,1).save();
+        new Visit(null, null, trip3, destination5,2).save();
+        new Visit( null, null, trip3, destination6,3).save();
 
-        new Visit(null, "2019-04-05", trip4, destination6).save();
-        new Visit(null, null, trip4, destination5).save();
-        new Visit( null, null, trip4, destination6).save();
+        new Visit(null, "2019-04-05", trip4, destination6,1).save();
+        new Visit(null, null, trip4, destination5,2).save();
+        new Visit( null, null, trip4, destination6,3).save();
 
-        new Visit(null, null, trip5, destination8).save();
-        new Visit(null, null, trip5, destination9).save();
-        new Visit( null, null, trip5, destination8).save();
+        new Visit(null, null, trip5, destination8,1).save();
+        new Visit(null, null, trip5, destination9,2).save();
+        new Visit( null, null, trip5, destination8,3).save();
 
-        new Visit(null, null, trip6, destination7).save();
-        new Visit(null, null, trip6, destination9).save();
+        new Visit(null, null, trip6, destination7,1).save();
+        new Visit(null, null, trip6, destination9,2).save();
 
 
 

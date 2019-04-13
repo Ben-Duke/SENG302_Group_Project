@@ -25,6 +25,12 @@ public class UserPhoto extends Model {
     @JoinColumn(name = "user", referencedColumnName = "userid")
     public User user;
 
+    // Creating  the relation to Destination
+    @ManyToOne
+    @JoinColumn(name = "destination", referencedColumnName = "destid")
+    public Destination destination;
+
+    public static Finder<Integer,UserPhoto> find = new Finder<>(UserPhoto.class);
 
     /**
      * Constructor method for UserPhoto.
@@ -48,6 +54,13 @@ public class UserPhoto extends Model {
         return isProfile;
     }
 
+    public Destination getDestination() {
+        return destination;
+    }
+
+    public void setDestination(Destination destination) {
+        this.destination = destination;
+    }
     /**
      * Method to set the photo as profile picture (or not)
      * @param isProfile the boolean showing if the picture is the profile picture
@@ -117,6 +130,4 @@ public class UserPhoto extends Model {
         return user;
     }
 
-
-    public static Finder<Integer,UserPhoto> find = new Finder<>(UserPhoto.class);
 }

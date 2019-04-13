@@ -2,6 +2,7 @@ package controllers;
 
 import models.*;
 import play.mvc.Result;
+import utilities.TestDatabaseManager;
 import utilities.UtilityFunctions;
 import views.html.users.userIndex;
 
@@ -18,11 +19,13 @@ public class UserController {
      * @return the user index page
      */
     public Result userindex(){
-        UtilityFunctions.addNatAndPass();
-        UtilityFunctions.addTravellerTypes();
+//        UtilityFunctions.addNatAndPass();
+//        UtilityFunctions.addTravellerTypes();
         List<User> users = User.find.all();
         if (users.isEmpty()) {
-            addDefaultUsers();
+            TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
+            testDatabaseManager.populateDatabase();
+            //was addDefaultUsers
         }
         users = User.find.all();
         List<Admin> admins = Admin.find.all();

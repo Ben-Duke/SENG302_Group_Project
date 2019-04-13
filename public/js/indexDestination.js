@@ -138,7 +138,6 @@ function sendLinkDestinationRequest(url, photoid){
     })
 }
 
-var parNode = 0;
 $('#orderModal').on('show.bs.modal', function (e) {
     // do something...
     var getIdFromRow = $(event.target).closest('tr').data('id');
@@ -159,12 +158,10 @@ $('#orderModal').on('show.bs.modal', function (e) {
             console.log(data);
             var outerDivNode = document.createElement("div");
             // outerDivNode.classList.
-            if(parNode == 0) {
-                parNode = document.createElement("p");
-                var parTextNode = document.createTextNode("Traveller type(s)");
-                parNode.appendChild(parTextNode);
-                outerDivNode.appendChild(parNode);
-            }
+            parNode = document.createElement("p");
+            var parTextNode = document.createTextNode("Traveller type(s)");
+            parNode.appendChild(parTextNode);
+            outerDivNode.appendChild(parNode);
             var ulNode = document.createElement("ul");
             ulNode.classList.add("list-group");
             outerDivNode.appendChild(ulNode);
@@ -177,7 +174,7 @@ $('#orderModal').on('show.bs.modal', function (e) {
                 ulNode.appendChild(liNode);
             });
 
-            $('#travellerTypes').append(outerDivNode);
+            $('#travellerTypes').html(outerDivNode);
         }
     })
 });

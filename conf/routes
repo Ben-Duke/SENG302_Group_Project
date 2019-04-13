@@ -145,8 +145,18 @@ GET     /users/destinations/create/     controllers.DestinationController.create
 #Renders page for editing destinations
 GET     /users/destinations/edit/:id    controllers.DestinationController.editDestination(request : Request, id : Integer)
 
-#Renders request for destination traveller types
+#Renders request for displaying the page for updating destination traveller types
+GET     /users/destinations/ttypes/display/:id    controllers.TravellerTypeController.updateDestinationTravellerType(request : Request, id : Integer)
+
+#Handles deleting a traveller type from a destinatoin
+GET     /users/destinations/ttypes/:destid/:typeid    controllers.TravellerTypeController.deleteUpdateDestinationTravellerType(request : Request, destid : Integer, typeid : Integer)
+
+#Renders request for getting a destination's traveller types (used in ajax request)
 GET     /users/destinations/ttypes/:id    controllers.DestinationController.getTravellerTypes(request : Request, id : Integer)
+
+
+#Renders request for destination traveller types
+POST     /users/destinations/ttypes/:id    controllers.TravellerTypeController.submitUpdateDestinationTravellerType(request : Request, id : Integer)
 
 #Handles making a destination public
 GET     /users/destinations/public/:id         controllers.DestinationController.makeDestinationPublic(request : Request, id : Integer)

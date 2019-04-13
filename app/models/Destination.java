@@ -111,15 +111,14 @@ public class Destination extends Model {
 
     @JsonIgnoreProperties("destination")
     @OneToMany(mappedBy = "destination")
-    @JsonIgnoreProperties("destination")
     public List<Visit> visits;
 
     @JsonIgnoreProperties("destination")
     @OneToMany(mappedBy = "destination")
     public List<UserPhoto> userPhotos;
 
-    @ManyToMany
     @JsonIgnoreProperties("destinations")
+    @ManyToMany
     public List<TravellerType> travellerTypes;
 
     public static Finder<String,Destination> findString =new Finder<>(Destination.class);

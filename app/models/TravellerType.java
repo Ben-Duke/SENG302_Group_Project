@@ -27,12 +27,12 @@ public class TravellerType extends Model {
         return travellerTypeName;
     }
 
-    @ManyToMany(mappedBy = "travellerTypes")
     @JsonIgnoreProperties("travellerTypes")
+    @ManyToMany(mappedBy = "travellerTypes")
     public List<User> users;
 
-    @ManyToMany(mappedBy = "travellerTypes")
     @JsonIgnoreProperties("travellerTypes")
+    @ManyToMany(mappedBy = "travellerTypes")
     public List<Destination> destinations;
 
     public Integer getTtypeid() {

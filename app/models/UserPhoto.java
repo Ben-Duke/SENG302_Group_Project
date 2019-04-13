@@ -22,6 +22,7 @@ public class UserPhoto extends Model {
     public boolean isProfile;
 
     // Creating  the relation to User
+    @JsonIgnoreProperties("userPhotos")
     @ManyToOne
     @JoinColumn(name = "user", referencedColumnName = "userid")
     public User user;

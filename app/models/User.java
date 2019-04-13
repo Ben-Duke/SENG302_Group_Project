@@ -98,8 +98,8 @@ public class User extends Model {
     /**
      * The passport of the user.
      */
-    @ManyToMany
     @JsonIgnoreProperties("users")
+    @ManyToMany
     public List<Passport> passports;
 
     @JsonIgnoreProperties("user")
@@ -118,8 +118,8 @@ public class User extends Model {
         return destMap;
     }
 
-    @ManyToMany
     @JsonIgnoreProperties("users")
+    @ManyToMany
     public List<TravellerType> travellerTypes;
 
     /**
@@ -131,6 +131,7 @@ public class User extends Model {
         return userPhotos;
     }
 
+    @JsonIgnoreProperties("user")
     @OneToMany(mappedBy = "user")
     public List<UserPhoto> userPhotos;
 

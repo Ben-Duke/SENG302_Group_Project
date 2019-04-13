@@ -21,8 +21,8 @@ public class Passport extends Model {
 
     public String passportName;
 
-    @ManyToMany(mappedBy = "passports")
     @JsonIgnoreProperties("passports")
+    @ManyToMany(mappedBy = "passports")
     public List<User> users;
 
     public List<User> getUsers() {

@@ -10,21 +10,6 @@ create table admin (
   constraint pk_admin primary key (id)
 );
 
-create table company (
-  id                            bigint auto_increment not null,
-  name                          varchar(255),
-  constraint pk_company primary key (id)
-);
-
-create table computer (
-  id                            bigint auto_increment not null,
-  name                          varchar(255),
-  introduced                    timestamp,
-  discontinued                  timestamp,
-  company_id                    bigint,
-  constraint pk_computer primary key (id)
-);
-
 create table destination (
   destid                        integer auto_increment not null,
   dest_name                     varchar(255),
@@ -124,9 +109,6 @@ create table visit (
   constraint pk_visit primary key (visitid)
 );
 
-create index ix_computer_company_id on computer (company_id);
-alter table computer add constraint fk_computer_company_id foreign key (company_id) references company (id) on delete restrict on update restrict;
-
 create index ix_destination_user on destination (user);
 alter table destination add constraint fk_destination_user foreign key (user) references user (userid) on delete restrict on update restrict;
 
@@ -172,9 +154,6 @@ alter table visit add constraint fk_visit_trip foreign key (trip) references tri
 
 # --- !Downs
 
-alter table computer drop constraint if exists fk_computer_company_id;
-drop index if exists ix_computer_company_id;
-
 alter table destination drop constraint if exists fk_destination_user;
 drop index if exists ix_destination_user;
 
@@ -218,10 +197,6 @@ alter table visit drop constraint if exists fk_visit_trip;
 drop index if exists ix_visit_trip;
 
 drop table if exists admin;
-
-drop table if exists company;
-
-drop table if exists computer;
 
 drop table if exists destination;
 

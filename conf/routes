@@ -101,6 +101,10 @@ GET     /users/trips/:id            controllers.TripController.displaytrip(reque
 #Renders page that displays the home page where users can navigate to other pages
 GET     /users/home                 controllers.HomeController.showhome(request:Request)
 
+
+#Serve a file
+GET     /users/home/serveDestPicture/:id               controllers.HomeController.serveFromId(request: Request, id:Integer)
+
 #Serve a file
 GET     /users/home/servePicture                     controllers.HomeController.index(request: Request, path:String)
 
@@ -144,6 +148,24 @@ GET     /users/destinations/create/     controllers.DestinationController.create
 
 #Renders page for editing destinations
 GET     /users/destinations/edit/:id    controllers.DestinationController.editDestination(request : Request, id : Integer)
+
+#Renders request for displaying the page for updating destination traveller types
+GET     /users/destinations/ttypes/display/:id    controllers.TravellerTypeController.updateDestinationTravellerType(request : Request, id : Integer)
+
+#Handles deleting a traveller type from a destinatoin
+GET     /users/destinations/ttypes/:destid/:typeid    controllers.TravellerTypeController.deleteUpdateDestinationTravellerType(request : Request, destid : Integer, typeid : Integer)
+
+#Renders request for getting a destination's traveller types (used in ajax request)
+GET     /users/destinations/ttypes/:id    controllers.DestinationController.getTravellerTypes(request : Request, id : Integer)
+
+#Renders request for getting a destination's photos (used in ajax request)
+GET     /users/destinations/photos/:id    controllers.DestinationController.getPhotos(request : Request, id : Integer)
+
+#Handles request for the file of a photo
+GET     /users/photos/:id                   controllers.DestinationController.getPhotoFile(request : Request, id : Integer)
+
+#Renders request for destination traveller types
+POST     /users/destinations/ttypes/:id    controllers.TravellerTypeController.submitUpdateDestinationTravellerType(request : Request, id : Integer)
 
 #Handles making a destination public
 GET     /users/destinations/public/:id         controllers.DestinationController.makeDestinationPublic(request : Request, id : Integer)

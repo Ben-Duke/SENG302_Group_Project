@@ -1,29 +1,14 @@
 package steps;
 
-import com.google.inject.Inject;
-import com.typesafe.config.Config;
 import cucumber.api.java.After;
 import cucumber.api.java.Before;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
-import io.ebean.Ebean;
-import io.ebean.EbeanServer;
-import io.ebean.config.ServerConfig;
-import io.ebeaninternal.dbmigration.DdlGenerator;
-import models.Trip;
-import models.User;
-import org.junit.Assert;
 import play.Application;
-import play.api.db.evolutions.DynamicEvolutions;
 import play.db.Database;
-import play.db.Databases;
-import play.db.ebean.EbeanConfig;
-import play.db.evolutions.Evolution;
-import play.db.evolutions.Evolutions;
 import play.inject.guice.GuiceApplicationBuilder;
 import play.test.WithApplication;
-import repository.DatabaseExecutionContext;
 import utilities.TestDatabaseManager;
 
 

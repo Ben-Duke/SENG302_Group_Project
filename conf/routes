@@ -67,6 +67,10 @@ GET     /users/trips/cancel         controllers.TripController.cancelTrip(reques
 
 GET     /users/trips/addDestinations    controllers.TripController.AddTripDestinations(request: Request, id:Integer)
 
+GET     /users/trips/display/addDestinations    controllers.TripController.AddExistingTripDestinations(request: Request, id:Integer)
+
+POST     /users/trips/display/addDestinations    controllers.TripController.addvisitExistingTrip(request: Request, id:Integer)
+
 #Handles creating trips
 POST    /users/trips/create         controllers.TripController.savetrip(request: Request)
 
@@ -82,6 +86,9 @@ GET     /users/trips/edit/:id        controllers.TripController.edittrip(request
 #Handles adding a visit to a trip
 POST    /users/trips/edit/:id       controllers.TripController.addvisit(request: Request, id:Integer)
 
+#Handles adding a visit to a trip (table form)
+GET    /users/trips/table/edit/:tripid/:destid       controllers.TripController.addVisitFromTable(request: Request, tripid:Integer, destid:Integer)
+
 #Renders page for editing a visit of a trip
 GET    /users/trips/visit/edit/:id       controllers.TripController.editvisit(request: Request, id:Integer)
 
@@ -94,9 +101,15 @@ GET     /users/trips/:id            controllers.TripController.displaytrip(reque
 #Renders page that displays the home page where users can navigate to other pages
 GET     /users/home                 controllers.HomeController.showhome(request:Request)
 
-GET     /index                      controllers.HomeController.index(request: Request, path:String)
+#Serve a file
+GET     /users/home/servePicture                     controllers.HomeController.index(request: Request, path:String)
+
+#Serve the profile picture
+GET     /users/home/serveProfilePicture              controllers.HomeController.serveProfilePicture(request: Request)
 
 POST    /users/home         controllers.HomeController.upload(request:Request)
+
+POST    /users/home/profilePicture         controllers.HomeController.uploadProfilePicture(request:Request)
 
 #Handles logout request from the user
 GET     /users/logout               controllers.LoginController.logoutrequest(request:Request)
@@ -132,8 +145,14 @@ GET     /users/destinations/create/     controllers.DestinationController.create
 #Renders page for editing destinations
 GET     /users/destinations/edit/:id    controllers.DestinationController.editDestination(request : Request, id : Integer)
 
+#Handles making a destination public
+GET     /users/destinations/public/:id         controllers.DestinationController.makeDestinationPublic(request : Request, id : Integer)
+
 #Handles updating a destination
 POST    /users/destinations/update/:id  controllers.DestinationController.updateDestination(request : Request, id : Integer)
+
+#Handles linking a photo to a destination
+PUT     /users/destinations/:id         controllers.DestinationController.linkPhotoToDestination(request : Request, id : Integer)
 
 #Handles creating a destination
 POST    /users/destinations/save        controllers.DestinationController.saveDestination(request : Request)

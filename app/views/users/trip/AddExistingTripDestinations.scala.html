@@ -6,7 +6,7 @@
 @import helper._
 
 @main("Add Destinations") {
-    @form(action = helper.CSRF(routes.TripController.addvisit(trip.tripid))) {
+    @form(action = helper.CSRF(routes.TripController.addvisitExistingTrip(trip.tripid))) {
 
 
         <fieldset>
@@ -20,7 +20,7 @@
             </div>
 
             </div>
-            @*<label><input type="checkbox" id="private" onchange="showPrivateDestinations(@destinations)">Show private destinations</label>*@
+
             @views.html.bootstrap3.select(visitForm("destName"),
                 label= "Destination",
                 optionMap= destinations,
@@ -44,7 +44,7 @@
             <label class="col-md-4 control-label" for="submit"></label>
             <div class="col-sm-offset-2 col-sm-10">
                 <input id="submit" type="submit" value="Add Destination" class="btn btn-primary"/>
-                <a href= "@routes.TripController.cancelTrip(trip.tripid)" id="cancel" name="cancel" class="btn btn-default">Cancel</a>
+                <a href= "@routes.TripController.displaytrip(trip.tripid,"")" id="cancel" name="cancel" class="btn btn-danger">Back</a>
                 @if(trip.visits.size < 2){
                     <h4>You need to have at least two destinations in your trip</h4>
                 } else {

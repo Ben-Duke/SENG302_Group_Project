@@ -9,6 +9,38 @@ import java.util.*;
 @Entity
 public class Destination extends Model {
 
+    /**
+     * Destination constructor with isPublic method
+     * @param destName
+     * @param destType
+     * @param district
+     * @param country
+     * @param latitude
+     * @param longitude
+     * @param user
+     * @param isPublic
+     */
+    public Destination(String destName, String destType, String district, String country, double latitude, double longitude, User user, boolean isPublic){
+        this.destName = destName;
+        this.user = user;
+        this.destType = destType;
+        this.district = district;
+        this.country = country;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.isPublic = isPublic;
+    }
+
+    /**
+     * Destination constructor without isPublic method (isPublic defaults to false)
+     * @param destName
+     * @param destType
+     * @param district
+     * @param country
+     * @param latitude
+     * @param longitude
+     * @param user
+     */
     public Destination(String destName, String destType, String district, String country, double latitude, double longitude, User user){
         this.destName = destName;
         this.user = user;
@@ -17,6 +49,7 @@ public class Destination extends Model {
         this.country = country;
         this.latitude = latitude;
         this.longitude = longitude;
+        this.isPublic = false;
     }
 
     /**
@@ -68,6 +101,7 @@ public class Destination extends Model {
     public String country;
     public double latitude;
     public double longitude;
+    public boolean isPublic;
 
     @ManyToOne
     @JoinColumn(name = "user", referencedColumnName = "userid")
@@ -75,6 +109,9 @@ public class Destination extends Model {
 
     @OneToMany(mappedBy = "destination")
     public List<Visit> visits;
+
+    @OneToMany(mappedBy = "destination")
+    public List<UserPhoto> userPhotos;
 
     public static Finder<String,Destination> findString =new Finder<>(Destination.class);
     public static Finder<Integer,Destination> find = new Finder<>(Destination.class);
@@ -88,6 +125,7 @@ public class Destination extends Model {
     public String getCountry() { return country; }
     public double getLatitude() { return latitude; }
     public double getLongitude() { return longitude; }
+    public boolean getIsPublic() { return isPublic;}
 
     public User getUser() { return user; }
 
@@ -99,6 +137,7 @@ public class Destination extends Model {
     public void setCountry(String country) { this.country = country; }
     public void setLatitude(double latitude) { this.latitude = latitude; }
     public void setLongitude(double longitude) { this.longitude = longitude; }
+    public void setIsPublic(boolean isPublic) { this.isPublic = isPublic; }
 
     public void setUser(User user) { this.user = user; }
 

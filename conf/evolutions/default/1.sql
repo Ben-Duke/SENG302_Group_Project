@@ -33,6 +33,7 @@ create table destination (
   country                       varchar(255),
   latitude                      double not null,
   longitude                     double not null,
+  is_public                     boolean default false not null,
   user                          integer,
   constraint pk_destination primary key (destid)
 );
@@ -100,7 +101,9 @@ create table user_photo (
   photo_id                      integer auto_increment not null,
   url                           varchar(255),
   is_public                     boolean default false not null,
+  is_profile                    boolean default false not null,
   user                          integer,
+  destination                   integer,
   constraint pk_user_photo primary key (photo_id)
 );
 
@@ -145,6 +148,9 @@ alter table user_traveller_type add constraint fk_user_traveller_type_traveller_
 create index ix_user_photo_user on user_photo (user);
 alter table user_photo add constraint fk_user_photo_user foreign key (user) references user (userid) on delete restrict on update restrict;
 
+create index ix_user_photo_destination on user_photo (destination);
+alter table user_photo add constraint fk_user_photo_destination foreign key (destination) references destination (destid) on delete restrict on update restrict;
+
 create index ix_visit_destination on visit (destination);
 alter table visit add constraint fk_visit_destination foreign key (destination) references destination (destid) on delete restrict on update restrict;
 
@@ -183,6 +189,9 @@ drop index if exists ix_user_traveller_type_traveller_type;
 
 alter table user_photo drop constraint if exists fk_user_photo_user;
 drop index if exists ix_user_photo_user;
+
+alter table user_photo drop constraint if exists fk_user_photo_destination;
+drop index if exists ix_user_photo_destination;
 
 alter table visit drop constraint if exists fk_visit_destination;
 drop index if exists ix_visit_destination;

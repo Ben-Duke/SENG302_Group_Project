@@ -18,6 +18,54 @@ public class NatFormData implements Constraints.Validatable<List<ValidationError
     public int nationality;
     public String nationalitydelete;
 
+    public static UserFactory getUserFactory() {
+        return userFactory;
+    }
+
+    public static void setUserFactory(UserFactory userFactory) {
+        NatFormData.userFactory = userFactory;
+    }
+
+    public static Logger getLogger() {
+        return logger;
+    }
+
+    public static void setLogger(Logger logger) {
+        NatFormData.logger = logger;
+    }
+
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
+
+    public int getNatcount() {
+        return natcount;
+    }
+
+    public void setNatcount(int natcount) {
+        this.natcount = natcount;
+    }
+
+    public int getNationality() {
+        return nationality;
+    }
+
+    public void setNationality(int nationality) {
+        this.nationality = nationality;
+    }
+
+    public String getNationalitydelete() {
+        return nationalitydelete;
+    }
+
+    public void setNationalitydelete(String nationalitydelete) {
+        this.nationalitydelete = nationalitydelete;
+    }
+
     public NatFormData(List<String> nats, String delNat, int id){
         this.nationality = nats.size();
         this.nationalitydelete = delNat;
@@ -38,19 +86,13 @@ public class NatFormData implements Constraints.Validatable<List<ValidationError
         if(userId != -1) {
             natcount = userFactory.getNatsForUserbyId(userId);
         }
-
         if (natcount < 2) {
-            logger.debug("im validating the nats");
             errors.add(
                     new ValidationError("nationalitydelete", "Need at least one nationality, " +
                             "please add another nationality before deleting the one you selected."));
         }
-
-        if (errors.isEmpty()) {
             return errors;
-        }
 
-        return null;
     }
 
 }

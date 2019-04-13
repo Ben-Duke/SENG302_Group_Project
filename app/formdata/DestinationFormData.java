@@ -11,14 +11,14 @@ import java.util.TreeMap;
 @Constraints.Validate
 public class DestinationFormData implements Constraints.Validatable<List<ValidationError>> {
 
-    public String name;
+    public String destName;
+    public String destType;
     public String district;
-    public String city;
+    public String country;
     public String latitude;
     public String longitude;
-    public String type;
     public String date;
-    public String country;
+
 
     /**
      * A function that is called when creating a destination to the the types
@@ -46,16 +46,19 @@ public class DestinationFormData implements Constraints.Validatable<List<Validat
     public List<ValidationError> validate() {
         List<ValidationError> errors = new ArrayList<>();
 
-        if (name == null || name.length() == 0) {
-            errors.add(new ValidationError("name","Destination Name field is empty"));
+        destName = destName.trim();
+        district = district.trim();
+
+        if (destName == null || destName.length() == 0) {
+            errors.add(new ValidationError("destName","Destination Name field is empty"));
         }
 
         if (country == null || country.length() == 0) {
             errors.add(new ValidationError("country", "Country field is empty"));
         }
 
-        if (type == null || type.length() == 0) {
-            errors.add(new ValidationError("type", "Type field is empty"));
+        if (destType == null || destType.length() == 0) {
+            errors.add(new ValidationError("destType", "Type field is empty"));
         }
 
 
@@ -80,14 +83,68 @@ public class DestinationFormData implements Constraints.Validatable<List<Validat
         }
 
 
-        if (type.equals("event") && date.isEmpty()){
+        if (destType.equals("event") && date.isEmpty()){
             errors.add(new ValidationError("date", "Please enter a date"));
         }
 
 
-        if (errors.size() > 0) {
-            return errors;
-        }
-        return null;
+
+        return errors;
+    }
+
+    public String getDestName() {
+        return destName;
+    }
+
+    public void setDestName(String destName) {
+        this.destName = destName;
+    }
+
+    public String getDestType() {
+        return destType;
+    }
+
+    public void setDestType(String destType) {
+        this.destType = destType;
+    }
+
+    public String getDistrict() {
+        return district;
+    }
+
+    public void setDistrict(String district) {
+        this.district = district;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
+    }
+
+    public String getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(String latitude) {
+        this.latitude = latitude;
+    }
+
+    public String getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(String longitude) {
+        this.longitude = longitude;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
     }
 }

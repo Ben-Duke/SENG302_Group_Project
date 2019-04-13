@@ -2,6 +2,8 @@ package controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import formdata.DestinationFormData;
+import formdata.UpdateUserFormData;
 import models.*;
 
 
@@ -31,6 +33,7 @@ public class DestinationController extends Controller {
      * @param destForm all of the inputs from the user
      * @return notAcceptable error messages for failed test, or null if all valid
      */
+    @Deprecated
     private Result validateDestination(DynamicForm destForm) {
 
 
@@ -124,9 +127,10 @@ public class DestinationController extends Controller {
         User user = User.getCurrentUser(request);
 
         if (user != null) {
-            Form<Destination> destForm = formFactory.form(Destination.class);
+            Form<DestinationFormData> destFormData;
+            destFormData = formFactory.form(DestinationFormData.class);
 
-            return ok(createdestination.render(destForm, Destination.getIsoCountries(), Destination.getTypeList()));
+            return ok(createdestination.render(destFormData, Destination.getIsoCountries(), Destination.getTypeList()));
         }
         return unauthorized("Oops, you are not logged in");
     }
@@ -144,27 +148,32 @@ public class DestinationController extends Controller {
      * @param request the http request
      * @return renders the index page or an unauthorized message is no user is logged in.
      */
-    public Result saveDestination(Http.Request request) {
+    public Result saveDestinationFromRequest(Http.Request request) {
+        Form<DestinationFormData> destinationFormData;
+        destinationFormData = formFactory.form(DestinationFormData.class)
+                                                                .bindFromRequest();
         User user = User.getCurrentUser(request);
 
-        if (user != null) {
-            DynamicForm destForm = formFactory.form().bindFromRequest();
-            Result validationResult = validateDestination(destForm);
+        if (user != null) { // checks if a user is logged in
+            if (! destinationFormData.hasErrors()) {
+                // no form errors
+                // processing it now
+                DynamicForm destForm = formFactory.form().bindFromRequest();
 
-            if (validationResult != null) {
-                return validationResult;
+                //If program gets past this point then inputted destination is valid
+
+                Destination destination = formFactory.form(Destination.class).bindFromRequest().get();
+
+                destination.setUser(user);
+                destination.save();
+                return redirect(routes.DestinationController.indexDestination());
+            } else {
+                return badRequest(createdestination.render(destinationFormData,
+                        Destination.getIsoCountries(), Destination.getTypeList()));
             }
-            //If program gets past this point then inputted destination is valid
-
-            Destination destination = formFactory.form(Destination.class).bindFromRequest().get();
-
-            destination.setUser(user);
-            destination.save();
         } else {
             return unauthorized("Oops, you are not logged in");
         }
-
-        return redirect(routes.DestinationController.indexDestination());
     }
 
     /**

@@ -137,3 +137,29 @@ function sendLinkDestinationRequest(url, photoid){
         }
     })
 }
+
+$('#orderModal').on('show.bs.modal', function (e) {
+    // do something...
+    var getIdFromRow = $(event.target).closest('tr').data('id');
+    //make your ajax call populate items or what even you need
+    $(this).find('#orderDetails').html($('<b> Destination Id selected: ' + getIdFromRow  + '</b>'));
+    var token =  $('input[name="csrfToken"]').attr('value');
+    $.ajaxSetup({
+        beforeSend: function(xhr) {
+            xhr.setRequestHeader('Csrf-Token', token);
+        }
+    });
+    $.ajax({
+        type: 'GET',
+        url: '/users/destinations/ttypes/' + getIdFromRow,
+        contentType: 'application/json',
+        success: function(data) {
+            $('#travellerTypes').html($('<p> Traveller type(s): </p>'))
+            $.each(data, function(index, element){
+                $('#travellerTypes').append($('<div>', {
+                    type: element
+                }));
+            });
+        }
+    })
+});

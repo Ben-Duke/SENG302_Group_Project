@@ -1,14 +1,15 @@
 package controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import models.Destination;
-import models.User;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import models.*;
 
 
-import models.UserPhoto;
 import play.data.DynamicForm;
 import play.data.Form;
 import play.data.FormFactory;
+import play.libs.Json;
+import play.mvc.BodyParser;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
@@ -358,5 +359,17 @@ public class DestinationController extends Controller {
             return unauthorized("Oops, you are not logged in");
         }
         return ok();
+    }
+
+    public Result getTravellerTypes(Http.Request request, Integer destId){
+        User user = User.getCurrentUser(request);
+        if(user != null){
+            //ObjectNode travellerTypes = Json.newObject();
+            //travellerTypes.put("travellerTypes", ); Destination.find.byId(destId).travellerTypes
+            List<TravellerType> travellerTypes = TravellerType.find.all();
+            return ok(Json.toJson(TravellerType.find.all()));
+        } else {
+            return unauthorized("Oops, you are not logged in");
+        }
     }
 }

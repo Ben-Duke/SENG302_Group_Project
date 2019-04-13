@@ -145,6 +145,9 @@ GET     /users/destinations/create/     controllers.DestinationController.create
 #Renders page for editing destinations
 GET     /users/destinations/edit/:id    controllers.DestinationController.editDestination(request : Request, id : Integer)
 
+#Renders request for destination traveller types
+GET     /users/destinations/ttypes/:id    controllers.DestinationController.getTravellerTypes(request : Request, id : Integer)
+
 #Handles making a destination public
 GET     /users/destinations/public/:id         controllers.DestinationController.makeDestinationPublic(request : Request, id : Integer)
 

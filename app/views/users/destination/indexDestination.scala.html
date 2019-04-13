@@ -9,7 +9,7 @@
 <h1>My private destinations <a class="btn btn-primary col-sm-offset-8" href="@routes.DestinationController.createDestination()" role="button">Create Destination</a></h1>
 
     <input type="text" class="searchDestinations" onkeyup="searchDestination()" placeholder="Search for destinations">
-    <table class="table privateDestinations">
+    <table class="table table-hover privateDestinations">
         <thead class="thead-dark">
         <tr>
             <th scope="col">Name</th>
@@ -25,7 +25,7 @@
         <tbody>
         @for(destination <- destinations) {
             @if(destination.getIsPublic == false){
-            <tr>
+            <tr data-toggle="modal" data-id="@destination.getDestId()" data-target="#orderModal" class="clickable">
                 <th scope ="row">@destination.getDestName()</th>
                 <td>@destination.getDestType()</td>
                 <td>@destination.getCountry()</td>
@@ -47,7 +47,7 @@
 
     <h1>Public destinations</h1>
     <input type="text" class="searchPublicDestinations" onkeyup="searchPublicDestination()" placeholder="Search for destinations">
-    <table class="table publicDestinations">
+    <table class="table table-hover publicDestinations">
         <thead class="thead-dark">
             <tr>
                 <th scope="col">Name</th>
@@ -61,7 +61,7 @@
         <tbody>
         @for(destination <- allDestinations) {
             @if(destination.getIsPublic == true){
-                <tr>
+                <tr data-toggle="modal" data-id="@destination.getDestId()" data-target="#orderModal" class="clickable">
                     <th scope ="row">@destination.getDestName()</th>
                     <td>@destination.getDestType()</td>
                     <td>@destination.getCountry()</td>
@@ -74,7 +74,23 @@
         }
         </tbody>
     </table>
-
+    <div id="orderModal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">x</button>
+                <h3>Destination</h3>
+            </div>
+            <div class="modal-body" id="orderDetails">
+            </div>
+            <div class="modal-body" id="travellerTypes">
+            </div>
+            <div class="modal-footer">
+                <button class="btn" data-dismiss="modal">Close</button>
+            </div>
+            </div>
+        </div>
+    </div>
     <script src="@routes.Assets.at("js/indexDestination.js")" type="text/javascript"></script>
 
 }

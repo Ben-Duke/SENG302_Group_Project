@@ -1,5 +1,6 @@
 package models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.ebean.ExpressionList;
 import io.ebean.Finder;
 import io.ebean.Model;
@@ -75,6 +76,7 @@ public class User extends Model {
      * The user doesn't need to have a nationality.
      */
     @ManyToMany
+    @JsonIgnoreProperties("users")
     public List<Nationality> nationality;
 
     /**

@@ -38,6 +38,12 @@ create table destination (
   constraint pk_destination primary key (destid)
 );
 
+create table destination_traveller_type (
+  destination_destid            integer not null,
+  traveller_type_ttypeid        integer not null,
+  constraint pk_destination_traveller_type primary key (destination_destid,traveller_type_ttypeid)
+);
+
 create table nationality (
   natid                         integer auto_increment not null,
   nationality_name              varchar(255),
@@ -124,6 +130,12 @@ alter table computer add constraint fk_computer_company_id foreign key (company_
 create index ix_destination_user on destination (user);
 alter table destination add constraint fk_destination_user foreign key (user) references user (userid) on delete restrict on update restrict;
 
+create index ix_destination_traveller_type_destination on destination_traveller_type (destination_destid);
+alter table destination_traveller_type add constraint fk_destination_traveller_type_destination foreign key (destination_destid) references destination (destid) on delete restrict on update restrict;
+
+create index ix_destination_traveller_type_traveller_type on destination_traveller_type (traveller_type_ttypeid);
+alter table destination_traveller_type add constraint fk_destination_traveller_type_traveller_type foreign key (traveller_type_ttypeid) references traveller_type (ttypeid) on delete restrict on update restrict;
+
 create index ix_trip_user on trip (user);
 alter table trip add constraint fk_trip_user foreign key (user) references user (userid) on delete restrict on update restrict;
 
@@ -166,6 +178,12 @@ drop index if exists ix_computer_company_id;
 alter table destination drop constraint if exists fk_destination_user;
 drop index if exists ix_destination_user;
 
+alter table destination_traveller_type drop constraint if exists fk_destination_traveller_type_destination;
+drop index if exists ix_destination_traveller_type_destination;
+
+alter table destination_traveller_type drop constraint if exists fk_destination_traveller_type_traveller_type;
+drop index if exists ix_destination_traveller_type_traveller_type;
+
 alter table trip drop constraint if exists fk_trip_user;
 drop index if exists ix_trip_user;
 
@@ -206,6 +224,8 @@ drop table if exists company;
 drop table if exists computer;
 
 drop table if exists destination;
+
+drop table if exists destination_traveller_type;
 
 drop table if exists nationality;
 

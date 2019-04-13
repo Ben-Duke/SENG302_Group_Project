@@ -19,6 +19,12 @@
     font-size: 16px;
 }
 
+
+/* un comment this to use hand when hovering over row instead of pointer */
+/*.clickable {*/
+    /*cursor: pointer;*/
+/*}*/
+
 br {
     display: none;
 }

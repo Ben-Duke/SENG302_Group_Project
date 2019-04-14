@@ -88,7 +88,7 @@ public class DestinationController extends Controller {
         if (user != null) {
             List<Destination> destinations = user.getDestinations();
             List<Destination> allDestinations = Destination.find.all();
-            return ok(indexDestination.render(destinations, allDestinations));
+            return ok(indexDestination.render(destinations, allDestinations, user));
 
 
         }
@@ -183,7 +183,7 @@ public class DestinationController extends Controller {
             Destination destination = Destination.find.query().where().eq("destid", destId).findOne();
 
             if (destination != null) {
-                if (destination.isUserOwner(user.userid)) {
+                if (destination.isUserOwner(user.getUserid()) || user.userIsAdmin()) {
 
                     Form<Destination> destForm = formFactory.form(Destination.class).fill(destination);
 

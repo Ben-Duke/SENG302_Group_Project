@@ -179,7 +179,8 @@ $('#orderModal').on('show.bs.modal', function (e) {
                         liNode.appendChild(liTextNode);
                         ulNode.appendChild(liNode);
                     });
-
+                    // outerDivNode.classList.add("col-md-offset-1");
+                    // outerDivNode.classList.add("col-md-4");
                     $('#travellerTypes').html(outerDivNode);
                 }
             });
@@ -198,8 +199,7 @@ $('#orderModal').on('show.bs.modal', function (e) {
                         }
                         var imgNode = document.createElement("img");
                         imgNode.src="/users/home/serveDestPicture/" + element["photoId"];
-                        imgNode.width=640;
-                        imgNode.height=480;
+                        imgNode.classList.add("destination-image");
                         itemNode.appendChild(imgNode);
                         outerDivNode.appendChild(itemNode);
                         // $.ajax({

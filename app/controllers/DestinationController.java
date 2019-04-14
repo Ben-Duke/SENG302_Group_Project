@@ -412,6 +412,13 @@ public class DestinationController extends Controller {
             return unauthorized("Oops, you are not logged in");
         }
     }
+
+    /**
+     * Returns the destination as a json based on a destination ID
+     * @param request the HTTP request
+     * @param destId the destination ID
+     * @return the destination as a json
+     */
     public Result getDestination(Http.Request request, Integer destId){
         User user = User.getCurrentUser(request);
         if(user != null){
@@ -420,6 +427,34 @@ public class DestinationController extends Controller {
         } else{
             return unauthorized("Oops, you are not logged in");
         }
+    }
+
+    public Result setPrimaryPhoto(Http.Request request, Integer destId){
+        User user = User.getCurrentUser(request);
+        if(user != null) {
+            JsonNode node = request.body().asJson().get("photoid");
+            String photoid = node.textValue();
+            photoid = photoid.replace("\"", "");
+            UserPhoto photo = UserPhoto.find.byId(Integer.parseInt(photoid));
+            Destination destination = Destination.find.byId(destId);
+            if(destination != null || photo != null) {
+                if ((destination.getUser().getUserid() == user.getUserid() && destination.getUserPhotos().contains(photo)) || user.userIsAdmin()) {
+                    //add checks for private destinations here once destinations have been merged in.
+                    //You can only link a photo to a private destination if you own the private destination.
+                    destination.setPrimaryPhoto(photo);
+                    destination.update();
+                    System.out.println("SUCCESS!");
+                } else {
+                    return unauthorized("Oops, this is not your photo!");
+                }
+            }
+            else{
+                return notFound();
+            }
+        } else {
+            return unauthorized("Oops, you are not logged in");
+        }
+        return ok();
     }
 
 }

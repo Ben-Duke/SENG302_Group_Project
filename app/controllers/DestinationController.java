@@ -129,10 +129,7 @@ public class DestinationController extends Controller {
         }
         return unauthorized("Oops, you are not logged in");
     }
-
-
-
-
+    
     /**
      * Extracts a destination object from the form user fills out.
      * Checks if input makes a valid destination.

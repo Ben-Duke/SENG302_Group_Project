@@ -56,6 +56,7 @@
                 <th scope="col">District</th>
                 <th scope="col">Latitude</th>
                 <th scope="col">Longitude</th>
+                <th scope="col">Edit</th>
             </tr>
         </thead>
         <tbody>
@@ -68,6 +69,7 @@
                     <td>@destination.getDistrict</td>
                     <td>@destination.getLatitude</td>
                     <td>@destination.getLongitude</td>
+                    <td><a class="btn btn-link" href="@routes.DestinationController.editPublicDestination(destination.getDestId)" role="button">Suggest Modification</a></td>
                 </tr>
                 <br>
                 }

@@ -205,6 +205,61 @@ public class DestinationController extends Controller {
         }
     }
 
+    public Result editPublicDestination(Http.Request request, Integer destId) {
+        User user = User.getCurrentUser(request);
+
+        if (user != null) {
+            Destination destination = Destination.find.query().where().eq("destid", destId).findOne();
+
+            if (destination != null) {
+                Form<Destination> destForm = formFactory.form(Destination.class).fill(destination);
+
+                Map<String, Boolean> typeList = Destination.getTypeList();
+                typeList.replace(destination.getDestType(), true);
+
+                Map<String, Boolean> countryList = Destination.getIsoCountries();
+                countryList.replace(destination.getCountry(), true);
+
+                return ok(editPublicDestination.render(destForm, destination, countryList, typeList));
+
+            } else {
+                return notFound("Destination does not exist");
+            }
+        } else {
+            return unauthorized("Oops, you are not logged in");
+        }
+    }
+
+    public Result updatePublicDestination(Http.Request request, Integer destId) {
+        User user = User.getCurrentUser(request);
+
+        if (user != null) {
+            DynamicForm destForm = formFactory.form().bindFromRequest();
+            Result validationResult = validateDestination(destForm);
+
+            if (validationResult != null) {
+                return validationResult;
+            }
+            //If program gets past this point then inputted destination is valid
+
+            Destination newDestination = formFactory.form(Destination.class).bindFromRequest().get();
+            Destination oldDestination = Destination.find.query().where().eq("destid", destId).findOne();
+
+            if (oldDestination != null) {
+
+                if (newDestination.equals(oldDestination)) {
+                    return badRequest("No changes suggested");
+                }
+                return ok("Request Submitted");
+
+            } else {
+                return notFound("The destination you are trying to update no longer exists");
+            }
+        } else {
+            return unauthorized("Oops, you are not logged in");
+        }
+    }
+
     /**
      * Creates a new destination object from the edit page form, checks if inputs make a valid destination.
      * then using the given destination, all the attributes of the old destination are updated with the new attributes.

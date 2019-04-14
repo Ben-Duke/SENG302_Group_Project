@@ -143,21 +143,31 @@ public class Destination extends Model {
 
     /**
      * The equals method compares two Destination objects for equality. The criteria
-     * is district and country.
+     * is all attributes, except isPublic.
      *
      * @param dest2 the other Destination object which is being compared for equality
      * @return true if destinations are equal, false if not.
      */
 
     public boolean equals(Destination dest2) {
-
-        if (!district.equals(dest2.getDistrict())) {
+        if (!this.destName.equals(dest2.getDestName())) {
             return false;
         }
-        if (!country.equals(dest2.getCountry())) {
+        if (!this.country.equals(dest2.getCountry())) {
             return false;
         }
-
+        if (!this.district.equals(dest2.getDistrict())) {
+            return false;
+        }
+        if (!(this.latitude == dest2.getLatitude())) {
+            return false;
+        }
+        if (!(this.longitude == dest2.getLongitude())) {
+            return false;
+        }
+        if (!this.destType.equals(dest2.getDestType())) {
+            return false;
+        }
         return true;
     }
 

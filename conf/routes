@@ -148,8 +148,14 @@ GET     /users/destinations/edit/:id    controllers.DestinationController.editDe
 #Handles making a destination public
 GET     /users/destinations/public/:id         controllers.DestinationController.makeDestinationPublic(request : Request, id : Integer)
 
+#Renders page for editing public destinations
+GET     /users/destinations/edit/public/:id     controllers.DestinationController.editPublicDestination(request : Request, id : Integer)
+
 #Handles updating a destination
 POST    /users/destinations/update/:id  controllers.DestinationController.updateDestination(request : Request, id : Integer)
+
+#Handles sending modification request to admins for editing public destinations
+POST    /users/destinations/update/public/:id  controllers.DestinationController.updatePublicDestination(request : Request, id : Integer)
 
 #Handles linking a photo to a destination
 PUT     /users/destinations/:id         controllers.DestinationController.linkPhotoToDestination(request : Request, id : Integer)

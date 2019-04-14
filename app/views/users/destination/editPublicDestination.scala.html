@@ -1,0 +1,58 @@
+@(destForm : Form[Destination], destination: Destination, countryMap: Map[String, Boolean], typeMap: Map[String, Boolean])
+@import helper._
+@import views.html.bootstrap3._
+
+@main("Destinations") {
+
+
+<h1>Edit Destination</h1>
+@helper.form(action = helper.CSRF(routes.DestinationController.updatePublicDestination(destination.getDestId()))) {
+
+<fieldset>
+
+    <!-- Name -->
+    @text(destForm("destName"),
+    label = "Destination Name",
+    placeholder = "destination name",
+    help = "Please enter the destination. (required)")
+
+    @views.html.bootstrap3.select(destForm("country"),
+    label = "Country",
+    optionMap = countryMap,
+    isMultiple = false,
+    help= "Select a country",
+    )
+
+    @text(destForm("district"),
+    label = "District",
+    placeholder = "district",
+    )
+
+    @text(destForm("latitude"),
+    label = "Latitude",
+    placeholder = "latitude"
+    )
+
+    @text(destForm("longitude"),
+    label = "Longitude",
+    placeholder = "longitude"
+    )
+
+    @views.html.bootstrap3.select(destForm("destType"),
+    label = "Type",
+    optionMap = typeMap,
+    isMultiple = false,
+    help = "Select a type")
+
+</fieldset>
+<p>
+<div class="form-group actions">
+    <div class="col-sm-offset-2 col-sm-10">
+        <input id="submit" type="submit" value="Submit Modification Request" class="btn btn-primary"/>
+        <a class="btn btn-danger" href="@routes.DestinationController.indexDestination()" role="button">Cancel</a>
+    </div>
+</div>
+</p>
+
+}
+}

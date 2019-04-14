@@ -40,5 +40,19 @@ public class TripFormData implements Constraints.Validatable<List<ValidationErro
 
     }
 
+    public String getTripName() {
+        return tripName;
+    }
 
+    public void setTripName(String tripName) {
+        this.tripName = tripName;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
 }

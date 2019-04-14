@@ -88,11 +88,12 @@ public class DestinationController extends Controller {
      */
     public Result indexDestination(Http.Request request) {
         User user = User.getCurrentUser(request);
+        DestinationFactory destFactory = new DestinationFactory();
 
         if (user != null) {
             List<Destination> destinations = user.getDestinations();
             List<Destination> allDestinations = Destination.find.all();
-            return ok(indexDestination.render(destinations, allDestinations));
+            return ok(indexDestination.render(destinations, allDestinations, destFactory));
 
 
         }
@@ -344,11 +345,26 @@ public class DestinationController extends Controller {
 
             if (destination != null) {
                 if (destination.isUserOwner(user.userid)) {
-                    //sets the destination to public, sets the owner to the default admin and updates the destination
-                    destination.setIsPublic(true);
-                    destination.update();
+                    //-----------checking if a public destination equivalent
+                    // ----------already exists
+                    DestinationFactory destFactory = new DestinationFactory();
+                    if (destFactory.doesPublicDestinationExist(destination)) {
+                        // public matching destination already exists
+                        // show error
+                        destination.setIsPublic(true);
+                        destination.update();
+                        return redirect(routes.DestinationController.indexDestination());
+                    } else {
+                        //no matching pub destination exists, making public now
+                        //sets the destination to public, sets the owner to the default admin and updates the destination
+                        destination.setIsPublic(true);
+                        destination.update();
+                        return redirect(routes.DestinationController.indexDestination());
+                    }
+
+
                 } else {
-                    return unauthorized("HEY!, not yours. You cant delete. How you get access to that anyway?... FBI!!! OPEN UP!");
+                    return unauthorized("HEY!, not yours. You cant make public. How you get access to that anyway?... FBI!!! OPEN UP!");
                 }
             } else {
                 return notFound("Destination does not exist");
@@ -356,8 +372,6 @@ public class DestinationController extends Controller {
         } else {
             return unauthorized("Oops, you are not logged in");
         }
-
-        return redirect(routes.DestinationController.indexDestination());
     }
     /**
      * Links a photo with a photo id to a destination with a destination id.

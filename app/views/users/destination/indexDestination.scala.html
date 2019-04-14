@@ -1,4 +1,4 @@
-@(destinations: List[Destination], allDestinations: List[Destination])
+@(destinations: List[Destination], allDestinations: List[Destination], user : User)
 
 @main("Destinations") {
 
@@ -72,7 +72,7 @@
                     <td>@destination.getDistrict</td>
                     <td>@destination.getLatitude</td>
                     <td>@destination.getLongitude</td>
-                    @if(destination.getUser().getUserid() == destination.user.getUserid() || destination.getUser().isAdmin()) {
+                    @if(destination.getUser().getUserid() == user.getUserid() || user.userIsAdmin()) {
                         <td><a href="@routes.DestinationController.editDestination(destination.getDestId())" class="btn btn-primary">
                             Edit</a></td>
                         <td><a href="@routes.DestinationController.deleteDestination(destination.getDestId())" class="btn btn-danger">

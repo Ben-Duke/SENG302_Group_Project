@@ -1,6 +1,6 @@
 #carouselImage{
     max-height: 720px;
-    max-width: 1280px;
+    width: 1280px;
 }
 
 #linkButton{
@@ -48,4 +48,25 @@ preview-wrapper-original{
     background-position: center;
     background-repeat: no-repeat;
     background-size: 100%;
+}
+
+.searchDestinations {
+    width: 100%;
+    font-size: 16px;
+    padding: 12px 20px 12px 40px; /* Add some padding */
+    border: 1px solid #ddd; /* Add a grey border */
+    margin-bottom: 12px; /* Add some space below the input */
+}
+
+.searchPublicDestinations {
+    width: 100%;
+    font-size: 16px;
+    padding: 12px 20px 12px 40px; /* Add some padding */
+    border: 1px solid #ddd; /* Add a grey border */
+    margin-bottom: 12px; /* Add some space below the input */
+}
+
+.errorMessage {
+    color: #FF0000;
+    font-size: 16px;
 }

@@ -1,0 +1,72 @@
+@import helper._
+
+@(destForm : Form[Destination], travellerTypes : List[TravellerType], destination : Destination)
+
+@main("Edit Traveller Types for Destination") {
+    <div class="container">
+        <div class="row">
+            <h2>Edit traveller types for @destination.getDestName: </h2>
+        </div>
+
+
+            <div class ="row">
+            @for(travellerType <- destination.travellerTypes) {
+                <div class="container">
+                @form(action = helper.CSRF(routes.TravellerTypeController.deleteUpdateDestinationTravellerType(destination.getDestId(),travellerType.getTtypeid()))) {
+                    <ul class="list-group">
+                        <li class="list-group-item" style = "width: 220px;">
+                            @travellerType.travellerTypeName <button type="submit" style="position: absolute;
+                            top: 5px;
+                            bottom: 5px;
+                            right: 5px;
+                            margin: 0;" class = "btn btn-danger">&times</button> </li>
+                    </ul>
+
+                    }
+                    @if(flash.containsKey("error")) {
+                        <div class="well">
+                            <div id="error-message" class="text-danger">
+                            @flash.get("error")
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            </div>
+        <div class="row">
+        @if(TravellerType.find.all().size() != destination.getTravellerTypes.size()) {
+            <div class="col-md-2">
+            @form(action = helper.CSRF(routes.TravellerTypeController.submitUpdateDestinationTravellerType(destination.getDestId())), 'id -> "myForm") {
+                @select(
+                    field = destForm("travellertypes"),
+                    options = travellerTypes.map(travellerType => travellerType.ttypeid.toString -> travellerType.travellerTypeName),
+                    '_label -> "Select new type to add:"
+                )
+            }
+            </div>
+        }
+            <div class="col-md-2">
+                <br>
+                @if(TravellerType.find.all().size() != destination.getTravellerTypes.size()){
+                    <input type="submit" value="Add traveller type" form="myForm" >
+                } else{
+                    <p>You may not add anymore traveller types.</p>
+                }
+            </div>
+        </div>
+
+    <div class = "row">
+        <div class="col-md-3">
+            <br>
+            <form>
+                <button class="btn btn-primary" formaction="@routes.DestinationController.editDestination(destination.getDestId())">Save</button>
+            </form>
+        </div>
+    </div>
+
+
+    </div>
+
+
+}
+

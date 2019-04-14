@@ -1,5 +1,7 @@
 package models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.ebean.Finder;
 import io.ebean.Model;
 
@@ -103,15 +105,22 @@ public class Destination extends Model {
     public double longitude;
     public boolean isPublic;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "user", referencedColumnName = "userid")
     public User user;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "destination")
     public List<Visit> visits;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "destination")
     public List<UserPhoto> userPhotos;
+
+    @JsonIgnore
+    @ManyToMany
+    public List<TravellerType> travellerTypes;
 
     public static Finder<String,Destination> findString =new Finder<>(Destination.class);
     public static Finder<Integer,Destination> find = new Finder<>(Destination.class);
@@ -129,6 +138,10 @@ public class Destination extends Model {
 
     public User getUser() { return user; }
 
+    public List<TravellerType> getTravellerTypes() {
+        return travellerTypes;
+    }
+
     //SETTERS
     public void setDestId(int destId) { this.destid = destId; }
     public void setDestName(String destName) { this.destName = destName; }
@@ -138,8 +151,19 @@ public class Destination extends Model {
     public void setLatitude(double latitude) { this.latitude = latitude; }
     public void setLongitude(double longitude) { this.longitude = longitude; }
     public void setIsPublic(boolean isPublic) { this.isPublic = isPublic; }
+    public void setTravellerTypes(List<TravellerType> travellerTypes) {
+        this.travellerTypes = travellerTypes;
+    }
 
     public void setUser(User user) { this.user = user; }
+
+    public void deleteTravellerType(TravellerType travellerType){
+        this.travellerTypes.remove(travellerType);
+    }
+
+    public void addTravellerType(TravellerType travellerType){
+        this.travellerTypes.add(travellerType);
+    }
 
     /**
      * The equals method compares two Destination objects for equality. The criteria

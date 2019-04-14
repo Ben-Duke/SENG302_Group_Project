@@ -19,7 +19,6 @@ import play.data.FormFactory;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
-import views.html.users.trip.AddTripDestinations;
 import views.html.users.trip.createTrip;
 import views.html.users.trip.displayTrip;
 import views.html.users.trip.editTrip;
@@ -276,7 +275,6 @@ public class TripController extends Controller {
             return unauthorized("Oops, you are not logged in");
         }
     }
-
     /**
      * Handles the cancellation of a trip on the page to add destinations to a new trip.
      * All visits are removed from the trip and the trip is removed from the database.
@@ -369,7 +367,7 @@ public class TripController extends Controller {
                 Trip trip = Trip.find.byId(tripid);
                 List<Visit> visits = trip.getVisits();
                 visits.sort(Comparator.comparing(Visit::getVisitOrder));
-                return badRequest(AddTripDestinations.render(incomingForm, trip, user.getMappedDestinations(), visits, today.toString()));
+                return badRequest(AddExistingTripDestinations.render(incomingForm, trip, user.getMappedDestinations(), visits, today.toString()));
             }
             VisitFormData created = incomingForm.get();
             Trip trip = Trip.find.byId(tripid);
@@ -388,7 +386,7 @@ public class TripController extends Controller {
                 if (tripFactory.hasRepeatDest(visits, visit, "ADD")) {
                     Date today = new Date();
                     today.setTime(today.getTime());
-                    return badRequest(AddTripDestinations.render(incomingForm.withError("destName", "Cannot have repeated destinations"), trip, user.getMappedDestinations(), visits, today.toString()));
+                    return badRequest(AddExistingTripDestinations.render(incomingForm.withError("destName", "Cannot have repeated destinations"), trip, user.getMappedDestinations(), visits, today.toString()));
                 }
                 visit.save();
             } else {
@@ -400,8 +398,8 @@ public class TripController extends Controller {
         }
         return redirect(routes.TripController.AddTripDestinations(tripid));
     }
-
     /**
+     * CURRENTLY NOT BEING USED
      * Handles the request to add destinations to an existing trip.
      * Destinations with an arrival and departure timestamp are stored in the form of a Visit.
      * A visit is created based on the destination, arrival and departure forms filled by the user, and stored into
@@ -452,8 +450,6 @@ public class TripController extends Controller {
         }
         return redirect(routes.TripController.AddExistingTripDestinations(tripid));
     }
-
-
 
     /**
      * If the user is logged in, renders the edit trip page. Users can add, swap or remove destinations from their

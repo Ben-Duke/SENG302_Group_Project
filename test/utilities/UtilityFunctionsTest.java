@@ -1,15 +1,23 @@
 package utilities;
 
+import models.TravellerType;
 import org.junit.Test;
+import play.db.Database;
+import play.db.Databases;
+import play.db.evolutions.Evolution;
+import play.db.evolutions.Evolutions;
+import play.test.WithApplication;
 
 //import javax.rmi.CORBA.Util;
+
+import java.util.List;
 
 import static org.junit.Assert.*;
 
 /**
  * Class to test the UtilityFunction class.
  */
-public class UtilityFunctionsTest {
+public class UtilityFunctionsTest extends WithApplication {
 
 //    @Test //TODO
 //    public void retainFromLists() {
@@ -417,5 +425,29 @@ public class UtilityFunctionsTest {
     @Test
     public void isEmailValidPeriodInUsername() {
         assertTrue(UtilityFunctions.isEmailValid("te.st@test.test"));
+    }
+
+    /**
+     * Unit test for adding traveller types function
+     */
+    @Test
+    public void addTravelTypes() {
+        //delete all traveller types
+        Database database = Databases.inMemory();
+        Evolutions.applyEvolutions(database, Evolutions.forDefault(new Evolution(
+                1,
+                "create table test (id bigint not null, name varchar(255));",
+                "drop table test;"
+        )));
+        List<TravellerType> travellerTypes= TravellerType.find.all();
+        for(TravellerType travellerType : travellerTypes){
+            travellerType.delete();
+        }
+        assertEquals(0, TravellerType.find.all().size());
+        //Add travel types
+        UtilityFunctions.addTravellerTypes();
+        assertEquals(7, TravellerType.find.all().size());        Evolutions.cleanupEvolutions(database);
+        database.shutdown();
+
     }
 }

@@ -108,7 +108,10 @@
 
                 <div>
                     <div id="modal-picture" class="modal">
+                        <Button class ="previous-image" id="preImg"><-</Button>
                         <img class="modal-content" id="img01">
+                        <Button class ="next-image" id="nextImg">-></Button>
+                        <Button class ="Backbutton" id="back-button">Back</Button>
 
                     </div>
                     <div class="row">
@@ -116,7 +119,7 @@
                             <div class="col-sm-4">
 
                                 @if(i < user.getUserPhotos.size()){
-                                <img class="img-thumbnail" id=@{user.getUserPhotos.get(i).getUrl} width="60" src="@{routes.HomeController.index(user.getUserPhotos.get(i).getUrlWithPath)}" alt="User Image">
+                                <img class="img-thumbnail" imgId=@i id=@{user.getUserPhotos.get(i).getUrl} width="60" src="@{routes.HomeController.index(user.getUserPhotos.get(i).getUrlWithPath)}" alt="User Image">
                                 }
                             </div>
                         }
@@ -126,7 +129,7 @@
                     @for(i <- 3 to 5) {
                         <div class="col-sm-4">
                         @if(i < user.getUserPhotos.size()){
-                            <img class="img-thumbnail" id=@{user.getUserPhotos.get(i).getUrl} width="60" src="@{routes.HomeController.index(user.getUserPhotos.get(i).getUrlWithPath)}" alt="User Image">
+                            <img class="img-thumbnail" imgId=@i id=@{user.getUserPhotos.get(i).getUrl} width="60" src="@{routes.HomeController.index(user.getUserPhotos.get(i).getUrlWithPath)}" alt="User Image">
                             }
                             </div>
                     }
@@ -136,7 +139,7 @@
                     @for(i <- 6 to 8) {
                         <div class="col-sm-4">
                         @if(i < user.getUserPhotos.size()){
-                            <img class="img-thumbnail" id=@{user.getUserPhotos.get(i).getUrl} width="60" src="@{routes.HomeController.index(user.getUserPhotos.get(i).getUrlWithPath)}" alt="User Image">
+                            <img class="img-thumbnail" imgId=@i id=@{user.getUserPhotos.get(i).getUrl}  width="60" src="@{routes.HomeController.index(user.getUserPhotos.get(i).getUrlWithPath)}" alt="User Image">
                             }
                         </div>
                     }
@@ -146,12 +149,45 @@
                         <!-- defines the number of photos the user has stored in the database. Currently hardcoded until tasks are finished -->
                     <div>
                         <script>
+
                                 // Get the modal
-                                var modal = document.getElementById('modal-picture');
+                                var modal = document.getElementById("modal-picture");
                                 // When the user clicks, they quit the modal view
                                 modal.onclick = function () {
-                                    this.style.display = "none";
+                                    //this.style.display = "none";
                                 };
+
+
+
+                                var previous = document.getElementById('preImg');
+                                previous.onclick = function () {
+
+                                    var imgRef = document.getElementById("img01");
+                                    var currentImgId = parseInt(imgRef.getAttribute("imgId"));
+
+                                    if(currentImgId == 0){
+                                        currentImgId = @(user.getUserPhotos.size() -1);
+                                    }else{
+                                        currentImgId -= 1;
+                                    }
+                                    console.log("@{routes.HomeController.index(user.getUserPhotos.get(0).getUrlWithPath)}");
+
+
+                                    //imgRef.src = srcRef;
+
+
+                                };
+
+                                var next = document.getElementById('nextImg');
+                                next.onclick = function () {
+                                    console.log("should show next image");
+                                };
+
+                                var next = document.getElementById('back-button');
+                                next.onclick = function () {
+                                    modal.style.display = "none";
+                                };
+
 
                                 // Get the image and insert it inside the modal
                                 var images = document.getElementsByClassName("img-thumbnail");
@@ -159,6 +195,7 @@
                                 // loops through each thumbnail and adds the event listener
                                 for (i = 0; i < @user.getUserPhotos.length; i++) {
                                     images[i].onclick = function() {
+                                        console.log(this.id);
                                         modal.style.display = "block";
                                         modalImg.src = this.src;
                                     };

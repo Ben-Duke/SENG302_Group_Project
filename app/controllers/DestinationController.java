@@ -205,6 +205,15 @@ public class DestinationController extends Controller {
         }
     }
 
+    /**
+     * Takes in the id of a given public destination, retrieves that destination from the database.
+     * A page is rendered with the information of the destination loaded ready for editing.
+     *
+     * @param request the http request
+     * @param destId the id of the destination that is to be edited
+     * @return renders the editPublicDestination page, or an unauthorized message is no user is logged in, or
+     * a not found error.
+     */
     public Result editPublicDestination(Http.Request request, Integer destId) {
         User user = User.getCurrentUser(request);
 
@@ -230,6 +239,16 @@ public class DestinationController extends Controller {
         }
     }
 
+    /**
+     * Creates a new destination object from the edit page form, checks if inputs make a valid destination.
+     * then using the given destination, checks if any changes have been made. If so, a request to the admins is
+     * sent with the info of the old and new destinations awaiting their acceptance of the modification.
+     *
+     * @param request http request
+     * @param destId the id of the destination that is being updated
+     * @return redirects to view the updated destination if successful, or
+     * a not found error.
+     */
     public Result updatePublicDestination(Http.Request request, Integer destId) {
         User user = User.getCurrentUser(request);
 

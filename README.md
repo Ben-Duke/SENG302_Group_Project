@@ -1,6 +1,19 @@
 # TravelEA - Team 800
 Basic Play project using sbt build and basic GitLab CI.
 
+## URL's of live projects
+Navigate to these websites in your favourite web browser (such as Chrome or Edge).
+
+Sprint 2 Deliverable (a few minor tweaks to get https working and to remove some warnings from the console when running the app):
+```
+https://csse-s302g8.canterbury.ac.nz
+```
+
+Most up-to-date running app from our Master branch:
+```
+https://csse-s302g8.canterbury.ac.nz:8443
+```
+
 ## Basic Project Structure
 * app/ Application source
 * conf/ configuration files required to ensure the project builds properly

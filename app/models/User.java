@@ -1,5 +1,7 @@
 package models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.ebean.ExpressionList;
 import io.ebean.Finder;
 import io.ebean.Model;
@@ -75,6 +77,7 @@ public class User extends Model {
      * The user doesn't need to have a nationality.
      */
     @ManyToMany
+    @JsonIgnoreProperties("users")
     public List<Nationality> nationality;
 
     /**
@@ -96,12 +99,15 @@ public class User extends Model {
     /**
      * The passport of the user.
      */
+    @JsonIgnore
     @ManyToMany
     public List<Passport> passports;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user")
     public List<Trip> trips;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user")
     public List<Destination> destinations;
 
@@ -113,6 +119,7 @@ public class User extends Model {
         return destMap;
     }
 
+    @JsonIgnore
     @ManyToMany
     public List<TravellerType> travellerTypes;
 
@@ -125,6 +132,7 @@ public class User extends Model {
         return userPhotos;
     }
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user")
     public List<UserPhoto> userPhotos;
 

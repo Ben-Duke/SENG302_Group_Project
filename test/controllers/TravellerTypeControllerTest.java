@@ -81,6 +81,24 @@ public class TravellerTypeControllerTest extends WithApplication {
     }
 
     /**
+     * Unit test for rendering the destination traveller type page
+     */
+    @Test
+    public void updateDestinationTravellerType() {
+        //invalid user
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/destinations/ttypes/display/1").session("connected", "3");
+        Result result = route(app, request);
+        assertEquals(UNAUTHORIZED, result.status());
+        request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/destinations/ttypes/display/1").session("connected", "2");
+        result = route(app, request);
+        assertEquals(OK, result.status());
+    }
+
+    /**
      * Unit test for adding a traveller type to a user
      */
     @Test
@@ -94,6 +112,22 @@ public class TravellerTypeControllerTest extends WithApplication {
         assertEquals(SEE_OTHER, result.status());
         //"TravellerType with name "Thrillseeker" should be the first index in the user's traveller types
         assertEquals("Thrillseeker", User.find.byId(1).getTravellerTypes().get(0).getTravellerTypeName());
+    }
+
+    /**
+     * Unit test for adding a traveller type to a destination
+     */
+    @Test
+    public void submitUpdateDestinationTravellerType() {
+        Map<String, String> formData = new HashMap<>();
+        //Assuming the user selects traveller type with id "2" which is "Thrillseeker"
+        formData.put("travellertypes", "2");
+        Http.RequestBuilder fakeRequest = Helpers.fakeRequest().bodyForm(formData).method(Helpers.POST).uri("/users/destinations/ttypes/1").session("connected", "2");
+        Result result = Helpers.route(app, fakeRequest);
+        //User should be redirected to the update traveller type page
+        assertEquals(SEE_OTHER, result.status());
+        //"TravellerType with name "Thrillseeker" should be the first index in the user's traveller types
+        assertEquals("Thrillseeker", Destination.find.byId(1).getTravellerTypes().get(0).getTravellerTypeName());
     }
 
     /**

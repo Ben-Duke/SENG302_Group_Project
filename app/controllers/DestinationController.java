@@ -2,6 +2,7 @@ package controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import factories.DestinationFactory;
 import formdata.DestinationFormData;
 import formdata.UpdateUserFormData;
 import models.*;
@@ -162,11 +163,34 @@ public class DestinationController extends Controller {
 
                 //If program gets past this point then inputted destination is valid
 
-                Destination destination = formFactory.form(Destination.class).bindFromRequest().get();
+                Destination newDestination = formFactory.form(Destination.class)
+                                                        .bindFromRequest().get();
 
-                destination.setUser(user);
-                destination.save();
-                return redirect(routes.DestinationController.indexDestination());
+                // checking if private and public destinations already exist. -----------
+                DestinationFactory destinationFactory = new DestinationFactory();
+                int userId = user.getUserid();
+
+                boolean hasError = false;
+                if (destinationFactory.userHasPrivateDestination(userId, newDestination)) {
+                    flash("privateDestinationExists",
+                            "You already have a matching private destination!");
+                    hasError = true;
+                }
+
+                if (destinationFactory.doesPublicDestinationExist(newDestination)) {
+                    flash("publicDestinationExists",
+                            "A matching public destination already exists!");
+                    hasError = true;
+                }
+
+                if (hasError) {
+                    return badRequest(createdestination.render(destinationFormData,
+                            Destination.getIsoCountries(), Destination.getTypeList()));
+                } else {
+                    newDestination.setUser(user);
+                    newDestination.save();
+                    return redirect(routes.DestinationController.indexDestination());
+                }
             } else {
                 return badRequest(createdestination.render(destinationFormData,
                         Destination.getIsoCountries(), Destination.getTypeList()));

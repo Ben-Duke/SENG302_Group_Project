@@ -60,6 +60,24 @@
                     <a class="btn btn-danger" href="@routes.DestinationController.indexDestination()" role="button">Cancel</a>
                 </div>
             </div>
+
+            <div style="margin-top: 50px">
+             @if(flash.containsKey("privateDestinationExists")) {
+                 <div class="well">
+                     <div id="error-message" class="text-danger">
+                          @flash.get("privateDestinationExists")
+                     </div>
+                </div>
+              }
+
+            @if(flash.containsKey("publicDestinationExists")) {
+                <div class="well">
+                    <div id="error-message" class="text-danger">
+                    @flash.get("publicDestinationExists")
+                    </div>
+                </div>
+            }
+            </div>
         </p>
         }
     }

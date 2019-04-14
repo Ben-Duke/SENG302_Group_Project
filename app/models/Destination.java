@@ -105,6 +105,12 @@ public class Destination extends Model {
     public double longitude;
     public boolean isPublic;
 
+
+    //Can be changed to manytoone eventually
+    @JsonIgnore
+    @ManyToOne
+    public UserPhoto primaryPhoto;
+
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "user", referencedColumnName = "userid")
@@ -115,7 +121,7 @@ public class Destination extends Model {
     public List<Visit> visits;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "destination")
+    @ManyToMany(mappedBy = "destinations")
     public List<UserPhoto> userPhotos;
 
     @JsonIgnore

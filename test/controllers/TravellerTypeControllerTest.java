@@ -1,5 +1,6 @@
 package controllers;
 
+import models.Destination;
 import models.TravellerType;
 import models.User;
 import org.junit.After;
@@ -13,6 +14,7 @@ import play.mvc.Http;
 import play.mvc.Result;
 import play.test.Helpers;
 import play.test.WithApplication;
+import utilities.TestDatabaseManager;
 import utilities.UtilityFunctions;
 
 import java.util.HashMap;
@@ -47,7 +49,8 @@ public class TravellerTypeControllerTest extends WithApplication {
         //Initialises a test user with name "testUser" and saves it to the database.
         User user = new User("testUser");
         user.save();
-        UtilityFunctions.addTravellerTypes();
+        TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
+        testDatabaseManager.populateDatabase();
     }
 
     /**
@@ -114,19 +117,21 @@ public class TravellerTypeControllerTest extends WithApplication {
     }
 
     /**
-     * Unit test for adding traveller types function
+     * Unit test for deleting traveller types from a destination
      */
     @Test
-    public void addTravelTypes() {
-        //delete all traveller types
-        List<TravellerType> travellerTypes= TravellerType.find.all();
-        for(TravellerType travellerType : travellerTypes){
-            travellerType.delete();
-        }
-        assertEquals(0, TravellerType.find.all().size());
-        //Add travel types
-        UtilityFunctions.addTravellerTypes();
-        assertEquals(7, TravellerType.find.all().size());
+    public void deleteUpdateDestinationTravellerType() {
+        //add a "Thrillseeker" traveller type to the destination
+        Destination destination = Destination.find.byId(1);
+        destination.addTravellerType(TravellerType.find.byId(2));
+        destination.update();
+        //There should be 1 traveller type
+        assertEquals(1, Destination.find.byId(1).getTravellerTypes().size());
+        Http.RequestBuilder fakeRequest = Helpers.fakeRequest().method(Helpers.GET).uri("/users/destinations/ttypes/1/2").session("connected", "2");
+        Result result = Helpers.route(app, fakeRequest);
+        //User should be redirected to the update traveller type page
+        //There should be one traveller type since can't remove from 1
+        assertEquals(0, Destination.find.byId(1).getTravellerTypes().size());
     }
 }
 

@@ -429,6 +429,12 @@ public class DestinationController extends Controller {
         }
     }
 
+    /**
+     * Sets the primary photo of a destination given by the destination ID.
+     * @param request the HTTP request
+     * @param destId the id of the destination to be updated
+     * @return success if it worked, error otherwise
+     */
     public Result setPrimaryPhoto(Http.Request request, Integer destId){
         User user = User.getCurrentUser(request);
         if(user != null) {
@@ -456,5 +462,6 @@ public class DestinationController extends Controller {
         }
         return ok();
     }
+
 
 }

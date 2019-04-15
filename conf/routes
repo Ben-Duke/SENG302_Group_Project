@@ -185,3 +185,4 @@ POST    /users/destinations/save        controllers.DestinationController.saveDe
 #Handles deleting a destination //TODO needs to be changed from get request
 GET     /users/destinations/delete/:id   controllers.DestinationController.deleteDestination(request : Request, id : Integer)
 
+PUT     /users/destinations/primary/:id     controllers.DestinationController.setPrimaryPhoto(request : Request, id : Integer)

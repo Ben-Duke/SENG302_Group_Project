@@ -48,6 +48,9 @@
     max-height: 720px;
 }
 
+#primaryPhotoButton{
+    margin-top: 170px;
+}
 
 
 /* un comment this to use hand when hovering over row instead of pointer */

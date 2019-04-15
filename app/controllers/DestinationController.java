@@ -203,6 +203,61 @@ public class DestinationController extends Controller {
         }
     }
 
+
+    /**
+     * Creates a new destination object from the edit page form, checks if inputs make a valid destination.
+     * then using the given destination, all the attributes of the old destination are updated with the new attributes.
+     * The old destination is then updated in the database.
+     *
+     * @param request http request
+     * @param destId the id of the destination that is being updated
+     * @return redirects to view the updated destination if successful, or
+     * a not found error, or an unauthorized message if the destination does not belong to the user.
+     */
+    public Result updateDestination(Http.Request request, Integer destId) {
+        User user = User.getCurrentUser(request);
+
+        if (user != null) {
+            DynamicForm destForm = formFactory.form().bindFromRequest();
+            Result validationResult = validateDestination(destForm);
+
+            if (validationResult != null) {
+                return validationResult;
+            }
+            //If program gets past this point then inputted destination is valid
+
+            Destination newDestination = formFactory.form(Destination.class).bindFromRequest().get();
+
+
+            Destination oldDestination = Destination.find.query().where().eq("destid", destId).findOne();
+
+            if (oldDestination != null) {
+
+                if (oldDestination.isUserOwner(user.userid)) {
+
+                    oldDestination.setDestName(newDestination.getDestName());
+                    oldDestination.setDestType(newDestination.getDestType());
+                    oldDestination.setCountry(newDestination.getCountry());
+                    oldDestination.setDistrict(newDestination.getDistrict());
+                    oldDestination.setLatitude(newDestination.getLatitude());
+                    oldDestination.setLongitude(newDestination.getLongitude());
+
+                    oldDestination.update();
+
+                    return redirect(routes.DestinationController.indexDestination());
+
+                } else {
+                    return unauthorized("Not your destination. You cant edit.");
+                }
+            } else {
+                return notFound("The destination you are trying to update no longer exists");
+            }
+
+        } else {
+            return unauthorized("Oops, you are not logged in");
+        }
+    }
+
     /**
      * Takes in the id of a given public destination, retrieves that destination from the database.
      * A page is rendered with the information of the destination loaded ready for editing.
@@ -266,66 +321,18 @@ public class DestinationController extends Controller {
 
                 if (newDestination.equals(oldDestination)) {
                     return badRequest("No changes suggested");
-                }
-                return ok("Request Submitted");
-
-            } else {
-                return notFound("The destination you are trying to update no longer exists");
-            }
-        } else {
-            return unauthorized("Oops, you are not logged in");
-        }
-    }
-
-    /**
-     * Creates a new destination object from the edit page form, checks if inputs make a valid destination.
-     * then using the given destination, all the attributes of the old destination are updated with the new attributes.
-     * The old destination is then updated in the database.
-     *
-     * @param request http request
-     * @param destId the id of the destination that is being updated
-     * @return redirects to view the updated destination if successful, or
-     * a not found error, or an unauthorized message if the destination does not belong to the user.
-     */
-    public Result updateDestination(Http.Request request, Integer destId) {
-        User user = User.getCurrentUser(request);
-
-        if (user != null) {
-            DynamicForm destForm = formFactory.form().bindFromRequest();
-            Result validationResult = validateDestination(destForm);
-
-            if (validationResult != null) {
-                return validationResult;
-            }
-            //If program gets past this point then inputted destination is valid
-
-            Destination newDestination = formFactory.form(Destination.class).bindFromRequest().get();
-
-
-            Destination oldDestination = Destination.find.query().where().eq("destid", destId).findOne();
-
-            if (oldDestination != null) {
-
-                if (oldDestination.isUserOwner(user.userid)) {
-
-                    oldDestination.setDestName(newDestination.getDestName());
-                    oldDestination.setDestType(newDestination.getDestType());
-                    oldDestination.setCountry(newDestination.getCountry());
-                    oldDestination.setDistrict(newDestination.getDistrict());
-                    oldDestination.setLatitude(newDestination.getLatitude());
-                    oldDestination.setLongitude(newDestination.getLongitude());
-
-                    oldDestination.update();
+                } else {
+                    DestinationModificationRequest newModReq = new DestinationModificationRequest(oldDestination, newDestination);
+                    newModReq.save();
+//                    List<DestinationModificationRequest> allReqs = DestinationModificationRequest.find.all();
+//                    System.out.println(allReqs);
 
                     return redirect(routes.DestinationController.indexDestination());
-
-                } else {
-                    return unauthorized("Not your destination. You cant edit.");
                 }
+
             } else {
                 return notFound("The destination you are trying to update no longer exists");
             }
-
         } else {
             return unauthorized("Oops, you are not logged in");
         }

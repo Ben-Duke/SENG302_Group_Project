@@ -134,7 +134,7 @@ public class Destination extends Model {
     public String getCountry() { return country; }
     public double getLatitude() { return latitude; }
     public double getLongitude() { return longitude; }
-    public boolean getIsPublic() { return isPublic;}
+    public boolean getIsPublic() { return isPublic; }
 
     public User getUser() { return user; }
 

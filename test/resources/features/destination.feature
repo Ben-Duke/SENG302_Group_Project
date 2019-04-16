@@ -3,7 +3,7 @@ Feature: typesOfDestinations
   Background:
     Given There is a prepopulated database
     And I am logged in with user id "2"
-    And I create a destination with name "Lighthouse of Alexandria" of type "Attraction" at district "Alexandria" at country "Egypt at latitude "31.170739" and longitude "29.844310"
+    And I create a destination with name "Lighthouse of Alexandria" of type "Attraction" at district "Alexandria" at country "Egypt" at latitude "31.170739" and longitude "29.844310"
 
 
   Scenario: When  I create a destination, it is private by default. Private destinations are only accessible to the user who created them (owner of the destination)
@@ -14,11 +14,11 @@ Feature: typesOfDestinations
 
   Scenario: I (the owner of the destination) can CRUD my own private destinations
     When I update my destination with name "Temple of Artemis", type "Attraction", district "Artemis", country "Turkey", latitude "37.949753" and longitude "27.363899"
-    Then the destination will be updated to the respective attributes.
+    Then the destination will be updated to the respective attributes of name "Temple of Artemis", type "Attraction", district "Artemis", country "Turkey", latitude "37.949753" and longitude "27.363899"
 
   Scenario: I (the owner of the destination) can CRUD my own private destinations
     When I delete my destination with name "Lighthouse of Alexandria"
-    Then the destination will be deleted.
+    Then the destination with name "Lighthouse of Alexandria" will be deleted.
 
   Scenario: I can mark any of my own destinations as public as long as the same public destination does not already exist. Public destinations are accessible to all registered users.
     When I mark "Lighthouse of Alexandria" as public and the same public destination does not already exist

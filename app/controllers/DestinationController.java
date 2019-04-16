@@ -431,7 +431,12 @@ public class DestinationController extends Controller {
         User user = User.getCurrentUser(request);
         if(user != null){
             Destination destination = Destination.find.byId(destId);
-            return ok(Json.toJson(destination));
+            if(destination.getIsPublic() || destination.getUser().getUserid() == user.getUserid() || user.userIsAdmin()) {
+                return ok(Json.toJson(destination));
+            }
+            else{
+                return unauthorized("Oops, this is a private destination and you don't own it.");
+            }
         } else{
             return unauthorized("Oops, you are not logged in");
         }

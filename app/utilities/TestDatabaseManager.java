@@ -127,6 +127,7 @@ public class TestDatabaseManager {
         Destination destination1 = new Destination(
                 "Christchurch", "Town", "Canterbury", "New Zealand", -43.5321, 172.6362, User.find.byId(2));
         destination1.setIsPublic(true);
+        destination1.addTravellerType(TravellerType.find.byId(1));
         destination1.save();
 
         Destination destination2 = new Destination(
@@ -136,6 +137,8 @@ public class TestDatabaseManager {
         Destination destination3 = new Destination(
                 "The Wok", "Cafe/Restaurant", "Canterbury", "New Zealand", -43.523593, 172.582971, User.find.byId(2));
         destination3.setIsPublic(true);
+        destination3.addTravellerType(TravellerType.find.byId(1));
+        destination3.addTravellerType(TravellerType.find.byId(3));
         destination3.save();
 
 
@@ -143,6 +146,8 @@ public class TestDatabaseManager {
         Destination destination4 = new Destination(
                 "Hanmer Springs Thermal Pools", "Attraction", "North Canterbury", "New Zealand", -42.522791, 172.828944, User.find.byId(3));
         destination4.setIsPublic(true);
+        destination4.addTravellerType(TravellerType.find.byId(5));
+        destination4.addTravellerType(TravellerType.find.byId(7));
         destination4.save();
 
         Destination destination5 = new Destination(
@@ -151,11 +156,13 @@ public class TestDatabaseManager {
         Destination destination6 = new Destination(
                 "Great Pyramid of Giza", "Attraction", "Giza", "Egypt", 29.979481, 31.134159, User.find.byId(3));
         destination6.setIsPublic(true);
+        destination6.addTravellerType(TravellerType.find.byId(7));
         destination6.save();
 
         //Adds destinations for user4
         Destination destination7 = new Destination(
                 "Niagara Falls", "Natural Spot", "New York", "United States", 29.979481, 31.134159, User.find.byId(4));
+        destination7.addTravellerType(TravellerType.find.byId(2));
         destination7.save();
         Destination destination8 = new Destination(
                 "Vatican City", "Country", "Rome", "Vatican City", 41.903133, 12.454341, User.find.byId(4));
@@ -163,6 +170,9 @@ public class TestDatabaseManager {
         Destination destination9 = new Destination(
                 "Lincoln Memorial", "Monument", "Washington DC", "United States", 38.889406, -77.050155, User.find.byId(4));
         destination9.setIsPublic(true);
+        destination9.addTravellerType(TravellerType.find.byId(1));
+        destination9.addTravellerType(TravellerType.find.byId(4));
+        destination9.addTravellerType(TravellerType.find.byId(6));
         destination9.save();
 
 

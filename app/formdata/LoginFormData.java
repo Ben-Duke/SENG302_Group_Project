@@ -35,6 +35,26 @@ public class LoginFormData implements Constraints.Validatable<List<ValidationErr
         return this.email;
     }
 
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public Boolean getUser() {
+        return user;
+    }
+
+    public void setUser(Boolean user) {
+        this.user = user;
+    }
+
     /**
      * Method to validate the Form data.
      *

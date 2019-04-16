@@ -1,15 +1,29 @@
 package steps;
 
+import com.google.inject.AbstractModule;
+import com.google.inject.Guice;
+import com.google.inject.Module;
 import cucumber.api.java.After;
 import cucumber.api.java.Before;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
+import models.User;
+import org.junit.Assert;
 import play.Application;
+import play.ApplicationLoader;
+import play.Environment;
 import play.db.Database;
+import play.db.Databases;
+import play.db.evolutions.Evolution;
+import play.db.evolutions.Evolutions;
 import play.inject.guice.GuiceApplicationBuilder;
+import play.inject.guice.GuiceApplicationLoader;
+import play.test.Helpers;
 import play.test.WithApplication;
 import utilities.TestDatabaseManager;
+
+import javax.inject.Inject;
 
 
 public class DestinationTestSteps extends WithApplication {
@@ -21,6 +35,9 @@ public class DestinationTestSteps extends WithApplication {
     Database database;
     TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
 
+    @Inject
+    private Application application;
+
     @Override
     protected Application provideApplication() {
         return new GuiceApplicationBuilder().build();
@@ -28,25 +45,27 @@ public class DestinationTestSteps extends WithApplication {
 
     @Before
     public void setup(){
-//        database = Databases.inMemory();
-//        Evolutions.applyEvolutions(database, Evolutions.forDefault(new Evolution(
-//                1,
-//                "create table test (id bigint not null, name varchar(255));",
-//                "drop table test;"
-//        )));
-//        testDatabaseManager.populateDatabase();
+        Module testModule = new AbstractModule() {
+            @Override
+            public void configure() {
+            }
+        };
+        GuiceApplicationBuilder builder = new GuiceApplicationLoader()
+                .builder(new ApplicationLoader.Context(Environment.simple()))
+                .overrides(testModule);
+        Guice.createInjector(builder.applicationModule()).injectMembers(this);
+        Helpers.start(application);
+        testDatabaseManager.populateDatabase();
     }
 
     @After
     public void tearDown(){
-//        Evolutions.cleanupEvolutions(database);
-//        database.shutdown();
+        Helpers.stop(application);
     }
 
     @Given("There is a prepopulated database")
     public void thereIsAPrepopulatedDatabase() {
-        //Assert.assertEquals(4, User.find.all().size());
-        throw new cucumber.api.PendingException();
+        Assert.assertEquals(4, User.find.all().size());
     }
 
 
@@ -55,8 +74,7 @@ public class DestinationTestSteps extends WithApplication {
     @Given("I am logged in with user id {string}")
     public void iAmLoggedInWithUserId(String string) {
         // Write code here that turns the phrase above into concrete actions
-        //Assert.assertEquals(true, User.find.byId(Integer.parseInt(string)) != null);
-        throw new cucumber.api.PendingException();
+        Assert.assertEquals(true, User.find.byId(Integer.parseInt(string)) != null);
     }
 
     @Given("I create a destination with name {string} of type {string} at district {string} at country {string}{double}{string}{double}\"")

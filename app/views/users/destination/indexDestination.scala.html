@@ -1,122 +1,124 @@
-@(destinations: List[Destination], allDestinations: List[Destination], user : User)
+@(destinations: List[Destination], allDestinations: List[Destination], user: User)
 
-@main("Destinations") {
+    @main("Destinations") {
 
 
-    <head>
-        <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/indexDestination.css")">
-    </head>
-    <h1>My private destinations <a class="btn btn-primary col-sm-offset-8" href="@routes.DestinationController.createDestination()" role="button">
-        Create Destination</a></h1>
+        <head>
+            <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/indexDestination.css")">
+        </head>
+        <h1>My private destinations <a class="btn btn-primary col-sm-offset-8" href="@routes.DestinationController.createDestination()" role="button">
+            Create Destination</a></h1>
 
-    <input type="text" class="searchDestinations" onkeyup="searchDestination()" placeholder="Search for destinations">
-    <table class="table table-hover privateDestinations">
-        <thead class="thead-dark">
-            <tr>
-                <th scope="col">Name</th>
-                <th scope="col">Type</th>
-                <th scope="col">Country</th>
-                <th scope="col">District</th>
-                <th scope="col">Latitude</th>
-                <th scope="col">Longitude</th>
-                <th scope="col">Edit</th>
-                <th scope="col">Delete</th>
-            </tr>
-        </thead>
-        <tbody>
-        @for(destination <- destinations) {
-            @if(destination.getIsPublic == false) {
-                <tr data-toggle="modal" data-id="@destination.getDestId()" data-target="#orderModal" class="clickable">
-                    <th scope ="row">@destination.getDestName()</th>
-                    <td>@destination.getDestType()</td>
-                    <td>@destination.getCountry()</td>
-                    <td>@destination.getDistrict</td>
-                    <td>@destination.getLatitude</td>
-                    <td>@destination.getLongitude</td>
-                    <td><a href="@routes.DestinationController.editDestination(destination.getDestId())" class="btn btn-primary">
-                        Edit</a></td>
-                    <td><a href="@routes.DestinationController.deleteDestination(destination.getDestId())" class="btn btn-danger">
-                        Delete</a></td>
-                    <td><a href="@routes.DestinationController.makeDestinationPublic(destination.getDestId)" class="btn btn-primary">
-                        Make destination public</a></td>
+        <input type="text" class="searchDestinations" onkeyup="searchDestination()" placeholder="Search for destinations">
+        <table class="table table-hover privateDestinations">
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Type</th>
+                    <th scope="col">Country</th>
+                    <th scope="col">District</th>
+                    <th scope="col">Latitude</th>
+                    <th scope="col">Longitude</th>
+                    <th scope="col">Edit</th>
+                    <th scope="col">Delete</th>
                 </tr>
-
-
-                <br>
-                }
-        }
-        </tbody>
-    </table>
-
-
-    <h1>Public destinations</h1>
-    <input type="text" class="searchPublicDestinations" onkeyup="searchPublicDestination()" placeholder="Search for destinations">
-    <table class="table table-hover publicDestinations">
-        <thead class="thead-dark">
-            <tr>
-                <th scope="col">Name</th>
-                <th scope="col">Type</th>
-                <th scope="col">Country</th>
-                <th scope="col">District</th>
-                <th scope="col">Latitude</th>
-                <th scope="col">Longitude</th>
-            </tr>
-        </thead>
-        <tbody>
-        @for(destination <- allDestinations) {
-            @if(destination.getIsPublic == true) {
-                <tr data-toggle="modal" data-id="@destination.getDestId()" data-target="#orderModal" class="clickable">
-                    <th scope ="row">@destination.getDestName()</th>
-                    <td>@destination.getDestType()</td>
-                    <td>@destination.getCountry()</td>
-                    <td>@destination.getDistrict</td>
-                    <td>@destination.getLatitude</td>
-                    <td>@destination.getLongitude</td>
-                    @if(destination.getUser().getUserid() == user.getUserid() || user.userIsAdmin()) {
+            </thead>
+            <tbody>
+            @for(destination <- destinations) {
+                @if(destination.getIsPublic == false) {
+                    <tr data-toggle="modal" data-id="@destination.getDestId()" data-target="#orderModal" class="clickable">
+                        <th scope ="row">@destination.getDestName()</th>
+                        <td>@destination.getDestType()</td>
+                        <td>@destination.getCountry()</td>
+                        <td>@destination.getDistrict</td>
+                        <td>@destination.getLatitude</td>
+                        <td>@destination.getLongitude</td>
                         <td><a href="@routes.DestinationController.editDestination(destination.getDestId())" class="btn btn-primary">
                             Edit</a></td>
                         <td><a href="@routes.DestinationController.deleteDestination(destination.getDestId())" class="btn btn-danger">
                             Delete</a></td>
-                    } else {
-                        <td></td>
-                        <td></td>
+                        <td><a href="@routes.DestinationController.makeDestinationPublic(destination.getDestId)" class="btn btn-primary">
+                            Make destination public</a></td>
+                    </tr>
+
+
+                    <br>
                     }
+            }
+            </tbody>
+        </table>
+
+
+        <h1>Public destinations</h1>
+        <input type="text" class="searchPublicDestinations" onkeyup="searchPublicDestination()" placeholder="Search for destinations">
+        <table class="table table-hover publicDestinations">
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Type</th>
+                    <th scope="col">Country</th>
+                    <th scope="col">District</th>
+                    <th scope="col">Latitude</th>
+                    <th scope="col">Longitude</th>
                 </tr>
-                <br>
-                }
-        }
-        </tbody>
-    </table>
-    <div id="orderModal" class="modal fade">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal">x</button>
-                    <h3 id="destTitle">Destination</h3>
-                </div>
-                <div class="modal-body" id="carousel">
-                    <div class="container-fluid">
-                        <div class="row" style="margin-top: 20px">
-                            <div class="carousel slide col-md-offset-1 col-md-4" id="destslider" data-ride="carousel" data-interval="false">
+            </thead>
+            <tbody>
+            @for(destination <- allDestinations) {
+                @if(destination.getIsPublic == true) {
+                    <tr data-toggle="modal" data-id="@destination.getDestId()" data-target="#orderModal" class="clickable">
+                        <th scope ="row">@destination.getDestName()</th>
+                        <td>@destination.getDestType()</td>
+                        <td>@destination.getCountry()</td>
+                        <td>@destination.getDistrict</td>
+                        <td>@destination.getLatitude</td>
+                        <td>@destination.getLongitude</td>
+                        @if(destination.getUser().getUserid() == user.getUserid() || user.userIsAdmin()) {
+                            <td><a href="@routes.DestinationController.editDestination(destination.getDestId())" class="btn btn-primary">
+                                Edit</a></td>
+                            <td><a href="@routes.DestinationController.deleteDestination(destination.getDestId())" class="btn btn-danger">
+                                Delete</a></td>
+                        } else {
+                            <td></td>
+                            <td></td>
+                        }
+                    </tr>
+                    <br>
+                    }
+            }
+            </tbody>
+        </table>
+        <div id="orderModal" class="modal fade">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">x</button>
+                        <h3 id="destTitle">Destination</h3>
+                    </div>
+                    <div class="modal-body" id="carousel">
+                        <div class="container-fluid">
+                            <div class="row" style="margin-top: 20px">
+                                <div class="carousel slide col-md-offset-1 col-md-4" id="destslider" data-ride="carousel" data-interval="false">
+                                </div>
+                                <a class ="left carousel-control" href="#destslider" data-slide="prev">
+                                    <span class="glyphicon glyphicon-chevron-left"></span>
+                                </a>
+                                <a class ="right carousel-control" href="#destslider" data-slide="next">
+                                    <span class="glyphicon glyphicon-chevron-right"></span>
+                                </a>
+                                <div id="travellerTypes" class="col-md-offset-1 col-md-4">
+                                </div>
                             </div>
-                        <a class ="left carousel-control" href="#destslider" data-slide="prev">
-                            <span class="glyphicon glyphicon-chevron-left"></span>
-                        </a>
-                        <a class ="right carousel-control" href="#destslider" data-slide="next">
-                            <span class="glyphicon glyphicon-chevron-right"></span>
-                        </a>
-                        <div id="travellerTypes" class="col-md-offset-1 col-md-4">
-                        </div>
-                            <td><a id="primaryPhotoButton" class="btn btn-primary col-md-offset-1 col-md-4">
-                                Set to primary photo</a></td>
+                            <div class="row" style="margin-top: 90px">
+                                <td><button id="primaryPhotoButton" class="btn btn-primary col-md-offset-1 col-md-4">
+                                    Set to primary photo</button></td>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn" data-dismiss="modal">Close</button>
+                    <div class="modal-footer">
+                        <button class="btn" data-dismiss="modal">Close</button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-    <script src="@routes.Assets.at("js/indexDestination.js")" type="text/javascript"></script>
-}
+        <script src="@routes.Assets.at("js/indexDestination.js")" type="text/javascript"></script>
+    }

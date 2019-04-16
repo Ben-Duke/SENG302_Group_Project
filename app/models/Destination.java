@@ -106,8 +106,6 @@ public class Destination extends Model {
     public boolean isPublic;
 
 
-    //Can be changed to manytoone eventually
-    @JsonIgnore
     @ManyToOne
     public UserPhoto primaryPhoto;
 

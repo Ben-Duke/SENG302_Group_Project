@@ -164,8 +164,8 @@ GET     /users/destinations/ttypes/:id    controllers.DestinationController.getT
 #Renders request for getting a destination's photos (used in ajax request)
 GET     /users/destinations/photos/:id    controllers.DestinationController.getPhotos(request : Request, id : Integer)
 
-#Handles request for the file of a photo
-GET     /users/photos/:id                   controllers.DestinationController.getPhotoFile(request : Request, id : Integer)
+#Handles request for a photo
+GET     /users/photos/:id                   controllers.DestinationController.getPhoto(request : Request, id : Integer)
 
 #Renders request for destination traveller types
 POST     /users/destinations/ttypes/:id    controllers.TravellerTypeController.submitUpdateDestinationTravellerType(request : Request, id : Integer)
@@ -176,6 +176,10 @@ GET     /users/destinations/public/:id         controllers.DestinationController
 #Handles updating a destination
 POST    /users/destinations/update/:id  controllers.DestinationController.updateDestination(request : Request, id : Integer)
 
+#Handles setting a photo to a primary photo (for some reason this route throws some csrf failed thing so i added a +nocsrf)... raise an issue in the future
++nocsrf
+PUT     /users/destinations/primary/:id     controllers.DestinationController.setPrimaryPhoto(request : Request, id : Integer)
+
 #Handles linking a photo to a destination
 PUT     /users/destinations/:id         controllers.DestinationController.linkPhotoToDestination(request : Request, id : Integer)
 
@@ -184,5 +188,3 @@ POST    /users/destinations/save        controllers.DestinationController.saveDe
 
 #Handles deleting a destination //TODO needs to be changed from get request
 GET     /users/destinations/delete/:id   controllers.DestinationController.deleteDestination(request : Request, id : Integer)
-
-PUT     /users/destinations/primary/:id     controllers.DestinationController.setPrimaryPhoto(request : Request, id : Integer)

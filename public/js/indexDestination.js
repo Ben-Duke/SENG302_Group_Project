@@ -138,10 +138,11 @@ function sendLinkDestinationRequest(url, photoid){
     })
 }
 
-
+var getIdFromRow;
+var destData;
 $('#orderModal').on('show.bs.modal', function (e) {
     // do something...
-    var getIdFromRow = $(event.target).closest('tr').data('id');
+    getIdFromRow = $(event.target).closest('tr').data('id');
     //make your ajax call populate items or what even you need
     //$(this).find('#orderDetails').html($('<b> Destination Id selected: ' + getIdFromRow  + '</b>'));
     var token =  $('input[name="csrfToken"]').attr('value');
@@ -155,6 +156,7 @@ $('#orderModal').on('show.bs.modal', function (e) {
         url: '/users/destinations/get/' + getIdFromRow,
         contentType: 'application/json',
         success: function(destinationData){
+            destData = destinationData;
             $('#destTitle').html(destinationData["destName"]);
             $.ajax({
                 type: 'GET',
@@ -194,12 +196,20 @@ $('#orderModal').on('show.bs.modal', function (e) {
                     $.each(data, function(index, element){
                         var itemNode = document.createElement("div");
                         itemNode.classList.add("item");
-                        if(index == 0){
-                            itemNode.classList.add("active")
+                        if(destData["primaryPhoto"] != null) {
+                            if (element["photoId"] == destData["primaryPhoto"]["photoId"]) {
+                                itemNode.classList.add("active")
+                            }
+                        }
+                        else{
+                            if(index == 0){
+                                itemNode.classList.add("active")
+                            }
                         }
                         var imgNode = document.createElement("img");
                         imgNode.src="/users/home/serveDestPicture/" + element["photoId"];
                         imgNode.classList.add("destination-image");
+                        imgNode.id = "photo" + "-" + element["photoId"];
                         itemNode.appendChild(imgNode);
                         outerDivNode.appendChild(itemNode);
                         // $.ajax({
@@ -220,4 +230,81 @@ $('#orderModal').on('show.bs.modal', function (e) {
             });
         }
     });
+});
+
+$('#orderModal').on('shown.bs.modal', function (e) {
+    var photo = document.getElementsByClassName("active")[0].getElementsByTagName('img')[0];
+    var photoid = photo.id;
+    photoid = photoid.split("-")[1];
+    if(destData["primaryPhoto"] != null) {
+        if (destData["primaryPhoto"]["photoId"] == photoid) {
+            $('#primaryPhotoButton').attr('disabled', 'disabled');
+        }
+        else {
+            $('#primaryPhotoButton').removeAttr('disabled');
+        }
+    }
+    else {
+        $('#primaryPhotoButton').removeAttr('disabled');
+    }
+});
+
+$('#primaryPhotoButton').click(function(e){
+    var photo = document.getElementsByClassName("active")[0].getElementsByTagName('img')[0];
+    var photoid = photo.id;
+    photoid = photoid.split("-")[1];
+    var token =  $('input[name="csrfToken"]').attr('value');
+    $.ajaxSetup({
+        beforeSend: function(xhr) {
+            xhr.setRequestHeader('Csrf-Token', token);
+        }
+    });
+    $.ajax({
+        url: '/users/destinations/primary/' + getIdFromRow,
+        method: 'PUT',
+        data: JSON.stringify({
+            photoid: '"' + photoid + '"'
+        }),
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        success: function(){
+            $('#primaryPhotoButton').attr('disabled','disabled');
+            //refreshing the destination
+            $.ajax({
+                type: 'GET',
+                url: '/users/destinations/get/' + getIdFromRow,
+                contentType: 'application/json',
+                success: function (destinationData) {
+                    destData = destinationData;
+                }
+            });
+        }
+    });
+});
+
+/**
+ * After the slider has slid, enable the set to primary photo button if the active picture is not the primary photo.
+ * Disable the set to primary photo button otherwise.
+ */
+$('#destslider').bind('slid.bs.carousel', function(e){
+    var photo = document.getElementsByClassName("active")[0].getElementsByTagName('img')[0];
+    var photoid = photo.id;
+    photoid = photoid.split("-")[1];
+    console.log(destData["primaryPhoto"]["photoId"]);
+    if(destData["primaryPhoto"] != null) {
+        if (destData["primaryPhoto"]["photoId"] == photoid) {
+            $('#primaryPhotoButton').attr('disabled', 'disabled');
+        }
+        else {
+            $('#primaryPhotoButton').removeAttr('disabled');
+        }
+    }
+    else {
+        $('#primaryPhotoButton').removeAttr('disabled');
+    }
+});
+
+$('#destslider').bind('slide.bs.carousel', function(e){
+    $('#primaryPhotoButton').attr('disabled','disabled');
 });

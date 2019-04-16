@@ -338,16 +338,20 @@ public class DestinationController extends Controller {
             JsonNode node = request.body().asJson().get("photoid");
             String photoid = node.textValue();
             photoid = photoid.replace("\"", "");
-            System.out.println(photoid);
             UserPhoto photo = UserPhoto.find.byId(Integer.parseInt(photoid));
             Destination destination = Destination.find.byId(destId);
             if(destination != null || photo != null) {
                 if (photo.getUser().getUserid() == user.getUserid()) {
                     //add checks for private destinations here once destinations have been merged in.
                     //You can only link a photo to a private destination if you own the private destination.
-                    photo.addDestination(destination);
-                    photo.update();
-                    System.out.println("SUCCESS!");
+                    if(!photo.getDestinations().contains(destination)) {
+                        photo.addDestination(destination);
+                        photo.update();
+                        System.out.println("SUCCESS!");
+                    }
+                    else{
+                        return badRequest("You have already linked the photo to this destination.");
+                    }
                 } else {
                     return unauthorized("Oops, this is not your photo!");
                 }
@@ -403,11 +407,15 @@ public class DestinationController extends Controller {
      * @param request the HTTP request
      * @return the photo file
      */
-    public Result getPhotoFile(Http.Request request, Integer photoId){
+    public Result getPhoto(Http.Request request, Integer photoId){
         User user = User.getCurrentUser(request);
         if(user != null){
             UserPhoto photo = UserPhoto.find.byId(photoId);
-            return ok(new java.io.File(photo.getUrlWithPath()));
+            if(photo.getUser().getUserid() == user.getUserid() || photo.isPublic() || user.userIsAdmin()) {
+                return ok(Json.toJson(photo));
+            } else{
+                return unauthorized("Oops, you do not have the rights to view this photo");
+            }
         } else {
             return unauthorized("Oops, you are not logged in");
         }
@@ -449,7 +457,6 @@ public class DestinationController extends Controller {
                     //You can only link a photo to a private destination if you own the private destination.
                     destination.setPrimaryPhoto(photo);
                     destination.update();
-                    System.out.println("SUCCESS!");
                 } else {
                     return unauthorized("Oops, this is not your photo!");
                 }

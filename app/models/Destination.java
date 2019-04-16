@@ -145,6 +145,10 @@ public class Destination extends Model {
     public UserPhoto getPrimaryPhoto() {
         return primaryPhoto;
     }
+    public List<Visit> getVisits() {
+        return visits;
+    }
+
 
 
     public User getUser() { return user; }
@@ -170,6 +174,9 @@ public class Destination extends Model {
     }
     public void setPrimaryPhoto(UserPhoto primaryPhoto) {
         this.primaryPhoto = primaryPhoto;
+    }
+    public void setVisits(List<Visit> visits) {
+        this.visits = visits;
     }
 
     public void setUser(User user) { this.user = user; }

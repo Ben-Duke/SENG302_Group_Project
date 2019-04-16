@@ -278,6 +278,7 @@ public class DestinationController extends Controller {
                 if (destination.isUserOwner(user.userid)) {
                     if(destination.visits.isEmpty()) {
                         destination.delete();
+                        return redirect(routes.DestinationController.indexDestination());
                     }
                     else{
                         return preconditionRequired("You cannot delete destinations while you're using them for your trips. Delete them from your trip first!");
@@ -292,7 +293,6 @@ public class DestinationController extends Controller {
             return unauthorized("Oops, you are not logged in");
         }
 
-        return redirect(routes.DestinationController.indexDestination());
     }
 
     /**

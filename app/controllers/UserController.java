@@ -35,6 +35,10 @@ public class UserController {
         return ok(userIndex.render(users, admins));
     }
 
+    /**
+     * Deprecated by TestDatabaseManager which populates the database.
+     */
+    /*
     public void addDefaultUsers() {
         User user = new User("admin@admin.com", "admin", "admin", "admin", LocalDate.now(), "male");
         user.setDateOfBirth(LocalDate.of(2019, 2, 18));
@@ -57,6 +61,7 @@ public class UserController {
         Admin admin = new Admin(user.userid, true);
         admin.save();
     }
+    */
 
     /**
      * Handles the ajax request to get a user.

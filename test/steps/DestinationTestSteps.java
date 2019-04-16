@@ -248,8 +248,8 @@ public class DestinationTestSteps extends WithApplication {
         throw new cucumber.api.PendingException();
     }
 
-    @When("I create another destination with name {string} of type {string} at district {string} at country {string}{double}{string}{double}\"")
-    public void iCreateAnotherDestinationWithNameOfTypeAtDistrictAtCountry(String string, String string2, String string3, String string4, Double double1, String string5, Double double2) {
+    @When("I create another destination with name {string} of type {string} at district {string} at country {string} at latitude {string} and longitude {string}")
+    public void iCreateAnotherDestinationWithNameOfTypeAtDistrictAtCountryAtLatitudeAndLongitude(String string, String string2, String string3, String string4, String string5, String string6) {
         // Write code here that turns the phrase above into concrete actions
         throw new cucumber.api.PendingException();
     }
@@ -272,20 +272,26 @@ public class DestinationTestSteps extends WithApplication {
         throw new cucumber.api.PendingException();
     }
 
+    @Then("the destination should not be created and there should only be one {string} in the database because it already exists.")
+    public void theDestinationShouldNotBeCreatedAndThereShouldOnlyBeOneInTheDatabaseBecauseItAlreadyExists(String string) {
+        // Write code here that turns the phrase above into concrete actions
+        throw new cucumber.api.PendingException();
+    }
+
     @Given("I mark {string} as public and nobody uses the destination")
     public void iMarkAsPublicAndNobodyUsesTheDestination(String string) {
         // Write code here that turns the phrase above into concrete actions
         throw new cucumber.api.PendingException();
     }
 
-    @When("I update the destination {string}")
-    public void iUpdateTheDestination(String string) {
+    @When("I validly update the destination {string}")
+    public void iValidlyUpdateTheDestination(String string) {
         // Write code here that turns the phrase above into concrete actions
         throw new cucumber.api.PendingException();
     }
 
-    @Then("the destination should be updated")
-    public void theDestinationShouldBeUpdated() {
+    @Then("the destination {string} should be updated")
+    public void theDestinationShouldBeUpdated(String string) {
         // Write code here that turns the phrase above into concrete actions
         throw new cucumber.api.PendingException();
     }
@@ -296,14 +302,20 @@ public class DestinationTestSteps extends WithApplication {
         throw new cucumber.api.PendingException();
     }
 
-    @Then("the destination should be not be updated")
-    public void theDestinationShouldBeNotBeUpdated() {
+    @When("I invalidly update the destination {string}")
+    public void iInvalidlyUpdateTheDestination(String string) {
         // Write code here that turns the phrase above into concrete actions
         throw new cucumber.api.PendingException();
     }
 
-    @When("a user with user id {string} creates a destination with name {string} of type {string} at district {string} at country {string}{double}{string}{double}\"")
-    public void aUserWithUserIdCreatesADestinationWithNameOfTypeAtDistrictAtCountry(String string, String string2, String string3, String string4, String string5, Double double1, String string6, Double double2) {
+    @Then("the destination {string} should not be updated")
+    public void theDestinationShouldNotBeUpdated(String string) {
+        // Write code here that turns the phrase above into concrete actions
+        throw new cucumber.api.PendingException();
+    }
+
+    @When("a user with user id {string} creates a destination with name {string} of type {string} at district {string} at country {string} at latitude {string} and longitude {string}")
+    public void aUserWithUserIdCreatesADestinationWithNameOfTypeAtDistrictAtCountryAtLatitudeAndLongitude(String string, String string2, String string3, String string4, String string5, String string6, String string7) {
         // Write code here that turns the phrase above into concrete actions
         throw new cucumber.api.PendingException();
     }

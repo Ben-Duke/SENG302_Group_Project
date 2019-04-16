@@ -1,5 +1,7 @@
 package models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.ebean.Finder;
 import io.ebean.Model;
 
@@ -21,11 +23,13 @@ public class UserPhoto extends Model {
     public boolean isProfile;
 
     // Creating  the relation to User
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "user", referencedColumnName = "userid")
     public User user;
 
     // Creating  the relation to Destination
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "destination", referencedColumnName = "destid")
     public Destination destination;

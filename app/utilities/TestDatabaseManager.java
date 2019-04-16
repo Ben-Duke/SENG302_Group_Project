@@ -20,8 +20,10 @@ public class TestDatabaseManager {
      * Populates the database. Call this method at the before section of each unit test.
      */
     public void populateDatabase(){
-        addTravellerTypes();
-        addNationalitiesAndPassports();
+        if(TravellerType.find.all().size() == 0) {
+            addTravellerTypes();
+            addNationalitiesAndPassports();
+        }
         populateUsers();
         addTrips();
         addDestinationsAndVisits();

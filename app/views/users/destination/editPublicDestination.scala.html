@@ -1,4 +1,4 @@
-@(destForm : Form[Destination], destination: Destination, countryMap: Map[String, Boolean], typeMap: Map[String, Boolean])
+@(destForm : Form[Destination], destination: Destination, countryMap: Map[String, Boolean], typeMap: Map[String, Boolean], travellerTypes : Map[String, Boolean])
 @import helper._
 @import views.html.bootstrap3._
 
@@ -42,9 +42,20 @@
     label = "Type",
     optionMap = typeMap,
     isMultiple = false,
-    help = "Select a type")
+    help = "Select a type"
+    )
+
+    @views.html.bootstrap3.select(destForm("travellerTypes"),
+    label = "Traveller Types",
+    optionMap = travellerTypes,
+    isMultiple = true,
+    help = "Select multiple Using ctrl or cmd."
+    )
+
+
 
 </fieldset>
+
 <p>
 <div class="form-group actions">
     <div class="col-sm-offset-2 col-sm-10">

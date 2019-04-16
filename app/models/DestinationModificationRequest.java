@@ -4,6 +4,7 @@ import io.ebean.Finder;
 import io.ebean.Model;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 public class DestinationModificationRequest extends Model {
@@ -20,6 +21,7 @@ public class DestinationModificationRequest extends Model {
     public String newDestDistrict;
     public double newDestLatitude;
     public double newDestLongitude;
+    public List<TravellerType> newTravelerTypes;
 
     public DestinationModificationRequest(Destination oldDestination, Destination newDestination) {
         this.oldDestination = oldDestination;
@@ -29,6 +31,7 @@ public class DestinationModificationRequest extends Model {
         this.newDestDistrict = newDestination.getDistrict();
         this.newDestLatitude = newDestination.getLatitude();
         this.newDestLongitude = newDestination.getLongitude();
+        this.newTravelerTypes = newDestination.getTravellerTypes();
     }
 
     public static Finder<Integer, DestinationModificationRequest> find = new Finder<>(DestinationModificationRequest.class);
@@ -41,4 +44,5 @@ public class DestinationModificationRequest extends Model {
     public String getNewDestDistrict() { return newDestDistrict; }
     public double getNewDestLatitude() { return newDestLatitude; }
     public double getNewDestLongitude() { return newDestLongitude; }
+    public List<TravellerType> getNewTravelerTypes() { return newTravelerTypes; }
 }

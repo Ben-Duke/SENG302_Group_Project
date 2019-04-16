@@ -192,6 +192,18 @@ public class Destination extends Model {
         if (!this.destType.equals(dest2.getDestType())) {
             return false;
         }
+        int eqCount = 0;
+        for (TravellerType travellerType1 : this.travellerTypes) {
+            for (TravellerType travellerType2 : dest2.getTravellerTypes()) {
+                if (travellerType1.getTravellerTypeName().equals(travellerType2.getTravellerTypeName())) {
+                    eqCount++;
+                }
+            }
+        }
+        if (!(eqCount == this.travellerTypes.size() && eqCount == dest2.getTravellerTypes().size())) {
+            return false;
+        }
+
         return true;
     }
 

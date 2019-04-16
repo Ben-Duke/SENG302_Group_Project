@@ -282,7 +282,17 @@ public class DestinationController extends Controller {
                 Map<String, Boolean> countryList = Destination.getIsoCountries();
                 countryList.replace(destination.getCountry(), true);
 
-                return ok(editPublicDestination.render(destForm, destination, countryList, typeList));
+                List<TravellerType> travellerTypes = TravellerType.find.all();
+                Map<String, Boolean> travellerTypesMap = new TreeMap<>();
+                for (TravellerType travellerType : travellerTypes) {
+                    if (destination.getTravellerTypes().contains(travellerType)) {
+                        travellerTypesMap.put(travellerType.getTravellerTypeName(), true);
+                    } else {
+                        travellerTypesMap.put(travellerType.getTravellerTypeName(), false);
+                    }
+                }
+
+                return ok(editPublicDestination.render(destForm, destination, countryList, typeList, travellerTypesMap));
 
             } else {
                 return notFound("Destination does not exist");

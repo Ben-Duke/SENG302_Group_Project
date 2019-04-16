@@ -1,6 +1,8 @@
 package controllers;
 
 import models.*;
+import play.libs.Json;
+import play.mvc.Http;
 import play.mvc.Result;
 import utilities.TestDatabaseManager;
 import utilities.UtilityFunctions;
@@ -9,6 +11,7 @@ import views.html.users.userIndex;
 import java.time.LocalDate;
 import java.util.List;
 
+import static play.mvc.Results.notFound;
 import static play.mvc.Results.ok;
 
 public class UserController {
@@ -55,5 +58,18 @@ public class UserController {
         admin.save();
     }
 
+    /**
+     * Handles the ajax request to get a user.
+     * Returns the corresponding user as a json based on the login session.
+     */
+    public Result getUser(Http.Request request){
+        User user = User.getCurrentUser(request);
+        if(user != null) {
+            return ok(Json.toJson(user.getUserid()));
+        }
+        else{
+            return notFound();
+        }
+    }
 
 }

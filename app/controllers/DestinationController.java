@@ -438,6 +438,22 @@ public class DestinationController extends Controller {
     }
 
     /**
+     * Returns the destination owner's id as a json based on a destination ID
+     * @param request the HTTP request
+     * @param destId the destination ID
+     * @return the destination as a json
+     */
+    public Result getDestinationOwner(Http.Request request, Integer destId){
+        Destination destination = Destination.find.byId(destId);
+        User user = User.find.query().where().eq("userid", destination.getUser().getUserid()).findOne();
+        if(user != null){
+            return ok(Json.toJson(user.getUserid()));
+        } else{
+            return unauthorized("Oops, you are not logged in");
+        }
+    }
+
+    /**
      * Sets the primary photo of a destination given by the destination ID.
      * @param request the HTTP request
      * @param destId the id of the destination to be updated

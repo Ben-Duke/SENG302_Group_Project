@@ -1,3 +1,9 @@
+var getIdFromRow;
+var destData;
+var photos;
+var user;
+var destinationOwner;
+
 /**
  * Function to search for private destinations.
  * Updates the rows of tables with class "privateDestinations" depending on what's entered in the input form with class name "searchDestinations"
@@ -139,9 +145,14 @@ function sendLinkDestinationRequest(url, photoid){
 }
 
 
+/**
+ * Event is called while the modal is popping up.
+ * Displays the destination's photos as a carousel and the destination's traveller type on the fly using ajax queries
+ * based on the destination id retrieved from the table row clicked.
+ */
 $('#orderModal').on('show.bs.modal', function (e) {
     // do something...
-    var getIdFromRow = $(event.target).closest('tr').data('id');
+    getIdFromRow = $(event.target).closest('tr').data('id');
     //make your ajax call populate items or what even you need
     //$(this).find('#orderDetails').html($('<b> Destination Id selected: ' + getIdFromRow  + '</b>'));
     var token =  $('input[name="csrfToken"]').attr('value');
@@ -151,10 +162,27 @@ $('#orderModal').on('show.bs.modal', function (e) {
         }
     });
     $.ajax({
+       type: 'GET',
+       url: '/users/get',
+        contentType: 'application/json',
+        success: function(userData){
+           user = userData;
+        }
+    });
+    $.ajax({
+        type: 'GET',
+        url: '/users/destinations/owner/' + getIdFromRow,
+        contentType: 'application/json',
+        success: function(ownerData){
+            destinationOwner = ownerData;
+        }
+    });
+    $.ajax({
         type: 'GET',
         url: '/users/destinations/get/' + getIdFromRow,
         contentType: 'application/json',
         success: function(destinationData){
+            destData = destinationData;
             $('#destTitle').html(destinationData["destName"]);
             $.ajax({
                 type: 'GET',
@@ -189,17 +217,26 @@ $('#orderModal').on('show.bs.modal', function (e) {
                 url: '/users/destinations/photos/' + getIdFromRow,
                 contentType: 'application/json',
                 success: function(data) {
+                    photos = data;
                     var outerDivNode = document.createElement("div");
                     outerDivNode.classList.add("carousel-inner");
                     $.each(data, function(index, element){
                         var itemNode = document.createElement("div");
                         itemNode.classList.add("item");
-                        if(index == 0){
-                            itemNode.classList.add("active")
+                        if(destData["primaryPhoto"] != null) {
+                            if (element["photoId"] == destData["primaryPhoto"]["photoId"]) {
+                                itemNode.classList.add("active")
+                            }
+                        }
+                        else{
+                            if(index == 0){
+                                itemNode.classList.add("active")
+                            }
                         }
                         var imgNode = document.createElement("img");
                         imgNode.src="/users/home/serveDestPicture/" + element["photoId"];
                         imgNode.classList.add("destination-image");
+                        imgNode.id = "photo" + "-" + element["photoId"];
                         itemNode.appendChild(imgNode);
                         outerDivNode.appendChild(itemNode);
                         // $.ajax({
@@ -216,8 +253,118 @@ $('#orderModal').on('show.bs.modal', function (e) {
                         //imgNode.src = element["urlWithPath"];
                     });
                     $('#destslider').html(outerDivNode);
+                    if(destinationOwner != user){
+                        $('#primaryPhotoButton').hide();
+                    }
+                    else{
+                        $('#primaryPhotoButton').show();
+                    }
                 }
             });
         }
     });
+});
+
+/**
+ * Event when the modal is shown. If there are no photos in the destination, hide the carousel and
+ * display a html message that the destination does not have any images.
+ */
+$('#orderModal').on('shown.bs.modal', function (e) {
+
+    if(photos.length > 0) {
+        var photo = document.getElementsByClassName("active")[0].getElementsByTagName('img')[0];
+        var photoid = photo.id;
+        photoid = photoid.split("-")[1];
+        if (destData["primaryPhoto"] != null) {
+            if (destData["primaryPhoto"]["photoId"] == photoid) {
+                $('#primaryPhotoButton').attr('disabled', 'disabled');
+            }
+            else {
+                $('#primaryPhotoButton').removeAttr('disabled');
+            }
+        }
+        else {
+            $('#primaryPhotoButton').removeAttr('disabled');
+        }
+    }
+    else{
+        $('#primaryPhotoButton').hide();
+        $('.left').hide();
+        $('.right').hide();
+        var outerDivNode = document.createElement("div");
+        // outerDivNode.classList.
+        var parNode = document.createElement("p");
+        var parTextNode = document.createTextNode("No image found!");
+        parNode.appendChild(parTextNode);
+        outerDivNode.appendChild(parNode);
+        $('#destslider').html(outerDivNode);
+    }
+});
+
+/**
+ * Function that listens for when someone clicks on the button to set a primary photo.
+ * Sets the primary photo based on the active item on the carousel displaying destination photos.
+ * The set primary photo button is then disabled.
+ */
+$('#primaryPhotoButton').click(function(e){
+    var photo = document.getElementsByClassName("active")[0].getElementsByTagName('img')[0];
+    var photoid = photo.id;
+    photoid = photoid.split("-")[1];
+    var token =  $('input[name="csrfToken"]').attr('value');
+    $.ajaxSetup({
+        beforeSend: function(xhr) {
+            xhr.setRequestHeader('Csrf-Token', token);
+        }
+    });
+    $.ajax({
+        url: '/users/destinations/primary/' + getIdFromRow,
+        method: 'PUT',
+        data: JSON.stringify({
+            photoid: '"' + photoid + '"'
+        }),
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        success: function(){
+            $('#primaryPhotoButton').attr('disabled','disabled');
+            //refreshing the destination
+            $.ajax({
+                type: 'GET',
+                url: '/users/destinations/get/' + getIdFromRow,
+                contentType: 'application/json',
+                success: function (destinationData) {
+                    destData = destinationData;
+                }
+            });
+        }
+    });
+});
+
+/**
+ * After the slider has slid, enable the set to primary photo button if the active picture is not the primary photo.
+ * Disable the set to primary photo button otherwise.
+ */
+$('#destslider').bind('slid.bs.carousel', function(e){
+    var photo = document.getElementsByClassName("active")[0].getElementsByTagName('img')[0];
+    var photoid = photo.id;
+    photoid = photoid.split("-")[1];
+    console.log(destData["primaryPhoto"]["photoId"]);
+    if(destData["primaryPhoto"] != null) {
+        if (destData["primaryPhoto"]["photoId"] == photoid) {
+            $('#primaryPhotoButton').attr('disabled', 'disabled');
+        }
+        else {
+            $('#primaryPhotoButton').removeAttr('disabled');
+        }
+    }
+    else {
+        $('#primaryPhotoButton').removeAttr('disabled');
+    }
+});
+
+/**
+ * Disables the primary photo button while the carousel is sliding.
+ */
+$('#destslider').bind('slide.bs.carousel', function(e){
+    $('#primaryPhotoButton').attr('disabled','disabled');
 });

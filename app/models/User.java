@@ -76,8 +76,8 @@ public class User extends Model {
      * The nationality of the user.
      * The user doesn't need to have a nationality.
      */
+    @JsonIgnore
     @ManyToMany
-    @JsonIgnoreProperties("users")
     public List<Nationality> nationality;
 
     /**

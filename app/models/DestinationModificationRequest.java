@@ -1,11 +1,13 @@
 package models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.ebean.Finder;
 import io.ebean.Model;
 import io.ebean.annotation.CreatedTimestamp;
 import play.data.format.Formats;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -24,7 +26,9 @@ public class DestinationModificationRequest extends Model {
     public String newDestDistrict;
     public double newDestLatitude;
     public double newDestLongitude;
-    public List<TravellerType> newTravelerTypes;
+
+    @ManyToMany
+    public List<TravellerType> newTravelerTypes = new ArrayList<>();
 
     @Temporal(TemporalType.TIMESTAMP)
     @Formats.DateTime(pattern="yyyy-MM-dd HH:mm:ss")
@@ -42,7 +46,11 @@ public class DestinationModificationRequest extends Model {
         this.newDestDistrict = newDestination.getDistrict();
         this.newDestLatitude = newDestination.getLatitude();
         this.newDestLongitude = newDestination.getLongitude();
-        this.newTravelerTypes = newDestination.getTravellerTypes();
+
+        for (TravellerType travellerType : newDestination.getTravellerTypes()) {
+            this.newTravelerTypes.add(TravellerType.find.query().where().eq("traveller_type_name", travellerType.getTravellerTypeName()).findOne());
+        }
+
         this.requestAuthor = user;
     }
 
@@ -56,7 +64,7 @@ public class DestinationModificationRequest extends Model {
     public String getNewDestDistrict() { return newDestDistrict; }
     public double getNewDestLatitude() { return newDestLatitude; }
     public double getNewDestLongitude() { return newDestLongitude; }
-    public List<TravellerType> getNewTravelerTypes() { return newTravelerTypes; }
+    public List<TravellerType> getNewTravellerTypes() { return newTravelerTypes; }
     public Date getCreationDate() { return creationDate; }
     public User getRequestAuthor() { return requestAuthor; }
 }

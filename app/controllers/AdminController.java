@@ -99,6 +99,8 @@ public class AdminController extends Controller {
                 DestinationModificationRequest modReq = DestinationModificationRequest.find.query().where().eq("id", destModReqId).findOne();
                 if (modReq != null) {
 
+//                    System.out.println(modReq.getNewTravellerTypes());
+
                     return ok(viewDestinationModificationRequest.render(modReq));
                 } else {
                     return badRequest("Destination Modification Request does not exist");

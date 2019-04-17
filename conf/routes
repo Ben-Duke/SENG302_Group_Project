@@ -34,6 +34,9 @@ GET     /users/admin/remove/:id     controllers.AdminController.adminToUser(requ
 #Handles creating admin
 GET     /users/admin/make/:id       controllers.AdminController.userToAdmin(request: Request, id: Integer)
 
+#Handles view a destination modification request
+GET     /users/admin/destination_modification_request/:id   controllers.AdminController.viewDestinationModificationRequest(request: Request, id: Integer)
+
 
 #Handles updating profile
 POST    /users/profile/update       controllers.ProfileController.updateProfileRequest(request: Request)

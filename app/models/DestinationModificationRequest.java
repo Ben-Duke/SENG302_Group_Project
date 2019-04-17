@@ -2,8 +2,11 @@ package models;
 
 import io.ebean.Finder;
 import io.ebean.Model;
+import io.ebean.annotation.CreatedTimestamp;
+import play.data.format.Formats;
 
 import javax.persistence.*;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -23,7 +26,15 @@ public class DestinationModificationRequest extends Model {
     public double newDestLongitude;
     public List<TravellerType> newTravelerTypes;
 
-    public DestinationModificationRequest(Destination oldDestination, Destination newDestination) {
+    @Temporal(TemporalType.TIMESTAMP)
+    @Formats.DateTime(pattern="yyyy-MM-dd HH:mm:ss")
+    @CreatedTimestamp
+    public Date creationDate;
+
+    @ManyToOne
+    public User requestAuthor;
+
+    public DestinationModificationRequest(Destination oldDestination, Destination newDestination, User user) {
         this.oldDestination = oldDestination;
         this.newDestName = newDestination.getDestName();
         this.newDestType = newDestination.getDestType();
@@ -32,6 +43,7 @@ public class DestinationModificationRequest extends Model {
         this.newDestLatitude = newDestination.getLatitude();
         this.newDestLongitude = newDestination.getLongitude();
         this.newTravelerTypes = newDestination.getTravellerTypes();
+        this.requestAuthor = user;
     }
 
     public static Finder<Integer, DestinationModificationRequest> find = new Finder<>(DestinationModificationRequest.class);
@@ -45,4 +57,6 @@ public class DestinationModificationRequest extends Model {
     public double getNewDestLatitude() { return newDestLatitude; }
     public double getNewDestLongitude() { return newDestLongitude; }
     public List<TravellerType> getNewTravelerTypes() { return newTravelerTypes; }
+    public Date getCreationDate() { return creationDate; }
+    public User getRequestAuthor() { return requestAuthor; }
 }

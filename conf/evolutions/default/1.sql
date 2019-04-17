@@ -38,6 +38,8 @@ create table destination_modification_request (
   new_dest_district             varchar(255),
   new_dest_latitude             double not null,
   new_dest_longitude            double not null,
+  request_author_userid         integer,
+  creation_date                 timestamp not null,
   constraint pk_destination_modification_request primary key (id)
 );
 
@@ -133,6 +135,9 @@ alter table destination_traveller_type add constraint fk_destination_traveller_t
 create index ix_destination_modification_request_old_destination_destid on destination_modification_request (old_destination_destid);
 alter table destination_modification_request add constraint fk_destination_modification_request_old_destination_destid foreign key (old_destination_destid) references destination (destid) on delete restrict on update restrict;
 
+create index ix_destination_modification_request_request_author_userid on destination_modification_request (request_author_userid);
+alter table destination_modification_request add constraint fk_destination_modification_request_request_author_userid foreign key (request_author_userid) references user (userid) on delete restrict on update restrict;
+
 create index ix_trip_user on trip (user);
 alter table trip add constraint fk_trip_user foreign key (user) references user (userid) on delete restrict on update restrict;
 
@@ -180,6 +185,9 @@ drop index if exists ix_destination_traveller_type_traveller_type;
 
 alter table destination_modification_request drop constraint if exists fk_destination_modification_request_old_destination_destid;
 drop index if exists ix_destination_modification_request_old_destination_destid;
+
+alter table destination_modification_request drop constraint if exists fk_destination_modification_request_request_author_userid;
+drop index if exists ix_destination_modification_request_request_author_userid;
 
 alter table trip drop constraint if exists fk_trip_user;
 drop index if exists ix_trip_user;

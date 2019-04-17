@@ -332,7 +332,7 @@ public class DestinationController extends Controller {
                 if (newDestination.equals(oldDestination)) {
                     return badRequest("No changes suggested");
                 } else {
-                    DestinationModificationRequest newModReq = new DestinationModificationRequest(oldDestination, newDestination);
+                    DestinationModificationRequest newModReq = new DestinationModificationRequest(oldDestination, newDestination, user);
                     newModReq.save();
 //                    List<DestinationModificationRequest> allReqs = DestinationModificationRequest.find.all();
 //                    System.out.println(allReqs);

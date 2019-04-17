@@ -21,8 +21,6 @@ import play.mvc.Http;
 import play.mvc.Result;
 import views.html.users.trip.createTrip;
 import views.html.users.trip.displayTrip;
-import views.html.users.trip.editTrip;
-
 import views.html.users.trip.*;
 
 import javax.inject.Inject;
@@ -69,7 +67,7 @@ public class TripController extends Controller {
      * @param message an error message if there is one
      * @return display visits page
      */
-    public Result displaytrip(Http.Request request, Integer tripId, String message){
+    public Result displaytrip(Http.Request request, Integer tripId){
         User user = User.getCurrentUser(request);
         if (user != null) {
             Trip trip = Trip.find.byId(tripId);
@@ -79,7 +77,7 @@ public class TripController extends Controller {
             if(trip.isUserOwner(user.getUserid())) {
                 List<Destination> destinations = user.getDestinations();
                 List<Destination> allDestinations = Destination.find.all();
-                return ok(AddTripDestinationsTable.render(trip, message, destinations, allDestinations));
+                return ok(AddTripDestinationsTable.render(trip, destinations, allDestinations));
             }
             else{
                 return ok(displayTrip.render(trip, visits));
@@ -132,8 +130,13 @@ public class TripController extends Controller {
         if (user != null) {
             Visit visit = Visit.find.byId(visitid);
             Form<Visit> visitForm = formFactory.form(Visit.class).fill(visit);
-            List<Destination> destinations = user.getDestinations();
-            return ok(editVisit.render(visitForm,visit,destinations));
+            if(visit.getTrip().getUser().getUserid() == user.getUserid() || user.userIsAdmin()) {
+                List<Destination> destinations = user.getDestinations();
+                return ok(editVisit.render(visitForm, visit, destinations));
+            }
+            else{
+                return unauthorized("Oops, this is not your trip.");
+            }
         }
         else{
             return unauthorized("Oops, you are not logged in");
@@ -173,7 +176,7 @@ public class TripController extends Controller {
                         return badRequest("You cannot visit the same destination twice in a row!");
                     }
                     visit.update();
-                    return redirect(routes.TripController.displaytrip(trip.getTripid(), ""));
+                    return redirect(routes.TripController.displaytrip(trip.getTripid()));
                 }
                 else{
                     return unauthorized("Oops, this is not your trip.");
@@ -194,7 +197,7 @@ public class TripController extends Controller {
 //                    Visit firstVisit = visits.get(0);
 //                    visits.remove(0);
                     //return ok(displayTrip.render(trip,visits));
-                    return redirect(routes.TripController.displaytrip(trip.getTripid(), ""));
+                    return redirect(routes.TripController.displaytrip(trip.getTripid()));
                 }
                 else{
                     return unauthorized("Oops, this is not your trip.");
@@ -227,7 +230,8 @@ public class TripController extends Controller {
                     List<Destination> destinations = user.getDestinations();
                     List<Destination> allDestinations = Destination.find.all();
                     //return ok(AddTripDestinations.render(incomingForm, trip, user.getMappedDestinations(), visits, today.toString()));
-                    return ok(AddTripDestinationsTable.render(trip, "", destinations, allDestinations));
+                    System.out.println(request.flash().getOptional("error").orElse("test"));
+                    return ok(AddTripDestinationsTable.render(trip, destinations, allDestinations)).flashing("error", request.flash().getOptional("error").orElse("test"));
 
                 } else {
                     return unauthorized("Not your trip");
@@ -242,39 +246,6 @@ public class TripController extends Controller {
         }
     }
 
-    /**
-     * Renders the page to add destinations onto a new trip.
-     * This has to be separated with existing trips due to the cancel button which deletes the trip.
-     * The cancel button is replaced with a back button on this page.
-     * @param request the HTTP request
-     * @param tripid the trip id of the trip
-     * @return
-     */
-    public Result AddExistingTripDestinations(Http.Request request, Integer tripid) {
-        Trip trip = Trip.find.byId(tripid);
-        User user = User.getCurrentUser(request);
-        Date today = new Date();
-        today.setTime(today.getTime());
-        if (user != null) {
-            if (trip != null) {
-                if (trip.isUserOwner(user.getUserid())) {
-                    Form<VisitFormData> incomingForm = formFactory.form(VisitFormData.class);
-                    List<Visit> visits = trip.getVisits();
-                    visits.sort(Comparator.comparing(Visit::getVisitOrder));
-                    return ok(AddExistingTripDestinations.render(incomingForm, trip, user.getMappedDestinations(), visits, today.toString()));
-
-                } else {
-                    return unauthorized("Not your trip");
-                }
-            }
-            else{
-                return unauthorized("Oops, invalid trip ID");
-            }
-        }
-        else{
-            return unauthorized("Oops, you are not logged in");
-        }
-    }
     /**
      * Handles the cancellation of a trip on the page to add destinations to a new trip.
      * All visits are removed from the trip and the trip is removed from the database.
@@ -330,8 +301,8 @@ public class TripController extends Controller {
                 if(destination != null) {
                     Visit visit = visitfactory.createVisitTable(trip, destination, visitOrder);
                     if (tripFactory.hasRepeatDest(visits, visit, "ADD")) {
-                        flash("danger", "You cannot have repeat destinations!");
-                        return redirect(routes.TripController.AddTripDestinations(tripid));
+                        //flash("danger", "You cannot have repeat destinations!");
+                        return redirect(routes.TripController.AddTripDestinations(tripid)).flashing("error", "You cannot have repeat destinations!");
                     }
                     if(!(destination.getUser().isAdmin()) && destination.getIsPublic() && !(destination.getUser().getUserid() == user.getUserid())){
                         User admin = User.find.byId(1);
@@ -347,150 +318,13 @@ public class TripController extends Controller {
         }
         return badRequest();
     }
-    /**
-     * Handles the request to add destinations to a new trip.
-     * Destinations with an arrival and departure timestamp are stored in the form of a Visit.
-     * A visit is created based on the destination, arrival and departure forms filled by the user, and stored into
-     * the trip they're editing. The user is then redirected to the edit trip page.
-     * If the user is not logged in, an error message is displayed.
-     * @param request The HTTP request
-     * @param tripid The trip id that the user is editing.
-     * @return edit trip page or error page
-     */
-    public Result addvisit(Http.Request request, Integer tripid){
-        Form<VisitFormData> incomingForm = formFactory.form(VisitFormData.class).bindFromRequest(request);
-        User user = User.getCurrentUser(request);
-        if (user != null) {
-            if (incomingForm.hasErrors()) {
-                Date today = new Date();
-                today.setTime(today.getTime());
-                Trip trip = Trip.find.byId(tripid);
-                List<Visit> visits = trip.getVisits();
-                visits.sort(Comparator.comparing(Visit::getVisitOrder));
-                return badRequest(AddExistingTripDestinations.render(incomingForm, trip, user.getMappedDestinations(), visits, today.toString()));
-            }
-            VisitFormData created = incomingForm.get();
-            Trip trip = Trip.find.byId(tripid);
-            if (trip.isUserOwner(user.getUserid())) {
-                Integer visitSize = 0;
-                if (trip.getVisits() != null) {
-                    visitSize = trip.getVisits().size();
-                }
-                List<Visit> visits = trip.getVisits();
-                Visit visit = new Visit();
-                for (Destination destination : user.getDestinations()) {
-                    if (destination.getDestName().equals(created.destName)) {
-                        visit = visitfactory.createVisit(created, destination, trip, visitSize);
-                    }
-                }
-                if (tripFactory.hasRepeatDest(visits, visit, "ADD")) {
-                    Date today = new Date();
-                    today.setTime(today.getTime());
-                    return badRequest(AddExistingTripDestinations.render(incomingForm.withError("destName", "Cannot have repeated destinations"), trip, user.getMappedDestinations(), visits, today.toString()));
-                }
-                visit.save();
-            } else {
-                return unauthorized("Oops, this is not your trip.");
-            }
-
-        } else{
-            return unauthorized("Oops, you are not logged in");
-        }
-        return redirect(routes.TripController.AddTripDestinations(tripid));
-    }
-    /**
-     * CURRENTLY NOT BEING USED
-     * Handles the request to add destinations to an existing trip.
-     * Destinations with an arrival and departure timestamp are stored in the form of a Visit.
-     * A visit is created based on the destination, arrival and departure forms filled by the user, and stored into
-     * the trip they're editing. The user is then redirected to the edit trip page.
-     * If the user is not logged in, an error message is displayed.
-     * @param request The HTTP request
-     * @param tripid The trip id that the user is editing.
-     * @return edit trip page or error page
-     */
-    public Result addvisitExistingTrip(Http.Request request, Integer tripid){
-        Form<VisitFormData> incomingForm = formFactory.form(VisitFormData.class).bindFromRequest(request);
-        User user = User.getCurrentUser(request);
-        if (user != null) {
-            if (incomingForm.hasErrors()) {
-                Date today = new Date();
-                today.setTime(today.getTime());
-                Trip trip = Trip.find.byId(tripid);
-                List<Visit> visits = trip.getVisits();
-                visits.sort(Comparator.comparing(Visit::getVisitOrder));
-                return badRequest(AddExistingTripDestinations.render(incomingForm, trip, user.getMappedDestinations(), visits, today.toString()));
-            }
-            VisitFormData created = incomingForm.get();
-            Trip trip = Trip.find.byId(tripid);
-            if (trip.isUserOwner(user.getUserid())) {
-                Integer visitSize = 0;
-                if (trip.getVisits() != null) {
-                    visitSize = trip.getVisits().size();
-                }
-                List<Visit> visits = trip.getVisits();
-                Visit visit = new Visit();
-                for (Destination destination : user.getDestinations()) {
-                    if (destination.getDestName().equals(created.destName)) {
-                        visit = visitfactory.createVisit(created, destination, trip, visitSize);
-                    }
-                }
-                if (tripFactory.hasRepeatDest(visits, visit, "ADD")) {
-                    Date today = new Date();
-                    today.setTime(today.getTime());
-                    return badRequest(AddExistingTripDestinations.render(incomingForm.withError("destName", "Cannot have repeated destinations"), trip, user.getMappedDestinations(), visits, today.toString()));
-                }
-                visit.save();
-            } else {
-                return unauthorized("Oops, this is not your trip.");
-            }
-
-        } else{
-            return unauthorized("Oops, you are not logged in");
-        }
-        return redirect(routes.TripController.AddExistingTripDestinations(tripid));
-    }
-
-    /**
-     * If the user is logged in, renders the edit trip page. Users can add, swap or remove destinations from their
-     * trip on this page.
-     * If the user is not logged in, returns an error.
-     * @param request The HTTP request
-     * @param tripid The trip id that the user is editing.
-     * @return edit trip page or error page
-     */
-    public Result edittrip(Http.Request request, Integer tripid){
-        Trip trip = Trip.find.byId(tripid);
-        User user = User.getCurrentUser(request);
-        if (user != null) {
-            List<Destination> destinations = user.getDestinations();
-            if (trip != null) {
-                if(trip.isUserOwner(user.getUserid())) {
-                    Form<VisitFormData> incomingForm = formFactory.form(VisitFormData.class);
-                    List<Visit> visits = trip.getVisits();
-                    visits.sort(Comparator.comparing(Visit::getVisitOrder));
-                    return ok(editTrip.render(incomingForm, trip, destinations, visits));
-
-                } else {
-                    return unauthorized("Not your trip");
-                }
-            }
-            else{
-                return unauthorized("Oops, invalid trip ID");
-            }
-        }
-        else{
-            return unauthorized("Oops, you are not logged in");
-        }
-    }
-
 
     /**
      * Handles the request to remove destinations from a trip. Removes the destination (which gets converted into a
      * visit) from the trip that the user is editing, then redirects the user to the edit trip page. Displays an error
      * if the user is not logged in.
      * @param request The HTTP request
-     * @param tripid The trip ID that the user is editing.
+     * @param visitid The visit ID that the user is deleting.
      * @return edit trip page or error page
      */
     public Result deletevisit(Http.Request request, Integer visitid){

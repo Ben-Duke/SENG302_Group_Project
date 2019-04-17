@@ -70,9 +70,9 @@ GET     /users/trips/cancel         controllers.TripController.cancelTrip(reques
 
 GET     /users/trips/addDestinations    controllers.TripController.AddTripDestinations(request: Request, id:Integer)
 
-GET     /users/trips/display/addDestinations    controllers.TripController.AddExistingTripDestinations(request: Request, id:Integer)
+#GET     /users/trips/display/addDestinations    controllers.TripController.AddExistingTripDestinations(request: Request, id:Integer)
 
-POST     /users/trips/display/addDestinations    controllers.TripController.addvisitExistingTrip(request: Request, id:Integer)
+#POST     /users/trips/display/addDestinations    controllers.TripController.addvisitExistingTrip(request: Request, id:Integer)
 
 #Handles creating trips
 POST    /users/trips/create         controllers.TripController.savetrip(request: Request)
@@ -84,10 +84,10 @@ DELETE    /users/trips/edit/:id    controllers.TripController.deletevisit(reques
 PUT    /users/trips/edit/:id      controllers.TripController.swapvisits(request: Request, id:Integer)
 
 #Renders page for editing a trip
-GET     /users/trips/edit/:id        controllers.TripController.edittrip(request: Request, id:Integer)
+#GET     /users/trips/edit/:id        controllers.TripController.edittrip(request: Request, id:Integer)
 
 #Handles adding a visit to a trip
-POST    /users/trips/edit/:id       controllers.TripController.addvisit(request: Request, id:Integer)
+#POST    /users/trips/edit/:id       controllers.TripController.addvisit(request: Request, id:Integer)
 
 #Handles adding a visit to a trip (table form)
 GET    /users/trips/table/edit/:tripid/:destid       controllers.TripController.addVisitFromTable(request: Request, tripid:Integer, destid:Integer)
@@ -99,7 +99,7 @@ GET    /users/trips/visit/edit/:id       controllers.TripController.editvisit(re
 POST    /users/trips/visit/edit/:id       controllers.TripController.updateVisit(request: Request, id:Integer)
 
 #Renders page that displays a given trip
-GET     /users/trips/:id            controllers.TripController.displaytrip(request: Request, id:Integer, message:String)
+GET     /users/trips/:id            controllers.TripController.displaytrip(request: Request, id:Integer)
 
 #Renders page that displays the home page where users can navigate to other pages
 GET     /users/home                 controllers.HomeController.showhome(request:Request)

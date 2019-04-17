@@ -34,6 +34,7 @@ import java.util.Map;
 import static org.junit.Assert.*;
 import static play.mvc.Http.Status.*;
 import static play.test.Helpers.GET;
+import static play.test.Helpers.contentAsString;
 import static play.test.Helpers.route;
 
 public class TripControllerTest extends WithApplication {
@@ -127,87 +128,241 @@ public class TripControllerTest extends WithApplication {
      * Unit test for trip creation request
      * */
     @Test
-    public void savetrip() {
-        //User with id 1 should have no trips
-        assertEquals(0, User.find.byId(1).getTrips().size());
+    public void saveTrip() {
+        //User with id 2 should have two trips
+        assertEquals(2, User.find.byId(2).getTrips().size());
         Map<String, String> formData = new HashMap<>();
         //Assuming the user fills in the trip name form as "triptest123"
         formData.put("tripName", "triptest123");
-        Http.RequestBuilder fakeRequest = Helpers.fakeRequest().bodyForm(formData).method(Helpers.POST).uri("/users/trips/create").session("connected", "1");
+        Http.RequestBuilder fakeRequest = Helpers.fakeRequest().bodyForm(formData).method(Helpers.POST).uri("/users/trips/create").session("connected", "2");
         Result result = Helpers.route(app, fakeRequest);
         //User should be redirected to the create profile page
         assertEquals(SEE_OTHER, result.status());
-        //User with id 1 should have one trip
-        assertEquals(1, User.find.byId(1).getTrips().size());
-        //Trip with name "triptest123" should be the user's first trip
-        assertEquals("triptest123", User.find.byId(1).getTrips().get(0).getTripName());
+        //User with id 2 should have three trips
+        assertEquals(3, User.find.byId(2).getTrips().size());
+        //Trip with name "triptest123" should be the user's third trip
+        assertEquals("triptest123", User.find.byId(2).getTrips().get(2).getTripName());
+    }
+
+    /**
+     * Unit test for trip creation request
+     * */
+    @Test
+    public void saveTripWithDuplicateName() {
+        //User with id 2 should have two trips
+        assertEquals(2, User.find.byId(2).getTrips().size());
+        Map<String, String> formData = new HashMap<>();
+        //Assuming the user fills in the trip name form as "Trip to New Zealand", which already exists
+        formData.put("tripName", "Trip to New Zealand");
+        Http.RequestBuilder fakeRequest = Helpers.fakeRequest().bodyForm(formData).method(Helpers.POST).uri("/users/trips/create").session("connected", "2");
+        CSRFTokenHelper.addCSRFToken(fakeRequest);
+        Result result = Helpers.route(app, fakeRequest);
+        //User with id 2 should still have two trips
+        assertEquals(2, User.find.byId(2).getTrips().size());
+    }
+
+    /**
+     * Unit test for trip creation request
+     * */
+    @Test
+    public void saveTripWithInvalidLoginSession() {
+        Map<String, String> formData = new HashMap<>();
+        formData.put("tripName", "Trip to New Zealand");
+        Http.RequestBuilder fakeRequest = Helpers.fakeRequest().bodyForm(formData).method(Helpers.POST).uri("/users/trips/create").session("connected", null);
+        CSRFTokenHelper.addCSRFToken(fakeRequest);
+        Result result = Helpers.route(app, fakeRequest);
+        //User with id 2 should still have two trips
+        assertEquals(UNAUTHORIZED, result.status());
+    }
+
+    @Test
+    public void loadEditVisitPageWithInvalidLoginSession(){
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/trips/visit/edit/1").session("connected", null);
+        Result result = route(app, request);
+        assertEquals(UNAUTHORIZED, result.status());
+    }
+
+    @Test
+    public void loadEditVisitPageWithLoginSessionAndUserIsTripOwner(){
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/trips/visit/edit/1").session("connected", "2");
+        Result result = route(app, request);
+        assertEquals(OK, result.status());
+    }
+
+    @Test
+    public void loadEditVisitPageWithLoginSessionAndUserIsNotTripOwner(){
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/trips/visit/edit/1").session("connected", "3");
+        Result result = route(app, request);
+        assertEquals(UNAUTHORIZED, result.status());
+    }
+
+    @Test
+    public void updateVisitWithInvalidLoginSession(){
+        //Update the first visit from Trip to New Zealand from Christchurch to The Wok.
+        Map<String, String> formData = new HashMap<>();
+        formData.put("destination", "3");
+        formData.put("arrival", "2019-04-20");
+        formData.put("departure", "2019-06-09");
+        Http.RequestBuilder request = Helpers.fakeRequest().bodyForm(formData).method(Helpers.POST).uri("/users/trips/visit/edit/1").session("connected", null);
+        CSRFTokenHelper.addCSRFToken(request);
+        Result result = route(app, request);
+        assertEquals(UNAUTHORIZED, result.status());
+    }
+
+    @Test
+    public void updateVisitWithValidLoginSessionWithInvalidOwner(){
+        Map<String, String> formData = new HashMap<>();
+        formData.put("destination", "4");
+        formData.put("arrival", "2019-04-20");
+        formData.put("departure", "2019-06-09");
+        Http.RequestBuilder request = Helpers.fakeRequest().bodyForm(formData).method(Helpers.POST).uri("/users/trips/visit/edit/1").session("connected", "3");
+        CSRFTokenHelper.addCSRFToken(request);
+        Result result = route(app, request);
+        assertEquals(UNAUTHORIZED, result.status());
+    }
+
+    @Test
+    public void updateVisitWithValidLoginSessionWithValidOwner(){
+        Visit visit = Visit.find.byId(1);
+        assertEquals("Trip to New Zealand", visit.getTrip().getTripName());
+        assertEquals("Christchurch", visit.getDestination().getDestName());
+        assertEquals("2018-05-04", visit.getArrival());
+        assertEquals("2018-05-06", visit.getDeparture());
+        //Update the first visit from Trip to New Zealand from Christchurch to The Wok.
+        Map<String, String> formData = new HashMap<>();
+        formData.put("destination", "3");
+        formData.put("arrival", "2019-04-20");
+        formData.put("departure", "2019-06-09");
+        Http.RequestBuilder request = Helpers.fakeRequest().bodyForm(formData).method(Helpers.POST).uri("/users/trips/visit/edit/1").session("connected", "2");
+        CSRFTokenHelper.addCSRFToken(request);
+        Result result = route(app, request);
+        visit = Visit.find.byId(1);
+        assertEquals(SEE_OTHER, result.status());
+        assertEquals("Trip to New Zealand", visit.getTrip().getTripName());
+        assertEquals("The Wok", visit.getDestination().getDestName());
+        assertEquals("2019-04-20", visit.getArrival());
+        assertEquals("2019-06-09", visit.getDeparture());
+    }
+
+    @Test
+    public void updateVisitWithValidLoginSessionWithValidOwnerWithNoArrivalOrDepartureDate(){
+        Visit visit = Visit.find.byId(1);
+        assertEquals("Trip to New Zealand", visit.getTrip().getTripName());
+        assertEquals("Christchurch", visit.getDestination().getDestName());
+        assertEquals("2018-05-04", visit.getArrival());
+        assertEquals("2018-05-06", visit.getDeparture());
+        //Update the first visit from Trip to New Zealand from Christchurch to The Wok.
+        Map<String, String> formData = new HashMap<>();
+        formData.put("destination", "3");
+        formData.put("arrival", "");
+        formData.put("departure", "");
+        Http.RequestBuilder request = Helpers.fakeRequest().bodyForm(formData).method(Helpers.POST).uri("/users/trips/visit/edit/1").session("connected", "2");
+        CSRFTokenHelper.addCSRFToken(request);
+        Result result = route(app, request);
+        visit = Visit.find.byId(1);
+        assertEquals(SEE_OTHER, result.status());
+        assertEquals("Trip to New Zealand", visit.getTrip().getTripName());
+        assertEquals("The Wok", visit.getDestination().getDestName());
+        assertEquals("", visit.getArrival());
+        assertEquals("", visit.getDeparture());
+    }
+
+    @Test
+    public void updateVisitWithValidLoginSessionWithValidOwnerThatResultsInRepeatDestination(){
+        Visit visit = Visit.find.byId(1);
+        assertEquals("Trip to New Zealand", visit.getTrip().getTripName());
+        assertEquals("Christchurch", visit.getDestination().getDestName());
+        assertEquals("2018-05-04", visit.getArrival());
+        assertEquals("2018-05-06", visit.getDeparture());
+        //Update the first visit from Trip to New Zealand from Christchurch to Wellington
+        Map<String, String> formData = new HashMap<>();
+        formData.put("destination", "2");
+        formData.put("arrival", "2019-04-20");
+        formData.put("departure", "2019-06-09");
+        Http.RequestBuilder request = Helpers.fakeRequest().bodyForm(formData).method(Helpers.POST).uri("/users/trips/visit/edit/1").session("connected", "2");
+        CSRFTokenHelper.addCSRFToken(request);
+        Result result = route(app, request);
+        visit = Visit.find.byId(1);
+        assertEquals(BAD_REQUEST, result.status());
+        assertEquals("Trip to New Zealand", visit.getTrip().getTripName());
+        assertEquals("Christchurch", visit.getDestination().getDestName());
+        assertEquals("2018-05-04", visit.getArrival());
+        assertEquals("2018-05-06", visit.getDeparture());
     }
 
     /**
      * Unit test for adding a visit to a trip request
      * TO ADD: VALIDATION FOR BACK TO BACK OF THE SAME VISITS ADD (might want to refactor first though?)
      */
-    @Test
-    public void addvisit() {
-        Map<String, String> formData = new HashMap<>();
-        String arrival = "2019-04-20";
-        String departure = "2019-06-09";
-        //VisitFormData visitformdata = new VisitFormData(Destination.find.byId(1).getDestName(), arrival, departure, Trip.find.byId(1).tripName);
-//        Visit visit = visitfactory.createVisit(visitformdata, Destination.find.byId(1), Trip.find.byId(1), 3 );
-//        visit.save();
-        //Christchurch
-        formData.put("destName", Destination.find.byId(1).getDestName());
-        formData.put("arrival", arrival);
-        formData.put("departure", departure);
-        formData.put("visitName", Destination.find.byId(1).getDestName());
-        //Add the visit to the auto-generated trip of ID 1 belonging to user of ID 2.
-        Http.RequestBuilder fakeRequest = Helpers.fakeRequest().bodyForm(formData).method(Helpers.POST).uri("/users/trips/edit/1").session("connected", "2");
-        CSRFTokenHelper.addCSRFToken(fakeRequest);
-        Result result = Helpers.route(app, fakeRequest);
-        assertEquals(SEE_OTHER, result.status());
-        //User should be redirected to the edit trip page
-        //"Newly created Visit with name "Christchurch" should be the third index in the trip
-        assertEquals("Christchurch", User.find.byId(2).getTrips().get(0).getVisits().get(2).getVisitName());
-        assertEquals("2019-04-20", User.find.byId(2).getTrips().get(0).getVisits().get(2).getArrival());
-        assertEquals("2019-06-09", User.find.byId(2).getTrips().get(0).getVisits().get(2).getDeparture());
-    }
+//    @Test
+//    public void addvisit() {
+//        Map<String, String> formData = new HashMap<>();
+//        String arrival = "2019-04-20";
+//        String departure = "2019-06-09";
+//        //VisitFormData visitformdata = new VisitFormData(Destination.find.byId(1).getDestName(), arrival, departure, Trip.find.byId(1).tripName);
+////        Visit visit = visitfactory.createVisit(visitformdata, Destination.find.byId(1), Trip.find.byId(1), 3 );
+////        visit.save();
+//        //Christchurch
+//        formData.put("destName", Destination.find.byId(1).getDestName());
+//        formData.put("arrival", arrival);
+//        formData.put("departure", departure);
+//        formData.put("visitName", Destination.find.byId(1).getDestName());
+//        //Add the visit to the auto-generated trip of ID 1 belonging to user of ID 2.
+//        Http.RequestBuilder fakeRequest = Helpers.fakeRequest().bodyForm(formData).method(Helpers.POST).uri("/users/trips/edit/1").session("connected", "2");
+//        CSRFTokenHelper.addCSRFToken(fakeRequest);
+//        Result result = Helpers.route(app, fakeRequest);
+//        assertEquals(SEE_OTHER, result.status());
+//        //User should be redirected to the edit trip page
+//        //"Newly created Visit with name "Christchurch" should be the third index in the trip
+//        assertEquals("Christchurch", User.find.byId(2).getTrips().get(0).getVisits().get(2).getVisitName());
+//        assertEquals("2019-04-20", User.find.byId(2).getTrips().get(0).getVisits().get(2).getArrival());
+//        assertEquals("2019-06-09", User.find.byId(2).getTrips().get(0).getVisits().get(2).getDeparture());
+//    }
 
     /**
      * Unit test for edit trip page
      */
     @Test
-    public void edittripWithInvalidLoginSession() {
+    public void displayTripWithInvalidLoginSession() {
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(GET)
-                .uri("/users/trips/edit/1").session("connected", null);
+                .uri("/users/trips/1").session("connected", null);
         Result result = route(app, request);
         assertEquals(UNAUTHORIZED, result.status());
     }
 
     @Test
-    public void edittripWithValidLoginSessionAndInvalidOwner() {
+    public void displayTripWithValidLoginSessionAndInvalidOwner() {
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(GET)
-                .uri("/users/trips/edit/1").session("connected", "3");
-        Result result = route(app, request);
-        assertEquals(UNAUTHORIZED, result.status());
-    }
-
-    @Test
-    public void edittripWithValidLoginSessionAndValidOwner() {
-        Http.RequestBuilder request = Helpers.fakeRequest()
-                .method(GET)
-                .uri("/users/trips/edit/1").session("connected", "2");
+                .uri("/users/trips/1").session("connected", "3");
         Result result = route(app, request);
         assertEquals(OK, result.status());
+        assertTrue(contentAsString(result).contains("displayTrip.scala.html"));
+    }
+
+    @Test
+    public void displayTripWithValidLoginSessionAndValidOwner() {
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/trips/1").session("connected", "2");
+        Result result = route(app, request);
+        assertEquals(OK, result.status());
+        assertTrue(contentAsString(result).contains("AddTripDestinationsTable.scala.html"));
     }
 
     /**
-     * Unit test for deleting a visit from a trip
+     * Unit test for deleting a visit from a new trip
      * TO ADD: VALIDATION FOR BACK TO BACK OF THE SAME VISITS REMOVE (might want to refactor first though?)
      */
     @Test
-    public void deletevisit() {
+    public void deleteVisitFromNewTrip() {
         Trip trip = new Trip("test", true, User.find.byId(1));
         trip.save();
         String arrival = "2019-04-20";
@@ -230,178 +385,35 @@ public class TripControllerTest extends WithApplication {
         assertEquals(0, User.find.byId(1).getTrips().get(0).getVisits().size());
     }
 
-    /**
-     * Unit test for swapping two visits in a trip request
-     * TEMPORARILY BLOCKED DUE TO NOT KNOWING MAKE FAKE AJAX REQUESTS
-     */
-    /*
     @Test
-    public void swapvisits() {
-//        String arrival1 = "2019-04-20";
-//        String departure1 = "2019-06-09";
-//        String arrival2 = "2018-04-20";
-//        String departure2 = "2018-06-09";
-//        //University of Canterbury, testTrip, visitOrder = 1
-//        VisitFormData visitformdata1 = new VisitFormData(Destination.find.byId(1).getDestName(), arrival1, departure1, Trip.find.byId(1).tripName);
-//        Visit visit1 = Visit.makeInstance(visitformdata1, Destination.find.byId(1), Trip.find.byId(1), 1 );        visit1.save();
-//        //University of Banterbury, testTrip, visitOrder = 2
-//        VisitFormData visitformdata2 = new VisitFormData(Destination.find.byId(2).getDestName(), arrival2, departure2, Trip.find.byId(1).tripName);
-//        Visit visit2 = Visit.makeInstance(visitformdata2, Destination.find.byId(2), Trip.find.byId(1), 2 );        visit2.save();
-//        visit2.save();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        String arrival1 = "2019-04-20";
-        String departure1 = "2019-06-09";
-        String arrival2 = "2018-04-20";
-        String departure2 = "2018-06-09";
-        //University of Canterbury, testTrip, visitOrder = 1
-        VisitFormData visitformdata1 = new VisitFormData(Destination.find.byId(1).getDestName(), arrival1, departure1, Trip.find.byId(1).tripName);
-        Visit visit1 = visitfactory.createVisit(visitformdata1, Destination.find.byId(1), Trip.find.byId(1), 1 );
-        visit1.save();
-        //University of Banterbury, testTrip, visitOrder = 2
-        VisitFormData visitformdata2 = new VisitFormData(Destination.find.byId(2).getDestName(), arrival1, departure1, Trip.find.byId(1).tripName);
-        Visit visit2 = visitfactory.createVisit(visitformdata2, Destination.find.byId(2), Trip.find.byId(1), 2 );
-        visit2.save();
-        visit2.save();
-        //University of Canterbury should be on the first row and University of Banterbury should be on the second row before swap
-        List<Visit> visitsBeforeSwap = User.find.byId(1).getTrips().get(0).getVisits();
-        visitsBeforeSwap.sort(Comparator.comparing(Visit::getVisitOrder));
-        assertEquals("University of Canterbury", visitsBeforeSwap.get(0).getVisitName());
-        assertEquals("University of Banterbury", visitsBeforeSwap.get(1).getVisitName());
-        Map<String, String> formData = new HashMap<>();
-        //visitID of the first visit should be 1
-        formData.put("visitid1", "1");
-        //visitID of the second visit should be 2
-        formData.put("visitid2", "2");
-        //Swap the visits
-        Http.RequestBuilder fakeRequest = Helpers.fakeRequest().bodyForm(formData).method(Helpers.POST).uri("/users/trips/edit/1/swap").session("connected", "1");
+    public void deleteVisitFromExistingTripWithValidOwner(){
+        assertEquals(4, Trip.find.byId(2).getVisits().size());
+        //visit of id 5 is in this trip
+        Http.RequestBuilder fakeRequest = Helpers.fakeRequest().method(Helpers.DELETE).uri("/users/trips/edit/5").session("connected", "2");
         Result result = Helpers.route(app, fakeRequest);
-        //User should be redirected to the edit trip page
-        assertEquals(SEE_OTHER, result.status());
-        //University of Banterbury should be on the first row and University of Canterbury should be on the second row after swap
-        List<Visit> visitsAfterSwap = User.find.byId(1).getTrips().get(0).getVisits();
-        visitsAfterSwap.sort(Comparator.comparing(Visit::getVisitOrder));
-        assertEquals("University of Banterbury", visitsAfterSwap.get(0).getVisitName());
-        assertEquals("University of Canterbury", visitsAfterSwap.get(1).getVisitName());
+        assertEquals(OK, result.status());
+        assertEquals(3, Trip.find.byId(2).getVisits().size());
     }
-*/
-    /**
-     * Unit tests for method to detect repeat destinations. (Returns true if repeat destination is detected, false otherwise)
-     */
-    /*
-    @Test
-    public void hasRepeatDest() {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        String arrival1 = "2019-04-20";
-        String departure1 = "2019-06-09";
-        String arrival2 = "2018-04-20";
-        String departure2 = "2018-06-09";
-        //University of Canterbury, testTrip, visitOrder = 1
-        VisitFormData visitformdata1 = new VisitFormData(Destination.find.byId(1).getDestName(), arrival1, departure1, Trip.find.byId(1).tripName);
-        Visit visit1 = visitfactory.createVisit(visitformdata1, Destination.find.byId(1), Trip.find.byId(1), 1 );
-        visit1.save();
-        //University of Banterbury, testTrip, visitOrder = 2
-        VisitFormData visitformdata2 = new VisitFormData(Destination.find.byId(2).getDestName(), arrival2, departure2, Trip.find.byId(1).tripName);
-        Visit visit2 = visitfactory.createVisit(visitformdata2, Destination.find.byId(2), Trip.find.byId(1), 2 );
-        visit2.save();
-        //University of Canterbury (same destination), testTrip, visitOrder = 3, arrival and departure currently broken
-        VisitFormData visitformdata3 = new VisitFormData(Destination.find.byId(1).getDestName(), arrival1, departure1, Trip.find.byId(1).tripName);
-        Visit visit3 = visitfactory.createVisit(visitformdata3, Destination.find.byId(1), Trip.find.byId(1), 3 );
-        visit3.save();
-        //Get the list of visits and sort it by order. Current list: [Canterbury, Banterbury, Canterbury]
-        List<Visit> visits = User.find.byId(1).getTrips().get(0).getVisits();
-        visits.sort(Comparator.comparing(Visit::getVisitOrder));
-        //Instantiate trip controller to test methods
-        TripController tripController = new TripController();
-        //Test if the first row of the list can be deleted, making it [Banterbury, Canterbury] which is valid (should return false)
-        assertFalse(tripfactory.hasRepeatDest(visits, visits.get(0), "DELETE"));
-        //Test if the second row of the list can be deleted, making it [Canterbury, Canterbury] which is invalid (should return true)
-        assertTrue(tripfactory.hasRepeatDest(visits, visits.get(1), "DELETE"));
-        //Test if the second row of the list can be deleted, making it [Canterbury, Canterbury] which is valid (should return false)
-        assertFalse(tripfactory.hasRepeatDest(visits, visits.get(2), "DELETE"));
-        //University of Canterbury (same destination), testTrip, visitOrder = 4, arrival and departure currently broken
-        VisitFormData visitformdata4 = new VisitFormData(Destination.find.byId(1).getDestName(), arrival1, departure1, Trip.find.byId(1).tripName);
-        Visit visit4 = visitfactory.createVisit(visitformdata4, Destination.find.byId(1), Trip.find.byId(1), 4 );        //Test if the University of Canterbury can be added, making it [Canterbury, Banterbury, Canterbury, Canterbury] which is invalid (should return true)
-        assertTrue(tripfactory.hasRepeatDest(visits, visit4, "ADD"));
-        //University of Canterbury (same destination), testTrip, visitOrder = 4, arrival and departure currently broken
-        VisitFormData visitformdata5 = new VisitFormData(Destination.find.byId(2).getDestName(), arrival1, departure1, Trip.find.byId(1).tripName);
-        Visit visit5 = visitfactory.createVisit(visitformdata5, Destination.find.byId(2), Trip.find.byId(1), 5 );        //Test if the University of Banterbury can be added, making it [Canterbury, Banterbury, Canterbury, Banterbury] which is valid (should return false)
-        assertFalse(tripfactory.hasRepeatDest(visits, visit5, "ADD"));
-        //TO BE DONE
-        //Test if the University of Canterbury can be swapped into the middle of the list (index 1). This assumes that the input list is already swapped.
-        visit2.setDestination(Destination.find.byId(1));
-        visit2.update();
-        visits = User.find.byId(1).getTrips().get(0).getVisits();
-        visits.sort(Comparator.comparing(Visit::getVisitOrder));
-        //Current list is [Canterbury, Canterbury, Canterbury] which is invalid for all indices (should return true)
-        assertTrue(tripfactory.hasRepeatDest(visits, visit1, "SWAP"));
-        assertTrue(tripfactory.hasRepeatDest(visits, visit2, "SWAP"));
-        assertTrue(tripfactory.hasRepeatDest(visits, visit3, "SWAP"));
-        visit3.setDestination(Destination.find.byId(2));
-        visit3.update();
-        visits = User.find.byId(1).getTrips().get(0).getVisits();
-        visits.sort(Comparator.comparing(Visit::getVisitOrder));
-        //Current list is [Canterbury, Canterbury, Banterbury] which is invalid for index 0, index 1 and valid for index 2
-        assertTrue(tripfactory.hasRepeatDest(visits, visit1, "SWAP"));
-        assertTrue(tripfactory.hasRepeatDest(visits, visit2, "SWAP"));
-        assertFalse(tripfactory.hasRepeatDest(visits, visit3, "SWAP"));
-        visit1.setDestination(Destination.find.byId(2));
-        visit1.update();
-        visits = User.find.byId(1).getTrips().get(0).getVisits();
-        visits.sort(Comparator.comparing(Visit::getVisitOrder));
-        //Current list is [Banterbury, Canterbury, Banterbury] which is valid for index 0, index 1 and index 2
-        assertFalse(tripfactory.hasRepeatDest(visits, visit1, "SWAP"));
-        assertFalse(tripfactory.hasRepeatDest(visits, visit2, "SWAP"));
-        assertFalse(tripfactory.hasRepeatDest(visits, visit3, "SWAP"));
-    }
-    */
 
-    /**
-     * Unit tests for method to detect repeat destinations when swapping.
-     * Returns true if a repeat destination is formed from swapping two visits in a list, false otherwise.
-     * TEMPORARILY COMMENTED OUT BECAUSE A DIFFERENT IMPLEMENTATION IS BEING USED
-     */
-    /*
     @Test
-    public void hasRepeatDestSwap() {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        String arrival1 = "2019-04-20";
-        String departure1 = "2019-06-09";
-        String arrival2 = "2018-04-20";
-        String departure2 = "2018-06-09";
-        //University of Canterbury, testTrip, visitOrder = 1
-        VisitFormData visitformdata1 = new VisitFormData(Destination.find.byId(1).getDestName(), arrival1, departure1, Trip.find.byId(1).tripName);
-        Visit visit1 = visitfactory.createVisit(visitformdata1, Destination.find.byId(1), Trip.find.byId(1), 1 );
-        visit1.save();
-        //University of Banterbury, testTrip, visitOrder = 2
-        VisitFormData visitformdata2 = new VisitFormData(Destination.find.byId(2).getDestName(), arrival2, departure2, Trip.find.byId(1).tripName);
-        Visit visit2 = visitfactory.createVisit(visitformdata2, Destination.find.byId(2), Trip.find.byId(1), 2 );
-        visit2.save();
-        //University of Canterbury (same destination), testTrip, visitOrder = 3, arrival and departure currently broken
-        VisitFormData visitformdata3 = new VisitFormData(Destination.find.byId(1).getDestName(), arrival1, departure1, Trip.find.byId(1).tripName);
-        Visit visit3 = visitfactory.createVisit(visitformdata3, Destination.find.byId(1), Trip.find.byId(1), 3 );
-        visit3.save();
-        //Panem, testTrip, visitOrder = 4, arrival and departure currently broken
-        VisitFormData visitformdata4 = new VisitFormData(Destination.find.byId(3).getDestName(), arrival1, departure1, Trip.find.byId(1).tripName);
-        Visit visit4 = visitfactory.createVisit(visitformdata4, Destination.find.byId(3), Trip.find.byId(1), 4 );
-        visit4.save();
-        //Get the list of visits and sort it by order. Current list: Canterbury, Banterbury, Canterbury, Panem.
-        List<Visit> visits = User.find.byId(1).getTrips().get(0).getVisits();
-        visits.sort(Comparator.comparing(Visit::getVisitOrder));
-        TripController tripController = new TripController();
-        //Swaps visit1 and visit2, making [Banterbury, Canterbury, Canterbury, Panem] which is invalid so should return true
-        assertTrue(tripController.hasRepeatDestSwap(visits, visit1, visit2));
-        //Swaps visit2 and visit3, making [Canterbury, Canterbury, Banterbury, Panem] which is invalid so should return true
-        assertTrue(tripController.hasRepeatDestSwap(visits, visit2, visit3));
-        //Swaps visit1 and visit3, making [Canterbury, Banterbury, Canterbury, Panem] which is valid so should return false
-        assertFalse(tripController.hasRepeatDestSwap(visits, visit1, visit3));
-        //Swaps visit1 and visit4, making [Panem, Banterbury, Canterbury, Canterbury] which is invalid so should return true
-        assertTrue(tripController.hasRepeatDestSwap(visits, visit1, visit4));
-        //Swaps visit4 and visit1, should have the same functionality above and return true
-        assertTrue(tripController.hasRepeatDestSwap(visits, visit4, visit1));
-        //Swaps visit2 and visit4, making [Canterbury, Panem, Canterbury, Banterbury] which is valid so should return false
-        assertFalse(tripController.hasRepeatDestSwap(visits, visit2, visit4));
-        //Swaps visit3 and visit4, making [Canterbury, Banterbury, Panem, Canterbury] which is valid so should return false
-        assertFalse(tripController.hasRepeatDestSwap(visits, visit3, visit4));
+    public void deleteVisitFromExistingTripWithInvalidOwner(){
+        assertEquals(4, Trip.find.byId(2).getVisits().size());
+        //visit of id 5 is in this trip
+        Http.RequestBuilder fakeRequest = Helpers.fakeRequest().method(Helpers.DELETE).uri("/users/trips/edit/5").session("connected", "3");
+        Result result = Helpers.route(app, fakeRequest);
+        assertEquals(UNAUTHORIZED, result.status());
+        assertEquals(4, Trip.find.byId(2).getVisits().size());
     }
-    */
+
+    @Test
+    public void deleteVisitWhichCausesRepeatDestinations(){
+        assertEquals(3, Trip.find.byId(4).getVisits().size());
+        //visit of id 11 is in this trip. Deleting it will result in Pyramid -> Pyramid which is illegal.
+        Http.RequestBuilder fakeRequest = Helpers.fakeRequest().method(Helpers.DELETE).uri("/users/trips/edit/11").session("connected", "3");
+        Result result = Helpers.route(app, fakeRequest);
+        assertEquals(BAD_REQUEST, result.status());
+        assertEquals(3, Trip.find.byId(4).getVisits().size());
+    }
+
+
 }

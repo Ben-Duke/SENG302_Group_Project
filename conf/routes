@@ -37,6 +37,11 @@ GET     /users/admin/make/:id       controllers.AdminController.userToAdmin(requ
 #Handles view a destination modification request
 GET     /users/admin/destination_modification_request/:id   controllers.AdminController.viewDestinationModificationRequest(request: Request, id: Integer)
 
+#Handles deleting a destination modification request on rejection by admin
+GET  /users/admin/destination_modification_request/reject/:id    controllers.DestinationController.destinationModificationReject(request: Request, id: Integer)
+
+#Handles updating a destination then deleting a destination modification request on acceptance by admin
+GET  /users/admin/destination_modification_request/accept/:id    controllers.DestinationController.destinationModificationAccept(request: Request, id: Integer)
 
 #Handles updating profile
 POST    /users/profile/update       controllers.ProfileController.updateProfileRequest(request: Request)

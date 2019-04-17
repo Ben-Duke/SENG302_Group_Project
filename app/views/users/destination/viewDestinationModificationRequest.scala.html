@@ -66,8 +66,8 @@
 
         </div>
         <div class="row">
-            <a class="btn btn-primary" href="" role="button">Accept</a>
-            <a class="btn btn-danger" href="" role="button">Reject</a>
+            <a class="btn btn-primary" href="@routes.DestinationController.destinationModificationAccept(modReq.getId())" role="button">Accept</a>
+            <a class="btn btn-danger" href="@routes.DestinationController.destinationModificationReject(modReq.getId())" role="button">Reject</a>
             <a class="btn btn-primary" href="@routes.AdminController.indexAdmin()" role="button">Back</a>
         </div>
     </div>

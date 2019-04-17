@@ -28,7 +28,7 @@ public class DestinationModificationRequest extends Model {
     public double newDestLongitude;
 
     @ManyToMany
-    public List<TravellerType> newTravelerTypes = new ArrayList<>();
+    public List<TravellerType> newTravelerTypes;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Formats.DateTime(pattern="yyyy-MM-dd HH:mm:ss")

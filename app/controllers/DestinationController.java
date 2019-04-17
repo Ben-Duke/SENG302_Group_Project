@@ -334,8 +334,6 @@ public class DestinationController extends Controller {
                 } else {
                     DestinationModificationRequest newModReq = new DestinationModificationRequest(oldDestination, newDestination, user);
                     newModReq.save();
-//                    List<DestinationModificationRequest> allReqs = DestinationModificationRequest.find.all();
-//                    System.out.println(allReqs);
 
                     return redirect(routes.DestinationController.indexDestination());
                 }
@@ -345,6 +343,62 @@ public class DestinationController extends Controller {
             }
         } else {
             return unauthorized("Oops, you are not logged in");
+        }
+    }
+
+    public Result destinationModificationReject(Http.Request request, Integer destModReqId) {
+        User currentUser = User.getCurrentUser(request);
+        if (currentUser != null) {
+            Admin currentAdmin = Admin.find.query().where().eq("userId", currentUser.userid).findOne();
+            if (currentAdmin != null) {
+                DestinationModificationRequest modReq = DestinationModificationRequest.find.query().where().eq("id", destModReqId).findOne();
+                if (modReq != null) {
+
+                    modReq.delete();
+
+                    return redirect(routes.AdminController.indexAdmin());
+                } else {
+                    return badRequest("Destination Modification Request does not exist");
+                }
+            } else {
+                return unauthorized("Oops, you are not authorised.");
+            }
+        } else {
+            return unauthorized("Oops, you are not logged in.");
+        }
+    }
+
+    public Result destinationModificationAccept(Http.Request request, Integer destModReqId) {
+        User currentUser = User.getCurrentUser(request);
+        if (currentUser != null) {
+            Admin currentAdmin = Admin.find.query().where().eq("userId", currentUser.userid).findOne();
+            if (currentAdmin != null) {
+                DestinationModificationRequest modReq = DestinationModificationRequest.find.query().where().eq("id", destModReqId).findOne();
+                if (modReq != null) {
+
+                    Destination oldDestination = modReq.getOldDestination();
+
+                    oldDestination.setDestName(modReq.getNewDestName());
+                    oldDestination.setDestType(modReq.getNewDestType());
+                    oldDestination.setCountry(modReq.getNewDestCountry());
+                    oldDestination.setDistrict(modReq.getNewDestDistrict());
+                    oldDestination.setLatitude(modReq.getNewDestLatitude());
+                    oldDestination.setLongitude(modReq.getNewDestLongitude());
+                    oldDestination.setTravellerTypes(modReq.getNewTravellerTypes());
+
+                    oldDestination.update();
+
+                    modReq.delete();
+
+                    return redirect(routes.AdminController.indexAdmin());
+                } else {
+                    return badRequest("Destination Modification Request does not exist");
+                }
+            } else {
+                return unauthorized("Oops, you are not authorised.");
+            }
+        } else {
+            return unauthorized("Oops, you are not logged in.");
         }
     }
 
@@ -414,6 +468,7 @@ public class DestinationController extends Controller {
 
         return redirect(routes.DestinationController.indexDestination());
     }
+
     /**
      * Links a photo with a photo id to a destination with a destination id.
      * @param request the HTTP request

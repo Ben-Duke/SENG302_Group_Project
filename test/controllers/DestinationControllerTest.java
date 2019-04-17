@@ -1,9 +1,12 @@
 package controllers;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import models.Destination;
 import models.Trip;
 import models.User;
 import models.Visit;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -19,14 +22,13 @@ import play.test.Helpers;
 import play.test.WithApplication;
 import utilities.TestDatabaseManager;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.Assert.*;
 import static play.mvc.Http.Status.*;
-import static play.test.Helpers.GET;
-import static play.test.Helpers.POST;
-import static play.test.Helpers.route;
+import static play.test.Helpers.*;
 
 public class DestinationControllerTest extends WithApplication {
 
@@ -447,6 +449,8 @@ public class DestinationControllerTest extends WithApplication {
         for(Visit visit : destination.getVisits()){
             visit.delete();
         }
+        destination.setTravellerTypes(new ArrayList<>());
+        destination.update();
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(GET)
                 .uri("/users/destinations/delete/3").session("connected", "2");
@@ -611,4 +615,106 @@ public class DestinationControllerTest extends WithApplication {
 
     }
     */
+
+    /**
+     * Unit test for ajax request to get the owner of a destination given by a destination id
+     */
+    @Test
+    public void getDestinationOwner(){
+        //user with user id 2 owns destination 2. Any user (eg user id 3) can get the owner of a destination.
+        //considering changing the method to consider private destinations in the future
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/destinations/owner/2").session("connected", "3");
+        Result result = route(app, request);
+        assertEquals(OK, result.status());
+        assertEquals(2, Integer.parseInt(contentAsString(result)));
+        request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/destinations/owner/4").session("connected", "3");
+        result = route(app, request);
+        assertEquals(OK, result.status());
+        assertEquals(3, Integer.parseInt(contentAsString(result)));
+    }
+
+    /**
+     * Unit test for ajax request to get a destination given by a destination id
+     * This should work because public destinations should be accessible by anyone
+     */
+    @Test
+    public void getDestinationAsPublicDestinationWithUserWhoIsNotOwner(){
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/destinations/get/3").session("connected", "3");
+        Result result = route(app, request);
+        assertEquals(OK, result.status());
+        JSONObject obj = new JSONObject(contentAsString(result));
+        assertEquals("The Wok", obj.getString("destName"));
+        request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/destinations/get/1").session("connected", "3");
+        result = route(app, request);
+        assertEquals(OK, result.status());
+        obj = new JSONObject(contentAsString(result));
+        assertEquals("Christchurch", obj.getString("destName"));
+    }
+
+    /**
+     * Unit test for ajax request to get a destination given by a destination id
+     * This should work because public destinations should be accessible by anyone including the owner
+     */
+    @Test
+    public void getDestinationAsPublicDestinationWithUserWhoIsOwner(){
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/destinations/get/3").session("connected", "2");
+        Result result = route(app, request);
+        assertEquals(OK, result.status());
+        JSONObject obj = new JSONObject(contentAsString(result));
+        assertEquals("The Wok", obj.getString("destName"));
+    }
+
+    /**
+     * Unit test for ajax request to get a destination given by a destination id
+     * This shouldn't work because private destinations should only be accessible by the owner
+     */
+    @Test
+    public void getDestinationAsPrivateDestinationWithUserWhoIsNotOwner(){
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/destinations/get/2").session("connected", "3");
+        Result result = route(app, request);
+        assertEquals(UNAUTHORIZED, result.status());
+    }
+
+    /**
+     * Unit test for ajax request to get a destination given by a destination id
+     * This should work because private destinations should only be accessible by the owner
+     */
+    @Test
+    public void getDestinationAsPrivateDestinationWithUserWhoIsOwner(){
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/destinations/get/2").session("connected", "2");
+        Result result = route(app, request);
+        assertEquals(OK, result.status());
+        JSONObject obj = new JSONObject(contentAsString(result));
+        assertEquals("Wellington", obj.getString("destName"));
+    }
+
+    @Test
+    public void getDestinationTravellerTypes(){
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/destinations/ttypes/3").session("connected", "2");
+        Result result = route(app, request);
+        assertEquals(OK, result.status());
+        JSONArray jsonArray = new JSONArray(contentAsString(result));
+        //Groupie and gap year so length 2
+        assertEquals(2, jsonArray.length());
+        JSONObject obj1 = jsonArray.getJSONObject(0);
+        JSONObject obj2 = jsonArray.getJSONObject(1);
+        assertEquals("Groupie", obj1.getString("travellerTypeName"));
+        assertEquals("Gap Year",obj2.getString("travellerTypeName"));
+    }
 }

@@ -278,6 +278,7 @@ public class DestinationController extends Controller {
                 if (destination.isUserOwner(user.userid)) {
                     if(destination.visits.isEmpty()) {
                         destination.delete();
+                        return redirect(routes.DestinationController.indexDestination());
                     }
                     else{
                         return preconditionRequired("You cannot delete destinations while you're using them for your trips. Delete them from your trip first!");
@@ -292,7 +293,6 @@ public class DestinationController extends Controller {
             return unauthorized("Oops, you are not logged in");
         }
 
-        return redirect(routes.DestinationController.indexDestination());
     }
 
     /**
@@ -338,16 +338,20 @@ public class DestinationController extends Controller {
             JsonNode node = request.body().asJson().get("photoid");
             String photoid = node.textValue();
             photoid = photoid.replace("\"", "");
-            System.out.println(photoid);
             UserPhoto photo = UserPhoto.find.byId(Integer.parseInt(photoid));
             Destination destination = Destination.find.byId(destId);
             if(destination != null || photo != null) {
                 if (photo.getUser().getUserid() == user.getUserid()) {
                     //add checks for private destinations here once destinations have been merged in.
                     //You can only link a photo to a private destination if you own the private destination.
-                    photo.setDestination(destination);
-                    photo.update();
-                    System.out.println("SUCCESS!");
+                    if(!photo.getDestinations().contains(destination)) {
+                        photo.addDestination(destination);
+                        photo.update();
+                        System.out.println("SUCCESS!");
+                    }
+                    else{
+                        return badRequest("You have already linked the photo to this destination.");
+                    }
                 } else {
                     return unauthorized("Oops, this is not your photo!");
                 }
@@ -403,23 +407,89 @@ public class DestinationController extends Controller {
      * @param request the HTTP request
      * @return the photo file
      */
-    public Result getPhotoFile(Http.Request request, Integer photoId){
+    public Result getPhoto(Http.Request request, Integer photoId){
         User user = User.getCurrentUser(request);
         if(user != null){
             UserPhoto photo = UserPhoto.find.byId(photoId);
-            return ok(new java.io.File(photo.getUrlWithPath()));
+            if(photo.getUser().getUserid() == user.getUserid() || photo.isPublic() || user.userIsAdmin()) {
+                return ok(Json.toJson(photo));
+            } else{
+                return unauthorized("Oops, you do not have the rights to view this photo");
+            }
         } else {
             return unauthorized("Oops, you are not logged in");
         }
     }
+
+    /**
+     * Returns the destination as a json based on a destination ID
+     * @param request the HTTP request
+     * @param destId the destination ID
+     * @return the destination as a json
+     */
     public Result getDestination(Http.Request request, Integer destId){
         User user = User.getCurrentUser(request);
         if(user != null){
             Destination destination = Destination.find.byId(destId);
-            return ok(Json.toJson(destination));
+            if(destination.getIsPublic() || destination.getUser().getUserid() == user.getUserid() || user.userIsAdmin()) {
+                return ok(Json.toJson(destination));
+            }
+            else{
+                return unauthorized("Oops, this is a private destination and you don't own it.");
+            }
         } else{
             return unauthorized("Oops, you are not logged in");
         }
     }
+
+    /**
+     * Returns the destination owner's id as a json based on a destination ID
+     * @param request the HTTP request
+     * @param destId the destination ID
+     * @return the destination as a json
+     */
+    public Result getDestinationOwner(Http.Request request, Integer destId){
+        Destination destination = Destination.find.byId(destId);
+        User user = User.find.query().where().eq("userid", destination.getUser().getUserid()).findOne();
+        if(user != null){
+            return ok(Json.toJson(user.getUserid()));
+        } else{
+            return unauthorized("Oops, you are not logged in");
+        }
+    }
+
+    /**
+     * Sets the primary photo of a destination given by the destination ID.
+     * @param request the HTTP request
+     * @param destId the id of the destination to be updated
+     * @return success if it worked, error otherwise
+     */
+    public Result setPrimaryPhoto(Http.Request request, Integer destId){
+        User user = User.getCurrentUser(request);
+        if(user != null) {
+            JsonNode node = request.body().asJson().get("photoid");
+            String photoid = node.textValue();
+            photoid = photoid.replace("\"", "");
+            UserPhoto photo = UserPhoto.find.byId(Integer.parseInt(photoid));
+            Destination destination = Destination.find.byId(destId);
+            if(destination != null || photo != null) {
+                if ((destination.getUser().getUserid() == user.getUserid() && destination.getUserPhotos().contains(photo)) || user.userIsAdmin()) {
+                    //add checks for private destinations here once destinations have been merged in.
+                    //You can only link a photo to a private destination if you own the private destination.
+                    destination.setPrimaryPhoto(photo);
+                    destination.update();
+                } else {
+                    return unauthorized("Oops, this is not your photo!");
+                }
+            }
+            else{
+                return notFound();
+            }
+        } else {
+            return unauthorized("Oops, you are not logged in");
+        }
+        return ok();
+    }
+
 
 }

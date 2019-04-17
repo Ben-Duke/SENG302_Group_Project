@@ -41,7 +41,7 @@
                     <div class="list-group">
                     @for(trip <- user.getTrips) {
                         @if(trip.getIsPublic) {
-                            <a href="@routes.TripController.displaytrip(trip.tripid,"")" class="list-group-item list-group-item-action">
+                            <a href="@routes.TripController.displaytrip(trip.tripid)" class="list-group-item list-group-item-action">
                             @trip.tripName
                             </a>
                         }

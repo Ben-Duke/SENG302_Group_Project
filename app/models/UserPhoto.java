@@ -5,11 +5,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.ebean.Finder;
 import io.ebean.Model;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 import java.nio.file.Paths;
+import java.util.List;
 
 /**
  * A class to hold information a user photograph.
@@ -30,9 +28,12 @@ public class UserPhoto extends Model {
 
     // Creating  the relation to Destination
     @JsonIgnore
-    @ManyToOne
-    @JoinColumn(name = "destination", referencedColumnName = "destid")
-    public Destination destination;
+    @ManyToMany
+    public List<Destination> destinations;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "primaryPhoto")
+    public List<Destination> primaryPhotoDestinations;
 
     public static Finder<Integer,UserPhoto> find = new Finder<>(UserPhoto.class);
 
@@ -58,12 +59,12 @@ public class UserPhoto extends Model {
         return isProfile;
     }
 
-    public Destination getDestination() {
-        return destination;
+    public List<Destination> getDestinations() {
+        return destinations;
     }
 
-    public void setDestination(Destination destination) {
-        this.destination = destination;
+    public void addDestination(Destination destination) {
+        this.destinations.add(destination);
     }
     /**
      * Method to set the photo as profile picture (or not)

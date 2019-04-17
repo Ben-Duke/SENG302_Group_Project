@@ -2,6 +2,7 @@
 @import play.mvc.Http
 @(trip : Trip, message : String)
 
+<!-- Page name (for unit tests): displayTripTable.scala.html -->
 @main("Trip destinations") {
     <h1>Trip destinations</h1>
     <body>
@@ -34,16 +35,16 @@
                                 <td><a href=@routes.TripController.editvisit(visit.visitid) class="btn btn-primary">Edit</a></td>
                                 <td><button class="btn btn-danger" onclick="sendDeleteVisitRequest(
                                     '@routes.TripController.deletevisit(visit.getVisitid())',
-                                    '@routes.TripController.displaytrip(trip.tripid,"")',
-                                    '@routes.TripController.displaytrip(trip.tripid,"You cannot visit the same destination twice in a row!")',
-                                    '@routes.TripController.displaytrip(trip.tripid,"You do not own this trip!")',
-                                    '@routes.TripController.displaytrip(trip.tripid,"An error occured!")')">Delete</button></td>
+                                    '@routes.TripController.displaytrip(trip.tripid)',
+                                    '@routes.TripController.displaytrip(trip.tripid)',
+                                    '@routes.TripController.displaytrip(trip.tripid)',
+                                    '@routes.TripController.displaytrip(trip.tripid)')">Delete</button></td>
                             </tr>
                             <br>
                             }
                         </tbody>
                     </table>
-                    <a class = "btn btn-success" href="@routes.TripController.AddExistingTripDestinations(trip.getTripid())">
+                    <a class = "btn btn-success" href="@routes.TripController.displaytrip(trip.getTripid())">
                         <i class="glyphicon glyphicon-plus-sign"></i>
                         Add destinations
                     </a>

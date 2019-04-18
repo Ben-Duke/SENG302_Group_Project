@@ -257,14 +257,24 @@ public class TripController extends Controller {
         Trip trip = Trip.find.byId(tripid);
         User user = User.getCurrentUser(request);
         if (user != null) {
-                if (trip.hasVisit()) {
-                    List<Visit> visits = trip.getVisits();
-                    for (Visit visit : visits) {
-                        visit.delete();
+            if(trip != null) {
+                if (trip.getUser().getUserid() == user.getUserid() || user.userIsAdmin()) {
+                    if (trip.hasVisit()) {
+                        List<Visit> visits = trip.getVisits();
+                        for (Visit visit : visits) {
+                            visit.delete();
+                        }
                     }
+                    trip = Trip.find.byId(tripid);
+                    trip.delete();
+                    return redirect(routes.TripController.createtrip());
+                } else {
+                    return unauthorized("Oops, this is not your trip.");
                 }
-                trip.delete();
-                return redirect(routes.TripController.createtrip());
+            }
+            else{
+                return notFound("Trip not found");
+            }
         }
         else{
             return unauthorized("Oops, you are not logged in");
@@ -386,7 +396,7 @@ public class TripController extends Controller {
         User user = User.getCurrentUser(request);
         Trip trip = Trip.find.byId(tripId);
         if (user != null) {
-            if(trip.isUserOwner(user.getUserid())) {
+            if(trip.isUserOwner(user.getUserid()) || user.userIsAdmin()) {
                 if (tripFactory.swapVisitsList(list, user.getUserid())) {
                     return ok();
                 } else {

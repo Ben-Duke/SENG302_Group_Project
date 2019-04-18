@@ -1,8 +1,12 @@
 package controllers;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import models.Destination;
 import models.Trip;
 import models.User;
+import models.Visit;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -16,15 +20,15 @@ import play.mvc.Http;
 import play.mvc.Result;
 import play.test.Helpers;
 import play.test.WithApplication;
+import utilities.TestDatabaseManager;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.Assert.*;
 import static play.mvc.Http.Status.*;
-import static play.test.Helpers.GET;
-import static play.test.Helpers.POST;
-import static play.test.Helpers.route;
+import static play.test.Helpers.*;
 
 public class DestinationControllerTest extends WithApplication {
 
@@ -50,37 +54,37 @@ public class DestinationControllerTest extends WithApplication {
                 "create table test (id bigint not null, name varchar(255));",
                 "drop table test;"
         )));
-
-
+        TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
+        testDatabaseManager.populateDatabase();
         //Initialises a test user with name "testUser" and saves it to the database.
-        User user = new User("testUser");
-        user.save();
-        User user2 = new User("testUser2");
-        user2.save();
-        Destination destination = new Destination("University of Canterbury",
-                "University",
-                "Ilam",
-                "New Zealand",
-                -43.525450F,
-                172.582600F,
-                user);
-        destination.save();
-        Destination destination2 = new Destination("University of Banterbury",
-                "University",
-                "9",
-                "Pepestan",
-                -100,
-                100,
-                user);
-        destination2.save();
-        Destination destination3 = new Destination("Panem",
-                "Hunger Games",
-                "12",
-                "Panem",
-                100,
-                -100,
-                user2);
-        destination3.save();
+//        User user = new User("testUser");
+//        user.save();
+//        User user2 = new User("testUser2");
+//        user2.save();
+//        Destination destination = new Destination("University of Canterbury",
+//                "University",
+//                "Ilam",
+//                "New Zealand",
+//                -43.525450F,
+//                172.582600F,
+//                user);
+//        destination.save();
+//        Destination destination2 = new Destination("University of Banterbury",
+//                "University",
+//                "9",
+//                "Pepestan",
+//                -100,
+//                100,
+//                user);
+//        destination2.save();
+//        Destination destination3 = new Destination("Panem",
+//                "Hunger Games",
+//                "12",
+//                "Panem",
+//                100,
+//                -100,
+//                user2);
+//        destination3.save();
     }
 
     /**
@@ -186,7 +190,7 @@ public class DestinationControllerTest extends WithApplication {
      */
     @Test
     public void saveDestinationWithLoginSession() {
-        assertEquals(2, User.find.byId(1).getDestinations().size());
+        assertEquals(3, User.find.byId(2).getDestinations().size());
         Map<String, String> formData = new HashMap<>();
         formData.put("destName", "Summoner's Rift");
         formData.put("destType", "Yes");
@@ -194,10 +198,10 @@ public class DestinationControllerTest extends WithApplication {
         formData.put("country", "Angola");
         formData.put("latitude", "50.0");
         formData.put("longitude", "-50.0");
-        Http.RequestBuilder request = Helpers.fakeRequest().bodyForm(formData).method(POST).uri("/users/destinations/save").session("connected", "1");
+        Http.RequestBuilder request = Helpers.fakeRequest().bodyForm(formData).method(POST).uri("/users/destinations/save").session("connected", "2");
         Result result = route(app, request);
         assertEquals(SEE_OTHER, result.status());
-        assertEquals(3, User.find.byId(1).getDestinations().size());
+        assertEquals(4, User.find.byId(2).getDestinations().size());
     }
 
     /**
@@ -273,7 +277,7 @@ public class DestinationControllerTest extends WithApplication {
     public void editDestinationWithLoginSessionAndInvalidDestination() {
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(GET)
-                .uri("/users/destinations/edit/5").session("connected", "1");
+                .uri("/users/destinations/edit/50").session("connected", "1");
         Result result = route(app, request);
         assertEquals(NOT_FOUND, result.status());
     }
@@ -286,7 +290,7 @@ public class DestinationControllerTest extends WithApplication {
     public void editDestinationWithLoginSessionAndValidDestinationAndInvalidOwner() {
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(GET)
-                .uri("/users/destinations/edit/3").session("connected", "1");
+                .uri("/users/destinations/edit/3").session("connected", "3");
         Result result = route(app, request);
         assertEquals(UNAUTHORIZED, result.status());
     }
@@ -332,7 +336,7 @@ public class DestinationControllerTest extends WithApplication {
         formData.put("country", "Angola");
         formData.put("latitude", "50.0");
         formData.put("longitude", "-50.0");
-        Http.RequestBuilder request = Helpers.fakeRequest().bodyForm(formData).method(POST).uri("/users/destinations/update/5").session("connected", "1");
+        Http.RequestBuilder request = Helpers.fakeRequest().bodyForm(formData).method(POST).uri("/users/destinations/update/50").session("connected", "1");
         Result result = route(app, request);
         assertEquals(NOT_FOUND, result.status());
     }
@@ -359,12 +363,12 @@ public class DestinationControllerTest extends WithApplication {
      */
     @Test
     public void updateDestinationWithLoginSessionAndValidDestinationAndValidOwner() {
-        assertEquals("University of Canterbury", User.find.byId(1).getDestinations().get(0).getDestName());
-        assertEquals("University", User.find.byId(1).getDestinations().get(0).getDestType());
-        assertEquals("Ilam", User.find.byId(1).getDestinations().get(0).getDistrict());
-        assertEquals("New Zealand", User.find.byId(1).getDestinations().get(0).getCountry());
-        assertEquals(-43.525450F, User.find.byId(1).getDestinations().get(0).getLatitude(), 0.01);
-        assertEquals(172.582600F, User.find.byId(1).getDestinations().get(0).getLongitude(), 0.01);
+        assertEquals("Christchurch", User.find.byId(2).getDestinations().get(0).getDestName());
+        assertEquals("Town", User.find.byId(2).getDestinations().get(0).getDestType());
+        assertEquals("Canterbury", User.find.byId(2).getDestinations().get(0).getDistrict());
+        assertEquals("New Zealand", User.find.byId(2).getDestinations().get(0).getCountry());
+        assertEquals(-43.5321, User.find.byId(2).getDestinations().get(0).getLatitude(), 0.01);
+        assertEquals(172.6362, User.find.byId(2).getDestinations().get(0).getLongitude(), 0.01);
         Map<String, String> formData = new HashMap<>();
         formData.put("destName", "Summoner's Rift");
         formData.put("destType", "Yes");
@@ -372,15 +376,15 @@ public class DestinationControllerTest extends WithApplication {
         formData.put("country", "Angola");
         formData.put("latitude", "50.0");
         formData.put("longitude", "-50.0");
-        Http.RequestBuilder request = Helpers.fakeRequest().bodyForm(formData).method(POST).uri("/users/destinations/update/1").session("connected", "1");
+        Http.RequestBuilder request = Helpers.fakeRequest().bodyForm(formData).method(POST).uri("/users/destinations/update/1").session("connected", "2");
         Result result = route(app, request);
         assertEquals(SEE_OTHER, result.status());
-        assertEquals("Summoner's Rift", User.find.byId(1).getDestinations().get(0).getDestName());
-        assertEquals("Yes", User.find.byId(1).getDestinations().get(0).getDestType());
-        assertEquals("Demacia", User.find.byId(1).getDestinations().get(0).getDistrict());
-        assertEquals("Angola", User.find.byId(1).getDestinations().get(0).getCountry());
-        assertEquals(50.0, User.find.byId(1).getDestinations().get(0).getLatitude(), 0.01);
-        assertEquals(-50.0, User.find.byId(1).getDestinations().get(0).getLongitude(), 0.01);
+        assertEquals("Summoner's Rift", User.find.byId(2).getDestinations().get(0).getDestName());
+        assertEquals("Yes", User.find.byId(2).getDestinations().get(0).getDestType());
+        assertEquals("Demacia", User.find.byId(2).getDestinations().get(0).getDistrict());
+        assertEquals("Angola", User.find.byId(2).getDestinations().get(0).getCountry());
+        assertEquals(50.0, User.find.byId(2).getDestinations().get(0).getLatitude(), 0.01);
+        assertEquals(-50.0, User.find.byId(2).getDestinations().get(0).getLongitude(), 0.01);
     }
 
     /**
@@ -402,7 +406,7 @@ public class DestinationControllerTest extends WithApplication {
     public void deleteDestinationWithLoginSessionAndInvalidDestination() {
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(GET)
-                .uri("/users/destinations/delete/5").session("connected", "1");
+                .uri("/users/destinations/delete/50").session("connected", "1");
         Result result = route(app, request);
         assertEquals(NOT_FOUND, result.status());
     }
@@ -414,23 +418,45 @@ public class DestinationControllerTest extends WithApplication {
     public void deleteDestinationWithLoginSessionAndValidDestinationAndInvalidOwner() {
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(GET)
-                .uri("/users/destinations/delete/1").session("connected", "2");
+                .uri("/users/destinations/delete/1").session("connected", "3");
         Result result = route(app, request);
         assertEquals(UNAUTHORIZED, result.status());
     }
 
     /**
      * Test to handle deleting a destination with a login session and valid destination and valid owner
+     * where the destination is being used in trips. This will fail.
      */
     @Test
-    public void deleteDestinationWithLoginSessionAndValidDestinationAndValidOwner() {
-        assertEquals(1, User.find.byId(2).getDestinations().size());
+    public void deleteDestinationWithLoginSessionAndValidDestinationAndValidOwnerWithDestinationInTrips() {
+        assertEquals(3, User.find.byId(2).getDestinations().size());
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/destinations/delete/3").session("connected", "2");
+        Result result = route(app, request);
+        assertEquals(PRECONDITION_REQUIRED, result.status());
+        assertEquals(3, User.find.byId(2).getDestinations().size());
+    }
+
+    /**
+     * Test to handle deleting a destination with a login session and valid destination and valid owner
+     * where the destination is not being used by any trips. This will succeed.
+     */
+    @Test
+    public void deleteDestinationWithLoginSessionAndValidDestinationAndValidOwnerWithDestinationNotInTrips() {
+        assertEquals(3, User.find.byId(2).getDestinations().size());
+        Destination destination = Destination.find.byId(3);
+        for(Visit visit : destination.getVisits()){
+            visit.delete();
+        }
+        destination.setTravellerTypes(new ArrayList<>());
+        destination.update();
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(GET)
                 .uri("/users/destinations/delete/3").session("connected", "2");
         Result result = route(app, request);
         assertEquals(SEE_OTHER, result.status());
-        assertEquals(0, User.find.byId(2).getDestinations().size());
+        assertEquals(2, User.find.byId(2).getDestinations().size());
     }
 
     /**
@@ -464,7 +490,7 @@ public class DestinationControllerTest extends WithApplication {
     public void makeDestinationPublicWithLoginSessionWithValidDestinationWithInvalidOwner(){
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(GET)
-                .uri("/users/destinations/public/1").session("connected", "2");
+                .uri("/users/destinations/public/2").session("connected", "4");
         Result result = route(app, request);
         assertEquals(UNAUTHORIZED, result.status());
     }
@@ -475,12 +501,12 @@ public class DestinationControllerTest extends WithApplication {
      */
     @Test
     public void makeDestinationPublicWithLoginSessionWithValidDestinationWithValidOwner(){
-        Destination destination = Destination.find.byId(3);
+        Destination destination = Destination.find.byId(2);
         assertEquals(false, destination.getIsPublic());
         assertEquals(2, destination.getUser().getUserid());
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(GET)
-                .uri("/users/destinations/public/3").session("connected", "2");
+                .uri("/users/destinations/public/2").session("connected", "2");
         Result result = route(app, request);
         assertEquals(SEE_OTHER, result.status());
         destination = Destination.find.byId(3);
@@ -527,20 +553,21 @@ public class DestinationControllerTest extends WithApplication {
     @Test
     public void updateDestinationWithLoginSessionAndValidDestinationAndValidOwnerAfterBeingSetToPublicAfterBeingAddedByDifferentUser(){
 
-        //Set destination 3 to public
+        //Set destination 2 to public by user id 2
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(GET)
-                .uri("/users/destinations/public/3").session("connected", "2");
+                .uri("/users/destinations/public/2").session("connected", "2");
         Result result = route(app, request);
         assertEquals(SEE_OTHER, result.status());
-
-        Trip trip = new Trip("testTrip", true, User.find.byId(1));
+        //A different user of user id 3 uses the destination in their trip
+        Trip trip = new Trip("testTrip", true, User.find.byId(3));
         trip.save();
         request = Helpers.fakeRequest()
                 .method(GET)
-                .uri("/users/trips/table/edit/1/3").session("connected", "1");
+                .uri("/users/trips/table/edit/3/2").session("connected", "3");
         result = route(app, request);
         assertEquals(SEE_OTHER, result.status());
+        //User id 2 tries to update their destination
         Map<String, String> formData = new HashMap<>();
         formData.put("destName", "Summoner's Rift");
         formData.put("destType", "Yes");
@@ -548,7 +575,7 @@ public class DestinationControllerTest extends WithApplication {
         formData.put("country", "Angola");
         formData.put("latitude", "50.0");
         formData.put("longitude", "-50.0");
-        Http.RequestBuilder request2 = Helpers.fakeRequest().bodyForm(formData).method(POST).uri("/users/destinations/update/3").session("connected", "2");
+        Http.RequestBuilder request2 = Helpers.fakeRequest().bodyForm(formData).method(POST).uri("/users/destinations/update/2").session("connected", "2");
         Result result2 = route(app, request2);
         assertEquals(UNAUTHORIZED, result2.status());
     }
@@ -580,5 +607,114 @@ public class DestinationControllerTest extends WithApplication {
         Http.RequestBuilder request2 = Helpers.fakeRequest().bodyForm(formData).method(POST).uri("/users/destinations/update/3").session("connected", "2");
         Result result2 = route(app, request2);
         assertEquals(SEE_OTHER, result2.status());
+    }
+
+    /*
+    @Test
+    public void setPrimaryPhotoWithLoginSessionAndValidDestinationAndValidUser(){
+
+    }
+    */
+
+    /**
+     * Unit test for ajax request to get the owner of a destination given by a destination id
+     */
+    @Test
+    public void getDestinationOwner(){
+        //user with user id 2 owns destination 2. Any user (eg user id 3) can get the owner of a destination.
+        //considering changing the method to consider private destinations in the future
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/destinations/owner/2").session("connected", "3");
+        Result result = route(app, request);
+        assertEquals(OK, result.status());
+        assertEquals(2, Integer.parseInt(contentAsString(result)));
+        request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/destinations/owner/4").session("connected", "3");
+        result = route(app, request);
+        assertEquals(OK, result.status());
+        assertEquals(3, Integer.parseInt(contentAsString(result)));
+    }
+
+    /**
+     * Unit test for ajax request to get a destination given by a destination id
+     * This should work because public destinations should be accessible by anyone
+     */
+    @Test
+    public void getDestinationAsPublicDestinationWithUserWhoIsNotOwner(){
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/destinations/get/3").session("connected", "3");
+        Result result = route(app, request);
+        assertEquals(OK, result.status());
+        JSONObject obj = new JSONObject(contentAsString(result));
+        assertEquals("The Wok", obj.getString("destName"));
+        request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/destinations/get/1").session("connected", "3");
+        result = route(app, request);
+        assertEquals(OK, result.status());
+        obj = new JSONObject(contentAsString(result));
+        assertEquals("Christchurch", obj.getString("destName"));
+    }
+
+    /**
+     * Unit test for ajax request to get a destination given by a destination id
+     * This should work because public destinations should be accessible by anyone including the owner
+     */
+    @Test
+    public void getDestinationAsPublicDestinationWithUserWhoIsOwner(){
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/destinations/get/3").session("connected", "2");
+        Result result = route(app, request);
+        assertEquals(OK, result.status());
+        JSONObject obj = new JSONObject(contentAsString(result));
+        assertEquals("The Wok", obj.getString("destName"));
+    }
+
+    /**
+     * Unit test for ajax request to get a destination given by a destination id
+     * This shouldn't work because private destinations should only be accessible by the owner
+     */
+    @Test
+    public void getDestinationAsPrivateDestinationWithUserWhoIsNotOwner(){
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/destinations/get/2").session("connected", "3");
+        Result result = route(app, request);
+        assertEquals(UNAUTHORIZED, result.status());
+    }
+
+    /**
+     * Unit test for ajax request to get a destination given by a destination id
+     * This should work because private destinations should only be accessible by the owner
+     */
+    @Test
+    public void getDestinationAsPrivateDestinationWithUserWhoIsOwner(){
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/destinations/get/2").session("connected", "2");
+        Result result = route(app, request);
+        assertEquals(OK, result.status());
+        JSONObject obj = new JSONObject(contentAsString(result));
+        assertEquals("Wellington", obj.getString("destName"));
+    }
+
+    @Test
+    public void getDestinationTravellerTypes(){
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/destinations/ttypes/3").session("connected", "2");
+        Result result = route(app, request);
+        assertEquals(OK, result.status());
+        JSONArray jsonArray = new JSONArray(contentAsString(result));
+        //Groupie and gap year so length 2
+        assertEquals(2, jsonArray.length());
+        JSONObject obj1 = jsonArray.getJSONObject(0);
+        JSONObject obj2 = jsonArray.getJSONObject(1);
+        assertEquals("Groupie", obj1.getString("travellerTypeName"));
+        assertEquals("Gap Year",obj2.getString("travellerTypeName"));
     }
 }

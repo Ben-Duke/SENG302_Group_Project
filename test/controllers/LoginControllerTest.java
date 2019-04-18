@@ -5,6 +5,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import play.Application;
+import play.api.test.CSRFTokenHelper;
 import play.db.Database;
 import play.db.Databases;
 import play.db.evolutions.Evolution;
@@ -66,35 +67,38 @@ public class LoginControllerTest extends WithApplication {
         assertEquals(OK, result.status());
     }
 
-//    @Test
-//    public void loginrequestWithInvalidUsername() {
-//        Map<String, String> formData = new HashMap<>();
-//        formData.put("email", "testAccount3@uclive.ac.nz");
-//        formData.put("password", "hunter22");
-//        Http.RequestBuilder request = Helpers.fakeRequest().bodyForm(formData).method(Helpers.POST).uri("/users/login");
-//        Result result = Helpers.route(app, request);
-//        assertEquals(NOT_FOUND, result.status());
-//    }
-//
-//    @Test
-//    public void loginrequestWithValidUsernameButInvalidPassword() {
-//        Map<String, String> formData = new HashMap<>();
-//        formData.put("email", "gon12@uclive.ac.nz");
-//        formData.put("password", "hunter234");
-//        Http.RequestBuilder request = Helpers.fakeRequest().bodyForm(formData).method(Helpers.POST).uri("/users/login");
-//        Result result = Helpers.route(app, request);
-//        assertEquals(NOT_FOUND, result.status());
-//    }
-//
-//    @Test
-//    public void loginrequestWithValidUsernameWithValidPassword() {
-//        Map<String, String> formData = new HashMap<>();
-//        formData.put("email", "gon12@uclive.ac.nz");
-//        formData.put("password", "hunter22");
-//        Http.RequestBuilder request = Helpers.fakeRequest().bodyForm(formData).method(Helpers.POST).uri("/users/login");
-//        Result result = Helpers.route(app, request);
-//        assertEquals(SEE_OTHER, result.status());
-//    }
+    @Test
+    public void loginrequestWithInvalidUsername() {
+        Map<String, String> formData = new HashMap<>();
+        formData.put("email", "testAccount3@uclive.ac.nz");
+        formData.put("password", "hunter22");
+        Http.RequestBuilder request = Helpers.fakeRequest().bodyForm(formData).method(Helpers.POST).uri("/users/login");
+        CSRFTokenHelper.addCSRFToken(request);
+        Result result = Helpers.route(app, request);
+        assertEquals(BAD_REQUEST, result.status());
+    }
+
+    @Test
+    public void loginrequestWithValidUsernameButInvalidPassword() {
+        Map<String, String> formData = new HashMap<>();
+        formData.put("email", "gon12@uclive.ac.nz");
+        formData.put("password", "hunter234");
+        Http.RequestBuilder request = Helpers.fakeRequest().bodyForm(formData).method(Helpers.POST).uri("/users/login");
+        CSRFTokenHelper.addCSRFToken(request);
+        Result result = Helpers.route(app, request);
+        assertEquals(BAD_REQUEST, result.status());
+    }
+
+    @Test
+    public void loginrequestWithValidUsernameWithValidPassword() {
+        Map<String, String> formData = new HashMap<>();
+        formData.put("email", "gon12@uclive.ac.nz");
+        formData.put("password", "hunter22");
+        Http.RequestBuilder request = Helpers.fakeRequest().bodyForm(formData).method(Helpers.POST).uri("/users/login");
+        CSRFTokenHelper.addCSRFToken(request);
+        Result result = Helpers.route(app, request);
+        assertEquals(SEE_OTHER, result.status());
+    }
 
     @Test
     public void logoutrequest() {

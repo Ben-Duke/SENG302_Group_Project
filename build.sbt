@@ -17,6 +17,8 @@ libraryDependencies += "org.glassfish.jaxb" % "jaxb-runtime" % "2.3.2"
 
 libraryDependencies += "org.awaitility" % "awaitility" % "2.0.0" % Test
 libraryDependencies += "org.assertj" % "assertj-core" % "3.6.2" % Test
+// https://mvnrepository.com/artifact/org.json/json
+libraryDependencies += "org.json" % "json" % "20180813"
 libraryDependencies ++= Seq (
   "io.cucumber" % "cucumber-core" % "4.2.0" % " test ",
   "io.cucumber" % "cucumber-jvm" % "4.2.0" % " test ",

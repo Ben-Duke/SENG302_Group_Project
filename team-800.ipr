@@ -1318,6 +1318,15 @@
         <root url="jar://$USER_HOME$/.ivy2/cache/org.jboss.logging/jboss-logging/srcs/jboss-logging-3.3.2.Final-sources.jar!/" />
       </SOURCES>
     </library>
+    <library name="sbt: org.json:json:20180813:jar">
+      <CLASSES>
+        <root url="jar://$USER_HOME$/.ivy2/cache/org.json/json/bundles/json-20180813.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="jar://$USER_HOME$/.ivy2/cache/org.json/json/srcs/json-20180813-sources.jar!/" />
+      </SOURCES>
+    </library>
     <library name="sbt: org.jvnet.staxex:stax-ex:1.8.1:jar">
       <CLASSES>
         <root url="jar://$USER_HOME$/.ivy2/cache/org.jvnet.staxex/stax-ex/jars/stax-ex-1.8.1.jar!/" />

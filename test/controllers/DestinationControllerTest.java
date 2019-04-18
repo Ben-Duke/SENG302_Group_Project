@@ -727,7 +727,10 @@ public class DestinationControllerTest extends WithApplication {
 
         Integer modReqId = modReq.getId();
 
-        Admin admin = Admin.find.all().get(0);
+
+        Admin admin = new Admin(2, false);
+        admin.insert();
+//        Admin admin = Admin.find.all().get(0);
         Integer adminUserId = admin.getUserId();
 
         Http.RequestBuilder request = Helpers.fakeRequest()

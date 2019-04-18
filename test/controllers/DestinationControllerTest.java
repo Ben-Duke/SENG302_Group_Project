@@ -1,10 +1,7 @@
 package controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import models.Destination;
-import models.Trip;
-import models.User;
-import models.Visit;
+import models.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.After;
@@ -716,5 +713,35 @@ public class DestinationControllerTest extends WithApplication {
         JSONObject obj2 = jsonArray.getJSONObject(1);
         assertEquals("Groupie", obj1.getString("travellerTypeName"));
         assertEquals("Gap Year",obj2.getString("travellerTypeName"));
+    }
+
+    @Test
+    public void destinationModificationRequestReject() {
+        User user = User.find.all().get(0);
+        Destination destination = new Destination("Test Dest", "Town", "Test District", "Test Country", 100, 100, user, true);
+        destination.save();
+        Destination newDestination = new Destination("Test Dest2", "Town2", "Test District2", "Test Country2", 101, 101, user);
+
+        DestinationModificationRequest modReq = new DestinationModificationRequest(destination, newDestination, user);
+        modReq.save();
+
+        Integer modReqId = modReq.getId();
+
+        Admin admin = Admin.find.all().get(0);
+        Integer adminUserId = admin.getUserId();
+
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/admin/destination_modification_request/reject/"+modReqId)
+                .session("connected", adminUserId.toString());
+
+        Result result = route(app, request);
+
+        assertEquals(OK, result.status());
+        assert(destination.getDestName().equals("Test Dest"));
+        assert(destination.getDestType().equals("Town"));
+        assert(destination.getLatitude() == 100);
+        assertEquals(null, DestinationModificationRequest.find.query().where().eq("id", modReqId).findOne());
+
     }
 }

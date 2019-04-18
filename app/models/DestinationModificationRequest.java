@@ -27,7 +27,7 @@ public class DestinationModificationRequest extends Model {
     public double newDestLatitude;
     public double newDestLongitude;
 
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.ALL)
     public List<TravellerType> newTravelerTypes;
 
     @Temporal(TemporalType.TIMESTAMP)

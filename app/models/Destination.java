@@ -123,7 +123,7 @@ public class Destination extends Model {
     public List<UserPhoto> userPhotos;
 
     @JsonIgnore
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.ALL)
     public List<TravellerType> travellerTypes;
 
     public static Finder<String,Destination> findString =new Finder<>(Destination.class);

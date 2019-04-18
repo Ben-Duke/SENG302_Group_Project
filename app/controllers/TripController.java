@@ -161,7 +161,7 @@ public class TripController extends Controller {
             //convert String to LocalDate
 //            LocalDate arrivalDate;
 //            LocalDate departureDate;
-            try {
+            //try {
                 Visit visit = Visit.find.byId(visitid);
                 //arrivalDate = LocalDate.parse(arrival, formatter);
                 //departureDate = LocalDate.parse(departure, formatter);
@@ -181,28 +181,28 @@ public class TripController extends Controller {
                 else{
                     return unauthorized("Oops, this is not your trip.");
                 }
-            } catch (Exception e) {
-                Visit visit = Visit.find.byId(visitid);
-                Trip trip = visit.getTrip();
-                if (trip.isUserOwner(user.getUserid())) {
-                    Destination dest = Destination.find.byId(Integer.parseInt(destID));
-                    List<Visit> visits = trip.getVisits();
-                    visit.setDestination(dest);
-                    if (tripFactory.hasRepeatDest(visits, visit, "ADD")) {
-                        return badRequest("You cannot visit the same destination twice in a row!");
-                    }
-                    visit.update();
-                    visits = trip.getVisits();
-                    visits.sort(Comparator.comparing(Visit::getVisitOrder));
-//                    Visit firstVisit = visits.get(0);
-//                    visits.remove(0);
-                    //return ok(displayTrip.render(trip,visits));
-                    return redirect(routes.TripController.displaytrip(trip.getTripid()));
-                }
-                else{
-                    return unauthorized("Oops, this is not your trip.");
-                }
-            }
+//            } catch (Exception e) {
+//                Visit visit = Visit.find.byId(visitid);
+//                Trip trip = visit.getTrip();
+//                if (trip.isUserOwner(user.getUserid())) {
+//                    Destination dest = Destination.find.byId(Integer.parseInt(destID));
+//                    List<Visit> visits = trip.getVisits();
+//                    visit.setDestination(dest);
+//                    if (tripFactory.hasRepeatDest(visits, visit, "ADD")) {
+//                        return badRequest("You cannot visit the same destination twice in a row!");
+//                    }
+//                    visit.update();
+//                    visits = trip.getVisits();
+//                    visits.sort(Comparator.comparing(Visit::getVisitOrder));
+////                    Visit firstVisit = visits.get(0);
+////                    visits.remove(0);
+//                    //return ok(displayTrip.render(trip,visits));
+//                    return redirect(routes.TripController.displaytrip(trip.getTripid()));
+//                }
+//                else{
+//                    return unauthorized("Oops, this is not your trip.");
+//                }
+//            }
         }
         else{
             return unauthorized("Oops, you are not logged in");
@@ -238,7 +238,7 @@ public class TripController extends Controller {
                 }
             }
             else{
-                return unauthorized("Oops, invalid trip ID");
+                return notFound("Oops, invalid trip ID");
             }
         }
         else{
@@ -286,7 +286,7 @@ public class TripController extends Controller {
         User user = User.getCurrentUser(request);
         if(user != null) {
             Trip trip = Trip.find.byId(tripid);
-            if (trip.isUserOwner(user.getUserid())) {
+            if (trip.isUserOwner(user.getUserid()) || user.userIsAdmin()) {
                 Integer visitSize = 0;
                 if (trip.getVisits() != null) {
                     visitSize = trip.getVisits().size();
@@ -299,22 +299,31 @@ public class TripController extends Controller {
                 List<Visit> visits = trip.getVisits();
                 Destination destination = Destination.find.byId(destid);
                 if(destination != null) {
-                    Visit visit = visitfactory.createVisitTable(trip, destination, visitOrder);
-                    if (tripFactory.hasRepeatDest(visits, visit, "ADD")) {
-                        //flash("danger", "You cannot have repeat destinations!");
-                        return redirect(routes.TripController.AddTripDestinations(tripid)).flashing("error", "You cannot have repeat destinations!");
+                    if(destination.isPublic || destination.getUser().getUserid() == user.getUserid() || user.userIsAdmin()) {
+                        Visit visit = visitfactory.createVisitTable(trip, destination, visitOrder);
+                        if (tripFactory.hasRepeatDest(visits, visit, "ADD")) {
+                            //flash("danger", "You cannot have repeat destinations!");
+                            return redirect(routes.TripController.AddTripDestinations(tripid)).flashing("error", "You cannot have repeat destinations!");
+                        }
+                        //if the destination is public but the owner of the destination is not an admin, set the owner of the destination to the default admin
+                        if (!(destination.getUser().isAdmin()) && destination.getIsPublic() && !(destination.getUser().getUserid() == user.getUserid())) {
+                            User admin = User.find.byId(1);
+                            destination.setUser(admin);
+                            destination.update();
+                        }
+                        visit.save();
+                        return redirect(routes.TripController.AddTripDestinations(tripid));
                     }
-                    if(!(destination.getUser().isAdmin()) && destination.getIsPublic() && !(destination.getUser().getUserid() == user.getUserid())){
-                        User admin = User.find.byId(1);
-                        destination.setUser(admin);
-                        destination.update();
+                    else{
+                        return unauthorized("This private destination is owned by someone else. You may not use it.");
                     }
-                    visit.save();
-                    return redirect(routes.TripController.AddTripDestinations(tripid));
                 }
             } else {
                 return unauthorized("Oops, this is not your trip.");
             }
+        }
+        else{
+            return unauthorized("Oops, you are not logged in");
         }
         return badRequest();
     }

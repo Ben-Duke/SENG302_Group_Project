@@ -5,10 +5,10 @@
 # Home page
 
 #Renders user index page
-GET     /                           controllers.UserController.userindex()
+GET     /                           controllers.UserController.userindex(request:Request)
 
 #Renders user index page
-GET     /users                      controllers.UserController.userindex()
+GET     /users                      controllers.UserController.userindex(request:Request)
 
 #Handles AJAX request to get the user
 GET     /users/get                  controllers.UserController.getUser(request:Request)
@@ -190,7 +190,7 @@ PUT     /users/destinations/primary/:id     controllers.DestinationController.se
 PUT     /users/destinations/:id         controllers.DestinationController.linkPhotoToDestination(request : Request, id : Integer)
 
 #Handles creating a destination
-POST    /users/destinations/save        controllers.DestinationController.saveDestination(request : Request)
+POST    /users/destinations/save        controllers.DestinationController.saveDestinationFromRequest(request : Request)
 
 #Handles deleting a destination //TODO needs to be changed from get request
 GET     /users/destinations/delete/:id   controllers.DestinationController.deleteDestination(request : Request, id : Integer)

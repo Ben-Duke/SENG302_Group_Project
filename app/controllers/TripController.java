@@ -77,10 +77,10 @@ public class TripController extends Controller {
             if(trip.isUserOwner(user.getUserid())) {
                 List<Destination> destinations = user.getDestinations();
                 List<Destination> allDestinations = Destination.find.all();
-                return ok(AddTripDestinationsTable.render(trip, destinations, allDestinations));
+                return ok(AddTripDestinationsTable.render(trip, destinations, allDestinations,user));
             }
             else{
-                return ok(displayTrip.render(trip, visits));
+                return ok(displayTrip.render(trip, visits,user));
             }
         }
         else{
@@ -132,7 +132,7 @@ public class TripController extends Controller {
             Form<Visit> visitForm = formFactory.form(Visit.class).fill(visit);
             if(visit.getTrip().getUser().getUserid() == user.getUserid() || user.userIsAdmin()) {
                 List<Destination> destinations = user.getDestinations();
-                return ok(editVisit.render(visitForm, visit, destinations));
+                return ok(editVisit.render(visitForm, visit, destinations,user));
             }
             else{
                 return unauthorized("Oops, this is not your trip.");
@@ -231,7 +231,7 @@ public class TripController extends Controller {
                     List<Destination> allDestinations = Destination.find.all();
                     //return ok(AddTripDestinations.render(incomingForm, trip, user.getMappedDestinations(), visits, today.toString()));
                     System.out.println(request.flash().getOptional("error").orElse("test"));
-                    return ok(AddTripDestinationsTable.render(trip, destinations, allDestinations)).flashing("error", request.flash().getOptional("error").orElse("test"));
+                    return ok(AddTripDestinationsTable.render(trip, destinations, allDestinations,user)).flashing("error", request.flash().getOptional("error").orElse("test"));
 
                 } else {
                     return unauthorized("Not your trip");

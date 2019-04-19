@@ -1,6 +1,7 @@
 package controllers;
 
 import formdata.UserFormData;
+import models.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import play.data.Form;
@@ -39,7 +40,7 @@ public class RegisterController {
         Map<String, Boolean> tTypes = UserFactory.getTTypesList();
         Map<String, Boolean> passports = UserFactory.getPassports();
         Map<String, Boolean> nationalities = UserFactory.getNatList();
-        return ok(createprofile_.render(userForm, Arrays.asList(gendersArray), tTypes, passports, nationalities));
+        return ok(createprofile_.render(userForm, Arrays.asList(gendersArray), tTypes, passports, nationalities,null));
     }
 
     /**
@@ -83,7 +84,7 @@ public class RegisterController {
                  }
              }
 
-            return badRequest(createprofile_.render(userForm, Arrays.asList(gendersArray), tTypes, passports, nationalities));
+            return badRequest(createprofile_.render(userForm, Arrays.asList(gendersArray), tTypes, passports, nationalities, User.getCurrentUser(request)));
         }
         else{
             UserFormData user = userForm.get();

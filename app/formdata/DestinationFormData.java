@@ -70,7 +70,11 @@ public class DestinationFormData implements Constraints.Validatable<List<Validat
                 errors.add(new ValidationError("latitude",
                             "Latitude must be a number between -90 and 90"));
             } else {
-                Double.parseDouble(latitude);
+                Double latitudeDouble = Double.parseDouble(latitude);
+                if (! (-90.0 <= latitudeDouble && latitudeDouble <= 90.0)) {
+                    errors.add(new ValidationError("latitude",
+                            "Latitude must be between -90 and 90"));
+                }
             }
         } catch (NumberFormatException e) {
             errors.add(new ValidationError("latitude",
@@ -82,7 +86,11 @@ public class DestinationFormData implements Constraints.Validatable<List<Validat
                 errors.add(new ValidationError("longitude",
                                     "Longitude must be between -180 and 180"));
             } else {
-                Double.parseDouble(longitude);
+                Double longitudeDouble = Double.parseDouble(longitude);
+                if (! (-180.0 <= longitudeDouble && longitudeDouble <= 180.0)) {
+                    errors.add(new ValidationError("longitude",
+                            "Longitude must be between -180 and 180"));
+                }
             }
         } catch (NumberFormatException e) {
             errors.add(new ValidationError("longitude",

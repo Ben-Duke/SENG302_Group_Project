@@ -7,7 +7,6 @@
 
     <head>
         <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/home.css")">
-        <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/indexDestination.css")">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropper/4.0.0/cropper.min.css">
         <title>Home</title>
     </head>
@@ -86,7 +85,7 @@
                 <form>
                     <div class="list-group">
                     @for(trip <- user.getTripsSorted) {
-                        <a href="@routes.TripController.displaytrip(trip.tripid,"")" class="list-group-item list-group-item-action">
+                        <a href="@routes.TripController.displaytrip(trip.tripid)" class="list-group-item list-group-item-action">
                         @trip.tripName
                         </a>
                     }

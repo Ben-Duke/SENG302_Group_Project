@@ -21,6 +21,9 @@ public class Destination extends Model {
     public double longitude;
     public boolean isPublic;
 
+    @ManyToOne
+    public UserPhoto primaryPhoto;
+
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "user", referencedColumnName = "userid")
@@ -134,6 +137,17 @@ public class Destination extends Model {
     public double getLatitude() { return latitude; }
     public double getLongitude() { return longitude; }
     public boolean getIsPublic() { return isPublic;}
+    public List<UserPhoto> getUserPhotos() {
+        return userPhotos;
+    }
+    public UserPhoto getPrimaryPhoto() {
+        return primaryPhoto;
+    }
+    public List<Visit> getVisits() {
+        return visits;
+    }
+
+
 
     public User getUser() { return user; }
 
@@ -150,8 +164,17 @@ public class Destination extends Model {
     public void setLatitude(double latitude) { this.latitude = latitude; }
     public void setLongitude(double longitude) { this.longitude = longitude; }
     public void setIsPublic(boolean isPublic) { this.isPublic = isPublic; }
-    public void setTravellerTypes(List<TravellerType> travellerTypes) {
+    public void setTravellerTypes(List<TravellerType> travellerTypes){
         this.travellerTypes = travellerTypes;
+    }
+    public void setUserPhotos(List<UserPhoto> userPhotos) {
+        this.userPhotos = userPhotos;
+    }
+    public void setPrimaryPhoto(UserPhoto primaryPhoto) {
+        this.primaryPhoto = primaryPhoto;
+    }
+    public void setVisits(List<Visit> visits) {
+        this.visits = visits;
     }
 
     public void setUser(User user) { this.user = user; }

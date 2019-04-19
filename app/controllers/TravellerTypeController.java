@@ -122,6 +122,7 @@ public class TravellerTypeController {
                     if(destination.getUser().getUserid() == user.getUserid()) {
                         destination.addTravellerType(travellerType);
                         destination.update();
+                        return redirect(routes.TravellerTypeController.updateDestinationTravellerType(destid));
                     }
                     else{
                         return unauthorized("You do not own this destination!");
@@ -136,7 +137,6 @@ public class TravellerTypeController {
         else{
             return unauthorized("Oops, you are not logged in");
         }
-        return redirect(routes.TravellerTypeController.updateDestinationTravellerType(destid));
     }
 
     /**
@@ -184,12 +184,17 @@ public class TravellerTypeController {
         }  else {
             try {
                 TravellerType travellerType = TravellerType.find.byId(typeId);
-                destination.deleteTravellerType(travellerType);
-                destination.update();
+                if(destination.getUser().getUserid() == user.getUserid()) {
+                    destination.deleteTravellerType(travellerType);
+                    destination.update();
+                    return redirect(routes.TravellerTypeController.updateDestinationTravellerType(destId));
+                }
+                else{
+                    return unauthorized("Oops, you do not own this destination.");
+                }
             } catch (NumberFormatException e) {
                 return unauthorized("Oops, you do not have any traveller types to delete");
             }
         }
-        return redirect(routes.TravellerTypeController.updateDestinationTravellerType(destId));
     }
 }

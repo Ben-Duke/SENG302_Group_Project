@@ -10,6 +10,9 @@ GET     /                           controllers.UserController.userindex()
 #Renders user index page
 GET     /users                      controllers.UserController.userindex()
 
+#Handles AJAX request to get the user
+GET     /users/get                  controllers.UserController.getUser(request:Request)
+
 #Renders register page
 GET     /users/register             controllers.RegisterController.createuser()
 
@@ -67,9 +70,9 @@ GET     /users/trips/cancel         controllers.TripController.cancelTrip(reques
 
 GET     /users/trips/addDestinations    controllers.TripController.AddTripDestinations(request: Request, id:Integer)
 
-GET     /users/trips/display/addDestinations    controllers.TripController.AddExistingTripDestinations(request: Request, id:Integer)
+#GET     /users/trips/display/addDestinations    controllers.TripController.AddExistingTripDestinations(request: Request, id:Integer)
 
-POST     /users/trips/display/addDestinations    controllers.TripController.addvisitExistingTrip(request: Request, id:Integer)
+#POST     /users/trips/display/addDestinations    controllers.TripController.addvisitExistingTrip(request: Request, id:Integer)
 
 #Handles creating trips
 POST    /users/trips/create         controllers.TripController.savetrip(request: Request)
@@ -81,10 +84,10 @@ DELETE    /users/trips/edit/:id    controllers.TripController.deletevisit(reques
 PUT    /users/trips/edit/:id      controllers.TripController.swapvisits(request: Request, id:Integer)
 
 #Renders page for editing a trip
-GET     /users/trips/edit/:id        controllers.TripController.edittrip(request: Request, id:Integer)
+#GET     /users/trips/edit/:id        controllers.TripController.edittrip(request: Request, id:Integer)
 
 #Handles adding a visit to a trip
-POST    /users/trips/edit/:id       controllers.TripController.addvisit(request: Request, id:Integer)
+#POST    /users/trips/edit/:id       controllers.TripController.addvisit(request: Request, id:Integer)
 
 #Handles adding a visit to a trip (table form)
 GET    /users/trips/table/edit/:tripid/:destid       controllers.TripController.addVisitFromTable(request: Request, tripid:Integer, destid:Integer)
@@ -96,7 +99,7 @@ GET    /users/trips/visit/edit/:id       controllers.TripController.editvisit(re
 POST    /users/trips/visit/edit/:id       controllers.TripController.updateVisit(request: Request, id:Integer)
 
 #Renders page that displays a given trip
-GET     /users/trips/:id            controllers.TripController.displaytrip(request: Request, id:Integer, message:String)
+GET     /users/trips/:id            controllers.TripController.displaytrip(request: Request, id:Integer)
 
 #Renders page that displays the home page where users can navigate to other pages
 GET     /users/home                 controllers.HomeController.showhome(request:Request)
@@ -143,6 +146,9 @@ GET     /users/destinations             controllers.DestinationController.indexD
 #Renders page for displaying a given destination
 GET     /users/destinations/:id         controllers.DestinationController.viewDestination(request : Request, id : Integer)
 
+#Handles AJAX request to get a given destination (maybe change ^ to /users/destinations/display/:id and this one to /users/destinations/:id
+GET     /users/destinations/get/:id         controllers.DestinationController.getDestination(request : Request, id : Integer)
+
 #Renders page for creating destinations
 GET     /users/destinations/create/     controllers.DestinationController.createDestination(request : Request)
 
@@ -161,8 +167,8 @@ GET     /users/destinations/ttypes/:id    controllers.DestinationController.getT
 #Renders request for getting a destination's photos (used in ajax request)
 GET     /users/destinations/photos/:id    controllers.DestinationController.getPhotos(request : Request, id : Integer)
 
-#Handles request for the file of a photo
-GET     /users/photos/:id                   controllers.DestinationController.getPhotoFile(request : Request, id : Integer)
+#Handles request for a photo
+GET     /users/photos/:id                   controllers.DestinationController.getPhoto(request : Request, id : Integer)
 
 #Renders request for destination traveller types
 POST     /users/destinations/ttypes/:id    controllers.TravellerTypeController.submitUpdateDestinationTravellerType(request : Request, id : Integer)
@@ -170,8 +176,15 @@ POST     /users/destinations/ttypes/:id    controllers.TravellerTypeController.s
 #Handles making a destination public
 GET     /users/destinations/public/:id         controllers.DestinationController.makeDestinationPublic(request : Request, id : Integer)
 
+#Gets the user id of the owner of the destination
+GET     /users/destinations/owner/:id         controllers.DestinationController.getDestinationOwner(request : Request, id : Integer)
+
 #Handles updating a destination
 POST    /users/destinations/update/:id  controllers.DestinationController.updateDestination(request : Request, id : Integer)
+
+#Handles setting a photo to a primary photo (for some reason this route throws some csrf failed thing so i added a +nocsrf)... raise an issue in the future
++nocsrf
+PUT     /users/destinations/primary/:id     controllers.DestinationController.setPrimaryPhoto(request : Request, id : Integer)
 
 #Handles linking a photo to a destination
 PUT     /users/destinations/:id         controllers.DestinationController.linkPhotoToDestination(request : Request, id : Integer)
@@ -181,4 +194,3 @@ POST    /users/destinations/save        controllers.DestinationController.saveDe
 
 #Handles deleting a destination //TODO needs to be changed from get request
 GET     /users/destinations/delete/:id   controllers.DestinationController.deleteDestination(request : Request, id : Integer)
-

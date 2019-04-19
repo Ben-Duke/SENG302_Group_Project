@@ -1,12 +1,12 @@
 @import formdata.NatFormData
 @import factories.UserFactory
 @import helper._
-@(userForm : Form[NatFormData], nationalities : List[Nationality], passports : List[Passport], id : Int)
+@(userForm : Form[NatFormData], nationalities : List[Nationality], passports : List[Passport], id : Int, user : User)
 
 
 
 
-@main("Index"){
+@main(user, "Index"){
 
     <div class="container">
 

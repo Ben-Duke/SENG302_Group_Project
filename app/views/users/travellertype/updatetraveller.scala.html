@@ -2,7 +2,7 @@
 
 @(userForm : Form[User], travellerTypes : List[TravellerType], user : User)
 
-@main("Edit Traveller Types") {
+@main(user, "Edit Traveller Types") {
     <div class="container">
         <div class="row">
             <h2>Edit traveller types for @user.getfName() @user.getlName(): </h2>

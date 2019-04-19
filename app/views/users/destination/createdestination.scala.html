@@ -2,9 +2,9 @@
 @import helper._
 @import views.html.bootstrap3.text
 
-@(destForm : Form[DestinationFormData], countryMap: Map[String, Boolean], typeMap: Map[String, Boolean])
+@(destForm : Form[DestinationFormData], countryMap: Map[String, Boolean], typeMap: Map[String, Boolean], user : User)
 
-@main("Destinations") {
+@main(user, "Destinations") {
     <nav class="navbar navbar-custom">
         <div class="container-fluid">
             <div class="navbar-header">

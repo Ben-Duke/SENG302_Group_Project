@@ -35,7 +35,7 @@ public class TravelPartnerController {
      *                       This will be empty when the user first enters the page
      * @return renders the search profile page
      */
-    private Result displayRenderedFilterPage(List<User> resultProfiles) {
+    private Result displayRenderedFilterPage(List<User> resultProfiles, User user) {
 
         DynamicForm dynamicForm = formFactory.form();
 
@@ -58,7 +58,7 @@ public class TravelPartnerController {
         genderMap.put("Female", true);
         genderMap.put("Other", true);
 
-        return ok(searchprofile.render(dynamicForm, convertedTravellerTypes, convertedNationalities, genderMap, resultProfiles));
+        return ok(searchprofile.render(dynamicForm, convertedTravellerTypes, convertedNationalities, genderMap, resultProfiles,user));
     }
 
 
@@ -73,7 +73,7 @@ public class TravelPartnerController {
         if (user != null) {
             List<User> resultProfiles = new ArrayList<>();
 
-            return displayRenderedFilterPage(resultProfiles);
+            return displayRenderedFilterPage(resultProfiles, user);
         }
         else{
             return unauthorized("Oops, you are not logged in");
@@ -244,7 +244,7 @@ public class TravelPartnerController {
             }
 
             //Redisplay the page, but this time with the search results
-            return displayRenderedFilterPage(resultProfiles);
+            return displayRenderedFilterPage(resultProfiles,user);
 
         } else{
             return unauthorized("Oops, you're not logged in!");

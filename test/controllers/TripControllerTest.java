@@ -159,6 +159,21 @@ public class TripControllerTest extends WithApplication {
         assertEquals(2, User.find.byId(2).getTrips().size());
     }
 
+    @Test
+    public void saveTripWithEmptyName() {
+        //User with id 2 should have two trips
+        assertEquals(2, User.find.byId(2).getTrips().size());
+        Map<String, String> formData = new HashMap<>();
+        //Assuming the user fills in the trip name form as "Trip to New Zealand", which already exists
+        formData.put("tripName", "");
+        Http.RequestBuilder fakeRequest = Helpers.fakeRequest().bodyForm(formData).method(Helpers.POST).uri("/users/trips/create").session("connected", "2");
+        CSRFTokenHelper.addCSRFToken(fakeRequest);
+        Result result = Helpers.route(app, fakeRequest);
+        assertEquals(BAD_REQUEST, result.status());
+        //User with id 2 should still have two trips
+        assertEquals(2, User.find.byId(2).getTrips().size());
+    }
+
     /**
      * Unit test for trip creation request
      * */
@@ -404,6 +419,16 @@ public class TripControllerTest extends WithApplication {
     }
 
     @Test
+    public void deleteVisitFromExistingTripWithInvalidLoginSession(){
+        assertEquals(4, Trip.find.byId(2).getVisits().size());
+        //visit of id 5 is in this trip
+        Http.RequestBuilder fakeRequest = Helpers.fakeRequest().method(Helpers.DELETE).uri("/users/trips/edit/5").session("connected", null);
+        Result result = Helpers.route(app, fakeRequest);
+        assertEquals(UNAUTHORIZED, result.status());
+        assertEquals(4, Trip.find.byId(2).getVisits().size());
+    }
+
+    @Test
     public void deleteVisitWhichCausesRepeatDestinations(){
         assertEquals(3, Trip.find.byId(4).getVisits().size());
         //visit of id 11 is in this trip. Deleting it will result in Pyramid -> Pyramid which is illegal.
@@ -531,6 +556,19 @@ public class TripControllerTest extends WithApplication {
         assertEquals(4, Trip.find.byId(3).getVisits().size());
         //4th visit of World Tour should be the newly added one (Christchurch)
         assertEquals("Christchurch", Trip.find.byId(3).getVisits().get(3).getVisitName());
+    }
+
+    @Test
+    public void addVisitFromTableWithValidLoginSessionWithInvalidDestination(){
+        assertEquals(3, Trip.find.byId(3).getVisits().size());
+        assertNull(Destination.find.byId(100));
+        //add Wellington to Christchurch to Wellington, to The Wok and back
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/trips/table/edit/3/100").session("connected", "3");
+        Result result = route(app, request);
+        assertEquals(NOT_FOUND, result.status());
+        assertEquals(3, Trip.find.byId(3).getVisits().size());
     }
 
     @Test

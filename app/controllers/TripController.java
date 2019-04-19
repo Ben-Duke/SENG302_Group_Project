@@ -328,6 +328,9 @@ public class TripController extends Controller {
                         return unauthorized("This private destination is owned by someone else. You may not use it.");
                     }
                 }
+                else{
+                    return notFound("Destination not found");
+                }
             } else {
                 return unauthorized("Oops, this is not your trip.");
             }
@@ -335,7 +338,6 @@ public class TripController extends Controller {
         else{
             return unauthorized("Oops, you are not logged in");
         }
-        return badRequest();
     }
 
     /**

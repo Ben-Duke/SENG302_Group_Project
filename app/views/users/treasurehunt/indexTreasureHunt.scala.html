@@ -1,6 +1,9 @@
 @(treasureHunts: List[TreasureHunt], openTreasureHunts: List[TreasureHunt], user: User)
 
 @main("Treasure hunt") {
+    <head>
+        <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/indexTreasureHunt.css")">
+    </head>
     <body>
         <h1>Open Treasure Hunts</h1>
         <input type="text" class="searchTreasureHunts" onkeyup="searchTreasureHunt()" placeholder="Search for Treasure hunts">
@@ -18,8 +21,8 @@
                     <tr data-toggle="modal" data-id="@treasureHunt.getThuntid()" data-target="#info" class="clickable">
                         <th scope ="row">@treasureHunt.getTitle()</th>
                         <td>@treasureHunt.getEndDate()</td>
-                        <td><a class="btn btn-primary col-sm-offset-8" href="@routes.DestinationController.createDestination()" role="button">
-            Guess</a></td>
+                        <td><a class="btn btn-success" href="@routes.DestinationController.createDestination()" role="button">
+            Take a guess</a></td>
                         <td>@treasureHunt.getRiddle()</td>
                     </tr>
 
@@ -29,5 +32,39 @@
             </tbody>
         </table>
 
+        <h1>My Treasure Hunts</h1>
+        <input type="text" class="searchTreasureHunts" onkeyup="searchTreasureHunt()" placeholder="Search for Treasure hunts">
+        <table class="table table-hover treasureHunts">
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">Title</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Start Date</th>
+                    <th scope="col">End Date</th>
+                    <th scope="col">Destination</th>
+                    <th scope="col">Riddle</th>
+                </tr>
+            </thead>
+            <tbody>
+            @for(treasureHunt <- treasureHunts) {
+                <tr data-toggle="modal" data-id="@treasureHunt.getThuntid()" data-target="#info" class="clickable">
+                    <th scope ="row">@treasureHunt.getTitle()</th>
+                    @if(openTreasureHunts.contains(treasureHunt)){
+                        <td>Open</td>
+                    } else{
+                        <td>Closed</td>
+                    }
+                    <td>@treasureHunt.getStartDate()</td>
+                    <td>@treasureHunt.getEndDate()</td>
+                    <td>@treasureHunt.getDestination()</td>
+                    <td>@treasureHunt.getRiddle()</td>
+                </tr>
+
+
+                <br>
+                }
+            </tbody>
+        </table>
+        <script src="@routes.Assets.at("js/indexTreasureHunt.js")" type="text/javascript"></script>
     </body>
 }

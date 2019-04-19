@@ -1,22 +1,24 @@
 package controllers;
 
-import formdata.TripFormData;
 import models.TreasureHunt;
 import models.User;
-import play.data.Form;
+import play.data.FormFactory;
+import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
 import views.html.users.treasurehunt.indexTreasureHunt;
-import views.html.users.trip.createTrip;
 
+import javax.inject.Inject;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-import static play.mvc.Results.*;
 
-public class TreasureHuntController {
+public class TreasureHuntController extends Controller {
+
+    @Inject
+    FormFactory formFactory;
 
     /**
      * If the user is logged in, renders the treasure hunt index page
@@ -27,7 +29,7 @@ public class TreasureHuntController {
     public Result indexTreasureHunt(Http.Request request){
         User user = User.getCurrentUser(request);
         if (user != null) {
-            return ok(indexTreasureHunt.render(user.getTreasureHunts(), getOpenTreasureHunts(), user);
+            return ok(indexTreasureHunt.render(user.getTreasureHunts(), getOpenTreasureHunts(), user));
         }
         else{
             return unauthorized("Oops, you are not logged in");

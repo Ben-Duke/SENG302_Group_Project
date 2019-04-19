@@ -2,12 +2,33 @@ package models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.ebean.Finder;
+import io.ebean.Model;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-public class TreasureHunt {
+public class TreasureHunt extends Model {
+
+
+    /**
+     * Constructor to create a treasure hunt
+     * @param title the treasure hunt's title
+     * @param riddle the treasure hunt's riddle
+     * @param destination the correct destination that the users should be guessing
+     * @param startDate when the treasure hunt opens
+     * @param endDate when the treasure hunt closes
+     */
+    public TreasureHunt(String title, String riddle, Destination destination, String startDate, String endDate, User user){
+        this.title = title;
+        this.riddle = riddle;
+        this.destination = destination;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.user = user;
+        this.users = new ArrayList<>();
+    }
 
     /**
      * The id of the treasure hunt

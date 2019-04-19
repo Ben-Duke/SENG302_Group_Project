@@ -194,3 +194,7 @@ POST    /users/destinations/save        controllers.DestinationController.saveDe
 
 #Handles deleting a destination //TODO needs to be changed from get request
 GET     /users/destinations/delete/:id   controllers.DestinationController.deleteDestination(request : Request, id : Integer)
+
+#Treasure Hunts
+#Renders treasure hunt index page
+GET     /users/treasurehunts             controllers.TreasureHuntController.indexTreasureHunt(request : Request)

@@ -10,39 +10,6 @@ import java.util.*;
 
 @Entity
 public class Destination extends Model {
-    @Id
-    public Integer destid;
-
-    public String destName;
-    public String destType;
-    public String district;
-    public String country;
-    public double latitude;
-    public double longitude;
-    public boolean isPublic;
-
-    @ManyToOne
-    public UserPhoto primaryPhoto;
-
-    @JsonIgnore
-    @ManyToOne
-    @JoinColumn(name = "user", referencedColumnName = "userid")
-    public User user;
-
-    @JsonIgnore
-    @OneToMany(mappedBy = "destination")
-    public List<Visit> visits;
-
-    @JsonIgnore
-    @OneToMany(mappedBy = "destination")
-    public List<UserPhoto> userPhotos;
-
-    @JsonIgnore
-    @ManyToMany
-    public List<TravellerType> travellerTypes;
-
-    public static Finder<String,Destination> findString =new Finder<>(Destination.class);
-    public static Finder<Integer,Destination> find = new Finder<>(Destination.class);
 
     /**
      * Destination constructor with isPublic method
@@ -126,6 +93,41 @@ public class Destination extends Model {
         countryMap.remove("");
         return countryMap;
     }
+
+    @Id
+    public Integer destid;
+
+    public String destName;
+    public String destType;
+    public String district;
+    public String country;
+    public double latitude;
+    public double longitude;
+    public boolean isPublic;
+
+
+    @ManyToOne
+    public UserPhoto primaryPhoto;
+
+    @JsonIgnore
+    @ManyToOne
+    @JoinColumn(name = "user", referencedColumnName = "userid")
+    public User user;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "destination")
+    public List<Visit> visits;
+
+    @JsonIgnore
+    @ManyToMany(mappedBy = "destinations")
+    public List<UserPhoto> userPhotos;
+
+    @JsonIgnore
+    @ManyToMany
+    public List<TravellerType> travellerTypes;
+
+    public static Finder<String,Destination> findString =new Finder<>(Destination.class);
+    public static Finder<Integer,Destination> find = new Finder<>(Destination.class);
 
 
     //GETTERS

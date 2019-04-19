@@ -11,6 +11,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import play.Application;
+import play.api.test.CSRFTokenHelper;
 import play.db.Database;
 import play.db.Databases;
 import play.db.evolutions.Evolution;
@@ -36,6 +37,8 @@ public class DestinationControllerTest extends WithApplication {
      * The fake database
      */
     Database database;
+    
+    int REDIRECT_HTTP_STATUS = SEE_OTHER;
 
     @Override
     protected Application provideApplication() {
@@ -200,7 +203,7 @@ public class DestinationControllerTest extends WithApplication {
         formData.put("longitude", "-50.0");
         Http.RequestBuilder request = Helpers.fakeRequest().bodyForm(formData).method(POST).uri("/users/destinations/save").session("connected", "2");
         Result result = route(app, request);
-        assertEquals(SEE_OTHER, result.status());
+        assertEquals(REDIRECT_HTTP_STATUS, result.status());
         assertEquals(4, User.find.byId(2).getDestinations().size());
     }
 
@@ -218,8 +221,9 @@ public class DestinationControllerTest extends WithApplication {
         formData.put("longitude", "-50.0");
         Http.RequestBuilder request = Helpers.fakeRequest().bodyForm(formData).method(Helpers.POST).
                 uri("/users/destinations/save").session("connected", "1");
+        CSRFTokenHelper.addCSRFToken(request);
         Result result = route(app, request);
-        assertEquals(NOT_ACCEPTABLE, result.status());
+        assertEquals(BAD_REQUEST, result.status());
     }
 
     /**
@@ -229,15 +233,16 @@ public class DestinationControllerTest extends WithApplication {
     public void saveDestinationOutOfRangeLongitude() {
         Map<String, String> formData = new HashMap<>();
         formData.put("destName", "Summoner's Rift");
-        formData.put("destType", "Yes");
         formData.put("district", "Demacia");
         formData.put("country", "Angola");
         formData.put("latitude", "10.0");
         formData.put("longitude", "-181");
+        formData.put("destType", "Country");
         Http.RequestBuilder request = Helpers.fakeRequest().bodyForm(formData).method(Helpers.POST).
                 uri("/users/destinations/save").session("connected", "1");
+        CSRFTokenHelper.addCSRFToken(request);
         Result result = route(app, request);
-        assertEquals(NOT_ACCEPTABLE, result.status());
+        assertEquals(BAD_REQUEST, result.status());
     }
 
     /**
@@ -255,7 +260,7 @@ public class DestinationControllerTest extends WithApplication {
         Http.RequestBuilder request = Helpers.fakeRequest().bodyForm(formData).method(Helpers.POST).
                 uri("/users/destinations/save").session("connected", "1");
         Result result = route(app, request);
-        assertEquals(SEE_OTHER, result.status());
+        assertEquals(REDIRECT_HTTP_STATUS, result.status());
     }
 
     /**
@@ -378,7 +383,7 @@ public class DestinationControllerTest extends WithApplication {
         formData.put("longitude", "-50.0");
         Http.RequestBuilder request = Helpers.fakeRequest().bodyForm(formData).method(POST).uri("/users/destinations/update/1").session("connected", "2");
         Result result = route(app, request);
-        assertEquals(SEE_OTHER, result.status());
+        assertEquals(REDIRECT_HTTP_STATUS, result.status());
         assertEquals("Summoner's Rift", User.find.byId(2).getDestinations().get(0).getDestName());
         assertEquals("Yes", User.find.byId(2).getDestinations().get(0).getDestType());
         assertEquals("Demacia", User.find.byId(2).getDestinations().get(0).getDistrict());
@@ -455,7 +460,7 @@ public class DestinationControllerTest extends WithApplication {
                 .method(GET)
                 .uri("/users/destinations/delete/3").session("connected", "2");
         Result result = route(app, request);
-        assertEquals(SEE_OTHER, result.status());
+        assertEquals(REDIRECT_HTTP_STATUS, result.status());
         assertEquals(2, User.find.byId(2).getDestinations().size());
     }
 
@@ -508,7 +513,7 @@ public class DestinationControllerTest extends WithApplication {
                 .method(GET)
                 .uri("/users/destinations/public/2").session("connected", "2");
         Result result = route(app, request);
-        assertEquals(SEE_OTHER, result.status());
+        assertEquals(REDIRECT_HTTP_STATUS, result.status());
         destination = Destination.find.byId(3);
         assertEquals(true, destination.getIsPublic());
         assertEquals(2, destination.getUser().getUserid());
@@ -529,7 +534,7 @@ public class DestinationControllerTest extends WithApplication {
                 .method(GET)
                 .uri("/users/destinations/public/3").session("connected", "2");
         Result result = route(app, request);
-        assertEquals(SEE_OTHER, result.status());
+        assertEquals(REDIRECT_HTTP_STATUS, result.status());
 
 
         Map<String, String> formData = new HashMap<>();
@@ -541,7 +546,7 @@ public class DestinationControllerTest extends WithApplication {
         formData.put("longitude", "-50.0");
         Http.RequestBuilder request2 = Helpers.fakeRequest().bodyForm(formData).method(POST).uri("/users/destinations/update/3").session("connected", "2");
         Result result2 = route(app, request2);
-        assertEquals(SEE_OTHER, result2.status());
+        assertEquals(REDIRECT_HTTP_STATUS, result2.status());
     }
 
     /**
@@ -558,7 +563,7 @@ public class DestinationControllerTest extends WithApplication {
                 .method(GET)
                 .uri("/users/destinations/public/2").session("connected", "2");
         Result result = route(app, request);
-        assertEquals(SEE_OTHER, result.status());
+        assertEquals(REDIRECT_HTTP_STATUS, result.status());
         //A different user of user id 3 uses the destination in their trip
         Trip trip = new Trip("testTrip", true, User.find.byId(3));
         trip.save();
@@ -566,7 +571,7 @@ public class DestinationControllerTest extends WithApplication {
                 .method(GET)
                 .uri("/users/trips/table/edit/3/2").session("connected", "3");
         result = route(app, request);
-        assertEquals(SEE_OTHER, result.status());
+        assertEquals(REDIRECT_HTTP_STATUS, result.status());
         //User id 2 tries to update their destination
         Map<String, String> formData = new HashMap<>();
         formData.put("destName", "Summoner's Rift");
@@ -588,7 +593,7 @@ public class DestinationControllerTest extends WithApplication {
                 .method(GET)
                 .uri("/users/destinations/public/3").session("connected", "2");
         Result result = route(app, request);
-        assertEquals(SEE_OTHER, result.status());
+        assertEquals(REDIRECT_HTTP_STATUS, result.status());
 
         Trip trip = new Trip("testTrip", true, User.find.byId(2));
         trip.save();
@@ -596,7 +601,7 @@ public class DestinationControllerTest extends WithApplication {
                 .method(GET)
                 .uri("/users/trips/table/edit/1/3").session("connected", "2");
         result = route(app, request);
-        assertEquals(SEE_OTHER, result.status());
+        assertEquals(REDIRECT_HTTP_STATUS, result.status());
         Map<String, String> formData = new HashMap<>();
         formData.put("destName", "Summoner's Rift");
         formData.put("destType", "Yes");
@@ -606,7 +611,7 @@ public class DestinationControllerTest extends WithApplication {
         formData.put("longitude", "-50.0");
         Http.RequestBuilder request2 = Helpers.fakeRequest().bodyForm(formData).method(POST).uri("/users/destinations/update/3").session("connected", "2");
         Result result2 = route(app, request2);
-        assertEquals(SEE_OTHER, result2.status());
+        assertEquals(REDIRECT_HTTP_STATUS, result2.status());
     }
 
     /*

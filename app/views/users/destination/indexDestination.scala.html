@@ -1,4 +1,6 @@
-@(destinations: List[Destination], allDestinations: List[Destination], user: User)
+@import factories.DestinationFactory
+
+@(destinations: List[Destination], allDestinations: List[Destination], destinationFactory: DestinationFactory, user: User)
 
     @main("Destinations") {
 
@@ -66,8 +68,14 @@
                             Edit</a></td>
                         <td><a href="@routes.DestinationController.deleteDestination(destination.getDestId())" class="btn btn-danger">
                             Delete</a></td>
-                        <td><a href="@routes.DestinationController.makeDestinationPublic(destination.getDestId)" class="btn btn-primary">
-                            Make destination public</a></td>
+                        @if(! destinationFactory.doesPublicDestinationExist(destination)) {
+                            <td><a href="@routes.DestinationController.makeDestinationPublic(destination.getDestId)" class="btn btn-primary">
+                                Make destination public</a></td>
+                        } else {
+                            @*<td><input id="Button" class="btn btn-primary" type="button" value="Make destination public" style="background-color:grey"/></td>*@
+
+                        }
+
                     </tr>
 
 

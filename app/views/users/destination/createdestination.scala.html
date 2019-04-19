@@ -1,6 +1,8 @@
-@(destForm : Form[Destination], countryMap: Map[String, Boolean], typeMap: Map[String, Boolean])
+@import formdata.DestinationFormData
 @import helper._
 @import views.html.bootstrap3.text
+
+@(destForm : Form[DestinationFormData], countryMap: Map[String, Boolean], typeMap: Map[String, Boolean])
 
 @main("Destinations") {
     <nav class="navbar navbar-custom">
@@ -15,7 +17,7 @@
         </div>
     </nav>
     <h1>Create Destination</h1>
-    @helper.form(action = helper.CSRF(routes.DestinationController.saveDestination())){
+    @helper.form(action = helper.CSRF(routes.DestinationController.saveDestinationFromRequest())){
         <fieldset>
                 <!-- Name -->
             @text(destForm("destName"),
@@ -57,6 +59,24 @@
                     <input id="submit" type="submit" value="Submit" class="btn btn-primary"/>
                     <a class="btn btn-danger" href="@routes.DestinationController.indexDestination()" role="button">Cancel</a>
                 </div>
+            </div>
+
+            <div style="margin-top: 50px">
+             @if(flash.containsKey("privateDestinationExists")) {
+                 <div class="well">
+                     <div id="error-message" class="text-danger">
+                          @flash.get("privateDestinationExists")
+                     </div>
+                </div>
+              }
+
+            @if(flash.containsKey("publicDestinationExists")) {
+                <div class="well">
+                    <div id="error-message" class="text-danger">
+                    @flash.get("publicDestinationExists")
+                    </div>
+                </div>
+            }
             </div>
         </p>
         }

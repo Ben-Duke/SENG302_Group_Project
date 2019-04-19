@@ -1,0 +1,33 @@
+@(treasureHunts: List[TreasureHunt], openTreasureHunts: List[TreasureHunt], user: User)
+
+@main("Treasure hunt") {
+    <body>
+        <h1>Open Treasure Hunts</h1>
+        <input type="text" class="searchTreasureHunts" onkeyup="searchTreasureHunt()" placeholder="Search for Treasure hunts">
+        <table class="table table-hover treasureHunts">
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">Title</th>
+                    <th scope="col">End Date</th>
+                    <th scope="col">Destination</th>
+                    <th scope="col">Riddle</th>
+                </tr>
+            </thead>
+            <tbody>
+            @for(treasureHunt <- openTreasureHunts) {
+                    <tr data-toggle="modal" data-id="@treasureHunt.getThuntid()" data-target="#info" class="clickable">
+                        <th scope ="row">@treasureHunt.getTitle()</th>
+                        <td>@treasureHunt.getEndDate()</td>
+                        <td><a class="btn btn-primary col-sm-offset-8" href="@routes.DestinationController.createDestination()" role="button">
+            Guess</a></td>
+                        <td>@treasureHunt.getRiddle()</td>
+                    </tr>
+
+
+                    <br>
+            }
+            </tbody>
+        </table>
+
+    </body>
+}

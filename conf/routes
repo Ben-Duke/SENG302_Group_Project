@@ -66,9 +66,9 @@ POST    /users/profile/search       controllers.TravelPartnerController.searchBy
 #Renders page for creating trips
 GET     /users/trips/create         controllers.TripController.createtrip(request: Request)
 
-GET     /users/trips/cancel         controllers.TripController.cancelTrip(request: Request, id:Integer)
+GET     /users/trips/cancel/:id         controllers.TripController.cancelTrip(request: Request, id:Integer)
 
-GET     /users/trips/addDestinations    controllers.TripController.AddTripDestinations(request: Request, id:Integer)
+GET     /users/trips/addDestinations/:id    controllers.TripController.AddTripDestinations(request: Request, id:Integer)
 
 #GET     /users/trips/display/addDestinations    controllers.TripController.AddExistingTripDestinations(request: Request, id:Integer)
 

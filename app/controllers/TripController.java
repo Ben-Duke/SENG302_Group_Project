@@ -111,7 +111,7 @@ public class TripController extends Controller {
             }
             TripFormData created = incomingForm.get();
             int tripid = tripFactory.createTrip(created, user);
-            return redirect(routes.TripController.AddTripDestinations(tripid));
+            return redirect(routes.TripController.addTripDestinations(tripid));
         }
         else{
             return unauthorized("Oops, you are not logged in");
@@ -313,7 +313,7 @@ public class TripController extends Controller {
                         Visit visit = visitfactory.createVisitTable(trip, destination, visitOrder);
                         if (tripFactory.hasRepeatDest(visits, visit, "ADD")) {
                             //flash("danger", "You cannot have repeat destinations!");
-                            return redirect(routes.TripController.AddTripDestinations(tripid)).flashing("error", "You cannot have repeat destinations!");
+                            return redirect(routes.TripController.addTripDestinations(tripid)).flashing("error", "You cannot have repeat destinations!");
                         }
                         //if the destination is public but the owner of the destination is not an admin, set the owner of the destination to the default admin
                         if (!(destination.getUser().isAdmin()) && destination.getIsPublic() && (destination.getUser().getUserid() != user.getUserid())) {
@@ -322,7 +322,7 @@ public class TripController extends Controller {
                             destination.update();
                         }
                         visit.save();
-                        return redirect(routes.TripController.AddTripDestinations(tripid));
+                        return redirect(routes.TripController.addTripDestinations(tripid));
                     }
                     else{
                         return unauthorized("This private destination is owned by someone else. You may not use it.");

@@ -46,6 +46,7 @@ public class DestinationFactory {
      * otherwise.
      */
     public boolean doesPublicDestinationExist(Destination destination) {
+
         List<Destination> allDestinations = Destination.find.query()
                 .where().eq("isPublic", true).findList();
 
@@ -55,6 +56,21 @@ public class DestinationFactory {
             }
         }
 
+        return false;
+    }
+
+    //todo javadoc
+    public boolean otherUserHasPrivateDestination(int userId, Destination destination) {
+        User user = UserFactory.getUserFromId(userId);
+        List<Destination> allDestinations = Destination.find.query()
+                .where().eq("isPublic", false).and()
+                .not().eq("user", user).findList();
+
+        for (Destination existingDestination : allDestinations) {
+            if (destination.equals(existingDestination)) {
+                return true;
+            }
+        }
         return false;
     }
 }

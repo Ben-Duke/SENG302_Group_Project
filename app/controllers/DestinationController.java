@@ -176,9 +176,7 @@ public class DestinationController extends Controller {
                     flash("privateDestinationExists",
                             "You already have a matching private destination!");
                     hasError = true;
-                }
-
-                if (destinationFactory.doesPublicDestinationExist(newDestination)) {
+                } else if (destinationFactory.doesPublicDestinationExist(newDestination)) {
                     flash("publicDestinationExists",
                             "A matching public destination already exists!");
                     hasError = true;
@@ -357,6 +355,7 @@ public class DestinationController extends Controller {
                     } else {
                         //no matching pub destination exists, making public now
                         //sets the destination to public, sets the owner to the default admin and updates the destination
+
                         destination.setIsPublic(true);
                         destination.update();
                         return redirect(routes.DestinationController.indexDestination());

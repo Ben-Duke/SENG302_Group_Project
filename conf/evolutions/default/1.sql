@@ -19,7 +19,6 @@ create table destination (
   latitude                      double not null,
   longitude                     double not null,
   is_public                     boolean default false not null,
-  used_by_others                boolean default false not null,
   primary_photo_photo_id        integer,
   user                          integer,
   constraint pk_destination primary key (destid)

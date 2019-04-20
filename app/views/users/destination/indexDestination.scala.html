@@ -69,19 +69,28 @@
                         <td><a href="@routes.DestinationController.deleteDestination(destination.getDestId())" class="btn btn-danger">
                             Delete</a></td>
                         @if(! destinationFactory.doesPublicDestinationExist(destination)) {
-                            <td><a href="@routes.DestinationController.makeDestinationPublic(destination.getDestId)" class="btn btn-primary">
-                                Make destination public</a></td>
+                            <td>
+                                <a href="@routes.DestinationController.makeDestinationPublic(destination.getDestId)" class="btn btn-primary">
+                                    Make destination public
+                                </a>
+                            </td>
                         } else {
                             @*<td><input id="Button" class="btn btn-primary" type="button" value="Make destination public" style="background-color:grey"/></td>*@
 
                         }
-
                     </tr>
 
 
                     <br>
                     }
             }
+                @if(flash.containsKey("matchingDest")) {
+                    <div class="well">
+                        <div id="error-message" class="text-danger">
+                        @flash.get("matchingDest")
+                        </div>
+                    </div>
+                }
             </tbody>
         </table>
 

@@ -60,17 +60,17 @@ public class DestinationFactory {
     }
 
     //todo javadoc
-    public boolean otherUserHasPrivateDestination(int userId, Destination destination) {
+    public int otherUserHasPrivateDestination(int userId, Destination destination) {
         User user = UserFactory.getUserFromId(userId);
         List<Destination> allDestinations = Destination.find.query()
                 .where().eq("isPublic", false).and()
                 .not().eq("user", user).findList();
-
+        int count = 0;
         for (Destination existingDestination : allDestinations) {
             if (destination.equals(existingDestination)) {
-                return true;
+                count++;
             }
         }
-        return false;
+        return count;
     }
 }

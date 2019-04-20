@@ -24,20 +24,39 @@ function initMap() {
  * objects to the window.globalMarkers global variable.
  */
 function initDestinationMarkers() {
+    const icons = {
+        greenIcon: {
+            url: 'https://maps.google.com/mapfiles/kml/paddle/grn-blank.png',
+            scale: 5
+        },
+        blueIcon: {
+            url: 'https://maps.google.com/mapfiles/kml/paddle/blu-blank.png',
+            scale: 5
+        }
+
+    };
+
     fetch('/users/destinations/getalljson', {
         method: 'GET'})
         .then(res => res.json())
         .then(data => {
             const destinations = data;
 
+            let customIcon;
             for (destination of destinations) {
+                if (destination.isPublic) {
+                    customIcon = icons.greenIcon;
+                } else {
+                    customIcon = icons.blueIcon;
+                }
+
                 window.globalMarkers.push(new google.maps.Marker({
                     position: {
                         lat: destination.latitude,
                         lng: destination.longitude
                     },
                     map: window.globalMap,
-                    icon:'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png'
+                    icon: customIcon
                 }));
             }
         });

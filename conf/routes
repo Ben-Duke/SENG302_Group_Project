@@ -143,6 +143,9 @@ GET     /assets/*file               controllers.Assets.at(path="/public", file)
 #Renders index page for destinations
 GET     /users/destinations             controllers.DestinationController.indexDestination(request : Request)
 
+#Gets JSON of all public and private Destinations avaliable to a user.
+GET     /users/destinations/getalljson         controllers.DestinationController.getVisibleDestinationMarkersJSON(request : Request)
+
 #Renders page for displaying a given destination
 GET     /users/destinations/:id         controllers.DestinationController.viewDestination(request : Request, id : Integer)
 
@@ -194,3 +197,5 @@ POST    /users/destinations/save        controllers.DestinationController.saveDe
 
 #Handles deleting a destination //TODO needs to be changed from get request
 GET     /users/destinations/delete/:id   controllers.DestinationController.deleteDestination(request : Request, id : Integer)
+
+

@@ -216,7 +216,7 @@ public class TripController extends Controller {
      * @param tripid the trip id of the trip
      * @return
      */
-    public Result AddTripDestinations(Http.Request request, Integer tripid) {
+    public Result addTripDestinations(Http.Request request, Integer tripid) {
         Trip trip = Trip.find.byId(tripid);
         User user = User.getCurrentUser(request);
         Date today = new Date();
@@ -229,7 +229,7 @@ public class TripController extends Controller {
                     visits.sort(Comparator.comparing(Visit::getVisitOrder));
                     List<Destination> destinations = user.getDestinations();
                     List<Destination> allDestinations = Destination.find.all();
-                    //return ok(AddTripDestinations.render(incomingForm, trip, user.getMappedDestinations(), visits, today.toString()));
+                    //return ok(addTripDestinations.render(incomingForm, trip, user.getMappedDestinations(), visits, today.toString()));
                     System.out.println(request.flash().getOptional("error").orElse("test"));
                     return ok(AddTripDestinationsTable.render(trip, destinations, allDestinations,user)).flashing("error", request.flash().getOptional("error").orElse("test"));
 
@@ -316,7 +316,7 @@ public class TripController extends Controller {
                             return redirect(routes.TripController.AddTripDestinations(tripid)).flashing("error", "You cannot have repeat destinations!");
                         }
                         //if the destination is public but the owner of the destination is not an admin, set the owner of the destination to the default admin
-                        if (!(destination.getUser().isAdmin()) && destination.getIsPublic() && !(destination.getUser().getUserid() == user.getUserid())) {
+                        if (!(destination.getUser().isAdmin()) && destination.getIsPublic() && (destination.getUser().getUserid() != user.getUserid())) {
                             User admin = User.find.byId(1);
                             destination.setUser(admin);
                             destination.update();

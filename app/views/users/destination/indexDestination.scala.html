@@ -6,12 +6,14 @@
 
     <head>
         <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/destination/indexDestination.css")">
+        <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/destination/mapStyle.css")">
         <title>Simple Map</title>
         <meta name="viewport" content="initial-scale=1.0">
         <meta charset="utf-8">
     </head>
     <body>
         <div id="map"></div>
+        <div id="legend"><h3>Legend</h3></div>
 
         <h1>My private destinations <a class="btn btn-primary col-sm-offset-8" href="@routes.DestinationController.createDestination()" role="button">
             Create Destination</a></h1>

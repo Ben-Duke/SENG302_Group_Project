@@ -24,6 +24,24 @@ function initMap() {
     });
 
     initDestinationMarkers();
+
+    // code for legend from here
+    // https://developers.google.com/maps/documentation/javascript/adding-a-legend
+    //TODO put in README
+
+    let icons = getAllMarkerIcons();
+
+    let legend = document.getElementById('legend');
+    for (let key in icons) {
+        let type = icons[key];
+        let name = type.name;
+        let icon = type.url;
+        let div = document.createElement('div');
+        div.innerHTML = '<img src="' + icon + '"> ' + name;
+        legend.appendChild(div);
+    }
+
+    window.globalMap.controls[google.maps.ControlPosition.LEFT_BOTTOM].push(legend);
 }
 
 /**
@@ -98,6 +116,25 @@ function getInfoWindowHTML(destination) {
 }
 
 /**
+ * Gets a JSON of all marker icons.
+ *
+ * @returns {{greenIcon: {url: string, name: string}, blueIcon: {url: string, name: string}}}
+ */
+function getAllMarkerIcons() {
+    const icons = {
+        greenIcon: {
+            url: 'https://maps.google.com/mapfiles/ms/icons/green-dot.png',
+            name: 'Public Destination'
+        },
+        blueIcon: {
+            url: 'https://maps.google.com/mapfiles/ms/icons/blue-dot.png',
+            name: 'Private Destination'
+        }
+    };
+    return icons;
+}
+
+/**
  * Gets the Icon (google maps api spec) for the Marker, depends on the Destintions
  * privacy.
  *
@@ -105,16 +142,7 @@ function getInfoWindowHTML(destination) {
  * @returns {icons.blueIcon|{url, scale}|icons.greenIcon} JSON of the icon
  */
 function getMarkerIcon(isPublic) {
-    const icons = {
-        greenIcon: {
-            url: 'https://maps.google.com/mapfiles/kml/paddle/grn-blank.png',
-            scale: 5
-        },
-        blueIcon: {
-            url: 'https://maps.google.com/mapfiles/kml/paddle/blu-blank.png',
-            scale: 5
-        }
-    };
+    const icons = getAllMarkerIcons();
 
     let selectedIcon;
 

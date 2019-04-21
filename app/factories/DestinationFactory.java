@@ -10,7 +10,6 @@ import java.util.List;
  */
 public class DestinationFactory {
 
-    //TODO jdoc and unit test
     /**
      * Gets a List of all public destinations.
      *
@@ -23,7 +22,6 @@ public class DestinationFactory {
         return allPublicDestinations;
     }
 
-    //TODO jdoc and unit test
     /**
      * Gets a List of all a users private destinations (excluding their own public
      * destinations).

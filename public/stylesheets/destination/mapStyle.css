@@ -23,3 +23,7 @@ html, body {
 #legend img {
     vertical-align: middle;
 }
+
+.flyToImage {
+    cursor: pointer;
+}

@@ -36,7 +36,16 @@
             @for(destination <- destinations) {
                 @if(destination.getIsPublic == false) {
                     <tr data-toggle="modal" data-id="@destination.getDestId()" data-target="#orderModal" class="clickable">
-                        <th scope ="row">@destination.getDestName()</th>
+                        <th scope ="row">
+                            <span>@destination.getDestName()</span>
+                            <span>
+                                <img class="flyToImage"
+                                     src="/assets/images/map/goto-map-icon-24px.png"
+                                     latitude="@destination.getLatitude()"
+                                     longitude="@destination.getLongitude()"
+                                >
+                            </span>
+                        </th>
                         <td>@destination.getDestType()</td>
                         <td>@destination.getCountry()</td>
                         <td>@destination.getDistrict</td>
@@ -81,7 +90,16 @@
             @for(destination <- allDestinations) {
                 @if(destination.getIsPublic == true) {
                     <tr data-toggle="modal" data-id="@destination.getDestId()" data-target="#orderModal" class="clickable">
-                        <th scope ="row">@destination.getDestName()</th>
+                        <th scope ="row">
+                            <span>@destination.getDestName()</span>
+                            <span>
+                                <img class="flyToImage"
+                                src="/assets/images/map/goto-map-icon-24px.png"
+                                latitude="@destination.getLatitude()"
+                                longitude="@destination.getLongitude()"
+                                >
+                            </span>
+                        </th>
                         <td>@destination.getDestType()</td>
                         <td>@destination.getCountry()</td>
                         <td>@destination.getDistrict</td>
@@ -135,6 +153,20 @@
                 </div>
             </div>
         </div>
+
+        <div>
+            Icons made by
+            <a href="https://www.flaticon.com/authors/smashicons" title="Smashicons">
+                Smashicons
+            </a> from <a href="https://www.flaticon.com/"
+            title="Flaticon">www.flaticon.com</a>
+            is licensed by
+            <a href="http://creativecommons.org/licenses/by/3.0/"
+            title="Creative Commons BY 3.0"
+            target="_blank">CC 3.0 BY
+            </a>
+        </div>
+
         <script src="@routes.Assets.at("js/destination/indexDestination.js")" type="text/javascript"></script>
         <script src="@routes.Assets.at("js/destination/destinationMap.js")"></script>
         <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDCyC_ON0GgSmJIfPlL7oke5PZgbR8TLbg&callback=initMap&libraries=drawing"

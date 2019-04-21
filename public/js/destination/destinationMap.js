@@ -200,3 +200,65 @@ function initDestinationMarkers() {
             }
         });
 }
+
+/**
+ * Method to check if a lat and long are valid coordinates in the mercerator
+ * map projection.
+ *
+ * @param latitude A float representing latitude
+ * @param longitude A float representing longitude
+ * @returns {boolean} true if both are valid, false otherwise
+ */
+function isLatLongValid(latitude, longitude) {
+    let isValid = true;
+
+    if (isNaN(latitude) || isNaN(longitude)) {
+        isValid = false;
+    } else {
+        if (-85 <= latitude && latitude <= 85) {
+            // valid latitude
+        } else {
+            // invalid latitude
+            isValid = false;
+        }
+
+        if (-180 <= longitude && longitude <= 180) {
+            // valid longitude
+        } else {
+            // invalid longitude
+            isValid = false;
+        }
+    }
+    return isValid;
+}
+
+/**
+ * Add's event handlers to all the "fly to map images" so than when they are
+ * clicked they center the google map on the appropiate location.
+ *
+ * This method is called implicitly when the page loads (dont call it explicitly).
+ *
+ * If somehow the lat and long attributes of the image are invalid, shows an
+ * alert box.
+ */
+window.onload = function() {
+    const images = document.getElementsByClassName("flyToImage");
+
+    for (image of images) {
+        image.addEventListener('click', (event) => {
+            const targetIMG = event.target;
+
+            const latitude = parseFloat(targetIMG.getAttribute('latitude'));
+            const longitude = parseFloat(targetIMG.getAttribute('longitude'));
+
+            if (! isLatLongValid(latitude, longitude)) {
+                alert("Error flying to destination on map, sorry!");
+            } else {
+                window.globalMap.setCenter({
+                    lat: latitude,
+                    lng: longitude
+                });
+            }
+        })
+    }
+};

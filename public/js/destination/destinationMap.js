@@ -11,6 +11,7 @@
 // }
 window.globalMarkers = [];
 
+
 /**
  * The callback function that is called after the google maps script src loads
  * with the api key.
@@ -24,11 +25,17 @@ function initMap() {
     });
 
     initDestinationMarkers();
+    initMapLegend();
+}
 
-    // code for legend from here
-    // https://developers.google.com/maps/documentation/javascript/adding-a-legend
-    //TODO put in README
-
+/**
+ * Creates the destination map legend.
+ *
+ * Code from here
+ * https://developers.google.com/maps/documentation/javascript/adding-a-legend
+ * TODO put in README
+ */
+function initMapLegend() {
     let icons = getAllMarkerIcons();
 
     let legend = document.getElementById('legend');

@@ -10,6 +10,7 @@ html, body {
     padding: 0;
 }
 
+/* CSS for the google map legend START */
 #legend {
     font-family: Arial, sans-serif;
     background: hsla(120, 100%, 75%, 0.3);
@@ -23,6 +24,7 @@ html, body {
 #legend img {
     vertical-align: middle;
 }
+/* CSS for the google map legend END */
 
 .flyToImage {
     cursor: pointer;

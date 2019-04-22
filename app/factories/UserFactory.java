@@ -398,9 +398,11 @@ public class UserFactory {
      * @param newPhoto the new photo that is to become the user's profile picture
      */
     public static void replaceProfilePicture(int userId, UserPhoto newPhoto) {
-        removeExistingProfilePicture(userId);
-        newPhoto.setProfile(true);
-        newPhoto.save();
+        if (!newPhoto.equals(getUserProfilePicture(userId))) {
+            removeExistingProfilePicture(userId);
+            newPhoto.setProfile(true);
+            newPhoto.save();
+        }
     }
 
     /**

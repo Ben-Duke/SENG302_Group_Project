@@ -55,7 +55,7 @@
                         </ul>
                     </div>
                 </p>
-                <p>Nationalit(y/ies):
+                <p>Nationality(s):
                     <ul class="list-group col-sm-offset-4" >
                         @for(nationality <- user.nationality) {
                         <li class="list-group-item">@nationality.nationalityName</li>
@@ -218,6 +218,10 @@
                                         <h2>insert caption here</h2>
                                     </div>
                                     <a class="btn btn-primary" id="linkButton" href="#" data-toggle="modal" data-target="#@photo.getPhotoId()">Link to destination</a>
+                                    <a class="btn btn-primary" id="setProfilePicture" href="@routes.HomeController.showhome()"
+                                       onclick="setProfilePictureRequest(
+                                                '@routes.HomeController.setProfilePicture(photo.getPhotoId)',
+                                                @photo.getPhotoId())">Set as Profile Picture</a>
                                 </div>
                                 }
                             </div>

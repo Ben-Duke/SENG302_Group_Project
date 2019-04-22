@@ -169,7 +169,7 @@ public class HomeController {
     public Result serveFromId(Http.Request httpRequest, Integer photoId)
     {
         UserPhoto photo = UserPhoto.find.byId(photoId);
-        return ok(new java.io.File(photo.getUrlWithPath()));
+        return ok(new File(photo.getUrlWithPath()));
     }
 
     /**Serve an image file with a get request
@@ -178,7 +178,7 @@ public class HomeController {
      * @return a java file with the photo
      */
     public Result index(Http.Request httpRequest, String path) {
-        return ok(new java.io.File(path));
+        return ok(new File(path));
     }
 
     /**
@@ -190,11 +190,21 @@ public class HomeController {
         User user = User.getCurrentUser(httpRequest);
         UserPhoto profilePicture = UserFactory.getUserProfilePicture(user.getUserid());
         if(profilePicture != null) {
-            return ok(new java.io.File(profilePicture.getUrlWithPath()));
+            return ok(new File(profilePicture.getUrlWithPath()));
         }
         else{
             //should be 404 but then console logs an error
             return ok();
         }
+    }
+
+    public Result setProfilePicture(Http.Request request, Integer photoId) {
+        User user = User.getCurrentUser(request);
+        UserPhoto profilePhoto = UserPhoto.find.byId(photoId);
+        if(user != null) {
+            UserFactory.replaceProfilePicture(user.getUserid(), profilePhoto);
+            return ok(home.render(user));
+        }
+        return badRequest(home.render(user));
     }
 }

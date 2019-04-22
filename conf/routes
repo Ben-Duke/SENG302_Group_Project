@@ -114,6 +114,9 @@ GET     /users/home/servePicture                     controllers.HomeController.
 #Serve the profile picture
 GET     /users/home/serveProfilePicture              controllers.HomeController.serveProfilePicture(request: Request)
 
+#Sets the picture as profile picture
+PUT     /users/home/setProfilePicture/:id              controllers.HomeController.setProfilePicture(request: Request, id: Integer)
+
 POST    /users/home         controllers.HomeController.upload(request:Request)
 
 POST    /users/home/profilePicture         controllers.HomeController.uploadProfilePicture(request:Request)

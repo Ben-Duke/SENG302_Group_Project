@@ -538,5 +538,32 @@ public class DestinationController extends Controller {
         return ok();
     }
 
+    /**
+     * Gets JSON of all visible (public + the logged in users private photos)
+     * Destinations avaliable to the user.
+     *
+     * @param request the HTTP request
+     * @return a Result object containing the destinations JSON in it's body
+     */
+    public Result getVisibleDestinationMarkersJSON(Http.Request request) {
+        User user = User.getCurrentUser(request);
+        if(user != null) {
+            int userId = user.getUserid();
 
+            DestinationFactory destinationFactory = new DestinationFactory();
+
+            List<Destination> publicDestinations;
+            List<Destination> privateDestinations;
+            publicDestinations = destinationFactory.getPublicDestinations();
+            privateDestinations = destinationFactory.getUsersPrivateDestinations(userId);
+
+            List<Destination> allVisibleDestination = new ArrayList<Destination>();
+            allVisibleDestination.addAll(publicDestinations);
+            allVisibleDestination.addAll(privateDestinations);
+
+            return ok(Json.toJson(allVisibleDestination));
+        } else {
+            return unauthorized("Oops, you are not logged in");
+        }
+    }
 }

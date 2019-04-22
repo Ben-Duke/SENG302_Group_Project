@@ -202,9 +202,25 @@ public class HomeController {
         User user = User.getCurrentUser(request);
         UserPhoto profilePhoto = UserPhoto.find.byId(photoId);
         if(user != null) {
-            UserFactory.replaceProfilePicture(user.getUserid(), profilePhoto);
-            return ok(home.render(user));
+            if (profilePhoto != null) {
+                UserFactory.replaceProfilePicture(user.getUserid(), profilePhoto);
+                return ok(home.render(user));
+            }
+            return unauthorized("Invalid Picture selected");
         }
-        return badRequest(home.render(user));
+        return unauthorized("Oops! You are not logged in.");
+    }
+
+    public Result makePicturePublic(Http.Request request, Integer photoId, boolean setPublic) {
+        User user = User.getCurrentUser(request);
+        UserPhoto photo = UserPhoto.find.byId(photoId);
+        if(user != null) {
+            if (photo != null) {
+                UserFactory.makePicturePublic(user.getUserid(), photo, setPublic);
+                return ok(home.render(user));
+            }
+            return unauthorized("Invalid Picture selected");
+        }
+        return unauthorized("Oops! You are not logged in.");
     }
 }

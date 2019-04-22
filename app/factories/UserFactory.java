@@ -426,5 +426,8 @@ public class UserFactory {
         }
     }
 
-
+    public static void makePicturePublic(int userId, UserPhoto newPhoto, boolean setPublic) {
+            newPhoto.setPublic(setPublic);
+            newPhoto.save();
+    }
 }

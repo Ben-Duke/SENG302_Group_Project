@@ -1,12 +1,18 @@
 package controllers;
 
-import models.Destination;
-import models.User;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import factories.DestinationFactory;
+import formdata.DestinationFormData;
+import formdata.UpdateUserFormData;
+import models.*;
 
 
 import play.data.DynamicForm;
 import play.data.Form;
 import play.data.FormFactory;
+import play.libs.Json;
+import play.mvc.BodyParser;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
@@ -28,6 +34,7 @@ public class DestinationController extends Controller {
      * @param destForm all of the inputs from the user
      * @return notAcceptable error messages for failed test, or null if all valid
      */
+    @Deprecated
     private Result validateDestination(DynamicForm destForm) {
 
 
@@ -81,10 +88,12 @@ public class DestinationController extends Controller {
      */
     public Result indexDestination(Http.Request request) {
         User user = User.getCurrentUser(request);
+        DestinationFactory destFactory = new DestinationFactory();
 
         if (user != null) {
             List<Destination> destinations = user.getDestinations();
-            return ok(indexDestination.render(destinations));
+            List<Destination> allDestinations = Destination.find.all();
+            return ok(indexDestination.render(destinations, allDestinations, destFactory, user));
 
 
         }
@@ -120,9 +129,10 @@ public class DestinationController extends Controller {
         User user = User.getCurrentUser(request);
 
         if (user != null) {
-            Form<Destination> destForm = formFactory.form(Destination.class);
+            Form<DestinationFormData> destFormData;
+            destFormData = formFactory.form(DestinationFormData.class);
 
-            return ok(createdestination.render(destForm, Destination.getIsoCountries(), Destination.getTypeList()));
+            return ok(createdestination.render(destFormData, Destination.getIsoCountries(), Destination.getTypeList(),user));
         }
         return unauthorized("Oops, you are not logged in");
     }
@@ -140,27 +150,55 @@ public class DestinationController extends Controller {
      * @param request the http request
      * @return renders the index page or an unauthorized message is no user is logged in.
      */
-    public Result saveDestination(Http.Request request) {
+    public Result saveDestinationFromRequest(Http.Request request) {
+        Form<DestinationFormData> destinationFormData;
+        destinationFormData = formFactory.form(DestinationFormData.class)
+                                                                .bindFromRequest();
         User user = User.getCurrentUser(request);
 
-        if (user != null) {
-            DynamicForm destForm = formFactory.form().bindFromRequest();
-            Result validationResult = validateDestination(destForm);
+        if (user != null) { // checks if a user is logged in
+            if (! destinationFormData.hasErrors()) {
+                // no form errors
+                // processing it now
+                DynamicForm destForm = formFactory.form().bindFromRequest();
 
-            if (validationResult != null) {
-                return validationResult;
+                //If program gets past this point then inputted destination is valid
+
+                Destination newDestination = formFactory.form(Destination.class)
+                                                        .bindFromRequest().get();
+
+                // checking if private and public destinations already exist. -----------
+                DestinationFactory destinationFactory = new DestinationFactory();
+                int userId = user.getUserid();
+
+                boolean hasError = false;
+                if (destinationFactory.userHasPrivateDestination(userId, newDestination)) {
+                    flash("privateDestinationExists",
+                            "You already have a matching private destination!");
+                    hasError = true;
+                }
+
+                if (destinationFactory.doesPublicDestinationExist(newDestination)) {
+                    flash("publicDestinationExists",
+                            "A matching public destination already exists!");
+                    hasError = true;
+                }
+
+                if (hasError) {
+                    return badRequest(createdestination.render(destinationFormData,
+                            Destination.getIsoCountries(), Destination.getTypeList(),user));
+                } else {
+                    newDestination.setUser(user);
+                    newDestination.save();
+                    return redirect(routes.DestinationController.indexDestination());
+                }
+            } else {
+                return badRequest(createdestination.render(destinationFormData,
+                        Destination.getIsoCountries(), Destination.getTypeList(),user));
             }
-            //If program gets past this point then inputted destination is valid
-
-            Destination destination = formFactory.form(Destination.class).bindFromRequest().get();
-
-            destination.setUser(user);
-            destination.save();
         } else {
             return unauthorized("Oops, you are not logged in");
         }
-
-        return redirect(routes.DestinationController.indexDestination());
     }
 
     /**
@@ -179,7 +217,7 @@ public class DestinationController extends Controller {
             Destination destination = Destination.find.query().where().eq("destid", destId).findOne();
 
             if (destination != null) {
-                if (destination.isUserOwner(user.userid)) {
+                if (destination.isUserOwner(user.getUserid()) || user.userIsAdmin()) {
 
                     Form<Destination> destForm = formFactory.form(Destination.class).fill(destination);
 
@@ -189,7 +227,7 @@ public class DestinationController extends Controller {
                     Map<String, Boolean> countryList = Destination.getIsoCountries();
                     countryList.replace(destination.getCountry(), true);
 
-                    return ok(editDestination.render(destForm, destination, countryList, typeList));
+                    return ok(editDestination.render(destForm, destination, countryList, typeList,user));
 
                 } else {
                     return unauthorized("Not your destination. You can't edit.");
@@ -274,6 +312,7 @@ public class DestinationController extends Controller {
                 if (destination.isUserOwner(user.userid)) {
                     if(destination.visits.isEmpty()) {
                         destination.delete();
+                        return redirect(routes.DestinationController.indexDestination());
                     }
                     else{
                         return preconditionRequired("You cannot delete destinations while you're using them for your trips. Delete them from your trip first!");
@@ -288,7 +327,243 @@ public class DestinationController extends Controller {
             return unauthorized("Oops, you are not logged in");
         }
 
-        return redirect(routes.DestinationController.indexDestination());
     }
 
+    /**
+     * Makes a private destination from the database public, given its id.
+     *
+     * @param request the http request
+     * @param destId the id of the destination that is being made public
+     * @return redirects to the index page if successful, or a not found error,
+     * or an unauthorized message if the destination does not belong to the user.
+     */
+    public Result makeDestinationPublic(Http.Request request, Integer destId) {
+        User user = User.getCurrentUser(request);
+
+        if (user != null) {
+            Destination destination = Destination.find.query().where().eq("destid", destId).findOne();
+
+            if (destination != null) {
+                if (destination.isUserOwner(user.userid)) {
+                    //-----------checking if a public destination equivalent
+                    // ----------already exists
+                    DestinationFactory destFactory = new DestinationFactory();
+                    if (destFactory.doesPublicDestinationExist(destination)) {
+                        // public matching destination already exists
+                        // show error
+                        destination.setIsPublic(true);
+                        destination.update();
+                        return redirect(routes.DestinationController.indexDestination());
+                    } else {
+                        //no matching pub destination exists, making public now
+                        //sets the destination to public, sets the owner to the default admin and updates the destination
+                        destination.setIsPublic(true);
+                        destination.update();
+                        return redirect(routes.DestinationController.indexDestination());
+                    }
+
+
+                } else {
+                    return unauthorized("HEY!, not yours. You cant make public. How you get access to that anyway?... FBI!!! OPEN UP!");
+                }
+            } else {
+                return notFound("Destination does not exist");
+            }
+        } else {
+            return unauthorized("Oops, you are not logged in");
+        }
+    }
+    /**
+     * Links a photo with a photo id to a destination with a destination id.
+     * @param request the HTTP request
+     * @param destId the destination that the photo should be linked to
+     * @return success if the linking was successful, not found if destination or photo not found, unauthorized otherwise.
+     */
+    public Result linkPhotoToDestination(Http.Request request, Integer destId){
+        User user = User.getCurrentUser(request);
+        if(user != null) {
+            JsonNode node = request.body().asJson().get("photoid");
+            String photoid = node.textValue();
+            photoid = photoid.replace("\"", "");
+            UserPhoto photo = UserPhoto.find.byId(Integer.parseInt(photoid));
+            Destination destination = Destination.find.byId(destId);
+            if(destination != null || photo != null) {
+                if (photo.getUser().getUserid() == user.getUserid()) {
+                    //add checks for private destinations here once destinations have been merged in.
+                    //You can only link a photo to a private destination if you own the private destination.
+                    if(!photo.getDestinations().contains(destination)) {
+                        photo.addDestination(destination);
+                        photo.update();
+                        System.out.println("SUCCESS!");
+                    }
+                    else{
+                        return badRequest("You have already linked the photo to this destination.");
+                    }
+                } else {
+                    return unauthorized("Oops, this is not your photo!");
+                }
+            }
+            else{
+                return notFound();
+            }
+        } else {
+            return unauthorized("Oops, you are not logged in");
+        }
+        return ok();
+    }
+
+    /**
+     * Returns a json list of traveller types associated to a destination given by a destination id
+     * @param request the HTTP request
+     * @param destId the destination id
+     * @return a json list of traveller types associated to the destination
+     */
+    public Result getTravellerTypes(Http.Request request, Integer destId){
+        User user = User.getCurrentUser(request);
+        if(user != null){
+            return ok(Json.toJson(Destination.find.byId(destId).travellerTypes));
+        } else {
+            return unauthorized("Oops, you are not logged in");
+        }
+    }
+
+    /**
+     * Returns a json list of photos associated to a destination given by a destination id
+     * @param request the HTTP request
+     * @param destId the destination id
+     * @return a json list of traveller types associated to the destination
+     */
+    public Result getPhotos(Http.Request request, Integer destId){
+        User user = User.getCurrentUser(request);
+        if(user != null){
+            //To add: filter between private and public, but that's another task
+            List<UserPhoto> photos = Destination.find.byId(destId).userPhotos;
+            ObjectNode result = Json.newObject();
+//            for(UserPhoto photo: photos){
+//                result.put(Integer.toString(photo.getPhotoId()), new java.io.File(photo.getUrlWithPath()).toString());
+//            }
+            return ok(Json.toJson(Destination.find.byId(destId).userPhotos));
+            //return ok(result);
+        } else {
+            return unauthorized("Oops, you are not logged in");
+        }
+    }
+
+    /**
+     * Returns a photo file based on a photo with a given photo id
+     * @param request the HTTP request
+     * @return the photo file
+     */
+    public Result getPhoto(Http.Request request, Integer photoId){
+        User user = User.getCurrentUser(request);
+        if(user != null){
+            UserPhoto photo = UserPhoto.find.byId(photoId);
+            if(photo.getUser().getUserid() == user.getUserid() || photo.isPublic() || user.userIsAdmin()) {
+                return ok(Json.toJson(photo));
+            } else{
+                return unauthorized("Oops, you do not have the rights to view this photo");
+            }
+        } else {
+            return unauthorized("Oops, you are not logged in");
+        }
+    }
+
+    /**
+     * Returns the destination as a json based on a destination ID
+     * @param request the HTTP request
+     * @param destId the destination ID
+     * @return the destination as a json
+     */
+    public Result getDestination(Http.Request request, Integer destId){
+        User user = User.getCurrentUser(request);
+        if(user != null){
+            Destination destination = Destination.find.byId(destId);
+            if(destination.getIsPublic() || destination.getUser().getUserid() == user.getUserid() || user.userIsAdmin()) {
+                return ok(Json.toJson(destination));
+            }
+            else{
+                return unauthorized("Oops, this is a private destination and you don't own it.");
+            }
+        } else{
+            return unauthorized("Oops, you are not logged in");
+        }
+    }
+
+    /**
+     * Returns the destination owner's id as a json based on a destination ID
+     * @param request the HTTP request
+     * @param destId the destination ID
+     * @return the destination as a json
+     */
+    public Result getDestinationOwner(Http.Request request, Integer destId){
+        Destination destination = Destination.find.byId(destId);
+        User user = User.find.query().where().eq("userid", destination.getUser().getUserid()).findOne();
+        if(user != null){
+            return ok(Json.toJson(user.getUserid()));
+        } else{
+            return unauthorized("Oops, you are not logged in");
+        }
+    }
+
+    /**
+     * Sets the primary photo of a destination given by the destination ID.
+     * @param request the HTTP request
+     * @param destId the id of the destination to be updated
+     * @return success if it worked, error otherwise
+     */
+    public Result setPrimaryPhoto(Http.Request request, Integer destId){
+        User user = User.getCurrentUser(request);
+        if(user != null) {
+            JsonNode node = request.body().asJson().get("photoid");
+            String photoid = node.textValue();
+            photoid = photoid.replace("\"", "");
+            UserPhoto photo = UserPhoto.find.byId(Integer.parseInt(photoid));
+            Destination destination = Destination.find.byId(destId);
+            if(destination != null || photo != null) {
+                if ((destination.getUser().getUserid() == user.getUserid() && destination.getUserPhotos().contains(photo)) || user.userIsAdmin()) {
+                    //add checks for private destinations here once destinations have been merged in.
+                    //You can only link a photo to a private destination if you own the private destination.
+                    destination.setPrimaryPhoto(photo);
+                    destination.update();
+                } else {
+                    return unauthorized("Oops, this is not your photo!");
+                }
+            }
+            else{
+                return notFound();
+            }
+        } else {
+            return unauthorized("Oops, you are not logged in");
+        }
+        return ok();
+    }
+
+    /**
+     * Gets JSON of all visible (public + the logged in users private photos)
+     * Destinations avaliable to the user.
+     *
+     * @param request the HTTP request
+     * @return a Result object containing the destinations JSON in it's body
+     */
+    public Result getVisibleDestinationMarkersJSON(Http.Request request) {
+        User user = User.getCurrentUser(request);
+        if(user != null) {
+            int userId = user.getUserid();
+
+            DestinationFactory destinationFactory = new DestinationFactory();
+
+            List<Destination> publicDestinations;
+            List<Destination> privateDestinations;
+            publicDestinations = destinationFactory.getPublicDestinations();
+            privateDestinations = destinationFactory.getUsersPrivateDestinations(userId);
+
+            List<Destination> allVisibleDestination = new ArrayList<Destination>();
+            allVisibleDestination.addAll(publicDestinations);
+            allVisibleDestination.addAll(privateDestinations);
+
+            return ok(Json.toJson(allVisibleDestination));
+        } else {
+            return unauthorized("Oops, you are not logged in");
+        }
+    }
 }

@@ -1,6 +1,19 @@
 # TravelEA - Team 800
 Basic Play project using sbt build and basic GitLab CI.
 
+## URL's of live projects
+Navigate to these websites in your favourite web browser (such as Chrome or Edge).
+
+Sprint 2 Deliverable (a few minor tweaks to get https working and to remove some warnings from the console when running the app):
+```
+https://csse-s302g8.canterbury.ac.nz
+```
+
+Most up-to-date running app from our Master branch:
+```
+https://csse-s302g8.canterbury.ac.nz:8443
+```
+
 ## Basic Project Structure
 * app/ Application source
 * conf/ configuration files required to ensure the project builds properly
@@ -45,3 +58,13 @@ And open <http://localhost:9000/>
 * The admin button is only visible if you are an admin.
 * To get back to the main page Logout from the navigation bar.
 * Note: Home/TravelEA buttons navigate to the profile page but only if you are logged in.
+
+## Attribution
+
+* Google Maps API Code (partially modified)
+        
+        https://developers.google.com/maps/documentation/javascript/localization
+        https://developers.google.com/maps/documentation/javascript/adding-a-google-map
+        https://developers.google.com/maps/documentation/javascript/adding-a-legend
+        https://developers.google.com/maps/documentation/javascript/events
+        https://developers.google.com/maps/documentation/javascript/markers

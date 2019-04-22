@@ -53,5 +53,38 @@ public class VisitFormData implements Constraints.Validatable<List<ValidationErr
 
         return null;
     }
+
+
+    public String getDestName() {
+        return destName;
+    }
+
+    public void setDestName(String destName) {
+        this.destName = destName;
+    }
+
+    public String getArrival() {
+        return arrival;
+    }
+
+    public void setArrival(String arrival) {
+        this.arrival = arrival;
+    }
+
+    public String getDeparture() {
+        return departure;
+    }
+
+    public void setDeparture(String departure) {
+        this.departure = departure;
+    }
+
+    public String getVisitName() {
+        return visitName;
+    }
+
+    public void setVisitName(String visitName) {
+        this.visitName = visitName;
+    }
 }
 

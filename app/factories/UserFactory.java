@@ -1,13 +1,8 @@
 package factories;
 import formdata.UpdateUserFormData;
 import formdata.UserFormData;
-import models.Nationality;
-import models.Passport;
-import models.TravellerType;
+import models.*;
 import io.ebean.ExpressionList;
-import models.User;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import play.data.FormFactory;
 import play.mvc.Http;
 
@@ -19,13 +14,12 @@ import java.time.format.DateTimeFormatter;
 import javax.inject.Inject;
 
 public class UserFactory {
-    private static Logger logger = LoggerFactory.getLogger("application");
 
     @Inject
     static FormFactory formFactory;
 
     public UserFactory(){//Just used to instanciate
-         }
+    }
 
 
     /**Returns 1 if in the database and 0 if not in the database
@@ -42,8 +36,7 @@ public class UserFactory {
         for (int i = 0; i < users.size(); i++) {
 
             userEmail = users.get(i).getEmail();
-            logger.debug(userEmail + " " + "email is " + userEmail + " " + userEmail.toLowerCase().equals(email.toLowerCase()));
-            if(userEmail.toLowerCase().equals(email.toLowerCase())){
+            if(userEmail.equalsIgnoreCase(email)){
                 present = 1;
             }
         }
@@ -52,19 +45,6 @@ public class UserFactory {
 
     }
 
-    /**
-     * adds all of the following traveller types to the database
-     * @throws io.ebean.DuplicateKeyException if a type has already been added to the database
-     */
-    public static void addTravelTypes() throws io.ebean.DuplicateKeyException {
-        (new TravellerType("Groupie")).save();
-        (new TravellerType("Thrillseeker")).save();
-        (new TravellerType("Gap Year")).save();
-        (new TravellerType("Frequent Weekender")).save();
-        (new TravellerType("Holidaymaker")).save();
-        (new TravellerType("Business Traveller")).save();
-        (new TravellerType("Backpacker")).save();
-    }
 
     public static void deleteNatsOnUser(int id, String nationalityId) {
         User user = User.find.query().where().eq("userid", id).findOne();
@@ -73,16 +53,17 @@ public class UserFactory {
             user.deleteNationality(nationality);
             user.update();
         } catch (NumberFormatException e) {
-            //return  unauthorized("Oops, you do not have any nationalities to delete");
+
         }
     }
-    /** Returns a user id if they exist any number less than zero indicates the email is not in the database
+    /** Returns a User object from a userId int.
      *
-     * @param request
-     * @return an int -1 indicates there are no entries in the database that have that user.
+     * @param userId An int representing the userId to search for.
+     * @return A User object with the userId, or null  if doesn't exist.
      */
-    public static int getCurrentUserById(Http.Request request) {
-        return User.getCurrentUserById(request);
+    public static User getUserFromId(int userId) {
+        User user = User.find.query().where().eq("userid", userId).findOne();
+        return user;
     }
 
     /**Get a list of all passports.
@@ -149,7 +130,7 @@ public class UserFactory {
      * @param user pass in the user that needs to have pass ports added
      * @param passportId this is the id of the pasport that needs to be added
      */
-    public void UpdatePassport(User user, int passportId){
+    public void updatePassport(User user, int passportId){
         if (user != null) {
             Passport passport = Passport.find.byId(passportId);
             if(passportId != -1){
@@ -169,7 +150,7 @@ public class UserFactory {
      * @param user pass in the user that needs to have pass ports added
      * @param natId this is the id of the pasport that needs to be added
      */
-    public void UpdateNationality(User user, int natId){
+    public void updateNationality(User user, int natId){
         if (user != null) {
             Nationality nationality = Nationality.find.byId(natId);
             if(natId != -1){
@@ -188,20 +169,19 @@ public class UserFactory {
      * and.
      * @param user pass in the user that needs to have pass ports added
      * @param  travellerId this is the id of the pasport that needs to be added
-     * @return none
      */
-    public void UpdateTravellerType(User user, int travellerId){
+    public void updateTravellerType(User user, int travellerId){
         if (user != null) {
             TravellerType travellerType = TravellerType.find.byId(travellerId);
 
             if( travellerId != -1){
-            try {
-                user.addTravellerType(travellerType);
-                user.update();
-            } catch (io.ebean.DuplicateKeyException e) {
+                try {
+                    user.addTravellerType(travellerType);
+                    user.update();
+                } catch (io.ebean.DuplicateKeyException e) {
 
+                }
             }
-        }
         }
     }
 
@@ -271,20 +251,6 @@ public class UserFactory {
         return id;
     }
 
-    /**
-     * adds all of the following traveller types to the database
-     * @throws io.ebean.DuplicateKeyException if a type has already been added to the database
-     */
-    public static  void addNatandPass() throws io.ebean.DuplicateKeyException {
-        String[] locales = Locale.getISOCountries();
-        for (String countryCode : locales) {
-            Locale obj = new Locale("", countryCode);
-            Nationality nationality = new Nationality(obj.getDisplayCountry());
-            nationality.save();
-            Passport passport = new Passport(obj.getDisplayCountry());
-            passport.save();
-        }
-    }
 
     public boolean checkpassword(String email, String password) {
         ExpressionList<User> usersExpressionList = User.find.query()
@@ -315,27 +281,26 @@ public class UserFactory {
 
 
         if(checkEmail(email)!=1){
-        User user = new User(email, password, firstName, lastName, date, gender);
-
+            User user = new User(email, password, firstName, lastName, date, gender);
 
 
             user.save();
             for (int i = 0; i < tType.size(); i++) {
 
                 int tTypeId = getTTypeId(tType.get(i));
-                UpdateTravellerType(user, tTypeId);
+                updateTravellerType(user, tTypeId);
             }
             //Passport loop
             for (int j = 0; j < passports.size(); j++) {
 
                 int passportId = getPassportId(passports.get(j));
-                UpdatePassport(user, passportId);
+                updatePassport(user, passportId);
             }
 
             for (int k = 0; k < nationalities.size(); k++) {
 
                 int natId = getNatId(nationalities.get(k));
-                UpdateNationality(user, natId);
+                updateNationality(user, natId);
             }
 
 
@@ -397,8 +362,55 @@ public class UserFactory {
 
     public static int getCurrentUserId(Http.Request request) {
         return User.getCurrentUserById(request);
-        }
+    }
 
+
+    /**
+     * Get the user's profile picture if it exists
+     * @param userId the user id of the user whose profile picture is to be retrieved
+     * @return the UserPhoto that is the profile picture if it exists, otherwise null
+     */
+    public static UserPhoto getUserProfilePicture(int userId) {
+        User user = User.find.query().where().eq("userid", userId).findOne();
+        UserPhoto userPhoto = UserPhoto.find.query().where().eq("user", user).and().eq("isProfile", true).findOne();
+        if(userPhoto != null) {
+            return  userPhoto;
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Remove the user's existing profile picture if it exists
+     * @param userId the user id of the user whose profile picture is to be removed
+     */
+    public static void removeExistingProfilePicture(int userId) {
+        UserPhoto existingProfile = getUserProfilePicture(userId);
+        if (existingProfile != null) {
+            existingProfile.setProfile(false);
+            existingProfile.save();
+        }
+    }
+
+    /**
+     * Replace the user's existing profile picture with an new photo
+     * @param userId the user id of the user whose profile picture is to be replaced
+     * @param newPhoto the new photo that is to become the user's profile picture
+     */
+    public static void replaceProfilePicture(int userId, UserPhoto newPhoto) {
+        removeExistingProfilePicture(userId);
+        newPhoto.setProfile(true);
+        newPhoto.save();
+    }
+
+    /**
+     * Get the path to the User's profile picture
+     * @param user the user whose profile picture path is to be retrieved
+     * @return the path to the photo
+     */
+    public static String getProfilePhotoPath(User user) {
+        return java.nio.file.Paths.get(".").toAbsolutePath().normalize().toString() + "/../user_photos/user_" + user.getUserid() + "/profilethumbnail.png";
+    }
 
 
 
@@ -406,12 +418,11 @@ public class UserFactory {
         User user = User.getCurrentUser(request);
 
         if (user != null) {
-            UpdateUserFormData updateUserFormDataForm = new UpdateUserFormData(user);
-            return updateUserFormDataForm;
-//            Form<UpdateUserFormData> updateUserForm = formFactory.form(UpdateUserFormData.class).fill(updateUserFormDataForm);
-//            return updateUserForm;
+            return new UpdateUserFormData(user);
         } else {
             return null;
         }
     }
+
+
 }

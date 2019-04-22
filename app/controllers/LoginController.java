@@ -2,6 +2,7 @@ package controllers;
 
 import factories.LoginFactory;
 import formdata.LoginFormData;
+import models.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import play.data.Form;
@@ -30,7 +31,7 @@ public class LoginController {
      */
     public Result login(){
         Form<LoginFormData> loginFormData = formFactory.form(LoginFormData.class);
-        return ok(loginPage.render(loginFormData));
+        return ok(loginPage.render(loginFormData,null));
     }
 
 
@@ -49,10 +50,9 @@ public class LoginController {
                                             .bindFromRequest();
         if (userLoginForm.hasErrors()) {
             // redirect user to same login page with some errors.
-            return badRequest(loginPage.render(userLoginForm));
+            return badRequest(loginPage.render(userLoginForm, User.getCurrentUser(request)));
         } else {
             String email = userLoginForm.get().email;
-            logger.debug("---"+ LoginFactory.getUserId(email));
             return redirect(routes.HomeController.showhome())
                     .addingToSession(request, "connected",
                             Integer.toString(LoginFactory.getUserId(email)));

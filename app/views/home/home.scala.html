@@ -1,15 +1,28 @@
 @import play.filters.csrf.AddCSRFToken
+@import factories.UserFactory
 @(user: User)
 @import views.html.bootstrap3._
-@main("Index"){
+@main(user, "Index"){
 
 
     <head>
+        <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/home.css")">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropper/4.0.0/cropper.min.css">
         <title>Home</title>
     </head>
-
     <div class="container">
-        <h1>@user.fName @user.lName @if(user.userIsAdmin) {<img class="img"  width = "60" height="50" src="../assets/images/key_2_small.png"> } </h1>
+            <!-- The thumbnail in the else is being displayed to show the AC passing -->
+        <h1>@user.fName @user.lName
+            @if(user.userIsAdmin) {
+                <img class="img"  width = "60" height="50" src="../assets/images/key_2_small.png">
+            } else{
+                @if(UserFactory.getUserProfilePicture(user.getUserid()) != null){
+                <img class="img-circle"  width = "60" height="50" src="@{routes.HomeController.index(factories.UserFactory.getProfilePhotoPath(user))}">
+                } else {
+                    <img class="img-circle"  width = "60" height="50" src="@{routes.Assets.at("images/Generic.png")}">
+                }
+            }
+        </h1>
     </div>
 
     <br>
@@ -18,7 +31,13 @@
         <div class="row">
                 <!-- The profile picture, currently a placeholder -->
             <div class="text-center">
-                <img class="img-circle" width = "150" src="@routes.Assets.at("images/Generic.png")">
+                <a href="#" data-toggle="modal" data-target="#addProfilePhoto">
+                    @if(UserFactory.getUserProfilePicture(user.getUserid()) != null){
+                        <img class="img-circle" width = "150" height = "150" src="@{routes.HomeController.serveProfilePicture()}")>
+                    } else {
+                        <img class="img-circle" width = "150" height = "150" src="@{routes.Assets.at("images/Generic.png")}")>
+                        }
+                </a>
             </div>
         </div>
         <div class="row">
@@ -60,157 +79,13 @@
                     <button class="btn btn-default" formaction="@routes.AdminController.indexAdmin()">Admin</button>
                     }
                 </form>
-
-                <br>
-
-
-
-                    <!-- Trigger the modal with a button -->
-                <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#addPhotoModal">Add Photo</button>
-
-
-                    <!-- Modal -->
-                <div id="addPhotoModal" class="modal fade" role="dialog">
-                    <div class="modal-dialog">
-
-                            <!-- Modal content-->
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                <h4 class="modal-title">Upload a new photo </h4>
-                            </div>
-
-                            <div class="modal-body">
-                            @helper.form(action = routes.HomeController.upload, 'id -> "myForm", 'enctype -> "multipart/form-data") {
-                                @helper.CSRF.formField
-                                <input type="file" name="picture" required>
-
-                                <br>
-
-                                <p>
-                                    <input type="submit" value="Upload">
-                                    @helper.CSRF.formField
-                                    <input type="checkbox" name="private" value="private"> Make photo private
-                                </p>
-
-                            }
-
-
-                            </div>
-                        </div>
-                    </div>
-
-
-                </div>
-
-
-                <br>
-
-                <div>
-                    <div id="modal-picture" class="modal">
-                        <Button class ="previous-image" id="preImg"><-</Button>
-                        <img class="modal-content" id="img01">
-                        <Button class ="next-image" id="nextImg">-></Button>
-                        <Button class ="Backbutton" id="back-button">Back</Button>
-
-                    </div>
-                    <div class="row">
-                        @for(i <- 0 to 2) {
-                            <div class="col-sm-4">
-
-                                @if(i < user.getUserPhotos.size()){
-                                <img class="img-thumbnail" imgId=@i id=@{user.getUserPhotos.get(i).getUrl} width="60" src="@{routes.HomeController.index(user.getUserPhotos.get(i).getUrlWithPath)}" alt="User Image">
-                                }
-                            </div>
-                        }
-                    </div>
-
-                    <div class="row">
-                    @for(i <- 3 to 5) {
-                        <div class="col-sm-4">
-                        @if(i < user.getUserPhotos.size()){
-                            <img class="img-thumbnail" imgId=@i id=@{user.getUserPhotos.get(i).getUrl} width="60" src="@{routes.HomeController.index(user.getUserPhotos.get(i).getUrlWithPath)}" alt="User Image">
-                            }
-                            </div>
-                    }
-                    </div>
-
-                    <div class="row">
-                    @for(i <- 6 to 8) {
-                        <div class="col-sm-4">
-                        @if(i < user.getUserPhotos.size()){
-                            <img class="img-thumbnail" imgId=@i id=@{user.getUserPhotos.get(i).getUrl}  width="60" src="@{routes.HomeController.index(user.getUserPhotos.get(i).getUrlWithPath)}" alt="User Image">
-                            }
-                        </div>
-                    }
-                    </div>
-
-
-                        <!-- defines the number of photos the user has stored in the database. Currently hardcoded until tasks are finished -->
-                    <div>
-                        <script>
-
-                                // Get the modal
-                                var modal = document.getElementById("modal-picture");
-                                // When the user clicks, they quit the modal view
-                                modal.onclick = function () {
-                                    //this.style.display = "none";
-                                };
-
-
-
-                                var previous = document.getElementById('preImg');
-                                previous.onclick = function () {
-
-                                    var imgRef = document.getElementById("img01");
-                                    var currentImgId = parseInt(imgRef.getAttribute("imgId"));
-
-                                    if(currentImgId == 0){
-                                        currentImgId = @(user.getUserPhotos.size() -1);
-                                    }else{
-                                        currentImgId -= 1;
-                                    }
-                                    console.log("@{routes.HomeController.index(user.getUserPhotos.get(0).getUrlWithPath)}");
-
-
-                                    //imgRef.src = srcRef;
-
-
-                                };
-
-                                var next = document.getElementById('nextImg');
-                                next.onclick = function () {
-                                    console.log("should show next image");
-                                };
-
-                                var next = document.getElementById('back-button');
-                                next.onclick = function () {
-                                    modal.style.display = "none";
-                                };
-
-
-                                // Get the image and insert it inside the modal
-                                var images = document.getElementsByClassName("img-thumbnail");
-                                var modalImg = document.getElementById("img01");
-                                // loops through each thumbnail and adds the event listener
-                                for (i = 0; i < @user.getUserPhotos.length; i++) {
-                                    images[i].onclick = function() {
-                                        console.log(this.id);
-                                        modal.style.display = "block";
-                                        modalImg.src = this.src;
-                                    };
-                                }
-                        </script>
-                    </div>
-
-                </div>
             </div>
             <div class="col-md-4">
                 <h2>Trips</h2>
                 <form>
                     <div class="list-group">
                     @for(trip <- user.getTripsSorted) {
-                        <a href="@routes.TripController.displaytrip(trip.tripid,"")" class="list-group-item list-group-item-action">
+                        <a href="@routes.TripController.displaytrip(trip.tripid)" class="list-group-item list-group-item-action">
                         @trip.tripName
                         </a>
                     }
@@ -228,9 +103,242 @@
         </div>
 
 
+        <br>
 
 
 
-    </div>
+            <!-- Trigger the modal with a button -->
+        <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#addPhotoModal">Add Photo</button>
 
+
+            <!-- Modal -->
+        <div id="addPhotoModal" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+
+                    <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">Upload a new photo </h4>
+                    </div>
+
+                    <div class="modal-body">
+                    @helper.form(action = routes.HomeController.upload, 'id -> "myForm", 'enctype -> "multipart/form-data") {
+                        @helper.CSRF.formField
+                        <input type="file" name="picture" required>
+
+                        <br>
+
+                        <p>
+                            <input type="submit" value="Upload">
+                            @helper.CSRF.formField
+                            <input type="checkbox" name="private" value="private"> Make photo private
+                        </p>
+
+                    }
+
+
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+
+        <!-- Modal to upload a new profile picture -->
+        <div id="addProfilePhoto" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+
+                    <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">Upload a new profile picture </h4>
+                    </div>
+
+                    <div class="modal-body">
+                        <!--<input type="file" accept="image/*" name="picture" required onchange="readURL(this);"/> -->
+                        <div class="profile-pic-wraper col-sm-8">
+                            <img id="change-profile-pic" src="@{routes.HomeController.serveProfilePicture()}" alt="You have not uploaded a profile picture!"/>
+                        </div>
+                        <div class="preview-wrapper">
+                            <div class="preview">
+
+                            </div><br>
+                        </div>
+                        <br>
+                        <input type="file" accept="image/*" name="picture" required onchange="loadFile(event);"/>
+                        <p>
+                            <button id="save-profile">Upload</button>
+                            <input type="checkbox" name="private" value="private"> Make photo private
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+
+
+        <br>
+
+
+        <div>
+            <div id="modal-picture" class="modal">
+                <img class="modal-content" id="img01">
+                @*<button class="btn btn-primary" id="linkButton" href="#" data-toggle="modal" data-photo-id="">Link to destination</button>*@
+            </div>
+            @for(photo <- user.getUserPhotos) {
+                <a href="#" data-toggle="modal" data-target="#destination-carousel">
+                    <img class="img-thumbnail" id=@{photo.getUrl} width="60" src="@{routes.HomeController.index(photo.getUrlWithPath)}" alt="User Image">
+                </a>
+            }
+        </div>
+                <div id="destination-carousel" class="modal fade">
+                    <div class="container">
+                        <div class="carousel slide" id="myslider" data-ride="carousel" data-interval="false">
+                            <ol class="carousel-indicators">
+                                <li data-target="#myslider" data-slide-to="0" class="active"></li>
+                                @for(i <- 1 to user.getUserPhotos().length -1) {
+                                    <li data-target="#myslider" data-slide-to="@i"></li>
+                                }
+                            </ol>
+                            <div class="carousel-inner">
+                                @for(photo <- user.getUserPhotos()) {
+                                    <!-- Sets the first image to be the first image displayed. To be changed to the image clicked-->
+                                    @if(photo == user.getUserPhotos().get(0)){
+                                        <div class="item active">
+                                        } else{
+                                        <div class="item">
+                                        }
+                                    @*<a href="#" data-toggle="modal" data-target=#@photo.getPhotoId()>*@
+                                        <img id="carouselImage" src="@{routes.HomeController.index(photo.getUrlWithPath)}" width="1280">
+                                    @*</a>*@
+                                    <div class="carousel-caption">
+                                        <h2>insert caption here</h2>
+                                    </div>
+                                    <a class="btn btn-primary" id="linkButton" href="#" data-toggle="modal" data-target="#@photo.getPhotoId()">Link to destination</a>
+                                </div>
+                                }
+                            </div>
+                                <a class ="left carousel-control" href="#myslider" data-slide="prev">
+                                    <span class="glyphicon glyphicon-chevron-left"></span>
+                                </a>
+                                <a class ="right carousel-control" href="#myslider" data-slide="next">
+                                    <span class="glyphicon glyphicon-chevron-right"></span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    @for(photo <- user.getUserPhotos()) {
+        <div id="@photo.getPhotoId()" class="modal fade">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1>Link photo to destination</h1>
+                        @*<h2 class="modal-title">@visit.visitName</h2>*@
+                    </div>
+                    <div class="modal-body">
+                        <h2>Private destinations</h2>
+                        <input type="text" class="searchDestinations" onkeyup="searchDestination()" placeholder="Search for destinations">
+                        <table class="table privateDestinations">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Type</th>
+                                    <th scope="col">Country</th>
+                                    <th scope="col">District</th>
+                                    <th scope="col">Latitude</th>
+                                    <th scope="col">Longitude</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            @for(destination <- user.getDestinations()) {
+                                @if(destination.getIsPublic() == false){
+                                    <tr>
+                                        <th scope ="row">@destination.getDestName()</th>
+                                        <td>@destination.getDestType()</td>
+                                        <td>@destination.getCountry()</td>
+                                        <td>@destination.getDistrict()</td>
+                                        <td>@destination.getLatitude()</td>
+                                        <td>@destination.getLongitude()</td>
+                                        <td><button class="btn btn-primary" onclick="sendLinkDestinationRequest(
+                                                '@routes.DestinationController.linkPhotoToDestination(destination.getDestId())',
+                                                @photo.getPhotoId())">Link to destination</button></td>
+                                    </tr>
+
+
+                                    <br>
+                                    }
+                            }
+                            </tbody>
+                        </table>
+
+
+                        <h2>Public destinations</h2>
+                        <input type="text" class="searchPublicDestinations" onkeyup="searchPublicDestination()" placeholder="Search for destinations">
+                        <table class="table publicDestinations">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Type</th>
+                                    <th scope="col">Country</th>
+                                    <th scope="col">District</th>
+                                    <th scope="col">Latitude</th>
+                                    <th scope="col">Longitude</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            @for(destination <- Destination.find.all()) {
+                                @if(destination.getIsPublic() == true){
+                                    <tr>
+                                        <th scope ="row">@destination.getDestName()</th>
+                                        <td>@destination.getDestType()</td>
+                                        <td>@destination.getCountry()</td>
+                                        <td>@destination.getDistrict()</td>
+                                        <td>@destination.getLatitude()</td>
+                                        <td>@destination.getLongitude()</td>
+                                            <!-- TO BE CHANGED -->
+                                        <td><button class="btn btn-primary" onclick="sendLinkDestinationRequest(
+                                                '@routes.DestinationController.linkPhotoToDestination(destination.getDestId())',
+                                                @photo.getPhotoId())">Link to destination</button></td>
+                                    </tr>
+                                    <br>
+                                    }
+                            }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    <script>
+    var modal = document.getElementById('destination-carousel');
+            // Get the modal THIS HAS BEEN EDITED AT 1:41 PM TODAY
+            // var modal = document.getElementById('modal-picture');
+            @*var modal = document.getElementById('destination-carousel');*@
+            @*// When the user clicks, they quit the modal view*@
+            @*modal.onclick = function () {*@
+                @*this.style.display = "none";*@
+            @*};*@
+
+            @*// Get the image and insert it inside the modal*@
+            @*var images = document.getElementsByClassName("img-thumbnail");*@
+            @*var modalImg = document.getElementById("img01");*@
+            @*var modalLink = document.getElementById("linkButton");*@
+            @*// loops through each thumbnail and adds the event listener*@
+            @*for (i = 0; i < @user.getUserPhotos.length; i++) {*@
+                @*images[i].onclick = function() {*@
+                    @*modal.style.display = "block";*@
+                    @*console.log("this happened");*@
+                    @*modalImg.src = this.src;*@
+                @*};*@
+            @*}*@
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropper/4.0.0/cropper.min.js"></script>
+    <script src="@routes.Assets.at("js/home.js")" type="text/javascript"></script>
+    <script src="@routes.Assets.at("../../../public/js/destination/indexDestination.js")" type="text/javascript"></script>
 }

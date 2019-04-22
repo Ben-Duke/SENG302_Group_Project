@@ -1,11 +1,11 @@
-@(title: String)(content: Html)
+@(user : User, title: String)(content: Html)
 
 <!DOCTYPE html>
 <html>
     <head>
         <title>TravelEA</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+        <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
 
             <!--  Load site-specific customizations after bootstrap. -->
         <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/main.css")">
@@ -17,28 +17,92 @@
 
         <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
             <!--[if lt IE 9]>
-          <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.2/html5shiv.js"></script>
-          <script src="https://cdnjs.cloudflare.com/ajax/libs/respond.js/1.4.2/respond.js"></script>
+          <script src="http://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.2/html5shiv.js"></script>
+          <script src="http://cdnjs.cloudflare.com/ajax/libs/respond.js/1.4.2/respond.js"></script>
+
+
+
         <![endif]-->
+
+        <script>
+        $(document).ready(function(){
+            $(document.body).css('padding-top', $('#topnavbar').height() + 10);
+            $(window).resize(function(){
+                $(document.body).css('padding-top', $('#topnavbar').height() + 10);
+            });
+        });
+         </script>
+
     </head>
     <body>
 
-        <nav class="navbar navbar-custom">
+
+        <nav class="navbar navbar-custom navbar-fixed-top" id="topnavbar">
 
             <div class="container-fluid">
                 <div class="navbar-header">
                     <a class="navbar-brand" href="@routes.HomeController.showhome()">TravelEA</a>
                 </div>
-                <ul class="nav navbar-nav">
+                <div class="nav navbar-nav">
                     <li><a href="@routes.HomeController.showhome()">Home</a></li>
                     <li class="dropdown">
                         <a class="dropdown-toggle" data-toggle="dropdown">Profile
                             <span class="caret"></span></a>
                         <ul class="dropdown-menu">
+                            <li><a href="@routes.ProfileController.updateProfile()">Update Profile</a></li>
+                            <li><a href="@routes.TravellerTypeController.updateTravellerType()">Update Traveller Type</a></li>
+                            <li><a href="@routes.ProfileController.updateNatPass()">Update Passport/Nationality</a></li>
+                            <li class="divider"></li>
                             <li><a href="@routes.LoginController.logoutrequest()">Logout</a></li>
+
                         </ul>
                     </li>
-                </ul>
+                    @if(user != null) {
+                        <ul class="nav navbar-nav navbar-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                    <span class="glyphicon glyphicon-user"></span> 
+                                    <strong>@user.getfName()</strong>
+                                    <span class="glyphicon glyphicon-chevron-down"></span>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <div class="navbar-login">
+                                            <div class="row">
+                                                <div class="col-lg-4">
+                                                    <p class="text-center">
+                                                        <span class="glyphicon glyphicon-user icon-size"></span>
+                                                    </p>
+                                                </div>
+                                                <div class="col-lg-8">
+                                                    <p class="text-left"><strong>@user.getfName() @user.getlName()</strong></p>
+                                                    <p class="text-left small">@user.getEmail()</p>
+                                                    <p class="text-left">
+                                                        <a href="@routes.HomeController.showhome()" class="btn btn-primary btn-block btn-sm">
+                                                           View profile</a>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li class="divider"></li>
+                                    <li>
+                                        <div class="navbar-login navbar-login-session">
+                                            <div class="row">
+                                                <div class="col-lg-12">
+                                                    <p>
+                                                        <a href="@routes.LoginController.logoutrequest()" class="btn btn-danger btn-block">Logout</a>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    }
+                </div>
+
 
 
             </div>

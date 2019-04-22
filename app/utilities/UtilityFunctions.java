@@ -1,8 +1,17 @@
 package utilities;
 
+import models.Nationality;
+import models.Passport;
+import models.TravellerType;
 import models.User;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.*;
+import java.util.List;
 import java.util.regex.Pattern;
 
 /**
@@ -97,25 +106,6 @@ public class UtilityFunctions {
         return Pattern.matches(alphanumericRegex, inputString);
     }
 
-    /**
-     * Validates if the input string is an actual nationality.
-     * @param inputString
-     * @return
-     */
-    public static boolean validateInvalidNationality(String inputString){
-
-        return false;
-    }
-
-    /**
-     * Validates if the input string is an actual passport type.
-     * @param inputString
-     * @return
-     */
-    public static boolean validateInvalidPassport(String inputString){
-
-        return false;
-    }
 
     /**
      * Function that validates a given input string to check if it can be converted to a given type
@@ -146,6 +136,53 @@ public class UtilityFunctions {
     public static boolean isEmailValid(String email) {
         String emailRegex = "^[\\w!#$%&'*+/=?`{|}~^-]+(?:\\.[\\w!#$%&'*+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$";
         return Pattern.matches(emailRegex, email);
+    }
+
+    public static void addNatAndPass() {
+        if (Nationality.find.all().isEmpty()) {
+            String[] locales = Locale.getISOCountries();
+            for (String countryCode : locales) {
+                Locale obj = new Locale("", countryCode);
+                Nationality nationality = new Nationality(obj.getDisplayCountry());
+                nationality.save();
+                Passport passport = new Passport(obj.getDisplayCountry());
+                passport.save();
+            }
+        }
+    }
+
+    public static void addTravellerTypes() {
+        if (TravellerType.find.all().isEmpty()) {
+            (new TravellerType("Groupie")).save();
+            (new TravellerType("Thrillseeker")).save();
+            (new TravellerType("Gap Year")).save();
+            (new TravellerType("Frequent Weekender")).save();
+            (new TravellerType("Holidaymaker")).save();
+            (new TravellerType("Business Traveller")).save();
+            (new TravellerType("Backpacker")).save();
+        }
+    }
+
+    /**
+     * Resizes an image given by a pathname
+     * @param pathName the path to the image to be resized
+     * @return the resized buffered image
+     */
+    public static BufferedImage resizeImage(String pathName){
+        try {
+            BufferedImage newProfileImage = ImageIO.read(new File(pathName));
+            int type = newProfileImage.getType() == 0? BufferedImage.TYPE_INT_ARGB : newProfileImage.getType();
+            BufferedImage resizedImage = new BufferedImage(32, 32, type);
+            Graphics2D g = resizedImage.createGraphics();
+            g.drawImage(newProfileImage.getScaledInstance(32, 32, Image.SCALE_SMOOTH), 0, 0, 32, 32, null);
+            g.dispose();
+            return resizedImage;
+        } catch (IOException e) {
+            System.out.println(e);
+            return null;
+        }
+
+
     }
 
 }

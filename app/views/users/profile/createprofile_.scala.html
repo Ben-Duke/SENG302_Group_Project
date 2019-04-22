@@ -1,12 +1,12 @@
 @import java.util
 @import helper._
 @import formdata.UserFormData
-@(userForm : Form[UserFormData], genders:util.List[String], tTypes:util.Map[String, Boolean], passports:util.Map[String, Boolean], nationalities:util.Map[String, Boolean])
+@(userForm : Form[UserFormData], genders:util.List[String], tTypes:util.Map[String, Boolean], passports:util.Map[String, Boolean], nationalities:util.Map[String, Boolean], user : User)
 
 
 
 
-@main("Index") {
+@main(user, "Index") {
     <div class="container">
         <div class="well">
         @form(helper.CSRF(routes.RegisterController.saveuser()) , 'class -> "form-horizontal") {

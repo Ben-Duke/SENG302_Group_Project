@@ -1,0 +1,72 @@
+#carouselImage{
+    max-height: 720px;
+    width: 1280px;
+}
+
+#linkButton{
+    width: 500px;
+}
+
+.carousel-indicators li {
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    margin: 5px;
+    text-indent: 0;
+    cursor: pointer;
+    border: none;
+    border-radius: 50%;
+    background-color: #8bd9ff;
+    box-shadow: inset 1px 1px 1px 1px rgba(0,0,0,0.5);
+}
+.carousel-indicators .active {
+    width: 30px;
+    height: 30px;
+    margin: 5px;
+    background-color: #5994ff;
+}
+
+#change-profile .preview {
+
+}
+
+.preview-wrapper{
+    width: 100px;
+    height:100px;
+    position: absolute;
+    top: 25%;
+    right: 10%;
+    overflow: hidden;
+    border-radius: 100%;
+}
+
+preview-wrapper-original{
+    width: 100px;
+    height:100px;
+    overflow: hidden;
+    border-radius: 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 100%;
+}
+
+.searchDestinations {
+    width: 100%;
+    font-size: 16px;
+    padding: 12px 20px 12px 40px; /* Add some padding */
+    border: 1px solid #ddd; /* Add a grey border */
+    margin-bottom: 12px; /* Add some space below the input */
+}
+
+.searchPublicDestinations {
+    width: 100%;
+    font-size: 16px;
+    padding: 12px 20px 12px 40px; /* Add some padding */
+    border: 1px solid #ddd; /* Add a grey border */
+    margin-bottom: 12px; /* Add some space below the input */
+}
+
+.errorMessage {
+    color: #FF0000;
+    font-size: 16px;
+}

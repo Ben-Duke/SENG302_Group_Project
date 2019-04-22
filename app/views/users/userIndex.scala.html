@@ -1,6 +1,6 @@
-@(users: List[User], admins: List[Admin])
+@(users: java.util.List[User], admins: java.util.List[Admin], user : User)
 
-@main("All Users") {
+@main(user, "All Users") {
 
     <body style = background-image:url("./assets/images/background.jpg");>
         <link rel="stylesheet" type="text/css"

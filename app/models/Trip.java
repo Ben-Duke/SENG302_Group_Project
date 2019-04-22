@@ -1,5 +1,7 @@
 package models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import formdata.TripFormData;
 import io.ebean.Ebean;
 import io.ebean.Finder;
@@ -21,6 +23,7 @@ public class Trip extends Model {
     @Column(columnDefinition = "integer default 0")
     public Integer removedVisits;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "trip")
     public List<Visit> visits;
 
@@ -28,6 +31,7 @@ public class Trip extends Model {
 
     public boolean isPublic = true;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "user", referencedColumnName = "userid")
     public User user;
@@ -37,10 +41,17 @@ public class Trip extends Model {
         trip.tripName = formData.tripName;
         trip.user = formData.user;
         trip.removedVisits = 0;
-        trip.visits = new ArrayList<Visit>();
+        trip.visits = new ArrayList<>();
         return trip;
     }
 
+    public Trip(String tripName, boolean isPublic, User user) {
+        this.removedVisits = 0;
+        this.tripName = tripName;
+        this.isPublic = isPublic;
+        this.user = user;
+        this.visits = new ArrayList<>();
+    }
     public Trip(){
     }
 

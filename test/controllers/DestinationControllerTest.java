@@ -942,4 +942,32 @@ public class DestinationControllerTest extends WithApplication {
         assertEquals(null, DestinationModificationRequest.find.query().where().eq("id", modReqId).findOne());
 
     }
+
+    @Test
+    public void editPublicDestination() {
+
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/destinations/edit/public/1")
+                .session("connected", "2");
+
+        Result result = route(app, request);
+
+        assertEquals(OK, result.status());
+
+    }
+
+    @Test
+    public void updatePublicDestination() {
+
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/destinations/update/public/1")
+                .session("connected", "2");
+
+        Result result = route(app, request);
+
+        assertEquals(OK, result.status());
+
+    }
 }

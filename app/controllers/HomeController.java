@@ -164,7 +164,7 @@ public class HomeController {
 
     /**Serve an image file with a get request
      * @param httpRequest the HTTP request
-     * @param path the full path name of the file to serve
+     * @param photoId the id of the photo
      * @return a java file with the photo
      */
     public Result serveFromId(Http.Request httpRequest, Integer photoId)
@@ -199,6 +199,12 @@ public class HomeController {
         }
     }
 
+    /**
+     * Replaces the profile picture with the photo corresponding to the photoId given.
+     * @param request the HTTP request
+     * @param photoId the id of the photo
+     * @return Renders the home page.
+     */
     public Result setProfilePicture(Http.Request request, Integer photoId) {
         User user = User.getCurrentUser(request);
         UserPhoto profilePhoto = UserPhoto.find.byId(photoId);
@@ -212,6 +218,13 @@ public class HomeController {
         return unauthorized("Oops! You are not logged in.");
     }
 
+    /**
+     * Changes the privacy of the picture corresponding to the photoId given.
+     * @param request the HTTP request
+     * @param photoId the id of the photo
+     * @param setPublic true to make public, false to make private
+     * @return Renders the home page.
+     */
     public Result makePicturePublic(Http.Request request, Integer photoId, boolean setPublic) {
         User user = User.getCurrentUser(request);
         UserPhoto photo = UserPhoto.find.byId(photoId);

@@ -1,9 +1,8 @@
-@(destForm : Form[Destination], destination: Destination, countryMap: Map[String, Boolean], typeMap: Map[String, Boolean], travellerTypes : Map[String, Boolean])
+@(destForm : Form[Destination], destination: Destination, countryMap: Map[String, Boolean], typeMap: Map[String, Boolean], travellerTypes : Map[String, Boolean], user : User)
 @import helper._
 @import views.html.bootstrap3._
 
-@main("Destinations") {
-
+@main(user, "Destinations") {
 
 <h1>Edit Destination</h1>
 @helper.form(action = helper.CSRF(routes.DestinationController.updatePublicDestination(destination.getDestId()))) {

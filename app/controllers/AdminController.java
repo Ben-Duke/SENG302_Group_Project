@@ -95,11 +95,10 @@ public class AdminController extends Controller {
         if (currentUser != null) {
             Admin currentAdmin = Admin.find.query().where().eq("userId", currentUser.userid).findOne();
             if (currentAdmin != null) {
-
                 DestinationModificationRequest modReq = DestinationModificationRequest.find.query().where().eq("id", destModReqId).findOne();
                 if (modReq != null) {
-
-                    return ok(viewDestinationModificationRequest.render(modReq));
+                    User user = User.find.byId(currentAdmin.getUserId());
+                    return ok(viewDestinationModificationRequest.render(modReq, user));
                 } else {
                     return badRequest("Destination Modification Request does not exist");
                 }

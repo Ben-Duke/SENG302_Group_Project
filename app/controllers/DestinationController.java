@@ -326,7 +326,7 @@ public class DestinationController extends Controller {
                     }
                 }
 
-                return ok(editPublicDestination.render(destForm, destination, countryList, typeList, travellerTypesMap));
+                return ok(editPublicDestination.render(destForm, destination, countryList, typeList, travellerTypesMap, user));
 
             } else {
                 return notFound("Destination does not exist");

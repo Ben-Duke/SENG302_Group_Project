@@ -1,6 +1,6 @@
 @(currentUser: User, users: List[User], admins: List[Admin], adminUsers: List[User], allReqs: List[DestinationModificationRequest])
 
-@main("Admin") {
+@main(currentUser, "Admin") {
 
 <div class="container">
     <div class="col">

@@ -1,9 +1,9 @@
 @import helper._
 @import play.mvc.Http
-@(trip : Trip, message : String)
+@(trip : Trip, message : String, user : User)
 
 <!-- Page name (for unit tests): displayTripTable.scala.html -->
-@main("Trip destinations") {
+@main(user, "Trip destinations") {
     <h1>Trip destinations</h1>
     <body>
         @helper.CSRF.formField

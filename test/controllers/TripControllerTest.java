@@ -1,5 +1,7 @@
 package controllers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import factories.TripFactory;
 import factories.VisitFactory;
 import formdata.TripFormData;
@@ -8,6 +10,7 @@ import models.Destination;
 import models.Trip;
 import models.User;
 import models.Visit;
+import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,16 +29,11 @@ import play.test.WithApplication;
 import utilities.TestDatabaseManager;
 
 import java.time.format.DateTimeFormatter;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.junit.Assert.*;
 import static play.mvc.Http.Status.*;
-import static play.test.Helpers.GET;
-import static play.test.Helpers.contentAsString;
-import static play.test.Helpers.route;
+import static play.test.Helpers.*;
 
 public class TripControllerTest extends WithApplication {
 
@@ -157,6 +155,21 @@ public class TripControllerTest extends WithApplication {
         Http.RequestBuilder fakeRequest = Helpers.fakeRequest().bodyForm(formData).method(Helpers.POST).uri("/users/trips/create").session("connected", "2");
         CSRFTokenHelper.addCSRFToken(fakeRequest);
         Result result = Helpers.route(app, fakeRequest);
+        //User with id 2 should still have two trips
+        assertEquals(2, User.find.byId(2).getTrips().size());
+    }
+
+    @Test
+    public void saveTripWithEmptyName() {
+        //User with id 2 should have two trips
+        assertEquals(2, User.find.byId(2).getTrips().size());
+        Map<String, String> formData = new HashMap<>();
+        //Assuming the user fills in the trip name form as "Trip to New Zealand", which already exists
+        formData.put("tripName", "");
+        Http.RequestBuilder fakeRequest = Helpers.fakeRequest().bodyForm(formData).method(Helpers.POST).uri("/users/trips/create").session("connected", "2");
+        CSRFTokenHelper.addCSRFToken(fakeRequest);
+        Result result = Helpers.route(app, fakeRequest);
+        assertEquals(BAD_REQUEST, result.status());
         //User with id 2 should still have two trips
         assertEquals(2, User.find.byId(2).getTrips().size());
     }
@@ -406,6 +419,16 @@ public class TripControllerTest extends WithApplication {
     }
 
     @Test
+    public void deleteVisitFromExistingTripWithInvalidLoginSession(){
+        assertEquals(4, Trip.find.byId(2).getVisits().size());
+        //visit of id 5 is in this trip
+        Http.RequestBuilder fakeRequest = Helpers.fakeRequest().method(Helpers.DELETE).uri("/users/trips/edit/5").session("connected", null);
+        Result result = Helpers.route(app, fakeRequest);
+        assertEquals(UNAUTHORIZED, result.status());
+        assertEquals(4, Trip.find.byId(2).getVisits().size());
+    }
+
+    @Test
     public void deleteVisitWhichCausesRepeatDestinations(){
         assertEquals(3, Trip.find.byId(4).getVisits().size());
         //visit of id 11 is in this trip. Deleting it will result in Pyramid -> Pyramid which is illegal.
@@ -416,4 +439,346 @@ public class TripControllerTest extends WithApplication {
     }
 
 
+    @Test
+    public void addTripDestinationsWithInvalidLoginSession(){
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/trips/addDestinations/1").session("connected", null);
+        Result result = route(app, request);
+        assertEquals(UNAUTHORIZED, result.status());
+    }
+
+    @Test
+    public void addTripDestinationsWithValidLoginSessionWithInvalidOwner(){
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/trips/addDestinations/1").session("connected", "3");
+        Result result = route(app, request);
+        assertEquals(UNAUTHORIZED, result.status());
+    }
+
+    @Test
+    public void addTripDestinationsWithValidLoginSessionWithValidOwner(){
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/trips/addDestinations/1").session("connected", "2");
+        Result result = route(app, request);
+        assertEquals(OK, result.status());
+    }
+
+    @Test
+    public void addTripDestinationsWithInvalidTrip(){
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/trips/addDestinations/420").session("connected", "2");
+        Result result = route(app, request);
+        assertEquals(NOT_FOUND, result.status());
+    }
+
+    @Test
+    public void addVisitFromTableWithInvalidLoginSession(){
+        assertEquals(2, Trip.find.byId(1).getVisits().size());
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/trips/table/edit/1/1").session("connected", null);
+        Result result = route(app, request);
+        assertEquals(UNAUTHORIZED, result.status());
+        assertEquals(2, Trip.find.byId(1).getVisits().size());
+    }
+
+    @Test
+    public void addVisitFromTableWithValidLoginSessionWithPrivateDestinationWithInvalidOwner(){
+        assertEquals(2, Trip.find.byId(1).getVisits().size());
+        assertFalse(Destination.find.byId(5).isPublic);
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/trips/table/edit/1/5").session("connected", "2");
+        Result result = route(app, request);
+        assertEquals(UNAUTHORIZED, result.status());
+        assertEquals(2, Trip.find.byId(1).getVisits().size());
+    }
+
+    @Test
+    public void addVisitFromTableWithValidLoginSessionWithPrivateDestinationWithValidOwner(){
+        assertEquals(4, Trip.find.byId(2).getVisits().size());
+        assertFalse(Destination.find.byId(2).isPublic);
+        //add Wellington to Christchurch to Wellington, to The Wok and back
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/trips/table/edit/2/2").session("connected", "2");
+        Result result = route(app, request);
+        assertEquals(SEE_OTHER, result.status());
+        assertEquals(5, Trip.find.byId(2).getVisits().size());
+        //5th visit should be the newly added one (Wellington)
+        assertEquals("Wellington", Trip.find.byId(2).getVisits().get(4).getVisitName());
+    }
+
+    @Test
+    public void addVisitFromTableWithValidLoginSessionWithPublicDestinationWithValidOwnerRepeatDestination(){
+        assertEquals(4, Trip.find.byId(2).getVisits().size());
+        assertTrue(Destination.find.byId(1).isPublic);
+        //add Christchurch to Christchurch to Wellington, to The Wok and back
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/trips/table/edit/2/1").session("connected", "2");
+        Result result = route(app, request);
+        //User should be redirected to the same page
+        assertEquals(SEE_OTHER, result.status());
+        //Visit should not be added
+        assertEquals(4, Trip.find.byId(2).getVisits().size());
+    }
+
+    @Test
+    public void addVisitFromTableWithValidLoginSessionWithPublicDestinationWithValidOwner(){
+        assertEquals(2, Trip.find.byId(1).getVisits().size());
+        assertTrue(Destination.find.byId(1).isPublic);
+        //add Wellington to Christchurch to Wellington, to The Wok and back
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/trips/table/edit/1/1").session("connected", "2");
+        Result result = route(app, request);
+        assertEquals(SEE_OTHER, result.status());
+        assertEquals(3, Trip.find.byId(1).getVisits().size());
+        //3rd visit should be the newly added one (Christchurch)
+        assertEquals("Christchurch", Trip.find.byId(1).getVisits().get(2).getVisitName());
+    }
+
+    @Test
+    public void addVisitFromTableWithValidLoginSessionWithPublicDestinationWithInvalidOwner(){
+        assertEquals(3, Trip.find.byId(3).getVisits().size());
+        assertTrue(Destination.find.byId(1).isPublic);
+        //add Wellington to Christchurch to Wellington, to The Wok and back
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/trips/table/edit/3/1").session("connected", "3");
+        Result result = route(app, request);
+        assertEquals(SEE_OTHER, result.status());
+        assertEquals(4, Trip.find.byId(3).getVisits().size());
+        //4th visit of World Tour should be the newly added one (Christchurch)
+        assertEquals("Christchurch", Trip.find.byId(3).getVisits().get(3).getVisitName());
+    }
+
+    @Test
+    public void addVisitFromTableWithValidLoginSessionWithInvalidDestination(){
+        assertEquals(3, Trip.find.byId(3).getVisits().size());
+        assertNull(Destination.find.byId(100));
+        //add Wellington to Christchurch to Wellington, to The Wok and back
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/trips/table/edit/3/100").session("connected", "3");
+        Result result = route(app, request);
+        assertEquals(NOT_FOUND, result.status());
+        assertEquals(3, Trip.find.byId(3).getVisits().size());
+    }
+
+    @Test
+    public void addVisitFromTableWithValidLoginSessionWithPrivateDestinationWithValidDestinationOwnerWithInvalidTrip(){
+        assertEquals(3, Trip.find.byId(5).getVisits().size());
+        assertFalse(Destination.find.byId(2).isPublic);
+        //add Wellington to Christchurch to Wellington, to The Wok and back
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/trips/table/edit/5/2").session("connected", "2");
+        Result result = route(app, request);
+        assertEquals(UNAUTHORIZED, result.status());
+        assertEquals(3, Trip.find.byId(5).getVisits().size());
+    }
+
+    @Test
+    public void addVisitFromTableWithValidLoginSessionWithPrivateDestinationWithAdmin(){
+        assertEquals(4, Trip.find.byId(2).getVisits().size());
+        assertFalse(Destination.find.byId(2).isPublic);
+        //add Wellington to Christchurch to Wellington, to The Wok and back
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/trips/table/edit/2/2").session("connected", "1");
+        Result result = route(app, request);
+        System.out.println(contentAsString(result));
+        assertEquals(SEE_OTHER, result.status());
+        assertEquals(5, Trip.find.byId(2).getVisits().size());
+        //5th visit should be the newly added one (Wellington)
+        assertEquals("Wellington", Trip.find.byId(2).getVisits().get(4).getVisitName());
+    }
+
+    @Test
+    public void swapVisitsWithValidSwap(){
+        //Christchurch to Wellington to the Wok and back
+        Trip trip = Trip.find.byId(2);
+        Visit visit1 = trip.getOrderedVisits().get(0);
+        Visit visit2 = trip.getOrderedVisits().get(1);
+        Visit visit3 = trip.getOrderedVisits().get(2);
+        Visit visit4 = trip.getOrderedVisits().get(3);
+        ArrayList<String> swappedVisitsList = new ArrayList<>();
+        //Swap visit3 and visit2
+        swappedVisitsList.add(Integer.toString(visit1.getVisitid()));
+        swappedVisitsList.add(Integer.toString(visit3.getVisitid()));
+        swappedVisitsList.add(Integer.toString(visit2.getVisitid()));
+        swappedVisitsList.add(Integer.toString(visit4.getVisitid()));
+        ObjectMapper mapper = new ObjectMapper();
+        ArrayNode array = mapper.valueToTree(swappedVisitsList);
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(PUT)
+                .bodyJson(array)
+                .uri("/users/trips/edit/2").session("connected", "2");
+        Result result = route(app, request);
+        assertEquals(OK, result.status());
+        trip = Trip.find.byId(2);
+        //2nd and third index should be swapped
+        assertEquals(visit1.getVisitid(), trip.getOrderedVisits().get(0).getVisitid());
+        assertEquals(visit3.getVisitid(), trip.getOrderedVisits().get(1).getVisitid());
+        assertEquals(visit2.getVisitid(), trip.getOrderedVisits().get(2).getVisitid());
+        assertEquals(visit4.getVisitid(), trip.getOrderedVisits().get(3).getVisitid());
+    }
+
+    @Test
+    public void swapVisitsWithInvalidSwapThatResultsInRepeatDestinations(){
+        //Christchurch to Wellington to the Wok and back
+        Trip trip = Trip.find.byId(2);
+        Visit visit1 = trip.getOrderedVisits().get(0);
+        Visit visit2 = trip.getOrderedVisits().get(1);
+        Visit visit3 = trip.getOrderedVisits().get(2);
+        Visit visit4 = trip.getOrderedVisits().get(3);
+        ArrayList<String> swappedVisitsList = new ArrayList<>();
+        //Swap visit2 and visit4 which results in visit 1 and visit 4 both being Christchurch which is invalid (repeat destination)
+        swappedVisitsList.add(Integer.toString(visit1.getVisitid()));
+        swappedVisitsList.add(Integer.toString(visit4.getVisitid()));
+        swappedVisitsList.add(Integer.toString(visit2.getVisitid()));
+        swappedVisitsList.add(Integer.toString(visit3.getVisitid()));
+        ObjectMapper mapper = new ObjectMapper();
+        ArrayNode array = mapper.valueToTree(swappedVisitsList);
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(PUT)
+                .bodyJson(array)
+                .uri("/users/trips/edit/2").session("connected", "2");
+        Result result = route(app, request);
+        assertEquals(BAD_REQUEST, result.status());
+        trip = Trip.find.byId(2);
+        //2nd and third index should not be swapped
+        assertEquals(visit1.getVisitid(), trip.getOrderedVisits().get(0).getVisitid());
+        assertEquals(visit2.getVisitid(), trip.getOrderedVisits().get(1).getVisitid());
+        assertEquals(visit3.getVisitid(), trip.getOrderedVisits().get(2).getVisitid());
+        assertEquals(visit4.getVisitid(), trip.getOrderedVisits().get(3).getVisitid());
+    }
+
+    @Test
+    public void swapVisitsWithValidSwapWithInvalidTripOwner(){
+        //Christchurch to Wellington to the Wok and back
+        Trip trip = Trip.find.byId(2);
+        Visit visit1 = trip.getOrderedVisits().get(0);
+        Visit visit2 = trip.getOrderedVisits().get(1);
+        Visit visit3 = trip.getOrderedVisits().get(2);
+        Visit visit4 = trip.getOrderedVisits().get(3);
+        ArrayList<String> swappedVisitsList = new ArrayList<>();
+        //Swap visit3 and visit2
+        swappedVisitsList.add(Integer.toString(visit1.getVisitid()));
+        swappedVisitsList.add(Integer.toString(visit3.getVisitid()));
+        swappedVisitsList.add(Integer.toString(visit2.getVisitid()));
+        swappedVisitsList.add(Integer.toString(visit4.getVisitid()));
+        ObjectMapper mapper = new ObjectMapper();
+        ArrayNode array = mapper.valueToTree(swappedVisitsList);
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(PUT)
+                .bodyJson(array)
+                .uri("/users/trips/edit/2").session("connected", "3");
+        Result result = route(app, request);
+        assertEquals(UNAUTHORIZED, result.status());
+        trip = Trip.find.byId(2);
+        //2nd and third index should not be swapped
+        assertEquals(visit1.getVisitid(), trip.getOrderedVisits().get(0).getVisitid());
+        assertEquals(visit2.getVisitid(), trip.getOrderedVisits().get(1).getVisitid());
+        assertEquals(visit3.getVisitid(), trip.getOrderedVisits().get(2).getVisitid());
+        assertEquals(visit4.getVisitid(), trip.getOrderedVisits().get(3).getVisitid());
+    }
+
+    @Test
+    public void swapVisitsWithValidSwapWithInvalidLoginSession(){
+        //Christchurch to Wellington to the Wok and back
+        Trip trip = Trip.find.byId(2);
+        Visit visit1 = trip.getOrderedVisits().get(0);
+        Visit visit2 = trip.getOrderedVisits().get(1);
+        Visit visit3 = trip.getOrderedVisits().get(2);
+        Visit visit4 = trip.getOrderedVisits().get(3);
+        ArrayList<String> swappedVisitsList = new ArrayList<>();
+        //Swap visit3 and visit2
+        swappedVisitsList.add(Integer.toString(visit1.getVisitid()));
+        swappedVisitsList.add(Integer.toString(visit3.getVisitid()));
+        swappedVisitsList.add(Integer.toString(visit2.getVisitid()));
+        swappedVisitsList.add(Integer.toString(visit4.getVisitid()));
+        ObjectMapper mapper = new ObjectMapper();
+        ArrayNode array = mapper.valueToTree(swappedVisitsList);
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(PUT)
+                .bodyJson(array)
+                .uri("/users/trips/edit/2").session("connected", null);
+        Result result = route(app, request);
+        assertEquals(UNAUTHORIZED, result.status());
+        trip = Trip.find.byId(2);
+        //2nd and third index should not be swapped
+        assertEquals(visit1.getVisitid(), trip.getOrderedVisits().get(0).getVisitid());
+        assertEquals(visit2.getVisitid(), trip.getOrderedVisits().get(1).getVisitid());
+        assertEquals(visit3.getVisitid(), trip.getOrderedVisits().get(2).getVisitid());
+        assertEquals(visit4.getVisitid(), trip.getOrderedVisits().get(3).getVisitid());
+    }
+
+    @Test
+    public void cancelTripWithLoginSessionWithValidOwner(){
+        Trip trip = Trip.find.byId(2);
+        assertNotNull(trip);
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/trips/cancel/2").session("connected", "2");
+        Result result = route(app, request);
+        assertEquals(SEE_OTHER, result.status());
+        trip = Trip.find.byId(2);
+        assertNull(trip);
+    }
+
+    @Test
+    public void cancelTripWithLoginSessionWithInvalidOwner(){
+        Trip trip = Trip.find.byId(2);
+        assertNotNull(trip);
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/trips/cancel/2").session("connected", "3");
+        Result result = route(app, request);
+        assertEquals(UNAUTHORIZED, result.status());
+        trip = Trip.find.byId(2);
+        assertNotNull(trip);
+    }
+
+    @Test
+    public void cancelTripWithLoginSessionWithAdmin(){
+        Trip trip = Trip.find.byId(2);
+        assertNotNull(trip);
+        assertFalse(trip.getUser().getUserid() == 1);
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/trips/cancel/2").session("connected", "1");
+        Result result = route(app, request);
+        assertEquals(SEE_OTHER, result.status());
+        trip = Trip.find.byId(2);
+        assertNull(trip);
+    }
+
+    @Test
+    public void cancelTripWithInvalidLoginSession(){
+        Trip trip = Trip.find.byId(2);
+        assertNotNull(trip);
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/trips/cancel/2").session("connected", null);
+        Result result = route(app, request);
+        assertEquals(UNAUTHORIZED, result.status());
+        trip = Trip.find.byId(2);
+        assertNotNull(trip);
+    }
+
+    @Test
+    public void cancelTripWithValidLoginSessionWithInvalidTrip(){
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/trips/cancel/10").session("connected", "1");
+        Result result = route(app, request);
+        assertEquals(NOT_FOUND, result.status());
+    }
 }

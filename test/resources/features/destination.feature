@@ -41,12 +41,12 @@ Feature: typesOfDestinations
 
   Scenario: I (the owner of the destination) can CRUD my own public destinations until another user uses this public destination. As soon as it is used by another user, ownership of the destination is transferred to the admins from that point forward. I (the original owner) can no longer modify or delete that destination.
     Given I mark "Lighthouse of Alexandria" as public and nobody uses the destination
-    When I validly update the destination "Lighthouse of Alexandria"
-    Then the destination "Lighthouse of Alexandria" should be updated
+    When I validly update the destination "Lighthouse of Alexandria" with name "Summoner's Rift", type "Yes", district "Demacia", country "Angola", latitude "50.0", longitude "-50.0"
+    Then the destination "Lighthouse of Alexandria" should be updated to name "Summoner's Rift", type "Yes", district "Demacia", country "Angola", latitude "50.0", longitude "-50.0"
 
   Scenario: I (the owner of the destination) can CRUD my own public destinations until another user uses this public destination. As soon as it is used by another user, ownership of the destination is transferred to the admins from that point forward. I (the original owner) can no longer modify or delete that destination.
     Given I mark "Lighthouse of Alexandria" as public and a user with user id "3" uses the destination
-    When I invalidly update the destination "Lighthouse of Alexandria"
+    When I invalidly update the destination "Lighthouse of Alexandria" with name "Summoner's Rift", type "Yes", district "Demacia", country "Angola", latitude "50.0", longitude "-50.0"
     Then the destination "Lighthouse of Alexandria" should not be updated
 
     Scenario: If a public destination is created and I have the same destination in my private list of destinations, it will automatically be merged with the public one. Any private information (e.g. photos, notes - future stories) on that destination will continue to remain private and only be accessible to me.

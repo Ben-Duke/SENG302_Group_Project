@@ -5,10 +5,10 @@
 # Home page
 
 #Renders user index page
-GET     /                           controllers.UserController.userindex()
+GET     /                           controllers.UserController.userindex(request:Request)
 
 #Renders user index page
-GET     /users                      controllers.UserController.userindex()
+GET     /users                      controllers.UserController.userindex(request:Request)
 
 #Handles AJAX request to get the user
 GET     /users/get                  controllers.UserController.getUser(request:Request)
@@ -74,9 +74,9 @@ POST    /users/profile/search       controllers.TravelPartnerController.searchBy
 #Renders page for creating trips
 GET     /users/trips/create         controllers.TripController.createtrip(request: Request)
 
-GET     /users/trips/cancel         controllers.TripController.cancelTrip(request: Request, id:Integer)
+GET     /users/trips/cancel/:id         controllers.TripController.cancelTrip(request: Request, id:Integer)
 
-GET     /users/trips/addDestinations    controllers.TripController.AddTripDestinations(request: Request, id:Integer)
+GET     /users/trips/addDestinations/:id    controllers.TripController.AddTripDestinations(request: Request, id:Integer)
 
 #GET     /users/trips/display/addDestinations    controllers.TripController.AddExistingTripDestinations(request: Request, id:Integer)
 
@@ -150,6 +150,9 @@ GET     /assets/*file               controllers.Assets.at(path="/public", file)
 #Renders index page for destinations
 GET     /users/destinations             controllers.DestinationController.indexDestination(request : Request)
 
+#Gets JSON of all public and private Destinations avaliable to a user.
+GET     /users/destinations/getalljson         controllers.DestinationController.getVisibleDestinationMarkersJSON(request : Request)
+
 #Renders page for displaying a given destination
 GET     /users/destinations/:id         controllers.DestinationController.viewDestination(request : Request, id : Integer)
 
@@ -203,7 +206,9 @@ PUT     /users/destinations/primary/:id     controllers.DestinationController.se
 PUT     /users/destinations/:id         controllers.DestinationController.linkPhotoToDestination(request : Request, id : Integer)
 
 #Handles creating a destination
-POST    /users/destinations/save        controllers.DestinationController.saveDestination(request : Request)
+POST    /users/destinations/save        controllers.DestinationController.saveDestinationFromRequest(request : Request)
 
 #Handles deleting a destination //TODO needs to be changed from get request
 GET     /users/destinations/delete/:id   controllers.DestinationController.deleteDestination(request : Request, id : Integer)
+
+

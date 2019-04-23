@@ -11,14 +11,13 @@ import java.util.TreeMap;
 @Constraints.Validate
 public class DestinationFormData implements Constraints.Validatable<List<ValidationError>> {
 
-    public String name;
+    public String destName;
+    public String destType;
     public String district;
-    public String city;
+    public String country;
     public String latitude;
     public String longitude;
-    public String type;
-    public String date;
-    public String country;
+
 
     /**
      * A function that is called when creating a destination to the the types
@@ -38,56 +37,114 @@ public class DestinationFormData implements Constraints.Validatable<List<Validat
     }
 
     /**
-     * A function that is called when the DestinationFormData is submitted and returns a list of errors if any or null.
-     * @return if there are errors a list of errors will be returned if there aren't any then then
-     * it will return null.
+     * A function that is called when the DestinationFormData is submitted and
+     * returns a list of errors if any or null.
+     * @return if there are errors a list of errors will be returned if there
+     * aren't any then then it will return null.
      */
     @Override
     public List<ValidationError> validate() {
         List<ValidationError> errors = new ArrayList<>();
 
-        if (name == null || name.length() == 0) {
-            errors.add(new ValidationError("name","Destination Name field is empty"));
+        destName = destName.trim();
+        district = district.trim();
+
+        if (destName == null || destName.length() == 0) {
+            errors.add(new ValidationError("destName",
+                                    "Destination name  must not be empty"));
         }
 
         if (country == null || country.length() == 0) {
-            errors.add(new ValidationError("country", "Country field is empty"));
+            errors.add(new ValidationError("country",
+                                    "Destination country must not be empty"));
         }
 
-        if (type == null || type.length() == 0) {
-            errors.add(new ValidationError("type", "Type field is empty"));
+        if (destType == null || destType.length() == 0) {
+            errors.add(new ValidationError("destType",
+                                        "Destination type must not be empty"));
         }
 
 
         try {
             if (latitude == null || latitude.length()==0) {
-                errors.add(new ValidationError("latitude","Latitude field is empty"));
+                errors.add(new ValidationError("latitude",
+                            "Latitude must be a number between -90 and 90"));
             } else {
-                Double.parseDouble(latitude);
+                Double latitudeDouble = Double.parseDouble(latitude);
+                if (! (-90.0 <= latitudeDouble && latitudeDouble <= 90.0)) {
+                    errors.add(new ValidationError("latitude",
+                            "Latitude must be between -90 and 90"));
+                }
             }
         } catch (NumberFormatException e) {
-            errors.add(new ValidationError("latitude", "Latitude is not a valid number"));
+            errors.add(new ValidationError("latitude",
+                            "Latitude must be a number between -90 and 90"));
         }
 
         try {
             if (longitude == null || longitude.length()==0) {
-                errors.add(new ValidationError("longitude","Longitude field is empty"));
+                errors.add(new ValidationError("longitude",
+                                    "Longitude must be between -180 and 180"));
             } else {
-                Double.parseDouble(longitude);
+                Double longitudeDouble = Double.parseDouble(longitude);
+                if (! (-180.0 <= longitudeDouble && longitudeDouble <= 180.0)) {
+                    errors.add(new ValidationError("longitude",
+                            "Longitude must be between -180 and 180"));
+                }
             }
         } catch (NumberFormatException e) {
-            errors.add(new ValidationError("longitude", "Latitude is not a valid number"));
+            errors.add(new ValidationError("longitude",
+                                    "Longitude must be between -180 and 180"));
         }
 
+        return errors;
+    }
 
-        if (type.equals("event") && date.isEmpty()){
-            errors.add(new ValidationError("date", "Please enter a date"));
-        }
+    public String getDestName() {
+        return destName;
+    }
 
+    public void setDestName(String destName) {
+        this.destName = destName;
+    }
 
-        if (errors.size() > 0) {
-            return errors;
-        }
-        return null;
+    public String getDestType() {
+        return destType;
+    }
+
+    public void setDestType(String destType) {
+        this.destType = destType;
+    }
+
+    public String getDistrict() {
+        return district;
+    }
+
+    public void setDistrict(String district) {
+        this.district = district;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
+    }
+
+    public String getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(String latitude) {
+        this.latitude = latitude;
+    }
+
+    public String getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(String longitude) {
+        this.longitude = longitude;
     }
 }

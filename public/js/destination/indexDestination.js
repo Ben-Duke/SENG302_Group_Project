@@ -147,7 +147,8 @@ function sendLinkDestinationRequest(url, photoid){
 
 /**
  * Event is called while the modal is popping up.
- * Displays the destination's photos as a carousel and the destination's traveller type on the fly using ajax queries
+ * Displays the destination's photos as a carousel and the destination's
+ * traveller type on the fly using ajax queries
  * based on the destination id retrieved from the table row clicked.
  */
 $('#orderModal').on('show.bs.modal', function (e) {
@@ -341,7 +342,8 @@ $('#primaryPhotoButton').click(function(e){
 });
 
 /**
- * After the slider has slid, enable the set to primary photo button if the active picture is not the primary photo.
+ * After the slider has slid, enable the set to primary photo button if the
+ * active picture is not the primary photo.
  * Disable the set to primary photo button otherwise.
  */
 $('#destslider').bind('slid.bs.carousel', function(e){

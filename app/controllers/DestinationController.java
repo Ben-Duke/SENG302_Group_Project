@@ -2,6 +2,9 @@ package controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import factories.DestinationFactory;
+import formdata.DestinationFormData;
+import formdata.UpdateUserFormData;
 import models.*;
 
 
@@ -31,6 +34,7 @@ public class DestinationController extends Controller {
      * @param destForm all of the inputs from the user
      * @return notAcceptable error messages for failed test, or null if all valid
      */
+    @Deprecated
     private Result validateDestination(DynamicForm destForm) {
 
 
@@ -84,11 +88,12 @@ public class DestinationController extends Controller {
      */
     public Result indexDestination(Http.Request request) {
         User user = User.getCurrentUser(request);
+        DestinationFactory destFactory = new DestinationFactory();
 
         if (user != null) {
             List<Destination> destinations = user.getDestinations();
             List<Destination> allDestinations = Destination.find.all();
-            return ok(indexDestination.render(destinations, allDestinations, user));
+            return ok(indexDestination.render(destinations, allDestinations, destFactory, user));
 
 
         }
@@ -124,9 +129,10 @@ public class DestinationController extends Controller {
         User user = User.getCurrentUser(request);
 
         if (user != null) {
-            Form<Destination> destForm = formFactory.form(Destination.class);
+            Form<DestinationFormData> destFormData;
+            destFormData = formFactory.form(DestinationFormData.class);
 
-            return ok(createdestination.render(destForm, Destination.getIsoCountries(), Destination.getTypeList()));
+            return ok(createdestination.render(destFormData, Destination.getIsoCountries(), Destination.getTypeList(),user));
         }
         return unauthorized("Oops, you are not logged in");
     }
@@ -141,27 +147,55 @@ public class DestinationController extends Controller {
      * @param request the http request
      * @return renders the index page or an unauthorized message is no user is logged in.
      */
-    public Result saveDestination(Http.Request request) {
+    public Result saveDestinationFromRequest(Http.Request request) {
+        Form<DestinationFormData> destinationFormData;
+        destinationFormData = formFactory.form(DestinationFormData.class)
+                                                                .bindFromRequest();
         User user = User.getCurrentUser(request);
 
-        if (user != null) {
-            DynamicForm destForm = formFactory.form().bindFromRequest();
-            Result validationResult = validateDestination(destForm);
+        if (user != null) { // checks if a user is logged in
+            if (! destinationFormData.hasErrors()) {
+                // no form errors
+                // processing it now
+                DynamicForm destForm = formFactory.form().bindFromRequest();
 
-            if (validationResult != null) {
-                return validationResult;
+                //If program gets past this point then inputted destination is valid
+
+                Destination newDestination = formFactory.form(Destination.class)
+                                                        .bindFromRequest().get();
+
+                // checking if private and public destinations already exist. -----------
+                DestinationFactory destinationFactory = new DestinationFactory();
+                int userId = user.getUserid();
+
+                boolean hasError = false;
+                if (destinationFactory.userHasPrivateDestination(userId, newDestination)) {
+                    flash("privateDestinationExists",
+                            "You already have a matching private destination!");
+                    hasError = true;
+                }
+
+                if (destinationFactory.doesPublicDestinationExist(newDestination)) {
+                    flash("publicDestinationExists",
+                            "A matching public destination already exists!");
+                    hasError = true;
+                }
+
+                if (hasError) {
+                    return badRequest(createdestination.render(destinationFormData,
+                            Destination.getIsoCountries(), Destination.getTypeList(),user));
+                } else {
+                    newDestination.setUser(user);
+                    newDestination.save();
+                    return redirect(routes.DestinationController.indexDestination());
+                }
+            } else {
+                return badRequest(createdestination.render(destinationFormData,
+                        Destination.getIsoCountries(), Destination.getTypeList(),user));
             }
-            //If program gets past this point then inputted destination is valid
-
-            Destination destination = formFactory.form(Destination.class).bindFromRequest().get();
-
-            destination.setUser(user);
-            destination.save();
         } else {
             return unauthorized("Oops, you are not logged in");
         }
-
-        return redirect(routes.DestinationController.indexDestination());
     }
 
     /**
@@ -190,7 +224,7 @@ public class DestinationController extends Controller {
                     Map<String, Boolean> countryList = Destination.getIsoCountries();
                     countryList.replace(destination.getCountry(), true);
 
-                    return ok(editDestination.render(destForm, destination, countryList, typeList));
+                    return ok(editDestination.render(destForm, destination, countryList, typeList,user));
 
                 } else {
                     return unauthorized("Not your destination. You can't edit.");
@@ -477,11 +511,26 @@ public class DestinationController extends Controller {
 
             if (destination != null) {
                 if (destination.isUserOwner(user.userid)) {
-                    //sets the destination to public, sets the owner to the default admin and updates the destination
-                    destination.setIsPublic(true);
-                    destination.update();
+                    //-----------checking if a public destination equivalent
+                    // ----------already exists
+                    DestinationFactory destFactory = new DestinationFactory();
+                    if (destFactory.doesPublicDestinationExist(destination)) {
+                        // public matching destination already exists
+                        // show error
+                        destination.setIsPublic(true);
+                        destination.update();
+                        return redirect(routes.DestinationController.indexDestination());
+                    } else {
+                        //no matching pub destination exists, making public now
+                        //sets the destination to public, sets the owner to the default admin and updates the destination
+                        destination.setIsPublic(true);
+                        destination.update();
+                        return redirect(routes.DestinationController.indexDestination());
+                    }
+
+
                 } else {
-                    return unauthorized("HEY!, not yours. You cant delete. How you get access to that anyway?... FBI!!! OPEN UP!");
+                    return unauthorized("HEY!, not yours. You cant make public. How you get access to that anyway?... FBI!!! OPEN UP!");
                 }
             } else {
                 return notFound("Destination does not exist");
@@ -489,8 +538,6 @@ public class DestinationController extends Controller {
         } else {
             return unauthorized("Oops, you are not logged in");
         }
-
-        return redirect(routes.DestinationController.indexDestination());
     }
 
     /**
@@ -658,5 +705,32 @@ public class DestinationController extends Controller {
         return ok();
     }
 
+    /**
+     * Gets JSON of all visible (public + the logged in users private photos)
+     * Destinations avaliable to the user.
+     *
+     * @param request the HTTP request
+     * @return a Result object containing the destinations JSON in it's body
+     */
+    public Result getVisibleDestinationMarkersJSON(Http.Request request) {
+        User user = User.getCurrentUser(request);
+        if(user != null) {
+            int userId = user.getUserid();
 
+            DestinationFactory destinationFactory = new DestinationFactory();
+
+            List<Destination> publicDestinations;
+            List<Destination> privateDestinations;
+            publicDestinations = destinationFactory.getPublicDestinations();
+            privateDestinations = destinationFactory.getUsersPrivateDestinations(userId);
+
+            List<Destination> allVisibleDestination = new ArrayList<Destination>();
+            allVisibleDestination.addAll(publicDestinations);
+            allVisibleDestination.addAll(privateDestinations);
+
+            return ok(Json.toJson(allVisibleDestination));
+        } else {
+            return unauthorized("Oops, you are not logged in");
+        }
+    }
 }

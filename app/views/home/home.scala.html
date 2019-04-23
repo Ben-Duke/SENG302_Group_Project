@@ -2,7 +2,7 @@
 @import factories.UserFactory
 @(user: User)
 @import views.html.bootstrap3._
-@main("Index"){
+@main(user, "Index"){
 
 
     <head>
@@ -340,5 +340,5 @@
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropper/4.0.0/cropper.min.js"></script>
     <script src="@routes.Assets.at("js/home.js")" type="text/javascript"></script>
-    <script src="@routes.Assets.at("js/indexDestination.js")" type="text/javascript"></script>
+    <script src="@routes.Assets.at("../../../public/js/destination/indexDestination.js")" type="text/javascript"></script>
 }

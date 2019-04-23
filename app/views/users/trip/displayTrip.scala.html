@@ -1,7 +1,7 @@
-@(trip : Trip, visits : List[Visit])
+@(trip : Trip, visits : List[Visit], user : User)
 @import helper._
 <!-- Page name (for unit tests): displayTrip.scala.html -->
-@main("Trip View") {
+@main(user, "Trip View") {
         @for(visit <- visits) {
             <div class="modal" id=@visit.visitName>
                 <div class="modal-dialog">

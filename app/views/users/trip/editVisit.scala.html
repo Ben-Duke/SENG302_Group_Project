@@ -1,9 +1,9 @@
 @import views.html.helper.form
 @import views.html.helper.select
-@(visitForm : Form[Visit], visit : Visit, destinations : List[Destination])
+@(visitForm : Form[Visit], visit : Visit, destinations : List[Destination], user : User)
 @import helper._
 
-@main("Edit destination") {
+@main(user, "Edit destination") {
     @form(action = helper.CSRF(routes.TripController.updateVisit(visit.visitid))) {
         @select(
             field = visitForm("destination"),

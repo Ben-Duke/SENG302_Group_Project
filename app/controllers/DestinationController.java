@@ -364,6 +364,7 @@ public class DestinationController extends Controller {
             if (oldDestination != null) {
 
                 if (newDestination.equals(oldDestination)) {
+
                     return badRequest("No changes suggested");
                 } else {
                     DestinationModificationRequest newModReq = new DestinationModificationRequest(oldDestination, newDestination, user);

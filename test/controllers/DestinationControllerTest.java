@@ -959,15 +959,22 @@ public class DestinationControllerTest extends WithApplication {
 
     @Test
     public void updatePublicDestination() {
+        Map<String, String> formData = new HashMap<>();
+        formData.put("destName", "Summoner's Rift");
+        formData.put("destType", "Yes");
+        formData.put("district", "Demacia");
+        formData.put("country", "Angola");
+        formData.put("latitude", "50.0");
+        formData.put("longitude", "-50.0");
 
         Http.RequestBuilder request = Helpers.fakeRequest()
-                .method(GET)
-                .uri("/users/destinations/update/public/1")
-                .session("connected", "2");
+            .bodyForm(formData)
+            .method(POST)
+            .uri("/users/destinations/update/public/1")
+            .session("connected", "2");
 
         Result result = route(app, request);
 
-        assertEquals(OK, result.status());
-
+        assertEquals(303, result.status());
     }
 }

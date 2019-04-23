@@ -7,7 +7,7 @@
 <h1>Trip destinations</h1>
 <body>
 <head>
-    <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/indexDestination.css")">
+    <link rel="stylesheet" media="screen" href="@routes.Assets.at("../../../../public/stylesheets/destination/indexDestination.css")">
     <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/AddTripDestinationsTable.css")">
     @if(flash.get("error")) {
         <div class="isa_error">
@@ -100,7 +100,7 @@
         </table>
     </div>
 
-    <script src="@routes.Assets.at("js/indexDestination.js")" type="text/javascript"></script>
+    <script src="@routes.Assets.at("../../../../public/js/destination/indexDestination.js")" type="text/javascript"></script>
 
 @helper.CSRF.formField
 <div class="container-fluid">

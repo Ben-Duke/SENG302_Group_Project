@@ -1,4 +1,4 @@
-@(currentUser: User, users: List[User], admins: List[Admin], adminUsers: List[User])
+@(currentUser: User, users: List[User], admins: List[Admin], adminUsers: List[User], allReqs: List[DestinationModificationRequest])
 
 @main(currentUser, "Admin") {
 
@@ -42,8 +42,6 @@
         </div>
         <div class="row">
             <h1>Users</h1>
-
-
             <table class="table">
                 <thead class="thead-dark">
                 <tr>
@@ -76,6 +74,37 @@
             </table>
         </div>
     </div>
+    <div class="row">
+        <h1>Destination Modification Requests</h1>
+        <table class="table">
+            <thead class="thead-dark">
+            <tr>
+                <th scope="col">Destination ID</th>
+                <th scope="col">Destination Name</th>
+                <th scope="col">Author ID</th>
+                <th scope="col">Author Name</th>
+                <th scope="col">Date created</th>
+                <th scope="col">View</th>
+            </tr>
+            </thead>
+            <tbody>
+            @for(req <- allReqs) {
+
+                <tr>
+                    <th scope ="row">@req.getOldDestination().getDestId()</th>
+                    <th>@req.getOldDestination().getDestName()</th>
+                    <td>@req.getRequestAuthor().getUserid()</td>
+                    <td>@req.getRequestAuthor().getfName() @req.getRequestAuthor().getlName()</td>
+                    <td>@req.getCreationDate()</td>
+                    <td><a class="btn btn-link" href="@routes.AdminController.viewDestinationModificationRequest(req.id)" role="button">View</a></td>
+
+                </tr>
+
+            }
+            </tbody>
+        </table>
+    </div>
+</div>
 </div>
 
 }

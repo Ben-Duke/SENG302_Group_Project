@@ -45,6 +45,7 @@ public class HomeController {
      */
     public Result showhome(Http.Request request) {
         User user = User.getCurrentUser(request);
+
         if (user != null){
             if(user.hasEmptyField()){
                 return redirect(routes.ProfileController.updateProfile());

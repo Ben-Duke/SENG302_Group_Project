@@ -123,7 +123,7 @@ public class Destination extends Model {
     public List<UserPhoto> userPhotos;
 
     @JsonIgnore
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.ALL)
     public List<TravellerType> travellerTypes;
 
     public static Finder<String,Destination> findString =new Finder<>(Destination.class);
@@ -138,7 +138,7 @@ public class Destination extends Model {
     public String getCountry() { return country; }
     public double getLatitude() { return latitude; }
     public double getLongitude() { return longitude; }
-    public boolean getIsPublic() { return isPublic;}
+    public boolean getIsPublic() { return isPublic; }
     public List<UserPhoto> getUserPhotos() {
         return userPhotos;
     }
@@ -166,7 +166,7 @@ public class Destination extends Model {
     public void setLatitude(double latitude) { this.latitude = latitude; }
     public void setLongitude(double longitude) { this.longitude = longitude; }
     public void setIsPublic(boolean isPublic) { this.isPublic = isPublic; }
-    public void setTravellerTypes(List<TravellerType> travellerTypes){
+    public void setTravellerTypes(List<TravellerType> travellerTypes) {
         this.travellerTypes = travellerTypes;
     }
     public void setUserPhotos(List<UserPhoto> userPhotos) {
@@ -191,18 +191,40 @@ public class Destination extends Model {
 
     /**
      * The equals method compares two Destination objects for equality. The criteria
-     * is district and country.
+     * is all attributes, except isPublic.
      *
      * @param dest2 the other Destination object which is being compared for equality
      * @return true if destinations are equal, false if not.
      */
 
     public boolean equals(Destination dest2) {
-
-        if (!district.equals(dest2.getDistrict())) {
+        if (!this.destName.equals(dest2.getDestName())) {
             return false;
         }
-        if (!country.equals(dest2.getCountry())) {
+        if (!this.country.equals(dest2.getCountry())) {
+            return false;
+        }
+        if (!this.district.equals(dest2.getDistrict())) {
+            return false;
+        }
+        if (!(this.latitude == dest2.getLatitude())) {
+            return false;
+        }
+        if (!(this.longitude == dest2.getLongitude())) {
+            return false;
+        }
+        if (!this.destType.equals(dest2.getDestType())) {
+            return false;
+        }
+        int eqCount = 0;
+        for (TravellerType travellerType1 : this.travellerTypes) {
+            for (TravellerType travellerType2 : dest2.getTravellerTypes()) {
+                if (travellerType1.getTravellerTypeName().equals(travellerType2.getTravellerTypeName())) {
+                    eqCount++;
+                }
+            }
+        }
+        if (!(eqCount == this.travellerTypes.size() && eqCount == dest2.getTravellerTypes().size())) {
             return false;
         }
 

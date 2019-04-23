@@ -346,6 +346,15 @@ public class DestinationController extends Controller {
         }
     }
 
+    /**
+     * This method handles when an admin rejects a destination modification request
+     * the modification request is deleted and the admin is redirected to the index
+     * admin page.
+     *
+     * @param request
+     * @param destModReqId the id of the destination modification request under review
+     * @return given proper authorisation redirect to index admin page
+     */
     public Result destinationModificationReject(Http.Request request, Integer destModReqId) {
         User currentUser = User.getCurrentUser(request);
         if (currentUser != null) {
@@ -355,7 +364,6 @@ public class DestinationController extends Controller {
                 if (modReq != null) {
 
                     modReq.delete();
-
                     return redirect(routes.AdminController.indexAdmin());
                 } else {
                     return badRequest("Destination Modification Request does not exist");
@@ -368,6 +376,16 @@ public class DestinationController extends Controller {
         }
     }
 
+    /**
+     * This method handles when an admin accepts a destination modification request
+     * the new values for the destination in the destination modification request
+     * are used to update the destination, then the modification request is
+     * is deleted and the admin is redirected to the index admin page.
+     *
+     * @param request
+     * @param destModReqId the id of the destination modification request under review
+     * @return given proper authorisation redirect to index admin page
+     */
     public Result destinationModificationAccept(Http.Request request, Integer destModReqId) {
         User currentUser = User.getCurrentUser(request);
         if (currentUser != null) {
@@ -384,7 +402,13 @@ public class DestinationController extends Controller {
                     oldDestination.setDistrict(modReq.getNewDestDistrict());
                     oldDestination.setLatitude(modReq.getNewDestLatitude());
                     oldDestination.setLongitude(modReq.getNewDestLongitude());
-                    oldDestination.setTravellerTypes(modReq.getNewTravellerTypes());
+
+                    List<TravellerType> travellerTypes = new ArrayList<>();
+                    for (TravellerType travellerType : modReq.getNewTravellerTypes()) {
+                        travellerTypes.add(travellerType);
+                    }
+
+                    oldDestination.setTravellerTypes(travellerTypes);
 
                     oldDestination.update();
 

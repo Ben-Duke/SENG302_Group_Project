@@ -21,6 +21,7 @@ import utilities.TestDatabaseManager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.*;
@@ -718,19 +719,20 @@ public class DestinationControllerTest extends WithApplication {
     @Test
     public void destinationModificationRequestReject() {
         User user = User.find.all().get(0);
-        Destination destination = new Destination("Test Dest", "Town", "Test District", "Test Country", 100, 100, user, true);
-        destination.save();
-        Destination newDestination = new Destination("Test Dest2", "Town2", "Test District2", "Test Country2", 101, 101, user);
+        Destination newDestination = new Destination("Test Dest", "Town", "Test District", "Test Country", 100, 100, user, true);
+        newDestination.save();
+        Integer destId = newDestination.getDestId();
 
-        DestinationModificationRequest modReq = new DestinationModificationRequest(destination, newDestination, user);
+        Destination newDestinationValues = new Destination("Test Dest2", "Town2", "Test District2", "Test Country2", 101, 101, user);
+
+        Destination destination = Destination.find.byId(destId);
+
+        DestinationModificationRequest modReq = new DestinationModificationRequest(destination, newDestinationValues, user);
         modReq.save();
 
         Integer modReqId = modReq.getId();
 
-
-        Admin admin = new Admin(2, false);
-        admin.insert();
-//        Admin admin = Admin.find.all().get(0);
+        Admin admin = Admin.find.all().get(0);
         Integer adminUserId = admin.getUserId();
 
         Http.RequestBuilder request = Helpers.fakeRequest()
@@ -740,10 +742,97 @@ public class DestinationControllerTest extends WithApplication {
 
         Result result = route(app, request);
 
-        assertEquals(OK, result.status());
+        assertEquals(303, result.status());
         assert(destination.getDestName().equals("Test Dest"));
         assert(destination.getDestType().equals("Town"));
         assert(destination.getLatitude() == 100);
+        assertEquals(null, DestinationModificationRequest.find.query().where().eq("id", modReqId).findOne());
+
+    }
+
+    @Test
+    public void destinationModificationRequestAcceptWithoutTravellerTypes() {
+        User user = User.find.all().get(0);
+        Destination newDestination = new Destination("Test Dest", "Town", "Test District", "Test Country", 100, 100, user, true);
+        newDestination.save();
+        Integer destId = newDestination.getDestId();
+
+        Destination newDestinationValues = new Destination("Test Dest2", "Town2", "Test District2", "Test Country2", 101, 101, user);
+
+        DestinationModificationRequest modReq = new DestinationModificationRequest(newDestination, newDestinationValues, user);
+        modReq.save();
+
+        Integer modReqId = modReq.getId();
+
+        Admin admin = Admin.find.all().get(0);
+        Integer adminUserId = admin.getUserId();
+
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/admin/destination_modification_request/accept/"+modReqId)
+                .session("connected", adminUserId.toString());
+
+        Result result = route(app, request);
+
+        Destination destination = Destination.find.byId(destId);
+
+        assertEquals(303, result.status());
+        System.out.println(destination.getDestName());
+        assert(destination.getDestName().equals("Test Dest2"));
+        assert(destination.getDestType().equals("Town2"));
+        assert(destination.getDistrict().equals("Test District2"));
+        assert(destination.getCountry().equals("Test Country2"));
+        assert(destination.getLatitude() == 101);
+        assert(destination.getLatitude() == 101);
+        assertEquals(null, DestinationModificationRequest.find.query().where().eq("id", modReqId).findOne());
+
+    }
+
+
+    @Test
+    public void destinationModificationRequestAcceptWithTravellerTypes() {
+        User user = User.find.all().get(0);
+        Destination newDestination = new Destination("Test Dest", "Town", "Test District", "Test Country", 100, 100, user, true);
+        newDestination.save();
+        Integer destId = newDestination.getDestId();
+
+        Destination newDestinationValues = new Destination("Test Dest2", "Town2", "Test District2", "Test Country2", 101, 101, user);
+        List<TravellerType> travellerTypes = new ArrayList<>();
+        travellerTypes.add(new TravellerType("Backpacker"));
+        travellerTypes.add(new TravellerType("Groupie"));
+        newDestinationValues.setTravellerTypes(travellerTypes);
+
+        DestinationModificationRequest modReq = new DestinationModificationRequest(newDestination, newDestinationValues, user);
+        modReq.save();
+
+        Integer modReqId = modReq.getId();
+
+        Admin admin = Admin.find.all().get(0);
+        Integer adminUserId = admin.getUserId();
+
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/admin/destination_modification_request/accept/"+modReqId)
+                .session("connected", adminUserId.toString());
+
+        Result result = route(app, request);
+
+        Destination destination = Destination.find.byId(destId);
+
+        assertEquals(303, result.status());
+        assert(destination.getDestName().equals("Test Dest2"));
+        assert(destination.getDestType().equals("Town2"));
+        assert(destination.getDistrict().equals("Test District2"));
+        assert(destination.getCountry().equals("Test Country2"));
+        assert(destination.getLatitude() == 101);
+        assert(destination.getLatitude() == 101);
+
+        for (TravellerType travellerType : destination.getTravellerTypes()) {
+            assert(travellerType.getTravellerTypeName().equals("Backpacker") || travellerType.getTravellerTypeName().equals("Groupie"));
+            assertNotEquals(null, travellerType.getTtypeid());
+        }
+        assertEquals(2, destination.getTravellerTypes().size());
+
         assertEquals(null, DestinationModificationRequest.find.query().where().eq("id", modReqId).findOne());
 
     }

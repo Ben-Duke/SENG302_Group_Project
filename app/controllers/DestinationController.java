@@ -734,4 +734,40 @@ public class DestinationController extends Controller {
             return unauthorized("Oops, you are not logged in");
         }
     }
+
+    /**
+     * Adds a photo with a photo id to a destination with a destination id.
+     * @param request the HTTP request
+     * @param destId the destination that the photo should be linked to
+     * @return success if the linking was successful, not found if destination or photo not found, unauthorized otherwise.
+     */
+    public Result addPhotoToDestination(Http.Request request, Integer photoId, Integer destId){
+        User user = User.getCurrentUser(request);
+        if(user != null) {
+            UserPhoto photo = UserPhoto.find.byId(photoId);
+            Destination destination = Destination.find.byId(destId);
+            if(destination != null && photo != null) {
+                if (photo.getUser().getUserid() == user.getUserid()) {
+                    //add checks for private destinations here once destinations have been merged in.
+                    //You can only link a photo to a private destination if you own the private destination.
+                    if(!photo.getDestinations().contains(destination)) {
+                        photo.addDestination(destination);
+                        photo.update();
+                        System.out.println("SUCCESS!");
+                    }
+                    else{
+                        return badRequest("You have already linked the photo to this destination.");
+                    }
+                } else {
+                    return unauthorized("Oops, this is not your photo!");
+                }
+            }
+            else{
+                return notFound();
+            }
+        } else {
+            return unauthorized("Oops, you are not logged in");
+        }
+        return redirect(routes.DestinationController.indexDestination());
+    }
 }

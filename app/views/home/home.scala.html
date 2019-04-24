@@ -8,19 +8,19 @@
     <head>
         <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/home.css")">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropper/4.0.0/cropper.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
         <title>Home</title>
     </head>
     <div class="container">
             <!-- The thumbnail in the else is being displayed to show the AC passing -->
         <h1>@user.fName @user.lName
+            @if(UserFactory.getUserProfilePicture(user.getUserid()) != null){
+                <img class="img-circle"  width = "60" height="50" src="@{routes.HomeController.serveProfilePicture()}">
+            } else {
+                <img class="img-circle"  width = "60" height="50" src="@{routes.Assets.at("images/Generic.png")}">
+            }
             @if(user.userIsAdmin) {
                 <img class="img"  width = "60" height="50" src="../assets/images/key_2_small.png">
-            } else{
-                @if(UserFactory.getUserProfilePicture(user.getUserid()) != null){
-                <img class="img-circle"  width = "60" height="50" src="@{routes.HomeController.index(factories.UserFactory.getProfilePhotoPath(user))}">
-                } else {
-                    <img class="img-circle"  width = "60" height="50" src="@{routes.Assets.at("images/Generic.png")}">
-                }
             }
         </h1>
     </div>
@@ -55,7 +55,7 @@
                         </ul>
                     </div>
                 </p>
-                <p>Nationalit(y/ies):
+                <p>Nationality(s):
                     <ul class="list-group col-sm-offset-4" >
                         @for(nationality <- user.nationality) {
                         <li class="list-group-item">@nationality.nationalityName</li>
@@ -158,8 +158,8 @@
 
                     <div class="modal-body">
                         <!--<input type="file" accept="image/*" name="picture" required onchange="readURL(this);"/> -->
-                        <div class="profile-pic-wraper col-sm-8">
-                            <img id="change-profile-pic" src="@{routes.HomeController.serveProfilePicture()}" alt="You have not uploaded a profile picture!"/>
+                        <div class="profile-pic-wraper ">
+                            <img class="img"  width = "450" height="375" id="change-profile-pic" src="@{routes.HomeController.serveProfilePicture()}" alt="You have not uploaded a profile picture!"/>
                         </div>
                         <div class="preview-wrapper">
                             <div class="preview">
@@ -190,7 +190,19 @@
             </div>
             @for(photo <- user.getUserPhotos) {
                 <a href="#" data-toggle="modal" data-target="#destination-carousel">
-                    <img class="img-thumbnail" id=@{photo.getUrl} width="60" src="@{routes.HomeController.index(photo.getUrlWithPath)}" alt="User Image">
+                    <div class="container" id="imagesContainer" >
+                        <div class="overlay">
+                            <i class="icon" title="User Profile">
+                                @if(photo.isPublic()) {
+                                    <i class="fa fa-eye"></i>
+                                } else {
+                                    <i class="fa fa-eye-slash"></i>
+                                }
+                            </i>
+                        </div>
+                        <img class="img-thumbnail" id=@{photo.getUrl} width="60" src="@{routes.HomeController.index(photo.getUrlWithPath)}" alt="User Image">
+
+                    </div>
                 </a>
             }
         </div>
@@ -218,6 +230,17 @@
                                         <h2>insert caption here</h2>
                                     </div>
                                     <a class="btn btn-primary" id="linkButton" href="#" data-toggle="modal" data-target="#@photo.getPhotoId()">Link to destination</a>
+                                    <a class="btn btn-primary" id="setProfilePicture" href="@routes.HomeController.showhome()"
+                                       onclick="setProfilePictureRequest(
+                                                '@routes.HomeController.setProfilePicture(photo.getPhotoId)',
+                                                @photo.getPhotoId())">Set as Profile Picture</a>
+                                    @if(photo.isPublic()) {
+                                            <a class="btn btn-primary" id="makePrivate" href="@routes.HomeController.showhome()" onclick="makePublicOrPrivateRequest(
+                                            '@routes.HomeController.makePicturePublic(photo.getPhotoId, false)', @photo.getPhotoId())">Make Private</a>
+                                        } else {
+                                            <a class="btn btn-primary" id="makePublic" href="@routes.HomeController.showhome()" onclick="makePublicOrPrivateRequest(
+                                            '@routes.HomeController.makePicturePublic(photo.getPhotoId, true)', @photo.getPhotoId())">Make Public</a>
+                                        }
                                 </div>
                                 }
                             </div>

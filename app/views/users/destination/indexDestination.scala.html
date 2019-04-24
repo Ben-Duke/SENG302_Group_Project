@@ -172,7 +172,7 @@
                     <div class="modal-body">
                         <p id="para"> Some text in the modal. </p>
                         @for(photo <- user.getUserPhotos) {
-                        <a href="@routes.DestinationController.indexDestination()" >
+                        <a id="addPhotoLink" class="btn btn-light" href="@routes.DestinationController.indexDestination()" onclick="addPhotoToDestinationRequest(@photo.getPhotoId())" >
                             <div class="container" id="imagesContainer" >
                                 <div class="overlay">
                                     <i class="icon" title="User Profile">

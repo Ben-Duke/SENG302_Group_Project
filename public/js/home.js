@@ -138,7 +138,7 @@ function makePublicOrPrivateRequest(url, photoId){
             console.log("Success!");
         }
     })
-}
+};
 // $("#imgInp").change(function(){
 //     readURL(this);
 // });

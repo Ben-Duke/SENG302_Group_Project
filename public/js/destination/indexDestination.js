@@ -370,3 +370,27 @@ $('#destslider').bind('slid.bs.carousel', function(e){
 $('#destslider').bind('slide.bs.carousel', function(e){
     $('#primaryPhotoButton').attr('disabled','disabled');
 });
+
+function addPhotoToDestinationRequest(photoId){
+    var token =  $('input[name="csrfToken"]').attr('value');
+    $.ajaxSetup({
+        beforeSend: function(xhr) {
+            xhr.setRequestHeader('Csrf-Token', token);
+        }
+    });
+    $.ajax({
+        url: '/users/destinations/' + getIdFromRow + '/' + photoId,
+//        url: url,
+        method: "PUT",
+        data: JSON.stringify({
+            photoId: '"' + photoId + '"'
+        }),
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        success:function(res){
+            $("#" + photoId).modal('hide');
+            console.log("Success!");
+        }
+    })
+};

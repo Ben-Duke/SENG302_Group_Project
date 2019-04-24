@@ -37,6 +37,14 @@ GET     /users/admin/remove/:id     controllers.AdminController.adminToUser(requ
 #Handles creating admin
 GET     /users/admin/make/:id       controllers.AdminController.userToAdmin(request: Request, id: Integer)
 
+#Handles view a destination modification request
+GET     /users/admin/destination_modification_request/:id   controllers.AdminController.viewDestinationModificationRequest(request: Request, id: Integer)
+
+#Handles deleting a destination modification request on rejection by admin
+GET  /users/admin/destination_modification_request/reject/:id    controllers.DestinationController.destinationModificationReject(request: Request, id: Integer)
+
+#Handles updating a destination then deleting a destination modification request on acceptance by admin
+GET  /users/admin/destination_modification_request/accept/:id    controllers.DestinationController.destinationModificationAccept(request: Request, id: Integer)
 
 #Handles updating profile
 POST    /users/profile/update       controllers.ProfileController.updateProfileRequest(request: Request)
@@ -103,7 +111,6 @@ GET     /users/trips/:id            controllers.TripController.displaytrip(reque
 
 #Renders page that displays the home page where users can navigate to other pages
 GET     /users/home                 controllers.HomeController.showhome(request:Request)
-
 
 #Serve a file
 GET     /users/home/serveDestPicture/:id               controllers.HomeController.serveFromId(request: Request, id:Integer)
@@ -179,11 +186,17 @@ POST     /users/destinations/ttypes/:id    controllers.TravellerTypeController.s
 #Handles making a destination public
 GET     /users/destinations/public/:id         controllers.DestinationController.makeDestinationPublic(request : Request, id : Integer)
 
+#Renders page for editing public destinations
+GET     /users/destinations/edit/public/:id     controllers.DestinationController.editPublicDestination(request : Request, id : Integer)
+
 #Gets the user id of the owner of the destination
 GET     /users/destinations/owner/:id         controllers.DestinationController.getDestinationOwner(request : Request, id : Integer)
 
 #Handles updating a destination
 POST    /users/destinations/update/:id  controllers.DestinationController.updateDestination(request : Request, id : Integer)
+
+#Handles sending modification request to admins for editing public destinations
+POST    /users/destinations/update/public/:id  controllers.DestinationController.updatePublicDestination(request : Request, id : Integer)
 
 #Handles setting a photo to a primary photo (for some reason this route throws some csrf failed thing so i added a +nocsrf)... raise an issue in the future
 +nocsrf

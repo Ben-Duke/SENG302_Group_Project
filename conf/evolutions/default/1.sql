@@ -30,6 +30,26 @@ create table destination_traveller_type (
   constraint pk_destination_traveller_type primary key (destination_destid,traveller_type_ttypeid)
 );
 
+create table destination_modification_request (
+  id                            integer auto_increment not null,
+  old_destination_destid        integer,
+  new_dest_name                 varchar(255),
+  new_dest_type                 varchar(255),
+  new_dest_country              varchar(255),
+  new_dest_district             varchar(255),
+  new_dest_latitude             double not null,
+  new_dest_longitude            double not null,
+  request_author_userid         integer,
+  creation_date                 timestamp not null,
+  constraint pk_destination_modification_request primary key (id)
+);
+
+create table destination_modification_request_traveller_type (
+  destination_modification_request_id integer not null,
+  traveller_type_ttypeid        integer not null,
+  constraint pk_destination_modification_request_traveller_type primary key (destination_modification_request_id,traveller_type_ttypeid)
+);
+
 create table nationality (
   natid                         integer auto_increment not null,
   nationality_name              varchar(255),
@@ -127,6 +147,18 @@ alter table destination_traveller_type add constraint fk_destination_traveller_t
 create index ix_destination_traveller_type_traveller_type on destination_traveller_type (traveller_type_ttypeid);
 alter table destination_traveller_type add constraint fk_destination_traveller_type_traveller_type foreign key (traveller_type_ttypeid) references traveller_type (ttypeid) on delete restrict on update restrict;
 
+create index ix_destination_modification_request_old_destination_destid on destination_modification_request (old_destination_destid);
+alter table destination_modification_request add constraint fk_destination_modification_request_old_destination_destid foreign key (old_destination_destid) references destination (destid) on delete restrict on update restrict;
+
+create index ix_destination_modification_request_request_author_userid on destination_modification_request (request_author_userid);
+alter table destination_modification_request add constraint fk_destination_modification_request_request_author_userid foreign key (request_author_userid) references user (userid) on delete restrict on update restrict;
+
+create index ix_destination_modification_request_traveller_type_destin_1 on destination_modification_request_traveller_type (destination_modification_request_id);
+alter table destination_modification_request_traveller_type add constraint fk_destination_modification_request_traveller_type_destin_1 foreign key (destination_modification_request_id) references destination_modification_request (id) on delete restrict on update restrict;
+
+create index ix_destination_modification_request_traveller_type_travel_2 on destination_modification_request_traveller_type (traveller_type_ttypeid);
+alter table destination_modification_request_traveller_type add constraint fk_destination_modification_request_traveller_type_travel_2 foreign key (traveller_type_ttypeid) references traveller_type (ttypeid) on delete restrict on update restrict;
+
 create index ix_trip_user on trip (user);
 alter table trip add constraint fk_trip_user foreign key (user) references user (userid) on delete restrict on update restrict;
 
@@ -178,6 +210,18 @@ drop index if exists ix_destination_traveller_type_destination;
 alter table destination_traveller_type drop constraint if exists fk_destination_traveller_type_traveller_type;
 drop index if exists ix_destination_traveller_type_traveller_type;
 
+alter table destination_modification_request drop constraint if exists fk_destination_modification_request_old_destination_destid;
+drop index if exists ix_destination_modification_request_old_destination_destid;
+
+alter table destination_modification_request drop constraint if exists fk_destination_modification_request_request_author_userid;
+drop index if exists ix_destination_modification_request_request_author_userid;
+
+alter table destination_modification_request_traveller_type drop constraint if exists fk_destination_modification_request_traveller_type_destin_1;
+drop index if exists ix_destination_modification_request_traveller_type_destin_1;
+
+alter table destination_modification_request_traveller_type drop constraint if exists fk_destination_modification_request_traveller_type_travel_2;
+drop index if exists ix_destination_modification_request_traveller_type_travel_2;
+
 alter table trip drop constraint if exists fk_trip_user;
 drop index if exists ix_trip_user;
 
@@ -219,6 +263,10 @@ drop table if exists admin;
 drop table if exists destination;
 
 drop table if exists destination_traveller_type;
+
+drop table if exists destination_modification_request;
+
+drop table if exists destination_modification_request_traveller_type;
 
 drop table if exists nationality;
 

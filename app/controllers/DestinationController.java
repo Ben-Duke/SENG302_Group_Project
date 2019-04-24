@@ -136,10 +136,7 @@ public class DestinationController extends Controller {
         }
         return unauthorized("Oops, you are not logged in");
     }
-
-
-
-
+    
     /**
      * Extracts a destination object from the form user fills out.
      * Checks if input makes a valid destination.
@@ -240,6 +237,7 @@ public class DestinationController extends Controller {
         }
     }
 
+
     /**
      * Creates a new destination object from the edit page form, checks if inputs make a valid destination.
      * then using the given destination, all the attributes of the old destination are updated with the new attributes.
@@ -291,6 +289,175 @@ public class DestinationController extends Controller {
 
         } else {
             return unauthorized("Oops, you are not logged in");
+        }
+    }
+
+    /**
+     * Takes in the id of a given public destination, retrieves that destination from the database.
+     * A page is rendered with the information of the destination loaded ready for editing.
+     *
+     * @param request the http request
+     * @param destId the id of the destination that is to be edited
+     * @return renders the editPublicDestination page, or an unauthorized message is no user is logged in, or
+     * a not found error.
+     */
+    public Result editPublicDestination(Http.Request request, Integer destId) {
+        User user = User.getCurrentUser(request);
+
+        if (user != null) {
+            Destination destination = Destination.find.query().where().eq("destid", destId).findOne();
+
+            if (destination != null) {
+                Form<Destination> destForm = formFactory.form(Destination.class).fill(destination);
+
+                Map<String, Boolean> typeList = Destination.getTypeList();
+                typeList.replace(destination.getDestType(), true);
+
+                Map<String, Boolean> countryList = Destination.getIsoCountries();
+                countryList.replace(destination.getCountry(), true);
+
+                List<TravellerType> travellerTypes = TravellerType.find.all();
+                Map<String, Boolean> travellerTypesMap = new TreeMap<>();
+                for (TravellerType travellerType : travellerTypes) {
+                    if (destination.getTravellerTypes().contains(travellerType)) {
+                        travellerTypesMap.put(travellerType.getTravellerTypeName(), true);
+                    } else {
+                        travellerTypesMap.put(travellerType.getTravellerTypeName(), false);
+                    }
+                }
+
+                return ok(editPublicDestination.render(destForm, destination, countryList, typeList, travellerTypesMap, user));
+
+            } else {
+                return notFound("Destination does not exist");
+            }
+        } else {
+            return unauthorized("Oops, you are not logged in");
+        }
+    }
+
+    /**
+     * Creates a new destination object from the edit page form, checks if inputs make a valid destination.
+     * then using the given destination, checks if any changes have been made. If so, a request to the admins is
+     * sent with the info of the old and new destinations awaiting their acceptance of the modification.
+     *
+     * @param request http request
+     * @param destId the id of the destination that is being updated
+     * @return redirects to view the updated destination if successful, or
+     * a not found error.
+     */
+    public Result updatePublicDestination(Http.Request request, Integer destId) {
+        User user = User.getCurrentUser(request);
+
+        if (user != null) {
+            DynamicForm destForm = formFactory.form().bindFromRequest();
+            Result validationResult = validateDestination(destForm);
+
+            if (validationResult != null) {
+                return validationResult;
+            }
+            //If program gets past this point then inputted destination is valid
+
+            Destination newDestination = formFactory.form(Destination.class).bindFromRequest().get();
+            Destination oldDestination = Destination.find.query().where().eq("destid", destId).findOne();
+
+            if (oldDestination != null) {
+
+                if (newDestination.equals(oldDestination)) {
+
+                    return badRequest("No changes suggested");
+                } else {
+                    DestinationModificationRequest newModReq = new DestinationModificationRequest(oldDestination, newDestination, user);
+                    newModReq.save();
+
+                    return redirect(routes.DestinationController.indexDestination());
+                }
+
+            } else {
+                return notFound("The destination you are trying to update no longer exists");
+            }
+        } else {
+            return unauthorized("Oops, you are not logged in");
+        }
+    }
+
+    /**
+     * This method handles when an admin rejects a destination modification request
+     * the modification request is deleted and the admin is redirected to the index
+     * admin page.
+     *
+     * @param request
+     * @param destModReqId the id of the destination modification request under review
+     * @return given proper authorisation redirect to index admin page
+     */
+    public Result destinationModificationReject(Http.Request request, Integer destModReqId) {
+        User currentUser = User.getCurrentUser(request);
+        if (currentUser != null) {
+            Admin currentAdmin = Admin.find.query().where().eq("userId", currentUser.userid).findOne();
+            if (currentAdmin != null) {
+                DestinationModificationRequest modReq = DestinationModificationRequest.find.query().where().eq("id", destModReqId).findOne();
+                if (modReq != null) {
+
+                    modReq.delete();
+                    return redirect(routes.AdminController.indexAdmin());
+                } else {
+                    return badRequest("Destination Modification Request does not exist");
+                }
+            } else {
+                return unauthorized("Oops, you are not authorised.");
+            }
+        } else {
+            return unauthorized("Oops, you are not logged in.");
+        }
+    }
+
+    /**
+     * This method handles when an admin accepts a destination modification request
+     * the new values for the destination in the destination modification request
+     * are used to update the destination, then the modification request is
+     * is deleted and the admin is redirected to the index admin page.
+     *
+     * @param request
+     * @param destModReqId the id of the destination modification request under review
+     * @return given proper authorisation redirect to index admin page
+     */
+    public Result destinationModificationAccept(Http.Request request, Integer destModReqId) {
+        User currentUser = User.getCurrentUser(request);
+        if (currentUser != null) {
+            Admin currentAdmin = Admin.find.query().where().eq("userId", currentUser.userid).findOne();
+            if (currentAdmin != null) {
+                DestinationModificationRequest modReq = DestinationModificationRequest.find.query().where().eq("id", destModReqId).findOne();
+                if (modReq != null) {
+
+                    Destination oldDestination = modReq.getOldDestination();
+
+                    oldDestination.setDestName(modReq.getNewDestName());
+                    oldDestination.setDestType(modReq.getNewDestType());
+                    oldDestination.setCountry(modReq.getNewDestCountry());
+                    oldDestination.setDistrict(modReq.getNewDestDistrict());
+                    oldDestination.setLatitude(modReq.getNewDestLatitude());
+                    oldDestination.setLongitude(modReq.getNewDestLongitude());
+
+                    List<TravellerType> travellerTypes = new ArrayList<>();
+                    for (TravellerType travellerType : modReq.getNewTravellerTypes()) {
+                        travellerTypes.add(travellerType);
+                    }
+
+                    oldDestination.setTravellerTypes(travellerTypes);
+
+                    oldDestination.update();
+
+                    modReq.delete();
+
+                    return redirect(routes.AdminController.indexAdmin());
+                } else {
+                    return badRequest("Destination Modification Request does not exist");
+                }
+            } else {
+                return unauthorized("Oops, you are not authorised.");
+            }
+        } else {
+            return unauthorized("Oops, you are not logged in.");
         }
     }
 
@@ -373,6 +540,7 @@ public class DestinationController extends Controller {
             return unauthorized("Oops, you are not logged in");
         }
     }
+
     /**
      * Links a photo with a photo id to a destination with a destination id.
      * @param request the HTTP request

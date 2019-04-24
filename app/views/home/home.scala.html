@@ -14,14 +14,13 @@
     <div class="container">
             <!-- The thumbnail in the else is being displayed to show the AC passing -->
         <h1>@user.fName @user.lName
+            @if(UserFactory.getUserProfilePicture(user.getUserid()) != null){
+                <img class="img-circle"  width = "60" height="50" src="@{routes.HomeController.serveProfilePicture()}">
+            } else {
+                <img class="img-circle"  width = "60" height="50" src="@{routes.Assets.at("images/Generic.png")}">
+            }
             @if(user.userIsAdmin) {
                 <img class="img"  width = "60" height="50" src="../assets/images/key_2_small.png">
-            } else{
-                @if(UserFactory.getUserProfilePicture(user.getUserid()) != null){
-                <img class="img-circle"  width = "60" height="50" src="@{routes.HomeController.index(factories.UserFactory.getProfilePhotoPath(user))}">
-                } else {
-                    <img class="img-circle"  width = "60" height="50" src="@{routes.Assets.at("images/Generic.png")}">
-                }
             }
         </h1>
     </div>

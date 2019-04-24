@@ -372,16 +372,18 @@ $('#destslider').bind('slide.bs.carousel', function(e){
 });
 
 function addPhotoToDestinationRequest(photoId){
+    console.log("Button clicked");
     var token =  $('input[name="csrfToken"]').attr('value');
     $.ajaxSetup({
         beforeSend: function(xhr) {
             xhr.setRequestHeader('Csrf-Token', token);
+            CSRFTokenHelper.addCSRFToken(request);
         }
     });
     $.ajax({
+
         url: '/users/destinations/' + getIdFromRow + '/' + photoId,
-//        url: url,
-        method: "PUT",
+        method: "POST",
         data: JSON.stringify({
             photoId: '"' + photoId + '"'
         }),

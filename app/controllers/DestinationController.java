@@ -738,6 +738,7 @@ public class DestinationController extends Controller {
     /**
      * Adds a photo with a photo id to a destination with a destination id.
      * @param request the HTTP request
+     * @param photoId the photoId of the photo to e added
      * @param destId the destination that the photo should be linked to
      * @return success if the linking was successful, not found if destination or photo not found, unauthorized otherwise.
      */

@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import factories.DestinationFactory;
 import formdata.DestinationFormData;
-import formdata.UpdateUserFormData;
 import models.*;
 
 
@@ -12,7 +11,6 @@ import play.data.DynamicForm;
 import play.data.Form;
 import play.data.FormFactory;
 import play.libs.Json;
-import play.mvc.BodyParser;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
@@ -522,15 +520,15 @@ public class DestinationController extends Controller {
                     } else {
                         //no matching pub destination exists, making public now
                         //sets the destination to public, sets the owner to the default admin and updates the destination
-                        int matchingDests = destFactory.otherUserHasPrivateDestination(user.userid, destination);
-                        if (matchingDests == 0) {
+                        List<Destination> matchingDests = destFactory.getOtherUsersMatchingPrivateDestinations(user.userid, destination);
+                        if (matchingDests.isEmpty()) {
                             destination.setIsPublic(true);
                             destination.update();
-                        } else if (matchingDests == 1) {
-                            flash("matchingDest", "There is " + matchingDests + " other destination that matches " +
+                        } else if (matchingDests.size() == 1) {
+                            flash("matchingDest", "There is " + matchingDests.size() + " other destination that matches " +
                                     destination.getDestName() + ".\nWould you like to merge?");
                         } else {
-                            flash("matchingDest", "There are " + matchingDests + " other destinations that match " +
+                            flash("matchingDest", "There are " + matchingDests.size() + " other destinations that match " +
                                     destination.getDestName() + ".\nWould you like to merge?");
                         }
                         return redirect(routes.DestinationController.indexDestination());

@@ -3,6 +3,7 @@ package factories;
 import models.Destination;
 import models.User;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -84,18 +85,24 @@ public class DestinationFactory {
         return false;
     }
 
-    //todo javadoc
-    public int otherUserHasPrivateDestination(int userId, Destination destination) {
+    /**
+     * C
+     * @param userId
+     * @param destination
+     * @return
+     */
+    public List<Destination> getOtherUsersMatchingPrivateDestinations(int userId, Destination destination) {
         User user = UserFactory.getUserFromId(userId);
         List<Destination> allDestinations = Destination.find.query()
                 .where().eq("isPublic", false).and()
                 .not().eq("user", user).findList();
+        List<Destination> matchingDestinations = new ArrayList<>();
         int count = 0;
         for (Destination existingDestination : allDestinations) {
             if (destination.equals(existingDestination)) {
-                count++;
+                matchingDestinations.add(destination);
             }
         }
-        return count;
+        return matchingDestinations;
     }
 }

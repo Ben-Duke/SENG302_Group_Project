@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static play.mvc.Http.Status.*;
 import static play.test.Helpers.GET;
 import static play.test.Helpers.route;
@@ -127,7 +128,7 @@ public class TravellerTypeControllerTest extends WithApplication {
         //User should be redirected to the update traveller type page
         assertEquals(SEE_OTHER, result.status());
         //"TravellerType with name "Thrillseeker" should be the second index in the user's traveller types, first being groupie
-        assertEquals("Thrillseeker", Destination.find.byId(1).getTravellerTypes().get(1).getTravellerTypeName());
+        assertTrue(Destination.find.byId(1).getTravellerTypes().contains("Thrillseeker") && Destination.find.byId(1).getTravellerTypes().size() == 1);
     }
 
     /**

@@ -1,11 +1,13 @@
 package controllers;
 
 import models.Admin;
+import models.DestinationModificationRequest;
 import models.User;
 import play.data.FormFactory;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
+import views.html.users.destination.viewDestinationModificationRequest;
 import views.html.users.profile.indexAdmin;
 
 import javax.inject.Inject;
@@ -38,7 +40,8 @@ public class AdminController extends Controller {
                     users.remove(user1);
                     adminUsers.add(user1);
                 }
-                return ok(indexAdmin.render(currentUser, users, admins, adminUsers));
+                List<DestinationModificationRequest> allReqs = DestinationModificationRequest.find.all();
+                return ok(indexAdmin.render(currentUser, users, admins, adminUsers, allReqs));
             }
 
         }
@@ -85,5 +88,25 @@ public class AdminController extends Controller {
             }
         }
         return unauthorized("Oops, you are not authorised.");
+    }
+
+    public Result viewDestinationModificationRequest(Http.Request request, Integer destModReqId) {
+        User currentUser = User.getCurrentUser(request);
+        if (currentUser != null) {
+            Admin currentAdmin = Admin.find.query().where().eq("userId", currentUser.userid).findOne();
+            if (currentAdmin != null) {
+                DestinationModificationRequest modReq = DestinationModificationRequest.find.query().where().eq("id", destModReqId).findOne();
+                if (modReq != null) {
+                    User user = User.find.byId(currentAdmin.getUserId());
+                    return ok(viewDestinationModificationRequest.render(modReq, user));
+                } else {
+                    return badRequest("Destination Modification Request does not exist");
+                }
+            } else {
+                return unauthorized("Oops, you are not authorised.");
+            }
+        } else {
+            return unauthorized("Oops, you are not logged in.");
+        }
     }
 }

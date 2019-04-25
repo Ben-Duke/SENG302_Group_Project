@@ -1,10 +1,7 @@
 package controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import models.Destination;
-import models.Trip;
-import models.User;
-import models.Visit;
+import models.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.After;
@@ -25,6 +22,7 @@ import utilities.TestDatabaseManager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.*;
@@ -37,7 +35,7 @@ public class DestinationControllerTest extends WithApplication {
      * The fake database
      */
     Database database;
-    
+
     int REDIRECT_HTTP_STATUS = SEE_OTHER;
 
     @Override
@@ -203,7 +201,7 @@ public class DestinationControllerTest extends WithApplication {
         formData.put("longitude", "-50.0");
         Http.RequestBuilder request = Helpers.fakeRequest().bodyForm(formData).method(POST).uri("/users/destinations/save").session("connected", "2");
         Result result = route(app, request);
-        assertEquals(REDIRECT_HTTP_STATUS, result.status());
+        assertEquals(SEE_OTHER, result.status());
         assertEquals(4, User.find.byId(2).getDestinations().size());
     }
 
@@ -721,5 +719,262 @@ public class DestinationControllerTest extends WithApplication {
         JSONObject obj2 = jsonArray.getJSONObject(1);
         assertEquals("Groupie", obj1.getString("travellerTypeName"));
         assertEquals("Gap Year",obj2.getString("travellerTypeName"));
+    }
+
+    @Test
+    public void getVisibleDestinationMarkersJSONNotLoggedIn() {
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/destinations/getalljson").session("connected", null);
+        Result result = route(app, request);
+        assertEquals(UNAUTHORIZED, result.status());
+    }
+
+    @Test
+    public void getVisibleDestinationMarkersJSONLoggedIn() {
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/destinations/getalljson").session("connected", "2");
+        Result result = route(app, request);
+
+        JSONArray jsonArrayActual = new JSONArray(contentAsString(result));
+        JSONArray jsonArrayExpected = new JSONArray("[\n" +
+                "  {\n" +
+                "    \"country\": \"New Zealand\",\n" +
+                "    \"destName\": \"Christchurch\",\n" +
+                "    \"destid\": 1,\n" +
+                "    \"destId\": 1,\n" +
+                "    \"public\": true,\n" +
+                "    \"district\": \"Canterbury\",\n" +
+                "    \"latitude\": -43.5321,\n" +
+                "    \"isPublic\": true,\n" +
+                "    \"primaryPhoto\": null,\n" +
+                "    \"destType\": \"Town\",\n" +
+                "    \"longitude\": 172.6362\n" +
+                "  },\n" +
+                "  {\n" +
+                "    \"country\": \"New Zealand\",\n" +
+                "    \"destName\": \"The Wok\",\n" +
+                "    \"destid\": 3,\n" +
+                "    \"destId\": 3,\n" +
+                "    \"public\": true,\n" +
+                "    \"district\": \"Canterbury\",\n" +
+                "    \"latitude\": -43.523593,\n" +
+                "    \"isPublic\": true,\n" +
+                "    \"primaryPhoto\": null,\n" +
+                "    \"destType\": \"Cafe\\/Restaurant\",\n" +
+                "    \"longitude\": 172.582971\n" +
+                "  },\n" +
+                "  {\n" +
+                "    \"country\": \"New Zealand\",\n" +
+                "    \"destName\": \"Hanmer Springs Thermal Pools\",\n" +
+                "    \"destid\": 4,\n" +
+                "    \"destId\": 4,\n" +
+                "    \"public\": true,\n" +
+                "    \"district\": \"North Canterbury\",\n" +
+                "    \"latitude\": -42.522791,\n" +
+                "    \"isPublic\": true,\n" +
+                "    \"primaryPhoto\": null,\n" +
+                "    \"destType\": \"Attraction\",\n" +
+                "    \"longitude\": 172.828944\n" +
+                "  },\n" +
+                "  {\n" +
+                "    \"country\": \"Egypt\",\n" +
+                "    \"destName\": \"Great Pyramid of Giza\",\n" +
+                "    \"destid\": 6,\n" +
+                "    \"destId\": 6,\n" +
+                "    \"public\": true,\n" +
+                "    \"district\": \"Giza\",\n" +
+                "    \"latitude\": 29.979481,\n" +
+                "    \"isPublic\": true,\n" +
+                "    \"primaryPhoto\": null,\n" +
+                "    \"destType\": \"Attraction\",\n" +
+                "    \"longitude\": 31.134159\n" +
+                "  },\n" +
+                "  {\n" +
+                "    \"country\": \"United States\",\n" +
+                "    \"destName\": \"Lincoln Memorial\",\n" +
+                "    \"destid\": 9,\n" +
+                "    \"destId\": 9,\n" +
+                "    \"public\": true,\n" +
+                "    \"district\": \"Washington DC\",\n" +
+                "    \"latitude\": 38.889406,\n" +
+                "    \"isPublic\": true,\n" +
+                "    \"primaryPhoto\": null,\n" +
+                "    \"destType\": \"Monument\",\n" +
+                "    \"longitude\": -77.050155\n" +
+                "  },\n" +
+                "  {\n" +
+                "    \"country\": \"New Zealand\",\n" +
+                "    \"destName\": \"Wellington\",\n" +
+                "    \"destid\": 2,\n" +
+                "    \"destId\": 2,\n" +
+                "    \"public\": false,\n" +
+                "    \"district\": \"Wellington\",\n" +
+                "    \"latitude\": -41.2866,\n" +
+                "    \"isPublic\": false,\n" +
+                "    \"primaryPhoto\": null,\n" +
+                "    \"destType\": \"Town\",\n" +
+                "    \"longitude\": 174.7756\n" +
+                "  }\n" +
+                "]");
+
+        assertEquals(jsonArrayExpected.toString(), jsonArrayActual.toString());
+    }
+
+    @Test
+    public void destinationModificationRequestReject() {
+        User user = User.find.all().get(0);
+        Destination newDestination = new Destination("Test Dest", "Town", "Test District", "Test Country", 100, 100, user, true);
+        newDestination.save();
+        Integer destId = newDestination.getDestId();
+
+        Destination newDestinationValues = new Destination("Test Dest2", "Town2", "Test District2", "Test Country2", 101, 101, user);
+
+        Destination destination = Destination.find.byId(destId);
+
+        DestinationModificationRequest modReq = new DestinationModificationRequest(destination, newDestinationValues, user);
+        modReq.save();
+
+        Integer modReqId = modReq.getId();
+
+        Admin admin = Admin.find.all().get(0);
+        Integer adminUserId = admin.getUserId();
+
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/admin/destination_modification_request/reject/"+modReqId)
+                .session("connected", adminUserId.toString());
+
+        Result result = route(app, request);
+
+        assertEquals(303, result.status());
+        assert(destination.getDestName().equals("Test Dest"));
+        assert(destination.getDestType().equals("Town"));
+        assert(destination.getLatitude() == 100);
+        assertEquals(null, DestinationModificationRequest.find.query().where().eq("id", modReqId).findOne());
+
+    }
+
+    @Test
+    public void destinationModificationRequestAcceptWithoutTravellerTypes() {
+        User user = User.find.all().get(0);
+        Destination newDestination = new Destination("Test Dest", "Town", "Test District", "Test Country", 100, 100, user, true);
+        newDestination.save();
+        Integer destId = newDestination.getDestId();
+
+        Destination newDestinationValues = new Destination("Test Dest2", "Town2", "Test District2", "Test Country2", 101, 101, user);
+
+        DestinationModificationRequest modReq = new DestinationModificationRequest(newDestination, newDestinationValues, user);
+        modReq.save();
+
+        Integer modReqId = modReq.getId();
+
+        Admin admin = Admin.find.all().get(0);
+        Integer adminUserId = admin.getUserId();
+
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/admin/destination_modification_request/accept/"+modReqId)
+                .session("connected", adminUserId.toString());
+
+        Result result = route(app, request);
+
+        Destination destination = Destination.find.byId(destId);
+
+        assertEquals(303, result.status());
+        System.out.println(destination.getDestName());
+        assert(destination.getDestName().equals("Test Dest2"));
+        assert(destination.getDestType().equals("Town2"));
+        assert(destination.getDistrict().equals("Test District2"));
+        assert(destination.getCountry().equals("Test Country2"));
+        assert(destination.getLatitude() == 101);
+        assert(destination.getLatitude() == 101);
+        assertEquals(null, DestinationModificationRequest.find.query().where().eq("id", modReqId).findOne());
+
+    }
+
+
+    @Test
+    public void destinationModificationRequestAcceptWithTravellerTypes() {
+        User user = User.find.all().get(0);
+        Destination newDestination = new Destination("Test Dest", "Town", "Test District", "Test Country", 100, 100, user, true);
+        newDestination.save();
+        Integer destId = newDestination.getDestId();
+
+        Destination newDestinationValues = new Destination("Test Dest2", "Town2", "Test District2", "Test Country2", 101, 101, user);
+        List<TravellerType> travellerTypes = new ArrayList<>();
+        travellerTypes.add(new TravellerType("Backpacker"));
+        travellerTypes.add(new TravellerType("Groupie"));
+        newDestinationValues.setTravellerTypes(travellerTypes);
+
+        DestinationModificationRequest modReq = new DestinationModificationRequest(newDestination, newDestinationValues, user);
+        modReq.save();
+
+        Integer modReqId = modReq.getId();
+
+        Admin admin = Admin.find.all().get(0);
+        Integer adminUserId = admin.getUserId();
+
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/admin/destination_modification_request/accept/"+modReqId)
+                .session("connected", adminUserId.toString());
+
+        Result result = route(app, request);
+
+        Destination destination = Destination.find.byId(destId);
+
+        assertEquals(303, result.status());
+        assert(destination.getDestName().equals("Test Dest2"));
+        assert(destination.getDestType().equals("Town2"));
+        assert(destination.getDistrict().equals("Test District2"));
+        assert(destination.getCountry().equals("Test Country2"));
+        assert(destination.getLatitude() == 101);
+        assert(destination.getLatitude() == 101);
+
+        for (TravellerType travellerType : destination.getTravellerTypes()) {
+            assert(travellerType.getTravellerTypeName().equals("Backpacker") || travellerType.getTravellerTypeName().equals("Groupie"));
+            assertNotEquals(null, travellerType.getTtypeid());
+        }
+        assertEquals(2, destination.getTravellerTypes().size());
+
+        assertEquals(null, DestinationModificationRequest.find.query().where().eq("id", modReqId).findOne());
+
+    }
+
+    @Test
+    public void editPublicDestination() {
+
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/destinations/edit/public/1")
+                .session("connected", "2");
+
+        Result result = route(app, request);
+
+        assertEquals(OK, result.status());
+
+    }
+
+    @Test
+    public void updatePublicDestination() {
+        Map<String, String> formData = new HashMap<>();
+        formData.put("destName", "Summoner's Rift");
+        formData.put("destType", "Yes");
+        formData.put("district", "Demacia");
+        formData.put("country", "Angola");
+        formData.put("latitude", "50.0");
+        formData.put("longitude", "-50.0");
+
+        Http.RequestBuilder request = Helpers.fakeRequest()
+            .bodyForm(formData)
+            .method(POST)
+            .uri("/users/destinations/update/public/1")
+            .session("connected", "2");
+
+        Result result = route(app, request);
+
+        assertEquals(303, result.status());
     }
 }

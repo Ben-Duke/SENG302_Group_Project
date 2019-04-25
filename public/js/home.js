@@ -1,5 +1,7 @@
 var croppedCanvas;
 var filename;
+var isExistingPhoto;
+var photoIdToEdit;
 
 /**
  * This function is called when an image file is chosen and uploaded by the user.
@@ -33,7 +35,6 @@ var loadFile = function (event) {
             }).html($clone);
         },
         crop: function (e) {
-            console.log("crop");
             var imageData = $(this).cropper('getImageData');
             croppedCanvas = $(this).cropper('getCroppedCanvas');
             $('.preview').html('<img src="' + croppedCanvas.toDataURL() + '" class="thumb-lg img-circle" style="width:100px;height:100px;">');
@@ -52,7 +53,6 @@ var loadFile = function (event) {
             });
         }
     })
-
 };
 
 /**
@@ -61,7 +61,6 @@ var loadFile = function (event) {
  * The cropped image will be used as the user's profile picture.
  */
 $('#save-profile').click(function (eve){
-    console.log("filename2 is " + filename);
     eve.preventDefault();
     var formData = new FormData();
     var private = $('input[type=checkbox]').attr('checked');
@@ -93,28 +92,35 @@ $('#save-profile').click(function (eve){
     });
 });
 
-function setProfilePictureRequest(url, photoId){
-    var token =  $('input[name="csrfToken"]').attr('value');
-    $.ajaxSetup({
-        beforeSend: function(xhr) {
-            xhr.setRequestHeader('Csrf-Token', token);
-        }
-    });
-    $.ajax({
-        url: url,
-        method: "PUT",
-        data: JSON.stringify({
-            photoId: '"' + photoId + '"'
-        }),
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        success:function(res){
+function setProfilePictureRequest(photoId){
             $("#" + photoId).modal('hide');
-            console.log("Success!");
-        }
-    })
+            isExistingPhoto = true;
+            photoIdToEdit = photoId;
+            $('#addProfilePhoto').modal('show');
 }
+
+// function setProfilePictureRequest(url, photoId){
+//     var token =  $('input[name="csrfToken"]').attr('value');
+//     $.ajaxSetup({
+//         beforeSend: function(xhr) {
+//             xhr.setRequestHeader('Csrf-Token', token);
+//         }
+//     });
+//     $.ajax({
+//         url: url,
+//         method: "PUT",
+//         data: JSON.stringify({
+//             photoId: '"' + photoId + '"'
+//         }),
+//         headers: {
+//             'Content-Type': 'application/json'
+//         },
+//         success:function(res){
+//             $("#" + photoId).modal('hide');
+//             console.log("Success!");
+//         }
+//     })
+// }
 
 
 function makePublicOrPrivateRequest(url, photoId){
@@ -139,6 +145,53 @@ function makePublicOrPrivateRequest(url, photoId){
         }
     })
 }
+
+$('#addProfilePhoto').on('show.bs.modal', function (e) {
+    if(isExistingPhoto == true){
+        isExistingPhoto = false;
+        var output = document.getElementById('change-profile-pic');
+        output.src = "/users/home/serveDestPicture/" + photoIdToEdit;
+        filename = event.target.files[0].name;
+        $('#change-profile-pic').cropper("destroy");
+
+        var $previews = $('.preview');
+        $('#change-profile-pic').cropper({
+            ready: function () {
+                var $clone = $(this).clone().removeClass('cropper-hidden');
+                $clone.css({
+                    display: 'block',
+                    width: '100%',
+                    minWidth: 0,
+                    minHeight: 0,
+                    maxWidth: 'none',
+                    maxHeight: 'none'
+                });
+                $previews.css({
+                    width: '100%',
+                    overflow: 'hidden'
+                }).html($clone);
+            },
+            crop: function (e) {
+                var imageData = $(this).cropper('getImageData');
+                croppedCanvas = $(this).cropper('getCroppedCanvas');
+                $('.preview').html('<img src="' + croppedCanvas.toDataURL() + '" class="thumb-lg img-circle" style="width:100px;height:100px;">');
+                var previewAspectRatio = e.width / e.height;
+                $previews.each(function (){
+                    var $preview = $(this);
+                    var previewWidth = $preview.width();
+                    var previewHeight = previewWidth / previewAspectRatio;
+                    var imageScaledRatio = e.width / previewWidth;
+                    $preview.height(previewHeight).find('img').css({
+                        width: imageData.naturalWidth / imageScaledRatio,
+                        height: imageData.naturalHeight / imageScaledRatio,
+                        marginLeft: -e.x / imageScaledRatio,
+                        marginTop: -e.y / imageScaledRatio
+                    });
+                });
+            }
+        })
+    }
+});
 // $("#imgInp").change(function(){
 //     readURL(this);
 // });

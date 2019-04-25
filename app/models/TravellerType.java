@@ -62,6 +62,23 @@ public class TravellerType extends Model {
 
     public static Finder<Integer,TravellerType> find = new Finder<>(TravellerType.class);
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) {
+            return true;
+        }
+        if (! (obj instanceof TravellerType)) {
+            return false;
+        }
+        TravellerType other = (TravellerType) obj;
+        return this.travellerTypeName.equals(other.travellerTypeName) && this.ttypeid.equals(other.ttypeid);
+    }
 
-
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 31 * hash + ttypeid;
+        hash = 31 * hash + (travellerTypeName == null ? 0 : travellerTypeName.hashCode());
+        return  hash;
+    }
 }

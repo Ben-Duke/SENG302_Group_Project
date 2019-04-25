@@ -193,42 +193,61 @@ public class Destination extends Model {
      * The equals method compares two Destination objects for equality. The criteria
      * is all attributes, except isPublic.
      *
-     * @param dest2 the other Destination object which is being compared for equality
+     * @param o the other Destination object which is being compared for equality
      * @return true if destinations are equal, false if not.
      */
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+        if (! (o instanceof Destination)) {
+            return false;
+        }
 
-    public boolean equals(Destination dest2) {
-        if (!this.destName.equals(dest2.getDestName())) {
+        Destination other = (Destination) o;
+
+        if (!this.destName.equals(other.getDestName())) {
             return false;
         }
-        if (!this.country.equals(dest2.getCountry())) {
+        if (!this.country.equals(other.getCountry())) {
             return false;
         }
-        if (!this.district.equals(dest2.getDistrict())) {
+        if (!this.district.equals(other.getDistrict())) {
             return false;
         }
-        if (!(this.latitude == dest2.getLatitude())) {
+        if (this.latitude != other.getLatitude()) {
             return false;
         }
-        if (!(this.longitude == dest2.getLongitude())) {
+        if (this.longitude != other.getLongitude()) {
             return false;
         }
-        if (!this.destType.equals(dest2.getDestType())) {
+        if (!this.destType.equals(other.getDestType())) {
             return false;
         }
         int eqCount = 0;
         for (TravellerType travellerType1 : this.travellerTypes) {
-            for (TravellerType travellerType2 : dest2.getTravellerTypes()) {
+            for (TravellerType travellerType2 : other.getTravellerTypes()) {
                 if (travellerType1.getTravellerTypeName().equals(travellerType2.getTravellerTypeName())) {
                     eqCount++;
                 }
             }
         }
-        if (!(eqCount == this.travellerTypes.size() && eqCount == dest2.getTravellerTypes().size())) {
-            return false;
-        }
+        return eqCount == this.travellerTypes.size() && eqCount == other.getTravellerTypes().size();
+    }
 
-        return true;
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 31 * hash + destid;
+        hash = 31 * hash + destName.hashCode();
+        hash = 31 * hash + destType.hashCode();
+        hash = 31 * hash + country.hashCode();
+        hash = 31 * hash + district.hashCode();
+        hash = 31 * hash + ((Double) latitude).hashCode();
+        hash = 31 * hash + ((Double) longitude).hashCode();
+        hash = 31 * hash + travellerTypes.hashCode();
+        return hash;
     }
 
     /**

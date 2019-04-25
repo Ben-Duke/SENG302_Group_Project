@@ -6,9 +6,7 @@ import io.ebean.annotation.CreatedTimestamp;
 import play.data.format.Formats;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Entity
 public class DestinationModificationRequest extends Model {
@@ -27,7 +25,7 @@ public class DestinationModificationRequest extends Model {
     public double newDestLongitude;
 
     @ManyToMany(cascade = CascadeType.ALL)
-    public List<TravellerType> newTravelerTypes;
+    public Set<TravellerType> newTravelerTypes;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Formats.DateTime(pattern="yyyy-MM-dd HH:mm:ss")
@@ -45,12 +43,22 @@ public class DestinationModificationRequest extends Model {
         this.newDestDistrict = newDestination.getDistrict();
         this.newDestLatitude = newDestination.getLatitude();
         this.newDestLongitude = newDestination.getLongitude();
-
-        for (TravellerType travellerType : newDestination.getTravellerTypes()) {
-            this.newTravelerTypes.add(TravellerType.find.query().where().eq("traveller_type_name", travellerType.getTravellerTypeName()).findOne());
-        }
+        this.newTravelerTypes = formNewTravelertypes(newDestination.getTravellerTypes());
 
         this.requestAuthor = user;
+    }
+
+    private Set<TravellerType> formNewTravelertypes(Set<TravellerType> travellerTypes) {
+        Set<TravellerType> travellerTypesSet = new HashSet<>();
+        String typesString = travellerTypes.toString();
+        typesString = typesString.substring(2, typesString.length()-2);
+        String[] types = typesString.split("\\s*,\\s");
+        for (String type: types) {
+            TravellerType travellerType = TravellerType.find.query()
+                    .where().eq("travellerTypeName", type).findOne();
+            travellerTypesSet.add(travellerType);
+        }
+        return travellerTypesSet;
     }
 
     public static Finder<Integer, DestinationModificationRequest> find = new Finder<>(DestinationModificationRequest.class);
@@ -63,7 +71,7 @@ public class DestinationModificationRequest extends Model {
     public String getNewDestDistrict() { return newDestDistrict; }
     public double getNewDestLatitude() { return newDestLatitude; }
     public double getNewDestLongitude() { return newDestLongitude; }
-    public List<TravellerType> getNewTravellerTypes() { return newTravelerTypes; }
+    public Set<TravellerType> getNewTravellerTypes() { return newTravelerTypes; }
     public Date getCreationDate() { return creationDate; }
     public User getRequestAuthor() { return requestAuthor; }
 }

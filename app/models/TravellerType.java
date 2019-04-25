@@ -7,6 +7,8 @@ import io.ebean.Model;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Set;
+
 @Table(
         uniqueConstraints=
                 @UniqueConstraint(columnNames={"traveller_type_name"})
@@ -30,11 +32,11 @@ public class TravellerType extends Model {
 
     @JsonIgnore
     @ManyToMany(mappedBy = "travellerTypes")
-    public List<User> users;
+    public Set<User> users;
 
     @JsonIgnore
     @ManyToMany(mappedBy = "travellerTypes")
-    public List<Destination> destinations;
+    public Set<Destination> destinations;
 
     public Integer getTtypeid() {
         return ttypeid;
@@ -52,11 +54,11 @@ public class TravellerType extends Model {
         this.travellerTypeName = travellerTypeName;
     }
 
-    public List<User> getUsers() {
+    public Set<User> getUsers() {
         return users;
     }
 
-    public void setUsers(List<User> users) {
+    public void setUsers(Set<User> users) {
         this.users = users;
     }
 

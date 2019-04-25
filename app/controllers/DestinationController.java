@@ -438,10 +438,8 @@ public class DestinationController extends Controller {
                     oldDestination.setLatitude(modReq.getNewDestLatitude());
                     oldDestination.setLongitude(modReq.getNewDestLongitude());
 
-                    List<TravellerType> travellerTypes = new ArrayList<>();
-                    for (TravellerType travellerType : modReq.getNewTravellerTypes()) {
-                        travellerTypes.add(travellerType);
-                    }
+                    Set<TravellerType> travellerTypes = new TreeSet<>();
+                    travellerTypes.addAll(modReq.getNewTravellerTypes());
 
                     oldDestination.setTravellerTypes(travellerTypes);
 

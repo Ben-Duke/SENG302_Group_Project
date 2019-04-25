@@ -35,7 +35,7 @@ public class TravelPartnerController {
      *                       This will be empty when the user first enters the page
      * @return renders the search profile page
      */
-    private Result displayRenderedFilterPage(List<User> resultProfiles, User user) {
+    private Result displayRenderedFilterPage(Set<User> resultProfiles, User user) {
 
         DynamicForm dynamicForm = formFactory.form();
 
@@ -58,7 +58,7 @@ public class TravelPartnerController {
         genderMap.put("Female", true);
         genderMap.put("Other", true);
 
-        return ok(searchprofile.render(dynamicForm, convertedTravellerTypes, convertedNationalities, genderMap, resultProfiles,user));
+        return ok(searchprofile.render(dynamicForm, convertedTravellerTypes, convertedNationalities, genderMap, resultProfiles, user));
     }
 
 
@@ -71,7 +71,7 @@ public class TravelPartnerController {
     public Result renderFilterPage(Http.Request request){
         User user = User.getCurrentUser(request);
         if (user != null) {
-            List<User> resultProfiles = new ArrayList<>();
+            Set<User> resultProfiles = new TreeSet<>();
 
             return displayRenderedFilterPage(resultProfiles, user);
         }
@@ -85,7 +85,7 @@ public class TravelPartnerController {
      * @param filterForm the form object containing the users search selections
      * @return A list of all users that match the traveler type
      */
-    private List<User> travelerTypeResults(DynamicForm filterForm) {
+    private Set<User> travelerTypeResults(DynamicForm filterForm) {
         String travellerType = filterForm.get("travellertype");
 
         if (travellerType != null){
@@ -95,7 +95,7 @@ public class TravelPartnerController {
             } else {
                 List<TravellerType> travellerTypes = TravellerType.find.query().where().eq("travellerTypeName", travellerType).findList();
                 if (travellerTypes.size() > 0) {
-                    List<User> results = TravellerType.find.byId(travellerTypes.get(0).ttypeid).getUsers();
+                    Set<User> results = TravellerType.find.byId(travellerTypes.get(0).ttypeid).getUsers();
                     return results;
                 }
 
@@ -109,7 +109,7 @@ public class TravelPartnerController {
      * @param filterForm the form object containing the users search selections
      * @return A list of all users that match the nationality
      */
-    private List<User> nationalityResults(DynamicForm filterForm) {
+    private Set<User> nationalityResults(DynamicForm filterForm) {
 
         String nationality = filterForm.get("nationality");
         if (nationality != null) {
@@ -119,7 +119,7 @@ public class TravelPartnerController {
             } else {
                 List<Nationality> nationalities = Nationality.find.query().where().eq("nationalityName", nationality).findList();
                 if (nationalities.size() > 0) {
-                    List<User> results = Nationality.find.byId(nationalities.get(0).natid).getUsers();
+                    Set<User> results = Nationality.find.byId(nationalities.get(0).natid).getUsers();
                     return results;
                 }
             }
@@ -132,22 +132,20 @@ public class TravelPartnerController {
      * @param filterForm the form object containing the users search selections
      * @return A list of all users that match the genders
      */
-    private List<User> genderResults(DynamicForm filterForm) {
+    private Set<User> genderResults(DynamicForm filterForm) {
 
         List<String> genderSelections = new ArrayList<>();
         genderSelections.add(filterForm.get("gender[0"));
         genderSelections.add(filterForm.get("gender[1"));
         genderSelections.add(filterForm.get("gender[2"));
 
-        List<User> results = new ArrayList<>();
+        Set<User> results = new TreeSet<>();
 
         for (String gender: genderSelections) {
             if (gender != null) {
 
                 List<User> query = User.find.query().where().eq("gender", gender).findList();
-                for (User user: query) {
-                    results.add(user);
-                }
+                results.addAll(query);
             }
         }
 
@@ -160,7 +158,7 @@ public class TravelPartnerController {
      * @param filterForm the form object containing the users search selections
      * @return A list of all users that match the date range
      */
-    private List<User> ageRangeResults(DynamicForm filterForm) {
+    private Set<User> ageRangeResults(DynamicForm filterForm) {
 
         String agerange1 = filterForm.get("agerange1");
         String agerange2 = filterForm.get("agerange2");
@@ -188,7 +186,7 @@ public class TravelPartnerController {
         }
 
         if(date1 != null && date2 != null){
-            List<User> results = User.find.query().where().gt("dateOfBirth", date1).lt("dateOfBirth", date2).findList();
+            Set<User> results = User.find.query().where().gt("dateOfBirth", date1).lt("dateOfBirth", date2).findSet();
             return results;
         }
         return null;
@@ -210,27 +208,27 @@ public class TravelPartnerController {
         User user = User.getCurrentUser(request);
 
         if (user != null) {
-            ArrayList<List<User>> userLists = new ArrayList<>();
+            List<Set<User>> userLists = new ArrayList<>();
 
-            List<User> travelerTypeMatches = travelerTypeResults(filterForm);
+            Set<User> travelerTypeMatches = travelerTypeResults(filterForm);
             if (travelerTypeMatches != null) {
                 userLists.add(travelerTypeMatches);
             }
 
-            List<User> nationalityMatches = nationalityResults(filterForm);
+            Set<User> nationalityMatches = nationalityResults(filterForm);
             if (nationalityMatches != null) {
                 userLists.add(nationalityMatches);
             }
 
             userLists.add(genderResults(filterForm));
 
-            List<User> ageRangeMatches = ageRangeResults(filterForm);
+            Set<User> ageRangeMatches = ageRangeResults(filterForm);
             if (ageRangeMatches != null) {
                 userLists.add(ageRangeMatches);
             }
 
             //Gets all common users from each search
-            List<User> resultProfiles = UtilityFunctions.retainFromLists(userLists);
+            Set<User> resultProfiles = UtilityFunctions.retainFromLists(userLists);
 
 
             //remove the current user from the list
@@ -239,7 +237,7 @@ public class TravelPartnerController {
             }
 
             //For the view to display no results
-            if(resultProfiles.size() == 0){
+            if(resultProfiles.isEmpty()){
                 resultProfiles.add(null);
             }
 

@@ -124,9 +124,9 @@ public class Destination extends Model {
 
     @JsonIgnore
     @ManyToMany(cascade = CascadeType.ALL)
-    public List<TravellerType> travellerTypes;
+    public Set<TravellerType> travellerTypes;
 
-    public static Finder<String,Destination> findString =new Finder<>(Destination.class);
+    public static Finder<String,Destination> findString = new Finder<>(Destination.class);
     public static Finder<Integer,Destination> find = new Finder<>(Destination.class);
 
 
@@ -153,7 +153,7 @@ public class Destination extends Model {
 
     public User getUser() { return user; }
 
-    public List<TravellerType> getTravellerTypes() {
+    public Set<TravellerType> getTravellerTypes() {
         return travellerTypes;
     }
 
@@ -166,7 +166,7 @@ public class Destination extends Model {
     public void setLatitude(double latitude) { this.latitude = latitude; }
     public void setLongitude(double longitude) { this.longitude = longitude; }
     public void setIsPublic(boolean isPublic) { this.isPublic = isPublic; }
-    public void setTravellerTypes(List<TravellerType> travellerTypes) {
+    public void setTravellerTypes(Set<TravellerType> travellerTypes) {
         this.travellerTypes = travellerTypes;
     }
     public void setUserPhotos(List<UserPhoto> userPhotos) {
@@ -225,15 +225,7 @@ public class Destination extends Model {
         if (!this.destType.equals(other.getDestType())) {
             return false;
         }
-        int eqCount = 0;
-        for (TravellerType travellerType1 : this.travellerTypes) {
-            for (TravellerType travellerType2 : other.getTravellerTypes()) {
-                if (travellerType1.getTravellerTypeName().equals(travellerType2.getTravellerTypeName())) {
-                    eqCount++;
-                }
-            }
-        }
-        return eqCount == this.travellerTypes.size() && eqCount == other.getTravellerTypes().size();
+        return travellerTypes.equals(other.getTravellerTypes());
     }
 
     @Override

@@ -128,7 +128,9 @@ public class TravellerTypeControllerTest extends WithApplication {
         //User should be redirected to the update traveller type page
         assertEquals(SEE_OTHER, result.status());
         //"TravellerType with name "Thrillseeker" should be the second index in the user's traveller types, first being groupie
-        assertTrue(Destination.find.byId(1).getTravellerTypes().contains("Thrillseeker") && Destination.find.byId(1).getTravellerTypes().size() == 1);
+        for (TravellerType travellerType : Destination.find.byId(2).getTravellerTypes()) {
+            assertEquals("Thrillseeker", travellerType.getTravellerTypeName());
+        }
     }
 
     /**

@@ -94,7 +94,7 @@ public class TravelPartnerController {
 
             } else {
                 List<TravellerType> travellerTypes = TravellerType.find.query().where().eq("travellerTypeName", travellerType).findList();
-                if (travellerTypes.size() > 0) {
+                if (travellerTypes.isEmpty()) {
                     Set<User> results = TravellerType.find.byId(travellerTypes.get(0).ttypeid).getUsers();
                     return results;
                 }
@@ -232,14 +232,8 @@ public class TravelPartnerController {
 
 
             //remove the current user from the list
-            if(resultProfiles.contains(user)){
-                resultProfiles.remove(user);
-            }
+            resultProfiles.remove(user);
 
-            //For the view to display no results
-            if(resultProfiles.isEmpty()){
-                resultProfiles.add(null);
-            }
 
             //Redisplay the page, but this time with the search results
             return displayRenderedFilterPage(resultProfiles,user);

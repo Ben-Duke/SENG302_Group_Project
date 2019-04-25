@@ -14,7 +14,7 @@ import java.util.Set;
                 @UniqueConstraint(columnNames={"traveller_type_name"})
 )
 @Entity
-public class TravellerType extends Model {
+public class TravellerType extends Model implements Comparable<TravellerType> {
 
     public TravellerType(String travellerTypeName){
         this.travellerTypeName = travellerTypeName;
@@ -82,5 +82,9 @@ public class TravellerType extends Model {
         hash = 31 * hash + ttypeid;
         hash = 31 * hash + (travellerTypeName == null ? 0 : travellerTypeName.hashCode());
         return  hash;
+    }
+
+    public int compareTo(TravellerType o) {
+        return this.travellerTypeName.compareTo(o.getTravellerTypeName());
     }
 }

@@ -62,9 +62,10 @@
                                         Make destination public
                                     </a>
                                 } else {
-                                <button class="btn btn-danger" data-target="#publicDestModal">
+                                    <!-- RED BUTTON IS FOR MERGING -->
+                                    <a href="@routes.DestinationController.makeDestinationPublic(destination.getDestId)" data-target="#publicDestModal" class="btn btn-danger">
                                         Make destination public
-                                </button>
+                                    </a>
                             }
                             </td>
                         } else {

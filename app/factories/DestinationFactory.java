@@ -86,10 +86,10 @@ public class DestinationFactory {
     }
 
     /**
-     * C
-     * @param userId
-     * @param destination
-     * @return
+     * Finds the list of all destinations from other users that are private and match the given destination
+     * @param userId the user's own ID
+     * @param destination the destination to check if there are matches to
+     * @return The list of destinations from other users that match the given destination.
      */
     public List<Destination> getOtherUsersMatchingPrivateDestinations(int userId, Destination destination) {
         User user = UserFactory.getUserFromId(userId);

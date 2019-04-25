@@ -188,23 +188,93 @@
                 <img class="modal-content" id="img01">
                 @*<button class="btn btn-primary" id="linkButton" href="#" data-toggle="modal" data-photo-id="">Link to destination</button>*@
             </div>
-            @for(photo <- user.getUserPhotos) {
-                <a href="#" data-toggle="modal" data-target="#destination-carousel">
-                    <div class="container" id="imagesContainer" >
-                        <div class="overlay">
-                            <i class="icon" title="User Profile">
-                                @if(photo.isPublic()) {
-                                    <i class="fa fa-eye"></i>
-                                } else {
-                                    <i class="fa fa-eye-slash"></i>
-                                }
-                            </i>
-                        </div>
-                        <img class="img-thumbnail" id=@{photo.getUrl} width="60" src="@{routes.HomeController.index(photo.getUrlWithPath)}" alt="User Image">
+
+
+            <div class="container">
+                <div class="row">
+                @for(i <- 0 to 2) {
+                    <div class="col-sm-2">
+
+                    @if(i < user.getUserPhotos.size() ){
+                        <a href="#" data-toggle="modal" data-target="#destination-carousel">
+                            <div class="container" id="imagesContainer" >
+                                <div class="overlay">
+                                    <i class="icon" title="User Profile">
+                                    @if(user.getUserPhotos.get(i).isPublic()) {
+                                        <i class="fa fa-eye"></i>
+                                    } else {
+                                        <i class="fa fa-eye-slash"></i>
+                                    }
+                                    </i>
+                                </div>
+                                <img class="img-thumbnail" id=@{user.getUserPhotos.get(i).getUrl} width="60" src="@{routes.HomeController.index(user.getUserPhotos.get(i).getUrlWithPath)}" alt="User Image">
+
+                            </div>
+                        </a>
+
+
+                    }
 
                     </div>
-                </a>
-            }
+                }
+                </div>
+
+                <div class="row">
+                @for(i <- 3 to 5) {
+                    <div class="col-sm-2">
+
+                    @if(i < user.getUserPhotos.size() ){
+                        <a href="#" data-toggle="modal" data-target="#destination-carousel">
+                            <div class="container" id="imagesContainer" >
+                                <div class="overlay">
+                                    <i class="icon" title="User Profile">
+                                    @if(user.getUserPhotos.get(i).isPublic()) {
+                                        <i class="fa fa-eye"></i>
+                                    } else {
+                                        <i class="fa fa-eye-slash"></i>
+                                    }
+                                    </i>
+                                </div>
+                                <img class="img-thumbnail" id=@{user.getUserPhotos.get(i).getUrl} width="60" src="@{routes.HomeController.index(user.getUserPhotos.get(i).getUrlWithPath)}" alt="User Image">
+
+                            </div>
+                        </a>
+
+
+                    }
+                    </div>
+                }
+                </div>
+
+                <div class="row">
+                @for(i <- 6 to 8) {
+                    <div class="col-sm-2">
+
+                    @if(i < user.getUserPhotos.size() ){
+                        <a href="#" data-toggle="modal" data-target="#destination-carousel">
+                            <div class="container" id="imagesContainer" >
+                                <div class="overlay">
+                                    <i class="icon" title="User Profile">
+                                    @if(user.getUserPhotos.get(i).isPublic()) {
+                                        <i class="fa fa-eye"></i>
+                                    } else {
+                                        <i class="fa fa-eye-slash"></i>
+                                    }
+                                    </i>
+                                </div>
+                                <img class="img-thumbnail" id=@{user.getUserPhotos.get(i).getUrl} width="60" src="@{routes.HomeController.index(user.getUserPhotos.get(i).getUrlWithPath)}" alt="User Image">
+
+                            </div>
+                        </a>
+
+
+                    }
+
+                    </div>
+                }
+                </div>
+            </div>
+
         </div>
                 <div id="destination-carousel" class="modal fade">
                     <div class="container">

@@ -152,14 +152,23 @@ public class UtilityFunctions {
     }
 
     public static void addTravellerTypes() {
+        ArrayList<String> types = new ArrayList();
+        types.add("Groupie");
+        types.add("Thrillseeker");
+        types.add("Gap Year");
+        types.add("Frequent Weekender");
+        types.add("Holidaymaker");
+        types.add("Business Traveller");
+        types.add("Backpacker");
         if (TravellerType.find.all().isEmpty()) {
-            (new TravellerType("Groupie")).save();
-            (new TravellerType("Thrillseeker")).save();
-            (new TravellerType("Gap Year")).save();
-            (new TravellerType("Frequent Weekender")).save();
-            (new TravellerType("Holidaymaker")).save();
-            (new TravellerType("Business Traveller")).save();
-            (new TravellerType("Backpacker")).save();
+            System.out.println("Adding types");
+            for(String type : types){
+                try{
+                    (new TravellerType(type)).save();
+                }catch(Exception error){
+                    System.out.println("Failed to add type: " + type + "Duplicate key");
+                }
+            }
         }
     }
 

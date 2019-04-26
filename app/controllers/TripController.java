@@ -9,6 +9,7 @@ import java.util.Date;
 import factories.VisitFactory;
 import formdata.TripFormData;
 import formdata.VisitFormData;
+import io.ebean.Expr;
 import models.Destination;
 import models.Trip;
 import models.User;
@@ -131,8 +132,9 @@ public class TripController extends Controller {
             Visit visit = Visit.find.byId(visitid);
             Form<Visit> visitForm = formFactory.form(Visit.class).fill(visit);
             if(visit.getTrip().getUser().getUserid() == user.getUserid() || user.userIsAdmin()) {
-                List<Destination> destinations = user.getDestinations();
-                return ok(editVisit.render(visitForm, visit, destinations,user));
+                List<Destination> publicDestinations = Destination.find.query().where().disjunction().add(Expr.eq("isPublic", true))
+                        .add(Expr.eq("user", user)).findList();
+                return ok(editVisit.render(visitForm, visit, publicDestinations,user));
             }
             else{
                 return unauthorized("Oops, this is not your trip.");

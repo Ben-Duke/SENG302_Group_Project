@@ -398,9 +398,11 @@ public class UserFactory {
      * @param newPhoto the new photo that is to become the user's profile picture
      */
     public static void replaceProfilePicture(int userId, UserPhoto newPhoto) {
-        removeExistingProfilePicture(userId);
-        newPhoto.setProfile(true);
-        newPhoto.save();
+        if (!newPhoto.equals(getUserProfilePicture(userId))) {
+            removeExistingProfilePicture(userId);
+            newPhoto.setProfile(true);
+            newPhoto.save();
+        }
     }
 
     /**
@@ -424,5 +426,17 @@ public class UserFactory {
         }
     }
 
-
+    /**
+     * Sets the privacy of the picture given.
+     * @param userId the user who is the owner of the picture
+     * @param newPhoto the photo who's privacy is to be changed
+     * @param setPublic true to make public, false to make private
+     */
+    public static void makePicturePublic(int userId, UserPhoto newPhoto, boolean setPublic) {
+        User user = User.find.byId(userId);
+        if (!user.equals(null)) {
+            newPhoto.setPublic(setPublic);
+            newPhoto.save();
+        }
+    }
 }

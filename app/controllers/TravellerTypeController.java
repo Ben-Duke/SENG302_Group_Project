@@ -61,7 +61,7 @@ public class TravellerTypeController {
                     Form<Destination> destForm = formFactory.form(Destination.class).fill(destination);
                     List<TravellerType> travellerTypes = TravellerType.find.all();
                     travellerTypes.removeAll(destination.getTravellerTypes());
-                    return ok(updateDestinationTraveller.render(destForm, travellerTypes, destination));
+                    return ok(updateDestinationTraveller.render(destForm, travellerTypes, destination,user));
                 }
                 else{
                     return unauthorized("You do not own this destination!");

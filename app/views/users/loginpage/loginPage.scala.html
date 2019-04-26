@@ -2,9 +2,9 @@
 @import helper._
 @import formdata.LoginFormData
 
-@(userForm : Form[LoginFormData])
+@(userForm : Form[LoginFormData], user : User)
 
-@main("Index") {
+@main(user, "Index") {
     <div class="container">
         <div class="well">
         @form(helper.CSRF(routes.LoginController.loginrequest()) , 'class -> "form-horizontal") {

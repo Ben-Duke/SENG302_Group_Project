@@ -21,7 +21,7 @@ public class UserController {
      * or register.
      * @return the user index page
      */
-    public Result userindex(){
+    public Result userindex(Http.Request request){
 //        UtilityFunctions.addNatAndPass();
 //        UtilityFunctions.addTravellerTypes();
         List<User> users = User.find.all();
@@ -32,7 +32,7 @@ public class UserController {
         }
         users = User.find.all();
         List<Admin> admins = Admin.find.all();
-        return ok(userIndex.render(users, admins));
+        return ok(userIndex.render(users, admins,User.getCurrentUser(request)));
     }
 
     /**

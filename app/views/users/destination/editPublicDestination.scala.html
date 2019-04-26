@@ -1,12 +1,11 @@
-@(destForm : Form[Destination], destination: Destination, countryMap: Map[String, Boolean], typeMap: Map[String, Boolean], user : User)
+@(destForm : Form[Destination], destination: Destination, countryMap: Map[String, Boolean], typeMap: Map[String, Boolean], travellerTypes : Map[String, Boolean], user : User)
 @import helper._
 @import views.html.bootstrap3._
 
 @main(user, "Destinations") {
 
-
 <h1>Edit Destination</h1>
-@helper.form(action = helper.CSRF(routes.DestinationController.updateDestination(destination.getDestId()))) {
+@helper.form(action = helper.CSRF(routes.DestinationController.updatePublicDestination(destination.getDestId()))) {
 
 <fieldset>
 
@@ -17,10 +16,10 @@
     help = "Please enter the destination. (required)")
 
     @views.html.bootstrap3.select(destForm("country"),
-        label = "Country",
-        optionMap = countryMap,
-        isMultiple = false,
-        help= "Select a country",
+    label = "Country",
+    optionMap = countryMap,
+    isMultiple = false,
+    help= "Select a country",
     )
 
     @text(destForm("district"),
@@ -42,15 +41,25 @@
     label = "Type",
     optionMap = typeMap,
     isMultiple = false,
-    help = "Select a type")
+    help = "Select a type"
+    )
+
+    @views.html.bootstrap3.select(destForm("travellerTypes"),
+    label = "Traveller Types",
+    optionMap = travellerTypes,
+    isMultiple = true,
+    help = "Select multiple Using ctrl or cmd."
+    )
+
+
 
 </fieldset>
+
 <p>
 <div class="form-group actions">
     <div class="col-sm-offset-2 col-sm-10">
-        <input id="submit" type="submit" value="Submit" class="btn btn-primary"/>
+        <input id="submit" type="submit" value="Submit Modification Request" class="btn btn-primary"/>
         <a class="btn btn-danger" href="@routes.DestinationController.indexDestination()" role="button">Cancel</a>
-        <a class="btn btn-primary" href="@routes.TravellerTypeController.updateDestinationTravellerType(destination.getDestId())" role="button">Update destination traveller type</a>
     </div>
 </div>
 </p>

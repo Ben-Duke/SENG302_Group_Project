@@ -3,10 +3,10 @@
 
 @import play.data.DynamicForm
 
-@(dynamicForm : DynamicForm, travellerTypes : List[String], nationalities : List[String], genderMap: Map[String, Boolean], resultProfiles : List[User])
+@(dynamicForm : DynamicForm, travellerTypes : List[String], nationalities : List[String], genderMap: Map[String, Boolean], resultProfiles : List[User], user : User)
 
 
-@main("Search") {
+@main(user, "Search") {
 
     <div class="container-fluid">
         <h1>Search</h1>

@@ -3,7 +3,7 @@
 @import views.html.bootstrap3._
 
 
-@main("Trips") {
+@main(user, "Trips") {
     @helper.form(action = helper.CSRF(routes.TripController.savetrip())) {
         <fieldset>
                 <!-- Header -->

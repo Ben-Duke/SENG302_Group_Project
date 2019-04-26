@@ -166,6 +166,7 @@ public class UtilityFunctions {
                 try{
                     (new TravellerType(type)).save();
                 }catch(Exception error){
+                    //Will remove after peer check
                     System.out.println("Failed to add type: " + type + "Duplicate key");
                 }
             }

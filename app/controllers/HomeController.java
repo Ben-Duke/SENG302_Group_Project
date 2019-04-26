@@ -225,10 +225,17 @@ public class HomeController {
         UserPhoto profilePhoto = UserPhoto.find.byId(photoId);
         if(user != null) {
             if (profilePhoto != null) {
-                UserFactory.replaceProfilePicture(user.getUserid(), profilePhoto);
-                return ok(home.render(user));
+                if(user.getUserid() == profilePhoto.getUser().getUserid() || user.userIsAdmin()) {
+                    UserFactory.replaceProfilePicture(user.getUserid(), profilePhoto);
+                    return ok(home.render(user));
+                }
+                else{
+                    return unauthorized("Oops! This is not your photo.");
+                }
             }
-            return unauthorized("Invalid Picture selected");
+            else {
+                return notFound("Invalid Picture selected");
+            }
         }
         return unauthorized("Oops! You are not logged in.");
     }
@@ -245,10 +252,15 @@ public class HomeController {
         UserPhoto photo = UserPhoto.find.byId(photoId);
         if(user != null) {
             if (photo != null) {
-                UserFactory.makePicturePublic(user.getUserid(), photo, setPublic);
-                return ok(home.render(user));
+                if(user.getUserid() == photo.getUser().getUserid() || user.userIsAdmin()) {
+                    UserFactory.makePicturePublic(user.getUserid(), photo, setPublic);
+                    return ok(home.render(user));
+                }
+                else{
+                    return unauthorized("Oops! This is not your photo.");
+                }
             }
-            return unauthorized("Invalid Picture selected");
+            return notFound("Invalid Picture selected");
         }
         return unauthorized("Oops! You are not logged in.");
     }

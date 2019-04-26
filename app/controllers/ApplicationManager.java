@@ -8,12 +8,6 @@ public class ApplicationManager {
 
     private static String userPhotoPath;
 
-    public ApplicationManager(String mainOrTest){
-        if(mainOrTest.equalsIgnoreCase("test")){
-            userPhotoPath = "/test/resources/test_photos/user_";
-        }
-    }
-
     public static String getUserPhotoPath() {
         return userPhotoPath;
     }

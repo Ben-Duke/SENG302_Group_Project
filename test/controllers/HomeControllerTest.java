@@ -214,6 +214,15 @@ public class HomeControllerTest extends WithApplication {
     }
 
     @Test
+    public void serveFromIdWithInvalidLoginSession(){
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/home/serveDestPicture/1").session("connected", null);
+        Result result = route(app, request);
+        assertEquals(UNAUTHORIZED, result.status());
+    }
+
+    @Test
     public void serveFromIdWithPrivatePhotoAndValidOwner(){
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(GET)
@@ -289,6 +298,130 @@ public class HomeControllerTest extends WithApplication {
                 .uri("/users/home/serveProfilePicture").session("connected", null);
         Result result = route(app, request);
         assertEquals(UNAUTHORIZED, result.status());
+    }
+
+    @Test
+    public void setProfilePictureWithValidPhotoAndValidUser(){
+        //userPhoto1 is the profile picture
+        UserPhoto userPhoto1 = UserPhoto.find.byId(1);
+        //userPhoto2 is not the profile picture
+        UserPhoto userPhoto2 = UserPhoto.find.byId(2);
+        assertTrue(userPhoto1.isProfile());
+        assertFalse(userPhoto2.isProfile());
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(PUT)
+                .uri("/users/home/setProfilePicture/2").session("connected", "2");
+        CSRFTokenHelper.addCSRFToken(request);
+        Result result = route(app, request);
+        assertEquals(OK, result.status());
+        userPhoto1 = UserPhoto.find.byId(1);
+        userPhoto2 = UserPhoto.find.byId(2);
+        //Oh how the tides have turned
+        assertFalse(userPhoto1.isProfile());
+        assertTrue(userPhoto2.isProfile());
+    }
+
+    @Test
+    public void setProfilePictureWithValidPhotoAndInvalidUser(){
+        //userPhoto1 is the profile picture
+        UserPhoto userPhoto1 = UserPhoto.find.byId(1);
+        //userPhoto2 is not the profile picture
+        UserPhoto userPhoto2 = UserPhoto.find.byId(2);
+        assertTrue(userPhoto1.isProfile());
+        assertFalse(userPhoto2.isProfile());
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(PUT)
+                .uri("/users/home/setProfilePicture/2").session("connected", "3");
+        CSRFTokenHelper.addCSRFToken(request);
+        Result result = route(app, request);
+        assertEquals(UNAUTHORIZED, result.status());
+        userPhoto1 = UserPhoto.find.byId(1);
+        userPhoto2 = UserPhoto.find.byId(2);
+        //Oh how the tides have not turned
+        assertTrue(userPhoto1.isProfile());
+        assertFalse(userPhoto2.isProfile());
+    }
+
+    @Test
+    public void setProfilePictureWithInvalidLoginSession(){
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(PUT)
+                .uri("/users/home/setProfilePicture/2").session("connected", null);
+        CSRFTokenHelper.addCSRFToken(request);
+        Result result = route(app, request);
+        assertEquals(UNAUTHORIZED, result.status());
+    }
+
+    @Test
+    public void setProfilePictureWithInvalidPhoto(){
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(PUT)
+                .uri("/users/home/setProfilePicture/100").session("connected", "2");
+        CSRFTokenHelper.addCSRFToken(request);
+        Result result = route(app, request);
+        assertEquals(NOT_FOUND, result.status());
+    }
+
+    @Test
+    public void makePicturePublicWithValidPhotoWithValidUser(){
+        UserPhoto userPhoto = UserPhoto.find.byId(2);
+        assertFalse(userPhoto.isPublic());
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(POST)
+                .uri(routes.HomeController.makePicturePublic(2,true).url()).session("connected", "2");
+        CSRFTokenHelper.addCSRFToken(request);
+        Result result = route(app, request);
+        assertEquals(OK, result.status());
+        userPhoto = UserPhoto.find.byId(2);
+        assertTrue(userPhoto.isPublic());
+    }
+
+    @Test
+    public void makePicturePrivateWithValidPhotoWithValidUser(){
+        UserPhoto userPhoto = UserPhoto.find.byId(1);
+        assertTrue(userPhoto.isPublic());
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(POST)
+                .uri(routes.HomeController.makePicturePublic(1,false).url()).session("connected", "2");
+        CSRFTokenHelper.addCSRFToken(request);
+        Result result = route(app, request);
+        assertEquals(OK, result.status());
+        userPhoto = UserPhoto.find.byId(1);
+        assertFalse(userPhoto.isPublic());
+    }
+
+    @Test
+    public void makePicturePublicWithMissingPhoto(){
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(POST)
+                .uri(routes.HomeController.makePicturePublic(100,false).url()).session("connected", "2");
+        CSRFTokenHelper.addCSRFToken(request);
+        Result result = route(app, request);
+        assertEquals(NOT_FOUND, result.status());
+    }
+
+    @Test
+    public void makePicturePublicWithInvalidLoginSession(){
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(POST)
+                .uri(routes.HomeController.makePicturePublic(2,true).url()).session("connected", null);
+        CSRFTokenHelper.addCSRFToken(request);
+        Result result = route(app, request);
+        assertEquals(UNAUTHORIZED, result.status());
+    }
+
+    @Test
+    public void makePicturePrivateWithValidPhotoWithInvalidUser(){
+        UserPhoto userPhoto = UserPhoto.find.byId(1);
+        assertTrue(userPhoto.isPublic());
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(POST)
+                .uri(routes.HomeController.makePicturePublic(1,false).url()).session("connected", "3");
+        CSRFTokenHelper.addCSRFToken(request);
+        Result result = route(app, request);
+        assertEquals(UNAUTHORIZED, result.status());
+        userPhoto = UserPhoto.find.byId(1);
+        assertTrue(userPhoto.isPublic());
     }
 
 

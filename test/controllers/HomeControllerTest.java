@@ -20,6 +20,7 @@ import play.mvc.Http;
 import play.mvc.Result;
 import play.test.Helpers;
 import play.test.WithApplication;
+import utilities.TestDatabaseManager;
 import utilities.UtilityFunctions;
 
 import java.io.File;
@@ -58,8 +59,9 @@ public class HomeControllerTest extends WithApplication {
                 "drop table test;"
         )));
         //Initialises a test user with name "testUser" and saves it to the database.
-        User user = new User("testUser");
-        user.save();
+        ApplicationManager.setUserPhotoPath("./test/resources/test_photos/user_");
+        TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
+        testDatabaseManager.populateDatabase();
     }
 
     /**
@@ -88,6 +90,8 @@ public class HomeControllerTest extends WithApplication {
      */
     @Test
     public void showHomeWithLoginSessionWithoutProfile() {
+        User user = new User("testuser@test.com");
+        user.save();
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(GET)
                 .uri("/users/home").session("connected", "1");
@@ -152,9 +156,50 @@ public class HomeControllerTest extends WithApplication {
         CSRFTokenHelper.addCSRFToken(request);
         Result result = route(app, request);
         assertEquals(OK, result.status());
-
     }
 
+    /**
+     * Test of uploading a profile picture
+     * @throws IOException
+     */
+    @Test
+    public void uploadProfilePicture() throws IOException {
+        createUser();
+        File file = getFile(Paths.get(".").toAbsolutePath().normalize().toString() + "/test/resources/imagetest.png");
+        Http.MultipartFormData.Part<Source<ByteString, ?>> part = new Http.MultipartFormData.FilePart<>("picture", "imagetest.png", "image/png", FileIO.fromPath(file.toPath()), Files.size(file.toPath()));
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(POST)
+                .uri("/users/home/profilePicture").session("connected", "4")
+                .bodyRaw(Collections.singletonList(part),
+                        play.libs.Files.singletonTemporaryFileCreator(),
+                        app.asScala().materializer());
+        CSRFTokenHelper.addCSRFToken(request);
+        Result result = route(app, request);
+        assertEquals(OK, result.status());
+    }
+
+    /**
+     * Test of uploading a profile picture
+     * @throws IOException
+     */
+    @Test
+    public void uploadProfilePictureWithInvalidLogin() throws IOException {
+        createUser();
+        File file = getFile(Paths.get(".").toAbsolutePath().normalize().toString() + "/test/resources/imagetest.png");
+        Http.MultipartFormData.Part<Source<ByteString, ?>> part = new Http.MultipartFormData.FilePart<>("picture", "imagetest.png", "image/png", FileIO.fromPath(file.toPath()), Files.size(file.toPath()));
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(POST)
+                .uri("/users/home/profilePicture").session("connected", null)
+                .bodyRaw(Collections.singletonList(part),
+                        play.libs.Files.singletonTemporaryFileCreator(),
+                        app.asScala().materializer());
+        CSRFTokenHelper.addCSRFToken(request);
+        Result result = route(app, request);
+        assertEquals(UNAUTHORIZED, result.status());
+    }
+
+    @Test
+    public void get
 
 
     public void createUser(){

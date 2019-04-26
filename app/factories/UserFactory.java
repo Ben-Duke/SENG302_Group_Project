@@ -411,7 +411,7 @@ public class UserFactory {
      * @return the path to the photo
      */
     public static String getProfilePhotoPath(User user) {
-        return java.nio.file.Paths.get(".").toAbsolutePath().normalize().toString() + "/../user_photos/user_" + user.getUserid() + "/profilethumbnail.png";
+        return java.nio.file.Paths.get(".").toAbsolutePath().normalize().toString() + ApplicationManager.getUserPhotoPath() + user.getUserid() + "/profilethumbnail.png";
     }
 
 

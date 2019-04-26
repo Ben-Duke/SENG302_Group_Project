@@ -1,6 +1,10 @@
 package controllers;
 
+import akka.actor.ActorSystem;
+import akka.actor.Terminated;
 import akka.http.impl.util.JavaMapping;
+import akka.stream.ActorMaterializer;
+import akka.stream.Materializer;
 import akka.stream.javadsl.FileIO;
 import akka.stream.javadsl.Source;
 import akka.util.ByteString;
@@ -20,6 +24,9 @@ import play.mvc.Http;
 import play.mvc.Result;
 import play.test.Helpers;
 import play.test.WithApplication;
+import scala.concurrent.Await;
+import scala.concurrent.Future;
+import scala.concurrent.duration.Duration;
 import utilities.TestDatabaseManager;
 import utilities.UtilityFunctions;
 
@@ -35,8 +42,7 @@ import static org.apache.commons.io.FileUtils.getFile;
 import static org.junit.Assert.*;
 import static play.mvc.Http.HttpVerbs.POST;
 import static play.mvc.Http.Status.*;
-import static play.test.Helpers.GET;
-import static play.test.Helpers.route;
+import static play.test.Helpers.*;
 
 public class HomeControllerTest extends WithApplication {
 
@@ -59,7 +65,7 @@ public class HomeControllerTest extends WithApplication {
                 "drop table test;"
         )));
         //Initialises a test user with name "testUser" and saves it to the database.
-        ApplicationManager.setUserPhotoPath("./test/resources/test_photos/user_");
+        ApplicationManager.setUserPhotoPath("/test/resources/test_photos/user_");
         TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
         testDatabaseManager.populateDatabase();
     }
@@ -94,7 +100,7 @@ public class HomeControllerTest extends WithApplication {
         user.save();
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(GET)
-                .uri("/users/home").session("connected", "1");
+                .uri("/users/home").session("connected", "5");
         Result result = route(app, request);
         assertEquals(SEE_OTHER, result.status());
     }
@@ -107,7 +113,7 @@ public class HomeControllerTest extends WithApplication {
         createUser();
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(GET)
-                .uri("/users/home").session("connected", "2");
+                .uri("/users/home").session("connected", "5");
         Result result = route(app, request);
         assertEquals(SEE_OTHER, result.status());
     }
@@ -120,7 +126,7 @@ public class HomeControllerTest extends WithApplication {
         createUser();
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(GET)
-                .uri("/users/home").session("connected", "3");
+                .uri("/users/home").session("connected", "5");
         Result result = route(app, request);
         assertEquals(SEE_OTHER, result.status());
     }
@@ -149,7 +155,7 @@ public class HomeControllerTest extends WithApplication {
         Http.MultipartFormData.Part<Source<ByteString, ?>> part = new Http.MultipartFormData.FilePart<>("picture", "imagetest.png", "image/png", FileIO.fromPath(file.toPath()), Files.size(file.toPath()));
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(POST)
-                .uri("/users/home").session("connected", "4")
+                .uri("/users/home").session("connected", "2")
                 .bodyRaw(Collections.singletonList(part),
                         play.libs.Files.singletonTemporaryFileCreator(),
                         app.asScala().materializer());
@@ -169,7 +175,7 @@ public class HomeControllerTest extends WithApplication {
         Http.MultipartFormData.Part<Source<ByteString, ?>> part = new Http.MultipartFormData.FilePart<>("picture", "imagetest.png", "image/png", FileIO.fromPath(file.toPath()), Files.size(file.toPath()));
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(POST)
-                .uri("/users/home/profilePicture").session("connected", "4")
+                .uri("/users/home/profilePicture").session("connected", "2")
                 .bodyRaw(Collections.singletonList(part),
                         play.libs.Files.singletonTemporaryFileCreator(),
                         app.asScala().materializer());
@@ -199,7 +205,91 @@ public class HomeControllerTest extends WithApplication {
     }
 
     @Test
-    public void get
+    public void serveFromIdWithPublicPhoto(){
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/home/serveDestPicture/1").session("connected", "2");
+        Result result = route(app, request);
+        assertEquals(OK, result.status());
+    }
+
+    @Test
+    public void serveFromIdWithPrivatePhotoAndValidOwner(){
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/home/serveDestPicture/2").session("connected", "2");
+        Result result = route(app, request);
+        assertEquals(OK, result.status());
+    }
+
+    @Test
+    public void serveFromIdWithPrivatePhotoAndInvalidOwner(){
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/home/serveDestPicture/2").session("connected", "3");
+        Result result = route(app, request);
+        assertEquals(UNAUTHORIZED, result.status());
+    }
+
+    @Test
+    public void serveFromIdWithPrivatePhotoAndAdmin(){
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/home/serveDestPicture/2").session("connected", "1");
+        Result result = route(app, request);
+        assertEquals(OK, result.status());
+    }
+
+    @Test
+    public void index(){
+        UserPhoto photo = UserPhoto.find.byId(1);
+        String path = photo.getUrlWithPath();
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri(routes.HomeController.index(path).url()).session("connected", "2");
+        Result result = route(app, request);
+        assertEquals(OK, result.status());
+        String fileAsString = convertResultFileToString(result);
+        assertNotNull(fileAsString);
+    }
+
+    @Test
+    public void serveProfilePictureForUserWithProfilePicture(){
+        UserPhoto photo = UserPhoto.find.byId(1);
+        String path = photo.getUrlWithPath();
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri(routes.HomeController.index(path).url()).session("connected", "2");
+        Result result = route(app, request);
+        assertEquals(OK, result.status());
+        String fileAsString = convertResultFileToString(result);
+        assertNotNull(fileAsString);
+        request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/home/serveProfilePicture").session("connected", "2");
+        result = route(app, request);
+        assertEquals(OK, result.status());
+        assertEquals(fileAsString, convertResultFileToString(result));
+    }
+
+    @Test
+    public void serveProfilePictureForUserWithoutProfilePicture(){
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/home/serveProfilePicture").session("connected", "4");
+        Result result = route(app, request);
+        assertEquals(OK, result.status());
+        assertEquals("", contentAsString(result));
+    }
+
+    @Test
+    public void serveProfilePictureWithoutLoginSession(){
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/home/serveProfilePicture").session("connected", null);
+        Result result = route(app, request);
+        assertEquals(UNAUTHORIZED, result.status());
+    }
 
 
     public void createUser(){
@@ -235,5 +325,27 @@ public class HomeControllerTest extends WithApplication {
         user3.getNationality().add(nationality1);
         user3.getNationality().add(nationality2);
         user3.save();
+    }
+
+    public String convertResultFileToString(Result result){
+        ActorSystem actorSystem = ActorSystem.create("TestSystem");
+        try {
+            Materializer mat = ActorMaterializer.create(actorSystem);
+            String contentAsString = Helpers.contentAsString(result, mat);
+            return contentAsString;
+        } catch (Exception e){
+            e.printStackTrace();
+            fail();
+        }
+        finally {
+            Future<Terminated> future = actorSystem.terminate();
+            try {
+                Await.result(future, Duration.create("5s"));
+            } catch (Exception e) {
+                e.printStackTrace();
+                fail();
+            }
+        }
+        return null;
     }
 }

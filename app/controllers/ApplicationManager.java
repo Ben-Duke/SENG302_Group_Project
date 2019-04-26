@@ -10,7 +10,7 @@ public class ApplicationManager {
 
     public ApplicationManager(String mainOrTest){
         if(mainOrTest.equalsIgnoreCase("test")){
-            userPhotoPath = "./test/resources/test_photos/user_";
+            userPhotoPath = "/test/resources/test_photos/user_";
         }
     }
 

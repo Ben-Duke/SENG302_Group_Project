@@ -200,14 +200,17 @@ public class HomeController {
      */
     public Result serveProfilePicture(Http.Request httpRequest) {
         User user = User.getCurrentUser(httpRequest);
-        UserPhoto profilePicture = UserFactory.getUserProfilePicture(user.getUserid());
-        System.out.println(profilePicture.getUrl());
-        if(profilePicture != null) {
-            return ok(new File(profilePicture.getUrlWithPath()));
+        if(user != null) {
+            UserPhoto profilePicture = UserFactory.getUserProfilePicture(user.getUserid());
+            if (profilePicture != null) {
+                return ok(new File(profilePicture.getUrlWithPath()));
+            } else {
+                //should be 404 but then console logs an error
+                return ok();
+            }
         }
         else{
-            //should be 404 but then console logs an error
-            return ok();
+            return unauthorized("Oops, you're not logged in.");
         }
     }
 

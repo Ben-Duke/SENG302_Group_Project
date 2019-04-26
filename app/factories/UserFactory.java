@@ -1,4 +1,5 @@
 package factories;
+import controllers.ApplicationManager;
 import formdata.UpdateUserFormData;
 import formdata.UserFormData;
 import models.*;

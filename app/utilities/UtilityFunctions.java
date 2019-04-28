@@ -144,9 +144,18 @@ public class UtilityFunctions {
             for (String countryCode : locales) {
                 Locale obj = new Locale("", countryCode);
                 Nationality nationality = new Nationality(obj.getDisplayCountry());
+                try{
                 nationality.save();
+                }catch(Exception error){
+                    System.out.println("Failed to save nationality: " + nationality );
+
+                }
                 Passport passport = new Passport(obj.getDisplayCountry());
-                passport.save();
+                try {
+                    passport.save();
+                }catch(Exception error){
+                    System.out.println("Passport failed to save. name:" + passport);
+                }
             }
         }
     }

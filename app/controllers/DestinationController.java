@@ -528,7 +528,7 @@ public class DestinationController extends Controller {
                             flash("matchingDest", "There is " + matchingDests.size() + " other destination that matches " +
                                     destination.getDestName() + ".\nWould you like to merge?");
                         } else {
-                            flash("matchingDest", "There are " + matchingDests.size() + " other destinations that match " +
+                            flash("matchingDest", "There are " + matchingDests.size  () + " other destinations that match " +
                                     destination.getDestName() + ".\nWould you like to merge?");
                         }
                         return redirect(routes.DestinationController.indexDestination());

@@ -1,5 +1,6 @@
 package factories;
 
+import models.Admin;
 import models.Destination;
 import models.User;
 
@@ -105,4 +106,16 @@ public class DestinationFactory {
         }
         return matchingDestinations;
     }
+
+    public boolean mergeDestinations(List<Destination> destinationList) {
+        Admin defaultAdmin = Admin.find.query().where().eq("isDefault", true).findOne();
+        User defaultAdminUser = User.find.query().where().eq("userid", defaultAdmin.getUserId()).findOne();
+        for (Destination destination : destinationList) {
+            destination.setIsPublic(true);
+            destination.setUser(defaultAdminUser);
+            return true;
+        }
+        return false;
+    }
+
 }

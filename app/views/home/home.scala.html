@@ -75,6 +75,7 @@
                 <form>
                     <button class="btn btn-default" formaction="@routes.ProfileController.updateProfile()">Update profile</button>
                     <button class="btn btn-default" formaction="@routes.TravellerTypeController.updateTravellerType()">Update traveller type</button>
+                    <button class="btn btn-default" formaction="@routes.ProfileController.updateNatPass()">Update passports/nationalities</button>
                     @if(user.userIsAdmin) {
                     <button class="btn btn-default" formaction="@routes.AdminController.indexAdmin()">Admin</button>
                     }

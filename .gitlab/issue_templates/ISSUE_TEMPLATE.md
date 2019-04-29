@@ -1,10 +1,3 @@
-# Sanity checks
-
-Please answer the following questions for yourself before submitting an issue. **YOU MAY DELETE THE PREREQUISITES SECTION.**
-
-- [ ] I am running the latest version
-- [ ] I checked the wiki for an answer first
-- [ ] I checked to make sure that this issue has not already been filed
 
 # Expected Behavior
 
@@ -35,4 +28,4 @@ Please provide any relevant information about your setup.
 
 ## Failure Logs
 
-Please include any relevant log snippets, files and screenshots here.
+Please include any relevant log snippets, files and screenshots here:

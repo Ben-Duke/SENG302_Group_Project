@@ -25,6 +25,7 @@ public class UserController {
 //        UtilityFunctions.addNatAndPass();
 //        UtilityFunctions.addTravellerTypes();
         List<User> users = User.find.all();
+        ApplicationManager.setUserPhotoPath("/../user_photos/user_");
         if (users.isEmpty()) {
             TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
             testDatabaseManager.populateDatabase();

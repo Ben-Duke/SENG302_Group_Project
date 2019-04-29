@@ -3,6 +3,7 @@ package steps;
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Module;
+import controllers.ApplicationManager;
 import cucumber.api.java.After;
 import cucumber.api.java.Before;
 import cucumber.api.java.en.Given;
@@ -70,6 +71,7 @@ public class DestinationTestSteps extends WithApplication {
                 .overrides(testModule);
         Guice.createInjector(builder.applicationModule()).injectMembers(this);
         Helpers.start(application);
+        ApplicationManager.setUserPhotoPath("/test/resources/test_photos/user_");
         testDatabaseManager.populateDatabase();
     }
 

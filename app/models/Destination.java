@@ -182,6 +182,25 @@ public class Destination extends Model {
         this.travellerTypes.add(travellerType);
     }
 
+    @Override
+    public String toString() {
+        return "Destination{" +
+                "destid=" + destid +
+                ", destName='" + destName + '\'' +
+                ", destType='" + destType + '\'' +
+                ", district='" + district + '\'' +
+                ", country='" + country + '\'' +
+                ", latitude=" + latitude +
+                ", longitude=" + longitude +
+                ", isPublic=" + isPublic +
+                ", primaryPhoto=" + primaryPhoto +
+                ", user=" + user +
+                ", visits=" + visits +
+                ", userPhotos=" + userPhotos +
+                ", travellerTypes=" + travellerTypes +
+                '}';
+    }
+
     /**
      * The equals method compares two Destination objects for equality. The criteria
      * is all attributes, except isPublic.

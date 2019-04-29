@@ -34,6 +34,8 @@ public class DestinationFormData implements Constraints.Validatable<List<Validat
         this.longitude = longitude.toString();
     }
 
+//    public Map<String, String>
+
     /**
      * A function that is called when creating a destination to the the types
      *

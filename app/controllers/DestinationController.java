@@ -225,7 +225,8 @@ public class DestinationController extends Controller {
             if (destination != null) {
                 if (destination.isUserOwner(user.getUserid()) || user.userIsAdmin()) {
 
-                    Form<DestinationFormData> destForm = formFactory.form(DestinationFormData.class).fill(formData);
+                    Form<DestinationFormData> destForm = formFactory.form(
+                            DestinationFormData.class).fill(formData);
 
                     Map<String, Boolean> typeList = Destination.getTypeList();
                     typeList.replace(destination.getDestType(), true);
@@ -263,24 +264,32 @@ public class DestinationController extends Controller {
         if (user != null) {
 
            // Validate form
-            Form<DestinationFormData> destForm = formFactory.
-                    form(DestinationFormData.class).bindFromRequest(request);
+            Form<DestinationFormData> destForm;
+            destForm = formFactory.form(DestinationFormData.class).bindFromRequest(request);
 
-            Destination newDestination = formFactory.form(Destination.class).
-                    bindFromRequest(request).get();
-
+            // Use a normal form to trigger validation
             if (destForm.hasErrors()) {
+                // Use a dynamic form to get the values of the dropdown inputs
+                DynamicForm dynamicDestForm = formFactory.form().bindFromRequest(request);
+                logger.debug(dynamicDestForm.get("country"));
+                logger.debug(dynamicDestForm.get("destType"));
+
+                logger.debug("We've got errors");
+
+                // Select the dropdown values which were selected at form submission
                 Map<String, Boolean> typeList = Destination.getTypeList();
-                typeList.replace(newDestination.getDestType(), true);
+                typeList.replace(dynamicDestForm.get("destType"), true);
 
                 Map<String, Boolean> countryList = Destination.getIsoCountries();
-                countryList.replace(newDestination.getCountry(), true);
+                countryList.replace(dynamicDestForm.get("country"), true);
 
                 return badRequest(editDestination.render(destForm, destId, typeList, countryList, user));
             }
 
 
             // Save form
+            Destination newDestination = formFactory.form(Destination.class).
+                    bindFromRequest(request).get();
             Destination oldDestination = Destination.find.query().where().eq("destid", destId).findOne();
 
             if (oldDestination != null) {
@@ -288,6 +297,7 @@ public class DestinationController extends Controller {
                 if (oldDestination.isUserOwner(user.userid)) {
 
                     oldDestination.setDestName(newDestination.getDestName());
+                    logger.debug(newDestination.getDestType());
                     oldDestination.setDestType(newDestination.getDestType());
                     oldDestination.setCountry(newDestination.getCountry());
                     oldDestination.setDistrict(newDestination.getDistrict());

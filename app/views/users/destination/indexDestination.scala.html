@@ -7,6 +7,7 @@
     <head>
         <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/destination/indexDestination.css")">
         <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/destination/mapStyle.css")">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
         <title>Simple Map</title>
         <meta name="viewport" content="initial-scale=1.0">
         <meta charset="utf-8">
@@ -141,10 +142,10 @@
                                 </a>
                                 <div id="travellerTypes" class="col-md-offset-1 col-md-4">
                                 </div>
-                                <div class="row">
-                                    <td><button id="addPhotoButton" onclick="myFunction()" class="btn btn-primary col-md-offset-1 col-md-4" data-toggle="modal" data-target="#myModal">
-                                        Add photo</button></td>
-                                </div>
+                            </div>
+                            <div class="row">
+                                <td><button id="addPhotoButton" onclick="myFunction()" class="btn btn-primary col-md-offset-1 col-md-4" data-toggle="modal" data-target="#myModal">
+                                    Add photo</button></td>
                             </div>
                             <div class="row">
                                 <td><button id="primaryPhotoButton" class="btn btn-primary col-md-offset-1 col-md-4">
@@ -172,7 +173,7 @@
                     <div class="modal-body">
                         <p id="para"> Some text in the modal. </p>
                         @for(photo <- user.getUserPhotos) {
-                        <a id="addPhotoLink" class="btn btn-light" href="@routes.DestinationController.indexDestination()" onclick="addPhotoToDestinationRequest(@photo.getPhotoId())" >
+                        <a id="addPhotoLink" class="btn btn-light" href="" onclick="addPhotoToDestinationRequest(@photo.getPhotoId())" >
                             <div class="container" id="imagesContainer" >
                                 <div class="overlay">
                                     <i class="icon" title="User Profile">

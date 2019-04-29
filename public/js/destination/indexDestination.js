@@ -377,7 +377,6 @@ function addPhotoToDestinationRequest(photoId){
     $.ajaxSetup({
         beforeSend: function(xhr) {
             xhr.setRequestHeader('Csrf-Token', token);
-            CSRFTokenHelper.addCSRFToken(request);
         }
     });
     $.ajax({

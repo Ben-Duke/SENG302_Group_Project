@@ -755,6 +755,7 @@ public class DestinationController extends Controller {
                         photo.addDestination(destination);
                         photo.update();
                         System.out.println("SUCCESS!");
+                        return redirect(routes.DestinationController.indexDestination());
                     }
                     else{
                         return badRequest("You have already linked the photo to this destination.");
@@ -769,6 +770,5 @@ public class DestinationController extends Controller {
         } else {
             return unauthorized("Oops, you are not logged in");
         }
-        return redirect(routes.DestinationController.indexDestination());
     }
 }

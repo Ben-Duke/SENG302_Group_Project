@@ -231,7 +231,7 @@ public class HomeController {
         if(user != null) {
             if (photo != null) {
                 UserFactory.makePicturePublic(user.getUserid(), photo, setPublic);
-                return ok(home.render(user));
+                return redirect(routes.HomeController.showhome());
             }
             return unauthorized("Invalid Picture selected");
         }

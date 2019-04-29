@@ -44,14 +44,7 @@ public class Destination extends Model {
      * @param user
      */
     public Destination(String destName, String destType, String district, String country, double latitude, double longitude, User user){
-        this.destName = destName;
-        this.user = user;
-        this.destType = destType;
-        this.district = district;
-        this.country = country;
-        this.latitude = latitude;
-        this.longitude = longitude;
-        this.isPublic = false;
+        this(destName, destType, district, country, latitude, longitude, user, false);
     }
 
     /**

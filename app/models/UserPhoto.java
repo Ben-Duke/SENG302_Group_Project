@@ -1,13 +1,14 @@
 package models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import controllers.ApplicationManager;
 import io.ebean.Finder;
 import io.ebean.Model;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 import java.nio.file.Paths;
+import java.util.List;
 
 /**
  * A class to hold information a user photograph.
@@ -21,14 +22,19 @@ public class UserPhoto extends Model {
     public boolean isProfile;
 
     // Creating  the relation to User
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "user", referencedColumnName = "userid")
     public User user;
 
     // Creating  the relation to Destination
-    @ManyToOne
-    @JoinColumn(name = "destination", referencedColumnName = "destid")
-    public Destination destination;
+    @JsonIgnore
+    @ManyToMany
+    public List<Destination> destinations;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "primaryPhoto")
+    public List<Destination> primaryPhotoDestinations;
 
     public static Finder<Integer,UserPhoto> find = new Finder<>(UserPhoto.class);
 
@@ -54,12 +60,12 @@ public class UserPhoto extends Model {
         return isProfile;
     }
 
-    public Destination getDestination() {
-        return destination;
+    public List<Destination> getDestinations() {
+        return destinations;
     }
 
-    public void setDestination(Destination destination) {
-        this.destination = destination;
+    public void addDestination(Destination destination) {
+        this.destinations.add(destination);
     }
     /**
      * Method to set the photo as profile picture (or not)
@@ -93,7 +99,7 @@ public class UserPhoto extends Model {
      * @return the full path string for the file
      */
     public String getUrlWithPath() {
-        return Paths.get(".").toAbsolutePath().normalize().toString() + "/../user_photos/user_" + user.getUserid() + "/" + url;
+        return Paths.get(".").toAbsolutePath().normalize().toString() + ApplicationManager.getUserPhotoPath() + user.getUserid() + "/" + url;
     }
 
     /**

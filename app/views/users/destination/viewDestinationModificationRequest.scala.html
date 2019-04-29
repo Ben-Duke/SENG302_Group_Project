@@ -1,0 +1,78 @@
+@(modReq: DestinationModificationRequest, user: User)
+
+@main(user, "Destination Modification Request") {
+
+
+    <div class="container">
+        <div class="row">
+            <h2>Destination Modification Request</h2>
+            <br>
+            <table class="table">
+                <thead class="thead-dark">
+                    <tr>
+                        <th scope="col"></th>
+                        <th scope="col">Current values</th>
+                        <th scope="col">Suggested values</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th scope ="row">Destination Name</th>
+                        <td>@modReq.getOldDestination().getDestName()</td>
+                        <td>@modReq.getNewDestName()</td>
+                    </tr>
+                    <tr>
+                        <th scope ="row">Country</th>
+                        <td>@modReq.getOldDestination().getCountry()</td>
+                        <td>@modReq.getNewDestCountry()</td>
+                    </tr>
+                    <tr>
+                        <th scope ="row">District</th>
+                        <td>@modReq.getOldDestination().getDistrict()</td>
+                        <td>@modReq.getNewDestDistrict()</td>
+                    </tr>
+                    <tr>
+                        <th scope ="row">Latitude</th>
+                        <td>@modReq.getOldDestination().getLatitude()</td>
+                        <td>@modReq.getNewDestLatitude()</td>
+                    </tr>
+                    <tr>
+                        <th scope ="row">Longitude</th>
+                        <td>@modReq.getOldDestination().getLongitude()</td>
+                        <td>@modReq.getNewDestLongitude()</td>
+                    </tr>
+                    <tr>
+                        <th scope ="row">Destination Type</th>
+                        <td>@modReq.getOldDestination().getDestType()</td>
+                        <td>@modReq.getNewDestType()</td>
+                    </tr>
+                    <tr>
+                        <th scope ="row">Traveller Types</th>
+                        <td>
+                            @for(travellerType <- modReq.getOldDestination().getTravellerTypes()) {
+                                @travellerType.getTravellerTypeName()
+                                <br>
+                            }
+                        </td>
+                        <td>
+                            @for(travellerType <- modReq.getNewTravellerTypes()) {
+                            @travellerType.getTravellerTypeName()
+                            <br>
+                            }
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+        </div>
+        <div class="row">
+            <a class="btn btn-primary" href="@routes.DestinationController.destinationModificationAccept(modReq.getId())" role="button">Accept</a>
+            <a class="btn btn-danger" href="@routes.DestinationController.destinationModificationReject(modReq.getId())" role="button">Reject</a>
+            <a class="btn btn-primary" href="@routes.AdminController.indexAdmin()" role="button">Back</a>
+        </div>
+    </div>
+
+
+
+
+}

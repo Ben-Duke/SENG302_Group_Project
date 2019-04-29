@@ -1,4 +1,5 @@
 package factories;
+import controllers.ApplicationManager;
 import formdata.UpdateUserFormData;
 import formdata.UserFormData;
 import models.*;
@@ -19,7 +20,7 @@ public class UserFactory {
     static FormFactory formFactory;
 
     public UserFactory(){//Just used to instanciate
-         }
+    }
 
 
     /**Returns 1 if in the database and 0 if not in the database
@@ -56,13 +57,14 @@ public class UserFactory {
 
         }
     }
-    /** Returns a user id if they exist any number less than zero indicates the email is not in the database
+    /** Returns a User object from a userId int.
      *
-     * @param request
-     * @return an int -1 indicates there are no entries in the database that have that user.
+     * @param userId An int representing the userId to search for.
+     * @return A User object with the userId, or null  if doesn't exist.
      */
-    public static int getCurrentUserById(Http.Request request) {
-        return User.getCurrentUserById(request);
+    public static User getUserFromId(int userId) {
+        User user = User.find.query().where().eq("userid", userId).findOne();
+        return user;
     }
 
     /**Get a list of all passports.
@@ -174,13 +176,13 @@ public class UserFactory {
             TravellerType travellerType = TravellerType.find.byId(travellerId);
 
             if( travellerId != -1){
-            try {
-                user.addTravellerType(travellerType);
-                user.update();
-            } catch (io.ebean.DuplicateKeyException e) {
+                try {
+                    user.addTravellerType(travellerType);
+                    user.update();
+                } catch (io.ebean.DuplicateKeyException e) {
 
+                }
             }
-        }
         }
     }
 
@@ -280,7 +282,7 @@ public class UserFactory {
 
 
         if(checkEmail(email)!=1){
-        User user = new User(email, password, firstName, lastName, date, gender);
+            User user = new User(email, password, firstName, lastName, date, gender);
 
 
             user.save();
@@ -290,11 +292,14 @@ public class UserFactory {
                 updateTravellerType(user, tTypeId);
             }
             //Passport loop
-            for (int j = 0; j < passports.size(); j++) {
+            if (passports != null) {
+                for (int j = 0; j < passports.size(); j++) {
 
-                int passportId = getPassportId(passports.get(j));
-                updatePassport(user, passportId);
+                    int passportId = getPassportId(passports.get(j));
+                    updatePassport(user, passportId);
+                }
             }
+
 
             for (int k = 0; k < nationalities.size(); k++) {
 
@@ -361,7 +366,7 @@ public class UserFactory {
 
     public static int getCurrentUserId(Http.Request request) {
         return User.getCurrentUserById(request);
-        }
+    }
 
 
     /**
@@ -372,11 +377,11 @@ public class UserFactory {
     public static UserPhoto getUserProfilePicture(int userId) {
         User user = User.find.query().where().eq("userid", userId).findOne();
         UserPhoto userPhoto = UserPhoto.find.query().where().eq("user", user).and().eq("isProfile", true).findOne();
-       if(userPhoto != null) {
-           return  userPhoto;
-       } else {
-           return null;
-       }
+        if(userPhoto != null) {
+            return  userPhoto;
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -397,9 +402,11 @@ public class UserFactory {
      * @param newPhoto the new photo that is to become the user's profile picture
      */
     public static void replaceProfilePicture(int userId, UserPhoto newPhoto) {
-        removeExistingProfilePicture(userId);
-        newPhoto.setProfile(true);
-        newPhoto.save();
+        if (!newPhoto.equals(getUserProfilePicture(userId))) {
+            removeExistingProfilePicture(userId);
+            newPhoto.setProfile(true);
+            newPhoto.save();
+        }
     }
 
     /**
@@ -408,7 +415,7 @@ public class UserFactory {
      * @return the path to the photo
      */
     public static String getProfilePhotoPath(User user) {
-        return java.nio.file.Paths.get(".").toAbsolutePath().normalize().toString() + "/../user_photos/user_" + user.getUserid() + "/profilethumbnail.png";
+        return java.nio.file.Paths.get(".").toAbsolutePath().normalize().toString() + ApplicationManager.getUserPhotoPath() + user.getUserid() + "/profilethumbnail.png";
     }
 
 
@@ -423,5 +430,17 @@ public class UserFactory {
         }
     }
 
-
+    /**
+     * Sets the privacy of the picture given.
+     * @param userId the user who is the owner of the picture
+     * @param newPhoto the photo who's privacy is to be changed
+     * @param setPublic true to make public, false to make private
+     */
+    public static void makePicturePublic(int userId, UserPhoto newPhoto, boolean setPublic) {
+        User user = User.find.byId(userId);
+        if (!user.equals(null)) {
+            newPhoto.setPublic(setPublic);
+            newPhoto.save();
+        }
+    }
 }

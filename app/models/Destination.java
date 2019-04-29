@@ -1,5 +1,7 @@
 package models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.ebean.Finder;
 import io.ebean.Model;
 
@@ -103,15 +105,26 @@ public class Destination extends Model {
     public double longitude;
     public boolean isPublic;
 
+
+    @ManyToOne
+    public UserPhoto primaryPhoto;
+
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "user", referencedColumnName = "userid")
     public User user;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "destination")
     public List<Visit> visits;
 
-    @OneToMany(mappedBy = "destination")
+    @JsonIgnore
+    @ManyToMany(mappedBy = "destinations")
     public List<UserPhoto> userPhotos;
+
+    @JsonIgnore
+    @ManyToMany(cascade = CascadeType.ALL)
+    public List<TravellerType> travellerTypes;
 
     public static Finder<String,Destination> findString =new Finder<>(Destination.class);
     public static Finder<Integer,Destination> find = new Finder<>(Destination.class);
@@ -125,9 +138,24 @@ public class Destination extends Model {
     public String getCountry() { return country; }
     public double getLatitude() { return latitude; }
     public double getLongitude() { return longitude; }
-    public boolean getIsPublic() { return isPublic;}
+    public boolean getIsPublic() { return isPublic; }
+    public List<UserPhoto> getUserPhotos() {
+        return userPhotos;
+    }
+    public UserPhoto getPrimaryPhoto() {
+        return primaryPhoto;
+    }
+    public List<Visit> getVisits() {
+        return visits;
+    }
+
+
 
     public User getUser() { return user; }
+
+    public List<TravellerType> getTravellerTypes() {
+        return travellerTypes;
+    }
 
     //SETTERS
     public void setDestId(int destId) { this.destid = destId; }
@@ -138,23 +166,65 @@ public class Destination extends Model {
     public void setLatitude(double latitude) { this.latitude = latitude; }
     public void setLongitude(double longitude) { this.longitude = longitude; }
     public void setIsPublic(boolean isPublic) { this.isPublic = isPublic; }
+    public void setTravellerTypes(List<TravellerType> travellerTypes) {
+        this.travellerTypes = travellerTypes;
+    }
+    public void setUserPhotos(List<UserPhoto> userPhotos) {
+        this.userPhotos = userPhotos;
+    }
+    public void setPrimaryPhoto(UserPhoto primaryPhoto) {
+        this.primaryPhoto = primaryPhoto;
+    }
+    public void setVisits(List<Visit> visits) {
+        this.visits = visits;
+    }
 
     public void setUser(User user) { this.user = user; }
 
+    public void deleteTravellerType(TravellerType travellerType){
+        this.travellerTypes.remove(travellerType);
+    }
+
+    public void addTravellerType(TravellerType travellerType){
+        this.travellerTypes.add(travellerType);
+    }
+
     /**
      * The equals method compares two Destination objects for equality. The criteria
-     * is district and country.
+     * is all attributes, except isPublic.
      *
      * @param dest2 the other Destination object which is being compared for equality
      * @return true if destinations are equal, false if not.
      */
 
     public boolean equals(Destination dest2) {
-
-        if (!district.equals(dest2.getDistrict())) {
+        if (!this.destName.equals(dest2.getDestName())) {
             return false;
         }
-        if (!country.equals(dest2.getCountry())) {
+        if (!this.country.equals(dest2.getCountry())) {
+            return false;
+        }
+        if (!this.district.equals(dest2.getDistrict())) {
+            return false;
+        }
+        if (!(this.latitude == dest2.getLatitude())) {
+            return false;
+        }
+        if (!(this.longitude == dest2.getLongitude())) {
+            return false;
+        }
+        if (!this.destType.equals(dest2.getDestType())) {
+            return false;
+        }
+        int eqCount = 0;
+        for (TravellerType travellerType1 : this.travellerTypes) {
+            for (TravellerType travellerType2 : dest2.getTravellerTypes()) {
+                if (travellerType1.getTravellerTypeName().equals(travellerType2.getTravellerTypeName())) {
+                    eqCount++;
+                }
+            }
+        }
+        if (!(eqCount == this.travellerTypes.size() && eqCount == dest2.getTravellerTypes().size())) {
             return false;
         }
 

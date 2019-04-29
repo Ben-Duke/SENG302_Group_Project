@@ -58,3 +58,13 @@ And open <http://localhost:9000/>
 * The admin button is only visible if you are an admin.
 * To get back to the main page Logout from the navigation bar.
 * Note: Home/TravelEA buttons navigate to the profile page but only if you are logged in.
+
+## Attribution
+
+* Google Maps API Code (partially modified)
+        
+        https://developers.google.com/maps/documentation/javascript/localization
+        https://developers.google.com/maps/documentation/javascript/adding-a-google-map
+        https://developers.google.com/maps/documentation/javascript/adding-a-legend
+        https://developers.google.com/maps/documentation/javascript/events
+        https://developers.google.com/maps/documentation/javascript/markers

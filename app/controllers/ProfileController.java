@@ -13,7 +13,6 @@ import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
 import views.html.users.profile.*;
-
 import javax.inject.Inject;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -48,7 +47,7 @@ public class ProfileController extends Controller {
             String[] gendersArray = {"Male", "Female", "Other"};
             List gendersList = Arrays.asList(gendersArray);
 
-            return ok(updateProfile.render(updateUserForm, gendersList));
+            return ok(updateProfile.render(updateUserForm, gendersList,user));
         }
         else{
             return unauthorized(notLoggedInErrorStr);
@@ -80,7 +79,7 @@ public class ProfileController extends Controller {
                 //bad request, errors present
                 String[] gendersArray = {"Male", "Female", "Other"};
                 List gendersList = Arrays.asList(gendersArray);
-                return badRequest(updateProfile.render(updateProfileForm, gendersList));
+                return badRequest(updateProfile.render(updateProfileForm, gendersList,user));
             }
         } else{
             return unauthorized(notLoggedInErrorStr);
@@ -137,7 +136,7 @@ public class ProfileController extends Controller {
                 return badRequest("User does not exist");
             }
 
-            return ok(showProfile.render(otherUser));
+            return ok(showProfile.render(otherUser, user));
         }
         return unauthorized(notLoggedInErrorStr);
     }
@@ -160,7 +159,7 @@ public class ProfileController extends Controller {
 
             List<Nationality> nationalities = Nationality.find.all();
             List<Passport> passports = Passport.find.all();
-            return ok(updateNatPass.render(userForm, nationalities, passports, userId));
+            return ok(updateNatPass.render(userForm, nationalities, passports, userId,User.getCurrentUser(request)));
         }
         else{
             return unauthorized(notLoggedInErrorStr);

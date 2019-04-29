@@ -22,6 +22,7 @@ public class LoginController {
 
     @Inject
     FormFactory formFactory;
+
     private final Logger logger = LoggerFactory.getLogger("application");
 
     /**

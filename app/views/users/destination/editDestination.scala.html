@@ -1,12 +1,13 @@
-@(destForm : Form[Destination], destination: Destination, countryMap: Map[String, Boolean], typeMap: Map[String, Boolean], user : User)
+@import formdata.DestinationFormData
 @import helper._
 @import views.html.bootstrap3._
 
+@(destForm : Form[DestinationFormData], destId: Integer, countryMap: Map[String, Boolean], typeMap: Map[String, Boolean], user : User)
+
 @main(user, "Destinations") {
 
-
 <h1>Edit Destination</h1>
-@helper.form(action = helper.CSRF(routes.DestinationController.updateDestination(destination.getDestId()))) {
+@helper.form(action = helper.CSRF(routes.DestinationController.updateDestination(destId))) {
 
 <fieldset>
 
@@ -45,15 +46,14 @@
     help = "Select a type")
 
 </fieldset>
-<p>
-<div class="form-group actions">
-    <div class="col-sm-offset-2 col-sm-10">
-        <input id="submit" type="submit" value="Submit" class="btn btn-primary"/>
-        <a class="btn btn-default" href="@routes.TravellerTypeController.updateDestinationTravellerType(destination.getDestId())" role="button">Update destination traveller type</a>
-        <a class="btn btn-danger" href="@routes.DestinationController.indexDestination()" role="button">Cancel</a>
+
+    <div class="form-group actions">
+        <div class="col-sm-offset-2 col-sm-10">
+            <input id="submit" type="submit" value="Submit" class="btn btn-primary"/>
+            <a class="btn btn-default" href="@routes.TravellerTypeController.updateDestinationTravellerType(destId)" role="button">Update destination traveller type</a>
+            <a class="btn btn-danger" href="@routes.DestinationController.indexDestination()" role="button">Cancel</a>
+        </div>
     </div>
-</div>
-</p>
 
 }
 }

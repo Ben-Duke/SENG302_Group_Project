@@ -1,5 +1,6 @@
 package controllers;
 
+import accessors.DestinationAccessor;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import factories.DestinationFactory;
@@ -8,6 +9,8 @@ import formdata.UpdateUserFormData;
 import models.*;
 
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import play.data.DynamicForm;
 import play.data.Form;
 import play.data.FormFactory;
@@ -26,6 +29,11 @@ public class DestinationController extends Controller {
 
     @Inject
     FormFactory formFactory;
+
+    @Inject
+    DestinationFactory destFactory;
+
+    private final Logger logger = LoggerFactory.getLogger("application");
 
     /**
      * Performs validation tests on each on the users input for
@@ -150,7 +158,7 @@ public class DestinationController extends Controller {
     public Result saveDestinationFromRequest(Http.Request request) {
         Form<DestinationFormData> destinationFormData;
         destinationFormData = formFactory.form(DestinationFormData.class)
-                                                                .bindFromRequest();
+                                                                .bindFromRequest(request);
         User user = User.getCurrentUser(request);
 
         if (user != null) { // checks if a user is logged in
@@ -211,12 +219,13 @@ public class DestinationController extends Controller {
         User user = User.getCurrentUser(request);
 
         if (user != null) {
-            Destination destination = Destination.find.query().where().eq("destid", destId).findOne();
+            Destination destination = DestinationAccessor.getDestinationById(destId);
+            DestinationFormData formData = destFactory.makeDestinationFormData(destination);
 
             if (destination != null) {
                 if (destination.isUserOwner(user.getUserid()) || user.userIsAdmin()) {
 
-                    Form<Destination> destForm = formFactory.form(Destination.class).fill(destination);
+                    Form<DestinationFormData> destForm = formFactory.form(DestinationFormData.class).fill(formData);
 
                     Map<String, Boolean> typeList = Destination.getTypeList();
                     typeList.replace(destination.getDestType(), true);
@@ -224,7 +233,7 @@ public class DestinationController extends Controller {
                     Map<String, Boolean> countryList = Destination.getIsoCountries();
                     countryList.replace(destination.getCountry(), true);
 
-                    return ok(editDestination.render(destForm, destination, countryList, typeList,user));
+                    return ok(editDestination.render(destForm, destId, countryList, typeList, user));
 
                 } else {
                     return unauthorized("Not your destination. You can't edit.");
@@ -248,21 +257,30 @@ public class DestinationController extends Controller {
      * @return redirects to view the updated destination if successful, or
      * a not found error, or an unauthorized message if the destination does not belong to the user.
      */
-    public Result updateDestination(Http.Request request, Integer destId) {
+    public Result updateDestination(Http.Request request, int destId) {
         User user = User.getCurrentUser(request);
 
         if (user != null) {
-            DynamicForm destForm = formFactory.form().bindFromRequest();
-            Result validationResult = validateDestination(destForm);
 
-            if (validationResult != null) {
-                return validationResult;
+           // Validate form
+            Form<DestinationFormData> destForm = formFactory.
+                    form(DestinationFormData.class).bindFromRequest(request);
+
+            Destination newDestination = formFactory.form(Destination.class).
+                    bindFromRequest(request).get();
+
+            if (destForm.hasErrors()) {
+                Map<String, Boolean> typeList = Destination.getTypeList();
+                typeList.replace(newDestination.getDestType(), true);
+
+                Map<String, Boolean> countryList = Destination.getIsoCountries();
+                countryList.replace(newDestination.getCountry(), true);
+
+                return badRequest(editDestination.render(destForm, destId, typeList, countryList, user));
             }
-            //If program gets past this point then inputted destination is valid
-
-            Destination newDestination = formFactory.form(Destination.class).bindFromRequest().get();
 
 
+            // Save form
             Destination oldDestination = Destination.find.query().where().eq("destid", destId).findOne();
 
             if (oldDestination != null) {

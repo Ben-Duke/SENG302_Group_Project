@@ -19,6 +19,21 @@ public class DestinationFormData implements Constraints.Validatable<List<Validat
     public String longitude;
 
 
+    /** Required for form instantiation. */
+    public DestinationFormData() {
+    }
+
+    /** Constructor */
+    public DestinationFormData(String destName, String destType, String district,
+                               String country, Double latitude, Double longitude) {
+        this.destName = destName;
+        this.destType = destType;
+        this.district = district;
+        this.country = country;
+        this.latitude = latitude.toString();
+        this.longitude = longitude.toString();
+    }
+
     /**
      * A function that is called when creating a destination to the the types
      *
@@ -62,6 +77,11 @@ public class DestinationFormData implements Constraints.Validatable<List<Validat
         if (destType == null || destType.length() == 0) {
             errors.add(new ValidationError("destType",
                                         "Destination type must not be empty"));
+        }
+
+        if (district == null || district.length() == 0) {
+            errors.add(new ValidationError("district",
+                    "District must not be empty"));
         }
 
 

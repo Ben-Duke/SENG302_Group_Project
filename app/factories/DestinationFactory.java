@@ -1,5 +1,6 @@
 package factories;
 
+import formdata.DestinationFormData;
 import models.Destination;
 import models.User;
 
@@ -82,5 +83,14 @@ public class DestinationFactory {
         }
 
         return false;
+    }
+
+    /**
+     * Return a DestinationFormData instance constructed from a destination instance
+     */
+    public DestinationFormData makeDestinationFormData(Destination dest) {
+        return new DestinationFormData(dest.getDestName(), dest.getDestType(),
+                dest.getDistrict(), dest.getCountry(), dest.getLatitude(),
+                dest.getLongitude());
     }
 }

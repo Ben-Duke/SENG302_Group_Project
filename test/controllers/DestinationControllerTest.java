@@ -745,7 +745,6 @@ public class DestinationControllerTest extends WithApplication {
                 "    \"destName\": \"Christchurch\",\n" +
                 "    \"destid\": 1,\n" +
                 "    \"destId\": 1,\n" +
-                "    \"public\": true,\n" +
                 "    \"district\": \"Canterbury\",\n" +
                 "    \"latitude\": -43.5321,\n" +
                 "    \"isPublic\": true,\n" +
@@ -758,7 +757,6 @@ public class DestinationControllerTest extends WithApplication {
                 "    \"destName\": \"The Wok\",\n" +
                 "    \"destid\": 3,\n" +
                 "    \"destId\": 3,\n" +
-                "    \"public\": true,\n" +
                 "    \"district\": \"Canterbury\",\n" +
                 "    \"latitude\": -43.523593,\n" +
                 "    \"isPublic\": true,\n" +
@@ -771,7 +769,6 @@ public class DestinationControllerTest extends WithApplication {
                 "    \"destName\": \"Hanmer Springs Thermal Pools\",\n" +
                 "    \"destid\": 4,\n" +
                 "    \"destId\": 4,\n" +
-                "    \"public\": true,\n" +
                 "    \"district\": \"North Canterbury\",\n" +
                 "    \"latitude\": -42.522791,\n" +
                 "    \"isPublic\": true,\n" +
@@ -784,7 +781,6 @@ public class DestinationControllerTest extends WithApplication {
                 "    \"destName\": \"Great Pyramid of Giza\",\n" +
                 "    \"destid\": 6,\n" +
                 "    \"destId\": 6,\n" +
-                "    \"public\": true,\n" +
                 "    \"district\": \"Giza\",\n" +
                 "    \"latitude\": 29.979481,\n" +
                 "    \"isPublic\": true,\n" +
@@ -797,7 +793,6 @@ public class DestinationControllerTest extends WithApplication {
                 "    \"destName\": \"Lincoln Memorial\",\n" +
                 "    \"destid\": 9,\n" +
                 "    \"destId\": 9,\n" +
-                "    \"public\": true,\n" +
                 "    \"district\": \"Washington DC\",\n" +
                 "    \"latitude\": 38.889406,\n" +
                 "    \"isPublic\": true,\n" +
@@ -810,7 +805,6 @@ public class DestinationControllerTest extends WithApplication {
                 "    \"destName\": \"Wellington\",\n" +
                 "    \"destid\": 2,\n" +
                 "    \"destId\": 2,\n" +
-                "    \"public\": false,\n" +
                 "    \"district\": \"Wellington\",\n" +
                 "    \"latitude\": -41.2866,\n" +
                 "    \"isPublic\": false,\n" +

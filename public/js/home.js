@@ -18,6 +18,7 @@ var loadFile = function (event) {
 
     var $previews = $('.preview');
     $('#change-profile-pic').cropper({
+        aspectRatio:1,
         data:{
             width: 150,
             height: 150
@@ -167,6 +168,7 @@ $('#addProfilePhoto').on('shown.bs.modal', function (e) {
                 var $previews = $('.preview');
                 $('#change-profile-pic').cropper({
                     autoCropArea: 1,
+                    aspectRatio: 1,
                     ready: function(e){
                         //DO NOT DELETE THIS SET TIMEOUT
                         setTimeout(function(){
@@ -175,6 +177,7 @@ $('#addProfilePhoto').on('shown.bs.modal', function (e) {
                         }, 1);
                     },
                     crop: function (e) {
+                        $('#change-profile-pic').cropper('crop');
                         var imageData = $(this).cropper('getImageData');
                         croppedCanvas = $(this).cropper('getCroppedCanvas');
                         $('.preview').html('<img src="' + croppedCanvas.toDataURL() + '" class="thumb-lg img-circle" style="width:100px;height:100px;">');

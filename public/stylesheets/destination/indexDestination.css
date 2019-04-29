@@ -61,10 +61,23 @@ br {
     display: none;
 }
 
+#addPhotoButton {
 
-#imagesContainer {
+}
+
+#addPhotoLink {
     display: inline-block;
     max-width: 120px;
+    max-height: 120px;
+}
+
+#imagesContainer {
+    position: relative;
+    max-width: 120px;
+    height: 100%;
+    width: 100%;
+    left: -25px;
+    top: -5px;
 }
 
 .overlay {

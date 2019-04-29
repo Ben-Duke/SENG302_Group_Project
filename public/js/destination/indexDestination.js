@@ -144,6 +144,14 @@ function sendLinkDestinationRequest(url, photoid){
     })
 }
 
+/**
+ * Sets the global dest id to the destination id then opens the modal based on the dest id.
+ * @param destid
+ */
+function viewDestination(destid){
+    getIdFromRow = destid;
+    $('#orderModal').modal('show');
+}
 
 /**
  * Event is called while the modal is popping up.
@@ -153,7 +161,7 @@ function sendLinkDestinationRequest(url, photoid){
  */
 $('#orderModal').on('show.bs.modal', function (e) {
     // do something...
-    getIdFromRow = $(event.target).closest('tr').data('id');
+    //getIdFromRow = $(event.target).closest('tr').data('id');
     //make your ajax call populate items or what even you need
     //$(this).find('#orderDetails').html($('<b> Destination Id selected: ' + getIdFromRow  + '</b>'));
     var token =  $('input[name="csrfToken"]').attr('value');

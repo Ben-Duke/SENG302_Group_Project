@@ -55,9 +55,8 @@ $('#save-profile').click(function (eve){
     var formData = new FormData();
     var private = $('input[type=checkbox]').attr('checked');
     croppedCanvas.toBlob(function(blob){
-        formData.append('picture', blob, 'filename');
+        formData.append('picture', blob, filename);
         formData.append('private', private);
-        formData.append('filename', filename);
         var token =  $('input[name="csrfToken"]').attr('value');
         $.ajaxSetup({
             beforeSend: function(xhr) {

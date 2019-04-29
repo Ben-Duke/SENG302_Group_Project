@@ -1,5 +1,6 @@
 package utilities;
 
+import controllers.ApplicationManager;
 import models.*;
 
 import java.time.LocalDate;
@@ -27,6 +28,9 @@ public class TestDatabaseManager {
         populateUsers();
         addTrips();
         addDestinationsAndVisits();
+        if(ApplicationManager.getUserPhotoPath().equalsIgnoreCase("/test/resources/test_photos/user_")){
+            addUserPhotos();
+        }
     }
 
     /**
@@ -232,7 +236,13 @@ public class TestDatabaseManager {
         trip5.save();
         Trip trip6 = new Trip("Waterfall walk and see the president", false, User.find.byId(4));
         trip6.save();
+    }
 
+    public void addUserPhotos(){
+        UserPhoto userphoto1 = new UserPhoto("shrek.jpeg", true, true, User.find.byId(2));
+        userphoto1.save();
+        UserPhoto userphoto2 = new UserPhoto("placeholder.png", false, false, User.find.byId(2));
+        userphoto2.save();
     }
 
 }

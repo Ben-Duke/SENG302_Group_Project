@@ -271,10 +271,6 @@ public class DestinationController extends Controller {
             if (destForm.hasErrors()) {
                 // Use a dynamic form to get the values of the dropdown inputs
                 DynamicForm dynamicDestForm = formFactory.form().bindFromRequest(request);
-                logger.debug(dynamicDestForm.get("country"));
-                logger.debug(dynamicDestForm.get("destType"));
-
-                logger.debug("We've got errors");
 
                 // Select the dropdown values which were selected at form submission
                 Map<String, Boolean> typeList = Destination.getTypeList();
@@ -283,7 +279,7 @@ public class DestinationController extends Controller {
                 Map<String, Boolean> countryList = Destination.getIsoCountries();
                 countryList.replace(dynamicDestForm.get("country"), true);
 
-                return badRequest(editDestination.render(destForm, destId, typeList, countryList, user));
+                return badRequest(editDestination.render(destForm, destId, countryList, typeList, user));
             }
 
 
@@ -297,7 +293,6 @@ public class DestinationController extends Controller {
                 if (oldDestination.isUserOwner(user.userid)) {
 
                     oldDestination.setDestName(newDestination.getDestName());
-                    logger.debug(newDestination.getDestType());
                     oldDestination.setDestType(newDestination.getDestType());
                     oldDestination.setCountry(newDestination.getCountry());
                     oldDestination.setDistrict(newDestination.getDistrict());

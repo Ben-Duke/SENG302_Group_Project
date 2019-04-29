@@ -251,7 +251,4 @@ public class Destination extends Model {
     public boolean isUserOwner(Integer userid){
         return this.user.getUserid() == userid;
     }
-
-
-
 }

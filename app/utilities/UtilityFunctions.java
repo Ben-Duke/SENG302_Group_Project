@@ -138,6 +138,9 @@ public class UtilityFunctions {
         return Pattern.matches(emailRegex, email);
     }
 
+    /**
+     * Function that populates the database with the nationalities and passports
+     */
     public static void addNatAndPass() {
         if (Nationality.find.all().isEmpty()) {
             String[] locales = Locale.getISOCountries();

@@ -60,11 +60,10 @@ public class DestinationModificationRequest extends Model {
         Set<TravellerType> travellerTypesSet = new HashSet<>();
 
         String typesString = travellerTypes.toString();
-        if (typesString.equals("[]")) {
+        if (typesString.equals("[]") || typesString.equals("BeanSet size[0] set[]")) {
             return travellerTypesSet;
         }
-
-        typesString = typesString.substring(2, typesString.length()-2); //Trim off the set square brackets
+        typesString = typesString.replaceAll("\\[|]", ""); //Trim off the set square brackets
         String[] types = typesString.split("\\s*,\\s"); // Split into array by the comma/whitespace delim
         for (String type: types) {
             TravellerType travellerType = TravellerType.find.query()

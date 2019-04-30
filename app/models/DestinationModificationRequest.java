@@ -43,16 +43,29 @@ public class DestinationModificationRequest extends Model {
         this.newDestDistrict = newDestination.getDistrict();
         this.newDestLatitude = newDestination.getLatitude();
         this.newDestLongitude = newDestination.getLongitude();
-        this.newTravelerTypes = formNewTravelertypes(newDestination.getTravellerTypes());
+        this.newTravelerTypes = formNewTravellerTypes(newDestination.getTravellerTypes());
 
         this.requestAuthor = user;
     }
 
-    private Set<TravellerType> formNewTravelertypes(Set<TravellerType> travellerTypes) {
+    /**
+     * A work-around due to a bug introduced working with Play. The bug was unexplained
+     * but essentially a String object was being jammed into the place of a Set and so
+     * this method unpacks the String and rebuilds the Set
+     * @param travellerTypes The possibly malformed Set produced by PlayFramework
+     * @return A well-formed Set of TravellerTypes
+     */
+    private Set<TravellerType> formNewTravellerTypes(Set<TravellerType> travellerTypes) {
+
         Set<TravellerType> travellerTypesSet = new HashSet<>();
+
         String typesString = travellerTypes.toString();
-        typesString = typesString.substring(2, typesString.length()-2);
-        String[] types = typesString.split("\\s*,\\s");
+        if (typesString.equals("[]")) {
+            return travellerTypesSet;
+        }
+
+        typesString = typesString.substring(2, typesString.length()-2); //Trim off the set square brackets
+        String[] types = typesString.split("\\s*,\\s"); // Split into array by the comma/whitespace delim
         for (String type: types) {
             TravellerType travellerType = TravellerType.find.query()
                     .where().eq("travellerTypeName", type).findOne();

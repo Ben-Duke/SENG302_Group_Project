@@ -360,6 +360,9 @@ public class DestinationController extends Controller {
             Map<String, String> map = new HashMap<>();
             fillDataWith(map, request.body().asFormUrlEncoded());
             Destination newDestination = formFactory.form(Destination.class).bind(map).get();
+            if (newDestination.getTravellerTypes().isEmpty()) {
+                newDestination.setTravellerTypes(new HashSet<>());
+            }
 
             Destination oldDestination = Destination.find.query().where().eq("destid", destId).findOne();
             if (oldDestination != null) {
@@ -735,7 +738,11 @@ public class DestinationController extends Controller {
         }
     }
 
-//todo -- todo -- todo --
+    /**
+     * Taken from Play framework
+     * @param data
+     * @param urlFormEncoded todo
+     */
     private void fillDataWith(Map<String, String> data, Map<String, String[]> urlFormEncoded) {
         urlFormEncoded.forEach((key, values) -> {
             if (key.endsWith("[]")) {

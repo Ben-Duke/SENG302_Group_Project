@@ -2,6 +2,7 @@ package factories;
 
 import models.Destination;
 import models.User;
+import models.UserPhoto;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -160,5 +161,27 @@ public class DestinationFactoryTest extends WithApplication {
                 testPublicDestination);
 
         assertTrue(hasDestination);
+    }
+
+    @Test
+    public void removingDestinationPrivateInformation() {
+        UserPhoto userPhoto = new UserPhoto("testurl", false, false, testUser);
+        userPhoto.save();
+        Destination testPrivateDestination = new Destination("destName",
+                "destType", "district", "country",
+                45.0, 45.0, testUser, false);
+        testPrivateDestination.save();
+        userPhoto.addDestination(testPrivateDestination);
+        userPhoto.update();
+        testPrivateDestination.save();
+
+        testPrivateDestination = Destination.find.byId(testPrivateDestination.getDestId());
+
+        Integer photoCount = testPrivateDestination.getUserPhotos().size();
+        destinationFactory.removePrivateInformation(testPrivateDestination);
+        testPrivateDestination.setIsPublic(true);
+        testPrivateDestination.update();
+        assertEquals(photoCount - 1, testPrivateDestination.getUserPhotos().size());
+        assertEquals(0, UserPhoto.find.byId(userPhoto.getPhotoId()).destinations.size());
     }
 }

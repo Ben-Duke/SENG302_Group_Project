@@ -58,7 +58,7 @@
                             Delete</a></td>
                         @if(! destinationFactory.doesPublicDestinationExist(destination)) {
                             <td>
-                                @if(destinationFactory.getOtherUsersMatchingPrivateDestinations(user.getUserid, destination) == 0) {
+                                @if(destinationFactory.getOtherUsersMatchingPrivateDestinations(user.getUserid, destination).isEmpty) {
                                     <a href="@routes.DestinationController.makeDestinationPublic(destination.getDestId)" class="btn btn-primary">
                                         Make destination public
                                     </a>

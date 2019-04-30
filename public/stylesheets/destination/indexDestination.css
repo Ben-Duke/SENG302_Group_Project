@@ -23,7 +23,12 @@
     width: auto;
     height: auto;
     max-height: 100%;
+    opacity: 0.9;
 }
+
+/*.modal-content{*/
+    /*opacity: 0.4;*/
+/*}*/
 
 .carousel-inner{
     width:100%;

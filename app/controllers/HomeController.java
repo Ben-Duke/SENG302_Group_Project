@@ -86,10 +86,10 @@ public class HomeController {
                 if (contentType.contains("image")) {
                     //Add the path to the filename given by the uploaded picture
 
-                    String pathName = Paths.get(".").toAbsolutePath().normalize().toString() + "/../user_photos/user_" + user.getUserid() + "/" + fileName;
+                    String pathName = Paths.get(".").toAbsolutePath().normalize().toString() + ApplicationManager.getUserPhotoPath() + user.getUserid() + "/" + fileName;
                     //Save the file, replacing the existing one if the name is taken
                     try {
-                        java.nio.file.Files.createDirectories(Paths.get(Paths.get(".").toAbsolutePath().normalize().toString() + "/../user_photos/user_" + user.getUserid() + "/"));
+                        java.nio.file.Files.createDirectories(Paths.get(Paths.get(".").toAbsolutePath().normalize().toString() + ApplicationManager.getUserPhotoPath() + user.getUserid() + "/"));
                     } catch (IOException e) {
                         System.out.println(e);
                     }
@@ -129,48 +129,59 @@ public class HomeController {
             Http.MultipartFormData<Files.TemporaryFile> body = request.body().asMultipartFormData();
             Http.MultipartFormData.FilePart<Files.TemporaryFile> picture = body.getFile("picture");
             if (picture != null) {
-                //String fileName = picture.getFilename();
-                String fileName = datapart.get("filename")[0];
+                String fileName = picture.getFilename();
+                //String fileName = datapart.get("filename")[0];
                 long fileSize = picture.getFileSize();
                 String contentType = picture.getContentType();
                 Files.TemporaryFile file = picture.getRef();
                 if (contentType.contains("image")) {
                     //Add the path to the filename given by the uploaded picture
 
-                    String pathName = Paths.get(".").toAbsolutePath().normalize().toString() + "/../user_photos/user_" + user.getUserid() + "/" + fileName;
+                    String pathName = Paths.get(".").toAbsolutePath().normalize().toString() + ApplicationManager.getUserPhotoPath() + user.getUserid() + "/" + fileName;
                     //Save the file, replacing the existing one if the name is taken
                     try {
-                        java.nio.file.Files.createDirectories(Paths.get(Paths.get(".").toAbsolutePath().normalize().toString() + "/../user_photos/user_" + user.getUserid() + "/"));
+                        java.nio.file.Files.createDirectories(Paths.get(Paths.get(".").toAbsolutePath().normalize().toString() + ApplicationManager.getUserPhotoPath() + user.getUserid() + "/"));
                         file.copyTo(Paths.get(pathName), true);
 
                         BufferedImage thumbnailImage = UtilityFunctions.resizeImage(pathName);
-                        ImageIO.write(thumbnailImage, "png", new File(Paths.get(".").toAbsolutePath().normalize().toString() + "/../user_photos/user_" + user.getUserid() + "/profilethumbnail.png"));
+                        ImageIO.write(thumbnailImage, "png", new File(Paths.get(".").toAbsolutePath().normalize().toString() + ApplicationManager.getUserPhotoPath() + user.getUserid() + "/profilethumbnail.png"));
 
                     } catch (IOException e) {
                         System.out.println(e);
+                        return internalServerError("Oops, something went wrong.");
                     }
-
-
-
-
                     //DB saving
                     UserFactory.replaceProfilePicture(user.getUserid(), new UserPhoto(fileName, isPublic, true, user));
                     return ok(home.render(user));
                 }
             }
+            return badRequest(home.render(user));
         }
-        return badRequest(home.render(user));
+        else{
+            return unauthorized("Oops, you're not logged in.");
+        }
     }
 
     /**Serve an image file with a get request
-     * @param httpRequest the HTTP request
+     * @param request the HTTP request
      * @param photoId the id of the photo
      * @return a java file with the photo
      */
-    public Result serveFromId(Http.Request httpRequest, Integer photoId)
+    public Result serveFromId(Http.Request request, Integer photoId)
     {
-        UserPhoto photo = UserPhoto.find.byId(photoId);
-        return ok(new File(photo.getUrlWithPath()));
+        User user = User.getCurrentUser(request);
+        if(user != null) {
+            UserPhoto photo = UserPhoto.find.byId(photoId);
+            if(!photo.isPublic() && user.getUserid() != photo.getUser().getUserid() && !user.userIsAdmin()){
+                return unauthorized("Oops, this is a private photo.");
+            }
+            else{
+                return ok(new File(photo.getUrlWithPath()));
+            }
+        }
+        else{
+            return unauthorized("Oops, you're not logged in.");
+        }
     }
 
     /**Serve an image file with a get request
@@ -189,13 +200,17 @@ public class HomeController {
      */
     public Result serveProfilePicture(Http.Request httpRequest) {
         User user = User.getCurrentUser(httpRequest);
-        UserPhoto profilePicture = UserFactory.getUserProfilePicture(user.getUserid());
-        if(profilePicture != null) {
-            return ok(new File(profilePicture.getUrlWithPath()));
+        if(user != null) {
+            UserPhoto profilePicture = UserFactory.getUserProfilePicture(user.getUserid());
+            if (profilePicture != null) {
+                return ok(new File(profilePicture.getUrlWithPath()));
+            } else {
+                //should be 404 but then console logs an error
+                return ok();
+            }
         }
         else{
-            //should be 404 but then console logs an error
-            return ok();
+            return unauthorized("Oops, you're not logged in.");
         }
     }
 
@@ -210,10 +225,17 @@ public class HomeController {
         UserPhoto profilePhoto = UserPhoto.find.byId(photoId);
         if(user != null) {
             if (profilePhoto != null) {
-                UserFactory.replaceProfilePicture(user.getUserid(), profilePhoto);
-                return ok(home.render(user));
+                if(user.getUserid() == profilePhoto.getUser().getUserid() || user.userIsAdmin()) {
+                    UserFactory.replaceProfilePicture(user.getUserid(), profilePhoto);
+                    return ok(home.render(user));
+                }
+                else{
+                    return unauthorized("Oops! This is not your photo.");
+                }
             }
-            return unauthorized("Invalid Picture selected");
+            else {
+                return notFound("Invalid Picture selected");
+            }
         }
         return unauthorized("Oops! You are not logged in.");
     }
@@ -230,10 +252,15 @@ public class HomeController {
         UserPhoto photo = UserPhoto.find.byId(photoId);
         if(user != null) {
             if (photo != null) {
-                UserFactory.makePicturePublic(user.getUserid(), photo, setPublic);
-                return redirect(routes.HomeController.showhome());
+                if(user.getUserid() == photo.getUser().getUserid() || user.userIsAdmin()) {
+                    UserFactory.makePicturePublic(user.getUserid(), photo, setPublic);
+                    return redirect(routes.HomeController.showhome());
+                }
+                else{
+                    return unauthorized("Oops! This is not your photo.");
+                }
             }
-            return unauthorized("Invalid Picture selected");
+            return notFound("Invalid Picture selected");
         }
         return unauthorized("Oops! You are not logged in.");
     }

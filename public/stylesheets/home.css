@@ -26,9 +26,9 @@
     background-color: #5994ff;
 }
 
-#change-profile .preview {
+/*#change-profile .preview {*/
 
-}
+/*}*/
 
 .preview-wrapper{
     width: 100px;
@@ -71,9 +71,19 @@ preview-wrapper-original{
     font-size: 16px;
 }
 
-#imagesContainer {
+#addPhotoLink {
     display: inline-block;
     max-width: 120px;
+    max-height: 120px;
+}
+
+#imagesContainer {
+    position: relative;
+    max-width: 120px;
+    height: 100%;
+    width: 100%;
+    left: -25px;
+    top: -5px;
 }
 
 .overlay {

@@ -35,9 +35,10 @@
             <tbody>
             @for(destination <- destinations) {
                 @if(destination.getIsPublic == false) {
-                    <tr data-toggle="modal" data-id="@destination.getDestId()" data-target="#orderModal" class="clickable">
+                    @*<tr data-toggle="modal" data-id="@destination.getDestId()" data-target="#orderModal" class="clickable">*@
+                    <tr data-id="@destination.getDestId()">
                         <th scope ="row">
-                            <span>@destination.getDestName()</span>
+                            <a href="javascript:;" onclick="viewDestination(@destination.getDestId())"> <span>@destination.getDestName()</span></a>
                             <span>
                                 <img class="flyToImage"
                                      src="/assets/images/map/goto-map-icon-24px.png"
@@ -72,6 +73,8 @@
                             @*<td><input id="Button" class="btn btn-primary" type="button" value="Make destination public" style="background-color:grey"/></td>*@
 
                         }
+                        <td><button onclick="viewDestination(@destination.getDestId())" class="btn btn-success">
+                            View destination</button></td>
                     </tr>
 
 
@@ -108,9 +111,9 @@
             <tbody>
             @for(destination <- allDestinations) {
                 @if(destination.getIsPublic == true) {
-                    <tr data-toggle="modal" data-id="@destination.getDestId()" data-target="#orderModal" class="clickable">
+                    <tr data-id="@destination.getDestId()">
                         <th scope ="row">
-                            <span>@destination.getDestName()</span>
+                            <a href="javascript:;" onclick="viewDestination(@destination.getDestId())"> <span>@destination.getDestName()</span></a>
                             <span>
                                 <img class="flyToImage"
                                 src="/assets/images/map/goto-map-icon-24px.png"
@@ -134,6 +137,8 @@
                                 Suggest Modification</a></td>
                             <td></td>
                         }
+                        <td><button onclick="viewDestination(@destination.getDestId())" class="btn btn-success">
+                            View destination</button></td>
                     </tr>
                     <br>
                     }
@@ -200,7 +205,7 @@
             </a> from <a href="https://www.flaticon.com/"
             title="Flaticon">www.flaticon.com</a>
             is licensed by
-            <a href="http://creativecommons.org/licenses/by/3.0/"
+            <a href="https://creativecommons.org/licenses/by/3.0/"
             title="Creative Commons BY 3.0"
             target="_blank">CC 3.0 BY
             </a>
@@ -210,7 +215,7 @@
             Portions of this page are reproduced from work created and
             <a href="https://developers.google.com/readme/policies/">
                 shared by Google</a> and used according to terms described in the
-            <a href="http://creativecommons.org/licenses/by/3.0/">
+            <a href="https://creativecommons.org/licenses/by/3.0/">
                 Creative Commons 3.0 Attribution License</a>. Links to origional
                 works:
             <a href="https://developers.google.com/maps/documentation/javascript/adding-a-google-map">

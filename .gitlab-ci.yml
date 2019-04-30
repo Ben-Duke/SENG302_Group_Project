@@ -9,6 +9,13 @@ junit:
   stage: test
   script:
     - sbt test
+  artifacts:
+    when: on_failure
+    name: "${CI_BUILD_STAGE}_${CI_BUILD_REF_NAME}_FAILED"
+    paths:
+    - "."
+    untracked: false
+    expire_in: 1 day
 
 recent-artifacts:
   stage: deploy

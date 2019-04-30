@@ -357,6 +357,8 @@ public class DestinationController extends Controller {
                 return validationResult;
             }
             //If program gets past this point then inputted destination is valid
+
+            //Takes the request body and forms a custom map for binding, gets past Play not liking sets
             Map<String, String> map = new HashMap<>();
             fillDataWith(map, request.body().asFormUrlEncoded());
             Destination newDestination = formFactory.form(Destination.class).bind(map).get();
@@ -740,8 +742,10 @@ public class DestinationController extends Controller {
 
     /**
      * Taken from Play framework
-     * @param data
-     * @param urlFormEncoded todo
+     * Takes an empty Map to fill with data from http body, this method helps replace the default way
+     * of binding from request, which does not deal with sets, only lists
+     * @param data The data map to add data from the http body to. Contains info about 1 Object
+     * @param urlFormEncoded the data from the http request body, with details about the Object to bind
      */
     private void fillDataWith(Map<String, String> data, Map<String, String[]> urlFormEncoded) {
         urlFormEncoded.forEach((key, values) -> {

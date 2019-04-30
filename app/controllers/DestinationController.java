@@ -220,11 +220,11 @@ public class DestinationController extends Controller {
 
         if (user != null) {
             Destination destination = DestinationAccessor.getDestinationById(destId);
-            DestinationFormData formData = destFactory.makeDestinationFormData(destination);
 
             if (destination != null) {
-                if (destination.isUserOwner(user.getUserid()) || user.userIsAdmin()) {
+                DestinationFormData formData = destFactory.makeDestinationFormData(destination);
 
+                if (destination.isUserOwner(user.getUserid()) || user.userIsAdmin()) {
                     Form<DestinationFormData> destForm = formFactory.form(
                             DestinationFormData.class).fill(formData);
 

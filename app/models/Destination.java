@@ -240,19 +240,7 @@ public class Destination extends Model {
         return this.user.getUserid() == userid;
     }
 
-    /**
-     * Remove the destinations private information
-     */
-    public void removePrivateInformation() {
-        for (UserPhoto photo : this.userPhotos) {
-            if(!photo.isPublic) {
-                photo.getDestinations().remove(this);
-                this.getUserPhotos().remove(photo);
-                photo.update();
-                this.update();
-            }
-        }
-    }
+
 
 
 

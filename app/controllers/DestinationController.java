@@ -518,14 +518,14 @@ public class DestinationController extends Controller {
                     if (destFactory.doesPublicDestinationExist(destination)) {
                         // public matching destination already exists
                         // show error
-                        destination.removePrivateInformation();
+                        destFactory.removePrivateInformation(destination);
                         destination.setIsPublic(true);
                         destination.update();
                         return redirect(routes.DestinationController.indexDestination());
                     } else {
                         //no matching pub destination exists, making public now
                         //sets the destination to public, sets the owner to the default admin and updates the destination
-                        destination.removePrivateInformation();
+                        destFactory.removePrivateInformation(destination);
                         destination.setIsPublic(true);
                         destination.update();
                         return redirect(routes.DestinationController.indexDestination());

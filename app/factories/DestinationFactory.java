@@ -2,7 +2,9 @@ package factories;
 
 import models.Destination;
 import models.User;
+import models.UserPhoto;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -82,5 +84,23 @@ public class DestinationFactory {
         }
 
         return false;
+    }
+
+    /**
+     * Remove the destinations private information
+     */
+    public void removePrivateInformation(Destination destination) {
+        //Remove Private Photos from the destination
+        ArrayList<UserPhoto> photosToRemove = new ArrayList<UserPhoto>();
+        for (UserPhoto photo : destination.userPhotos) {
+            if(!photo.isPublic) {
+                photo.getDestinations().remove(this);
+                photosToRemove.add(photo);
+                photo.update();
+                destination.update();
+            }
+        }
+        destination.userPhotos.removeAll(photosToRemove);
+
     }
 }

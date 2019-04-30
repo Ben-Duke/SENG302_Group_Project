@@ -218,5 +218,16 @@ GET     /users/destinations/delete/:id   controllers.DestinationController.delet
 
 #Treasure Hunts
 #Renders treasure hunt index page
-GET     /users/treasurehunts             controllers.TreasureHuntController.indexTreasureHunt(request : Request)
+GET     /users/treasurehunts                    controllers.TreasureHuntController.indexTreasureHunt(request : Request)
 
+#Open Create treasure hunt page
+GET     /users/treasurehunts/create             controllers.TreasureHuntController.createTreasureHunt(request : Request)
+
+#Submit Create treasure hunt request
+GET     /users/treasurehunts/save               controllers.TreasureHuntController.saveTreasureHunt(request : Request)
+
+#Edit treasure hunt
+GET     /users/treasurehunts/edit/:id                    controllers.TreasureHuntController.editTreasureHunt(request : Request, id : Integer)
+
+#Delete treasure hunt
+GET     /users/treasurehunts/delete/:id                    controllers.TreasureHuntController.deleteTreasureHunt(request : Request, id : Integer)

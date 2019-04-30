@@ -13,3 +13,9 @@
     border: 1px solid #ddd; /* Add a grey border */
     margin-bottom: 12px; /* Add some space below the input */
 }
+
+#createTHuntButton {
+    float: right;
+    margin-right: 20px;
+    margin-bottom: 10px;
+}

@@ -1,24 +1,32 @@
 package controllers;
 
+import factories.TreasureHuntFactory;
+import formdata.TreasureHuntFormData;
+import models.Destination;
 import models.TreasureHunt;
 import models.User;
+import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
-import views.html.users.treasurehunt.indexTreasureHunt;
+import views.html.users.treasurehunt.*;
 
 import javax.inject.Inject;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 
 public class TreasureHuntController extends Controller {
 
     @Inject
     FormFactory formFactory;
+
+    TreasureHuntFactory treasureHuntFactory = new TreasureHuntFactory();
 
     /**
      * If the user is logged in, renders the treasure hunt index page
@@ -54,5 +62,89 @@ public class TreasureHuntController extends Controller {
             }
         }
         return openTreasureHunts;
+    }
+
+
+    public Result createTreasureHunt(Http.Request request){
+        User user = User.getCurrentUser(request);
+        if (user != null) {
+            Form<TreasureHuntFormData> incomingForm = formFactory.form(TreasureHuntFormData.class);
+            Map<String, Boolean> destinationMap = new TreeMap<>();
+            List<Destination> allDestinations= Destination.find.all();
+            for (Destination destination: allDestinations) {
+                if(destination.getIsPublic()) {
+                    destinationMap.put(destination.getDestName(), false);
+                }
+            }
+            return ok(createTreasureHunt.render(incomingForm, user, destinationMap));
+        }
+        else{
+            return unauthorized("Oops, you are not logged in");
+        }
+    }
+
+
+    public Result saveTreasureHunt(Http.Request request){
+        User user = User.getCurrentUser(request);
+        if (user != null) {
+            Form<TreasureHuntFormData> incomingForm = formFactory.form(TreasureHuntFormData.class).bindFromRequest(request);
+            Map<String, Boolean> destinationMap = new TreeMap<>();
+            List<Destination> allDestinations= Destination.find.all();
+            for (Destination destination: allDestinations) {
+                if(destination.getIsPublic()) {
+                    destinationMap.put(destination.getDestName(), false);
+                }
+            }
+            if (incomingForm.hasErrors()) {
+                return badRequest(createTreasureHunt.render(incomingForm, user, destinationMap));
+            }
+            for (TreasureHunt tHunt: user.getTreasureHunts()) {
+                if (incomingForm.get().getTitle().equals(tHunt.getTitle())) {
+                    return ok(createTreasureHunt.render(incomingForm.withError("title", "Cannot have duplicate Treasure Hunt titles"), user, destinationMap));
+                }
+            }
+            TreasureHuntFormData created = incomingForm.get();
+            treasureHuntFactory.createTreasureHunt(created, user);
+            return redirect(routes.TreasureHuntController.indexTreasureHunt());
+        }
+        else{
+            return unauthorized("Oops, you are not logged in");
+        }
+    }
+
+    public Result editTreasureHunt(Http.Request request, Integer treasureHuntId){
+        User user = User.getCurrentUser(request);
+        if (user != null) {
+            Form<TreasureHuntFormData> incomingForm = formFactory.form(TreasureHuntFormData.class);
+            Map<String, Boolean> destinationMap = new TreeMap<>();
+            List<Destination> allDestinations= Destination.find.all();
+            for (Destination destination: allDestinations) {
+                if(destination.getIsPublic()) {
+                    destinationMap.put(destination.getDestName(), false);
+                }
+            }
+            return ok(createTreasureHunt.render(incomingForm, user, destinationMap));
+        }
+        else{
+            return unauthorized("Oops, you are not logged in");
+        }
+    }
+
+    public Result deleteTreasureHunt(Http.Request request, Integer treasureHuntId){
+        User user = User.getCurrentUser(request);
+        if (user != null) {
+            Form<TreasureHuntFormData> incomingForm = formFactory.form(TreasureHuntFormData.class);
+            Map<String, Boolean> destinationMap = new TreeMap<>();
+            List<Destination> allDestinations= Destination.find.all();
+            for (Destination destination: allDestinations) {
+                if(destination.getIsPublic()) {
+                    destinationMap.put(destination.getDestName(), false);
+                }
+            }
+            return ok(createTreasureHunt.render(incomingForm, user, destinationMap));
+        }
+        else{
+            return unauthorized("Oops, you are not logged in");
+        }
     }
 }

@@ -139,9 +139,9 @@ public class UtilityFunctions {
     }
 
     /**
-     * Function that populates the database with the nationalities and passports
+     * Function that populates the database with the nationalities
      */
-    public static void addNatAndPass() {
+    public static void addAllNationalities() {
         if (Nationality.find.all().isEmpty()) {
             String[] locales = Locale.getISOCountries();
             for (String countryCode : locales) {
@@ -153,16 +153,33 @@ public class UtilityFunctions {
                     System.out.println("Failed to save nationality: " + nationality );
 
                 }
+            }
+        }
+    }
+
+    /**
+     * Inserts all default passport options into the database.
+     */
+    public static void addAllPassports() {
+        if (Passport.find.all().isEmpty()) {
+            String[] locales = Locale.getISOCountries();
+
+            for (String countryCode : locales) {
+                Locale obj = new Locale("", countryCode);
+
                 Passport passport = new Passport(obj.getDisplayCountry());
                 try {
                     passport.save();
                 }catch(Exception error){
-                    System.out.println("Passport failed to save. name:" + passport);
+                    System.out.println("Passport failed to save. name: " + passport);
                 }
             }
         }
     }
 
+    /**
+     * Inserts all default traveler type options into the database.
+     */
     public static void addTravellerTypes() {
         ArrayList<String> types = new ArrayList();
         types.add("Groupie");

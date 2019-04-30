@@ -1,6 +1,7 @@
 package utilities;
 
 import controllers.ApplicationManager;
+import io.ebean.ExpressionList;
 import models.*;
 
 import java.time.LocalDate;
@@ -21,10 +22,20 @@ public class TestDatabaseManager {
      * Populates the database. Call this method at the before section of each unit test.
      */
     public void populateDatabase(){
-        if(TravellerType.find.all().size() == 0) {
-            addTravellerTypes();
-            addNationalitiesAndPassports();
+        UtilityFunctions util = new UtilityFunctions();
+
+        if(TravellerType.find.all().isEmpty()) {
+            util.addTravellerTypes();
         }
+
+        if (Nationality.find.all().isEmpty()) {
+            util.addAllNationalities();
+        }
+
+        if (Passport.find.all().isEmpty()) {
+            util.addAllPassports();
+        }
+
         populateUsers();
         addTrips();
         addDestinationsAndVisits();
@@ -49,7 +60,20 @@ public class TestDatabaseManager {
         String natPassName2 = "Singapore";
         String natPassName3 = "Australia";
 
-        Nationality nationality1 = Nationality.find.query().where().eq("nationalityName",natPassName1).findOne();
+        // --------------------fleshing out the sql query to debug
+
+        ExpressionList<Nationality> nationalityExpressionList;
+        nationalityExpressionList = Nationality.find.query().where();
+
+        ExpressionList<Nationality> natExpressionListEquals;
+        natExpressionListEquals = nationalityExpressionList.eq("nationalityName",natPassName1);
+
+        System.out.println("count nationality1: " + natExpressionListEquals.findCount());
+
+        Nationality nationality1 = natExpressionListEquals.findOne();
+
+        // --------------------fleshing out the sql query to debug ^^^^^^^^^^
+
         Nationality nationality2 = Nationality.find.query().where().eq("nationalityName",natPassName2).findOne();
         Nationality nationality3 = Nationality.find.query().where().eq("nationalityName",natPassName3).findOne();
 
@@ -95,13 +119,6 @@ public class TestDatabaseManager {
     }
 
     /**
-     * Populates the database with traveller types.
-     */
-    public void addTravellerTypes(){
-        UtilityFunctions.addTravellerTypes();
-    }
-
-    /**
      * Creates a default admin.
      */
     public void createDefaultAdmin(){
@@ -112,13 +129,6 @@ public class TestDatabaseManager {
         user.save();
         Admin admin = new Admin(user.userid, true);
         admin.save();
-    }
-
-    /**
-     * Populates the database with nationalities and pasports.
-     */
-    public void addNationalitiesAndPassports(){
-        UtilityFunctions.addNatAndPass();
     }
 
 

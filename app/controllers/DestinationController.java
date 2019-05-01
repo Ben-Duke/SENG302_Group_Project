@@ -745,7 +745,7 @@ public class DestinationController extends Controller {
         // User user = httpRequest.session().getOptional("connected").orElse(null);
         if(destId != null) {
             UserPhoto primaryPicture = DestinationFactory.getprimaryProfilePicture(destId);
-
+            System.out.println("Path is " + primaryPicture.getUrlWithPath());
             if (primaryPicture != null) {
                 System.out.println("Sending image back");
                 return ok(new File(primaryPicture.getUrlWithPath()));

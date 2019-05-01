@@ -40,7 +40,7 @@
                     <tr data-id="@destination.getDestId()">
                         <th scope ="row">
             @if(destination.getPrimaryPhoto != null){
-                <img src="@routes.DestinationController.servePrimaryPicture(destination.getPrimaryPhoto.getPhotoId) ">
+                <img src="@routes.DestinationController.servePrimaryPicture(destination.getPrimaryPhoto.getPhotoId) " width="50" height="60">
             }
                             <a href="javascript:;" onclick="viewDestination(@destination.getDestId())"> <span>@destination.getDestName()</span></a>
                             <span>

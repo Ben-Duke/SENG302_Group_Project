@@ -81,9 +81,6 @@ public class DestinationController extends Controller {
     }
 
 
-
-
-
     /**
      * Gets all the current users destinations renders the index page displaying them.
      *

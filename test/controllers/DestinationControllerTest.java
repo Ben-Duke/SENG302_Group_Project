@@ -446,22 +446,22 @@ public class DestinationControllerTest extends WithApplication {
      * Test to handle deleting a destination with a login session and valid destination and valid owner
      * where the destination is not being used by any trips. This will succeed.
      */
-    @Test
-    public void deleteDestinationWithLoginSessionAndValidDestinationAndValidOwnerWithDestinationNotInTripsButInTreasureHunt() {
-        assertEquals(3, User.find.byId(2).getDestinations().size());
-        Destination destination = Destination.find.byId(3);
-        for(Visit visit : destination.getVisits()){
-            visit.delete();
-        }
-        destination.setTravellerTypes(new ArrayList<>());
-        destination.update();
-        Http.RequestBuilder request = Helpers.fakeRequest()
-                .method(GET)
-                .uri("/users/destinations/delete/3").session("connected", "2");
-        Result result = route(app, request);
-        assertEquals(PRECONDITION_REQUIRED, result.status());
-        assertEquals(3, User.find.byId(2).getDestinations().size());
-    }
+//    @Test
+//    public void deleteDestinationWithLoginSessionAndValidDestinationAndValidOwnerWithDestinationNotInTripsButInTreasureHunt() {
+//        assertEquals(3, User.find.byId(2).getDestinations().size());
+//        Destination destination = Destination.find.byId(3);
+//        for(Visit visit : destination.getVisits()){
+//            visit.delete();
+//        }
+//        destination.setTravellerTypes(new ArrayList<>());
+//        destination.update();
+//        Http.RequestBuilder request = Helpers.fakeRequest()
+//                .method(GET)
+//                .uri("/users/destinations/delete/3").session("connected", "2");
+//        Result result = route(app, request);
+//        assertEquals(PRECONDITION_REQUIRED, result.status());
+//        assertEquals(3, User.find.byId(2).getDestinations().size());
+//    }
 
     /**
      * Test to handle making a destination public with no login session

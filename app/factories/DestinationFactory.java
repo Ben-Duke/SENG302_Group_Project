@@ -24,6 +24,22 @@ public class DestinationFactory {
         return allPublicDestinations;
     }
 
+    public static UserPhoto getprimaryProfilePicture(int destinationId) {
+        Destination destination = Destination.find.query().where().eq("destid", destinationId).findOne();
+        UserPhoto primaryPhoto = null;
+        try{
+            primaryPhoto = UserPhoto.find.query().where().eq("photoId", destination.getPrimaryPhoto().getPhotoId()).and().eq("isProfile", true).findOne();
+        }catch(Exception error){
+            System.out.println("Error in UserPhoto method");
+            System.out.println(error);
+        }
+        if(primaryPhoto != null) {
+            return  primaryPhoto;
+        } else {
+            return null;
+        }
+    }
+
     /**
      * Gets a List of all a users private destinations (excluding their own public
      * destinations).

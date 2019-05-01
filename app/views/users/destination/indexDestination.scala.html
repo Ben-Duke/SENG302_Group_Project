@@ -23,6 +23,7 @@
             <thead class="thead-dark">
                 <tr>
                     <th scope="col">Name</th>
+                    <th scope="col">Name</th>
                     <th scope="col">Type</th>
                     <th scope="col">Country</th>
                     <th scope="col">District</th>
@@ -38,6 +39,9 @@
                     @*<tr data-toggle="modal" data-id="@destination.getDestId()" data-target="#orderModal" class="clickable">*@
                     <tr data-id="@destination.getDestId()">
                         <th scope ="row">
+            @if(destination.getPrimaryPhoto != null){
+                <img src="@routes.DestinationController.servePrimaryPicture(destination.getPrimaryPhoto.getPhotoId) ">
+            }
                             <a href="javascript:;" onclick="viewDestination(@destination.getDestId())"> <span>@destination.getDestName()</span></a>
                             <span>
                                 <img class="flyToImage"

@@ -152,8 +152,13 @@ GET     /assets/*file               controllers.Assets.at(path="/public", file)
 
 #Destinations
 
+
+
 #Renders index page for destinations
 GET     /users/destinations             controllers.DestinationController.indexDestination(request : Request)
+
+
+GET     /users/destinations/getprimaryphoto  controllers.DestinationController.servePrimaryPicture(request : Request, id : Integer)
 
 #Gets JSON of all public and private Destinations avaliable to a user.
 GET     /users/destinations/getalljson         controllers.DestinationController.getVisibleDestinationMarkersJSON(request : Request)

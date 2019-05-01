@@ -3,6 +3,7 @@ package controllers;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import factories.DestinationFactory;
+
 import formdata.DestinationFormData;
 import formdata.UpdateUserFormData;
 import models.*;
@@ -17,6 +18,7 @@ import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
 import javax.inject.Inject;
+import java.io.File;
 import java.util.*;
 
 
@@ -77,6 +79,9 @@ public class DestinationController extends Controller {
 
         return null;
     }
+
+
+
 
 
     /**
@@ -736,4 +741,25 @@ public class DestinationController extends Controller {
             return unauthorized("Oops, you are not logged in");
         }
     }
+
+
+
+    public Result servePrimaryPicture(Http.Request request, Integer destId) {
+        // User user = httpRequest.session().getOptional("connected").orElse(null);
+        if(destId != null) {
+            UserPhoto primaryPicture = DestinationFactory.getprimaryProfilePicture(destId);
+
+            if (primaryPicture != null) {
+                System.out.println("Sending image back");
+                return ok(new File(primaryPicture.getUrlWithPath()));
+            } else {
+                //should be 404 but then console logs an error
+                return ok();
+            }
+        }
+        else{
+            return unauthorized("Oops, you're not logged in.");
+        }
+    }
+
 }

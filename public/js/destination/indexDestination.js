@@ -302,10 +302,14 @@ $('#orderModal').on('shown.bs.modal', function (e) {
         $('.right').hide();
         var outerDivNode = document.createElement("div");
         // outerDivNode.classList.
-        var parNode = document.createElement("p");
-        var parTextNode = document.createTextNode("No image found!");
-        parNode.appendChild(parTextNode);
-        outerDivNode.appendChild(parNode);
+        var imgNode = document.createElement("img");
+        imgNode.src= "/assets/images/destinationPlaceHolder.png";
+        imgNode.setAttribute("width", "200");
+        imgNode.setAttribute("height", "150");
+        var textNode = document.createTextNode(destData["destName"] + " has no pictures!");
+        outerDivNode.appendChild(textNode);
+        outerDivNode.appendChild(imgNode);
+
         $('#destslider').html(outerDivNode);
     }
 });

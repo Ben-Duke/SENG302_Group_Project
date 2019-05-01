@@ -173,7 +173,7 @@ function initDestinationMarkers() {
         .then(destinations => {
             let marker;
             let infoWindow;
-
+            console.log(destinations);
             for (let index = 0; index < destinations.length; index++) {
                 marker = new google.maps.Marker({
                     position: {

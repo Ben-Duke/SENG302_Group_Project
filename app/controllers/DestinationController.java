@@ -20,6 +20,7 @@ import javax.inject.Inject;
 import java.util.*;
 
 
+import scala.concurrent.java8.FuturesConvertersImpl;
 import views.html.users.destination.*;
 
 public class DestinationController extends Controller {
@@ -599,7 +600,7 @@ public class DestinationController extends Controller {
      * Returns a json list of photos associated to a destination given by a destination id
      * @param request the HTTP request
      * @param destId the destination id
-     * @return a json list of traveller types associated to the destination
+     * @return a json list of photos associated to the destination
      */
     public Result getPhotos(Http.Request request, Integer destId){
         User user = User.getCurrentUser(request);
@@ -707,7 +708,28 @@ public class DestinationController extends Controller {
     }
 
     /**
-     * Gets JSON of all visible (public + the logged in users private photos)
+     * Gets List of all destinations visible to the given user
+     * @param userId the user to look for private destinations of
+     * @return The list of all public destinations and all private destinations that the user can see
+     * todo consider admins
+     */
+    private List<Destination> getVisibleDestinations(int userId) {
+        DestinationFactory destinationFactory = new DestinationFactory();
+
+        List<Destination> publicDestinations;
+        List<Destination> privateDestinations;
+        publicDestinations = destinationFactory.getPublicDestinations();
+        privateDestinations = destinationFactory.getUsersPrivateDestinations(userId);
+
+        List<Destination> allVisibleDestination = new ArrayList<>();
+        allVisibleDestination.addAll(publicDestinations);
+        allVisibleDestination.addAll(privateDestinations);
+
+        return allVisibleDestination;
+    }
+
+    /**
+     * Gets JSON of all visible (public + the logged in users private)
      * Destinations avaliable to the user.
      *
      * @param request the HTTP request
@@ -718,20 +740,37 @@ public class DestinationController extends Controller {
         if(user != null) {
             int userId = user.getUserid();
 
-            DestinationFactory destinationFactory = new DestinationFactory();
-
-            List<Destination> publicDestinations;
-            List<Destination> privateDestinations;
-            publicDestinations = destinationFactory.getPublicDestinations();
-            privateDestinations = destinationFactory.getUsersPrivateDestinations(userId);
-
-            List<Destination> allVisibleDestination = new ArrayList<Destination>();
-            allVisibleDestination.addAll(publicDestinations);
-            allVisibleDestination.addAll(privateDestinations);
+            List<Destination> allVisibleDestination = getVisibleDestinations(userId);
+            System.out.println(allVisibleDestination);
 
             return ok(Json.toJson(allVisibleDestination));
         } else {
             return unauthorized("Oops, you are not logged in");
         }
     }
+
+    /**
+     * Gets JSON of all visible (public + the logged in users private)
+     * Photos available to the user
+     * @param request the HTTP request
+     * @return a Result object containing the destination photos JSON in it's body
+     */
+    public Result getVisibleDestinationPhotoMarkersJSON(Http.Request request) {
+        User user = User.getCurrentUser(request);
+        if(user != null) {
+            int userId = user.getUserid();
+
+            List<Destination> allVisibleDestination = getVisibleDestinations(userId);
+            List<UserPhoto> allVisibleDestinationPhoto = new ArrayList<>();
+            for (Destination dest: allVisibleDestination) {
+                allVisibleDestinationPhoto.addAll(dest.getUserPhotos());
+            }
+
+            return ok(Json.toJson(allVisibleDestinationPhoto));
+        } else {
+            return unauthorized("Oops, you are not logged in");
+        }
+    }
+
+
 }

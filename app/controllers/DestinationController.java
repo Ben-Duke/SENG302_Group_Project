@@ -521,15 +521,18 @@ public class DestinationController extends Controller {
                         //no matching pub destination exists, making public now
                         //sets the destination to public, sets the owner to the default admin and updates the destination
                         List<Destination> matchingDests = destFactory.getOtherUsersMatchingPrivateDestinations(user.userid, destination);
-                        if (matchingDests.isEmpty()) {
+                        if (matchingDests.size() == 1) {
                             destination.setIsPublic(true);
                             destination.update();
-                        } else if (matchingDests.size() == 1) {
-                            flash("matchingDest", "There is " + matchingDests.size() + " other destination that matches " +
+                        } else if (matchingDests.size() == 2) {
+                            flash("matchingDest", "There is " + (matchingDests.size() - 1) + " other destination that matches " +
                                     destination.getDestName() + ".\nWould you like to merge?");
+                            destFactory.mergeDestinations(matchingDests, destination);
                         } else {
-                            flash("matchingDest", "There are " + matchingDests.size  () + " other destinations that match " +
+                            flash("matchingDest", "There are " + (matchingDests.size() - 1) + " other destinations that match " +
                                     destination.getDestName() + ".\nWould you like to merge?");
+                            destFactory.mergeDestinations(matchingDests, destination);
+
                         }
                         return redirect(routes.DestinationController.indexDestination());
                     }

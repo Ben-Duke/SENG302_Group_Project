@@ -1,8 +1,6 @@
 package factories;
 
-import models.Admin;
-import models.Destination;
-import models.User;
+import models.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -101,21 +99,34 @@ public class DestinationFactory {
         int count = 0;
         for (Destination existingDestination : allDestinations) {
             if (destination.equals(existingDestination)) {
-                matchingDestinations.add(destination);
+                matchingDestinations.add(existingDestination);
             }
         }
+        matchingDestinations.add(destination);
         return matchingDestinations;
     }
 
-    public boolean mergeDestinations(List<Destination> destinationList) {
+    public boolean mergeDestinations(List<Destination> destinationList, Destination destination) {
         Admin defaultAdmin = Admin.find.query().where().eq("isDefault", true).findOne();
         User defaultAdminUser = User.find.query().where().eq("userid", defaultAdmin.getUserId()).findOne();
-        for (Destination destination : destinationList) {
-            destination.setIsPublic(true);
-            destination.setUser(defaultAdminUser);
+        Destination newDestination = destination;
+        newDestination.setIsPublic(true);
+        newDestination.setUser(defaultAdminUser);
+        for (Destination otherDestination : destinationList) {
+            if(!otherDestination.visits.isEmpty()) {
+                List<Trip> trips = otherDestination.getUser().getTrips();
+                for (Trip trip: trips) {
+                    for(Visit visit: trip.getVisits()) {
+                        if (visit.destination.destid == otherDestination.destid) {
+                            visit.destination = newDestination;
+                        }
+                    }
+                }
+
+            }
+            otherDestination.delete();
             return true;
         }
         return false;
     }
-
 }

@@ -447,7 +447,7 @@ public class DestinationControllerTest extends WithApplication {
      * where the destination is not being used by any trips. This will succeed.
      */
     @Test
-    public void deleteDestinationWithLoginSessionAndValidDestinationAndValidOwnerWithDestinationNotInTrips() {
+    public void deleteDestinationWithLoginSessionAndValidDestinationAndValidOwnerWithDestinationNotInTripsButInTreasureHunt() {
         assertEquals(3, User.find.byId(2).getDestinations().size());
         Destination destination = Destination.find.byId(3);
         for(Visit visit : destination.getVisits()){
@@ -459,8 +459,8 @@ public class DestinationControllerTest extends WithApplication {
                 .method(GET)
                 .uri("/users/destinations/delete/3").session("connected", "2");
         Result result = route(app, request);
-        assertEquals(REDIRECT_HTTP_STATUS, result.status());
-        assertEquals(2, User.find.byId(2).getDestinations().size());
+        assertEquals(PRECONDITION_REQUIRED, result.status());
+        assertEquals(3, User.find.byId(2).getDestinations().size());
     }
 
     /**
@@ -744,8 +744,8 @@ public class DestinationControllerTest extends WithApplication {
                 "    \"country\": \"New Zealand\",\n" +
                 "    \"destName\": \"Christchurch\",\n" +
                 "    \"destid\": 1,\n" +
-                "    \"destId\": 1,\n" +
                 "    \"public\": true,\n" +
+                "    \"destId\": 1,\n" +
                 "    \"district\": \"Canterbury\",\n" +
                 "    \"latitude\": -43.5321,\n" +
                 "    \"isPublic\": true,\n" +
@@ -757,8 +757,8 @@ public class DestinationControllerTest extends WithApplication {
                 "    \"country\": \"New Zealand\",\n" +
                 "    \"destName\": \"The Wok\",\n" +
                 "    \"destid\": 3,\n" +
-                "    \"destId\": 3,\n" +
                 "    \"public\": true,\n" +
+                "    \"destId\": 3,\n" +
                 "    \"district\": \"Canterbury\",\n" +
                 "    \"latitude\": -43.523593,\n" +
                 "    \"isPublic\": true,\n" +
@@ -770,8 +770,8 @@ public class DestinationControllerTest extends WithApplication {
                 "    \"country\": \"New Zealand\",\n" +
                 "    \"destName\": \"Hanmer Springs Thermal Pools\",\n" +
                 "    \"destid\": 4,\n" +
-                "    \"destId\": 4,\n" +
                 "    \"public\": true,\n" +
+                "    \"destId\": 4,\n" +
                 "    \"district\": \"North Canterbury\",\n" +
                 "    \"latitude\": -42.522791,\n" +
                 "    \"isPublic\": true,\n" +
@@ -783,8 +783,8 @@ public class DestinationControllerTest extends WithApplication {
                 "    \"country\": \"Egypt\",\n" +
                 "    \"destName\": \"Great Pyramid of Giza\",\n" +
                 "    \"destid\": 6,\n" +
-                "    \"destId\": 6,\n" +
                 "    \"public\": true,\n" +
+                "    \"destId\": 6,\n" +
                 "    \"district\": \"Giza\",\n" +
                 "    \"latitude\": 29.979481,\n" +
                 "    \"isPublic\": true,\n" +
@@ -796,8 +796,8 @@ public class DestinationControllerTest extends WithApplication {
                 "    \"country\": \"United States\",\n" +
                 "    \"destName\": \"Lincoln Memorial\",\n" +
                 "    \"destid\": 9,\n" +
-                "    \"destId\": 9,\n" +
                 "    \"public\": true,\n" +
+                "    \"destId\": 9,\n" +
                 "    \"district\": \"Washington DC\",\n" +
                 "    \"latitude\": 38.889406,\n" +
                 "    \"isPublic\": true,\n" +
@@ -809,8 +809,8 @@ public class DestinationControllerTest extends WithApplication {
                 "    \"country\": \"New Zealand\",\n" +
                 "    \"destName\": \"Wellington\",\n" +
                 "    \"destid\": 2,\n" +
-                "    \"destId\": 2,\n" +
                 "    \"public\": false,\n" +
+                "    \"destId\": 2,\n" +
                 "    \"district\": \"Wellington\",\n" +
                 "    \"latitude\": -41.2866,\n" +
                 "    \"isPublic\": false,\n" +

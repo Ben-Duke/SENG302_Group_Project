@@ -48,7 +48,7 @@ public class TreasureHuntFactory {
             }
             treasureHunt.setStartDate(treasureHuntFormData.startDate);
             treasureHunt.setEndDate(treasureHuntFormData.endDate);
-            treasureHunt.save();
+            treasureHunt.update();
         } else {
             System.out.println("ERROR: You cannot edit this Treasure hunt as you are not it's owner");
         }
@@ -62,7 +62,6 @@ public class TreasureHuntFactory {
     public void deleteTreasureHunt(TreasureHunt treasureHunt, User user) {
         if (user.equals(treasureHunt.getUser())) {
             treasureHunt.delete();
-            treasureHunt.save();
         } else {
             System.out.println("ERROR: You cannot delete this Treasure hunt as you are not it's owner");
         }

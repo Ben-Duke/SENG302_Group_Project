@@ -17,6 +17,9 @@ import java.util.*;
 import static play.mvc.Results.badRequest;
 
 @Entity
+@Table(name = "user",
+        uniqueConstraints = @UniqueConstraint(columnNames = "email")
+)
 public class User extends Model {
 
     /**

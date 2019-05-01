@@ -148,7 +148,7 @@ public class UtilityFunctions {
                 Locale obj = new Locale("", countryCode);
                 Nationality nationality = new Nationality(obj.getDisplayCountry());
                 try{
-                nationality.save();
+                    nationality.save();
                 }catch(Exception error){
                     System.out.println("Failed to save nationality: " + nationality );
 

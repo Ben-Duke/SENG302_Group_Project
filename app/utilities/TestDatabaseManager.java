@@ -126,8 +126,20 @@ public class TestDatabaseManager {
         user.setDateOfBirth(LocalDate.of(2019, 2, 18));
         user.setTravellerTypes(TravellerType.find.all().subList(5, 6)); // Business Traveller
         user.setNationality(Nationality.find.all().subList(0, 2)); // First two countries alphabetically
-        user.save();
-        Admin admin = new Admin(user.userid, true);
+
+        try {
+            user.save();
+        } catch (Exception e) {
+            System.out.println("Error making admin: User is already in db");
+        }
+
+        Admin admin = null;
+        try {
+            admin = new Admin(user.userid, true);
+        } catch (Exception e) {
+            System.out.println("Error making admin: Admin is already in db");
+        }
+
         admin.save();
     }
 

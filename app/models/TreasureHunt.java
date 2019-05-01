@@ -49,6 +49,8 @@ public class TreasureHunt extends Model {
     /**
      * The destination that is the correct answer to the treasure hunt
      */
+    @JsonIgnore
+    @ManyToOne
     public Destination destination;
 
     /**

@@ -73,6 +73,7 @@ create table treasure_hunt (
   thuntid                       integer auto_increment not null,
   title                         varchar(255),
   riddle                        varchar(255),
+  destination_destid            integer,
   start_date                    varchar(255),
   end_date                      varchar(255),
   user                          integer,
@@ -175,6 +176,9 @@ alter table destination_modification_request_traveller_type add constraint fk_de
 create index ix_destination_modification_request_traveller_type_travel_2 on destination_modification_request_traveller_type (traveller_type_ttypeid);
 alter table destination_modification_request_traveller_type add constraint fk_destination_modification_request_traveller_type_travel_2 foreign key (traveller_type_ttypeid) references traveller_type (ttypeid) on delete restrict on update restrict;
 
+create index ix_treasure_hunt_destination_destid on treasure_hunt (destination_destid);
+alter table treasure_hunt add constraint fk_treasure_hunt_destination_destid foreign key (destination_destid) references destination (destid) on delete restrict on update restrict;
+
 create index ix_treasure_hunt_user on treasure_hunt (user);
 alter table treasure_hunt add constraint fk_treasure_hunt_user foreign key (user) references user (userid) on delete restrict on update restrict;
 
@@ -246,6 +250,9 @@ drop index if exists ix_destination_modification_request_traveller_type_destin_1
 
 alter table destination_modification_request_traveller_type drop constraint if exists fk_destination_modification_request_traveller_type_travel_2;
 drop index if exists ix_destination_modification_request_traveller_type_travel_2;
+
+alter table treasure_hunt drop constraint if exists fk_treasure_hunt_destination_destid;
+drop index if exists ix_treasure_hunt_destination_destid;
 
 alter table treasure_hunt drop constraint if exists fk_treasure_hunt_user;
 drop index if exists ix_treasure_hunt_user;

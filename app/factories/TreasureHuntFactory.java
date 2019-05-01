@@ -1,8 +1,11 @@
 package factories;
 
 import formdata.TreasureHuntFormData;
+import models.Destination;
 import models.TreasureHunt;
 import models.User;
+
+import java.util.List;
 
 public class TreasureHuntFactory {
 
@@ -15,22 +18,34 @@ public class TreasureHuntFactory {
      * @param user The user who is the creator of this treasure hunt
      */
     public void createTreasureHunt(TreasureHuntFormData treasureHuntFormData, User user) {
-        TreasureHunt treasureHunt = new TreasureHunt(treasureHuntFormData.title, treasureHuntFormData.riddle,
-                treasureHuntFormData.destination, treasureHuntFormData.startDate, treasureHuntFormData.endDate, user);
-        treasureHunt.save();
+        List<Destination> destinations = Destination.find.all();
+        for (Destination destination: destinations) {
+            if (destination.getIsPublic() && destination.getDestName().equals(treasureHuntFormData.destination)) {
+                TreasureHunt treasureHunt = new TreasureHunt(treasureHuntFormData.title, treasureHuntFormData.riddle,
+                        destination, treasureHuntFormData.startDate, treasureHuntFormData.endDate, user);
+                treasureHunt.save();
+            }
+        }
+
     }
 
     /**
      * The method to update and save the Treasure Hunt.
-     * @param treasureHunt The Treasure Hunt to be edited
+     * @param treasureHuntId The id of the Treasure Hunt to be edited
      * @param treasureHuntFormData TreasureHuntFormData
      * @param user The user who wants to edit this treasure hunt
      */
-    public void editTreasureHunt(TreasureHunt treasureHunt, TreasureHuntFormData treasureHuntFormData, User user) {
+    public void editTreasureHunt(Integer treasureHuntId, TreasureHuntFormData treasureHuntFormData, User user) {
+        TreasureHunt treasureHunt = TreasureHunt.find.byId(treasureHuntId);
         if (user.equals(treasureHunt.getUser())) {
             treasureHunt.setTitle(treasureHuntFormData.title);
             treasureHunt.setRiddle(treasureHuntFormData.riddle);
-            treasureHunt.setDestination(treasureHuntFormData.destination);
+            List<Destination> destinations = Destination.find.all();
+            for (Destination destination: destinations) {
+                if (destination.getIsPublic() && destination.getDestName().equals(treasureHuntFormData.destination)) {
+                    treasureHunt.setDestination(destination);
+                }
+            }
             treasureHunt.setStartDate(treasureHuntFormData.startDate);
             treasureHunt.setEndDate(treasureHuntFormData.endDate);
             treasureHunt.save();

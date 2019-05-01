@@ -25,7 +25,7 @@ import java.util.List;
 public class TreasureHuntFormData implements Constraints.Validatable<List<ValidationError>> {
     public String title;
     public String riddle;
-    public Destination destination;
+    public String destination;
     public String startDate;
     public String endDate;
     public List<User> users;
@@ -50,7 +50,7 @@ public class TreasureHuntFormData implements Constraints.Validatable<List<Valida
     /**
      * Creates an initialized form instance. Assumes the passed data is valid.
      */
-    public TreasureHuntFormData(String title, String riddle, Destination destination, String startDate, String endDate) {
+    public TreasureHuntFormData(String title, String riddle, String destination, String startDate, String endDate) {
         this.title = title;
         this.riddle = riddle;
         this.destination = destination;
@@ -64,6 +64,12 @@ public class TreasureHuntFormData implements Constraints.Validatable<List<Valida
      */
     public List<ValidationError> validate() {
         List<ValidationError> errors = new ArrayList<>();
+        LocalDate now = LocalDate.now();
+        String min = "1900-01-01";
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate minDate = LocalDate.parse(min, formatter);
+        LocalDate userStartDate;
+        LocalDate userEndDate;
 
         if (title == null || title.length() == 0) {
             errors.add(new ValidationError("title", "No title was given"));
@@ -77,42 +83,27 @@ public class TreasureHuntFormData implements Constraints.Validatable<List<Valida
         // TODO: Implement validation for the dates below and destination.
         if (startDate.isEmpty()) {
             errors.add(new ValidationError("startDate", "Please enter a start date"));
-        }
-        else {
-            LocalDate now = LocalDate.now();
-            String min = "1900-01-01";
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            LocalDate minDate = LocalDate.parse(min, formatter);
-            LocalDate userDate = LocalDate.parse(startDate, formatter);
-
-            if (userDate.compareTo(now) > 0) {
-                errors.add(new ValidationError("startDate", "Please select a valid year under the current year"));
+            if (endDate.isEmpty()) {
+                errors.add(new ValidationError("endDate", "Please enter a end date"));
             }
-            if (userDate.compareTo(minDate) < 0) {
+        } else {
+            userStartDate = LocalDate.parse(startDate, formatter);
+            if (userStartDate.compareTo(minDate) < 0) {
                 errors.add(new ValidationError("startDate", "Please select a date after 1/1/1900"));
             }
-        }
-
-        if (endDate.isEmpty()) {
-            errors.add(new ValidationError("startDate", "Please enter a start date"));
-        }
-        else {
-            LocalDate now = LocalDate.now();
-            String min = "1900-01-01";
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            LocalDate minDate = LocalDate.parse(min, formatter);
-            LocalDate userDate = LocalDate.parse(endDate, formatter);
-
-            if (userDate.compareTo(now) > 0) {
-                errors.add(new ValidationError("endDate", "Please select a valid year under the current year"));
-            }
-            if (userDate.compareTo(minDate) < 0) {
-                errors.add(new ValidationError("endDate", "Please select a date after 1/1/1900"));
+            if (endDate.isEmpty()) {
+                errors.add(new ValidationError("endDate", "Please enter a end date"));
+            } else {
+                userEndDate = LocalDate.parse(endDate, formatter);
+                if (userEndDate.compareTo(userStartDate) < 0) {
+                    errors.add(new ValidationError("endDate", "Please select a date which is after the start date."));
+                }
             }
         }
 
-        if (destination == null) {
-            errors.add(new ValidationError("destination", "No destination was given"));
+
+        if (destination == null || destination.length() == 0) {
+            errors.add(new ValidationError("destination", "Please select a destination."));
         }
 
         if (errors.size() > 0) {
@@ -139,11 +130,11 @@ public class TreasureHuntFormData implements Constraints.Validatable<List<Valida
         this.riddle = riddle;
     }
 
-    public Destination getDestination() {
+    public String getDestination() {
         return destination;
     }
 
-    public void setDestination(Destination destination) {
+    public void setDestination(String destination) {
         this.destination = destination;
     }
 

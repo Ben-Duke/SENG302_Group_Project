@@ -4,7 +4,7 @@
 
 
 @main(user, "Treasure Hunt") {
-    @helper.form(action = helper.CSRF(routes.TreasureHuntController.saveTreasureHunt())) {
+    @helper.form(action = helper.CSRF(routes.TreasureHuntController.createAndSaveTreasureHunt())) {
         <fieldset>
                 <!-- Header -->
             <legend>Create Treasure Hunt</legend>
@@ -13,29 +13,29 @@
             <!-- Name -->
             @text(treasureHuntForm("title"),
                 label = "Title",
-                placeholder = "",
-                help = "Please enter the title for the Treasure Hunt.")
+                placeholder = "Title",
+                help = "Title for the Treasure Hunt.")
 
             @text(treasureHuntForm("riddle"),
                 label = "Riddle",
-                placeholder = "",
-                help = "Please enter the riddle.")
+                placeholder = "Riddle",
+                help = "Riddle for the Treasure Hunt.")
 
             @select(treasureHuntForm("destination"),
                 label = "Destination",
                 optionMap = destinations,
                 isMultiple = false,
-                help = "Select the destination (answer) for the Treasure Hunt.")
+                help = "Destination (answer) for the Treasure Hunt.")
 
             @datepicker(treasureHuntForm("startDate"),
                 label = "Start Date",
                 placeholder = "01/01/2000",
-                help = "Please select the start date.")
+                help = "Start date for the Treasure Hunt.")
 
             @datepicker(treasureHuntForm("endDate"),
                 label = "End Date",
                 placeholder = "01/01/2000",
-                help = "Please select the end date.")
+                help = "End date for the Treasure Hunt.")
 
         </fieldset>
 

@@ -224,10 +224,14 @@ GET     /users/treasurehunts                    controllers.TreasureHuntControll
 GET     /users/treasurehunts/create             controllers.TreasureHuntController.createTreasureHunt(request : Request)
 
 #Submit Create treasure hunt request
-GET     /users/treasurehunts/save               controllers.TreasureHuntController.saveTreasureHunt(request : Request)
+GET     /users/treasurehunts/save               controllers.TreasureHuntController.createAndSaveTreasureHunt(request : Request)
+
+#Open Edit treasure hunt page
+GET     /users/treasurehunts/edit                  controllers.TreasureHuntController.editTreasureHunt(request : Request, id : Integer)
 
 #Edit treasure hunt
-GET     /users/treasurehunts/edit/:id                    controllers.TreasureHuntController.editTreasureHunt(request : Request, id : Integer)
+GET     /users/treasurehunts/edit/save/:id                    controllers.TreasureHuntController.editAndSaveTreasureHunt(request : Request, id : Integer)
 
 #Delete treasure hunt
 GET     /users/treasurehunts/delete/:id                    controllers.TreasureHuntController.deleteTreasureHunt(request : Request, id : Integer)
+

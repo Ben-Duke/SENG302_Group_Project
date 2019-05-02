@@ -267,7 +267,7 @@ public class DestinationController extends Controller {
 
             if (oldDestination != null) {
 
-                if (oldDestination.isUserOwner(user.userid)) {
+                if (oldDestination.isUserOwner(user.userid) || user.userIsAdmin()) {
 
                     oldDestination.setDestName(newDestination.getDestName());
                     oldDestination.setDestType(newDestination.getDestType());
@@ -476,7 +476,7 @@ public class DestinationController extends Controller {
             Destination destination = Destination.find.query().where().eq("destid", destId).findOne();
 
             if (destination != null) {
-                if (destination.isUserOwner(user.userid)) {
+                if (destination.isUserOwner(user.userid) || user.userIsAdmin()) {
                     if(destination.visits.isEmpty()) {
                         destination.delete();
                         return redirect(routes.DestinationController.indexDestination());

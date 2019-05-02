@@ -14,9 +14,13 @@ import java.util.List;
  * A class to hold information a user photograph.
  */
 @Entity
+
+@Table(uniqueConstraints={@UniqueConstraint(columnNames={"url"})})
 public class UserPhoto extends Model {
     @Id //The photos primary key
     public int photoId;
+
+    @Column(name = "url")
     public String url;
     public boolean isPublic;
     public boolean isProfile;
@@ -51,6 +55,30 @@ public class UserPhoto extends Model {
         this.user = user;
         this.isProfile = isProfile;
     }
+
+
+    /**
+     * Gets an unused user photo url.
+     *
+     * Checks for duplicate photo file names and increments the file name index until a non duplicate file name
+     * is found.
+     *
+     * @return A String representing the unused url of the photo
+     */
+    public String getUnusedUserPhotoFileName(){
+        int count = 0;
+        UserPhoto userPhoto = this;
+        String url = "";
+        while(userPhoto != null) {
+            count += 1;
+            url = count + "_" + this.url;
+            userPhoto = UserPhoto.find.query().where().eq("url", url).findOne();
+        }
+
+        return url;
+    }
+
+
 
     /**
      * Method to return if the photo is the profile picture

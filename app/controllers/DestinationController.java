@@ -263,7 +263,7 @@ public class DestinationController extends Controller {
 
             if (oldDestination != null) {
 
-                if (oldDestination.isUserOwner(user.userid)) {
+                if (oldDestination.isUserOwner(user.userid) || user.userIsAdmin()) {
 
                     oldDestination.setDestName(newDestination.getDestName());
                     oldDestination.setDestType(newDestination.getDestType());

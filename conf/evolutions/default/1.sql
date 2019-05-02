@@ -115,6 +115,7 @@ create table user_photo (
   is_public                     boolean default false not null,
   is_profile                    boolean default false not null,
   user                          integer,
+  constraint uq_user_photo_url unique (url),
   constraint pk_user_photo primary key (photo_id)
 );
 

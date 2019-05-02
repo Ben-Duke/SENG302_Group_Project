@@ -28,4 +28,12 @@
         </div>
     </div>
 
+    @if(flash.containsKey("serverError")) {
+        <div class="well">
+            <div id="error-message" class="text-danger">
+            @flash.get("serverError")
+            </div>
+        </div>
+    }
+
 </fieldset>

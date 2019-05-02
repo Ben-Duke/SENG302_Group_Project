@@ -1,3 +1,6 @@
+# Issue context
+Story Id: the story this bug relates to (if applicable)
+Acceptance Criteria: the ac the bug relates to (if applicable)
 
 # Expected Behavior
 

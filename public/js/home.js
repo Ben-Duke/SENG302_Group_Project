@@ -52,6 +52,32 @@ var loadFile = function (event) {
  * The cropped image will be used as the user's profile picture.
  */
 $('#save-profile').click(function (eve){
+
+
+    /*
+        WARNING
+        WARNING
+        WARNING
+        WARNING
+
+        This solves the bug where the crop box needs to move a little before the image can
+        be successfully uploaded.
+
+        We do not know why this works.
+
+        Please do not touch.
+     */
+    let cropper = $("#change-profile-pic").data('cropper');
+    cropper.scale(1);
+    /*
+        WARNING END
+        WARNING END
+        WARNING END
+        WARNING END
+     */
+
+
+
     eve.preventDefault();
     var formData = new FormData();
     var private = $('input[type=checkbox]').attr('checked');
@@ -81,6 +107,8 @@ $('#save-profile').click(function (eve){
             }
         })
     });
+
+
 });
 
 /**
@@ -167,17 +195,27 @@ $('#addProfilePhoto').on('shown.bs.modal', function (e) {
 
                 var $previews = $('.preview');
                 $('#change-profile-pic').cropper({
+                    movable: false,
                     autoCropArea: 1,
                     aspectRatio: 1,
                     ready: function(e){
+                        console.log("ready!!!!!!!!!!!!!!!!!!!!!!!!!")
+                        console.log(e);
+
                         //DO NOT DELETE THIS SET TIMEOUT
-                        setTimeout(function(){
-                            $('#change-profile-pic').cropper('crop');
-                            croppedCanvas = $('#change-profile-pic').cropper('getCroppedCanvas');
-                        }, 1);
-                    },
+                        // setTimeout(function(){
+                        //     $('#change-profile-pic').cropper('crop');
+                        //     croppedCanvas = $('#change-profile-pic').cropper('getCroppedCanvas');
+                        // }, 1);
+
+                        let cropBoxElements = document.getElementsByClassName('cropper-face cropper-move');
+                        let cropBoxElement = cropBoxElements[0];
+                        let cropBoxMoveEvent = new Event('crop');
+                        cropBoxElement.dispatchEvent(cropBoxMoveEvent);
+
+                        },
                     crop: function (e) {
-                        $('#change-profile-pic').cropper('crop');
+                        console.log(e);
                         var imageData = $(this).cropper('getImageData');
                         croppedCanvas = $(this).cropper('getCroppedCanvas');
                         $('.preview').html('<img src="' + croppedCanvas.toDataURL() + '" class="thumb-lg img-circle" style="width:100px;height:100px;">');
@@ -301,3 +339,4 @@ function sendLinkDestinationRequest(url, photoid){
         }
     })
 }
+

@@ -346,7 +346,20 @@ $('#primaryPhotoButton').click(function(e){
                 url: '/users/destinations/get/' + getIdFromRow,
                 contentType: 'application/json',
                 success: function (destinationData) {
+                    var outerDivNode = document.createElement("span");
                     destData = destinationData;
+                    var target = destData["destid"];
+                    var idTarget = "primary" + target;
+                    var imgNode = document.createElement("img");
+                    imgNode.width = 50;
+                    imgNode.height = 60;
+                    var primaryPhoto = destData["primaryPhoto"];
+                    var photoId = primaryPhoto["photoId"];
+                    imgNode.src="/users/home/serveDestPicture/" + photoId;
+                    outerDivNode.appendChild(imgNode);
+                    console.log("Log from Ajax success");
+                    console.log(destData);
+                    $("#"+idTarget).html(outerDivNode);
                 }
             });
         }

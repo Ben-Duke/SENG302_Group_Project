@@ -275,7 +275,7 @@ public class HomeControllerTest extends WithApplication {
         assertNotNull(fileAsString);
         request = Helpers.fakeRequest()
                 .method(GET)
-                .uri("/users/home/serveProfilePicture").session("connected", "2");
+                .uri("/users/home/serveProfilePicture/2").session("connected", "2");
         result = route(app, request);
         assertEquals(OK, result.status());
         assertEquals(fileAsString, convertResultFileToString(result));
@@ -285,7 +285,7 @@ public class HomeControllerTest extends WithApplication {
     public void serveProfilePictureForUserWithoutProfilePicture(){
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(GET)
-                .uri("/users/home/serveProfilePicture").session("connected", "4");
+                .uri("/users/home/serveProfilePicture/4").session("connected", "4");
         Result result = route(app, request);
         assertEquals(OK, result.status());
         assertEquals("", contentAsString(result));
@@ -295,9 +295,28 @@ public class HomeControllerTest extends WithApplication {
     public void serveProfilePictureWithoutLoginSession(){
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(GET)
-                .uri("/users/home/serveProfilePicture").session("connected", null);
+                .uri("/users/home/serveProfilePicture/1").session("connected", null);
         Result result = route(app, request);
         assertEquals(UNAUTHORIZED, result.status());
+    }
+
+    @Test
+    public void serveOtherProfilePictureForUserWithProfilePicture(){
+        UserPhoto photo = UserPhoto.find.byId(1);
+        String path = photo.getUrlWithPath();
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri(routes.HomeController.index(path).url()).session("connected", "2");
+        Result result = route(app, request);
+        assertEquals(OK, result.status());
+        String fileAsString = convertResultFileToString(result);
+        assertNotNull(fileAsString);
+        request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/home/serveProfilePicture/2").session("connected", "1");
+        result = route(app, request);
+        assertEquals(OK, result.status());
+        assertEquals(fileAsString, convertResultFileToString(result));
     }
 
     @Test

@@ -20,10 +20,7 @@ import play.test.Helpers;
 import play.test.WithApplication;
 import utilities.TestDatabaseManager;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.junit.Assert.*;
 import static play.mvc.Http.Status.*;
@@ -55,6 +52,7 @@ public class DestinationControllerTest extends WithApplication {
                 "create table test (id bigint not null, name varchar(255));",
                 "drop table test;"
         )));
+        ApplicationManager.setUserPhotoPath("/test/resources/test_photos/user_");
         TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
         testDatabaseManager.populateDatabase();
         //Initialises a test user with name "testUser" and saves it to the database.
@@ -356,7 +354,7 @@ public class DestinationControllerTest extends WithApplication {
         formData.put("country", "Angola");
         formData.put("latitude", "50.0");
         formData.put("longitude", "-50.0");
-        Http.RequestBuilder request = Helpers.fakeRequest().bodyForm(formData).method(POST).uri("/users/destinations/update/3").session("connected", "1");
+        Http.RequestBuilder request = Helpers.fakeRequest().bodyForm(formData).method(POST).uri("/users/destinations/update/3").session("connected", "3");
         Result result = route(app, request);
         assertEquals(UNAUTHORIZED, result.status());
     }
@@ -452,7 +450,7 @@ public class DestinationControllerTest extends WithApplication {
         for(Visit visit : destination.getVisits()){
             visit.delete();
         }
-        destination.setTravellerTypes(new ArrayList<>());
+        destination.setTravellerTypes(new TreeSet<>());
         destination.update();
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(GET)
@@ -903,7 +901,7 @@ public class DestinationControllerTest extends WithApplication {
         Integer destId = newDestination.getDestId();
 
         Destination newDestinationValues = new Destination("Test Dest2", "Town2", "Test District2", "Test Country2", 101, 101, user);
-        List<TravellerType> travellerTypes = new ArrayList<>();
+        Set<TravellerType> travellerTypes = new TreeSet<>();
         travellerTypes.add(new TravellerType("Backpacker"));
         travellerTypes.add(new TravellerType("Groupie"));
         newDestinationValues.setTravellerTypes(travellerTypes);

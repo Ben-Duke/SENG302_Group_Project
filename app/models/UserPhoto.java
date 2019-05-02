@@ -72,7 +72,6 @@ public class UserPhoto extends Model {
         while(userPhoto != null) {
             count += 1;
             url = count + "_" + this.url;
-            System.out.println(url);
             userPhoto = UserPhoto.find.query().where().eq("url", url).findOne();
         }
 

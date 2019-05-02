@@ -33,38 +33,30 @@ public class TreasureHuntFactory {
      * The method to update and save the Treasure Hunt.
      * @param treasureHuntId The id of the Treasure Hunt to be edited
      * @param treasureHuntFormData TreasureHuntFormData
-     * @param user The user who wants to edit this treasure hunt
      */
-    public void editTreasureHunt(Integer treasureHuntId, TreasureHuntFormData treasureHuntFormData, User user) {
+    public void editTreasureHunt(Integer treasureHuntId, TreasureHuntFormData treasureHuntFormData) {
         TreasureHunt treasureHunt = TreasureHunt.find.byId(treasureHuntId);
-        if (user.equals(treasureHunt.getUser())) {
+        if (treasureHunt != null) {
             treasureHunt.setTitle(treasureHuntFormData.title);
             treasureHunt.setRiddle(treasureHuntFormData.riddle);
-            List<Destination> destinations = Destination.find.all();
+            List<Destination> destinations = Destination.find.query().where().eq("is_public", true).findList();
             for (Destination destination: destinations) {
-                if (destination.getIsPublic() && destination.getDestName().equals(treasureHuntFormData.destination)) {
+                if (destination.getDestName().equals(treasureHuntFormData.destination)) {
                     treasureHunt.setDestination(destination);
                 }
             }
             treasureHunt.setStartDate(treasureHuntFormData.startDate);
             treasureHunt.setEndDate(treasureHuntFormData.endDate);
             treasureHunt.update();
-        } else {
-            System.out.println("ERROR: You cannot edit this Treasure hunt as you are not it's owner");
         }
     }
 
     /**
      * The method to delete the Treasure Hunt.
      * @param treasureHunt The Treasure Hunt to be edited
-     * @param user The user who wants to delete this treasure hunt
      */
-    public void deleteTreasureHunt(TreasureHunt treasureHunt, User user) {
-        if (user.equals(treasureHunt.getUser())) {
-            treasureHunt.delete();
-        } else {
-            System.out.println("ERROR: You cannot delete this Treasure hunt as you are not it's owner");
-        }
+    public void deleteTreasureHunt(TreasureHunt treasureHunt) {
+        treasureHunt.delete();
     }
 
     /**

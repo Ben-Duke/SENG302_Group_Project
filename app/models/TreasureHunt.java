@@ -84,10 +84,6 @@ public class TreasureHunt extends Model {
         return thuntid;
     }
 
-    public void setThuntid(Integer thuntid) {
-        this.thuntid = thuntid;
-    }
-
     public String getRiddle() {
         return riddle;
     }

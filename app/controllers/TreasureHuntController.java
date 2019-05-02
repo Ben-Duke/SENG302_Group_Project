@@ -20,26 +20,38 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-
+/**
+ * The Treasure Hunt controller class which handles the viewing, creating, editing and deleting of treasure hunts.
+ */
 public class TreasureHuntController extends Controller {
 
     @Inject
     FormFactory formFactory;
 
     TreasureHuntFactory treasureHuntFactory = new TreasureHuntFactory();
+
+    /**
+     * The option map of public destinations for treasure hunts.
+     */
     Map<String, Boolean> destinationMap = new TreeMap<>();
 
-    public Map<String, Boolean> getPublicDestinationsMap() {
+    /**
+     * Creates the option map of public destinations for treasure hunts.
+     */
+    public void createPublicDestinationsMap() {
         List<Destination> allDestinations = Destination.find.query().where().eq("is_public", true).findList();
         for (Destination destination: allDestinations) {
             destinationMap.put(destination.getDestName(), false);
         }
-        return destinationMap;
     }
 
-    public Map<String, Boolean> modifyAndGetPublicDestinationsMap(String destName, boolean isTrue) {
+    /**
+     * Modifies the given destination name's (key) boolean value.
+     * @param destName Name of the destination
+     * @param isTrue Boolean value to be changed to.
+     */
+    public void modifyPublicDestinationsMap(String destName, boolean isTrue) {
         destinationMap.replace(destName, isTrue);
-        return destinationMap;
     }
 
     /**
@@ -88,7 +100,7 @@ public class TreasureHuntController extends Controller {
         User user = User.getCurrentUser(request);
         if (user != null) {
             Form<TreasureHuntFormData> incomingForm = formFactory.form(TreasureHuntFormData.class);
-            getPublicDestinationsMap();
+            createPublicDestinationsMap();
             return ok(createTreasureHunt.render(incomingForm, user, destinationMap));
         }
         else{
@@ -106,7 +118,7 @@ public class TreasureHuntController extends Controller {
         User user = User.getCurrentUser(request);
         if (user != null) {
             Form<TreasureHuntFormData> incomingForm = formFactory.form(TreasureHuntFormData.class).bindFromRequest(request);
-            getPublicDestinationsMap();
+            createPublicDestinationsMap();
             if (incomingForm.hasErrors()) {
                 return badRequest(createTreasureHunt.render(incomingForm, user, destinationMap));
             }
@@ -139,8 +151,8 @@ public class TreasureHuntController extends Controller {
                         treasureHunt.getRiddle(), treasureHunt.getDestination().getDestName(),
                         treasureHunt.getStartDate(), treasureHunt.getEndDate());
                 Form<TreasureHuntFormData> incomingForm = formFactory.form(TreasureHuntFormData.class).fill(treasureHuntFormData);
-                getPublicDestinationsMap();
-                modifyAndGetPublicDestinationsMap(treasureHunt.getDestination().getDestName(), true);
+                createPublicDestinationsMap();
+                modifyPublicDestinationsMap(treasureHunt.getDestination().getDestName(), true);
                 return ok(editTreasureHunt.render(incomingForm, treasureHunt, user, destinationMap));
             } else {
                 notFound("The given Treasure Hunt doesn't exist.");
@@ -160,20 +172,24 @@ public class TreasureHuntController extends Controller {
         if (user != null) {
             TreasureHunt treasureHunt = TreasureHunt.find.byId(treasureHuntId);
             if (treasureHunt != null) {
-                Form<TreasureHuntFormData> incomingForm = formFactory.form(TreasureHuntFormData.class).bindFromRequest(request);
-                getPublicDestinationsMap();
-                if (incomingForm.hasErrors()) {
-                    return badRequest(editTreasureHunt.render(incomingForm, treasureHunt, user, destinationMap));
-                }
-                for (TreasureHunt tHunt: user.getTreasureHunts()) {
-                    if (incomingForm.get().getTitle().equals(tHunt.getTitle())
-                            && !incomingForm.get().getTitle().equals(treasureHunt.getTitle())) {
-                        return ok(editTreasureHunt.render(incomingForm.withError("title", "Cannot have duplicate Treasure Hunt titles"), treasureHunt, user, destinationMap));
+                if (treasureHunt.getUser().getUserid() == (user.getUserid())) {
+                    Form<TreasureHuntFormData> incomingForm = formFactory.form(TreasureHuntFormData.class).bindFromRequest(request);
+                    createPublicDestinationsMap();
+                    if (incomingForm.hasErrors()) {
+                        return badRequest(editTreasureHunt.render(incomingForm, treasureHunt, user, destinationMap));
                     }
+                    for (TreasureHunt userTreasureHunt: user.getTreasureHunts()) {
+                        if (incomingForm.get().getTitle().equals(userTreasureHunt.getTitle())
+                                && !incomingForm.get().getTitle().equals(treasureHunt.getTitle())) {
+                            return ok(editTreasureHunt.render(incomingForm.withError("title", "Cannot have duplicate Treasure Hunt titles"), treasureHunt, user, destinationMap));
+                        }
+                    }
+                    TreasureHuntFormData edited = incomingForm.get();
+                    treasureHuntFactory.editTreasureHunt(treasureHuntId, edited);
+                    return redirect(routes.TreasureHuntController.indexTreasureHunt());
+                } else {
+                    unauthorized("This Treasure Hunt does not belong to you.");
                 }
-                TreasureHuntFormData edited = incomingForm.get();
-                treasureHuntFactory.editTreasureHunt(treasureHuntId, edited, user);
-                return redirect(routes.TreasureHuntController.indexTreasureHunt());
             } else {
                 notFound("The given Treasure Hunt doesn't exist.");
             }
@@ -181,16 +197,22 @@ public class TreasureHuntController extends Controller {
         return unauthorized("Oops, you are not logged in");
     }
 
+    /**
+     * If the user is logged in, deletes the treasure hunt and renders the index treasure hunt page.
+     * If the user is not logged in, returns an error.
+     * @param request The HTTP request
+     * @return index treasure hunt page or error page
+     */
     public Result deleteTreasureHunt(Http.Request request, Integer treasureHuntId){
         User user = User.getCurrentUser(request);
         if (user != null) {
             TreasureHunt treasureHunt = TreasureHunt.find.byId(treasureHuntId);
             if (treasureHunt != null) {
                 if (treasureHunt.getUser().getUserid() == (user.getUserid())) {
-                    treasureHuntFactory.deleteTreasureHunt(treasureHunt, user);
+                    treasureHuntFactory.deleteTreasureHunt(treasureHunt);
                     return ok(indexTreasureHunt.render(user.getTreasureHunts(), getOpenTreasureHunts(), user));
                 } else {
-                    return notFound("The Treasure Hunt that you are trying to delete does not belong to you.");
+                    return unauthorized("The Treasure Hunt that you are trying to delete does not belong to you.");
                 }
             } else {
                 return notFound("The Treasure Hunt that you are trying to find does not exist.");

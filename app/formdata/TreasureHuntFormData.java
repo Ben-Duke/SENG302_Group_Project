@@ -1,7 +1,5 @@
 package formdata;
 
-import com.sun.xml.bind.v2.TODO;
-import models.Destination;
 import models.User;
 import play.data.validation.Constraints;
 import play.data.validation.ValidationError;
@@ -12,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Backing class for the Traveller data form.
+ * Backing class for the Treasure Hunt data form.
  * Requirements:
  * <ul>
  * <li> All fields are public,
@@ -28,8 +26,6 @@ public class TreasureHuntFormData implements Constraints.Validatable<List<Valida
     public String destination;
     public String startDate;
     public String endDate;
-    public List<User> users;
-    public User user;
 
     @Override
     public String toString() {
@@ -39,8 +35,6 @@ public class TreasureHuntFormData implements Constraints.Validatable<List<Valida
                 ", destination=" + destination +
                 ", startDate='" + startDate + '\'' +
                 ", endDate='" + endDate + '\'' +
-                ", users=" + users +
-                ", user=" + user +
                 '}';
     }
 
@@ -64,7 +58,6 @@ public class TreasureHuntFormData implements Constraints.Validatable<List<Valida
      */
     public List<ValidationError> validate() {
         List<ValidationError> errors = new ArrayList<>();
-        LocalDate now = LocalDate.now();
         String min = "1900-01-01";
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDate minDate = LocalDate.parse(min, formatter);
@@ -80,7 +73,6 @@ public class TreasureHuntFormData implements Constraints.Validatable<List<Valida
         }
 
         // Check dates are valid
-        // TODO: Implement validation for the dates below and destination.
         if (startDate.isEmpty()) {
             errors.add(new ValidationError("startDate", "Please enter a start date"));
             if (endDate.isEmpty()) {
@@ -106,7 +98,7 @@ public class TreasureHuntFormData implements Constraints.Validatable<List<Valida
             errors.add(new ValidationError("destination", "Please select a destination."));
         }
 
-        if (errors.size() > 0) {
+        if (!errors.isEmpty()) {
             return errors;
         }
         return null;
@@ -154,19 +146,4 @@ public class TreasureHuntFormData implements Constraints.Validatable<List<Valida
         this.endDate = endDate;
     }
 
-    public List<User> getUsers() {
-        return users;
-    }
-
-    public void setUsers(List<User> users) {
-        this.users = users;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
 }

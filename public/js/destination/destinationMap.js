@@ -107,31 +107,25 @@ function initInforWindowEventHandlers(markerIndex) {
  * @returns {string} A String containing the HTML to display in the markers
  *                   infoWindow.
  */
-function getInfoWindowHTML(destinationMarkers, index) {
+function getInfoWindowHTML(destination) {
 // create the destinations info window
-    const destinationName = destinationMarkers[0][index].destName;
-    const destinationType = destinationMarkers[0][index].destType;
-    const destinationCountry = destinationMarkers[0][index].country;
-    const destinationDistrict = destinationMarkers[0][index].district;
-    const destinationPhoto = destinationMarkers[1][index];
+    const destinationName = destination.destName;
+    const destinationType = destination.destType;
+    const destinationCountry = destination.country;
+    const destinationDistrict = destination.district;
 
 
     let infoWindowHTML;
-    if (destinationPhoto) {
-        // uses a ES6 template string
-        console.log(destinationName + " is photoing");
-        infoWindowHTML = `<h5>${destinationName}</h5>
-                          <div>Type: ${destinationType}</div>
-                          <div>Country: ${destinationCountry}</div>
-                          <div>District: ${destinationDistrict}</div>
-                          <img src="/users/home/serveDestPicture/${destinationPhoto.photoId}">`;
-    } else {
-        // uses a ES6 template string
-        infoWindowHTML = `<h5>${destinationName}</h5>
-                          <div>Type: ${destinationType}</div>
-                          <div>Country: ${destinationCountry}</div>
-                          <div>District: ${destinationDistrict}</div>`;
-    }
+    // uses a ES6 template string
+    infoWindowHTML = `<style>.basicLink {text-underline: #0000EE;}</style>
+                      <a class="basicLink" href="javascript:;" onclick="viewDestination(${destination.destid})">
+                        ${destinationName}
+                      </a>
+                      <div>${destinationType}</div>
+                      <div>District: ${destinationDistrict}</div>
+                      <div>${destinationCountry}</div>
+                      <script src="indexDestination.js"></script>`;
+
     return infoWindowHTML;
 }
 
@@ -183,22 +177,22 @@ function initDestinationMarkers() {
     fetch('/users/destinations/getalljson', {
         method: 'GET'})
         .then(res => res.json())
-        .then(destinationMarkers => {
+        .then(destinations => {
             let marker;
             let infoWindow;
-            console.log(destinationMarkers);
-            for (let index = 0; index < destinationMarkers[0].length; index++) {
+            console.log(destinations);
+            for (let index = 0; index < destinations.length; index++) {
                 marker = new google.maps.Marker({
                     position: {
-                        lat: destinationMarkers[0][index].latitude,
-                        lng: destinationMarkers[0][index].longitude
+                        lat: destinations[index].latitude,
+                        lng: destinations[index].longitude
                     },
                     map: window.globalMap,
-                    icon: getMarkerIcon(destinationMarkers[0][index].isPublic)
+                    icon: getMarkerIcon(destinations[index].isPublic)
                 });
 
                 infoWindow = new google.maps.InfoWindow({
-                    content: getInfoWindowHTML(destinationMarkers, index)
+                    content: getInfoWindowHTML(destinations[index])
                 });
 
                 //make the marker and infoWindow globals (persist in browser session)

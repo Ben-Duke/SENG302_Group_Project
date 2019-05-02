@@ -18,6 +18,7 @@ import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
 import javax.inject.Inject;
+import java.io.File;
 import java.util.*;
 
 
@@ -742,45 +743,12 @@ public class DestinationController extends Controller {
             int userId = user.getUserid();
 
             List<Destination> allVisibleDestination = getVisibleDestinations(userId);
-            List<UserPhoto> allVisibleDestinationPhotos = new ArrayList<>();
-            for (Destination dest: allVisibleDestination) {
-                allVisibleDestinationPhotos.addAll(dest.getUserPhotos());
-            }
 
-            List<List<? extends Model>> visibleDestinationMarkers = new ArrayList<>();
-            visibleDestinationMarkers.add(allVisibleDestination);
-            visibleDestinationMarkers.add(allVisibleDestinationPhotos);
-            for (Object o : Json.toJson(visibleDestinationMarkers)) {
-                System.out.println(o);
-            }
-            return ok(Json.toJson(visibleDestinationMarkers));
+            return ok(Json.toJson(allVisibleDestination));
         } else {
             return unauthorized("Oops, you are not logged in");
         }
     }
-
-    /**
-     * Gets JSON of all visible (public + the logged in users private)
-     * Photos available to the user
-     * @param request the HTTP request
-     * @return a Result object containing the destination photos JSON in it's body
-     */
-//    public Result getVisibleDestinationPhotoMarkersJSON(Http.Request request) {
-//        User user = User.getCurrentUser(request);
-//        if(user != null) {
-//            int userId = user.getUserid();
-//
-//            List<Destination> allVisibleDestination = getVisibleDestinations(userId);
-//            List<UserPhoto> allVisibleDestinationPhoto = new ArrayList<>();
-//            for (Destination dest: allVisibleDestination) {
-//                allVisibleDestinationPhoto.addAll(dest.getUserPhotos());
-//            }
-//
-//            return ok(Json.toJson(allVisibleDestinationPhoto));
-//        } else {
-//            return unauthorized("Oops, you are not logged in");
-//        }
-//    }
 
 
 }

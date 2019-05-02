@@ -297,14 +297,12 @@ public class DestinationController extends Controller {
             Map<String, Boolean> typeList = Destination.getTypeList();
             Map<String, Boolean> countryList = Destination.getIsoCountries();
 
-            if (destId != null) {   // if editing
-                // Use a dynamic form to get the values of the dropdown inputs
-                DynamicForm dynamicDestForm = formFactory.form().bindFromRequest(request);
+            // Use a dynamic form to get the values of the dropdown inputs
+            DynamicForm dynamicDestForm = formFactory.form().bindFromRequest(request);
 
-                // Select the dropdown values which were selected at form submission
-                typeList.replace(dynamicDestForm.get("destType"), true);
-                countryList.replace(dynamicDestForm.get("country"), true);
-            }
+            // Select the dropdown values which were selected at form submission
+            typeList.replace(dynamicDestForm.get("destType"), true);
+            countryList.replace(dynamicDestForm.get("country"), true);
 
             return badRequest(createEditDestination.render(destForm, destId, countryList,
                     typeList, user));

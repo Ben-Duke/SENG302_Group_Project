@@ -13,6 +13,7 @@ import views.html.users.loginpage.*;
 
 import javax.inject.Inject;
 
+import static play.mvc.Controller.flash;
 import static play.mvc.Results.*;
 
 /**
@@ -41,6 +42,8 @@ public class LoginController {
      * If the email is found but the password does not match then returns an error.
      * If the email and password matches then stores the user's login session
      *      and redirects the user to the home page.
+     * If somehow multiple users have the same email address then redirects
+     *              to login page with a "internal server error" message
      * @param request The HTTP request
      * @return The home page or login error page
      */
@@ -53,9 +56,19 @@ public class LoginController {
             return badRequest(loginPage.render(userLoginForm, User.getCurrentUser(request)));
         } else {
             String email = userLoginForm.get().email;
-            return redirect(routes.HomeController.showhome())
-                    .addingToSession(request, "connected",
-                            Integer.toString(LoginFactory.getUserId(email)));
+            String userId = Integer.toString(LoginFactory.getUserId(email));
+
+            if (userId.equals("-1")) {
+                // happens if somehow there are multiple users with the same email
+                // address in the db
+                flash("serverError", "Internal Server Error, please try again");
+                return internalServerError(loginPage.render(userLoginForm,
+                                                User.getCurrentUser(request)));
+            } else {
+                return redirect(routes.HomeController.showhome())
+                           .addingToSession(request, "connected", userId);
+            }
+
         }
 
 

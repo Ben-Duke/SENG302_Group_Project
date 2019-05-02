@@ -58,8 +58,18 @@
                         <td><a href="@routes.DestinationController.deleteDestination(destination.getDestId())" class="btn btn-danger">
                             Delete</a></td>
                         @if(! destinationFactory.doesPublicDestinationExist(destination)) {
-                            <td><a href="@routes.DestinationController.makeDestinationPublic(destination.getDestId)" class="btn btn-primary">
-                                Make destination public</a></td>
+                            <td>
+                                @if(destinationFactory.getOtherUsersMatchingPrivateDestinations(user.getUserid, destination).isEmpty) {
+                                    <a href="@routes.DestinationController.makeDestinationPublic(destination.getDestId)" class="btn btn-primary">
+                                        Make destination public
+                                    </a>
+                                } else {
+                                    <!-- RED BUTTON IS FOR MERGING -->
+                                    <a href="@routes.DestinationController.makeDestinationPublic(destination.getDestId)" data-target="#publicDestModal" class="btn btn-danger">
+                                        Make destination public
+                                    </a>
+                            }
+                            </td>
                         } else {
                             @*<td><input id="Button" class="btn btn-primary" type="button" value="Make destination public" style="background-color:grey"/></td>*@
 
@@ -72,6 +82,16 @@
                     <br>
                     }
             }
+                @if(flash.containsKey("matchingDest")) {
+                    <div class="well">
+                        <div id="error-message" class="text-danger">
+                        @flash.get("matchingDest")
+                        </div>
+                        <a href="@routes.DestinationController.indexDestination()" class="btn btn-danger">
+                            Merge Destinations
+                        </a>
+                    </div>
+                }
             </tbody>
         </table>
 
@@ -126,6 +146,22 @@
             }
             </tbody>
         </table>
+        <div id="publicDestModal" class="modal fade">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">x</button>
+                        <h3 id="destTitle">Destination</h3>
+                    </div>
+                    <div class="modal-body">
+                        <p>YEET</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div id="orderModal" class="modal fade">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
@@ -151,8 +187,11 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <td><button id="primaryPhotoButton" class="btn btn-primary col-md-offset-1 col-md-4">
-                                    Set to primary photo</button></td>
+                                <td>
+                                    <button id="primaryPhotoButton" class="btn btn-primary col-md-offset-1 col-md-4">
+                                        Set to primary photo
+                                    </button>
+                                </td>
                             </div>
                         </div>
                     </div>

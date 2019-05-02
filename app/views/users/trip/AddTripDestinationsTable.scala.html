@@ -4,57 +4,57 @@
 
 <!-- Page name (for unit tests): AddTripDestinationsTable.scala.html -->
 @main(user, "Create your trip") {
-<h1>Trip destinations</h1>
-<body>
-<head>
-    <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/destination/indexDestination.css")">
-    <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/AddTripDestinationsTable.css")">
-    @if(flash.get("error")) {
-        <div class="isa_error">
-            <p>@flash.get("error")</p>
-        </div>
-    }
-</head>
-    <label><input type="checkbox" id="private" onchange="showPrivateDestinations(this)" checked>Show private destinations</label>
-    <label><input type="checkbox" id="public" onchange="showPublicDestinations(this)" checked>Show public destinations</label>
-        <div class="container-fluid" id="hideDivPrivate" aria-hidden="false">
-            <h1>My private destinations <a class="btn btn-primary col-sm-offset-8" href="@routes.DestinationController.createDestination()" role="button">Create Destination</a></h1>
-            <input type="text" class="searchDestinations" onkeyup="searchDestination()" placeholder="Search for destinations">
-            <table class="table privateDestinations">
-                <thead class="thead-dark">
-                <tr>
-                    <th scope="col">Name</th>
-                    <th scope="col">Type</th>
-                    <th scope="col">Country</th>
-                    <th scope="col">District</th>
-                    <th scope="col">Latitude</th>
-                    <th scope="col">Longitude</th>
-                    <th scope="col">Edit</th>
-                    <th scope="col">Delete</th>
-                </tr>
-                </thead>
-                <tbody>
-                @for(destination <- destinations) {
-                @if(destination.getIsPublic == false){
-                <tr>
-                    <th scope ="row">@destination.getDestName()</th>
-                    <td>@destination.getDestType()</td>
-                    <td>@destination.getCountry()</td>
-                    <td>@destination.getDistrict</td>
-                    <td>@destination.getLatitude</td>
-                    <td>@destination.getLongitude</td>
-                    <td><a href="@routes.DestinationController.editDestination(destination.getDestId())" class="btn btn-primary">Edit</a></td>
-                    <td><a href="@routes.DestinationController.deleteDestination(destination.getDestId())" class="btn btn-danger">Delete</a></td>
-                    <td><a href="@routes.TripController.addVisitFromTable(trip.getTripid,destination.getDestId)" class="btn btn-success">Add destination to trip</a></td>
-                </tr>
+    <head>
+        <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/destination/indexDestination.css")">
+        <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/AddTripDestinationsTable.css")">
+        @if(flash.get("error")) {
+            <div class="isa_error">
+                <p>@flash.get("error")</p>
+            </div>
+        }
+    </head>
+    <body>
+        <h1>Trip destinations</h1>
+        <label><input type="checkbox" id="private" onchange="showPrivateDestinations(this)" checked>Show private destinations</label>
+        <label><input type="checkbox" id="public" onchange="showPublicDestinations(this)" checked>Show public destinations</label>
+            <div class="container-fluid" id="hideDivPrivate" aria-hidden="false">
+                <h1>My private destinations <a class="btn btn-primary col-sm-offset-8" href="@routes.DestinationController.createDestination()" role="button">Create Destination</a></h1>
+                <input type="text" class="searchDestinations" onkeyup="searchDestination()" placeholder="Search for destinations">
+                <table class="table privateDestinations">
+                    <thead class="thead-dark">
+                    <tr>
+                        <th scope="col">Name</th>
+                        <th scope="col">Type</th>
+                        <th scope="col">Country</th>
+                        <th scope="col">District</th>
+                        <th scope="col">Latitude</th>
+                        <th scope="col">Longitude</th>
+                        <th scope="col">Edit</th>
+                        <th scope="col">Delete</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @for(destination <- destinations) {
+                    @if(destination.getIsPublic == false){
+                    <tr>
+                        <th scope ="row">@destination.getDestName()</th>
+                        <td>@destination.getDestType()</td>
+                        <td>@destination.getCountry()</td>
+                        <td>@destination.getDistrict</td>
+                        <td>@destination.getLatitude</td>
+                        <td>@destination.getLongitude</td>
+                        <td><a href="@routes.DestinationController.editDestination(destination.getDestId())" class="btn btn-primary">Edit</a></td>
+                        <td><a href="@routes.DestinationController.deleteDestination(destination.getDestId())" class="btn btn-danger">Delete</a></td>
+                        <td><a href="@routes.TripController.addVisitFromTable(trip.getTripid,destination.getDestId)" class="btn btn-success">Add destination to trip</a></td>
+                    </tr>
 
 
-                <br>
-                }
-                }
-                </tbody>
-            </table>
-</div>
+                    <br>
+                    }
+                    }
+                    </tbody>
+                </table>
+    </div>
 
     <div class="container-fluid" id="hideDivPublic" aria-hidden="false">
         <h1>Public destinations</h1>
@@ -100,82 +100,83 @@
         </table>
     </div>
 
-    <script src="@routes.Assets.at("js/destination/indexDestination.js")" type="text/javascript"></script>
-
-@helper.CSRF.formField
-<div class="container-fluid">
-    <h1>My trip</h1>
-    <div class="row">
-        <div class="col-lg-12">
-            <table class="table table-hover" id="myTable">
-                <thead>
-                <tr>
-                    <th scope="col">Name</th>
-                    <th scope="col">Type</th>
-                    <th scope="col">Country</th>
-                    <th scope="col">Arrival</th>
-                    <th scope="col">Departure</th>
-                    <th></th>
-                </tr>
-                </thead>
-                <tbody>
-                @for(visit <- trip.getOrderedVisits){
-                <tr id=@visit.getVisitid()>
-                    <th scope ="row">@visit.getDestination().getDestName()</th>
-                    <td>@visit.getDestination().getDestType()</td>
-                    <td>@visit.getDestination().getCountry()</td>
-                    <td>@visit.getArrival()</td>
-                    <td>@visit.getDeparture()</td>
-                    <td><a href=@routes.TripController.editvisit(visit.visitid) class="btn btn-primary">Edit</a></td>
-                    <td><button class="btn btn-danger" onclick="sendDeleteVisitRequest(
-                                    '@routes.TripController.deletevisit(visit.getVisitid())',
-                                    '@routes.TripController.displaytrip(trip.tripid)',
-                        '@routes.TripController.displaytrip(trip.tripid)',
-                        '@routes.TripController.displaytrip(trip.tripid)',
-                        '@routes.TripController.displaytrip(trip.tripid)')">Delete</button></td>
-                </tr>
-                <br>
-                }
-                </tbody>
-            </table>
-            <a href= "@routes.HomeController.showhome()" id="cancel" name="return" class="btn btn-default">Return to home</a>
+        @helper.CSRF.formField
+    <div class="container-fluid">
+        <h1>My trip</h1>
+        <div class="row">
+            <div class="col-lg-12">
+                <table class="table table-hover" id="myTable">
+                    <thead>
+                    <tr>
+                        <th scope="col">Name</th>
+                        <th scope="col">Type</th>
+                        <th scope="col">Country</th>
+                        <th scope="col">Arrival</th>
+                        <th scope="col">Departure</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @for(visit <- trip.getOrderedVisits){
+                    <tr id=@visit.getVisitid()>
+                        <th scope ="row">@visit.getDestination().getDestName()</th>
+                        <td>@visit.getDestination().getDestType()</td>
+                        <td>@visit.getDestination().getCountry()</td>
+                        <td>@visit.getArrival()</td>
+                        <td>@visit.getDeparture()</td>
+                        <td><a href=@routes.TripController.editvisit(visit.visitid) class="btn btn-primary">Edit</a></td>
+                        <td><button class="btn btn-danger" onclick="sendDeleteVisitRequest(
+                                        '@routes.TripController.deletevisit(visit.getVisitid())',
+                                        '@routes.TripController.displaytrip(trip.tripid)',
+                            '@routes.TripController.displaytrip(trip.tripid)',
+                            '@routes.TripController.displaytrip(trip.tripid)',
+                            '@routes.TripController.displaytrip(trip.tripid)')">Delete</button></td>
+                    </tr>
+                    <br>
+                    }
+                    </tbody>
+                </table>
+                <a href= "@routes.HomeController.showhome()" id="cancel" name="return" class="btn btn-default">Return to home</a>
+            </div>
         </div>
     </div>
-</div>
-<script type="text/javascript">
-    $('tbody').sortable({
-        axis: 'y',
-        update: function (event, ui) {
-            var token =  $('input[name="csrfToken"]').attr('value')
-            $.ajaxSetup({
-                beforeSend: function(xhr) {
-                    xhr.setRequestHeader('Csrf-Token', token);
-                }
-            });
-            var data = jQuery('#myTable tr').map(function(){
-                return jQuery (this).attr("id");
-            }).get();
-            var url = '/users/trips/edit/' + @trip.tripid;
-            // POST to server using $.post or $.ajax
-            $.ajax({
-                data : JSON.stringify(data),
-                contentType : 'application/json',
-                type: 'PUT',
-                url: url,
-                success: function(data, textStatus, xhr){
-                    if(xhr.status == 200) {
 
+    <script src="@routes.Assets.at("js/destination/indexDestination.js")" type="text/javascript"></script>
+
+    <script type="text/javascript">
+        $('tbody').sortable({
+            axis: 'y',
+            update: function (event, ui) {
+                var token =  $('input[name="csrfToken"]').attr('value')
+                $.ajaxSetup({
+                    beforeSend: function(xhr) {
+                        xhr.setRequestHeader('Csrf-Token', token);
                     }
-                    else{
+                });
+                var data = jQuery('#myTable tr').map(function(){
+                    return jQuery (this).attr("id");
+                }).get();
+                var url = '/users/trips/edit/' + @trip.tripid;
+                // POST to server using $.post or $.ajax
+                $.ajax({
+                    data : JSON.stringify(data),
+                    contentType : 'application/json',
+                    type: 'PUT',
+                    url: url,
+                    success: function(data, textStatus, xhr){
+                        if(xhr.status == 200) {
+
+                        }
+                        else{
+                        }
+                    },
+                    error: function(xhr, textStatus, errorThrown){
+                        $('tbody').sortable('cancel');
+                        alert("You cannot visit the same destination twice in a row!");
                     }
-                },
-                error: function(xhr, textStatus, errorThrown){
-                    $('tbody').sortable('cancel');
-                    alert("You cannot visit the same destination twice in a row!");
-                }
-            });
-        }
-    });
-</script>
-</body>
+                });
+            }
+        });
+    </script>
+    </body>
 }

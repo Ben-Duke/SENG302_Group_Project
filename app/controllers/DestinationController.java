@@ -717,21 +717,11 @@ public class DestinationController extends Controller {
      * Gets List of all destinations visible to the given user
      * @param userId the user to look for private destinations of
      * @return The list of all public destinations and all private destinations that the user can see
-     * todo consider admins
      */
     private List<Destination> getVisibleDestinations(int userId) {
         DestinationFactory destinationFactory = new DestinationFactory();
 
-        List<Destination> publicDestinations;
-        List<Destination> privateDestinations;
-        publicDestinations = destinationFactory.getPublicDestinations();
-        privateDestinations = destinationFactory.getUsersPrivateDestinations(userId);
-
-        List<Destination> allVisibleDestination = new ArrayList<>();
-        allVisibleDestination.addAll(publicDestinations);
-        allVisibleDestination.addAll(privateDestinations);
-
-        return allVisibleDestination;
+        return destinationFactory.getAllVisibleDestinations(userId);
     }
 
     /**

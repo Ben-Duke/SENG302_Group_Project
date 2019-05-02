@@ -175,7 +175,7 @@ public class DestinationFactoryTest extends WithApplication {
             isPublic = !isPublic ;
         }
         Integer userPhotosSize = userPhotos.size();
-        destinationFactory.removePrivatePhotos(userPhotos);
+        destinationFactory.removePrivatePhotos(userPhotos, testUser.getUserid());
         assertEquals(userPhotosSize - 5, userPhotos.size());
 
     }

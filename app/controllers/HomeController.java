@@ -196,23 +196,32 @@ public class HomeController {
     /**
      * Serve the profile picture with a get request
      * @param httpRequest the HTTP request
+     * @param userId the user whose profile we want to get
      * @return a java file with the profile photo
      */
-    public Result serveProfilePicture(Http.Request httpRequest) {
+    public Result serveProfilePicture(Http.Request httpRequest, Integer userId) {
         User user = User.getCurrentUser(httpRequest);
         if(user != null) {
-            UserPhoto profilePicture = UserFactory.getUserProfilePicture(user.getUserid());
-            if (profilePicture != null) {
-                return ok(new File(profilePicture.getUrlWithPath()));
+
+            User otherUser = User.find.byId(userId);
+            if (otherUser != null) {
+                UserPhoto profilePicture = UserFactory.getUserProfilePicture(userId);
+                if (profilePicture != null) {
+                    return ok(new File(profilePicture.getUrlWithPath()));
+                } else {
+                    //should be 404 but then console logs an error
+                    return ok();
+                }
             } else {
-                //should be 404 but then console logs an error
-                return ok();
+                return badRequest("User not found");
             }
         }
         else{
             return unauthorized("Oops, you're not logged in.");
         }
     }
+
+
 
     /**
      * Replaces the profile picture with the photo corresponding to the photoId given.

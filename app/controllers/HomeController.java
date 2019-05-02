@@ -120,6 +120,7 @@ public class HomeController {
                 java.nio.file.Files.createDirectories(Paths.get(Paths.get(".").toAbsolutePath().normalize().toString() + ApplicationManager.getUserPhotoPath() + user.getUserid() + "/"));
             } catch (IOException e) {
                 System.out.println(e);
+                return internalServerError("Oops, something went wrong.");
             }
 
             //Save the file, replacing the existing one if the name is taken
@@ -157,29 +158,32 @@ public class HomeController {
             Http.MultipartFormData<Files.TemporaryFile> body = request.body().asMultipartFormData();
             Http.MultipartFormData.FilePart<Files.TemporaryFile> picture = body.getFile("picture");
             if (picture != null) {
-                String fileName = picture.getFilename();
+                String originalFilePath = picture.getFilename();
                 //String fileName = datapart.get("filename")[0];
                 long fileSize = picture.getFileSize();
                 String contentType = picture.getContentType();
                 Files.TemporaryFile file = picture.getRef();
                 if (contentType.contains("image")) {
+                    // finding unused photo url
+                    UserPhoto newPhoto = new UserPhoto(originalFilePath, isPublic, true, user);
+                    String unusedPhotoUrl = newPhoto.getUnusedUserPhotoFileName();
+                    newPhoto.setUrl(unusedPhotoUrl);
                     //Add the path to the filename given by the uploaded picture
 
-                    String pathName = Paths.get(".").toAbsolutePath().normalize().toString() + ApplicationManager.getUserPhotoPath() + user.getUserid() + "/" + fileName;
+                    String unusedAbsoluteFilePath = Paths.get(".").toAbsolutePath().normalize().toString() + ApplicationManager.getUserPhotoPath() + user.getUserid() + "/" + unusedPhotoUrl;
                     //Save the file, replacing the existing one if the name is taken
                     try {
                         java.nio.file.Files.createDirectories(Paths.get(Paths.get(".").toAbsolutePath().normalize().toString() + ApplicationManager.getUserPhotoPath() + user.getUserid() + "/"));
-                        file.copyTo(Paths.get(pathName), true);
+                        file.copyTo(Paths.get(unusedAbsoluteFilePath), true);
 
-                        BufferedImage thumbnailImage = UtilityFunctions.resizeImage(pathName);
+                        BufferedImage thumbnailImage = UtilityFunctions.resizeImage(unusedAbsoluteFilePath);
                         ImageIO.write(thumbnailImage, "png", new File(Paths.get(".").toAbsolutePath().normalize().toString() + ApplicationManager.getUserPhotoPath() + user.getUserid() + "/profilethumbnail.png"));
-
                     } catch (IOException e) {
                         System.out.println(e);
                         return internalServerError("Oops, something went wrong.");
                     }
                     //DB saving
-                    UserFactory.replaceProfilePicture(user.getUserid(), new UserPhoto(fileName, isPublic, true, user));
+                    UserFactory.replaceProfilePicture(user.getUserid(), newPhoto);
                     return ok(home.render(user));
                 }
             }

@@ -140,7 +140,7 @@ public class DestinationController extends Controller {
             Form<DestinationFormData> destFormData;
             destFormData = formFactory.form(DestinationFormData.class);
 
-            return ok(createdestination.render(destFormData, Destination.getIsoCountries(), Destination.getTypeList(),user));
+            return ok(createEditDestination.render(destFormData, null, Destination.getIsoCountries(), Destination.getTypeList(),user));
         }
         return unauthorized("Oops, you are not logged in");
     }
@@ -165,12 +165,12 @@ public class DestinationController extends Controller {
             if (! destinationFormData.hasErrors()) {
                 // no form errors
                 // processing it now
-                DynamicForm destForm = formFactory.form().bindFromRequest();
+                DynamicForm destForm = formFactory.form().bindFromRequest(request);
 
                 //If program gets past this point then inputted destination is valid
 
                 Destination newDestination = formFactory.form(Destination.class)
-                                                        .bindFromRequest().get();
+                                                        .bindFromRequest(request).get();
 
                 // checking if private and public destinations already exist. -----------
                 DestinationFactory destinationFactory = new DestinationFactory();
@@ -190,16 +190,18 @@ public class DestinationController extends Controller {
                 }
 
                 if (hasError) {
-                    return badRequest(createdestination.render(destinationFormData,
-                            Destination.getIsoCountries(), Destination.getTypeList(),user));
+                    return badRequest(createEditDestination.render(destinationFormData,
+                            null, Destination.getIsoCountries(),
+                            Destination.getTypeList(),user));
                 } else {
                     newDestination.setUser(user);
                     newDestination.save();
                     return redirect(routes.DestinationController.indexDestination());
                 }
             } else {
-                return badRequest(createdestination.render(destinationFormData,
-                        Destination.getIsoCountries(), Destination.getTypeList(),user));
+                return badRequest(createEditDestination.render(destinationFormData,
+                        null, Destination.getIsoCountries(),
+                        Destination.getTypeList(),user));
             }
         } else {
             return unauthorized("Oops, you are not logged in");
@@ -234,7 +236,7 @@ public class DestinationController extends Controller {
                     Map<String, Boolean> countryList = Destination.getIsoCountries();
                     countryList.replace(destination.getCountry(), true);
 
-                    return ok(editDestination.render(destForm, destId, countryList, typeList, user));
+                    return ok(createEditDestination.render(destForm, destId, countryList, typeList, user));
 
                 } else {
                     return unauthorized("Not your destination. You can't edit.");
@@ -279,7 +281,7 @@ public class DestinationController extends Controller {
                 Map<String, Boolean> countryList = Destination.getIsoCountries();
                 countryList.replace(dynamicDestForm.get("country"), true);
 
-                return badRequest(editDestination.render(destForm, destId, countryList, typeList, user));
+                return badRequest(createEditDestination.render(destForm, destId, countryList, typeList, user));
             }
 
 

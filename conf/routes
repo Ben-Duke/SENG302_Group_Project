@@ -158,9 +158,6 @@ GET     /users/destinations             controllers.DestinationController.indexD
 #Gets JSON of all public and private Destinations avaliable to a user.
 GET     /users/destinations/getalljson         controllers.DestinationController.getVisibleDestinationMarkersJSON(request : Request)
 
-#Gets JSON of all public and private Destination photos available to a user
-GET     /users/destinations/getallphotojson    controllers.DestinationController.getVisibleDestinationPhotoMarkersJSON(request : Request)
-
 #Renders page for displaying a given destination
 GET     /users/destinations/:id         controllers.DestinationController.viewDestination(request : Request, id : Integer)
 

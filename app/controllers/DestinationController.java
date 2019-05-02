@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import factories.DestinationFactory;
 import formdata.DestinationFormData;
 import formdata.UpdateUserFormData;
+import io.ebean.Model;
 import models.*;
 
 
@@ -730,7 +731,7 @@ public class DestinationController extends Controller {
 
     /**
      * Gets JSON of all visible (public + the logged in users private)
-     * Destinations avaliable to the user.
+     * Destinations available to the user.
      *
      * @param request the HTTP request
      * @return a Result object containing the destinations JSON in it's body
@@ -741,9 +742,18 @@ public class DestinationController extends Controller {
             int userId = user.getUserid();
 
             List<Destination> allVisibleDestination = getVisibleDestinations(userId);
-            System.out.println(allVisibleDestination);
+            List<UserPhoto> allVisibleDestinationPhotos = new ArrayList<>();
+            for (Destination dest: allVisibleDestination) {
+                allVisibleDestinationPhotos.addAll(dest.getUserPhotos());
+            }
 
-            return ok(Json.toJson(allVisibleDestination));
+            List<List<? extends Model>> visibleDestinationMarkers = new ArrayList<>();
+            visibleDestinationMarkers.add(allVisibleDestination);
+            visibleDestinationMarkers.add(allVisibleDestinationPhotos);
+            for (Object o : Json.toJson(visibleDestinationMarkers)) {
+                System.out.println(o);
+            }
+            return ok(Json.toJson(visibleDestinationMarkers));
         } else {
             return unauthorized("Oops, you are not logged in");
         }
@@ -755,22 +765,22 @@ public class DestinationController extends Controller {
      * @param request the HTTP request
      * @return a Result object containing the destination photos JSON in it's body
      */
-    public Result getVisibleDestinationPhotoMarkersJSON(Http.Request request) {
-        User user = User.getCurrentUser(request);
-        if(user != null) {
-            int userId = user.getUserid();
-
-            List<Destination> allVisibleDestination = getVisibleDestinations(userId);
-            List<UserPhoto> allVisibleDestinationPhoto = new ArrayList<>();
-            for (Destination dest: allVisibleDestination) {
-                allVisibleDestinationPhoto.addAll(dest.getUserPhotos());
-            }
-
-            return ok(Json.toJson(allVisibleDestinationPhoto));
-        } else {
-            return unauthorized("Oops, you are not logged in");
-        }
-    }
+//    public Result getVisibleDestinationPhotoMarkersJSON(Http.Request request) {
+//        User user = User.getCurrentUser(request);
+//        if(user != null) {
+//            int userId = user.getUserid();
+//
+//            List<Destination> allVisibleDestination = getVisibleDestinations(userId);
+//            List<UserPhoto> allVisibleDestinationPhoto = new ArrayList<>();
+//            for (Destination dest: allVisibleDestination) {
+//                allVisibleDestinationPhoto.addAll(dest.getUserPhotos());
+//            }
+//
+//            return ok(Json.toJson(allVisibleDestinationPhoto));
+//        } else {
+//            return unauthorized("Oops, you are not logged in");
+//        }
+//    }
 
 
 }

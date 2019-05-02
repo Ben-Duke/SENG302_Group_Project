@@ -4,8 +4,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import factories.DestinationFactory;
 import formdata.DestinationFormData;
-import formdata.UpdateUserFormData;
-import io.ebean.Model;
 import models.*;
 
 
@@ -13,7 +11,6 @@ import play.data.DynamicForm;
 import play.data.Form;
 import play.data.FormFactory;
 import play.libs.Json;
-import play.mvc.BodyParser;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
@@ -176,9 +173,7 @@ public class DestinationController extends Controller {
                     flash("privateDestinationExists",
                             "You already have a matching private destination!");
                     hasError = true;
-                }
-
-                if (destinationFactory.doesPublicDestinationExist(newDestination)) {
+                } else if (destinationFactory.doesPublicDestinationExist(newDestination)) {
                     flash("publicDestinationExists",
                             "A matching public destination already exists!");
                     hasError = true;
@@ -270,7 +265,7 @@ public class DestinationController extends Controller {
 
             if (oldDestination != null) {
 
-                if (oldDestination.isUserOwner(user.userid)) {
+                if (oldDestination.isUserOwner(user.userid) || user.userIsAdmin()) {
 
                     oldDestination.setDestName(newDestination.getDestName());
                     oldDestination.setDestType(newDestination.getDestType());
@@ -479,7 +474,7 @@ public class DestinationController extends Controller {
             Destination destination = Destination.find.query().where().eq("destid", destId).findOne();
 
             if (destination != null) {
-                if (destination.isUserOwner(user.userid)) {
+                if (destination.isUserOwner(user.userid) || user.userIsAdmin()) {
                     if(destination.visits.isEmpty()) {
                         destination.delete();
                         return redirect(routes.DestinationController.indexDestination());
@@ -527,8 +522,17 @@ public class DestinationController extends Controller {
                     } else {
                         //no matching pub destination exists, making public now
                         //sets the destination to public, sets the owner to the default admin and updates the destination
-                        destination.setIsPublic(true);
-                        destination.update();
+                        List<Destination> matchingDests = destFactory.getOtherUsersMatchingPrivateDestinations(user.userid, destination);
+                        if (matchingDests.isEmpty()) {
+                            destination.setIsPublic(true);
+                            destination.update();
+                        } else if (matchingDests.size() == 1) {
+                            flash("matchingDest", "There is " + matchingDests.size() + " other destination that matches " +
+                                    destination.getDestName() + ".\nWould you like to merge?");
+                        } else {
+                            flash("matchingDest", "There are " + matchingDests.size() + " other destinations that match " +
+                                    destination.getDestName() + ".\nWould you like to merge?");
+                        }
                         return redirect(routes.DestinationController.indexDestination());
                     }
 

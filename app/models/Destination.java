@@ -216,16 +216,20 @@ public class Destination extends Model {
         if (!this.district.equals(other.getDistrict())) {
             return false;
         }
-        if (this.latitude != other.getLatitude()) {
+        if (Math.round(this.latitude*1000) != Math.round(other.getLatitude()*1000)) {
             return false;
         }
-        if (this.longitude != other.getLongitude()) {
+        if (Math.round(this.longitude*1000) != Math.round(other.getLongitude()*1000)) {
             return false;
         }
         if (!this.destType.equals(other.getDestType())) {
             return false;
         }
-        return travellerTypes.equals(other.getTravellerTypes());
+        /*Can not currently compare traveller types as this will let an identical destination be
+           created as long as it has a different traveller type which would be the case due to
+            how destinations are created the traveller type is not asked till after creation.
+         */
+        return true;
     }
 
     @Override

@@ -118,6 +118,7 @@ public class DestinationFactory {
         int count = 0;
         for (Destination existingDestination : allDestinations) {
             if (destination.equals(existingDestination)) {
+
                 matchingDestinations.add(destination);
             }
         }

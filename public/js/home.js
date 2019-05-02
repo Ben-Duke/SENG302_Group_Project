@@ -52,6 +52,32 @@ var loadFile = function (event) {
  * The cropped image will be used as the user's profile picture.
  */
 $('#save-profile').click(function (eve){
+
+
+    /*
+        WARNING
+        WARNING
+        WARNING
+        WARNING
+
+        This solves the bug where the crop box needs to move a little before the image can
+        be successfully uploaded.
+
+        We do not know why this works.
+
+        Please do not touch.
+     */
+    let cropper = $("#change-profile-pic").data('cropper');
+    cropper.scale(1);
+    /*
+        WARNING END
+        WARNING END
+        WARNING END
+        WARNING END
+     */
+
+
+
     eve.preventDefault();
     var formData = new FormData();
     var private = $('input[type=checkbox]').attr('checked');
@@ -87,35 +113,35 @@ $('#save-profile').click(function (eve){
  * New set profile picture from existing picture function. Makes use of the cropper.
  * @param photoId
  */
-//function setProfilePictureRequest(photoId){
-//            $("#destination-carousel").modal('hide');
-//            isExistingPhoto = true;
-//            photoIdToEdit = photoId;
-//            $('#addProfilePhoto').modal('show');
-//}
+function setProfilePictureRequest(photoId){
+            $("#destination-carousel").modal('hide');
+            isExistingPhoto = true;
+            photoIdToEdit = photoId;
+            $('#addProfilePhoto').modal('show');
+}
 
- function setProfilePictureRequest(url, photoId){
-     var token =  $('input[name="csrfToken"]').attr('value');
-     $.ajaxSetup({
-         beforeSend: function(xhr) {
-             xhr.setRequestHeader('Csrf-Token', token);
-         }
-     });
-     $.ajax({
-         url: url,
-         method: "PUT",
-         data: JSON.stringify({
-             photoId: '"' + photoId + '"'
-         }),
-         headers: {
-             'Content-Type': 'application/json'
-         },
-         success:function(res){
-             $("#" + photoId).modal('hide');
-             console.log("Success!");
-         }
-     })
- }
+// function setProfilePictureRequest(url, photoId){
+//     var token =  $('input[name="csrfToken"]').attr('value');
+//     $.ajaxSetup({
+//         beforeSend: function(xhr) {
+//             xhr.setRequestHeader('Csrf-Token', token);
+//         }
+//     });
+//     $.ajax({
+//         url: url,
+//         method: "PUT",
+//         data: JSON.stringify({
+//             photoId: '"' + photoId + '"'
+//         }),
+//         headers: {
+//             'Content-Type': 'application/json'
+//         },
+//         success:function(res){
+//             $("#" + photoId).modal('hide');
+//             console.log("Success!");
+//         }
+//     })
+// }
 
 
 function makePublicOrPrivateRequest(url, photoId){
@@ -141,68 +167,78 @@ function makePublicOrPrivateRequest(url, photoId){
     })
 }
 
-///**
-// * Same as the previous function, but for adding a photo from an existing destination
-// */
-//$('#addProfilePhoto').on('show.bs.modal', function (e) {
-//    if(isExistingPhoto == true){
-//        var output = document.getElementById('change-profile-pic');
-//        output.src = "/users/home/serveDestPicture/" + photoIdToEdit;
-//        $("#selectProfileInput").hide();
-//    }
-//});
-//
-///**
-// * Same as the previous function, but for adding a photo from an existing destination
-// */
-//$('#addProfilePhoto').on('shown.bs.modal', function (e) {
-//    if(isExistingPhoto == true){
-//        isExistingPhoto = false;
-//        $.ajax({
-//            type: 'GET',
-//            url: '/users/photos/' + photoIdToEdit,
-//            success: function(data){
-//                filename = data["url"];
-//                $('#change-profile-pic').cropper("destroy");
-//
-//                var $previews = $('.preview');
-//                $('#change-profile-pic').cropper({
-//                    autoCropArea: 1,
-//                    aspectRatio: 1,
-//                    ready: function(e){
-//                        //DO NOT DELETE THIS SET TIMEOUT
-//                        setTimeout(function(){
-//                            $('#change-profile-pic').cropper('crop');
-//                            croppedCanvas = $('#change-profile-pic').cropper('getCroppedCanvas');
-//                        }, 1);
-//                    },
-//                    crop: function (e) {
-//                        $('#change-profile-pic').cropper('crop');
-//                        var imageData = $(this).cropper('getImageData');
-//                        croppedCanvas = $(this).cropper('getCroppedCanvas');
-//                        $('.preview').html('<img src="' + croppedCanvas.toDataURL() + '" class="thumb-lg img-circle" style="width:100px;height:100px;">');
-//                        var previewAspectRatio = e.width / e.height;
-//                        $previews.each(function (){
-//                            var $preview = $(this);
-//                            var previewWidth = $preview.width();
-//                            var previewHeight = previewWidth / previewAspectRatio;
-//                            var imageScaledRatio = e.width / previewWidth;
-//                            $preview.height(previewHeight).find('img').css({
-//                                width: imageData.naturalWidth / imageScaledRatio,
-//                                height: imageData.naturalHeight / imageScaledRatio,
-//                                marginLeft: -e.x / imageScaledRatio,
-//                                marginTop: -e.y / imageScaledRatio
-//                            });
-//                        });
-//                    }
-//                });
-//            }
-//        });
-//    }
-//});
-//// $("#imgInp").change(function(){
-////     readURL(this);
-//// });
+/**
+ * Same as the previous function, but for adding a photo from an existing destination
+ */
+$('#addProfilePhoto').on('show.bs.modal', function (e) {
+    if(isExistingPhoto == true){
+        var output = document.getElementById('change-profile-pic');
+        output.src = "/users/home/serveDestPicture/" + photoIdToEdit;
+        $("#selectProfileInput").hide();
+    }
+});
+
+/**
+ * Same as the previous function, but for adding a photo from an existing destination
+ */
+$('#addProfilePhoto').on('shown.bs.modal', function (e) {
+    if(isExistingPhoto == true){
+        isExistingPhoto = false;
+        $.ajax({
+            type: 'GET',
+            url: '/users/photos/' + photoIdToEdit,
+            success: function(data){
+                filename = data["url"];
+                $('#change-profile-pic').cropper("destroy");
+
+                var $previews = $('.preview');
+                $('#change-profile-pic').cropper({
+                    movable: false,
+                    autoCropArea: 1,
+                    aspectRatio: 1,
+                    ready: function(e){
+                        console.log("ready!!!!!!!!!!!!!!!!!!!!!!!!!")
+                        console.log(e);
+
+                        //DO NOT DELETE THIS SET TIMEOUT
+                        // setTimeout(function(){
+                        //     $('#change-profile-pic').cropper('crop');
+                        //     croppedCanvas = $('#change-profile-pic').cropper('getCroppedCanvas');
+                        // }, 1);
+
+                        let cropBoxElements = document.getElementsByClassName('cropper-face cropper-move');
+                        let cropBoxElement = cropBoxElements[0];
+                        let cropBoxMoveEvent = new Event('crop');
+                        cropBoxElement.dispatchEvent(cropBoxMoveEvent);
+
+                        },
+                    crop: function (e) {
+                        console.log(e);
+                        var imageData = $(this).cropper('getImageData');
+                        croppedCanvas = $(this).cropper('getCroppedCanvas');
+                        $('.preview').html('<img src="' + croppedCanvas.toDataURL() + '" class="thumb-lg img-circle" style="width:100px;height:100px;">');
+                        var previewAspectRatio = e.width / e.height;
+                        $previews.each(function (){
+                            var $preview = $(this);
+                            var previewWidth = $preview.width();
+                            var previewHeight = previewWidth / previewAspectRatio;
+                            var imageScaledRatio = e.width / previewWidth;
+                            $preview.height(previewHeight).find('img').css({
+                                width: imageData.naturalWidth / imageScaledRatio,
+                                height: imageData.naturalHeight / imageScaledRatio,
+                                marginLeft: -e.x / imageScaledRatio,
+                                marginTop: -e.y / imageScaledRatio
+                            });
+                        });
+                    }
+                });
+            }
+        });
+    }
+});
+// $("#imgInp").change(function(){
+//     readURL(this);
+// });
 
 /**
  * Function to search for private destinations.

@@ -15,7 +15,7 @@
             <!-- The thumbnail in the else is being displayed to show the AC passing -->
         <h1>@user.fName @user.lName
             @if(UserFactory.getUserProfilePicture(user.getUserid()) != null){
-                <img class="img-circle"  width = "60" height="50" src="@{routes.HomeController.serveProfilePicture()}">
+                <img class="img-circle"  width = "60" height="50" src="@{routes.HomeController.serveProfilePicture(user.getUserid())}">
             } else {
                 <img class="img-circle"  width = "60" height="50" src="@{routes.Assets.at("images/Generic.png")}">
             }
@@ -33,7 +33,7 @@
             <div class="text-center">
                 <a href="#" data-toggle="modal" data-target="#addProfilePhoto">
                     @if(UserFactory.getUserProfilePicture(user.getUserid()) != null){
-                        <img class="img-circle" width = "150" height = "150" src="@{routes.HomeController.serveProfilePicture()}")>
+                        <img class="img-circle" width = "150" height = "150" src="@{routes.HomeController.serveProfilePicture(user.getUserid())}")>
                     } else {
                         <img class="img-circle" width = "150" height = "150" src="@{routes.Assets.at("images/Generic.png")}")>
                         }
@@ -160,7 +160,7 @@
                     <div class="modal-body">
                         <!--<input type="file" accept="image/*" name="picture" required onchange="readURL(this);"/> -->
                         <div class="profile-pic-wraper ">
-                            <img class="img"  width = "450" height="375" id="change-profile-pic" src="@{routes.HomeController.serveProfilePicture()}" alt="You have not uploaded a profile picture!"/>
+                            <img class="img"  width = "450" height="375" id="change-profile-pic" src="@{routes.HomeController.serveProfilePicture(user.getUserid())}" alt="You have not uploaded a profile picture!"/>
                         </div>
                         <div class="preview-wrapper">
                             <div class="preview">

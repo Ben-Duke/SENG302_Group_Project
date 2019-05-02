@@ -6,8 +6,9 @@
 
 
     <head>
-        <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/home.css")">
         <link rel="stylesheet" href="@routes.Assets.at("stylesheets/cropper.min.css")">
+        <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/home.css")">
+
         <title>Home</title>
     </head>
     <div class="container">
@@ -108,7 +109,20 @@
 
 
             <!-- Trigger the modal with a button -->
-        <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#addPhotoModal">Add Photo</button>
+        <div>
+            <span>
+                <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#addPhotoModal">Add Photo</button>
+            </span>
+            <span class="picture-privacy-legend-span">
+                <span class="legend-content">
+                    <span class="public-icon">&#128065</span><span class="public-icon picture-privacy-text"> : public </span>
+                </span>
+                <span>
+                    <span class="private-icon">&#128065</span> <span class="public-icon picture-privacy-text"> : private </span>
+                </span>
+            </span>
+
+        </div>
 
 
             <!-- Modal -->
@@ -200,9 +214,9 @@
                                 <div class="overlay">
                                     <i class="icon" title="User Profile">
                                     @if(user.getUserPhotos.get(i).isPublic()) {
-                                        <i class="fa fa-eye"></i>
+                                        <i class="fa fa-eye-green"></i>
                                     } else {
-                                        <i class="fa fa-eye-slash"></i>
+                                        <i class="fa fa-eye-red"></i>
                                     }
                                     </i>
                                 </div>
@@ -228,9 +242,9 @@
                                 <div class="overlay">
                                     <i class="icon" title="User Profile">
                                     @if(user.getUserPhotos.get(i).isPublic()) {
-                                        <i class="fa fa-eye"></i>
+                                        <i class="fa fa-eye-green"></i>
                                     } else {
-                                        <i class="fa fa-eye-slash"></i>
+                                        <i class="fa fa-eye-red"></i>
                                     }
                                     </i>
                                 </div>
@@ -255,9 +269,9 @@
                                 <div class="overlay">
                                     <i class="icon" title="User Profile">
                                     @if(user.getUserPhotos.get(i).isPublic()) {
-                                        <i class="fa fa-eye"></i>
+                                        <i class="fa fa-eye-green"></i>
                                     } else {
-                                        <i class="fa fa-eye-slash"></i>
+                                        <i class="fa fa-eye-red"></i>
                                     }
                                     </i>
                                 </div>

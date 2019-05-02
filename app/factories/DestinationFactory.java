@@ -86,6 +86,27 @@ public class DestinationFactory {
         return false;
     }
 
+    /**
+     * Finds the list of all destinations from other users that are private and match the given destination
+     * @param userId the user's own ID
+     * @param destination the destination to check if there are matches to
+     * @return The list of destinations from other users that match the given destination.
+     */
+    public List<Destination> getOtherUsersMatchingPrivateDestinations(int userId, Destination destination) {
+        User user = UserFactory.getUserFromId(userId);
+        List<Destination> allDestinations = Destination.find.query()
+                .where().eq("isPublic", false).and()
+                .not().eq("user", user).findList();
+        List<Destination> matchingDestinations = new ArrayList<>();
+        int count = 0;
+        for (Destination existingDestination : allDestinations) {
+            if (destination.equals(existingDestination)) {
+                matchingDestinations.add(destination);
+            }
+        }
+        return matchingDestinations;
+    }
+
 
     /**
      * Remove the private photos from a list of photos so that the list can be displayed publicly on a destination

@@ -86,24 +86,11 @@ public class DestinationFactory {
         return false;
     }
 
+
     /**
-     * Remove the destinations private information
+     * Remove the private photos from a list of photos so that the list can be displayed publicly on a destination
+     * @param userPhotos the list of photos to display
      */
-    /*public void removePrivateInformation(Destination destination) {
-        //Remove Private Photos from the destination
-        ArrayList<UserPhoto> photosToRemove = new ArrayList<UserPhoto>();
-        for (UserPhoto photo : destination.userPhotos) {
-            if(!photo.isPublic) {
-                photo.getDestinations().remove(this);
-                photosToRemove.add(photo);
-                photo.update();
-                destination.update();
-            }
-        }
-        destination.userPhotos.removeAll(photosToRemove);
-
-    }*/
-
     public void removePrivatePhotos(List<UserPhoto> userPhotos) {
         ArrayList<UserPhoto> photosToRemove = new ArrayList<UserPhoto>();
         for (UserPhoto photo : userPhotos) {

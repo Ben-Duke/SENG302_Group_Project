@@ -102,16 +102,17 @@ public class DestinationFactory {
                 matchingDestinations.add(existingDestination);
             }
         }
-        matchingDestinations.add(destination);
         return matchingDestinations;
     }
 
-    public boolean mergeDestinations(List<Destination> destinationList, Destination destination) {
+    public void mergeDestinations(List<Destination> destinationList, Destination destination) {
         Admin defaultAdmin = Admin.find.query().where().eq("isDefault", true).findOne();
         User defaultAdminUser = User.find.query().where().eq("userid", defaultAdmin.getUserId()).findOne();
+        destinationList.add(destination);
         Destination newDestination = destination;
         newDestination.setIsPublic(true);
         newDestination.setUser(defaultAdminUser);
+        newDestination.update();
         for (Destination otherDestination : destinationList) {
             if(!otherDestination.visits.isEmpty()) {
                 List<Trip> trips = otherDestination.getUser().getTrips();
@@ -124,9 +125,10 @@ public class DestinationFactory {
                 }
 
             }
-            otherDestination.delete();
-            return true;
+            if (otherDestination.getUser() != newDestination.getUser()) {
+                otherDestination.delete();
+            }
         }
-        return false;
+
     }
 }

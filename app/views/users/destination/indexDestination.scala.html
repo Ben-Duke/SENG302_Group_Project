@@ -56,9 +56,9 @@
                             Edit</a></td>
                         <td><a href="@routes.DestinationController.deleteDestination(destination.getDestId())" class="btn btn-danger">
                             Delete</a></td>
-                        @if(! destinationFactory.doesPublicDestinationExist(destination)) {
+                        @if(!destinationFactory.doesPublicDestinationExist(destination)) {
                             <td>
-                                @if(destinationFactory.getOtherUsersMatchingPrivateDestinations(user.getUserid, destination).size() == 1) {
+                                @if(destinationFactory.getOtherUsersMatchingPrivateDestinations(user.getUserid, destination).size() == 0) {
                                     <a href="@routes.DestinationController.makeDestinationPublic(destination.getDestId)" class="btn btn-primary">
                                         Make destination public
                                     </a>
@@ -77,20 +77,23 @@
                             View destination</button></td>
                     </tr>
 
-
                     <br>
                     }
-            }
                 @if(flash.containsKey("matchingDest")) {
                     <div class="well">
                         <div id="error-message" class="text-danger">
                         @flash.get("matchingDest")
                         </div>
-                        <a href="@routes.DestinationController.indexDestination()" class="btn btn-danger">
+                        <a href="@routes.DestinationController.makeDestinationsMerge(destination.getDestId())" class="btn btn-danger">
                             Merge Destinations
                         </a>
                     </div>
                 }
+            }
+
+
+
+
             </tbody>
         </table>
 

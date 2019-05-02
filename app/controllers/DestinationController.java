@@ -472,7 +472,7 @@ public class DestinationController extends Controller {
             Destination destination = Destination.find.query().where().eq("destid", destId).findOne();
 
             if (destination != null) {
-                if (destination.isUserOwner(user.userid)) {
+                if (destination.isUserOwner(user.userid) || user.userIsAdmin()) {
                     if(destination.visits.isEmpty()) {
                         destination.delete();
                         return redirect(routes.DestinationController.indexDestination());
@@ -521,17 +521,15 @@ public class DestinationController extends Controller {
                         //no matching pub destination exists, making public now
                         //sets the destination to public, sets the owner to the default admin and updates the destination
                         List<Destination> matchingDests = destFactory.getOtherUsersMatchingPrivateDestinations(user.userid, destination);
-                        if (matchingDests.size() == 1) {
+                        if (matchingDests.size() == 0) {
                             destination.setIsPublic(true);
                             destination.update();
-                        } else if (matchingDests.size() == 2) {
-                            flash("matchingDest", "There is " + (matchingDests.size() - 1) + " other destination that matches " +
+                        } else if (matchingDests.size() == 1) {
+                            flash("matchingDest", "There is " + (matchingDests.size()) + " other destination that matches " +
                                     destination.getDestName() + ".\nWould you like to merge?");
-                            destFactory.mergeDestinations(matchingDests, destination);
                         } else {
-                            flash("matchingDest", "There are " + (matchingDests.size() - 1) + " other destinations that match " +
+                            flash("matchingDest", "There are " + (matchingDests.size()) + " other destinations that match " +
                                     destination.getDestName() + ".\nWould you like to merge?");
-                            destFactory.mergeDestinations(matchingDests, destination);
 
                         }
                         return redirect(routes.DestinationController.indexDestination());
@@ -540,6 +538,27 @@ public class DestinationController extends Controller {
 
                 } else {
                     return unauthorized("HEY!, not yours. You cant make public. How you get access to that anyway?... FBI!!! OPEN UP!");
+                }
+            } else {
+                return notFound("Destination does not exist");
+            }
+        } else {
+            return unauthorized("Oops, you are not logged in");
+        }
+    }
+
+    public Result makeDestinationsMerge(Http.Request request, int destId) {
+        User user = User.getCurrentUser(request);
+        if (user != null) {
+            Destination destination = Destination.find.query().where().eq("destid", destId).findOne();
+            if (destination != null) {
+                DestinationFactory destFactory = new DestinationFactory();
+                List<Destination> matchingDests = destFactory.getOtherUsersMatchingPrivateDestinations(user.userid, destination);
+                if (destination.isUserOwner(user.userid) || user.userIsAdmin()) {
+                    destFactory.mergeDestinations(matchingDests, destination);
+                    return redirect(routes.DestinationController.indexDestination());
+                } else {
+                    return unauthorized("HEY!, not yours. You cant delete. How you get access to that anyway?... FBI!!! OPEN UP!");
                 }
             } else {
                 return notFound("Destination does not exist");

@@ -606,10 +606,10 @@ public class DestinationController extends Controller {
         if(user != null){
             Destination destination = Destination.find.byId(destId);
             List<UserPhoto> photos;
-            if(destination.getIsPublic() && !user.userIsAdmin() && destination.getUser().getUserid() != user.getUserid()) {
+            if(destination.getIsPublic() && !user.userIsAdmin()) {
                 photos = Destination.find.byId(destId).getUserPhotos();
                 DestinationFactory destinationFactory = new DestinationFactory();
-                destinationFactory.removePrivatePhotos(photos);
+                destinationFactory.removePrivatePhotos(photos, user.getUserid());
             } else {
                 photos = Destination.find.byId(destId).getUserPhotos();
             }

@@ -89,12 +89,14 @@ public class DestinationFactory {
 
     /**
      * Remove the private photos from a list of photos so that the list can be displayed publicly on a destination
+     * Keeping the private content that the viewer owns
      * @param userPhotos the list of photos to display
+     * @param viewerId the user Id of the person viewing the photos
      */
-    public void removePrivatePhotos(List<UserPhoto> userPhotos) {
+    public void removePrivatePhotos(List<UserPhoto> userPhotos, Integer viewerId) {
         ArrayList<UserPhoto> photosToRemove = new ArrayList<UserPhoto>();
         for (UserPhoto photo : userPhotos) {
-            if(!photo.isPublic) {
+            if(!photo.isPublic && photo.getUser().getUserid() != viewerId) {
                 photosToRemove.add(photo);
             }
         }

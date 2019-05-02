@@ -11,14 +11,12 @@ function sendDeleteVisitRequest(url, rUrl, errorUrl, errorUrl2, errorUrl3) {
     var data = {
         myTextToPass: $('#sometext').val()
     };
-    // LOOK AT ME! BETWEEN HERE AND
     var token =  $('input[name="csrfToken"]').attr('value')
     $.ajaxSetup({
         beforeSend: function(xhr) {
             xhr.setRequestHeader('Csrf-Token', token);
         }
     });
-    // HERE
     $.ajax({
         url: url,
         method: "DELETE",

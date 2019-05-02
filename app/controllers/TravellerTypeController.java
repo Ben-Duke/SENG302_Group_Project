@@ -57,7 +57,7 @@ public class TravellerTypeController {
         if (user != null) {
             Destination destination = Destination.find.byId(destid);
             if(destination != null) {
-                if(destination.getUser().getUserid() == user.getUserid()) {
+                if(destination.getUser().getUserid() == user.getUserid() || user.userIsAdmin()) {
                     Form<Destination> destForm = formFactory.form(Destination.class).fill(destination);
                     List<TravellerType> travellerTypes = TravellerType.find.all();
                     travellerTypes.removeAll(destination.getTravellerTypes());
@@ -119,7 +119,7 @@ public class TravellerTypeController {
             TravellerType travellerType = TravellerType.find.byId(Integer.parseInt(travellerID));
             try {
                 if(destination != null) {
-                    if(destination.getUser().getUserid() == user.getUserid()) {
+                    if(destination.getUser().getUserid() == user.getUserid() || user.userIsAdmin()) {
                         destination.addTravellerType(travellerType);
                         destination.update();
                         return redirect(routes.TravellerTypeController.updateDestinationTravellerType(destid));
@@ -184,7 +184,7 @@ public class TravellerTypeController {
         }  else {
             try {
                 TravellerType travellerType = TravellerType.find.byId(typeId);
-                if(destination.getUser().getUserid() == user.getUserid()) {
+                if(destination.getUser().getUserid() == user.getUserid() || user.userIsAdmin()) {
                     destination.deleteTravellerType(travellerType);
                     destination.update();
                     return redirect(routes.TravellerTypeController.updateDestinationTravellerType(destId));

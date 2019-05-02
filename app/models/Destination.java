@@ -124,9 +124,9 @@ public class Destination extends Model {
 
     @JsonIgnore
     @ManyToMany(cascade = CascadeType.ALL)
-    public List<TravellerType> travellerTypes;
+    public Set<TravellerType> travellerTypes;
 
-    public static Finder<String,Destination> findString =new Finder<>(Destination.class);
+    public static Finder<String,Destination> findString = new Finder<>(Destination.class);
     public static Finder<Integer,Destination> find = new Finder<>(Destination.class);
 
 
@@ -153,7 +153,7 @@ public class Destination extends Model {
 
     public User getUser() { return user; }
 
-    public List<TravellerType> getTravellerTypes() {
+    public Set<TravellerType> getTravellerTypes() {
         return travellerTypes;
     }
 
@@ -166,7 +166,7 @@ public class Destination extends Model {
     public void setLatitude(double latitude) { this.latitude = latitude; }
     public void setLongitude(double longitude) { this.longitude = longitude; }
     public void setIsPublic(boolean isPublic) { this.isPublic = isPublic; }
-    public void setTravellerTypes(List<TravellerType> travellerTypes) {
+    public void setTravellerTypes(Set<TravellerType> travellerTypes) {
         this.travellerTypes = travellerTypes;
     }
     public void setUserPhotos(List<UserPhoto> userPhotos) {
@@ -193,42 +193,53 @@ public class Destination extends Model {
      * The equals method compares two Destination objects for equality. The criteria
      * is all attributes, except isPublic.
      *
-     * @param dest2 the other Destination object which is being compared for equality
+     * @param o the other Destination object which is being compared for equality
      * @return true if destinations are equal, false if not.
      */
-
-    public boolean equals(Destination dest2) {
-        if (!this.destName.equals(dest2.getDestName())) {
-            return false;
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
         }
-        if (!this.country.equals(dest2.getCountry())) {
-            return false;
-        }
-        if (!this.district.equals(dest2.getDistrict())) {
-            return false;
-        }
-        if (!(this.latitude == dest2.getLatitude())) {
-            return false;
-        }
-        if (!(this.longitude == dest2.getLongitude())) {
-            return false;
-        }
-        if (!this.destType.equals(dest2.getDestType())) {
-            return false;
-        }
-        int eqCount = 0;
-        for (TravellerType travellerType1 : this.travellerTypes) {
-            for (TravellerType travellerType2 : dest2.getTravellerTypes()) {
-                if (travellerType1.getTravellerTypeName().equals(travellerType2.getTravellerTypeName())) {
-                    eqCount++;
-                }
-            }
-        }
-        if (!(eqCount == this.travellerTypes.size() && eqCount == dest2.getTravellerTypes().size())) {
+        if (! (o instanceof Destination)) {
             return false;
         }
 
-        return true;
+        Destination other = (Destination) o;
+
+        if (!this.destName.equals(other.getDestName())) {
+            return false;
+        }
+        if (!this.country.equals(other.getCountry())) {
+            return false;
+        }
+        if (!this.district.equals(other.getDistrict())) {
+            return false;
+        }
+        if (this.latitude != other.getLatitude()) {
+            return false;
+        }
+        if (this.longitude != other.getLongitude()) {
+            return false;
+        }
+        if (!this.destType.equals(other.getDestType())) {
+            return false;
+        }
+        return travellerTypes.equals(other.getTravellerTypes());
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 31 * hash + destid;
+        hash = 31 * hash + destName.hashCode();
+        hash = 31 * hash + destType.hashCode();
+        hash = 31 * hash + country.hashCode();
+        hash = 31 * hash + district.hashCode();
+        hash = 31 * hash + ((Double) latitude).hashCode();
+        hash = 31 * hash + ((Double) longitude).hashCode();
+        hash = 31 * hash + travellerTypes.hashCode();
+        return hash;
     }
 
     /**

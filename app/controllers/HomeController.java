@@ -149,10 +149,7 @@ public class HomeController {
         User user = User.getCurrentUser(request);
         if(user != null) {
             Map<String, String[]> datapart = request.body().asMultipartFormData().asFormUrlEncoded();
-            boolean isPublic = false;
-            if (datapart.get("private") == null) {
-                isPublic = true;
-            }
+            boolean isPublic = true;
 
             //Get the photo data from the multipart form data encoding
             Http.MultipartFormData<Files.TemporaryFile> body = request.body().asMultipartFormData();

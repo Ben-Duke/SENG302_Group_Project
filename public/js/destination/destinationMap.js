@@ -124,7 +124,7 @@ function getInfoWindowHTML(destinationMarkers, index) {
                           <div>Type: ${destinationType}</div>
                           <div>Country: ${destinationCountry}</div>
                           <div>District: ${destinationDistrict}</div>
-                          <img src="../../images/${destinationPhoto.url}">`;
+                          <img src="/users/home/serveDestPicture/${destinationPhoto.photoId}">`;
     } else {
         // uses a ES6 template string
         infoWindowHTML = `<h5>${destinationName}</h5>

@@ -89,7 +89,7 @@ public class DestinationFactory {
     /**
      * Remove the destinations private information
      */
-    public void removePrivateInformation(Destination destination) {
+    /*public void removePrivateInformation(Destination destination) {
         //Remove Private Photos from the destination
         ArrayList<UserPhoto> photosToRemove = new ArrayList<UserPhoto>();
         for (UserPhoto photo : destination.userPhotos) {
@@ -102,5 +102,15 @@ public class DestinationFactory {
         }
         destination.userPhotos.removeAll(photosToRemove);
 
+    }*/
+
+    public void removePrivatePhotos(List<UserPhoto> userPhotos) {
+        ArrayList<UserPhoto> photosToRemove = new ArrayList<UserPhoto>();
+        for (UserPhoto photo : userPhotos) {
+            if(!photo.isPublic) {
+                photosToRemove.add(photo);
+            }
+        }
+        userPhotos.removeAll(photosToRemove);
     }
 }

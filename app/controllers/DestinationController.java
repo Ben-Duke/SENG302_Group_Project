@@ -518,14 +518,12 @@ public class DestinationController extends Controller {
                     if (destFactory.doesPublicDestinationExist(destination)) {
                         // public matching destination already exists
                         // show error
-                        destFactory.removePrivateInformation(destination);
                         destination.setIsPublic(true);
                         destination.update();
                         return redirect(routes.DestinationController.indexDestination());
                     } else {
                         //no matching pub destination exists, making public now
                         //sets the destination to public, sets the owner to the default admin and updates the destination
-                        destFactory.removePrivateInformation(destination);
                         destination.setIsPublic(true);
                         destination.update();
                         return redirect(routes.DestinationController.indexDestination());
@@ -606,14 +604,17 @@ public class DestinationController extends Controller {
     public Result getPhotos(Http.Request request, Integer destId){
         User user = User.getCurrentUser(request);
         if(user != null){
-            //To add: filter between private and public, but that's another task
-            List<UserPhoto> photos = Destination.find.byId(destId).userPhotos;
-            ObjectNode result = Json.newObject();
-//            for(UserPhoto photo: photos){
-//                result.put(Integer.toString(photo.getPhotoId()), new java.io.File(photo.getUrlWithPath()).toString());
-//            }
-            return ok(Json.toJson(Destination.find.byId(destId).userPhotos));
-            //return ok(result);
+            Destination destination = Destination.find.byId(destId);
+            List<UserPhoto> photos;
+            if(destination.getIsPublic() && !user.userIsAdmin() && destination.getUser().getUserid() != user.getUserid()) {
+                photos = Destination.find.byId(destId).getUserPhotos();
+                DestinationFactory destinationFactory = new DestinationFactory();
+                destinationFactory.removePrivatePhotos(photos);
+            } else {
+                photos = Destination.find.byId(destId).getUserPhotos();
+            }
+
+            return ok(Json.toJson(photos));
         } else {
             return unauthorized("Oops, you are not logged in");
         }

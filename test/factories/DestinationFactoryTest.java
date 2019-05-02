@@ -12,6 +12,8 @@ import play.db.evolutions.Evolution;
 import play.db.evolutions.Evolutions;
 import play.test.WithApplication;
 
+import java.util.ArrayList;
+
 import static org.junit.Assert.*;
 
 /**
@@ -164,24 +166,17 @@ public class DestinationFactoryTest extends WithApplication {
     }
 
     @Test
-    public void removingDestinationPrivateInformation() {
-        UserPhoto userPhoto = new UserPhoto("testurl", false, false, testUser);
-        userPhoto.save();
-        Destination testPrivateDestination = new Destination("destName",
-                "destType", "district", "country",
-                45.0, 45.0, testUser, false);
-        testPrivateDestination.save();
-        userPhoto.addDestination(testPrivateDestination);
-        userPhoto.update();
-        testPrivateDestination.save();
+    public void removingDestinationPrivatePhotos() {
+        ArrayList<UserPhoto> userPhotos = new ArrayList<UserPhoto>();
+        Boolean isPublic = true;
+        for (int i = 0; i< 10; i ++) {
+            UserPhoto userPhoto = new UserPhoto("testurl" + i, isPublic, false, testUser);
+            userPhotos.add(userPhoto);
+            isPublic = !isPublic ;
+        }
+        Integer userPhotosSize = userPhotos.size();
+        destinationFactory.removePrivatePhotos(userPhotos);
+        assertEquals(userPhotosSize - 5, userPhotos.size());
 
-        testPrivateDestination = Destination.find.byId(testPrivateDestination.getDestId());
-
-        Integer photoCount = testPrivateDestination.getUserPhotos().size();
-        destinationFactory.removePrivateInformation(testPrivateDestination);
-        testPrivateDestination.setIsPublic(true);
-        testPrivateDestination.update();
-        assertEquals(photoCount - 1, testPrivateDestination.getUserPhotos().size());
-        assertEquals(0, UserPhoto.find.byId(userPhoto.getPhotoId()).destinations.size());
     }
 }

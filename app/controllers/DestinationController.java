@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import factories.DestinationFactory;
 import formdata.DestinationFormData;
-import formdata.UpdateUserFormData;
 import models.*;
 
 
@@ -12,7 +11,6 @@ import play.data.DynamicForm;
 import play.data.Form;
 import play.data.FormFactory;
 import play.libs.Json;
-import play.mvc.BodyParser;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
@@ -57,7 +55,7 @@ public class DestinationController extends Controller {
         } catch (NumberFormatException e) {
             return notAcceptable("ERROR: Entered latitude is not a number");
         }
-        if (!(Double.parseDouble(latitude) >= -90 && Double.parseDouble(latitude) <= 90)) {
+        if (! (Double.parseDouble(latitude) >= -90 && Double.parseDouble(latitude) <= 90)) {
             return notAcceptable("ERROR: Entered latitude must be between -90 and 90");
         }
         try {
@@ -65,7 +63,7 @@ public class DestinationController extends Controller {
         } catch (NumberFormatException e) {
             return notAcceptable("ERROR: Entered longitude is not a number");
         }
-        if (!(Double.parseDouble(longitude) >= -180 && Double.parseDouble(longitude) <= 180)) {
+        if (! (Double.parseDouble(longitude) >= -180 && Double.parseDouble(longitude) <= 180)) {
             return notAcceptable("ERROR: Entered longitude must be between -180 and 180");
         }
         if (destType.length() < 1) {
@@ -105,7 +103,7 @@ public class DestinationController extends Controller {
      * and renders a page displaying its information.
      *
      * @param request the http request
-     * @param destId  an Integer id for a given destination
+     * @param destId an Integer id for a given destination
      * @return the view destination page or an unauthorized message is no user is logged in.
      */
     public Result viewDestination(Http.Request request, Integer destId) {
@@ -150,11 +148,11 @@ public class DestinationController extends Controller {
     public Result saveDestinationFromRequest(Http.Request request) {
         Form<DestinationFormData> destinationFormData;
         destinationFormData = formFactory.form(DestinationFormData.class)
-                .bindFromRequest();
+                                                                .bindFromRequest();
         User user = User.getCurrentUser(request);
 
         if (user != null) { // checks if a user is logged in
-            if (!destinationFormData.hasErrors()) {
+            if (! destinationFormData.hasErrors()) {
                 // no form errors
                 // processing it now
                 DynamicForm destForm = formFactory.form().bindFromRequest();
@@ -162,7 +160,7 @@ public class DestinationController extends Controller {
                 //If program gets past this point then inputted destination is valid
 
                 Destination newDestination = formFactory.form(Destination.class)
-                        .bindFromRequest().get();
+                                                        .bindFromRequest().get();
 
                 // checking if private and public destinations already exist. -----------
                 DestinationFactory destinationFactory = new DestinationFactory();
@@ -173,9 +171,7 @@ public class DestinationController extends Controller {
                     flash("privateDestinationExists",
                             "You already have a matching private destination!");
                     hasError = true;
-                }
-
-                if (destinationFactory.doesPublicDestinationExist(newDestination)) {
+                } else if (destinationFactory.doesPublicDestinationExist(newDestination)) {
                     flash("publicDestinationExists",
                             "A matching public destination already exists!");
                     hasError = true;
@@ -224,7 +220,7 @@ public class DestinationController extends Controller {
                     Map<String, Boolean> countryList = Destination.getIsoCountries();
                     countryList.replace(destination.getCountry(), true);
 
-                    return ok(editDestination.render(destForm, destination, countryList, typeList, user));
+                    return ok(editDestination.render(destForm, destination, countryList, typeList,user));
 
                 } else {
                     return unauthorized("Not your destination. You can't edit.");
@@ -244,7 +240,7 @@ public class DestinationController extends Controller {
      * The old destination is then updated in the database.
      *
      * @param request http request
-     * @param destId  the id of the destination that is being updated
+     * @param destId the id of the destination that is being updated
      * @return redirects to view the updated destination if successful, or
      * a not found error, or an unauthorized message if the destination does not belong to the user.
      */
@@ -267,7 +263,7 @@ public class DestinationController extends Controller {
 
             if (oldDestination != null) {
 
-                if (oldDestination.isUserOwner(user.userid)) {
+                if (oldDestination.isUserOwner(user.userid) || user.userIsAdmin()) {
 
                     oldDestination.setDestName(newDestination.getDestName());
                     oldDestination.setDestType(newDestination.getDestType());
@@ -297,7 +293,7 @@ public class DestinationController extends Controller {
      * A page is rendered with the information of the destination loaded ready for editing.
      *
      * @param request the http request
-     * @param destId  the id of the destination that is to be edited
+     * @param destId the id of the destination that is to be edited
      * @return renders the editPublicDestination page, or an unauthorized message is no user is logged in, or
      * a not found error.
      */
@@ -342,7 +338,7 @@ public class DestinationController extends Controller {
      * sent with the info of the old and new destinations awaiting their acceptance of the modification.
      *
      * @param request http request
-     * @param destId  the id of the destination that is being updated
+     * @param destId the id of the destination that is being updated
      * @return redirects to view the updated destination if successful, or
      * a not found error.
      */
@@ -468,7 +464,7 @@ public class DestinationController extends Controller {
      * Deletes a destination from the database given its id.
      *
      * @param request the http request
-     * @param destId  the id of the destination that is being deleted
+     * @param destId the id of the destination that is being deleted
      * @return redirects to the index page if successful, or a not found error,
      * or an unauthorized message if the destination does not belong to the user.
      */
@@ -479,8 +475,8 @@ public class DestinationController extends Controller {
             Destination destination = Destination.find.query().where().eq("destid", destId).findOne();
 
             if (destination != null) {
-                if (destination.isUserOwner(user.userid)) {
-                    if (destination.visits.isEmpty()) {
+                if (destination.isUserOwner(user.userid) || user.userIsAdmin()) {
+                    if(destination.visits.isEmpty()) {
                         destination.delete();
                         return redirect(routes.DestinationController.indexDestination());
                     } else {
@@ -502,7 +498,7 @@ public class DestinationController extends Controller {
      * Makes a private destination from the database public, given its id.
      *
      * @param request the http request
-     * @param destId  the id of the destination that is being made public
+     * @param destId the id of the destination that is being made public
      * @return redirects to the index page if successful, or a not found error,
      * or an unauthorized message if the destination does not belong to the user.
      */
@@ -526,8 +522,17 @@ public class DestinationController extends Controller {
                     } else {
                         //no matching pub destination exists, making public now
                         //sets the destination to public, sets the owner to the default admin and updates the destination
-                        destination.setIsPublic(true);
-                        destination.update();
+                        List<Destination> matchingDests = destFactory.getOtherUsersMatchingPrivateDestinations(user.userid, destination);
+                        if (matchingDests.isEmpty()) {
+                            destination.setIsPublic(true);
+                            destination.update();
+                        } else if (matchingDests.size() == 1) {
+                            flash("matchingDest", "There is " + matchingDests.size() + " other destination that matches " +
+                                    destination.getDestName() + ".\nWould you like to merge?");
+                        } else {
+                            flash("matchingDest", "There are " + matchingDests.size() + " other destinations that match " +
+                                    destination.getDestName() + ".\nWould you like to merge?");
+                        }
                         return redirect(routes.DestinationController.indexDestination());
                     }
 
@@ -547,7 +552,7 @@ public class DestinationController extends Controller {
      * Links a photo with a photo id to a destination with a destination id.
      *
      * @param request the HTTP request
-     * @param destId  the destination that the photo should be linked to
+     * @param destId the destination that the photo should be linked to
      * @return success if the linking was successful, not found if destination or photo not found, unauthorized otherwise.
      */
     public Result linkPhotoToDestination(Http.Request request, Integer destId) {
@@ -585,7 +590,7 @@ public class DestinationController extends Controller {
      * Returns a json list of traveller types associated to a destination given by a destination id
      *
      * @param request the HTTP request
-     * @param destId  the destination id
+     * @param destId the destination id
      * @return a json list of traveller types associated to the destination
      */
     public Result getTravellerTypes(Http.Request request, Integer destId) {
@@ -628,7 +633,7 @@ public class DestinationController extends Controller {
      */
     public Result getPhoto(Http.Request request, Integer photoId) {
         User user = User.getCurrentUser(request);
-        if (user != null) {
+        if(user != null){
             UserPhoto photo = UserPhoto.find.byId(photoId);
             if (photo.getUser().getUserid() == user.getUserid() || photo.isPublic() || user.userIsAdmin()) {
                 return ok(Json.toJson(photo));
@@ -647,7 +652,7 @@ public class DestinationController extends Controller {
      * @param destId  the destination ID
      * @return the destination as a json
      */
-    public Result getDestination(Http.Request request, Integer destId) {
+    public Result getDestination(Http.Request request, Integer destId){
         User user = User.getCurrentUser(request);
         if (user != null) {
             Destination destination = Destination.find.byId(destId);
@@ -665,7 +670,7 @@ public class DestinationController extends Controller {
      * Returns the destination owner's id as a json based on a destination ID
      *
      * @param request the HTTP request
-     * @param destId  the destination ID
+     * @param destId the destination ID
      * @return the destination as a json
      */
     public Result getDestinationOwner(Http.Request request, Integer destId) {
@@ -682,7 +687,7 @@ public class DestinationController extends Controller {
      * Sets the primary photo of a destination given by the destination ID.
      *
      * @param request the HTTP request
-     * @param destId  the id of the destination to be updated
+     * @param destId the id of the destination to be updated
      * @return success if it worked, error otherwise
      */
     public Result setPrimaryPhoto(Http.Request request, Integer destId) {

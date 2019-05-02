@@ -354,7 +354,7 @@ public class DestinationControllerTest extends WithApplication {
         formData.put("country", "Angola");
         formData.put("latitude", "50.0");
         formData.put("longitude", "-50.0");
-        Http.RequestBuilder request = Helpers.fakeRequest().bodyForm(formData).method(POST).uri("/users/destinations/update/3").session("connected", "1");
+        Http.RequestBuilder request = Helpers.fakeRequest().bodyForm(formData).method(POST).uri("/users/destinations/update/3").session("connected", "3");
         Result result = route(app, request);
         assertEquals(UNAUTHORIZED, result.status());
     }

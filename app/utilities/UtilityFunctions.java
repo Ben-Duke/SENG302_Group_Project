@@ -4,6 +4,8 @@ import models.Nationality;
 import models.Passport;
 import models.TravellerType;
 import models.User;
+import play.mvc.Http;
+import play.mvc.Result;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -14,10 +16,23 @@ import java.util.*;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import static play.mvc.Results.unauthorized;
+
 /**
  * A class for methods which check user entered data for correctness.
  */
 public class UtilityFunctions {
+
+    /** Check that there is a user logged in */
+    public static Result checkLoggedIn(Http.Request request) {
+        User user = User.getCurrentUser(request);
+        if (user == null) {
+            return unauthorized("Oops, you are not logged in");
+        }
+
+        return null;
+    }
+
     public static List<User> retainFromLists(List<List<User>> lists){
         int count = 0;
         List<User> retainedList = lists.get(count);

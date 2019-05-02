@@ -34,27 +34,27 @@
             </thead>
             <tbody>
             @for(destination <- destinations) {
-                @if(destination.getIsPublic == false) {
+                @if(! destination.getIsPublic) {
                     @*<tr data-toggle="modal" data-id="@destination.getDestId()" data-target="#orderModal" class="clickable">*@
                     <tr data-id="@destination.getDestId()">
                         <th scope ="row">
-                            <a href="javascript:;" onclick="viewDestination(@destination.getDestId())"> <span>@destination.getDestName()</span></a>
+                            <a href="javascript:;" onclick="viewDestination(@destination.getDestId"> <span>@destination.getDestName</span></a>
                             <span>
                                 <img class="flyToImage"
                                      src="/assets/images/map/goto-map-icon-24px.png"
-                                     latitude="@destination.getLatitude()"
-                                     longitude="@destination.getLongitude()"
+                                     latitude="@destination.getLatitude"
+                                     longitude="@destination.getLongitude"
                                 >
                             </span>
                         </th>
-                        <td>@destination.getDestType()</td>
-                        <td>@destination.getCountry()</td>
+                        <td>@destination.getDestType</td>
+                        <td>@destination.getCountry</td>
                         <td>@destination.getDistrict</td>
                         <td>@destination.getLatitude</td>
                         <td>@destination.getLongitude</td>
-                        <td><a href="@routes.DestinationController.editDestination(destination.getDestId())" class="btn btn-primary">
+                        <td><a href="@routes.DestinationController.editDestination(destination.getDestId)" class="btn btn-primary">
                             Edit</a></td>
-                        <td><a href="@routes.DestinationController.deleteDestination(destination.getDestId())" class="btn btn-danger">
+                        <td><a href="@routes.DestinationController.deleteDestination(destination.getDestId)" class="btn btn-danger">
                             Delete</a></td>
                         @if(! destinationFactory.doesPublicDestinationExist(destination)) {
                             <td><a href="@routes.DestinationController.makeDestinationPublic(destination.getDestId)" class="btn btn-primary">
@@ -63,7 +63,7 @@
                             @*<td><input id="Button" class="btn btn-primary" type="button" value="Make destination public" style="background-color:grey"/></td>*@
 
                         }
-                        <td><button onclick="viewDestination(@destination.getDestId())" class="btn btn-success">
+                        <td><button onclick="viewDestination(@destination.getDestId)" class="btn btn-success">
                             View destination</button></td>
                     </tr>
 
@@ -90,34 +90,34 @@
             </thead>
             <tbody>
             @for(destination <- allDestinations) {
-                @if(destination.getIsPublic == true) {
-                    <tr data-id="@destination.getDestId()">
+                @if(destination.getIsPublic) {
+                    <tr data-id="@destination.getDestId">
                         <th scope ="row">
-                            <a href="javascript:;" onclick="viewDestination(@destination.getDestId())"> <span>@destination.getDestName()</span></a>
+                            <a href="javascript:" onclick="viewDestination(@destination.getDestId)"> <span>@destination.getDestName</span></a>
                             <span>
                                 <img class="flyToImage"
                                 src="/assets/images/map/goto-map-icon-24px.png"
-                                latitude="@destination.getLatitude()"
-                                longitude="@destination.getLongitude()"
+                                latitude="@destination.getLatitude"
+                                longitude="@destination.getLongitude"
                                 >
                             </span>
                         </th>
-                        <td>@destination.getDestType()</td>
-                        <td>@destination.getCountry()</td>
+                        <td>@destination.getDestType</td>
+                        <td>@destination.getCountry</td>
                         <td>@destination.getDistrict</td>
                         <td>@destination.getLatitude</td>
                         <td>@destination.getLongitude</td>
-                        @if(destination.getUser().getUserid() == user.getUserid() || user.userIsAdmin()) {
-                            <td><a href="@routes.DestinationController.editDestination(destination.getDestId())" class="btn btn-primary">
+                        @if(destination.getUser.getUserid == user.getUserid || user.userIsAdmin) {
+                            <td><a href="@routes.DestinationController.editDestination(destination.getDestId)" class="btn btn-primary">
                                 Edit</a></td>
-                            <td><a href="@routes.DestinationController.deleteDestination(destination.getDestId())" class="btn btn-danger">
+                            <td><a href="@routes.DestinationController.deleteDestination(destination.getDestId)" class="btn btn-danger">
                                 Delete</a></td>
                         } else {
-                            <td><a href="@routes.DestinationController.editPublicDestination(destination.getDestId())" class="btn btn-primary">
+                            <td><a href="@routes.DestinationController.editPublicDestination(destination.getDestId)" class="btn btn-primary">
                                 Suggest Modification</a></td>
                             <td></td>
                         }
-                        <td><button onclick="viewDestination(@destination.getDestId())" class="btn btn-success">
+                        <td><button onclick="viewDestination(@destination.getDestId" class="btn btn-success">
                             View destination</button></td>
                     </tr>
                     <br>
@@ -132,6 +132,8 @@
                         <button type="button" class="close" data-dismiss="modal">x</button>
                         <h3 id="destTitle">Destination</h3>
                     </div>
+
+
                     <div class="modal-body" id="carousel">
                         <div class="container-fluid">
                             <div class="row" style="margin-top: 20px">
@@ -143,8 +145,16 @@
                                 <a class ="right carousel-control" href="#destslider" data-slide="next">
                                     <span class="glyphicon glyphicon-chevron-right"></span>
                                 </a>
-                                <div id="travellerTypes" class="col-md-offset-1 col-md-4">
+                                <div id="destInfo" class="col-md-offset-1 col-md-4">
+                                    <div id="destLocation" ></div>
+
+                                    <div id="coordinates" ></div>
+                                    <div id="travellerTypes"></div>
+
                                 </div>
+                                </div>
+
+
                             </div>
                             <div class="row">
                                 <td><button id="primaryPhotoButton" class="btn btn-primary col-md-offset-1 col-md-4">

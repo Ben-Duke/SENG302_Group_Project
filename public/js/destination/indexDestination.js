@@ -192,7 +192,9 @@ $('#orderModal').on('show.bs.modal', function (e) {
         contentType: 'application/json',
         success: function(destinationData){
             destData = destinationData;
-            $('#destTitle').html(destinationData["destName"]);
+            $('#destTitle').html(destinationData.destName);
+            $('#destLocation').html(destinationData.district + ", " + destinationData.country);
+            $('#coordinates').html("Coordinates: (" + destinationData.latitude + ", " + destinationData.longitude + ")");
             $.ajax({
                 type: 'GET',
                 url: '/users/destinations/ttypes/' + getIdFromRow,
@@ -238,7 +240,7 @@ $('#orderModal').on('show.bs.modal', function (e) {
                             }
                         }
                         else{
-                            if(index == 0){
+                            if(index === 0){
                                 itemNode.classList.add("active")
                             }
                         }
@@ -262,7 +264,7 @@ $('#orderModal').on('show.bs.modal', function (e) {
                         //imgNode.src = element["urlWithPath"];
                     });
                     $('#destslider').html(outerDivNode);
-                    if(destinationOwner != user){
+                    if(destinationOwner !== user){
                         $('#primaryPhotoButton').hide();
                     }
                     else{

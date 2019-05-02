@@ -1,3 +1,4 @@
+@import factories.UserFactory
 @(user: User, actualUser : User)
 @import views.html.bootstrap3._
 @main(actualUser, "Index") {
@@ -8,7 +9,16 @@
     </head>
 
     <div class="container">
-        <h1>@user.fName @user.lName @if(user.userIsAdmin) {<img class="img"  width = "60" height="50" src="../assets/images/key_2_small.png"> } </h1>
+        <h1>@user.fName @user.lName
+            @if(UserFactory.getUserProfilePicture(user.getUserid()) != null){
+                <img class="img-circle"  width = "60" height="50" src="@{routes.HomeController.serveProfilePicture()}">
+            } else {
+                <img class="img-circle"  width = "60" height="50" src="@{routes.Assets.at("images/Generic.png")}">
+            }
+            @if(user.userIsAdmin) {
+                <img class="img"  width = "60" height="50" src="../assets/images/key_2_small.png">
+            }
+        </h1>
     </div>
 
     <br>
@@ -16,7 +26,11 @@
     <div class="container">
         <div class="row">
             <div class="text-center">
-                <img class="img-circle" width = "150" src="@routes.Assets.at("images/Generic.png")">
+                @if(UserFactory.getUserProfilePicture(user.getUserid()) != null){
+                    <img class="img-circle" width = "150" height = "150" src="@{routes.HomeController.serveProfilePicture()}")>
+                } else {
+                    <img class="img-circle" width = "150" height = "150" src="@{routes.Assets.at("images/Generic.png")}")>
+                }
             </div>
         </div>
         <div class="row">

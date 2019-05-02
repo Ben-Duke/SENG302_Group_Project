@@ -7,8 +7,11 @@ import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import play.Application;
 import play.api.test.CSRFTokenHelper;
+import play.data.FormFactory;
 import play.db.Database;
 import play.db.Databases;
 import play.db.evolutions.Evolution;
@@ -20,6 +23,7 @@ import play.test.Helpers;
 import play.test.WithApplication;
 import utilities.TestDatabaseManager;
 
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -37,6 +41,8 @@ public class DestinationControllerTest extends WithApplication {
     Database database;
 
     int REDIRECT_HTTP_STATUS = SEE_OTHER;
+
+    private final Logger logger = LoggerFactory.getLogger("application");
 
     @Override
     protected Application provideApplication() {
@@ -813,6 +819,10 @@ public class DestinationControllerTest extends WithApplication {
                 "    \"longitude\": 174.7756\n" +
                 "  }\n" +
                 "]");
+
+        logger.debug(jsonArrayExpected.toString());
+        logger.debug(jsonArrayActual.toString());
+        logger.debug(Boolean.toString(jsonArrayExpected.toString().equals(jsonArrayActual.toString())));
 
         assertEquals(jsonArrayExpected.toString(), jsonArrayActual.toString());
     }

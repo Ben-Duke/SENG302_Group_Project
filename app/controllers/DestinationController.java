@@ -574,7 +574,6 @@ public class DestinationController extends Controller {
                     if (!photo.getDestinations().contains(destination)) {
                         photo.addDestination(destination);
                         photo.update();
-                        System.out.println("SUCCESS!");
                     } else {
                         return badRequest("You have already linked the photo to this destination.");
                     }

@@ -124,7 +124,7 @@ public class TreasureHuntController extends Controller {
             }
             for (TreasureHunt tHunt: user.getTreasureHunts()) {
                 if (incomingForm.get().getTitle().equals(tHunt.getTitle())) {
-                    return ok(createTreasureHunt.render(incomingForm.withError("title", "Cannot have duplicate Treasure Hunt titles"), user, destinationMap));
+                    return badRequest(createTreasureHunt.render(incomingForm.withError("title", "Cannot have duplicate Treasure Hunt titles"), user, destinationMap));
                 }
             }
             TreasureHuntFormData created = incomingForm.get();

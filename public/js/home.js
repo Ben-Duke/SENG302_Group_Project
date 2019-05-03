@@ -105,8 +105,6 @@ $('#save-profile').click(function (eve){
             }
         })
     });
-
-
 });
 
 /**
@@ -334,4 +332,3 @@ function sendLinkDestinationRequest(url, photoid){
         }
     })
 }
-

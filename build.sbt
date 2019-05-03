@@ -28,16 +28,7 @@ libraryDependencies ++= Seq (
 )
 testOptions in Test += Tests.Argument(TestFrameworks.JUnit, "-a", "-v")
 
-javacOptions ++= Seq("-source", "1.8", "-target", "1.8","-Xlint:unchecked", "-Xlint:deprecation")
 
-scalacOptions := Seq("-target:jvm-1.8")
-
-initialize := {
-  val _ = initialize.value
-  if (sys.props("java.specification.version") != "1.8")
-
-    sys.error(sys.props("java.specification.version") + " Java 8 is required for this project.")
-}
-
+javacOptions ++= Seq("-Xlint:unchecked", "-Xlint:deprecation")
 configs(IntegrationTest)
 Defaults.itSettings

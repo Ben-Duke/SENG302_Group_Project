@@ -7,12 +7,14 @@ import io.ebean.Model;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Set;
+
 @Table(
         uniqueConstraints=
                 @UniqueConstraint(columnNames={"traveller_type_name"})
 )
 @Entity
-public class TravellerType extends Model {
+public class TravellerType extends Model implements Comparable<TravellerType> {
 
     public TravellerType(String travellerTypeName){
         this.travellerTypeName = travellerTypeName;
@@ -30,11 +32,11 @@ public class TravellerType extends Model {
 
     @JsonIgnore
     @ManyToMany(mappedBy = "travellerTypes")
-    public List<User> users;
+    public Set<User> users;
 
     @JsonIgnore
     @ManyToMany(mappedBy = "travellerTypes")
-    public List<Destination> destinations;
+    public Set<Destination> destinations;
 
     public Integer getTtypeid() {
         return ttypeid;
@@ -52,16 +54,37 @@ public class TravellerType extends Model {
         this.travellerTypeName = travellerTypeName;
     }
 
-    public List<User> getUsers() {
+    public Set<User> getUsers() {
         return users;
     }
 
-    public void setUsers(List<User> users) {
+    public void setUsers(Set<User> users) {
         this.users = users;
     }
 
     public static Finder<Integer,TravellerType> find = new Finder<>(TravellerType.class);
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) {
+            return true;
+        }
+        if (! (obj instanceof TravellerType)) {
+            return false;
+        }
+        TravellerType other = (TravellerType) obj;
+        return this.travellerTypeName.equals(other.travellerTypeName) && this.ttypeid.equals(other.ttypeid);
+    }
 
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 31 * hash + ttypeid;
+        hash = 31 * hash + (travellerTypeName == null ? 0 : travellerTypeName.hashCode());
+        return  hash;
+    }
 
+    public int compareTo(TravellerType o) {
+        return this.travellerTypeName.compareTo(o.getTravellerTypeName());
+    }
 }

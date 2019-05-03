@@ -221,4 +221,22 @@ POST    /users/destinations/save        controllers.DestinationController.saveDe
 #Handles deleting a destination //TODO needs to be changed from get request
 GET     /users/destinations/delete/:id   controllers.DestinationController.deleteDestination(request : Request, id : Integer)
 
+#Treasure Hunts
+#Renders treasure hunt index page
+GET     /users/treasurehunts                    controllers.TreasureHuntController.indexTreasureHunt(request : Request)
+
+#Open Create treasure hunt page
+GET     /users/treasurehunts/create             controllers.TreasureHuntController.createTreasureHunt(request : Request)
+
+#Submit Create treasure hunt request
+GET     /users/treasurehunts/save               controllers.TreasureHuntController.createAndSaveTreasureHunt(request : Request)
+
+#Open Edit treasure hunt page
+GET     /users/treasurehunts/edit                  controllers.TreasureHuntController.editTreasureHunt(request : Request, id : Integer)
+
+#Edit treasure hunt
+GET     /users/treasurehunts/edit/save/:id                    controllers.TreasureHuntController.editAndSaveTreasureHunt(request : Request, id : Integer)
+
+#Delete treasure hunt
+GET     /users/treasurehunts/delete/:id                    controllers.TreasureHuntController.deleteTreasureHunt(request : Request, id : Integer)
 

@@ -79,31 +79,60 @@ public class HomeController {
             Http.MultipartFormData<Files.TemporaryFile> body = request.body().asMultipartFormData();
             Http.MultipartFormData.FilePart<Files.TemporaryFile> picture = body.getFile("picture");
             if (picture != null) {
-                String fileName = picture.getFilename();
-                long fileSize = picture.getFileSize();
-                String contentType = picture.getContentType();
-                Files.TemporaryFile file = picture.getRef();
-                if (contentType.contains("image")) {
-                    //Add the path to the filename given by the uploaded picture
-
-                    String pathName = Paths.get(".").toAbsolutePath().normalize().toString() + ApplicationManager.getUserPhotoPath() + user.getUserid() + "/" + fileName;
-                    //Save the file, replacing the existing one if the name is taken
-                    try {
-                        java.nio.file.Files.createDirectories(Paths.get(Paths.get(".").toAbsolutePath().normalize().toString() + ApplicationManager.getUserPhotoPath() + user.getUserid() + "/"));
-                    } catch (IOException e) {
-                        System.out.println(e);
-                    }
-                    file.copyTo(Paths.get(pathName), true);
-                    //DB saving
-                    UserPhoto newPhoto = new UserPhoto(fileName, isPublic, false, user);
-                    newPhoto.save();
-                    return ok(home.render(user));
-                }
+                return getResultFromSaveUserPhoto(user, isPublic, picture);
+            } else {
+                return badRequest(home.render(user));
             }
+        } else {
+            return unauthorized("Unauthorized: Can not upload picture.");
         }
-        return badRequest(home.render(user));
     }
 
+    /**
+     * Gets a Result for saving a user photo, Given the user is authenticated and the picture is not null.
+     *
+     * Should only be called from a place where the user authentication and picture not null checks have been done.
+     *
+     * @param user An authenticated User
+     * @param isPublic A boolean representing the privacy of the photo
+     * @param picture The FilePart of the picture, not null.
+     * @return A Result from trying to save the photo.
+     */
+    private Result getResultFromSaveUserPhoto(User user, boolean isPublic, Http.MultipartFormData.FilePart<Files.TemporaryFile> picture) {
+        String origionalFilePath = picture.getFilename();
+        long fileSize = picture.getFileSize();
+        String contentType = picture.getContentType();
+        Files.TemporaryFile fileObject = picture.getRef();
+
+
+        if (contentType.contains("image")) {
+            //Add the path to the filename given by the uploaded picture
+
+            // finding unused photo url
+            UserPhoto newPhoto = new UserPhoto(origionalFilePath, isPublic, false, user);
+            String unusedPhotoUrl = newPhoto.getUnusedUserPhotoFileName();
+            newPhoto.setUrl(unusedPhotoUrl);
+
+            String unusedAbsoluteFilePath = Paths.get(".").toAbsolutePath().normalize().toString() + ApplicationManager.getUserPhotoPath() + user.getUserid() + "/" + unusedPhotoUrl;
+
+            try {
+                // creates the photo directory for the user if does not exist
+                java.nio.file.Files.createDirectories(Paths.get(Paths.get(".").toAbsolutePath().normalize().toString() + ApplicationManager.getUserPhotoPath() + user.getUserid() + "/"));
+            } catch (IOException e) {
+                System.out.println(e);
+                return internalServerError("Oops, something went wrong.");
+            }
+
+            //Save the file, replacing the existing one if the name is taken
+            fileObject.copyTo(Paths.get(unusedAbsoluteFilePath), true);
+
+            //DB saving
+            newPhoto.save();
+            return ok(home.render(user));
+        } else {
+            return badRequest(home.render(user));
+        }
+    }
 
 
     /**
@@ -120,38 +149,38 @@ public class HomeController {
         User user = User.getCurrentUser(request);
         if(user != null) {
             Map<String, String[]> datapart = request.body().asMultipartFormData().asFormUrlEncoded();
-            boolean isPublic = false;
-            if (datapart.get("private") == null) {
-                isPublic = true;
-            }
+            boolean isPublic = true;
 
             //Get the photo data from the multipart form data encoding
             Http.MultipartFormData<Files.TemporaryFile> body = request.body().asMultipartFormData();
             Http.MultipartFormData.FilePart<Files.TemporaryFile> picture = body.getFile("picture");
             if (picture != null) {
-                String fileName = picture.getFilename();
+                String originalFilePath = picture.getFilename();
                 //String fileName = datapart.get("filename")[0];
                 long fileSize = picture.getFileSize();
                 String contentType = picture.getContentType();
                 Files.TemporaryFile file = picture.getRef();
                 if (contentType.contains("image")) {
+                    // finding unused photo url
+                    UserPhoto newPhoto = new UserPhoto(originalFilePath, isPublic, true, user);
+                    String unusedPhotoUrl = newPhoto.getUnusedUserPhotoFileName();
+                    newPhoto.setUrl(unusedPhotoUrl);
                     //Add the path to the filename given by the uploaded picture
 
-                    String pathName = Paths.get(".").toAbsolutePath().normalize().toString() + ApplicationManager.getUserPhotoPath() + user.getUserid() + "/" + fileName;
+                    String unusedAbsoluteFilePath = Paths.get(".").toAbsolutePath().normalize().toString() + ApplicationManager.getUserPhotoPath() + user.getUserid() + "/" + unusedPhotoUrl;
                     //Save the file, replacing the existing one if the name is taken
                     try {
                         java.nio.file.Files.createDirectories(Paths.get(Paths.get(".").toAbsolutePath().normalize().toString() + ApplicationManager.getUserPhotoPath() + user.getUserid() + "/"));
-                        file.copyTo(Paths.get(pathName), true);
+                        file.copyTo(Paths.get(unusedAbsoluteFilePath), true);
 
-                        BufferedImage thumbnailImage = UtilityFunctions.resizeImage(pathName);
+                        BufferedImage thumbnailImage = UtilityFunctions.resizeImage(unusedAbsoluteFilePath);
                         ImageIO.write(thumbnailImage, "png", new File(Paths.get(".").toAbsolutePath().normalize().toString() + ApplicationManager.getUserPhotoPath() + user.getUserid() + "/profilethumbnail.png"));
-
                     } catch (IOException e) {
                         System.out.println(e);
                         return internalServerError("Oops, something went wrong.");
                     }
                     //DB saving
-                    UserFactory.replaceProfilePicture(user.getUserid(), new UserPhoto(fileName, isPublic, true, user));
+                    UserFactory.replaceProfilePicture(user.getUserid(), newPhoto);
                     return ok(home.render(user));
                 }
             }
@@ -196,23 +225,32 @@ public class HomeController {
     /**
      * Serve the profile picture with a get request
      * @param httpRequest the HTTP request
+     * @param userId the user whose profile we want to get
      * @return a java file with the profile photo
      */
-    public Result serveProfilePicture(Http.Request httpRequest) {
+    public Result serveProfilePicture(Http.Request httpRequest, Integer userId) {
         User user = User.getCurrentUser(httpRequest);
         if(user != null) {
-            UserPhoto profilePicture = UserFactory.getUserProfilePicture(user.getUserid());
-            if (profilePicture != null) {
-                return ok(new File(profilePicture.getUrlWithPath()));
+
+            User otherUser = User.find.byId(userId);
+            if (otherUser != null) {
+                UserPhoto profilePicture = UserFactory.getUserProfilePicture(userId);
+                if (profilePicture != null) {
+                    return ok(new File(profilePicture.getUrlWithPath()));
+                } else {
+                    //should be 404 but then console logs an error
+                    return ok();
+                }
             } else {
-                //should be 404 but then console logs an error
-                return ok();
+                return badRequest("User not found");
             }
         }
         else{
             return unauthorized("Oops, you're not logged in.");
         }
     }
+
+
 
     /**
      * Replaces the profile picture with the photo corresponding to the photoId given.
@@ -254,7 +292,7 @@ public class HomeController {
             if (photo != null) {
                 if(user.getUserid() == photo.getUser().getUserid() || user.userIsAdmin()) {
                     UserFactory.makePicturePublic(user.getUserid(), photo, setPublic);
-                    return ok(home.render(user));
+                    return redirect(routes.HomeController.showhome());
                 }
                 else{
                     return unauthorized("Oops! This is not your photo.");

@@ -6,16 +6,16 @@
 
 
     <head>
+        <link rel="stylesheet" href="@routes.Assets.at("stylesheets/cropper.min.css")">
         <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/home.css")">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropper/4.0.0/cropper.min.css">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
         <title>Home</title>
     </head>
     <div class="container">
             <!-- The thumbnail in the else is being displayed to show the AC passing -->
         <h1>@user.fName @user.lName
             @if(UserFactory.getUserProfilePicture(user.getUserid()) != null){
-                <img class="img-circle"  width = "60" height="50" src="@{routes.HomeController.serveProfilePicture()}">
+                <img class="img-circle"  width = "60" height="50" src="@{routes.HomeController.serveProfilePicture(user.getUserid())}">
             } else {
                 <img class="img-circle"  width = "60" height="50" src="@{routes.Assets.at("images/Generic.png")}">
             }
@@ -33,7 +33,7 @@
             <div class="text-center">
                 <a href="#" data-toggle="modal" data-target="#addProfilePhoto">
                     @if(UserFactory.getUserProfilePicture(user.getUserid()) != null){
-                        <img class="img-circle" width = "150" height = "150" src="@{routes.HomeController.serveProfilePicture()}")>
+                        <img class="img-circle" width = "150" height = "150" src="@{routes.HomeController.serveProfilePicture(user.getUserid())}")>
                     } else {
                         <img class="img-circle" width = "150" height = "150" src="@{routes.Assets.at("images/Generic.png")}")>
                         }
@@ -93,6 +93,7 @@
                     </div>
                     <button class="btn btn-default" formaction="@routes.DestinationController.indexDestination()">Destinations</button>
                     <button class="btn btn-default" formaction="@routes.TripController.createtrip()">Create trip</button>
+
                 </form>
             </div>
             <div class="col-md-4">
@@ -109,7 +110,20 @@
 
 
             <!-- Trigger the modal with a button -->
-        <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#addPhotoModal">Add Photo</button>
+        <div>
+            <span>
+                <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#addPhotoModal">Add Photo</button>
+            </span>
+            <span class="picture-privacy-legend-span">
+                <span class="legend-content">
+                    <span class="public-icon">&#128065</span><span class="public-icon picture-privacy-text"> : public </span>
+                </span>
+                <span>
+                    <span class="private-icon">&#128065</span> <span class="public-icon picture-privacy-text"> : private </span>
+                </span>
+            </span>
+
+        </div>
 
 
             <!-- Modal -->
@@ -160,7 +174,7 @@
                     <div class="modal-body">
                         <!--<input type="file" accept="image/*" name="picture" required onchange="readURL(this);"/> -->
                         <div class="profile-pic-wraper ">
-                            <img class="img"  width = "450" height="375" id="change-profile-pic" src="@{routes.HomeController.serveProfilePicture()}" alt="You have not uploaded a profile picture!"/>
+                            <img class="img"  width = "450" height="375" id="change-profile-pic" src="@{routes.HomeController.serveProfilePicture(user.getUserid())}" alt="You have not uploaded a profile picture!"/>
                         </div>
                         <div class="preview-wrapper">
                             <div class="preview">
@@ -171,7 +185,6 @@
                         <input id="selectProfileInput" type="file" accept="image/*" name="picture" required onchange="loadFile(event);"/>
                         <p>
                             <button id="save-profile">Upload</button>
-                            <input type="checkbox" name="private" value="private"> Make photo private
                         </p>
                     </div>
                 </div>
@@ -179,6 +192,8 @@
 
 
         </div>
+
+
 
 
         <br>
@@ -197,14 +212,14 @@
                     <div class="col-sm-2">
 
                     @if(i < user.getUserPhotos.size() ){
-                        <a href="#" data-toggle="modal" data-target="#destination-carousel">
+                        <a id="addPhotoLink" href="#" data-toggle="modal" data-target="#destination-carousel">
                             <div class="container" id="imagesContainer" >
                                 <div class="overlay">
                                     <i class="icon" title="User Profile">
                                     @if(user.getUserPhotos.get(i).isPublic()) {
-                                        <i class="fa fa-eye"></i>
+                                        <i class="fa fa-eye-green"></i>
                                     } else {
-                                        <i class="fa fa-eye-slash"></i>
+                                        <i class="fa fa-eye-red"></i>
                                     }
                                     </i>
                                 </div>
@@ -225,14 +240,14 @@
                     <div class="col-sm-2">
 
                     @if(i < user.getUserPhotos.size() ){
-                        <a href="#" data-toggle="modal" data-target="#destination-carousel">
+                        <a id="addPhotoLink" href="#" data-toggle="modal" data-target="#destination-carousel">
                             <div class="container" id="imagesContainer" >
                                 <div class="overlay">
                                     <i class="icon" title="User Profile">
                                     @if(user.getUserPhotos.get(i).isPublic()) {
-                                        <i class="fa fa-eye"></i>
+                                        <i class="fa fa-eye-green"></i>
                                     } else {
-                                        <i class="fa fa-eye-slash"></i>
+                                        <i class="fa fa-eye-red"></i>
                                     }
                                     </i>
                                 </div>
@@ -252,14 +267,14 @@
                     <div class="col-sm-2">
 
                     @if(i < user.getUserPhotos.size() ){
-                        <a href="#" data-toggle="modal" data-target="#destination-carousel">
+                        <a id="addPhotoLink" href="#" data-toggle="modal" data-target="#destination-carousel">
                             <div class="container" id="imagesContainer" >
                                 <div class="overlay">
                                     <i class="icon" title="User Profile">
                                     @if(user.getUserPhotos.get(i).isPublic()) {
-                                        <i class="fa fa-eye"></i>
+                                        <i class="fa fa-eye-green"></i>
                                     } else {
-                                        <i class="fa fa-eye-slash"></i>
+                                        <i class="fa fa-eye-red"></i>
                                     }
                                     </i>
                                 </div>
@@ -431,6 +446,6 @@
                 @*};*@
             @*}*@
     </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropper/4.0.0/cropper.min.js"></script>
+    <script src="@routes.Assets.at("js/cropper.min.js")" type="text/javascript"></script>
     <script src="@routes.Assets.at("js/home.js")" type="text/javascript"></script>
 }

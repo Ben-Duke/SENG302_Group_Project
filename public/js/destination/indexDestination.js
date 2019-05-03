@@ -192,7 +192,9 @@ $('#orderModal').on('show.bs.modal', function (e) {
         contentType: 'application/json',
         success: function(destinationData){
             destData = destinationData;
-            $('#destTitle').html(destinationData["destName"]);
+            $('#destTitle').html(destinationData.destName);
+            $('#destLocation').html(destinationData.district + ", " + destinationData.country);
+            $('#coordinates').html("Coordinates: (" + destinationData.latitude + ", " + destinationData.longitude + ")");
             $.ajax({
                 type: 'GET',
                 url: '/users/destinations/ttypes/' + getIdFromRow,
@@ -238,7 +240,7 @@ $('#orderModal').on('show.bs.modal', function (e) {
                             }
                         }
                         else{
-                            if(index == 0){
+                            if(index === 0){
                                 itemNode.classList.add("active")
                             }
                         }
@@ -262,7 +264,7 @@ $('#orderModal').on('show.bs.modal', function (e) {
                         //imgNode.src = element["urlWithPath"];
                     });
                     $('#destslider').html(outerDivNode);
-                    if(destinationOwner != user){
+                    if(destinationOwner !== user){
                         $('#primaryPhotoButton').hide();
                     }
                     else{
@@ -302,10 +304,14 @@ $('#orderModal').on('shown.bs.modal', function (e) {
         $('.right').hide();
         var outerDivNode = document.createElement("div");
         // outerDivNode.classList.
-        var parNode = document.createElement("p");
-        var parTextNode = document.createTextNode("No image found!");
-        parNode.appendChild(parTextNode);
-        outerDivNode.appendChild(parNode);
+        var imgNode = document.createElement("img");
+        imgNode.src= "/assets/images/destinationPlaceHolder.png";
+        imgNode.setAttribute("width", "200");
+        imgNode.setAttribute("height", "150");
+        var textNode = document.createTextNode(destData["destName"] + " has no pictures!");
+        outerDivNode.appendChild(textNode);
+        outerDivNode.appendChild(imgNode);
+
         $('#destslider').html(outerDivNode);
     }
 });
@@ -342,7 +348,20 @@ $('#primaryPhotoButton').click(function(e){
                 url: '/users/destinations/get/' + getIdFromRow,
                 contentType: 'application/json',
                 success: function (destinationData) {
+                    var outerDivNode = document.createElement("span");
                     destData = destinationData;
+                    var target = destData["destid"];
+                    var idTarget = "primary" + target;
+                    var imgNode = document.createElement("img");
+                    imgNode.width = 50;
+                    imgNode.height = 60;
+                    var primaryPhoto = destData["primaryPhoto"];
+                    var photoId = primaryPhoto["photoId"];
+                    imgNode.src="/users/home/serveDestPicture/" + photoId;
+                    outerDivNode.appendChild(imgNode);
+                    console.log("Log from Ajax success");
+                    console.log(destData);
+                    $("#"+idTarget).html(outerDivNode);
                 }
             });
         }
@@ -378,3 +397,28 @@ $('#destslider').bind('slid.bs.carousel', function(e){
 $('#destslider').bind('slide.bs.carousel', function(e){
     $('#primaryPhotoButton').attr('disabled','disabled');
 });
+
+function addPhotoToDestinationRequest(photoId){
+    console.log("Button clicked");
+    var token =  $('input[name="csrfToken"]').attr('value');
+    $.ajaxSetup({
+        beforeSend: function(xhr) {
+            xhr.setRequestHeader('Csrf-Token', token);
+        }
+    });
+    $.ajax({
+
+        url: '/users/destinations/' + getIdFromRow + '/' + photoId,
+        method: "POST",
+        data: JSON.stringify({
+            photoId: '"' + photoId + '"'
+        }),
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        success:function(res){
+            $("#" + photoId).modal('hide');
+            console.log("Success!");
+        }
+    })
+};

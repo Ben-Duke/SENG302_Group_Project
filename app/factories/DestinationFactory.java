@@ -1,6 +1,8 @@
 package factories;
 
-import models.*;
+import models.Destination;
+import models.User;
+import models.UserPhoto;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,6 +11,7 @@ import java.util.List;
  * A class to handle interactions with  the database involving the Destination class.
  */
 public class DestinationFactory {
+
     /**
      * Gets a List of all public destinations.
      *
@@ -21,6 +24,22 @@ public class DestinationFactory {
         return allPublicDestinations;
     }
 
+    public static UserPhoto getprimaryProfilePicture(int photoID) {
+        UserPhoto primaryPhoto = null;
+        try{
+            primaryPhoto = UserPhoto.find.query().where().eq("photoId", photoID).findOne();
+
+        }catch(Exception error){
+            System.out.println("Error in UserPhoto method");
+            System.out.println(error);
+        }
+        if(primaryPhoto != null) {
+
+            return  primaryPhoto ;
+        } else {
+            return null;
+        }
+    }
 
     /**
      * Gets a List of all a users private destinations (excluding their own public
@@ -92,46 +111,54 @@ public class DestinationFactory {
      */
     public List<Destination> getOtherUsersMatchingPrivateDestinations(int userId, Destination destination) {
         User user = UserFactory.getUserFromId(userId);
+        // Get all destinations that are private and belong to another user
         List<Destination> allDestinations = Destination.find.query()
                 .where().eq("isPublic", false).and()
                 .not().eq("user", user).findList();
+
         List<Destination> matchingDestinations = new ArrayList<>();
-        int count = 0;
         for (Destination existingDestination : allDestinations) {
             if (destination.equals(existingDestination)) {
-                matchingDestinations.add(existingDestination);
+
+                matchingDestinations.add(destination);
             }
         }
         return matchingDestinations;
     }
 
+    /**
+     * Returns a list of all public destinations and all private destinations that the user can see
+     * @param userId the user accessing the destinations
+     * @return the list of all destinations that the user is authorized to see
+     */
+    public List<Destination> getAllVisibleDestinations(int userId) {
+        User user = UserFactory.getUserFromId(userId);
+        if (user.userIsAdmin()) {
+            return Destination.find.all();
+        }
 
-    public Boolean mergeDestinations(List<Destination> destinationList, Destination destination) {
-        Admin defaultAdmin = Admin.find.query().where().eq("isDefault", true).findOne();
-        User defaultAdminUser = User.find.query().where().eq("userid", defaultAdmin.getUserId()).findOne();
-        destinationList.add(destination);
-        for (Destination otherDestination : destinationList) {
-            if (!otherDestination.visits.isEmpty()) {
-                return false;
-                //List<Trip> trips = otherDestination.getUser().getTrips();
-                //for (Trip trip: trips) {
-                //    for(Visit visit: trip.getVisits()) {
-                //        if (visit.destination.destid == otherDestination.destid) {
-                //            visit.destination = newDestination;
-                //            visit.update();
-                //        }
-                //    }
-                //}
+        List<Destination> visibleDestinations = new ArrayList<>();
+        visibleDestinations.addAll(getPublicDestinations());
+        visibleDestinations.addAll(getUsersPrivateDestinations(userId));
 
-            } else {
-                Destination newDestination = destination;
-                newDestination.setIsPublic(true);
-                newDestination.setUser(defaultAdminUser);
-                newDestination.update();
-                otherDestination.delete();
-                return true;
+        return visibleDestinations;
+    }
+
+    /**
+     * Remove the destinations private information
+     */
+    public void removePrivateInformation(Destination destination) {
+        //Remove Private Photos from the destination
+        ArrayList<UserPhoto> photosToRemove = new ArrayList<UserPhoto>();
+        for (UserPhoto photo : destination.userPhotos) {
+            if(!photo.isPublic) {
+                photo.getDestinations().remove(this);
+                photosToRemove.add(photo);
+                photo.update();
+                destination.update();
             }
         }
-        return false;
+        destination.userPhotos.removeAll(photosToRemove);
+
     }
 }

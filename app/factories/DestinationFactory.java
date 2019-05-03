@@ -2,7 +2,9 @@ package factories;
 
 import models.Destination;
 import models.User;
+import models.UserPhoto;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -20,6 +22,23 @@ public class DestinationFactory {
                 .where().eq("isPublic", true).findList();
 
         return allPublicDestinations;
+    }
+
+    public static UserPhoto getprimaryProfilePicture(int photoID) {
+        UserPhoto primaryPhoto = null;
+        try{
+            primaryPhoto = UserPhoto.find.query().where().eq("photoId", photoID).findOne();
+
+        }catch(Exception error){
+            System.out.println("Error in UserPhoto method");
+            System.out.println(error);
+        }
+        if(primaryPhoto != null) {
+
+            return  primaryPhoto ;
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -82,5 +101,45 @@ public class DestinationFactory {
         }
 
         return false;
+    }
+
+    /**
+     * Finds the list of all destinations from other users that are private and match the given destination
+     * @param userId the user's own ID
+     * @param destination the destination to check if there are matches to
+     * @return The list of destinations from other users that match the given destination.
+     */
+    public List<Destination> getOtherUsersMatchingPrivateDestinations(int userId, Destination destination) {
+        User user = UserFactory.getUserFromId(userId);
+        List<Destination> allDestinations = Destination.find.query()
+                .where().eq("isPublic", false).and()
+                .not().eq("user", user).findList();
+        List<Destination> matchingDestinations = new ArrayList<>();
+        int count = 0;
+        for (Destination existingDestination : allDestinations) {
+            if (destination.equals(existingDestination)) {
+
+                matchingDestinations.add(destination);
+            }
+        }
+        return matchingDestinations;
+    }
+
+    /**
+     * Remove the destinations private information
+     */
+    public void removePrivateInformation(Destination destination) {
+        //Remove Private Photos from the destination
+        ArrayList<UserPhoto> photosToRemove = new ArrayList<UserPhoto>();
+        for (UserPhoto photo : destination.userPhotos) {
+            if(!photo.isPublic) {
+                photo.getDestinations().remove(this);
+                photosToRemove.add(photo);
+                photo.update();
+                destination.update();
+            }
+        }
+        destination.userPhotos.removeAll(photosToRemove);
+
     }
 }

@@ -28,7 +28,13 @@ public class UserController {
         ApplicationManager.setUserPhotoPath("/../user_photos/user_");
         if (users.isEmpty()) {
             TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
-            testDatabaseManager.populateDatabase();
+            try{
+                testDatabaseManager.populateDatabase();
+                System.out.println("WAS able to get this function work");
+            }
+            catch(Exception e){
+                System.out.println("COUDLNT ADD USER REQUIREMENTS");
+            }
             //was addDefaultUsers
         }
         users = User.find.all();

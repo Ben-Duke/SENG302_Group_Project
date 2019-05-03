@@ -3,7 +3,9 @@ package controllers;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import factories.DestinationFactory;
+
 import formdata.DestinationFormData;
+import formdata.UpdateUserFormData;
 import models.*;
 
 
@@ -11,10 +13,12 @@ import play.data.DynamicForm;
 import play.data.Form;
 import play.data.FormFactory;
 import play.libs.Json;
+import play.mvc.BodyParser;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
 import javax.inject.Inject;
+import java.io.File;
 import java.util.*;
 
 
@@ -570,7 +574,6 @@ public class DestinationController extends Controller {
                     if (!photo.getDestinations().contains(destination)) {
                         photo.addDestination(destination);
                         photo.update();
-                        System.out.println("SUCCESS!");
                     } else {
                         return badRequest("You have already linked the photo to this destination.");
                     }
@@ -744,6 +747,32 @@ public class DestinationController extends Controller {
             return unauthorized("Oops, you are not logged in");
         }
     }
+
+
+    /**
+     * Returns an image file to the requester, accepts the UserPhoto id to send back the correct image.
+     * @param request
+     * @param destId
+     * @return
+     */
+    public Result servePrimaryPicture(Http.Request request, Integer destId) {
+        // User user = httpRequest.session().getOptional("connected").orElse(null);
+        if(destId != null) {
+            UserPhoto primaryPicture = DestinationFactory.getprimaryProfilePicture(destId);
+            System.out.println("Path is " + primaryPicture.getUrlWithPath());
+            if (primaryPicture != null) {
+                System.out.println("Sending image back");
+                return ok(new File(primaryPicture.getUrlWithPath()));
+            } else {
+                //should be 404 but then console logs an error
+                return ok();
+            }
+        }
+        else{
+            return unauthorized("Oops, you're not logged in.");
+        }
+    }
+
 
     /**
      * Taken from Play framework

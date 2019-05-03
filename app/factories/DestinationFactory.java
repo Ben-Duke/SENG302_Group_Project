@@ -2,6 +2,7 @@ package factories;
 
 import models.Destination;
 import models.User;
+import models.UserPhoto;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +22,23 @@ public class DestinationFactory {
                 .where().eq("isPublic", true).findList();
 
         return allPublicDestinations;
+    }
+
+    public static UserPhoto getprimaryProfilePicture(int photoID) {
+        UserPhoto primaryPhoto = null;
+        try{
+            primaryPhoto = UserPhoto.find.query().where().eq("photoId", photoID).findOne();
+
+        }catch(Exception error){
+            System.out.println("Error in UserPhoto method");
+            System.out.println(error);
+        }
+        if(primaryPhoto != null) {
+
+            return  primaryPhoto ;
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -101,6 +119,7 @@ public class DestinationFactory {
         List<Destination> matchingDestinations = new ArrayList<>();
         for (Destination existingDestination : allDestinations) {
             if (destination.equals(existingDestination)) {
+
                 matchingDestinations.add(destination);
             }
         }
@@ -123,5 +142,23 @@ public class DestinationFactory {
         visibleDestinations.addAll(getUsersPrivateDestinations(userId));
 
         return visibleDestinations;
+    }
+
+    /**
+     * Remove the destinations private information
+     */
+    public void removePrivateInformation(Destination destination) {
+        //Remove Private Photos from the destination
+        ArrayList<UserPhoto> photosToRemove = new ArrayList<UserPhoto>();
+        for (UserPhoto photo : destination.userPhotos) {
+            if(!photo.isPublic) {
+                photo.getDestinations().remove(this);
+                photosToRemove.add(photo);
+                photo.update();
+                destination.update();
+            }
+        }
+        destination.userPhotos.removeAll(photosToRemove);
+
     }
 }

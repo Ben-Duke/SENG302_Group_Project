@@ -304,10 +304,14 @@ $('#orderModal').on('shown.bs.modal', function (e) {
         $('.right').hide();
         var outerDivNode = document.createElement("div");
         // outerDivNode.classList.
-        var parNode = document.createElement("p");
-        var parTextNode = document.createTextNode("No image found!");
-        parNode.appendChild(parTextNode);
-        outerDivNode.appendChild(parNode);
+        var imgNode = document.createElement("img");
+        imgNode.src= "/assets/images/destinationPlaceHolder.png";
+        imgNode.setAttribute("width", "200");
+        imgNode.setAttribute("height", "150");
+        var textNode = document.createTextNode(destData["destName"] + " has no pictures!");
+        outerDivNode.appendChild(textNode);
+        outerDivNode.appendChild(imgNode);
+
         $('#destslider').html(outerDivNode);
     }
 });
@@ -344,7 +348,20 @@ $('#primaryPhotoButton').click(function(e){
                 url: '/users/destinations/get/' + getIdFromRow,
                 contentType: 'application/json',
                 success: function (destinationData) {
+                    var outerDivNode = document.createElement("span");
                     destData = destinationData;
+                    var target = destData["destid"];
+                    var idTarget = "primary" + target;
+                    var imgNode = document.createElement("img");
+                    imgNode.width = 50;
+                    imgNode.height = 60;
+                    var primaryPhoto = destData["primaryPhoto"];
+                    var photoId = primaryPhoto["photoId"];
+                    imgNode.src="/users/home/serveDestPicture/" + photoId;
+                    outerDivNode.appendChild(imgNode);
+                    console.log("Log from Ajax success");
+                    console.log(destData);
+                    $("#"+idTarget).html(outerDivNode);
                 }
             });
         }

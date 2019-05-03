@@ -2,7 +2,7 @@
 
 @(destinations: List[Destination], allDestinations: List[Destination], destinationFactory: DestinationFactory, user: User)
 
-@main(user, "Destinations") {
+    @main(user, "Destinations") {
 
     <head>
         <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/destination/indexDestination.css")">
@@ -42,9 +42,12 @@
                     @*<tr data-toggle="modal" data-id="@destination.getDestId()" data-target="#orderModal" class="clickable">*@
                     <tr data-id="@destination.getDestId">
                         <th scope ="row">
-                            <a href="javascript:" onclick="viewDestination(@destination.getDestId)">
-                                <span>@destination.getDestName</span>
-                            </a>
+                            <span id="primary@destination.destid">
+                            @if(destination.getPrimaryPhoto != null){
+                                <img src="@routes.DestinationController.servePrimaryPicture(destination.getPrimaryPhoto.getPhotoId) " width="50" height="60">
+                                }
+                            </span>
+                            <a href="javascript:" onclick="viewDestination(@destination.getDestId)"> <span>@destination.getDestName</span></a>
                             <span>
                                 <img class="flyToImage"
                                      src="/assets/images/map/goto-map-icon-24px.png"
@@ -128,7 +131,13 @@
                 @if(destination.getIsPublic) {
                     <tr data-id="@destination.getDestId">
                         <th scope ="row">
-                            <a href="javascript:" onclick="viewDestination(@destination.getDestId)"> <span>@destination.getDestName</span></a>
+                                <span id="primary@destination.destid">
+                                @if(destination.getPrimaryPhoto != null){
+                                    <img src="@routes.DestinationController.servePrimaryPicture(destination.getPrimaryPhoto.getPhotoId) " width="50" height="60">
+                                    }
+                                </span>
+
+                            <a href="javascript:" onclick="viewDestination(@destination.getDestId"> <span>@destination.getDestName</span></a>
                             <span>
                                 <img class="flyToImage"
                                 src="/assets/images/map/goto-map-icon-24px.png"

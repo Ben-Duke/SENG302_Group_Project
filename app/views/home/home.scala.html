@@ -318,8 +318,7 @@
                                     <a class="btn btn-primary" id="linkButton" href="#" data-toggle="modal" data-target="#@photo.getPhotoId()">Link to destination</a>
                                     <a class="btn btn-primary" id="setProfilePicture"
                                        onclick="setProfilePictureRequest(
-                                                '@routes.HomeController.setProfilePicture(photo.getPhotoId)',
-                                                @photo.getPhotoId())" href="">Set as Profile Picture</a>
+                                                @photo.getPhotoId())">Set as Profile Picture</a>
                                     @if(photo.isPublic()) {
                                             <a class="btn btn-primary" id="makePrivate" href="@routes.HomeController.showhome()" onclick="makePublicOrPrivateRequest(
                                             '@routes.HomeController.makePicturePublic(photo.getPhotoId, false)', @photo.getPhotoId())">Make Private</a>

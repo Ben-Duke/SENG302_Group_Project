@@ -18,9 +18,9 @@ import java.util.regex.Pattern;
  * A class for methods which check user entered data for correctness.
  */
 public class UtilityFunctions {
-    public static List<User> retainFromLists(List<List<User>> lists){
+    public static Set<User> retainFromLists(List<Set<User>> lists){
         int count = 0;
-        List<User> retainedList = lists.get(count);
+        Set<User> retainedList = lists.get(count);
         while(count < (lists.size() - 1)){
             retainedList.retainAll(lists.get(count + 1));
             count += 1;

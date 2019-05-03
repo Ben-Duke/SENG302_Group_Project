@@ -16,11 +16,11 @@ import java.util.*;
 
 import static play.mvc.Results.badRequest;
 
+/**
+ * NOTE: This class has a natural ordering that is inconsistent with equals
+ */
 @Entity
-@Table(name = "user",
-        uniqueConstraints = @UniqueConstraint(columnNames = "email")
-)
-public class User extends Model {
+public class User extends Model implements Comparable<User> {
 
     /**
      * The email of the User
@@ -429,6 +429,10 @@ public class User extends Model {
             }
         }
         return false;
+    }
+
+    public int compareTo(User other) {
+        return this.userid.compareTo(other.getUserid());
     }
 }
 

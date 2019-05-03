@@ -7,6 +7,7 @@ import io.ebean.Model;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "nationality",
@@ -21,7 +22,7 @@ public class Nationality extends Model {
 
     @ManyToMany(mappedBy = "nationality")
     @JsonIgnore
-    public List<User> users;
+    public Set<User> users;
 
     public static Finder<Integer,Nationality> find = new Finder<>(Nationality.class);
 
@@ -33,11 +34,11 @@ public class Nationality extends Model {
 
     public String getNationalityName() { return nationalityName; }
 
-    public List<User> getUsers() {
+    public Set<User> getUsers() {
         return users;
     }
 
-    public void setUsers(List<User> users) {
+    public void setUsers(Set<User> users) {
         this.users = users;
     }
 

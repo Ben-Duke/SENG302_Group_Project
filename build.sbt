@@ -30,7 +30,6 @@ testOptions in Test += Tests.Argument(TestFrameworks.JUnit, "-a", "-v")
 
 javacOptions ++= Seq("-source", "1.8", "-target", "1.8","-Xlint:unchecked", "-Xlint:deprecation")
 
-//javacOptions ++= Seq("-source", "1.8", "-target", "1.8", "-Xlint")
 scalacOptions := Seq("-target:jvm-1.8")
 
 initialize := {

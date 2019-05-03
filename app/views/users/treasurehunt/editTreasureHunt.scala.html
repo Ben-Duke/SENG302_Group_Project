@@ -1,0 +1,53 @@
+@(treasureHuntForm : Form[formdata.TreasureHuntFormData], treasureHunt : TreasureHunt, user : User, destinations : Map[String, Boolean])
+
+@import views.html.bootstrap3._
+
+
+@main(user, "Treasure Hunt") {
+    @helper.form(action = helper.CSRF(routes.TreasureHuntController.editAndSaveTreasureHunt(treasureHunt.getThuntid()))) {
+        <fieldset>
+                <!-- Header -->
+            <legend>Edit Treasure Hunt</legend>
+
+
+            <!-- Name -->
+            @text(treasureHuntForm("title"),
+            label = "Title",
+            placeholder = "Title",
+            help = "Title for the Treasure Hunt.")
+
+            @text(treasureHuntForm("riddle"),
+            label = "Riddle",
+            placeholder = "Riddle",
+            help = "Riddle for the Treasure Hunt.")
+
+            @select(treasureHuntForm("destination"),
+            label = "Destination",
+            optionMap = destinations,
+            isMultiple = false,
+            help = "Destination (answer) for the Treasure Hunt.")
+
+            @datepicker(treasureHuntForm("startDate"),
+            label = "Start Date",
+            placeholder = "01/01/2000",
+            help = "Start date for the Treasure Hunt.")
+
+            @datepicker(treasureHuntForm("endDate"),
+            label = "End Date",
+            placeholder = "01/01/2000",
+            help = "End date for the Treasure Hunt.")
+
+        </fieldset>
+
+        <div class="form-group actions">
+            <label class="col-md-4 control-label" for="submit"></label>
+            <div class="col-sm-offset-2 col-sm-10">
+                <input id="submit" type="submit" value="Submit" class="btn btn-primary"/>
+                <a href= "@routes.TreasureHuntController.indexTreasureHunt()" id="cancel" name="cancel" class="btn btn-default">Cancel</a>
+            </div>
+        </div>
+    }
+}
+
+
+

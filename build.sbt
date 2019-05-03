@@ -28,4 +28,7 @@ libraryDependencies ++= Seq (
 )
 testOptions in Test += Tests.Argument(TestFrameworks.JUnit, "-a", "-v")
 
+
 javacOptions ++= Seq("-Xlint:unchecked", "-Xlint:deprecation")
+configs(IntegrationTest)
+Defaults.itSettings

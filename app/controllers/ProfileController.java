@@ -6,6 +6,7 @@ import formdata.UpdateUserFormData;
 import models.Nationality;
 import models.Passport;
 import models.User;
+import models.UserPhoto;
 import play.data.DynamicForm;
 import play.data.Form;
 import play.data.FormFactory;
@@ -14,6 +15,7 @@ import play.mvc.Http;
 import play.mvc.Result;
 import views.html.users.profile.*;
 import javax.inject.Inject;
+import java.io.File;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
@@ -133,13 +135,14 @@ public class ProfileController extends Controller {
             User otherUser = User.find.byId(userId);
 
             if (otherUser == null) {
-                return badRequest("User does not exist");
+                return notFound("User does not exist");
             }
 
             return ok(showProfile.render(otherUser, user));
         }
         return unauthorized(notLoggedInErrorStr);
     }
+
 
     /**
      * If the user is logged in, renders the update traveller type page,

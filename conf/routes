@@ -119,7 +119,7 @@ GET     /users/home/serveDestPicture/:id               controllers.HomeControlle
 GET     /users/home/servePicture/:path                 controllers.HomeController.index(request: Request, path:String)
 
 #Serve the profile picture
-GET     /users/home/serveProfilePicture              controllers.HomeController.serveProfilePicture(request: Request)
+GET     /users/home/serveProfilePicture/:id              controllers.HomeController.serveProfilePicture(request: Request, id:Integer)
 
 #Sets the picture as profile picture
 PUT     /users/home/setProfilePicture/:id              controllers.HomeController.setProfilePicture(request: Request, id: Integer)
@@ -152,8 +152,13 @@ GET     /assets/*file               controllers.Assets.at(path="/public", file)
 
 #Destinations
 
+
+
 #Renders index page for destinations
 GET     /users/destinations             controllers.DestinationController.indexDestination(request : Request)
+
+#*************_*_*_*_*_*_*_*_*_*
+GET     /users/destinations/getprimaryphoto  controllers.DestinationController.servePrimaryPicture(request : Request, id : Integer)
 
 #Gets JSON of all public and private Destinations avaliable to a user.
 GET     /users/destinations/getalljson         controllers.DestinationController.getVisibleDestinationMarkersJSON(request : Request)
@@ -210,10 +215,32 @@ PUT     /users/destinations/primary/:id     controllers.DestinationController.se
 #Handles linking a photo to a destination
 PUT     /users/destinations/:id         controllers.DestinationController.linkPhotoToDestination(request : Request, id : Integer)
 
+#Handles linking a photo to a destination
++nocsrf
+POST     /users/destinations/:destId/:photoId         controllers.DestinationController.addPhotoToDestination(request : Request, photoId : Integer, destId : Integer)
+
 #Handles creating a destination
 POST    /users/destinations/save        controllers.DestinationController.saveDestinationFromRequest(request : Request)
 
 #Handles deleting a destination //TODO needs to be changed from get request
 GET     /users/destinations/delete/:id   controllers.DestinationController.deleteDestination(request : Request, id : Integer)
 
+#Treasure Hunts
+#Renders treasure hunt index page
+GET     /users/treasurehunts                    controllers.TreasureHuntController.indexTreasureHunt(request : Request)
+
+#Open Create treasure hunt page
+GET     /users/treasurehunts/create             controllers.TreasureHuntController.createTreasureHunt(request : Request)
+
+#Submit Create treasure hunt request
+GET     /users/treasurehunts/save               controllers.TreasureHuntController.createAndSaveTreasureHunt(request : Request)
+
+#Open Edit treasure hunt page
+GET     /users/treasurehunts/edit                  controllers.TreasureHuntController.editTreasureHunt(request : Request, id : Integer)
+
+#Edit treasure hunt
+GET     /users/treasurehunts/edit/save/:id                    controllers.TreasureHuntController.editAndSaveTreasureHunt(request : Request, id : Integer)
+
+#Delete treasure hunt
+GET     /users/treasurehunts/delete/:id                    controllers.TreasureHuntController.deleteTreasureHunt(request : Request, id : Integer)
 

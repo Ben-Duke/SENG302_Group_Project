@@ -24,6 +24,23 @@ public class DestinationFactory {
         return allPublicDestinations;
     }
 
+    public static UserPhoto getprimaryProfilePicture(int photoID) {
+        UserPhoto primaryPhoto = null;
+        try{
+            primaryPhoto = UserPhoto.find.query().where().eq("photoId", photoID).findOne();
+
+        }catch(Exception error){
+            System.out.println("Error in UserPhoto method");
+            System.out.println(error);
+        }
+        if(primaryPhoto != null) {
+
+            return  primaryPhoto ;
+        } else {
+            return null;
+        }
+    }
+
     /**
      * Gets a List of all a users private destinations (excluding their own public
      * destinations).
@@ -94,13 +111,15 @@ public class DestinationFactory {
      */
     public List<Destination> getOtherUsersMatchingPrivateDestinations(int userId, Destination destination) {
         User user = UserFactory.getUserFromId(userId);
+        // Get all destinations that are private and belong to another user
         List<Destination> allDestinations = Destination.find.query()
                 .where().eq("isPublic", false).and()
                 .not().eq("user", user).findList();
+
         List<Destination> matchingDestinations = new ArrayList<>();
-        int count = 0;
         for (Destination existingDestination : allDestinations) {
             if (destination.equals(existingDestination)) {
+
                 matchingDestinations.add(destination);
             }
         }
@@ -123,4 +142,24 @@ public class DestinationFactory {
         }
         userPhotos.removeAll(photosToRemove);
     }
+
+    /**
+     * Returns a list of all public destinations and all private destinations that the user can see
+     * @param userId the user accessing the destinations
+     * @return the list of all destinations that the user is authorized to see
+     */
+    public List<Destination> getAllVisibleDestinations(int userId) {
+        User user = UserFactory.getUserFromId(userId);
+        if (user.userIsAdmin()) {
+            return Destination.find.all();
+        }
+
+        List<Destination> visibleDestinations = new ArrayList<>();
+        visibleDestinations.addAll(getPublicDestinations());
+        visibleDestinations.addAll(getUsersPrivateDestinations(userId));
+
+        return visibleDestinations;
+    }
+
+
 }

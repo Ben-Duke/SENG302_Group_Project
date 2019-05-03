@@ -11,7 +11,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "nationality",
-        uniqueConstraints = @UniqueConstraint(columnNames = "nationalityName")
+        uniqueConstraints = @UniqueConstraint(columnNames = "nationality_name")
 )
 public class Nationality extends Model {
     @Id

@@ -53,6 +53,7 @@ create table destination_modification_request_traveller_type (
 create table nationality (
   natid                         integer auto_increment not null,
   nationality_name              varchar(255),
+  constraint uq_nationality_nationality_name unique (nationality_name),
   constraint pk_nationality primary key (natid)
 );
 
@@ -88,7 +89,6 @@ create table user (
   l_name                        varchar(255),
   is_admin                      boolean,
   creation_date                 timestamp not null,
-  constraint uq_user_email unique (email),
   constraint pk_user primary key (userid)
 );
 

@@ -475,9 +475,15 @@ public class DestinationController extends Controller {
             if (destination != null) {
                 if (destination.isUserOwner(user.userid) || user.userIsAdmin()) {
                     if(destination.visits.isEmpty()) {
-                        destination.delete();
-                        return redirect(routes.DestinationController.indexDestination());
-                    } else {
+                        List<TreasureHunt> treasureHunts = TreasureHunt.find.query().where().eq("destination", destination).findList();
+                        if (treasureHunts.isEmpty()) {
+                            destination.delete();
+                            return redirect(routes.DestinationController.indexDestination());
+                        } else {
+                            return preconditionRequired("You cannot delete destinations while they are being used by the treasure hunts.");
+                        }
+                    }
+                    else{
                         return preconditionRequired("You cannot delete destinations while you're using them for your trips. Delete them from your trip first!");
                     }
                 } else {

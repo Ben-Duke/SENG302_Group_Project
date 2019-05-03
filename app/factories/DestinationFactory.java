@@ -9,7 +9,6 @@ import java.util.List;
  * A class to handle interactions with  the database involving the Destination class.
  */
 public class DestinationFactory {
-
     /**
      * Gets a List of all public destinations.
      *
@@ -21,6 +20,7 @@ public class DestinationFactory {
 
         return allPublicDestinations;
     }
+
 
     /**
      * Gets a List of all a users private destinations (excluding their own public
@@ -105,30 +105,33 @@ public class DestinationFactory {
         return matchingDestinations;
     }
 
-    public void mergeDestinations(List<Destination> destinationList, Destination destination) {
+
+    public Boolean mergeDestinations(List<Destination> destinationList, Destination destination) {
         Admin defaultAdmin = Admin.find.query().where().eq("isDefault", true).findOne();
         User defaultAdminUser = User.find.query().where().eq("userid", defaultAdmin.getUserId()).findOne();
         destinationList.add(destination);
-        Destination newDestination = destination;
-        newDestination.setIsPublic(true);
-        newDestination.setUser(defaultAdminUser);
-        newDestination.update();
         for (Destination otherDestination : destinationList) {
-            if(!otherDestination.visits.isEmpty()) {
-                List<Trip> trips = otherDestination.getUser().getTrips();
-                for (Trip trip: trips) {
-                    for(Visit visit: trip.getVisits()) {
-                        if (visit.destination.destid == otherDestination.destid) {
-                            visit.destination = newDestination;
-                        }
-                    }
-                }
+            if (!otherDestination.visits.isEmpty()) {
+                return false;
+                //List<Trip> trips = otherDestination.getUser().getTrips();
+                //for (Trip trip: trips) {
+                //    for(Visit visit: trip.getVisits()) {
+                //        if (visit.destination.destid == otherDestination.destid) {
+                //            visit.destination = newDestination;
+                //            visit.update();
+                //        }
+                //    }
+                //}
 
-            }
-            if (otherDestination.getUser() != newDestination.getUser()) {
+            } else {
+                Destination newDestination = destination;
+                newDestination.setIsPublic(true);
+                newDestination.setUser(defaultAdminUser);
+                newDestination.update();
                 otherDestination.delete();
+                return true;
             }
         }
-
+        return false;
     }
 }

@@ -524,13 +524,6 @@ public class DestinationController extends Controller {
                         if (matchingDests.size() == 0) {
                             destination.setIsPublic(true);
                             destination.update();
-                        } else if (matchingDests.size() == 1) {
-                            flash("matchingDest", "There is " + (matchingDests.size()) + " other destination that matches " +
-                                    destination.getDestName() + ".\nWould you like to merge?");
-                        } else {
-                            flash("matchingDest", "There are " + (matchingDests.size()) + " other destinations that match " +
-                                    destination.getDestName() + ".\nWould you like to merge?");
-
                         }
                         return redirect(routes.DestinationController.indexDestination());
                     }
@@ -555,8 +548,14 @@ public class DestinationController extends Controller {
                 DestinationFactory destFactory = new DestinationFactory();
                 List<Destination> matchingDests = destFactory.getOtherUsersMatchingPrivateDestinations(user.userid, destination);
                 if (destination.isUserOwner(user.userid) || user.userIsAdmin()) {
-                    destFactory.mergeDestinations(matchingDests, destination);
-                    return redirect(routes.DestinationController.indexDestination());
+                    if(destFactory.mergeDestinations(matchingDests, destination)) {
+                        return redirect(routes.DestinationController.indexDestination());
+                    } else {
+                        flash("visitExists",
+                                "This destination is used in a trip!");
+                        return redirect(routes.DestinationController.indexDestination());
+
+                    }
                 } else {
                     return unauthorized("HEY!, not yours. You cant delete. How you get access to that anyway?... FBI!!! OPEN UP!");
                 }

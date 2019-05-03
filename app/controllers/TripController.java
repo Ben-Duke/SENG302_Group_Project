@@ -9,6 +9,7 @@ import java.util.Date;
 import factories.VisitFactory;
 import formdata.TripFormData;
 import formdata.VisitFormData;
+import io.ebean.Expr;
 import models.Destination;
 import models.Trip;
 import models.User;
@@ -111,7 +112,7 @@ public class TripController extends Controller {
             }
             TripFormData created = incomingForm.get();
             int tripid = tripFactory.createTrip(created, user);
-            return redirect(routes.TripController.AddTripDestinations(tripid));
+            return redirect(routes.TripController.addTripDestinations(tripid));
         }
         else{
             return unauthorized("Oops, you are not logged in");
@@ -131,8 +132,9 @@ public class TripController extends Controller {
             Visit visit = Visit.find.byId(visitid);
             Form<Visit> visitForm = formFactory.form(Visit.class).fill(visit);
             if(visit.getTrip().getUser().getUserid() == user.getUserid() || user.userIsAdmin()) {
-                List<Destination> destinations = user.getDestinations();
-                return ok(editVisit.render(visitForm, visit, destinations,user));
+                List<Destination> publicDestinations = Destination.find.query().where().disjunction().add(Expr.eq("isPublic", true))
+                        .add(Expr.eq("user", user)).findList();
+                return ok(editVisit.render(visitForm, visit, publicDestinations,user));
             }
             else{
                 return unauthorized("Oops, this is not your trip.");
@@ -216,7 +218,7 @@ public class TripController extends Controller {
      * @param tripid the trip id of the trip
      * @return
      */
-    public Result AddTripDestinations(Http.Request request, Integer tripid) {
+    public Result addTripDestinations(Http.Request request, Integer tripid) {
         Trip trip = Trip.find.byId(tripid);
         User user = User.getCurrentUser(request);
         Date today = new Date();
@@ -229,7 +231,7 @@ public class TripController extends Controller {
                     visits.sort(Comparator.comparing(Visit::getVisitOrder));
                     List<Destination> destinations = user.getDestinations();
                     List<Destination> allDestinations = Destination.find.all();
-                    //return ok(AddTripDestinations.render(incomingForm, trip, user.getMappedDestinations(), visits, today.toString()));
+                    //return ok(addTripDestinations.render(incomingForm, trip, user.getMappedDestinations(), visits, today.toString()));
                     System.out.println(request.flash().getOptional("error").orElse("test"));
                     return ok(AddTripDestinationsTable.render(trip, destinations, allDestinations,user)).flashing("error", request.flash().getOptional("error").orElse("test"));
 
@@ -313,16 +315,16 @@ public class TripController extends Controller {
                         Visit visit = visitfactory.createVisitTable(trip, destination, visitOrder);
                         if (tripFactory.hasRepeatDest(visits, visit, "ADD")) {
                             //flash("danger", "You cannot have repeat destinations!");
-                            return redirect(routes.TripController.AddTripDestinations(tripid)).flashing("error", "You cannot have repeat destinations!");
+                            return redirect(routes.TripController.addTripDestinations(tripid)).flashing("error", "You cannot have repeat destinations!");
                         }
                         //if the destination is public but the owner of the destination is not an admin, set the owner of the destination to the default admin
-                        if (!(destination.getUser().isAdmin()) && destination.getIsPublic() && !(destination.getUser().getUserid() == user.getUserid())) {
+                        if (!(destination.getUser().isAdmin()) && destination.getIsPublic() && (destination.getUser().getUserid() != user.getUserid())) {
                             User admin = User.find.byId(1);
                             destination.setUser(admin);
                             destination.update();
                         }
                         visit.save();
-                        return redirect(routes.TripController.AddTripDestinations(tripid));
+                        return redirect(routes.TripController.addTripDestinations(tripid));
                     }
                     else{
                         return unauthorized("This private destination is owned by someone else. You may not use it.");

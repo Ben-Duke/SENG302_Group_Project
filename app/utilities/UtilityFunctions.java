@@ -23,6 +23,7 @@ import static play.mvc.Results.unauthorized;
  */
 public class UtilityFunctions {
 
+
     /** Check that there is a user logged in */
     public static Result checkLoggedIn(Http.Request request) {
         User user = User.getCurrentUser(request);
@@ -33,9 +34,9 @@ public class UtilityFunctions {
         return null;
     }
 
-    public static List<User> retainFromLists(List<List<User>> lists){
+    public static Set<User> retainFromLists(List<Set<User>> lists){
         int count = 0;
-        List<User> retainedList = lists.get(count);
+        Set<User> retainedList = lists.get(count);
         while(count < (lists.size() - 1)){
             retainedList.retainAll(lists.get(count + 1));
             count += 1;

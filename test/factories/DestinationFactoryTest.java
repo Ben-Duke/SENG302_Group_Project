@@ -2,6 +2,7 @@ package factories;
 
 import models.Destination;
 import models.User;
+import models.UserPhoto;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -10,6 +11,8 @@ import play.db.Databases;
 import play.db.evolutions.Evolution;
 import play.db.evolutions.Evolutions;
 import play.test.WithApplication;
+
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -60,7 +63,7 @@ public class DestinationFactoryTest extends WithApplication {
     @Test
     public void userHasPrivateDestinationInvalidUserId() {
         boolean hasDestination = destinationFactory.userHasPrivateDestination(
-                                                        -50, testPublicDestination);
+                -50, testPublicDestination);
 
         assertFalse(hasDestination);
     }
@@ -160,5 +163,116 @@ public class DestinationFactoryTest extends WithApplication {
                 testPublicDestination);
 
         assertTrue(hasDestination);
+    }
+
+    @Test
+    public void removingDestinationPrivateInformation() {
+        UserPhoto userPhoto = new UserPhoto("testurl", false, false, testUser);
+        userPhoto.save();
+        Destination testPrivateDestination = new Destination("destName",
+                "destType", "district", "country",
+                45.0, 45.0, testUser, false);
+        testPrivateDestination.save();
+        userPhoto.addDestination(testPrivateDestination);
+        userPhoto.update();
+        testPrivateDestination.save();
+
+        testPrivateDestination = Destination.find.byId(testPrivateDestination.getDestId());
+
+        Integer photoCount = testPrivateDestination.getUserPhotos().size();
+        destinationFactory.removePrivateInformation(testPrivateDestination);
+        testPrivateDestination.setIsPublic(true);
+        testPrivateDestination.update();
+        assertEquals(photoCount - 1, testPrivateDestination.getUserPhotos().size());
+        assertEquals(0, UserPhoto.find.byId(userPhoto.getPhotoId()).destinations.size());
+    }
+
+    @Test
+    public void testGetOtherUsersMatchingPrivateDestinationsNoMatches() {
+        User user = new User("test@testytest.test", "hunter22");
+        user.save();
+        Destination testPrivateDestination = new Destination("Rotherham",
+                "Town", "North Canterbury", "New Zealand",
+                -42.699000, 172.943667, user, false);
+        testPrivateDestination.save();
+
+        List<Destination> matchingDests = destinationFactory
+                .getOtherUsersMatchingPrivateDestinations(user.getUserid(), testPrivateDestination);
+
+        assertTrue(matchingDests.isEmpty());
+    }
+
+    @Test
+    public void testGetOtherUsersMatchingPrivateDestinations1Match() {
+        User user1 = new User("test@testytest.test", "hunter22");
+        user1.save();
+        Destination testPrivateDestination1 = new Destination("Rotherham",
+                "Town", "North Canterbury", "New Zealand",
+                -42.699000, 172.943667, user1, false);
+        testPrivateDestination1.save();
+
+        User user2 = new User("test@testers.org", "hunter27");
+        user2.save();
+        Destination testPrivateDestination2 = new Destination("Rotherham",
+                "Town", "North Canterbury", "New Zealand",
+                -42.699000, 172.943667, user2, false);
+        testPrivateDestination2.save();
+
+        List<Destination> matchingDests = destinationFactory
+                .getOtherUsersMatchingPrivateDestinations(user1.getUserid(), testPrivateDestination1);
+
+        assertEquals(1, matchingDests.size());
+
+    }
+
+    @Test
+    public void testGetOtherUsersMatchingPrivateDestinations2Matches() {
+        User user1 = new User("test@testytest.test", "hunter22");
+        user1.save();
+        Destination testPrivateDestination1 = new Destination("Rotherham",
+                "Town", "North Canterbury", "New Zealand",
+                -42.699000, 172.943667, user1, false);
+        testPrivateDestination1.save();
+
+        User user2 = new User("test@testers.org", "hunter27");
+        user2.save();
+        Destination testPrivateDestination2 = new Destination("Rotherham",
+                "Town", "North Canterbury", "New Zealand",
+                -42.699000, 172.943667, user2, false);
+        testPrivateDestination2.save();
+
+        User user3 = new User("test@testing.net", "hunter360");
+        user3.save();
+        Destination testPrivateDestination3 = new Destination("Rotherham",
+                "Town", "North Canterbury", "New Zealand",
+                -42.699000, 172.943667, user3, false);
+        testPrivateDestination3.save();
+
+        List<Destination> matchingDests = destinationFactory
+                .getOtherUsersMatchingPrivateDestinations(user1.getUserid(), testPrivateDestination1);
+
+        assertEquals(2, matchingDests.size());
+    }
+
+    @Test
+    public void testGetOtherUsersMatchingPrivateDestinationWithPublicMatch() {
+        User privateUser = new User("test@testytest.test", "hunter22");
+        privateUser.save();
+        Destination testPrivateDestination = new Destination("Rotherham",
+                "Town", "North Canterbury", "New Zealand",
+                -42.699000, 172.943667, privateUser, false);
+        testPrivateDestination.save();
+
+        User publicUser = new User("test@testers.org", "hunter27");
+        publicUser.save();
+        Destination testPublicDestination = new Destination("Rotherham",
+                "Town", "North Canterbury", "New Zealand",
+                -42.699000, 172.943667, publicUser, true);
+        testPublicDestination.save();
+
+        List<Destination> matchingDests = destinationFactory
+                .getOtherUsersMatchingPrivateDestinations(privateUser.getUserid(), testPrivateDestination);
+
+        assertTrue(matchingDests.isEmpty());
     }
 }

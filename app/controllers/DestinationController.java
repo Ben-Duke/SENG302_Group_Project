@@ -17,7 +17,10 @@ import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
+import views.html.users.destination.*;
+
 import javax.inject.Inject;
+import java.io.File;
 import java.util.*;
 
 
@@ -143,7 +146,7 @@ public class DestinationController extends Controller {
         }
         return unauthorized("Oops, you are not logged in");
     }
-    
+
     /**
      * Extracts a destination object from the form user fills out.
      * Checks if input makes a valid destination.
@@ -178,7 +181,7 @@ public class DestinationController extends Controller {
      * A page is rendered with the information of the destination loaded ready for editing.
      *
      * @param request the http request
-     * @param destId the id of the given destination
+     * @param destId  the id of the given destination
      * @return renders the edit destination page, or an unauthorized message is no user is logged in, or
      * a not found error, or an unauthorized message if the destination does not belong to the user.
      */
@@ -375,11 +378,16 @@ public class DestinationController extends Controller {
             }
             //If program gets past this point then inputted destination is valid
 
-            Destination newDestination = formFactory.form(Destination.class).bindFromRequest().get();
+            //Takes the request body and forms a custom map for binding, gets past Play not liking sets
+            Map<String, String> map = new HashMap<>();
+            fillDataWith(map, request.body().asFormUrlEncoded());
+            Destination newDestination = formFactory.form(Destination.class).bind(map).get();
+            if (newDestination.getTravellerTypes().isEmpty()) {
+                newDestination.setTravellerTypes(new HashSet<>());
+            }
+
             Destination oldDestination = Destination.find.query().where().eq("destid", destId).findOne();
-
             if (oldDestination != null) {
-
                 if (newDestination.equals(oldDestination)) {
 
                     return badRequest("No changes suggested");
@@ -455,10 +463,8 @@ public class DestinationController extends Controller {
                     oldDestination.setLatitude(modReq.getNewDestLatitude());
                     oldDestination.setLongitude(modReq.getNewDestLongitude());
 
-                    List<TravellerType> travellerTypes = new ArrayList<>();
-                    for (TravellerType travellerType : modReq.getNewTravellerTypes()) {
-                        travellerTypes.add(travellerType);
-                    }
+                    Set<TravellerType> travellerTypes = new TreeSet<>();
+                    travellerTypes.addAll(modReq.getNewTravellerTypes());
 
                     oldDestination.setTravellerTypes(travellerTypes);
 
@@ -493,12 +499,11 @@ public class DestinationController extends Controller {
             Destination destination = Destination.find.query().where().eq("destid", destId).findOne();
 
             if (destination != null) {
-                if (destination.isUserOwner(user.userid)) {
+                if (destination.isUserOwner(user.userid) || user.userIsAdmin()) {
                     if(destination.visits.isEmpty()) {
                         destination.delete();
                         return redirect(routes.DestinationController.indexDestination());
-                    }
-                    else{
+                    } else {
                         return preconditionRequired("You cannot delete destinations while you're using them for your trips. Delete them from your trip first!");
                     }
                 } else {
@@ -541,8 +546,17 @@ public class DestinationController extends Controller {
                     } else {
                         //no matching pub destination exists, making public now
                         //sets the destination to public, sets the owner to the default admin and updates the destination
-                        destination.setIsPublic(true);
-                        destination.update();
+                        List<Destination> matchingDests = destFactory.getOtherUsersMatchingPrivateDestinations(user.userid, destination);
+                        if (matchingDests.isEmpty()) {
+                            destination.setIsPublic(true);
+                            destination.update();
+                        } else if (matchingDests.size() == 1) {
+                            flash("matchingDest", "There is " + matchingDests.size() + " other destination that matches " +
+                                    destination.getDestName() + ".\nWould you like to merge?");
+                        } else {
+                            flash("matchingDest", "There are " + matchingDests.size() + " other destinations that match " +
+                                    destination.getDestName() + ".\nWould you like to merge?");
+                        }
                         return redirect(routes.DestinationController.indexDestination());
                     }
 
@@ -560,35 +574,33 @@ public class DestinationController extends Controller {
 
     /**
      * Links a photo with a photo id to a destination with a destination id.
+     *
      * @param request the HTTP request
      * @param destId the destination that the photo should be linked to
      * @return success if the linking was successful, not found if destination or photo not found, unauthorized otherwise.
      */
-    public Result linkPhotoToDestination(Http.Request request, Integer destId){
+    public Result linkPhotoToDestination(Http.Request request, Integer destId) {
         User user = User.getCurrentUser(request);
-        if(user != null) {
+        if (user != null) {
             JsonNode node = request.body().asJson().get("photoid");
             String photoid = node.textValue();
             photoid = photoid.replace("\"", "");
             UserPhoto photo = UserPhoto.find.byId(Integer.parseInt(photoid));
             Destination destination = Destination.find.byId(destId);
-            if(destination != null || photo != null) {
+            if (destination != null || photo != null) {
                 if (photo.getUser().getUserid() == user.getUserid()) {
                     //add checks for private destinations here once destinations have been merged in.
                     //You can only link a photo to a private destination if you own the private destination.
-                    if(!photo.getDestinations().contains(destination)) {
+                    if (!photo.getDestinations().contains(destination)) {
                         photo.addDestination(destination);
                         photo.update();
-                        System.out.println("SUCCESS!");
-                    }
-                    else{
+                    } else {
                         return badRequest("You have already linked the photo to this destination.");
                     }
                 } else {
                     return unauthorized("Oops, this is not your photo!");
                 }
-            }
-            else{
+            } else {
                 return notFound();
             }
         } else {
@@ -599,13 +611,14 @@ public class DestinationController extends Controller {
 
     /**
      * Returns a json list of traveller types associated to a destination given by a destination id
+     *
      * @param request the HTTP request
      * @param destId the destination id
      * @return a json list of traveller types associated to the destination
      */
-    public Result getTravellerTypes(Http.Request request, Integer destId){
+    public Result getTravellerTypes(Http.Request request, Integer destId) {
         User user = User.getCurrentUser(request);
-        if(user != null){
+        if (user != null) {
             return ok(Json.toJson(Destination.find.byId(destId).travellerTypes));
         } else {
             return unauthorized("Oops, you are not logged in");
@@ -614,13 +627,14 @@ public class DestinationController extends Controller {
 
     /**
      * Returns a json list of photos associated to a destination given by a destination id
+     *
      * @param request the HTTP request
      * @param destId the destination id
-     * @return a json list of traveller types associated to the destination
+     * @return a json list of photos associated to the destination
      */
-    public Result getPhotos(Http.Request request, Integer destId){
+    public Result getPhotos(Http.Request request, Integer destId) {
         User user = User.getCurrentUser(request);
-        if(user != null){
+        if (user != null) {
             //To add: filter between private and public, but that's another task
             List<UserPhoto> photos = Destination.find.byId(destId).userPhotos;
             ObjectNode result = Json.newObject();
@@ -636,16 +650,17 @@ public class DestinationController extends Controller {
 
     /**
      * Returns a photo file based on a photo with a given photo id
+     *
      * @param request the HTTP request
      * @return the photo file
      */
-    public Result getPhoto(Http.Request request, Integer photoId){
+    public Result getPhoto(Http.Request request, Integer photoId) {
         User user = User.getCurrentUser(request);
         if(user != null){
             UserPhoto photo = UserPhoto.find.byId(photoId);
-            if(photo.getUser().getUserid() == user.getUserid() || photo.isPublic() || user.userIsAdmin()) {
+            if (photo.getUser().getUserid() == user.getUserid() || photo.isPublic() || user.userIsAdmin()) {
                 return ok(Json.toJson(photo));
-            } else{
+            } else {
                 return unauthorized("Oops, you do not have the rights to view this photo");
             }
         } else {
@@ -655,56 +670,58 @@ public class DestinationController extends Controller {
 
     /**
      * Returns the destination as a json based on a destination ID
+     *
      * @param request the HTTP request
-     * @param destId the destination ID
+     * @param destId  the destination ID
      * @return the destination as a json
      */
     public Result getDestination(Http.Request request, Integer destId){
         User user = User.getCurrentUser(request);
-        if(user != null){
+        if (user != null) {
             Destination destination = Destination.find.byId(destId);
-            if(destination.getIsPublic() || destination.getUser().getUserid() == user.getUserid() || user.userIsAdmin()) {
+            if (destination.getIsPublic() || destination.getUser().getUserid() == user.getUserid() || user.userIsAdmin()) {
                 return ok(Json.toJson(destination));
-            }
-            else{
+            } else {
                 return unauthorized("Oops, this is a private destination and you don't own it.");
             }
-        } else{
+        } else {
             return unauthorized("Oops, you are not logged in");
         }
     }
 
     /**
      * Returns the destination owner's id as a json based on a destination ID
+     *
      * @param request the HTTP request
      * @param destId the destination ID
      * @return the destination as a json
      */
-    public Result getDestinationOwner(Http.Request request, Integer destId){
+    public Result getDestinationOwner(Http.Request request, Integer destId) {
         Destination destination = Destination.find.byId(destId);
         User user = User.find.query().where().eq("userid", destination.getUser().getUserid()).findOne();
-        if(user != null){
+        if (user != null) {
             return ok(Json.toJson(user.getUserid()));
-        } else{
+        } else {
             return unauthorized("Oops, you are not logged in");
         }
     }
 
     /**
      * Sets the primary photo of a destination given by the destination ID.
+     *
      * @param request the HTTP request
      * @param destId the id of the destination to be updated
      * @return success if it worked, error otherwise
      */
-    public Result setPrimaryPhoto(Http.Request request, Integer destId){
+    public Result setPrimaryPhoto(Http.Request request, Integer destId) {
         User user = User.getCurrentUser(request);
-        if(user != null) {
+        if (user != null) {
             JsonNode node = request.body().asJson().get("photoid");
             String photoid = node.textValue();
             photoid = photoid.replace("\"", "");
             UserPhoto photo = UserPhoto.find.byId(Integer.parseInt(photoid));
             Destination destination = Destination.find.byId(destId);
-            if(destination != null || photo != null) {
+            if (destination != null || photo != null) {
                 if ((destination.getUser().getUserid() == user.getUserid() && destination.getUserPhotos().contains(photo)) || user.userIsAdmin()) {
                     //add checks for private destinations here once destinations have been merged in.
                     //You can only link a photo to a private destination if you own the private destination.
@@ -713,8 +730,7 @@ public class DestinationController extends Controller {
                 } else {
                     return unauthorized("Oops, this is not your photo!");
                 }
-            }
-            else{
+            } else {
                 return notFound();
             }
         } else {
@@ -724,31 +740,79 @@ public class DestinationController extends Controller {
     }
 
     /**
-     * Gets JSON of all visible (public + the logged in users private photos)
-     * Destinations avaliable to the user.
+     * Gets List of all destinations visible to the given user
+     * @param userId the user to look for private destinations of
+     * @return The list of all public destinations and all private destinations that the user can see
+     */
+    private List<Destination> getVisibleDestinations(int userId) {
+        DestinationFactory destinationFactory = new DestinationFactory();
+
+        return destinationFactory.getAllVisibleDestinations(userId);
+    }
+
+    /**
+     * Gets JSON of all visible (public + the logged in users private)
+     * Destinations available to the user.
      *
      * @param request the HTTP request
      * @return a Result object containing the destinations JSON in it's body
      */
     public Result getVisibleDestinationMarkersJSON(Http.Request request) {
         User user = User.getCurrentUser(request);
-        if(user != null) {
+        if (user != null) {
             int userId = user.getUserid();
 
-            DestinationFactory destinationFactory = new DestinationFactory();
-
-            List<Destination> publicDestinations;
-            List<Destination> privateDestinations;
-            publicDestinations = destinationFactory.getPublicDestinations();
-            privateDestinations = destinationFactory.getUsersPrivateDestinations(userId);
-
-            List<Destination> allVisibleDestination = new ArrayList<Destination>();
-            allVisibleDestination.addAll(publicDestinations);
-            allVisibleDestination.addAll(privateDestinations);
+            List<Destination> allVisibleDestination = getVisibleDestinations(userId);
 
             return ok(Json.toJson(allVisibleDestination));
         } else {
             return unauthorized("Oops, you are not logged in");
         }
     }
+
+
+    /**
+     * Returns an image file to the requester, accepts the UserPhoto id to send back the correct image.
+     * @param request
+     * @param destId
+     * @return
+     */
+    public Result servePrimaryPicture(Http.Request request, Integer destId) {
+        // User user = httpRequest.session().getOptional("connected").orElse(null);
+        if(destId != null) {
+            UserPhoto primaryPicture = DestinationFactory.getprimaryProfilePicture(destId);
+            System.out.println("Path is " + primaryPicture.getUrlWithPath());
+            if (primaryPicture != null) {
+                System.out.println("Sending image back");
+                return ok(new File(primaryPicture.getUrlWithPath()));
+            } else {
+                //should be 404 but then console logs an error
+                return ok();
+            }
+        }
+        else{
+            return unauthorized("Oops, you're not logged in.");
+        }
+    }
+
+
+    /**
+     * Taken from Play framework
+     * Takes an empty Map to fill with data from http body, this method helps replace the default way
+     * of binding from request, which does not deal with sets, only lists
+     * @param data The data map to add data from the http body to. Contains info about 1 Object
+     * @param urlFormEncoded the data from the http request body, with details about the Object to bind
+     */
+    private void fillDataWith(Map<String, String> data, Map<String, String[]> urlFormEncoded) {
+        urlFormEncoded.forEach((key, values) -> {
+            if (key.endsWith("[]")) {
+                String k = key.substring(0, key.length() - 2);
+                Set<String> subData = new HashSet<>(Arrays.asList(values));
+                data.put(k, subData.toString());
+            } else if (values.length > 0) {
+                data.put(key, values[0]);
+            }
+        });
+    }
+
 }

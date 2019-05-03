@@ -29,9 +29,9 @@ public class TestDatabaseManager {
         addTrips();
         addDestinationsAndVisits();
         addTreasureHunts();
-//        if(ApplicationManager.getUserPhotoPath().equalsIgnoreCase("/test/resources/test_photos/user_")){
-//            addUserPhotos();
-//        }
+        if(ApplicationManager.getUserPhotoPath().equalsIgnoreCase("/test/resources/test_photos/user_")){
+            addUserPhotos();
+        }
     }
 
     /**

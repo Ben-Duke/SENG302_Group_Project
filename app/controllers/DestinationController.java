@@ -244,10 +244,8 @@ public class DestinationController extends Controller {
 
             if (oldDestination != null) {
                 if (oldDestination.isUserOwner(user.userid)) {
-                    DestinationAccessor.delete(oldDestination);
-
-                    newDestination.setUser(user);
-                    DestinationAccessor.insert(newDestination);
+                    oldDestination.applyEditChanges(newDestination);
+                    oldDestination.update();
 
                     return redirect(routes.DestinationController.indexDestination());
 

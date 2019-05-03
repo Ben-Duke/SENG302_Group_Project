@@ -251,4 +251,16 @@ public class Destination extends Model {
     public boolean isUserOwner(Integer userid){
         return this.user.getUserid() == userid;
     }
+
+    /** Modifies the fields of this Destination which are included in the
+     *   destination editing form to be equal to those fields of the destination
+     *   passed in */
+    public void applyEditChanges(Destination newDestination) {
+        this.destName = newDestination.getDestName();
+        this.country = newDestination.getCountry();
+        this.district = newDestination.getDistrict();
+        this.longitude = newDestination.getLongitude();
+        this.latitude = newDestination.getLatitude();
+        this.destType = newDestination.getDestType();
+    }
 }

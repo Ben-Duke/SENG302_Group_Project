@@ -28,6 +28,7 @@ public class TestDatabaseManager {
         populateUsers();
         addTrips();
         addDestinationsAndVisits();
+        addTreasureHunts();
         if(ApplicationManager.getUserPhotoPath().equalsIgnoreCase("/test/resources/test_photos/user_")){
             addUserPhotos();
         }
@@ -243,6 +244,13 @@ public class TestDatabaseManager {
         userphoto1.save();
         UserPhoto userphoto2 = new UserPhoto("placeholder.png", false, false, User.find.byId(2));
         userphoto2.save();
+    }
+
+    public void addTreasureHunts(){
+        TreasureHunt treasureHunt1 = new TreasureHunt("Surprise", "The garden city", Destination.find.byId(1), "2019-04-17", "2019-12-25", User.find.byId(2));
+        treasureHunt1.save();
+        TreasureHunt treasureHunt2 = new TreasureHunt("Surprise2", "Prime example of inflation", Destination.find.byId(3), "2019-04-17", "2019-12-25", User.find.byId(3));
+        treasureHunt2.save();
     }
 
 }

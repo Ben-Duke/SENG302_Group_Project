@@ -3,26 +3,20 @@ package controllers;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import factories.DestinationFactory;
-
 import formdata.DestinationFormData;
-import formdata.UpdateUserFormData;
 import models.*;
-
-
 import play.data.DynamicForm;
 import play.data.Form;
 import play.data.FormFactory;
 import play.libs.Json;
-import play.mvc.BodyParser;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
+import views.html.users.destination.*;
+
 import javax.inject.Inject;
 import java.io.File;
 import java.util.*;
-
-
-import views.html.users.destination.*;
 
 public class DestinationController extends Controller {
 

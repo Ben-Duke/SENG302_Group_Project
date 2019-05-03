@@ -114,11 +114,18 @@ function getInfoWindowHTML(destination) {
     const destinationCountry = destination.country;
     const destinationDistrict = destination.district;
 
+
+    let infoWindowHTML;
     // uses a ES6 template string
-    const infoWindowHTML = `<h5>${destinationName}</h5>
-                            <div>Type: ${destinationType}</div>
-                            <div>Country: ${destinationCountry}</div>
-                            <div>District: ${destinationDistrict}</div>`;
+    infoWindowHTML = `<style>.basicLink {text-underline: #0000EE;}</style>
+                      <a class="basicLink" href="javascript:;" onclick="viewDestination(${destination.destid})">
+                        ${destinationName}
+                      </a>
+                      <div>${destinationType}</div>
+                      <div>District: ${destinationDistrict}</div>
+                      <div>${destinationCountry}</div>
+                      <script src="indexDestination.js"></script>`;
+
     return infoWindowHTML;
 }
 
@@ -173,7 +180,7 @@ function initDestinationMarkers() {
         .then(destinations => {
             let marker;
             let infoWindow;
-
+            console.log(destinations);
             for (let index = 0; index < destinations.length; index++) {
                 marker = new google.maps.Marker({
                     position: {

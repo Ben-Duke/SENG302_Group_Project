@@ -3,26 +3,20 @@ package controllers;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import factories.DestinationFactory;
-
 import formdata.DestinationFormData;
-import formdata.UpdateUserFormData;
 import models.*;
-
-
 import play.data.DynamicForm;
 import play.data.Form;
 import play.data.FormFactory;
 import play.libs.Json;
-import play.mvc.BodyParser;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
+import views.html.users.destination.*;
+
 import javax.inject.Inject;
 import java.io.File;
 import java.util.*;
-
-
-import views.html.users.destination.*;
 
 public class DestinationController extends Controller {
 
@@ -481,9 +475,15 @@ public class DestinationController extends Controller {
             if (destination != null) {
                 if (destination.isUserOwner(user.userid) || user.userIsAdmin()) {
                     if(destination.visits.isEmpty()) {
-                        destination.delete();
-                        return redirect(routes.DestinationController.indexDestination());
-                    } else {
+                        List<TreasureHunt> treasureHunts = TreasureHunt.find.query().where().eq("destination", destination).findList();
+                        if (treasureHunts.isEmpty()) {
+                            destination.delete();
+                            return redirect(routes.DestinationController.indexDestination());
+                        } else {
+                            return preconditionRequired("You cannot delete destinations while they are being used by the treasure hunts.");
+                        }
+                    }
+                    else{
                         return preconditionRequired("You cannot delete destinations while you're using them for your trips. Delete them from your trip first!");
                     }
                 } else {
@@ -609,8 +609,8 @@ public class DestinationController extends Controller {
      * Returns a json list of photos associated to a destination given by a destination id
      *
      * @param request the HTTP request
-     * @param destId  the destination id
-     * @return a json list of traveller types associated to the destination
+     * @param destId the destination id
+     * @return a json list of photos associated to the destination
      */
     public Result getPhotos(Http.Request request, Integer destId) {
         User user = User.getCurrentUser(request);
@@ -720,8 +720,19 @@ public class DestinationController extends Controller {
     }
 
     /**
-     * Gets JSON of all visible (public + the logged in users private photos)
-     * Destinations avaliable to the user.
+     * Gets List of all destinations visible to the given user
+     * @param userId the user to look for private destinations of
+     * @return The list of all public destinations and all private destinations that the user can see
+     */
+    private List<Destination> getVisibleDestinations(int userId) {
+        DestinationFactory destinationFactory = new DestinationFactory();
+
+        return destinationFactory.getAllVisibleDestinations(userId);
+    }
+
+    /**
+     * Gets JSON of all visible (public + the logged in users private)
+     * Destinations available to the user.
      *
      * @param request the HTTP request
      * @return a Result object containing the destinations JSON in it's body
@@ -731,16 +742,7 @@ public class DestinationController extends Controller {
         if (user != null) {
             int userId = user.getUserid();
 
-            DestinationFactory destinationFactory = new DestinationFactory();
-
-            List<Destination> publicDestinations;
-            List<Destination> privateDestinations;
-            publicDestinations = destinationFactory.getPublicDestinations();
-            privateDestinations = destinationFactory.getUsersPrivateDestinations(userId);
-
-            List<Destination> allVisibleDestination = new ArrayList<Destination>();
-            allVisibleDestination.addAll(publicDestinations);
-            allVisibleDestination.addAll(privateDestinations);
+            List<Destination> allVisibleDestination = getVisibleDestinations(userId);
 
             return ok(Json.toJson(allVisibleDestination));
         } else {

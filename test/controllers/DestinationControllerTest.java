@@ -40,7 +40,7 @@ public class DestinationControllerTest extends WithApplication {
      */
     Database database;
 
-    int REDIRECT_HTTP_STATUS = SEE_OTHER;
+    private int REDIRECT_HTTP_STATUS = SEE_OTHER;
 
     private final Logger logger = LoggerFactory.getLogger("application");
 
@@ -607,6 +607,7 @@ public class DestinationControllerTest extends WithApplication {
                 .uri("/users/trips/table/edit/1/3").session("connected", "2");
         result = route(app, request);
         assertEquals(REDIRECT_HTTP_STATUS, result.status());
+
         Map<String, String> formData = new HashMap<>();
         formData.put("destName", "Summoner's Rift");
         formData.put("destType", "Yes");
@@ -614,7 +615,8 @@ public class DestinationControllerTest extends WithApplication {
         formData.put("country", "Angola");
         formData.put("latitude", "50.0");
         formData.put("longitude", "-50.0");
-        Http.RequestBuilder request2 = Helpers.fakeRequest().bodyForm(formData).method(POST).uri("/users/destinations/update/3").session("connected", "2");
+        Http.RequestBuilder request2 = Helpers.fakeRequest().bodyForm(formData).
+                method(POST).uri("/users/destinations/update/3").session("connected", "2");
         Result result2 = route(app, request2);
         assertEquals(REDIRECT_HTTP_STATUS, result2.status());
     }

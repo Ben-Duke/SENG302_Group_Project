@@ -5,17 +5,7 @@
 @(destForm : Form[DestinationFormData], countryMap: Map[String, Boolean], typeMap: Map[String, Boolean], user : User)
 
 @main(user, "Destinations") {
-    <nav class="navbar navbar-custom">
-        <div class="container-fluid">
-            <div class="navbar-header">
-                <a class="navbar-brand" href="@routes.HomeController.showhome()">Home</a>
-            </div>
-            <ul class="nav navbar-nav">
-                <li class="active"><a href="@routes.DestinationController.indexDestination()">Destinations</a></li>
-                <li><a href="@routes.DestinationController.createDestination()">New</a></li>
-            </ul>
-        </div>
-    </nav>
+
     <h1>Create Destination</h1>
     @helper.form(action = helper.CSRF(routes.DestinationController.saveDestinationFromRequest())){
         <fieldset>

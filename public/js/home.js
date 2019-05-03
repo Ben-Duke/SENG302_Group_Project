@@ -80,10 +80,8 @@ $('#save-profile').click(function (eve){
 
     eve.preventDefault();
     var formData = new FormData();
-    var private = $('input[type=checkbox]').attr('checked');
     croppedCanvas.toBlob(function(blob){
         formData.append('picture', blob, filename);
-        formData.append('private', private);
         var token =  $('input[name="csrfToken"]').attr('value');
         $.ajaxSetup({
             beforeSend: function(xhr) {
@@ -197,8 +195,6 @@ $('#addProfilePhoto').on('shown.bs.modal', function (e) {
                     autoCropArea: 1,
                     aspectRatio: 1,
                     ready: function(e){
-                        console.log("ready!!!!!!!!!!!!!!!!!!!!!!!!!")
-                        console.log(e);
 
                         //DO NOT DELETE THIS SET TIMEOUT
                         // setTimeout(function(){
@@ -213,7 +209,6 @@ $('#addProfilePhoto').on('shown.bs.modal', function (e) {
 
                         },
                     crop: function (e) {
-                        console.log(e);
                         var imageData = $(this).cropper('getImageData');
                         croppedCanvas = $(this).cropper('getCroppedCanvas');
                         $('.preview').html('<img src="' + croppedCanvas.toDataURL() + '" class="thumb-lg img-circle" style="width:100px;height:100px;">');

@@ -1,5 +1,6 @@
 package factories;
 
+import models.Admin;
 import models.Destination;
 import models.User;
 import models.UserPhoto;
@@ -119,8 +120,7 @@ public class DestinationFactory {
         List<Destination> matchingDestinations = new ArrayList<>();
         for (Destination existingDestination : allDestinations) {
             if (destination.equals(existingDestination)) {
-
-                matchingDestinations.add(destination);
+                matchingDestinations.add(existingDestination);
             }
         }
         return matchingDestinations;
@@ -161,4 +161,25 @@ public class DestinationFactory {
         destination.userPhotos.removeAll(photosToRemove);
 
     }
+
+    public Boolean mergeDestinations(List<Destination> destinationList, Destination destination) {
+        Admin defaultAdmin = Admin.find.query().where().eq("isDefault", true).findOne();
+        User defaultAdminUser = User.find.query().where().eq("userid", defaultAdmin.getUserId()).findOne();
+        destinationList.add(destination);
+        for (Destination otherDestination : destinationList) {
+            if (!otherDestination.visits.isEmpty()) {
+                return false;
+            } else {
+                if(otherDestination.getUser() != destination.getUser()) {
+                    otherDestination.delete();
+                }
+            }
+        }
+        destination.setIsPublic(true);
+        destination.setUser(defaultAdminUser);
+        destination.update();
+        return true;
+    }
 }
+
+

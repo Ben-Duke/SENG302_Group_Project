@@ -554,14 +554,11 @@ public class DestinationController extends Controller {
                 DestinationFactory destFactory = new DestinationFactory();
                 List<Destination> matchingDests = destFactory.getOtherUsersMatchingPrivateDestinations(user.userid, destination);
                 if (destination.isUserOwner(user.userid) || user.userIsAdmin()) {
-                    if(destFactory.mergeDestinations(matchingDests, destination)) {
-                        return redirect(routes.DestinationController.indexDestination());
-                    } else {
+                    if(!destFactory.mergeDestinations(matchingDests, destination)) {
                         flash("visitExists",
                                 "This destination is used in a trip!");
-                        return redirect(routes.DestinationController.indexDestination());
-
                     }
+                    return redirect(routes.DestinationController.indexDestination());
                 } else {
                     return unauthorized("HEY!, not yours. You cant delete. How you get access to that anyway?... FBI!!! OPEN UP!");
                 }
@@ -572,6 +569,7 @@ public class DestinationController extends Controller {
             return unauthorized("Oops, you are not logged in");
         }
     }
+
 
     /**
      * Links a photo with a photo id to a destination with a destination id.

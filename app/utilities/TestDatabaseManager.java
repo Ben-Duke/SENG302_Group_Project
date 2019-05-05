@@ -37,10 +37,13 @@ public class TestDatabaseManager {
         }
 
         if (isInSuccessState && Nationality.find.all().isEmpty()) {
-            util.addAllNationalities();
+            boolean successfullyAddedAllNationalities = util.addAllNationalities();
+            if (! successfullyAddedAllNationalities) {
+                isInSuccessState = false;
+            }
         }
 
-        if (Passport.find.all().isEmpty()) {
+        if (isInSuccessState && Passport.find.all().isEmpty()) {
             util.addAllPassports();
         }
 

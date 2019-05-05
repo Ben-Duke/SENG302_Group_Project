@@ -140,8 +140,13 @@ public class UtilityFunctions {
 
     /**
      * Function that populates the database with the nationalities
+     *
+     * @return A boolean, true if all nationality are added successfully,
+     *              false otherwise.
      */
-    public static void addAllNationalities() {
+    public static boolean addAllNationalities() {
+        boolean isInSuccessState = true;
+
         if (Nationality.find.all().isEmpty()) {
             String[] locales = Locale.getISOCountries();
             for (String countryCode : locales) {
@@ -150,13 +155,18 @@ public class UtilityFunctions {
                 try{
                     nationality.save();
                 }catch(Exception error){
+                    isInSuccessState = false;
                     System.out.println("Failed to save nationality: " +
                                                 nationality.getNationalityName() +
                                                 " uniqueness contraint failed");
 
                 }
             }
+        } else {
+            isInSuccessState = false;
         }
+
+        return isInSuccessState;
     }
 
     /**

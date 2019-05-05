@@ -99,9 +99,9 @@ public class TestDatabaseManager {
             }
         }
 
-        addTreasureHunts();
-
-
+        if (isInSuccessState) {
+            this.addTreasureHunts();
+        }
     }
 
     /**

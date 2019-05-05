@@ -44,7 +44,10 @@ public class TestDatabaseManager {
         }
 
         if (isInSuccessState && Passport.find.all().isEmpty()) {
-            util.addAllPassports();
+            boolean successfullyAddedAllPassorts =  util.addAllPassports();
+            if (! successfullyAddedAllPassorts) {
+                isInSuccessState = false;
+            }
         }
 
         if (isInSuccessState) {

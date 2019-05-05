@@ -171,8 +171,12 @@ public class UtilityFunctions {
 
     /**
      * Inserts all default passport options into the database.
+     *
+     * @return A boolean, true if all passports where added successfully.
      */
-    public static void addAllPassports() {
+    public static boolean addAllPassports() {
+        boolean isInSuccessState = true;
+
         if (Passport.find.all().isEmpty()) {
             String[] locales = Locale.getISOCountries();
 
@@ -183,12 +187,17 @@ public class UtilityFunctions {
                 try {
                     passport.save();
                 }catch(Exception error){
+                    isInSuccessState = false;
                     System.out.println("Passport failed to save. name: " +
                                                 passport.getName() +
                                                 " uniqueness constraint failed");
                 }
             }
+        } else {
+            isInSuccessState = false;
         }
+
+        return isInSuccessState;
     }
 
     /**
@@ -217,6 +226,8 @@ public class UtilityFunctions {
                     System.out.println("Failed to add type: " + type + " Duplicate key");
                 }
             }
+        } else {
+            successfullyAddedAllTravvelers = false;
         }
 
         return successfullyAddedAllTravvelers;

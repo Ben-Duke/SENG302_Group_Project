@@ -467,6 +467,8 @@ public class TestDatabaseManager {
         treasureHunt1.save();
         TreasureHunt treasureHunt2 = new TreasureHunt("Surprise2", "Prime example of inflation", Destination.find.byId(3), "2019-04-17", "2019-12-25", User.find.byId(3));
         treasureHunt2.save();
+        TreasureHunt treasureHunt3 = new TreasureHunt("Closed Treasure Hunt", "You should not be able to view this", Destination.find.byId(4), "2019-04-17", "2019-04-25", User.find.byId(4));
+        treasureHunt3.save();
     }
 
 }

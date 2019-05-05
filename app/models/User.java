@@ -20,11 +20,15 @@ import static play.mvc.Results.badRequest;
  * NOTE: This class has a natural ordering that is inconsistent with equals
  */
 @Entity
+@Table(name = "user",
+        uniqueConstraints = @UniqueConstraint(columnNames = "email")
+)
 public class User extends Model implements Comparable<User> {
 
     /**
      * The email of the User
      */
+    @Column(name="email")
     public String email;
 
     /**

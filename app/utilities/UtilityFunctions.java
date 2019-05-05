@@ -150,7 +150,9 @@ public class UtilityFunctions {
                 try{
                     nationality.save();
                 }catch(Exception error){
-                    System.out.println("Failed to save nationality: " + nationality );
+                    System.out.println("Failed to save nationality: " +
+                                                nationality.getNationalityName() +
+                                                " uniqueness contraint failed");
 
                 }
             }
@@ -171,7 +173,9 @@ public class UtilityFunctions {
                 try {
                     passport.save();
                 }catch(Exception error){
-                    System.out.println("Passport failed to save. name: " + passport);
+                    System.out.println("Passport failed to save. name: " +
+                                                passport.getName() +
+                                                " uniqueness constraint failed");
                 }
             }
         }
@@ -196,7 +200,7 @@ public class UtilityFunctions {
                     (new TravellerType(type)).save();
                 }catch(Exception error){
                     //Will remove after peer check
-                    System.out.println("Failed to add type: " + type + "Duplicate key");
+                    System.out.println("Failed to add type: " + type + " Duplicate key");
                 }
             }
         }

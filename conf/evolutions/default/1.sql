@@ -60,6 +60,7 @@ create table nationality (
 create table passport (
   passid                        integer auto_increment not null,
   passport_name                 varchar(255),
+  constraint uq_passport_passport_name unique (passport_name),
   constraint pk_passport primary key (passid)
 );
 
@@ -89,6 +90,7 @@ create table user (
   l_name                        varchar(255),
   is_admin                      boolean,
   creation_date                 timestamp not null,
+  constraint uq_user_email unique (email),
   constraint pk_user primary key (userid)
 );
 

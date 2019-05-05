@@ -138,11 +138,16 @@
                         <td>@destination.getDistrict</td>
                         <td>@destination.getLatitude</td>
                         <td>@destination.getLongitude</td>
-                        @if(destination.getUser().getUserid() == user.getUserid() || user.userIsAdmin()) {
+                        @if(destination.getUser().getUserid() == user.getUserid()) {
                             <td><a href="@routes.DestinationController.editDestination(destination.getDestId())" class="btn btn-primary">
                                 Edit</a></td>
                             <td><a href="@routes.DestinationController.deleteDestination(destination.getDestId())" class="btn btn-danger">
                                 Delete</a></td>
+                        } else if(user.userIsAdmin()) {
+                        <td><a href="@routes.DestinationController.editDestination(destination.getDestId())" class="btn btn-primary">
+                            Edit</a></td>
+                        <td><a href="@routes.DestinationController.deleteDestination(destination.getDestId())" class="btn btn-danger">
+                            Delete</a></td>
                         } else {
                             <td><a href="@routes.DestinationController.editPublicDestination(destination.getDestId())" class="btn btn-primary">
                                 Suggest Modification</a></td>

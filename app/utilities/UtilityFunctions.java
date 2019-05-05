@@ -216,7 +216,6 @@ public class UtilityFunctions {
         types.add("Backpacker");
         boolean successfullyAddedAllTravvelers = true;
         if (TravellerType.find.all().isEmpty()) {
-            System.out.println("Adding types");
             for(String type : types){
                 try{
                     (new TravellerType(type)).save();

@@ -23,7 +23,8 @@ public class TestDatabaseManager {
     /**
      * Populates the database. Call this method at the before section of each unit test.
      */
-    public void populateDatabase() {
+    public synchronized void populateDatabase() {
+
         boolean isInSuccessState = true;
 
         UtilityFunctions util = new UtilityFunctions();
@@ -65,7 +66,6 @@ public class TestDatabaseManager {
         }
 
         if (isInSuccessState) {
-            System.out.println("got to add trips");
             boolean successfullyAddedAllTrips =  this.addTrips();
             if (! successfullyAddedAllTrips) {
                 isInSuccessState = false;
@@ -73,17 +73,15 @@ public class TestDatabaseManager {
         }
 
         if (isInSuccessState) {
-            try {
-                System.out.println("got to add destinations and visits");
-                this.addDestinationsAndVisits();
-            }catch(Exception err){
-                System.out.println("Add destinations and vists FAILED");
+            boolean successfullyAddedDestTrips = this.addDestinationsAndVisits();
+            if (! successfullyAddedDestTrips) {
+                isInSuccessState = false;
             }
+
         }
 
         if (isInSuccessState) {
             if(ApplicationManager.getUserPhotoPath().equalsIgnoreCase("/test/resources/test_photos/user_")){
-                System.out.println("got to add photos");
                 this.addUserPhotos();
             }
         }
@@ -121,8 +119,6 @@ public class TestDatabaseManager {
 
             ExpressionList<Nationality> natExpressionListEquals;
             natExpressionListEquals = nationalityExpressionList.eq("nationalityName",natPassName1);
-
-            System.out.println("count nationality1: " + natExpressionListEquals.findCount());
 
             Nationality nationality1 = natExpressionListEquals.findOne();
 
@@ -228,8 +224,12 @@ public class TestDatabaseManager {
     /**
      * Populates the database with destinations added to users 2,3 and 4.
      * The destinations are then used to create visits for trips 1,2,3,4,5 and 6.
+     *
+     * @return A boolean, true if successfully added all destinations and visits.
      */
-    public void addDestinationsAndVisits() {
+    public boolean addDestinationsAndVisits() {
+        boolean isInSuccessState = true;
+
         // Adds destinations for user2
         Destination destination1 = new Destination(
                 "Christchurch", "Town", "Canterbury",
@@ -304,19 +304,18 @@ public class TestDatabaseManager {
         destinations.add(destination8);
         destinations.add(destination9);
 
-        boolean successfullyAddedAllDestinations = true;
         for (Destination destination: destinations) {
             try {
                 destination.save();
             } catch (Exception e) {
-                successfullyAddedAllDestinations = false;
+                isInSuccessState = false;
                 System.out.println(String.format("Failed to save destination " +
                         "(%s) due to uniqueness constraint fail",
                         destination.getDestName()));
             }
         }
 
-        if (successfullyAddedAllDestinations) {
+        if (isInSuccessState) {
             // Gets the first trip with that name. This may have bad side effects.
             Trip trip1 = Trip.find.query().where().eq("tripName", "Trip to New Zealand").findList().get(0);
             Trip trip2 = Trip.find.query().where().eq("tripName", "Christchurch to Wellington, to The Wok and back").findList().get(0);
@@ -373,6 +372,7 @@ public class TestDatabaseManager {
                 try {
                     visit.save();
                 } catch (Exception e) {
+                    isInSuccessState = false;
                     String visitSaveErrorFormat = "Failed to save visit (%s) due to" +
                             " uniqueness constraint fail";
                     String errorStr;
@@ -381,12 +381,11 @@ public class TestDatabaseManager {
                     System.out.println(errorStr);
                 }
             }
+        } else {
+            isInSuccessState = false;
         }
 
-
-
-
-
+        return isInSuccessState;
     }
 
     /**

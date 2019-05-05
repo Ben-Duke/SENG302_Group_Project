@@ -15,6 +15,7 @@ import static play.mvc.Results.notFound;
 import static play.mvc.Results.ok;
 
 public class UserController {
+    static boolean hasPopulatedDatabaseAlready = false;
 
     /**
      * Renders the user index page, which currently displays all users registered and contains links to logout, login
@@ -22,22 +23,17 @@ public class UserController {
      * @return the user index page
      */
     public Result userindex(Http.Request request){
-//        UtilityFunctions.addNatAndPass();
-//        UtilityFunctions.addTravellerTypes();
-        List<User> users = User.find.all();
-        ApplicationManager.setUserPhotoPath("/../user_photos/user_");
-        if (users.isEmpty()) {
+        if (! hasPopulatedDatabaseAlready) {
+            hasPopulatedDatabaseAlready = true;
+            ApplicationManager.setUserPhotoPath("/../user_photos/user_");
             TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
-            try{
-                testDatabaseManager.populateDatabase();
-                System.out.println("WAS able to get this function work");
-            }
-            catch(Exception e){
-                System.out.println("COUDLNT ADD USER REQUIREMENTS");
-            }
-            //was addDefaultUsers
+            testDatabaseManager.populateDatabase();
+            System.out.println("populating database");
+        } else {
+            System.out.println("database already populated");
         }
-        users = User.find.all();
+
+        List<User> users = User.find.all();
         List<Admin> admins = Admin.find.all();
         return ok(userIndex.render(users, admins,User.getCurrentUser(request)));
     }

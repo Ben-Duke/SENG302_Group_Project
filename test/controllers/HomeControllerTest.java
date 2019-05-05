@@ -390,7 +390,7 @@ public class HomeControllerTest extends WithApplication {
                 .uri(routes.HomeController.makePicturePublic(2,true).url()).session("connected", "2");
         CSRFTokenHelper.addCSRFToken(request);
         Result result = route(app, request);
-        assertEquals(OK, result.status());
+        assertEquals(SEE_OTHER, result.status());
         userPhoto = UserPhoto.find.byId(2);
         assertTrue(userPhoto.isPublic());
     }
@@ -404,7 +404,7 @@ public class HomeControllerTest extends WithApplication {
                 .uri(routes.HomeController.makePicturePublic(1,false).url()).session("connected", "2");
         CSRFTokenHelper.addCSRFToken(request);
         Result result = route(app, request);
-        assertEquals(OK, result.status());
+        assertEquals(SEE_OTHER, result.status());
         userPhoto = UserPhoto.find.byId(1);
         assertFalse(userPhoto.isPublic());
     }
@@ -445,7 +445,8 @@ public class HomeControllerTest extends WithApplication {
 
 
     public void createUser(){
-        UtilityFunctions.addNatAndPass();
+        UtilityFunctions.addAllNationalities();
+        UtilityFunctions.addAllPassports();
         UtilityFunctions.addTravellerTypes();
         TravellerType travellerType1 = TravellerType.find.byId(1);
         TravellerType travellerType2 = TravellerType.find.byId(2);
@@ -457,9 +458,9 @@ public class HomeControllerTest extends WithApplication {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         //convert String to LocalDate
         LocalDate birthDate = LocalDate.parse("1998-08-23", formatter);
-        User user = new User("gon12@uclive.ac.nz", "hunter22", "Gavin", "Ong", birthDate, "Male");
-        User user2 = new User("gon12@uclive.ac.nz", "hunter22", "Gavin", "Ong", birthDate, "Male");
-        User user3 = new User("gon12@uclive.ac.nz", "hunter22", "Gavin", "Ong", birthDate, "Male");
+        User user = new User("gon12_1@uclive.ac.nz", "hunter22", "Gavin", "Ong", birthDate, "Male");
+        User user2 = new User("gon12_2@uclive.ac.nz", "hunter22", "Gavin", "Ong", birthDate, "Male");
+        User user3 = new User("gon12_3@uclive.ac.nz", "hunter22", "Gavin", "Ong", birthDate, "Male");
         user.getNationality().add(nationality1);
         user.getNationality().add(nationality2);
         user.getPassport().add(passport1);

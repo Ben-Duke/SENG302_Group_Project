@@ -292,7 +292,7 @@ public class HomeController {
             if (photo != null) {
                 if(user.getUserid() == photo.getUser().getUserid() || user.userIsAdmin()) {
                     UserFactory.makePicturePublic(user.getUserid(), photo, setPublic);
-                    return ok(home.render(user));
+                    return redirect(routes.HomeController.showhome());
                 }
                 else{
                     return unauthorized("Oops! This is not your photo.");

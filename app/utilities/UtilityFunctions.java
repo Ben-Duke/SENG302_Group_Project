@@ -154,29 +154,98 @@ public class UtilityFunctions {
         return Pattern.matches(emailRegex, email);
     }
 
-    public static void addNatAndPass() {
+    /**
+     * Function that populates the database with the nationalities
+     *
+     * @return A boolean, true if all nationality are added successfully,
+     *              false otherwise.
+     */
+    public static boolean addAllNationalities() {
+        boolean isInSuccessState = true;
+
         if (Nationality.find.all().isEmpty()) {
             String[] locales = Locale.getISOCountries();
             for (String countryCode : locales) {
                 Locale obj = new Locale("", countryCode);
                 Nationality nationality = new Nationality(obj.getDisplayCountry());
-                nationality.save();
-                Passport passport = new Passport(obj.getDisplayCountry());
-                passport.save();
+                try{
+                    nationality.save();
+                }catch(Exception error){
+                    isInSuccessState = false;
+                    System.out.println("Failed to save nationality: " +
+                                                nationality.getNationalityName() +
+                                                " uniqueness contraint failed");
+
+                }
             }
+        } else {
+            isInSuccessState = false;
         }
+
+        return isInSuccessState;
     }
 
-    public static void addTravellerTypes() {
-        if (TravellerType.find.all().isEmpty()) {
-            (new TravellerType("Groupie")).save();
-            (new TravellerType("Thrillseeker")).save();
-            (new TravellerType("Gap Year")).save();
-            (new TravellerType("Frequent Weekender")).save();
-            (new TravellerType("Holidaymaker")).save();
-            (new TravellerType("Business Traveller")).save();
-            (new TravellerType("Backpacker")).save();
+    /**
+     * Inserts all default passport options into the database.
+     *
+     * @return A boolean, true if all passports where added successfully.
+     */
+    public static boolean addAllPassports() {
+        boolean isInSuccessState = true;
+
+        if (Passport.find.all().isEmpty()) {
+            String[] locales = Locale.getISOCountries();
+
+            for (String countryCode : locales) {
+                Locale obj = new Locale("", countryCode);
+
+                Passport passport = new Passport(obj.getDisplayCountry());
+                try {
+                    passport.save();
+                }catch(Exception error){
+                    isInSuccessState = false;
+                    System.out.println("Passport failed to save. name: " +
+                                                passport.getName() +
+                                                " uniqueness constraint failed");
+                }
+            }
+        } else {
+            isInSuccessState = false;
         }
+
+        return isInSuccessState;
+    }
+
+    /**
+     * Inserts all default traveler type options into the database.
+     *
+     * @return A boolean, true if all travelers are successfully added, false otherwise.
+     */
+    public static boolean addTravellerTypes() {
+        ArrayList<String> types = new ArrayList();
+        types.add("Groupie");
+        types.add("Thrillseeker");
+        types.add("Gap Year");
+        types.add("Frequent Weekender");
+        types.add("Holidaymaker");
+        types.add("Business Traveller");
+        types.add("Backpacker");
+        boolean successfullyAddedAllTravvelers = true;
+        if (TravellerType.find.all().isEmpty()) {
+            for(String type : types){
+                try{
+                    (new TravellerType(type)).save();
+                }catch(Exception error){
+                    //Will remove after peer check
+                    successfullyAddedAllTravvelers = false;
+                    System.out.println("Failed to add type: " + type + " Duplicate key");
+                }
+            }
+        } else {
+            successfullyAddedAllTravvelers = false;
+        }
+
+        return successfullyAddedAllTravvelers;
     }
 
     /**

@@ -501,9 +501,15 @@ public class DestinationController extends Controller {
             if (destination != null) {
                 if (destination.isUserOwner(user.userid) || user.userIsAdmin()) {
                     if(destination.visits.isEmpty()) {
-                        destination.delete();
-                        return redirect(routes.DestinationController.indexDestination());
-                    } else {
+                        List<TreasureHunt> treasureHunts = TreasureHunt.find.query().where().eq("destination", destination).findList();
+                        if (treasureHunts.isEmpty()) {
+                            destination.delete();
+                            return redirect(routes.DestinationController.indexDestination());
+                        } else {
+                            return preconditionRequired("You cannot delete destinations while they are being used by the treasure hunts.");
+                        }
+                    }
+                    else{
                         return preconditionRequired("You cannot delete destinations while you're using them for your trips. Delete them from your trip first!");
                     }
                 } else {
@@ -765,6 +771,43 @@ public class DestinationController extends Controller {
             List<Destination> allVisibleDestination = getVisibleDestinations(userId);
 
             return ok(Json.toJson(allVisibleDestination));
+        } else {
+            return unauthorized("Oops, you are not logged in");
+        }
+    }
+
+    /**
+     * Adds a photo with a photo id to a destination with a destination id.
+     * @param request the HTTP request
+     * @param photoId the photoId of the photo to e added
+     * @param destId the destination that the photo should be linked to
+     * @return success if the linking was successful, not found if destination or photo not found, unauthorized otherwise.
+     */
+    public Result addPhotoToDestination(Http.Request request, Integer photoId, Integer destId){
+        User user = User.getCurrentUser(request);
+        if(user != null) {
+            UserPhoto photo = UserPhoto.find.byId(photoId);
+            Destination destination = Destination.find.byId(destId);
+            if(destination != null && photo != null) {
+                if (photo.getUser().getUserid() == user.getUserid()) {
+                    //add checks for private destinations here once destinations have been merged in.
+                    //You can only link a photo to a private destination if you own the private destination.
+                    if(!photo.getDestinations().contains(destination)) {
+                        photo.addDestination(destination);
+                        photo.update();
+                        System.out.println("SUCCESS!");
+                        return redirect(routes.DestinationController.indexDestination());
+                    }
+                    else{
+                        return badRequest("You have already linked the photo to this destination.");
+                    }
+                } else {
+                    return unauthorized("Oops, this is not your photo!");
+                }
+            }
+            else{
+                return notFound();
+            }
         } else {
             return unauthorized("Oops, you are not logged in");
         }

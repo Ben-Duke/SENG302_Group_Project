@@ -8,6 +8,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * Test Database Manager class. Populates the database. NOTE: Does not create the database, so it requires the database to already be running.
@@ -21,9 +22,21 @@ public class TestDatabaseManager {
     }
 
     /**
+     * Method to populate the database when the application is first started.
+     *
+     *
+     * @param initCompleteLatch A CountDownLatch to call back and unlock when the
+     *                          database has been populated.
+     */
+    public void populateDatabase(CountDownLatch initCompleteLatch) {
+        populateDatabase();
+        initCompleteLatch.countDown();
+    }
+
+    /**
      * Populates the database. Call this method at the before section of each unit test.
      */
-    public synchronized void populateDatabase() {
+    public void populateDatabase() {
 
         boolean isInSuccessState = true;
 

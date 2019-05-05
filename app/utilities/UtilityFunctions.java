@@ -183,8 +183,10 @@ public class UtilityFunctions {
 
     /**
      * Inserts all default traveler type options into the database.
+     *
+     * @return A boolean, true if all travelers are successfully added, false otherwise.
      */
-    public static void addTravellerTypes() {
+    public static boolean addTravellerTypes() {
         ArrayList<String> types = new ArrayList();
         types.add("Groupie");
         types.add("Thrillseeker");
@@ -193,6 +195,7 @@ public class UtilityFunctions {
         types.add("Holidaymaker");
         types.add("Business Traveller");
         types.add("Backpacker");
+        boolean successfullyAddedAllTravvelers = true;
         if (TravellerType.find.all().isEmpty()) {
             System.out.println("Adding types");
             for(String type : types){
@@ -200,10 +203,13 @@ public class UtilityFunctions {
                     (new TravellerType(type)).save();
                 }catch(Exception error){
                     //Will remove after peer check
+                    successfullyAddedAllTravvelers = false;
                     System.out.println("Failed to add type: " + type + " Duplicate key");
                 }
             }
         }
+
+        return successfullyAddedAllTravvelers;
     }
 
     /**

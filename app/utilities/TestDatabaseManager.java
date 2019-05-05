@@ -24,15 +24,19 @@ public class TestDatabaseManager {
      * Populates the database. Call this method at the before section of each unit test.
      */
     public void populateDatabase() {
-
+        boolean isInSuccessState = true;
 
         UtilityFunctions util = new UtilityFunctions();
 
         if(TravellerType.find.all().isEmpty()) {
-            util.addTravellerTypes();
+            boolean successFullyAddedTravellerTypes = util.addTravellerTypes();
+
+            if (! successFullyAddedTravellerTypes) {
+                isInSuccessState = false;
+            }
         }
 
-        if (Nationality.find.all().isEmpty()) {
+        if (isInSuccessState && Nationality.find.all().isEmpty()) {
             util.addAllNationalities();
         }
 

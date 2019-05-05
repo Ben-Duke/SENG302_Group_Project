@@ -65,3 +65,52 @@
 br {
     display: none;
 }
+
+#addPhotoButton {
+
+}
+
+#addPhotoLink {
+    display: inline-block;
+    max-width: 120px;
+    max-height: 120px;
+}
+
+#imagesContainer {
+    position: relative;
+    max-width: 120px;
+    height: 100%;
+    width: 100%;
+    left: -25px;
+    top: -5px;
+}
+
+.overlay {
+    position: absolute;
+    max-width: 120px;
+    opacity: 1;
+    transition: .3s ease;
+}
+
+.icon {
+    color: white;
+    font-size: 15px;
+    position: absolute;
+    top: -5px;
+    left: 85px;
+    max-width: 60px;
+    transform: translate(50%, 50%);
+    -ms-transform: translate(-50%, -50%);
+}
+
+.fa-eye {
+    color: green;
+}
+
+.fa-eye-slash {
+    color: red;
+}
+
+#destId {
+    visibility: hidden;
+}

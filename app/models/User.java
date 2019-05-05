@@ -116,6 +116,10 @@ public class User extends Model implements Comparable<User> {
 
     @JsonIgnore
     @OneToMany(mappedBy = "user")
+    public List<TreasureHunt> treasureHunts;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "user")
     public List<Destination> destinations;
 
     public Map<String, Boolean> getMappedDestinations() {
@@ -129,6 +133,10 @@ public class User extends Model implements Comparable<User> {
     @JsonIgnore
     @ManyToMany
     public List<TravellerType> travellerTypes;
+
+    @JsonIgnore
+    @ManyToMany
+    public List<TreasureHunt> guessedTHunts;
 
     /**
      * Get's a List<UserPhoto> containing all the photos of the user.
@@ -285,6 +293,21 @@ public class User extends Model implements Comparable<User> {
         return trips;
     }
 
+    public List<TreasureHunt> getTreasureHunts() {
+        return treasureHunts;
+    }
+
+    public void setTreasureHunts(List<TreasureHunt> treasureHunts) {
+        this.treasureHunts = treasureHunts;
+    }
+
+    public List<TreasureHunt> getGuessedTHunts() {
+        return guessedTHunts;
+    }
+
+    public void setGuessedTHunts(List<TreasureHunt> guessedTHunts) {
+        this.guessedTHunts = guessedTHunts;
+    }
 
     public void setTrips(List<Trip> trips) {
         this.trips = trips;

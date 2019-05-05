@@ -99,6 +99,8 @@ public class TestDatabaseManager {
             }
         }
 
+        addTreasureHunts();
+
 
     }
 
@@ -458,6 +460,13 @@ public class TestDatabaseManager {
         } catch (Exception e) {
             System.out.println("Failed to add user2 photos");
         }
+    }
+
+    public void addTreasureHunts(){
+        TreasureHunt treasureHunt1 = new TreasureHunt("Surprise", "The garden city", Destination.find.byId(1), "2019-04-17", "2019-12-25", User.find.byId(2));
+        treasureHunt1.save();
+        TreasureHunt treasureHunt2 = new TreasureHunt("Surprise2", "Prime example of inflation", Destination.find.byId(3), "2019-04-17", "2019-12-25", User.find.byId(3));
+        treasureHunt2.save();
     }
 
 }

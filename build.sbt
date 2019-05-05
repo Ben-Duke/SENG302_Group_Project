@@ -17,8 +17,7 @@ libraryDependencies += "org.glassfish.jaxb" % "jaxb-runtime" % "2.3.2"
 
 libraryDependencies += "org.awaitility" % "awaitility" % "2.0.0" % Test
 libraryDependencies += "org.assertj" % "assertj-core" % "3.6.2" % Test
-// https://mvnrepository.com/artifact/org.json/json
-libraryDependencies += "org.json" % "json" % "20180813"
+
 libraryDependencies ++= Seq (
   "io.cucumber" % "cucumber-core" % "4.2.0" % " test ",
   "io.cucumber" % "cucumber-jvm" % "4.2.0" % " test ",
@@ -28,16 +27,7 @@ libraryDependencies ++= Seq (
 )
 testOptions in Test += Tests.Argument(TestFrameworks.JUnit, "-a", "-v")
 
-javacOptions ++= Seq("-source", "1.8", "-target", "1.8","-Xlint:unchecked", "-Xlint:deprecation")
 
-scalacOptions := Seq("-target:jvm-1.8")
-
-initialize := {
-  val _ = initialize.value
-  if (sys.props("java.specification.version") != "1.8")
-
-    sys.error(sys.props("java.specification.version") + " Java 8 is required for this project.")
-}
-
+javacOptions ++= Seq("-Xlint:unchecked", "-Xlint:deprecation")
 configs(IntegrationTest)
 Defaults.itSettings

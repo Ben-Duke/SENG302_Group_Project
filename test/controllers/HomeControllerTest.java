@@ -390,7 +390,7 @@ public class HomeControllerTest extends WithApplication {
                 .uri(routes.HomeController.makePicturePublic(2,true).url()).session("connected", "2");
         CSRFTokenHelper.addCSRFToken(request);
         Result result = route(app, request);
-        assertEquals(OK, result.status());
+        assertEquals(SEE_OTHER, result.status());
         userPhoto = UserPhoto.find.byId(2);
         assertTrue(userPhoto.isPublic());
     }
@@ -404,7 +404,7 @@ public class HomeControllerTest extends WithApplication {
                 .uri(routes.HomeController.makePicturePublic(1,false).url()).session("connected", "2");
         CSRFTokenHelper.addCSRFToken(request);
         Result result = route(app, request);
-        assertEquals(OK, result.status());
+        assertEquals(SEE_OTHER, result.status());
         userPhoto = UserPhoto.find.byId(1);
         assertFalse(userPhoto.isPublic());
     }

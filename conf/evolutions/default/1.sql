@@ -71,6 +71,17 @@ create table traveller_type (
   constraint pk_traveller_type primary key (ttypeid)
 );
 
+create table treasure_hunt (
+  thuntid                       integer auto_increment not null,
+  title                         varchar(255),
+  riddle                        varchar(255),
+  destination_destid            integer,
+  start_date                    varchar(255),
+  end_date                      varchar(255),
+  user                          integer,
+  constraint pk_treasure_hunt primary key (thuntid)
+);
+
 create table trip (
   tripid                        integer auto_increment not null,
   trip_name                     varchar(255),
@@ -110,6 +121,12 @@ create table user_traveller_type (
   user_userid                   integer not null,
   traveller_type_ttypeid        integer not null,
   constraint pk_user_traveller_type primary key (user_userid,traveller_type_ttypeid)
+);
+
+create table user_treasure_hunt (
+  user_userid                   integer not null,
+  treasure_hunt_thuntid         integer not null,
+  constraint pk_user_treasure_hunt primary key (user_userid,treasure_hunt_thuntid)
 );
 
 create table user_photo (
@@ -163,6 +180,12 @@ alter table destination_modification_request_traveller_type add constraint fk_de
 create index ix_destination_modification_request_traveller_type_travel_2 on destination_modification_request_traveller_type (traveller_type_ttypeid);
 alter table destination_modification_request_traveller_type add constraint fk_destination_modification_request_traveller_type_travel_2 foreign key (traveller_type_ttypeid) references traveller_type (ttypeid) on delete restrict on update restrict;
 
+create index ix_treasure_hunt_destination_destid on treasure_hunt (destination_destid);
+alter table treasure_hunt add constraint fk_treasure_hunt_destination_destid foreign key (destination_destid) references destination (destid) on delete restrict on update restrict;
+
+create index ix_treasure_hunt_user on treasure_hunt (user);
+alter table treasure_hunt add constraint fk_treasure_hunt_user foreign key (user) references user (userid) on delete restrict on update restrict;
+
 create index ix_trip_user on trip (user);
 alter table trip add constraint fk_trip_user foreign key (user) references user (userid) on delete restrict on update restrict;
 
@@ -183,6 +206,12 @@ alter table user_traveller_type add constraint fk_user_traveller_type_user forei
 
 create index ix_user_traveller_type_traveller_type on user_traveller_type (traveller_type_ttypeid);
 alter table user_traveller_type add constraint fk_user_traveller_type_traveller_type foreign key (traveller_type_ttypeid) references traveller_type (ttypeid) on delete restrict on update restrict;
+
+create index ix_user_treasure_hunt_user on user_treasure_hunt (user_userid);
+alter table user_treasure_hunt add constraint fk_user_treasure_hunt_user foreign key (user_userid) references user (userid) on delete restrict on update restrict;
+
+create index ix_user_treasure_hunt_treasure_hunt on user_treasure_hunt (treasure_hunt_thuntid);
+alter table user_treasure_hunt add constraint fk_user_treasure_hunt_treasure_hunt foreign key (treasure_hunt_thuntid) references treasure_hunt (thuntid) on delete restrict on update restrict;
 
 create index ix_user_photo_user on user_photo (user);
 alter table user_photo add constraint fk_user_photo_user foreign key (user) references user (userid) on delete restrict on update restrict;
@@ -226,6 +255,12 @@ drop index if exists ix_destination_modification_request_traveller_type_destin_1
 alter table destination_modification_request_traveller_type drop constraint if exists fk_destination_modification_request_traveller_type_travel_2;
 drop index if exists ix_destination_modification_request_traveller_type_travel_2;
 
+alter table treasure_hunt drop constraint if exists fk_treasure_hunt_destination_destid;
+drop index if exists ix_treasure_hunt_destination_destid;
+
+alter table treasure_hunt drop constraint if exists fk_treasure_hunt_user;
+drop index if exists ix_treasure_hunt_user;
+
 alter table trip drop constraint if exists fk_trip_user;
 drop index if exists ix_trip_user;
 
@@ -246,6 +281,12 @@ drop index if exists ix_user_traveller_type_user;
 
 alter table user_traveller_type drop constraint if exists fk_user_traveller_type_traveller_type;
 drop index if exists ix_user_traveller_type_traveller_type;
+
+alter table user_treasure_hunt drop constraint if exists fk_user_treasure_hunt_user;
+drop index if exists ix_user_treasure_hunt_user;
+
+alter table user_treasure_hunt drop constraint if exists fk_user_treasure_hunt_treasure_hunt;
+drop index if exists ix_user_treasure_hunt_treasure_hunt;
 
 alter table user_photo drop constraint if exists fk_user_photo_user;
 drop index if exists ix_user_photo_user;
@@ -278,6 +319,8 @@ drop table if exists passport;
 
 drop table if exists traveller_type;
 
+drop table if exists treasure_hunt;
+
 drop table if exists trip;
 
 drop table if exists user;
@@ -287,6 +330,8 @@ drop table if exists user_nationality;
 drop table if exists user_passport;
 
 drop table if exists user_traveller_type;
+
+drop table if exists user_treasure_hunt;
 
 drop table if exists user_photo;
 

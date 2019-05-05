@@ -1,9 +1,8 @@
 package controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
+
 import models.*;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -14,6 +13,7 @@ import play.db.Databases;
 import play.db.evolutions.Evolution;
 import play.db.evolutions.Evolutions;
 import play.inject.guice.GuiceApplicationBuilder;
+import play.libs.Json;
 import play.mvc.Http;
 import play.mvc.Result;
 import play.test.Helpers;
@@ -649,15 +649,17 @@ public class DestinationControllerTest extends WithApplication {
                 .uri("/users/destinations/get/3").session("connected", "3");
         Result result = route(app, request);
         assertEquals(OK, result.status());
-        JSONObject obj = new JSONObject(contentAsString(result));
-        assertEquals("The Wok", obj.getString("destName"));
+
+        JsonNode jsonJacksonObjectOne = Json.parse(contentAsString(result));
+        assertEquals("The Wok", jsonJacksonObjectOne.get("destName").asText());
+
         request = Helpers.fakeRequest()
                 .method(GET)
                 .uri("/users/destinations/get/1").session("connected", "3");
         result = route(app, request);
         assertEquals(OK, result.status());
-        obj = new JSONObject(contentAsString(result));
-        assertEquals("Christchurch", obj.getString("destName"));
+        JsonNode jsonJacksonObjectTwo = Json.parse(contentAsString(result));
+        assertEquals("Christchurch", jsonJacksonObjectTwo.get("destName").asText());
     }
 
     /**
@@ -671,8 +673,8 @@ public class DestinationControllerTest extends WithApplication {
                 .uri("/users/destinations/get/3").session("connected", "2");
         Result result = route(app, request);
         assertEquals(OK, result.status());
-        JSONObject obj = new JSONObject(contentAsString(result));
-        assertEquals("The Wok", obj.getString("destName"));
+        JsonNode jsonObject = Json.parse(contentAsString(result));
+        assertEquals("The Wok", jsonObject.get("destName").asText());
     }
 
     /**
@@ -699,8 +701,8 @@ public class DestinationControllerTest extends WithApplication {
                 .uri("/users/destinations/get/2").session("connected", "2");
         Result result = route(app, request);
         assertEquals(OK, result.status());
-        JSONObject obj = new JSONObject(contentAsString(result));
-        assertEquals("Wellington", obj.getString("destName"));
+        JsonNode jsonObject = Json.parse(contentAsString(result));
+        assertEquals("Wellington", jsonObject.get("destName").asText());
     }
 
     @Test
@@ -710,13 +712,17 @@ public class DestinationControllerTest extends WithApplication {
                 .uri("/users/destinations/ttypes/3").session("connected", "2");
         Result result = route(app, request);
         assertEquals(OK, result.status());
-        JSONArray jsonArray = new JSONArray(contentAsString(result));
+
+        JsonNode jsonJacksonArray = Json.parse(contentAsString(result));
+
+        JsonNode nodeOne = jsonJacksonArray.get(0);
+        JsonNode nodeTwo = jsonJacksonArray.get(1);
+
         //Groupie and gap year so length 2
-        assertEquals(2, jsonArray.length());
-        JSONObject obj1 = jsonArray.getJSONObject(0);
-        JSONObject obj2 = jsonArray.getJSONObject(1);
-        assertEquals("Groupie", obj1.getString("travellerTypeName"));
-        assertEquals("Gap Year",obj2.getString("travellerTypeName"));
+        assertEquals(2, jsonJacksonArray.size());
+
+        assertEquals("Groupie", nodeOne.get("travellerTypeName").asText());
+        assertEquals("Gap Year", nodeTwo.get("travellerTypeName").asText());
     }
 
     @Test
@@ -728,97 +734,17 @@ public class DestinationControllerTest extends WithApplication {
         assertEquals(UNAUTHORIZED, result.status());
     }
 
-//    @Test
-//    public void getVisibleDestinationMarkersJSONLoggedIn() {
-//        Http.RequestBuilder request = Helpers.fakeRequest()
-//                .method(GET)
-//                .uri("/users/destinations/getalljson").session("connected", "2");
-//        Result result = route(app, request);
-//
-//        JSONArray jsonArrayActual = new JSONArray(contentAsString(result));
-//        JSONArray jsonArrayExpected = new JSONArray("[\n" +
-//                "  {\n" +
-//                "    \"country\": \"New Zealand\",\n" +
-//                "    \"destName\": \"Christchurch\",\n" +
-//                "    \"destid\": 1,\n" +
-//                "    \"public\": true,\n" +
-//                "    \"destId\": 1,\n" +
-//                "    \"district\": \"Canterbury\",\n" +
-//                "    \"latitude\": -43.5321,\n" +
-//                "    \"isPublic\": true,\n" +
-//                "    \"primaryPhoto\": null,\n" +
-//                "    \"destType\": \"Town\",\n" +
-//                "    \"longitude\": 172.6362\n" +
-//                "  },\n" +
-//                "  {\n" +
-//                "    \"country\": \"New Zealand\",\n" +
-//                "    \"destName\": \"The Wok\",\n" +
-//                "    \"destid\": 3,\n" +
-//                "    \"public\": true,\n" +
-//                "    \"destId\": 3,\n" +
-//                "    \"district\": \"Canterbury\",\n" +
-//                "    \"latitude\": -43.523593,\n" +
-//                "    \"isPublic\": true,\n" +
-//                "    \"primaryPhoto\": null,\n" +
-//                "    \"destType\": \"Cafe\\/Restaurant\",\n" +
-//                "    \"longitude\": 172.582971\n" +
-//                "  },\n" +
-//                "  {\n" +
-//                "    \"country\": \"New Zealand\",\n" +
-//                "    \"destName\": \"Hanmer Springs Thermal Pools\",\n" +
-//                "    \"destid\": 4,\n" +
-//                "    \"public\": true,\n" +
-//                "    \"destId\": 4,\n" +
-//                "    \"district\": \"North Canterbury\",\n" +
-//                "    \"latitude\": -42.522791,\n" +
-//                "    \"isPublic\": true,\n" +
-//                "    \"primaryPhoto\": null,\n" +
-//                "    \"destType\": \"Attraction\",\n" +
-//                "    \"longitude\": 172.828944\n" +
-//                "  },\n" +
-//                "  {\n" +
-//                "    \"country\": \"Egypt\",\n" +
-//                "    \"destName\": \"Great Pyramid of Giza\",\n" +
-//                "    \"destid\": 6,\n" +
-//                "    \"public\": true,\n" +
-//                "    \"destId\": 6,\n" +
-//                "    \"district\": \"Giza\",\n" +
-//                "    \"latitude\": 29.979481,\n" +
-//                "    \"isPublic\": true,\n" +
-//                "    \"primaryPhoto\": null,\n" +
-//                "    \"destType\": \"Attraction\",\n" +
-//                "    \"longitude\": 31.134159\n" +
-//                "  },\n" +
-//                "  {\n" +
-//                "    \"country\": \"United States\",\n" +
-//                "    \"destName\": \"Lincoln Memorial\",\n" +
-//                "    \"destid\": 9,\n" +
-//                "    \"public\": true,\n" +
-//                "    \"destId\": 9,\n" +
-//                "    \"district\": \"Washington DC\",\n" +
-//                "    \"latitude\": 38.889406,\n" +
-//                "    \"isPublic\": true,\n" +
-//                "    \"primaryPhoto\": null,\n" +
-//                "    \"destType\": \"Monument\",\n" +
-//                "    \"longitude\": -77.050155\n" +
-//                "  },\n" +
-//                "  {\n" +
-//                "    \"country\": \"New Zealand\",\n" +
-//                "    \"destName\": \"Wellington\",\n" +
-//                "    \"destid\": 2,\n" +
-//                "    \"public\": false,\n" +
-//                "    \"destId\": 2,\n" +
-//                "    \"district\": \"Wellington\",\n" +
-//                "    \"latitude\": -41.2866,\n" +
-//                "    \"isPublic\": false,\n" +
-//                "    \"primaryPhoto\": null,\n" +
-//                "    \"destType\": \"Town\",\n" +
-//                "    \"longitude\": 174.7756\n" +
-//                "  }\n" +
-//                "]");
-//
-//        assertEquals(jsonArrayExpected.toString(), jsonArrayActual.toString());
-//    }
+    @Test
+    public void getVisibleDestinationMarkersJSONLoggedIn() {
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/destinations/getalljson").session("connected", "2");
+        Result result = route(app, request);
+
+        JsonNode jsonJacksonNodeArray= Json.parse(contentAsString(result));
+
+        assertEquals(6, jsonJacksonNodeArray.size());
+    }
 
     @Test
     public void destinationModificationRequestReject() {

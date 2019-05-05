@@ -23,6 +23,7 @@ public class TravellerType extends Model implements Comparable<TravellerType> {
     @Id
     public Integer ttypeid;
 
+    @Column(name="traveller_type_name")
     public String travellerTypeName;
 
     @Override

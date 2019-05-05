@@ -10,7 +10,6 @@ import models.Destination;
 import models.Trip;
 import models.User;
 import models.Visit;
-import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,7 +27,6 @@ import play.test.Helpers;
 import play.test.WithApplication;
 import utilities.TestDatabaseManager;
 
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import static org.junit.Assert.*;

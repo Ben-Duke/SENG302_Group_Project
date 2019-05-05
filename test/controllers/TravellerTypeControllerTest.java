@@ -15,14 +15,11 @@ import play.mvc.Result;
 import play.test.Helpers;
 import play.test.WithApplication;
 import utilities.TestDatabaseManager;
-import utilities.UtilityFunctions;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static play.mvc.Http.Status.*;
 import static play.test.Helpers.GET;
 import static play.test.Helpers.route;
@@ -145,10 +142,11 @@ public class TravellerTypeControllerTest extends WithApplication {
         //There should be 1 traveller type
         assertEquals(1, User.find.byId(1).getTravellerTypes().size());
         Map<String, String> formData = new HashMap<>();
-        formData.put("travellertypesdelete", "2");
-        Http.RequestBuilder fakeRequest = Helpers.fakeRequest().bodyForm(formData).method(Helpers.POST).uri("/users/profile/delete").session("connected", "1");
+        formData.put("travellertypes", "2");
+        Http.RequestBuilder fakeRequest = Helpers.fakeRequest().bodyForm(formData).method(Helpers.POST).uri("/users/profile/delete/2").session("connected", "1");
         Result result = Helpers.route(app, fakeRequest);
         //User should be redirected to the update traveller type page
+        assertEquals(303, result.status());
         //There should be one traveller type since can't remove from 1
         assertEquals(1, User.find.byId(1).getTravellerTypes().size());
     }

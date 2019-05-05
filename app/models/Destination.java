@@ -79,14 +79,7 @@ public class Destination extends Model {
      * @param user
      */
     public Destination(String destName, String destType, String district, String country, double latitude, double longitude, User user){
-        this.destName = destName;
-        this.user = user;
-        this.destType = destType;
-        this.district = district;
-        this.country = country;
-        this.latitude = latitude;
-        this.longitude = longitude;
-        this.isPublic = false;
+        this(destName, destType, district, country, latitude, longitude, user, false);
     }
 
     /**
@@ -189,6 +182,25 @@ public class Destination extends Model {
         this.travellerTypes.add(travellerType);
     }
 
+    @Override
+    public String toString() {
+        return "Destination{" +
+                "destid=" + destid +
+                ", destName='" + destName + '\'' +
+                ", destType='" + destType + '\'' +
+                ", district='" + district + '\'' +
+                ", country='" + country + '\'' +
+                ", latitude=" + latitude +
+                ", longitude=" + longitude +
+                ", isPublic=" + isPublic +
+                ", primaryPhoto=" + primaryPhoto +
+                ", user=" + user +
+                ", visits=" + visits +
+                ", userPhotos=" + userPhotos +
+                ", travellerTypes=" + travellerTypes +
+                '}';
+    }
+
     /**
      * The equals method compares two Destination objects for equality. The criteria
      * is all attributes, except isPublic.
@@ -255,8 +267,15 @@ public class Destination extends Model {
         return this.user.getUserid() == userid;
     }
 
-
-
-
-
+    /** Modifies the fields of this Destination which are included in the
+     *   destination editing form to be equal to those fields of the destination
+     *   passed in */
+    public void applyEditChanges(Destination newDestination) {
+        this.destName = newDestination.getDestName();
+        this.country = newDestination.getCountry();
+        this.district = newDestination.getDistrict();
+        this.longitude = newDestination.getLongitude();
+        this.latitude = newDestination.getLatitude();
+        this.destType = newDestination.getDestType();
+    }
 }

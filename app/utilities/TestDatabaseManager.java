@@ -47,25 +47,37 @@ public class TestDatabaseManager {
             util.addAllPassports();
         }
 
-        try {
-            this.populateUsers();
-        }catch(Exception error){
-            System.out.println("Populate Users failed");
+        if (isInSuccessState) {
+            try {
+                this.populateUsers();
+            }catch(Exception error){
+                System.out.println("Populate Users failed");
+            }
         }
 
-        try {
-            this.addTrips();
-        }catch(Exception err){
-            System.out.println("addtrips failed");
+        if (isInSuccessState) {
+            try {
+                this.addTrips();
+            }catch(Exception err){
+                System.out.println("addtrips failed");
+            }
         }
-        try {
-            this.addDestinationsAndVisits();
-        }catch(Exception err){
-            System.out.println("Add destinations and vists FAILED");
+
+        if (isInSuccessState) {
+            try {
+                this.addDestinationsAndVisits();
+            }catch(Exception err){
+                System.out.println("Add destinations and vists FAILED");
+            }
         }
-        if(ApplicationManager.getUserPhotoPath().equalsIgnoreCase("/test/resources/test_photos/user_")){
-            this.addUserPhotos();
+
+        if (isInSuccessState) {
+            if(ApplicationManager.getUserPhotoPath().equalsIgnoreCase("/test/resources/test_photos/user_")){
+                this.addUserPhotos();
+            }
         }
+
+
     }
 
     /**

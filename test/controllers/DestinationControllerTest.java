@@ -735,6 +735,18 @@ public class DestinationControllerTest extends WithApplication {
     }
 
     @Test
+    public void getVisibleDestinationMarkersJSONLoggedIn() {
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/destinations/getalljson").session("connected", "2");
+        Result result = route(app, request);
+
+        JsonNode jsonJacksonNodeArray= Json.parse(contentAsString(result));
+
+        assertEquals(6, jsonJacksonNodeArray.size());
+    }
+
+    @Test
     public void destinationModificationRequestReject() {
         User user = User.find.all().get(0);
         Destination newDestination = new Destination("Test Dest", "Town", "Test District", "Test Country", 100, 100, user, true);

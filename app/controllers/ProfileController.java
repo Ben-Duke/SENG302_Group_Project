@@ -67,7 +67,7 @@ public class ProfileController extends Controller {
      */
     public Result updateProfileRequest(Http.Request request){
         Form<UpdateUserFormData> updateProfileForm = formFactory
-                            .form(UpdateUserFormData.class).bindFromRequest();
+                            .form(UpdateUserFormData.class).bindFromRequest(request);
         // checking if a user is logged in.
         User user = User.getCurrentUser(request);
         if (user != null) {
@@ -178,7 +178,7 @@ public class ProfileController extends Controller {
      * @return update traveller type page or error page
      */
     public Result submitUpdateNationality(Http.Request request){
-        DynamicForm userForm = formFactory.form().bindFromRequest();
+        DynamicForm userForm = formFactory.form().bindFromRequest(request);
         String nationalityID = userForm.get("nationality");
         int user = UserFactory.getCurrentUserId(request);
         if (user != -1) {
@@ -201,7 +201,7 @@ public class ProfileController extends Controller {
      * @return update traveller type page or error page
      */
     public Result submitUpdatePassport(Http.Request request){
-        DynamicForm userForm = formFactory.form().bindFromRequest();
+        DynamicForm userForm = formFactory.form().bindFromRequest(request);
         String passportID = userForm.get("passport");
         User user = User.getCurrentUser(request);
         int userId = UserFactory.getCurrentUserId(request);
@@ -223,7 +223,7 @@ public class ProfileController extends Controller {
      * @return update traveller type page or error page
      */
     public Result deleteNationality(Http.Request request){
-        Form<NatFormData> userForm = formFactory.form(NatFormData.class).bindFromRequest();
+        Form<NatFormData> userForm = formFactory.form(NatFormData.class).bindFromRequest(request);
 
         if (userForm.hasErrors()) {
 
@@ -257,7 +257,7 @@ public class ProfileController extends Controller {
      * @return update traveller type page or error page
      */
     public Result deletePassport(Http.Request request){
-        DynamicForm userForm = formFactory.form().bindFromRequest();
+        DynamicForm userForm = formFactory.form().bindFromRequest(request);
         String passportID = userForm.get("passportdelete");
         int userId = UserFactory.getCurrentUserId(request);
         if (userId != -1) {

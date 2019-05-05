@@ -17,6 +17,7 @@ import play.test.Helpers;
 import play.test.WithApplication;
 import utilities.UtilityFunctions;
 
+import javax.rmi.CORBA.Util;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -217,7 +218,8 @@ public class ProfileControllerTest extends WithApplication {
 
     public void createUser(){
         UtilityFunctions.addTravellerTypes();
-        UtilityFunctions.addNatAndPass();
+        UtilityFunctions.addAllNationalities();
+        UtilityFunctions.addAllPassports();
         TravellerType travellerType1 = TravellerType.find.byId(1);
         TravellerType travellerType2 = TravellerType.find.byId(2);
         Nationality nationality1 = Nationality.find.byId(1);

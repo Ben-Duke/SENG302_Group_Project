@@ -553,15 +553,9 @@ public class DestinationController extends Controller {
                         //no matching pub destination exists, making public now
                         //sets the destination to public, sets the owner to the default admin and updates the destination
                         List<Destination> matchingDests = destFactory.getOtherUsersMatchingPrivateDestinations(user.userid, destination);
-                        if (matchingDests.isEmpty()) {
+                        if (matchingDests.size() == 0) {
                             destination.setIsPublic(true);
                             destination.update();
-                        } else if (matchingDests.size() == 1) {
-                            flash("matchingDest", "There is " + matchingDests.size() + " other destination that matches " +
-                                    destination.getDestName() + ".\nWould you like to merge?");
-                        } else {
-                            flash("matchingDest", "There are " + matchingDests.size() + " other destinations that match " +
-                                    destination.getDestName() + ".\nWould you like to merge?");
                         }
                         return redirect(routes.DestinationController.indexDestination());
                     }
@@ -577,6 +571,31 @@ public class DestinationController extends Controller {
             return unauthorized("Oops, you are not logged in");
         }
     }
+
+    public Result makeDestinationsMerge(Http.Request request, int destId) {
+        User user = User.getCurrentUser(request);
+        if (user != null) {
+            Destination destination = Destination.find.query().where().eq("destid", destId).findOne();
+            if (destination != null) {
+                DestinationFactory destFactory = new DestinationFactory();
+                List<Destination> matchingDests = destFactory.getOtherUsersMatchingPrivateDestinations(user.userid, destination);
+                if (destination.isUserOwner(user.userid) || user.userIsAdmin()) {
+                    if(!destFactory.mergeDestinations(matchingDests, destination)) {
+                        flash("visitExists",
+                                "This destination is used in a trip!");
+                    }
+                    return redirect(routes.DestinationController.indexDestination());
+                } else {
+                    return unauthorized("HEY!, not yours. You cant delete. How you get access to that anyway?... FBI!!! OPEN UP!");
+                }
+            } else {
+                return notFound("Destination does not exist");
+            }
+        } else {
+            return unauthorized("Oops, you are not logged in");
+        }
+    }
+
 
     /**
      * Links a photo with a photo id to a destination with a destination id.

@@ -51,15 +51,22 @@ public class TestDatabaseManager {
         }
 
         if (isInSuccessState) {
-            try {
-                this.populateUsers();
-            }catch(Exception error){
-                System.out.println("Populate Users failed");
+            boolean successfullyAddedAdmin = this.createDefaultAdmin();
+            if (! successfullyAddedAdmin) {
+                isInSuccessState = false;
+            }
+        }
+
+        if (isInSuccessState) {
+            boolean successfullyAddedAllUsers = this.populateNormalUsers();
+            if (! successfullyAddedAllUsers) {
+                isInSuccessState = false;
             }
         }
 
         if (isInSuccessState) {
             try {
+                System.out.println("got to add trips");
                 this.addTrips();
             }catch(Exception err){
                 System.out.println("addtrips failed");
@@ -68,6 +75,7 @@ public class TestDatabaseManager {
 
         if (isInSuccessState) {
             try {
+                System.out.println("got to add destinations and visits");
                 this.addDestinationsAndVisits();
             }catch(Exception err){
                 System.out.println("Add destinations and vists FAILED");
@@ -76,6 +84,7 @@ public class TestDatabaseManager {
 
         if (isInSuccessState) {
             if(ApplicationManager.getUserPhotoPath().equalsIgnoreCase("/test/resources/test_photos/user_")){
+                System.out.println("got to add photos");
                 this.addUserPhotos();
             }
         }
@@ -85,10 +94,12 @@ public class TestDatabaseManager {
 
     /**
      * Populates the database with users. (requires addTravellerTypes and addNationalitiesAndPassports to be called beforehand)
+     *
+     * @return A boolean, true if successfully added all normal users, else false
      */
-    public void populateUsers(){
+    public boolean populateNormalUsers(){
+        boolean isInSuccessState = true;
         try {
-            this.createDefaultAdmin();
             //Groupie
             TravellerType travellerType1 = null;
             TravellerType travellerType2 = null;
@@ -146,6 +157,7 @@ public class TestDatabaseManager {
             try {
                 user.save();
             }catch(Exception err){
+                isInSuccessState = false;
                 System.out.printf("User1 failed");
             }
             user2.getTravellerTypes().add(travellerType2);
@@ -157,6 +169,7 @@ public class TestDatabaseManager {
             try{
                 user2.save();
             }catch(Exception err){
+                isInSuccessState = false;
                 System.out.printf("User2 failed");
             }
             user3.getTravellerTypes().add(travellerType1);
@@ -167,21 +180,26 @@ public class TestDatabaseManager {
             try{
                 user3.save();
             }catch(Exception err){
+                isInSuccessState = false;
                 System.out.printf("User1 failed");
             }
 
         } catch (Exception e) {
-            System.out.println("This is a caught error");
-            e.printStackTrace();
+            isInSuccessState = false;
+            System.out.println("Failed to create all users");
         }
 
-
+        return isInSuccessState;
     }
 
     /**
      * Creates a default admin.
+     *
+     * @return A boolean, true if successfully created the admin, false otherwise
      */
-    public void createDefaultAdmin(){
+    public boolean createDefaultAdmin(){
+        boolean isInSuccessState = true;
+
         User user = new User("admin@admin.com", "admin", "admin", "admin", LocalDate.now(), "male");
         user.setDateOfBirth(LocalDate.of(2019, 2, 18));
         user.setTravellerTypes(TravellerType.find.all().subList(5, 6)); // Business Traveller
@@ -190,17 +208,21 @@ public class TestDatabaseManager {
         try {
             user.save();
         } catch (Exception e) {
+            isInSuccessState = false;
             System.out.println("Error making admin: User is already in db");
         }
 
-        Admin admin = null;
-        try {
-            admin = new Admin(user.userid, true);
-        } catch (Exception e) {
-            System.out.println("Error making admin: Admin is already in db");
+        if (isInSuccessState) {
+            Admin admin = new Admin(user.userid, true);
+            try {
+                admin.save();
+            } catch (Exception e) {
+                isInSuccessState = false;
+                System.out.println("Error making admin: Admin is already in db");
+            }
         }
 
-        admin.save();
+        return isInSuccessState;
     }
 
 

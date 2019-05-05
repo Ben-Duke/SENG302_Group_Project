@@ -1,5 +1,7 @@
 package factories;
 
+import formdata.DestinationFormData;
+import models.Admin;
 import models.Destination;
 import models.User;
 import models.UserPhoto;
@@ -104,6 +106,15 @@ public class DestinationFactory {
     }
 
     /**
+     * Return a DestinationFormData instance constructed from a destination instance
+     */
+    public DestinationFormData makeDestinationFormData(Destination dest) {
+        return new DestinationFormData(dest.getDestName(), dest.getDestType(),
+                dest.getDistrict(), dest.getCountry(), dest.getLatitude(),
+                dest.getLongitude());
+    }
+
+    /**
      * Finds the list of all destinations from other users that are private and match the given destination
      * @param userId the user's own ID
      * @param destination the destination to check if there are matches to
@@ -120,7 +131,7 @@ public class DestinationFactory {
         for (Destination existingDestination : allDestinations) {
             if (destination.equals(existingDestination)) {
 
-                matchingDestinations.add(destination);
+                matchingDestinations.add(existingDestination);
             }
         }
         return matchingDestinations;
@@ -160,5 +171,31 @@ public class DestinationFactory {
         }
         destination.userPhotos.removeAll(photosToRemove);
 
+    }
+
+
+    /**
+     * Merges all matching destination when one private destination is made public, will not merge if destination is used in trip
+     * @param destinationList list of all matching private destinations
+     * @param destination destination of user making private destination public
+     * @return check to see if destinations are used in trips
+     */
+    public Boolean mergeDestinations(List<Destination> destinationList, Destination destination) {
+        Admin defaultAdmin = Admin.find.query().where().eq("isDefault", true).findOne();
+        User defaultAdminUser = User.find.query().where().eq("userid", defaultAdmin.getUserId()).findOne();
+        destinationList.add(destination);
+        for (Destination otherDestination : destinationList) {
+            if (!otherDestination.visits.isEmpty()) {
+                return false;
+            } else {
+                if(otherDestination.getUser() != destination.getUser()) {
+                    otherDestination.delete();
+                }
+            }
+        }
+        destination.setIsPublic(true);
+        destination.setUser(defaultAdminUser);
+        destination.update();
+        return true;
     }
 }

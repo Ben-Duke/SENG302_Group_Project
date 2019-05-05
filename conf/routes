@@ -196,6 +196,8 @@ POST     /users/destinations/ttypes/:id    controllers.TravellerTypeController.s
 #Handles making a destination public
 GET     /users/destinations/public/:id         controllers.DestinationController.makeDestinationPublic(request : Request, id : Integer)
 
+GET     /users/destination/merge/:id           controllers.DestinationController.makeDestinationsMerge(request : Request, id : Integer)
+
 #Renders page for editing public destinations
 GET     /users/destinations/edit/public/:id     controllers.DestinationController.editPublicDestination(request : Request, id : Integer)
 

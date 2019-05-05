@@ -11,17 +11,13 @@ import java.util.List;
 @Constraints.Validate
 public class VisitFormData implements Constraints.Validatable<List<ValidationError>> {
 
-    public String destName;
     public String arrival;
     public String departure;
-    public String visitName;
 
 
-    public VisitFormData(String destName, String arrival, String departure, String visitName) {
-        this.destName = destName;
+    public VisitFormData(String arrival, String departure) {
         this.arrival = arrival;
         this.departure = departure;
-        this.visitName = visitName;
     }
 
     public VisitFormData() {
@@ -31,16 +27,16 @@ public class VisitFormData implements Constraints.Validatable<List<ValidationErr
     @Override
     public List<ValidationError> validate() {
         List<ValidationError> errors = new ArrayList<>();
-        if (destName == null || destName.length() == 0) {
-            errors.add(new ValidationError("destName", "Please enter a Destination to add"));
 
-        }
         if ((!arrival.isEmpty()) && (!departure.isEmpty())) {
             LocalDate now = LocalDate.now();
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             LocalDate arrivalDate = LocalDate.parse(arrival, formatter);
             LocalDate departureDate = LocalDate.parse(departure, formatter);
+            System.out.println(arrivalDate);
+            System.out.println(departureDate);
             if ((arrivalDate.compareTo(departureDate)) > 0) {
+                System.out.println("error date");
                 errors.add(new ValidationError("arrival", "Please provide an arrival date after the departure date"));
                 errors.add(new ValidationError("departure", "Please provide an arrival date after the departure date"));
             }
@@ -55,13 +51,6 @@ public class VisitFormData implements Constraints.Validatable<List<ValidationErr
     }
 
 
-    public String getDestName() {
-        return destName;
-    }
-
-    public void setDestName(String destName) {
-        this.destName = destName;
-    }
 
     public String getArrival() {
         return arrival;
@@ -79,12 +68,4 @@ public class VisitFormData implements Constraints.Validatable<List<ValidationErr
         this.departure = departure;
     }
 
-    public String getVisitName() {
-        return visitName;
-    }
-
-    public void setVisitName(String visitName) {
-        this.visitName = visitName;
-    }
 }
-

@@ -10,7 +10,6 @@ import models.Destination;
 import models.Trip;
 import models.User;
 import models.Visit;
-import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,7 +27,6 @@ import play.test.Helpers;
 import play.test.WithApplication;
 import utilities.TestDatabaseManager;
 
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import static org.junit.Assert.*;
@@ -249,7 +247,6 @@ public class TripControllerTest extends WithApplication {
         assertEquals("2018-05-06", visit.getDeparture());
         //Update the first visit from Trip to New Zealand from Christchurch to The Wok.
         Map<String, String> formData = new HashMap<>();
-        formData.put("destination", "3");
         formData.put("arrival", "2019-04-20");
         formData.put("departure", "2019-06-09");
         Http.RequestBuilder request = Helpers.fakeRequest().bodyForm(formData).method(Helpers.POST).uri("/users/trips/visit/edit/1").session("connected", "2");
@@ -258,7 +255,7 @@ public class TripControllerTest extends WithApplication {
         visit = Visit.find.byId(1);
         assertEquals(SEE_OTHER, result.status());
         assertEquals("Trip to New Zealand", visit.getTrip().getTripName());
-        assertEquals("The Wok", visit.getDestination().getDestName());
+        assertEquals("Christchurch", visit.getDestination().getDestName());
         assertEquals("2019-04-20", visit.getArrival());
         assertEquals("2019-06-09", visit.getDeparture());
     }
@@ -272,7 +269,6 @@ public class TripControllerTest extends WithApplication {
         assertEquals("2018-05-06", visit.getDeparture());
         //Update the first visit from Trip to New Zealand from Christchurch to The Wok.
         Map<String, String> formData = new HashMap<>();
-        formData.put("destination", "3");
         formData.put("arrival", "");
         formData.put("departure", "");
         Http.RequestBuilder request = Helpers.fakeRequest().bodyForm(formData).method(Helpers.POST).uri("/users/trips/visit/edit/1").session("connected", "2");
@@ -281,7 +277,7 @@ public class TripControllerTest extends WithApplication {
         visit = Visit.find.byId(1);
         assertEquals(SEE_OTHER, result.status());
         assertEquals("Trip to New Zealand", visit.getTrip().getTripName());
-        assertEquals("The Wok", visit.getDestination().getDestName());
+        assertEquals("Christchurch", visit.getDestination().getDestName());
         assertEquals("", visit.getArrival());
         assertEquals("", visit.getDeparture());
     }
@@ -295,18 +291,16 @@ public class TripControllerTest extends WithApplication {
         assertEquals("2018-05-06", visit.getDeparture());
         //Update the first visit from Trip to New Zealand from Christchurch to Wellington
         Map<String, String> formData = new HashMap<>();
-        formData.put("destination", "2");
         formData.put("arrival", "2019-04-20");
         formData.put("departure", "2019-06-09");
         Http.RequestBuilder request = Helpers.fakeRequest().bodyForm(formData).method(Helpers.POST).uri("/users/trips/visit/edit/1").session("connected", "2");
         CSRFTokenHelper.addCSRFToken(request);
         Result result = route(app, request);
         visit = Visit.find.byId(1);
-        assertEquals(BAD_REQUEST, result.status());
         assertEquals("Trip to New Zealand", visit.getTrip().getTripName());
         assertEquals("Christchurch", visit.getDestination().getDestName());
-        assertEquals("2018-05-04", visit.getArrival());
-        assertEquals("2018-05-06", visit.getDeparture());
+        assertEquals("2019-04-20", visit.getArrival());
+        assertEquals("2019-06-09", visit.getDeparture());
     }
 
     /**
@@ -381,7 +375,7 @@ public class TripControllerTest extends WithApplication {
         String arrival = "2019-04-20";
         String departure = "2019-06-09";
         //University of Canterbury, testTrip, visitOrder = 1
-        VisitFormData visitformdata = new VisitFormData(Destination.find.byId(1).getDestName(), arrival, departure, Trip.find.byId(1).tripName);
+        VisitFormData visitformdata = new VisitFormData(arrival, departure);
         Visit visit = visitfactory.createVisit(visitformdata, Destination.find.byId(1), User.find.byId(1).getTrips().get(0), 1 );
         visit.save();
         //There should be 1 row in trips, which is the visit that was put in.

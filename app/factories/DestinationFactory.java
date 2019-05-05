@@ -131,7 +131,7 @@ public class DestinationFactory {
         for (Destination existingDestination : allDestinations) {
             if (destination.equals(existingDestination)) {
 
-                matchingDestinations.add(destination);
+                matchingDestinations.add(existingDestination);
             }
         }
         return matchingDestinations;

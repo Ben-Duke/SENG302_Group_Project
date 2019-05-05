@@ -65,11 +65,10 @@ public class TestDatabaseManager {
         }
 
         if (isInSuccessState) {
-            try {
-                System.out.println("got to add trips");
-                this.addTrips();
-            }catch(Exception err){
-                System.out.println("addtrips failed");
+            System.out.println("got to add trips");
+            boolean successfullyAddedAllTrips =  this.addTrips();
+            if (! successfullyAddedAllTrips) {
+                isInSuccessState = false;
             }
         }
 
@@ -392,8 +391,12 @@ public class TestDatabaseManager {
 
     /**
      * Populates the databsae with trips added to users 2,3 and 4.
+     *
+     * @return A boolean, true if successfully added all trips, false otherwise.
      */
-    public void addTrips(){
+    public boolean addTrips(){
+        boolean isInSuccessState = true;
+
         //Add trips for user2
         Trip trip1 = new Trip("Trip to New Zealand", true, User.find.byId(2));
         Trip trip2 = new Trip("Christchurch to Wellington, to The Wok and back", false, User.find.byId(2));
@@ -418,11 +421,14 @@ public class TestDatabaseManager {
             try {
                 trip.save();
             } catch (Exception e) {
+                isInSuccessState = false;
                 System.out.println("Failed to save trip for user: " +
                         trip.getUser().getEmail() + " with trip name: " +
                         trip.getTripName() + " due to uniqueness constraint fail");
             }
         }
+
+        return isInSuccessState;
     }
 
     public void addUserPhotos(){

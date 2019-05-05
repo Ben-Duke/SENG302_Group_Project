@@ -11,6 +11,41 @@ import java.util.*;
 @Entity
 public class Destination extends Model {
 
+    @Id
+    public Integer destid;
+
+    public String destName;
+    public String destType;
+    public String district;
+    public String country;
+    public double latitude;
+    public double longitude;
+    public boolean isPublic;
+
+
+    @ManyToOne
+    public UserPhoto primaryPhoto;
+
+    @JsonIgnore
+    @ManyToOne
+    @JoinColumn(name = "user", referencedColumnName = "userid")
+    public User user;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "destination")
+    public List<Visit> visits;
+
+    @JsonIgnore
+    @ManyToMany(mappedBy = "destinations")
+    public List<UserPhoto> userPhotos;
+
+    @JsonIgnore
+    @ManyToMany(cascade = CascadeType.ALL)
+    public Set<TravellerType> travellerTypes;
+
+    public static Finder<String,Destination> findString = new Finder<>(Destination.class);
+    public static Finder<Integer,Destination> find = new Finder<>(Destination.class);
+
     /**
      * Destination constructor with isPublic method
      * @param destName
@@ -44,14 +79,7 @@ public class Destination extends Model {
      * @param user
      */
     public Destination(String destName, String destType, String district, String country, double latitude, double longitude, User user){
-        this.destName = destName;
-        this.user = user;
-        this.destType = destType;
-        this.district = district;
-        this.country = country;
-        this.latitude = latitude;
-        this.longitude = longitude;
-        this.isPublic = false;
+        this(destName, destType, district, country, latitude, longitude, user, false);
     }
 
     /**
@@ -93,41 +121,6 @@ public class Destination extends Model {
         countryMap.remove("");
         return countryMap;
     }
-
-    @Id
-    public Integer destid;
-
-    public String destName;
-    public String destType;
-    public String district;
-    public String country;
-    public double latitude;
-    public double longitude;
-    public boolean isPublic;
-
-
-    @ManyToOne
-    public UserPhoto primaryPhoto;
-
-    @JsonIgnore
-    @ManyToOne
-    @JoinColumn(name = "user", referencedColumnName = "userid")
-    public User user;
-
-    @JsonIgnore
-    @OneToMany(mappedBy = "destination")
-    public List<Visit> visits;
-
-    @JsonIgnore
-    @ManyToMany(mappedBy = "destinations")
-    public List<UserPhoto> userPhotos;
-
-    @JsonIgnore
-    @ManyToMany(cascade = CascadeType.ALL)
-    public Set<TravellerType> travellerTypes;
-
-    public static Finder<String,Destination> findString = new Finder<>(Destination.class);
-    public static Finder<Integer,Destination> find = new Finder<>(Destination.class);
 
 
     //GETTERS
@@ -187,6 +180,25 @@ public class Destination extends Model {
 
     public void addTravellerType(TravellerType travellerType){
         this.travellerTypes.add(travellerType);
+    }
+
+    @Override
+    public String toString() {
+        return "Destination{" +
+                "destid=" + destid +
+                ", destName='" + destName + '\'' +
+                ", destType='" + destType + '\'' +
+                ", district='" + district + '\'' +
+                ", country='" + country + '\'' +
+                ", latitude=" + latitude +
+                ", longitude=" + longitude +
+                ", isPublic=" + isPublic +
+                ", primaryPhoto=" + primaryPhoto +
+                ", user=" + user +
+                ", visits=" + visits +
+                ", userPhotos=" + userPhotos +
+                ", travellerTypes=" + travellerTypes +
+                '}';
     }
 
     /**
@@ -255,8 +267,15 @@ public class Destination extends Model {
         return this.user.getUserid() == userid;
     }
 
-
-
-
-
+    /** Modifies the fields of this Destination which are included in the
+     *   destination editing form to be equal to those fields of the destination
+     *   passed in */
+    public void applyEditChanges(Destination newDestination) {
+        this.destName = newDestination.getDestName();
+        this.country = newDestination.getCountry();
+        this.district = newDestination.getDistrict();
+        this.longitude = newDestination.getLongitude();
+        this.latitude = newDestination.getLatitude();
+        this.destType = newDestination.getDestType();
+    }
 }

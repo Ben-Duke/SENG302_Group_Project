@@ -8,6 +8,9 @@ import play.mvc.Http;
 import javax.persistence.*;
 
 @Entity
+//@Table(name = "admin",
+//        uniqueConstraints = @UniqueConstraint(columnNames = "userId")
+//)
 public class Admin extends BaseModel {
 
     /**

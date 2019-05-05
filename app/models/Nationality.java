@@ -5,26 +5,32 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.ebean.Finder;
 import io.ebean.Model;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.ManyToMany;
+import javax.persistence.*;
 import java.util.List;
 import java.util.Set;
 
 @Entity
+@Table(name = "nationality",
+        uniqueConstraints = @UniqueConstraint(columnNames = "nationality_name")
+)
 public class Nationality extends Model {
-    public Nationality(String nationality){
-        this.nationalityName = nationality;
-    }
-
     @Id
     public Integer natid;
 
+    @Column
     public String nationalityName;
 
     @ManyToMany(mappedBy = "nationality")
     @JsonIgnore
     public Set<User> users;
+
+    public static Finder<Integer,Nationality> find = new Finder<>(Nationality.class);
+
+
+    // --------------------- methods below here--------------------------------
+    public Nationality(String nationality){
+        this.nationalityName = nationality;
+    }
 
     public String getNationalityName() { return nationalityName; }
 
@@ -36,5 +42,5 @@ public class Nationality extends Model {
         this.users = users;
     }
 
-    public static Finder<Integer,Nationality> find = new Finder<>(Nationality.class);
+
 }

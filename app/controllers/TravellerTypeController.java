@@ -39,7 +39,7 @@ public class TravellerTypeController {
 
             return ok(updatetraveller.render(userForm, travellerTypes, user));
         }
-        else{
+        else {
             return unauthorized("Oops, you are not logged in");
         }
     }
@@ -84,7 +84,7 @@ public class TravellerTypeController {
      * @return update traveller type page or error page
      */
     public Result submitUpdateTravellerType(Http.Request request){
-        DynamicForm userForm = formFactory.form().bindFromRequest();
+        DynamicForm userForm = formFactory.form().bindFromRequest(request);
         String travellerID = userForm.get("travellertypes");
         User user = User.getCurrentUser(request);
         if (user != null) {
@@ -111,7 +111,7 @@ public class TravellerTypeController {
      * @return update traveller type page or error page
      */
     public Result submitUpdateDestinationTravellerType(Http.Request request, Integer destid){
-        DynamicForm destForm = formFactory.form().bindFromRequest();
+        DynamicForm destForm = formFactory.form().bindFromRequest(request);
         String travellerID = destForm.get("travellertypes");
         User user = User.getCurrentUser(request);
         Destination destination = Destination.find.byId(destid);

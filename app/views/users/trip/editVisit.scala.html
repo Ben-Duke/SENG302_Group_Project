@@ -1,17 +1,30 @@
 @import views.html.helper.form
 @import views.html.helper.select
-@(visitForm : Form[Visit], visit : Visit, destinations : List[Destination], user : User)
+@import formdata.VisitFormData
+
+@(visitForm: Form[VisitFormData], visit: Visit, destinations : List[Destination], user : User)
 @import helper._
 
 @main(user, "Edit destination") {
     @form(action = helper.CSRF(routes.TripController.updateVisit(visit.visitid))) {
-        @select(
-            field = visitForm("destination"),
-            options = destinations.map(destination => destination.destid.toString -> destination.destName),
-            '_label -> "Destination"
-        )
-        @helper.inputDate(visitForm("arrival"), '_label -> "Arrival date: " )
-        @helper.inputDate(visitForm("departure"), '_label -> "Departure date: " )
-        <input type="submit" value="Update destination">
+        <h2>Edit visit to @destinations.get(0).getDestName()</h2>
+        <br>
+        @views.html.bootstrap3.datepicker(visitForm("arrival"),
+            label = "Arrival Date",
+            placeholder = "01/01/2000",
+            help = "Please select Arrival Date")
+
+        @views.html.bootstrap3.datepicker(visitForm("departure"),
+            label = "Departure Date",
+            placeholder = "01/01/2000",
+            help = "Please select Departure Date")
+
+
+        <div class="form-group actions">
+
+            <div class="col-sm-offset-2 col-sm-10">
+                <input id="submit" type="submit" value="Update Visit" class="btn btn-primary"/>
+            </div>
+        </div>
     }
 }

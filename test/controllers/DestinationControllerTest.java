@@ -6,8 +6,11 @@ import models.*;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import play.Application;
 import play.api.test.CSRFTokenHelper;
+import play.data.FormFactory;
 import play.db.Database;
 import play.db.Databases;
 import play.db.evolutions.Evolution;
@@ -20,6 +23,11 @@ import play.test.Helpers;
 import play.test.WithApplication;
 import utilities.TestDatabaseManager;
 
+import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.*;
 
 import static org.junit.Assert.*;
@@ -33,7 +41,9 @@ public class DestinationControllerTest extends WithApplication {
      */
     Database database;
 
-    int REDIRECT_HTTP_STATUS = SEE_OTHER;
+    private int REDIRECT_HTTP_STATUS = SEE_OTHER;
+
+    private final Logger logger = LoggerFactory.getLogger("application");
 
     @Override
     protected Application provideApplication() {
@@ -598,6 +608,7 @@ public class DestinationControllerTest extends WithApplication {
                 .uri("/users/trips/table/edit/1/3").session("connected", "2");
         result = route(app, request);
         assertEquals(REDIRECT_HTTP_STATUS, result.status());
+
         Map<String, String> formData = new HashMap<>();
         formData.put("destName", "Summoner's Rift");
         formData.put("destType", "Yes");
@@ -605,7 +616,8 @@ public class DestinationControllerTest extends WithApplication {
         formData.put("country", "Angola");
         formData.put("latitude", "50.0");
         formData.put("longitude", "-50.0");
-        Http.RequestBuilder request2 = Helpers.fakeRequest().bodyForm(formData).method(POST).uri("/users/destinations/update/3").session("connected", "2");
+        Http.RequestBuilder request2 = Helpers.fakeRequest().bodyForm(formData).
+                method(POST).uri("/users/destinations/update/3").session("connected", "2");
         Result result2 = route(app, request2);
         assertEquals(REDIRECT_HTTP_STATUS, result2.status());
     }
@@ -732,6 +744,23 @@ public class DestinationControllerTest extends WithApplication {
                 .uri("/users/destinations/getalljson").session("connected", null);
         Result result = route(app, request);
         assertEquals(UNAUTHORIZED, result.status());
+    }
+
+    /** THIS TEST IS EXPECTED TO FAIL LOCALLY
+     *
+     *  However it will pass on the pipeline, for some reason the public field only
+     *  gets added on the server.
+     */
+    @Test
+    public void getVisibleDestinationMarkersJSONLoggedIn() {
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/destinations/getalljson").session("connected", "2");
+        Result result = route(app, request);
+
+        JsonNode jsonJacksonNodeArray= Json.parse(contentAsString(result));
+
+        assertEquals(6, jsonJacksonNodeArray.size());
     }
 
     @Test

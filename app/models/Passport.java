@@ -5,12 +5,13 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.ebean.Finder;
 import io.ebean.Model;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.ManyToMany;
+import javax.persistence.*;
 import java.util.List;
 
 @Entity
+@Table(name = "passport",
+        uniqueConstraints = @UniqueConstraint(columnNames = "passport_name")
+)
 public class Passport extends Model {
 
     public Passport(String passportName){
@@ -20,6 +21,7 @@ public class Passport extends Model {
     @Id
     public Integer passid;
 
+    @Column(name="passport_name")
     public String passportName;
 
     @JsonIgnore

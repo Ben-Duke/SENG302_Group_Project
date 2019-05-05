@@ -741,9 +741,9 @@ public class DestinationControllerTest extends WithApplication {
                 .uri("/users/destinations/getalljson").session("connected", "2");
         Result result = route(app, request);
 
-        JSONArray jsonArrayActual = new (contentAsString(result));
+        JsonNode jsonJacksonNodeArray= Json.parse(contentAsString(result));
 
-        assertEquals(6, jsonArrayActual.length());
+        assertEquals(6, jsonJacksonNodeArray.size());
     }
 
     @Test

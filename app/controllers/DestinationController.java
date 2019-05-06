@@ -1,10 +1,15 @@
 package controllers;
 
+import accessors.DestinationAccessor;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import factories.DestinationFactory;
 import formdata.DestinationFormData;
 import models.*;
+
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import play.data.DynamicForm;
 import play.data.Form;
 import play.data.FormFactory;
@@ -18,10 +23,19 @@ import javax.inject.Inject;
 import java.io.File;
 import java.util.*;
 
+
+import utilities.UtilityFunctions;
+import views.html.users.destination.*;
+
 public class DestinationController extends Controller {
 
     @Inject
     FormFactory formFactory;
+
+    @Inject
+    DestinationFactory destFactory;
+
+    private final Logger logger = LoggerFactory.getLogger("application");
 
     /**
      * Performs validation tests on each on the users input for
@@ -128,7 +142,7 @@ public class DestinationController extends Controller {
             Form<DestinationFormData> destFormData;
             destFormData = formFactory.form(DestinationFormData.class);
 
-            return ok(createdestination.render(destFormData, Destination.getIsoCountries(), Destination.getTypeList(), user));
+            return ok(createEditDestination.render(destFormData, null, Destination.getIsoCountries(), Destination.getTypeList(),user));
         }
         return unauthorized("Oops, you are not logged in");
     }
@@ -144,49 +158,19 @@ public class DestinationController extends Controller {
      * @return renders the index page or an unauthorized message is no user is logged in.
      */
     public Result saveDestinationFromRequest(Http.Request request) {
-        Form<DestinationFormData> destinationFormData;
-        destinationFormData = formFactory.form(DestinationFormData.class)
-                                                                .bindFromRequest();
         User user = User.getCurrentUser(request);
 
         if (user != null) { // checks if a user is logged in
-            if (! destinationFormData.hasErrors()) {
-                // no form errors
-                // processing it now
-                DynamicForm destForm = formFactory.form().bindFromRequest();
-
-                //If program gets past this point then inputted destination is valid
-
-                Destination newDestination = formFactory.form(Destination.class)
-                                                        .bindFromRequest().get();
-
-                // checking if private and public destinations already exist. -----------
-                DestinationFactory destinationFactory = new DestinationFactory();
-                int userId = user.getUserid();
-
-                boolean hasError = false;
-                if (destinationFactory.userHasPrivateDestination(userId, newDestination)) {
-                    flash("privateDestinationExists",
-                            "You already have a matching private destination!");
-                    hasError = true;
-                } else if (destinationFactory.doesPublicDestinationExist(newDestination)) {
-                    flash("publicDestinationExists",
-                            "A matching public destination already exists!");
-                    hasError = true;
-                }
-
-                if (hasError) {
-                    return badRequest(createdestination.render(destinationFormData,
-                            Destination.getIsoCountries(), Destination.getTypeList(), user));
+                Result errorForm = validateEditCreateForm(request, user, null);
+                if (errorForm != null) {
+                    return errorForm;
                 } else {
+                    Destination newDestination = formFactory.form(Destination.class)
+                            .bindFromRequest(request).get();
                     newDestination.setUser(user);
                     newDestination.save();
                     return redirect(routes.DestinationController.indexDestination());
                 }
-            } else {
-                return badRequest(createdestination.render(destinationFormData,
-                        Destination.getIsoCountries(), Destination.getTypeList(), user));
-            }
         } else {
             return unauthorized("Oops, you are not logged in");
         }
@@ -202,35 +186,38 @@ public class DestinationController extends Controller {
      * a not found error, or an unauthorized message if the destination does not belong to the user.
      */
     public Result editDestination(Http.Request request, Integer destId) {
-        User user = User.getCurrentUser(request);
-
-        if (user != null) {
-            Destination destination = Destination.find.query().where().eq("destid", destId).findOne();
-
-            if (destination != null) {
-                if (destination.isUserOwner(user.getUserid()) || user.userIsAdmin()) {
-
-                    Form<Destination> destForm = formFactory.form(Destination.class).fill(destination);
-
-                    Map<String, Boolean> typeList = Destination.getTypeList();
-                    typeList.replace(destination.getDestType(), true);
-
-                    Map<String, Boolean> countryList = Destination.getIsoCountries();
-                    countryList.replace(destination.getCountry(), true);
-
-                    return ok(editDestination.render(destForm, destination, countryList, typeList,user));
-
-                } else {
-                    return unauthorized("Not your destination. You can't edit.");
-                }
-            } else {
-                return notFound("Destination does not exist");
-            }
-        } else {
-            return unauthorized("Oops, you are not logged in");
+        Result unauthorised = UtilityFunctions.checkLoggedIn(request);
+        if (unauthorised != null) {
+            return unauthorised;
         }
+
+        User user = User.getCurrentUser(request);
+        Destination destination = DestinationAccessor.getDestinationById(destId);
+        if (destination == null) {
+            return notFound("Destination does not exist");
+        } else if (!(user != null && (destination.isUserOwner(user.getUserid()) || user.userIsAdmin()))) {
+            return unauthorized("Not your destination. You can't edit.");
+        }
+
+        return renderDestinationForm(user, destination, destId);
     }
 
+    /** Render the destination form */
+    private Result renderDestinationForm(User user, Destination destination, Integer destId) {
+        DestinationFormData formData = destFactory.makeDestinationFormData(destination);
+
+        Form<DestinationFormData> destForm = formFactory.form(
+                DestinationFormData.class).fill(formData);
+
+        // Select the dropdown values which were selected at form submission
+        Map<String, Boolean> typeList = Destination.getTypeList();
+        typeList.replace(destination.getDestType(), true);
+
+        Map<String, Boolean> countryList = Destination.getIsoCountries();
+        countryList.replace(destination.getCountry(), true);
+
+        return ok(createEditDestination.render(destForm, destId, countryList, typeList, user));
+    }
 
     /**
      * Creates a new destination object from the edit page form, checks if inputs make a valid destination.
@@ -246,30 +233,21 @@ public class DestinationController extends Controller {
         User user = User.getCurrentUser(request);
 
         if (user != null) {
-            DynamicForm destForm = formFactory.form().bindFromRequest();
-            Result validationResult = validateDestination(destForm);
 
-            if (validationResult != null) {
-                return validationResult;
+            // Validate form
+            Result errorForm = validateEditCreateForm(request, user, destId);
+            if (errorForm != null) {
+                return errorForm;
             }
-            //If program gets past this point then inputted destination is valid
 
-            Destination newDestination = formFactory.form(Destination.class).bindFromRequest().get();
-
-
-            Destination oldDestination = Destination.find.query().where().eq("destid", destId).findOne();
+            // Save form
+            Destination newDestination = formFactory.form(Destination.class).
+                    bindFromRequest(request).get();
+            Destination oldDestination = DestinationAccessor.getDestinationById(destId);
 
             if (oldDestination != null) {
-
-                if (oldDestination.isUserOwner(user.userid) || user.userIsAdmin()) {
-
-                    oldDestination.setDestName(newDestination.getDestName());
-                    oldDestination.setDestType(newDestination.getDestType());
-                    oldDestination.setCountry(newDestination.getCountry());
-                    oldDestination.setDistrict(newDestination.getDistrict());
-                    oldDestination.setLatitude(newDestination.getLatitude());
-                    oldDestination.setLongitude(newDestination.getLongitude());
-
+                if (oldDestination.isUserOwner(user.userid)) {
+                    oldDestination.applyEditChanges(newDestination);
                     oldDestination.update();
 
                     return redirect(routes.DestinationController.indexDestination());
@@ -283,6 +261,54 @@ public class DestinationController extends Controller {
 
         } else {
             return unauthorized("Oops, you are not logged in");
+        }
+    }
+
+    /** Perform form validation for the edit/create destination form
+     *  Returns a request containing the form with errors if errors found,
+     *  null if no errors found */
+    private Result validateEditCreateForm(Http.Request request, User user, Integer destId) {
+        Form<DestinationFormData> destForm;
+        destForm = formFactory.form(DestinationFormData.class).bindFromRequest(request);
+
+        // check if private and public destinations already exist.
+        // Cannon use .get() on form unless there are no errors
+        boolean hasError = false;
+        if (!destForm.hasErrors()) {
+            Destination destination = formFactory.form(Destination.class).
+                    bindFromRequest(request).get();
+
+            DestinationFactory destinationFactory = new DestinationFactory();
+            int userId = user.getUserid();
+
+            if (destinationFactory.userHasPrivateDestination(userId, destination)) {
+                flash("privateDestinationExists",
+                        "You already have a matching private destination!");
+                hasError = true;
+            } else if (destinationFactory.doesPublicDestinationExist(destination)) {
+                flash("publicDestinationExists",
+                        "A matching public destination already exists!");
+                hasError = true;
+            }
+        }
+
+        // Use a normal form to trigger validation
+        if (destForm.hasErrors() || hasError) {
+
+            Map<String, Boolean> typeList = Destination.getTypeList();
+            Map<String, Boolean> countryList = Destination.getIsoCountries();
+
+            // Use a dynamic form to get the values of the dropdown inputs
+            DynamicForm dynamicDestForm = formFactory.form().bindFromRequest(request);
+
+            // Select the dropdown values which were selected at form submission
+            typeList.replace(dynamicDestForm.get("destType"), true);
+            countryList.replace(dynamicDestForm.get("country"), true);
+
+            return badRequest(createEditDestination.render(destForm, destId, countryList,
+                    typeList, user));
+        } else {
+            return null;    // no errors
         }
     }
 
@@ -527,15 +553,9 @@ public class DestinationController extends Controller {
                         //no matching pub destination exists, making public now
                         //sets the destination to public, sets the owner to the default admin and updates the destination
                         List<Destination> matchingDests = destFactory.getOtherUsersMatchingPrivateDestinations(user.userid, destination);
-                        if (matchingDests.isEmpty()) {
+                        if (matchingDests.size() == 0) {
                             destination.setIsPublic(true);
                             destination.update();
-                        } else if (matchingDests.size() == 1) {
-                            flash("matchingDest", "There is " + matchingDests.size() + " other destination that matches " +
-                                    destination.getDestName() + ".\nWould you like to merge?");
-                        } else {
-                            flash("matchingDest", "There are " + matchingDests.size() + " other destinations that match " +
-                                    destination.getDestName() + ".\nWould you like to merge?");
                         }
                         return redirect(routes.DestinationController.indexDestination());
                     }
@@ -551,6 +571,31 @@ public class DestinationController extends Controller {
             return unauthorized("Oops, you are not logged in");
         }
     }
+
+    public Result makeDestinationsMerge(Http.Request request, int destId) {
+        User user = User.getCurrentUser(request);
+        if (user != null) {
+            Destination destination = Destination.find.query().where().eq("destid", destId).findOne();
+            if (destination != null) {
+                DestinationFactory destFactory = new DestinationFactory();
+                List<Destination> matchingDests = destFactory.getOtherUsersMatchingPrivateDestinations(user.userid, destination);
+                if (destination.isUserOwner(user.userid) || user.userIsAdmin()) {
+                    if(!destFactory.mergeDestinations(matchingDests, destination)) {
+                        flash("visitExists",
+                                "This destination is used in a trip!");
+                    }
+                    return redirect(routes.DestinationController.indexDestination());
+                } else {
+                    return unauthorized("HEY!, not yours. You cant delete. How you get access to that anyway?... FBI!!! OPEN UP!");
+                }
+            } else {
+                return notFound("Destination does not exist");
+            }
+        } else {
+            return unauthorized("Oops, you are not logged in");
+        }
+    }
+
 
     /**
      * Links a photo with a photo id to a destination with a destination id.

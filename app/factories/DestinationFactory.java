@@ -172,6 +172,11 @@ public class DestinationFactory {
         return visibleDestinations;
     }
 
+    /**
+     * Move the photos from one destination to being linked to another
+     * @param destinationOne the original destination which will no longer hold photos
+     * @param destinationTwo the new destination which will hold new photos
+     */
     private void movePhotosToAnotherDestination(Destination destinationOne, Destination destinationTwo) {
         while(!destinationOne.getUserPhotos().isEmpty()) {
             UserPhoto changingPhoto = destinationOne.getUserPhotos().get(0);

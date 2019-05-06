@@ -97,7 +97,6 @@ public class UserPhoto extends Model {
         this.destinations.add(destination);
     }
 
-
     public void removeDestination(Destination destination) { this.destinations.remove(destination);}
     /**
      * Method to set the photo as profile picture (or not)

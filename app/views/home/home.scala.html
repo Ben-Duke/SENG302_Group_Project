@@ -310,11 +310,12 @@
                                         <div class="item">
                                         }
                                     @*<a href="#" data-toggle="modal" data-target=#@photo.getPhotoId()>*@
-                                        <img id="carouselImage" src="@{routes.HomeController.index(photo.getUrlWithPath)}" width="1280">
+                                        @*<img id="carouselImage" src="@{routes.HomeController.index(photo.getUrlWithPath)}" width="1280">*@
+                                    <img class="center" id="carouselImage" src="@{routes.HomeController.index(photo.getUrlWithPath)}">
                                     @*</a>*@
-                                    <div class="carousel-caption">
+@*                                    <div class="carousel-caption">
                                         <h2>insert caption here</h2>
-                                    </div>
+                                    </div>*@
                                     <a class="btn btn-primary" id="linkButton" href="#" data-toggle="modal" data-target="#@photo.getPhotoId()">Link to destination</a>
                                     <a class="btn btn-primary" id="setProfilePicture"
                                        onclick="setProfilePictureRequest(

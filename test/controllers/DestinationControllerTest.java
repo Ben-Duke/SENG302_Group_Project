@@ -2,11 +2,13 @@ package controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import models.*;
+import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
 import play.Application;
 import play.api.test.CSRFTokenHelper;
 import play.db.Database;
@@ -19,6 +21,7 @@ import play.mvc.Result;
 import play.test.Helpers;
 import play.test.WithApplication;
 import utilities.TestDatabaseManager;
+import utilities.UtilityFunctions;
 
 import java.util.*;
 
@@ -32,6 +35,8 @@ public class DestinationControllerTest extends WithApplication {
      * The fake database
      */
     Database database;
+
+    Logger logger = UtilityFunctions.getLogger();
 
     int REDIRECT_HTTP_STATUS = SEE_OTHER;
 
@@ -578,6 +583,7 @@ public class DestinationControllerTest extends WithApplication {
         formData.put("longitude", "-50.0");
         Http.RequestBuilder request2 = Helpers.fakeRequest().bodyForm(formData).method(POST).uri("/users/destinations/update/2").session("connected", "2");
         Result result2 = route(app, request2);
+
         assertEquals(UNAUTHORIZED, result2.status());
     }
 
@@ -607,6 +613,7 @@ public class DestinationControllerTest extends WithApplication {
         formData.put("longitude", "-50.0");
         Http.RequestBuilder request2 = Helpers.fakeRequest().bodyForm(formData).method(POST).uri("/users/destinations/update/3").session("connected", "2");
         Result result2 = route(app, request2);
+
         assertEquals(REDIRECT_HTTP_STATUS, result2.status());
     }
 

@@ -4,6 +4,8 @@ import models.Nationality;
 import models.Passport;
 import models.TravellerType;
 import models.User;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -18,6 +20,17 @@ import java.util.regex.Pattern;
  * A class for methods which check user entered data for correctness.
  */
 public class UtilityFunctions {
+
+    /** Get a default logger (application) */
+    public static Logger getLogger() {
+        return UtilityFunctions.getLogger("application");
+    }
+
+    /** Get a new logger */
+    public static Logger getLogger(String loggerName) {
+        return LoggerFactory.getLogger(loggerName);
+    }
+
     public static Set<User> retainFromLists(List<Set<User>> lists){
         int count = 0;
         Set<User> retainedList = lists.get(count);
@@ -181,8 +194,6 @@ public class UtilityFunctions {
             System.out.println(e);
             return null;
         }
-
-
     }
 
 }

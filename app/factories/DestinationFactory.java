@@ -172,8 +172,19 @@ public class DestinationFactory {
         return visibleDestinations;
     }
 
-
+    private void movePhotosToAnotherDestination(Destination destinationOne, Destination destinationTwo) {
+        while(!destinationOne.getUserPhotos().isEmpty()) {
+            UserPhoto changingPhoto = destinationOne.getUserPhotos().get(0);
+            changingPhoto.removeDestination(destinationOne);
+            changingPhoto.addDestination(destinationTwo);
+            destinationOne.getUserPhotos().remove(changingPhoto);
+            changingPhoto.update();
+            destinationOne.update();
+            destinationTwo.update();
+        }
     }
+
+
 
 
     /**
@@ -191,7 +202,10 @@ public class DestinationFactory {
                 return false;
             } else {
                 if(otherDestination.getUser() != destination.getUser()) {
+                    movePhotosToAnotherDestination(otherDestination, destination);
                     otherDestination.delete();
+                    otherDestination.update();
+                    destination.update();
                 }
             }
         }

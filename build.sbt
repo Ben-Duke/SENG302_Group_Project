@@ -25,6 +25,7 @@ libraryDependencies ++= Seq (
   "io.cucumber" % "cucumber-java" % "4.2.0",
   "org.mockito" % "mockito-core" % "2.25.1" % " test "
 )
+libraryDependencies += "com.novocode" % "junit-interface" % "0.8" % "test->default"
 testOptions in Test += Tests.Argument(TestFrameworks.JUnit, "-a", "-v")
 
 

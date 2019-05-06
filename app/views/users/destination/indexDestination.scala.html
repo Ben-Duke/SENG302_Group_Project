@@ -79,7 +79,7 @@
                                     </a>
                                 } else {
                                     <!-- RED BUTTON IS FOR MERGING -->
-                                    <a href="@routes.DestinationController.makeDestinationPublic(destination.getDestId)" data-target="#publicDestModal" class="btn btn-danger">
+                                    <a href="@routes.DestinationController.makeDestinationsMerge(destination.getDestId)" data-target="#publicDestModal" class="btn btn-danger">
                                         Make destination public
                                     </a>
                             }
@@ -99,18 +99,17 @@
                     <br>
                     }
             }
-                @if(flash.containsKey("matchingDest")) {
+                @if(flash.containsKey("visitExists")) {
                     <div class="well">
                         <div id="error-message" class="text-danger">
-                            @flash.get("matchingDest")
+                        @flash.get("visitExists")
                         </div>
-                        <a href="@routes.DestinationController.indexDestination()" class="btn btn-danger">
-                            Merge Destinations
-                        </a>
                     </div>
                 }
+
             </tbody>
         </table>
+
 
 
         <h1>Public destinations</h1>

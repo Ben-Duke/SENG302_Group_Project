@@ -1,8 +1,6 @@
 package factories;
 
-import models.Destination;
-import models.User;
-import models.UserPhoto;
+import models.*;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -255,6 +253,72 @@ public class DestinationFactoryTest extends WithApplication {
 
         assertTrue(matchingDests.isEmpty());
     }
+
+    @Test
+    public void testMergingTwoPrivateDestinations() {
+        User adminUser = new User("test@testytest.test", "hunter22");
+        adminUser.save();
+        Admin admin = new Admin(adminUser.userid, true);
+        admin.save();
+        Destination testPrivateDestination = new Destination("Rotherham",
+                "Town", "North Canterbury", "New Zealand",
+                -42.699000, 172.943667, adminUser, false);
+        testPrivateDestination.save();
+        List<Visit> visitList = new ArrayList();
+        testPrivateDestination.setVisits(visitList);
+
+        User privateUser = new User("test@testers.org", "hunter27");
+        privateUser.save();
+        Destination testPrivateDestination1 = new Destination("Rotherham",
+                "Town", "North Canterbury", "New Zealand",
+                -42.699000, 172.943667, privateUser, false);
+        testPrivateDestination1.save();
+        testPrivateDestination1.setVisits(visitList);
+
+
+        List<Destination> matchingDests = destinationFactory
+                .getOtherUsersMatchingPrivateDestinations(privateUser.getUserid(), testPrivateDestination1);
+
+        Boolean result = destinationFactory.mergeDestinations(matchingDests, testPrivateDestination1);
+        assertTrue(result);
+    }
+
+    @Test
+    public void testMergingTwoPrivateDestinations2() {
+        User adminUser = new User("test@testytest.test", "hunter22");
+        adminUser.save();
+        Admin admin = new Admin(adminUser.userid, true);
+        admin.save();
+        Destination testPrivateDestination = new Destination("Rotherham",
+                "Town", "North Canterbury", "New Zealand",
+                -42.699000, 172.943667, adminUser, false);
+        testPrivateDestination.save();
+        List<Visit> visitList = new ArrayList();
+        testPrivateDestination.setVisits(visitList);
+
+        User privateUser2 = new User("test@testers.org", "hunter27");
+        privateUser2.save();
+        Destination testPrivateDestination2 = new Destination("Rotherham",
+                "Town", "North Canterbury", "New Zealand",
+                -42.699000, 172.943667, privateUser2, false);
+        testPrivateDestination2.save();
+        testPrivateDestination2.setVisits(visitList);
+
+        User privateUser3 = new User("test@testerstest.org", "hunter29");
+        privateUser3.save();
+        Destination testPrivateDestination3 = new Destination("Rotherham",
+                "Town", "North Canterbury", "New Zealand",
+                -42.699000, 172.943667, privateUser3, false);
+        testPrivateDestination3.save();
+        testPrivateDestination3.setVisits(visitList);
+
+
+        List<Destination> matchingDests = destinationFactory
+                .getOtherUsersMatchingPrivateDestinations(privateUser2.getUserid(), testPrivateDestination2);
+
+        assertTrue(destinationFactory.mergeDestinations(matchingDests, testPrivateDestination2));
+    }
+
 
     @Test
     public void removingDestinationPrivatePhotos() {

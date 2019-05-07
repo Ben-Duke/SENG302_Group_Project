@@ -15,9 +15,9 @@
             <!-- The thumbnail in the else is being displayed to show the AC passing -->
         <h1>@user.fName @user.lName
             @if(UserFactory.getUserProfilePicture(user.getUserid()) != null){
-                <img class="img-circle"  width = "60" height="50" src="@{routes.HomeController.serveProfilePicture(user.getUserid())}">
+                <img class="img-circle"  width = "50" height="50" src="@{routes.HomeController.serveProfilePicture(user.getUserid())}">
             } else {
-                <img class="img-circle"  width = "60" height="50" src="@{routes.Assets.at("images/Generic.png")}">
+                <img class="img-circle"  width = "50" height="50" src="@{routes.Assets.at("images/Generic.png")}">
             }
             @if(user.userIsAdmin) {
                 <img class="img"  width = "60" height="50" src="../assets/images/key_2_small.png">
@@ -314,11 +314,12 @@
                                         <div class="item">
                                         }
                                     @*<a href="#" data-toggle="modal" data-target=#@photo.getPhotoId()>*@
-                                        <img id="carouselImage" src="@{routes.HomeController.index(photo.getUrlWithPath)}" width="1280">
+                                        @*<img id="carouselImage" src="@{routes.HomeController.index(photo.getUrlWithPath)}" width="1280">*@
+                                    <img class="center" id="carouselImage" src="@{routes.HomeController.index(photo.getUrlWithPath)}">
                                     @*</a>*@
-                                    <div class="carousel-caption">
+@*                                    <div class="carousel-caption">
                                         <h2>insert caption here</h2>
-                                    </div>
+                                    </div>*@
                                     <a class="btn btn-primary" id="linkButton" href="#" data-toggle="modal" data-target="#@photo.getPhotoId()">Link to destination</a>
                                     <a class="btn btn-primary" id="setProfilePicture"
                                        onclick="setProfilePictureRequest(

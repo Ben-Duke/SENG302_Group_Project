@@ -279,8 +279,10 @@ public class DestinationFactoryTest extends WithApplication {
         List<Destination> matchingDests = destinationFactory
                 .getOtherUsersMatchingPrivateDestinations(privateUser.getUserid(), testPrivateDestination1);
 
-        Boolean result = destinationFactory.mergeDestinations(matchingDests, testPrivateDestination1);
-        assertTrue(result);
+        destinationFactory.mergeDestinations(matchingDests, testPrivateDestination1);
+        List<Destination> destinationsWithSameName = Destination.find.query().where()
+                .eq("destName", "Rotherham").findList();
+        assertEquals(1, destinationsWithSameName.size());
     }
 
     @Test
@@ -315,8 +317,10 @@ public class DestinationFactoryTest extends WithApplication {
 
         List<Destination> matchingDests = destinationFactory
                 .getOtherUsersMatchingPrivateDestinations(privateUser2.getUserid(), testPrivateDestination2);
-
-        assertTrue(destinationFactory.mergeDestinations(matchingDests, testPrivateDestination2));
+        destinationFactory.mergeDestinations(matchingDests, testPrivateDestination2);
+        List<Destination> destinationsWithSameName = Destination.find.query().where()
+                .eq("destName", "Rotherham").findList();
+        assertEquals(1, destinationsWithSameName.size());
     }
 
 

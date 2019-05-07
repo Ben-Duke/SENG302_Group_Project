@@ -192,21 +192,19 @@ public class DestinationFactory {
      * @param destinationTwo the new destination which will hold new visits
      */
     private void moveVisitsToAnotherDestination(Destination destinationOne, Destination destinationTwo){
-        List<Visit> visits = Visit.find.query().where().eq("destination", destinationOne).findList();
-        for(Visit changingVisit : visits) {
-            changingVisit.setDestination(destinationTwo);
-            System.out.println("1" + changingVisit.getDestination().getUser().getfName());
-            changingVisit.update();
-            Visit visit = Visit.find.byId(changingVisit.getVisitid());
-            System.out.println("2" + visit.getDestination().getUser().getfName());
+        List<Visit> visitsFrom = Visit.find.query().where().eq("destination", destinationOne).findList();
+        for(Visit visit : visitsFrom) {
+            visit.delete();
+            //Note: Update this if new attributes are ever added to visit
+            Visit newVisit = new Visit(visit.getArrival(), visit.getDeparture(), visit.getTrip(), destinationTwo, visit.getVisitOrder());
+            newVisit.save();
+            try {
+                visit.update();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
-        visits = Visit.find.query().where().eq("destination", destinationOne).findList();
-        List<Visit> visits2 = Visit.find.query().where().eq("destination", destinationTwo).findList();
-        System.out.println("Prior size is " + visits.size());
-        System.out.println("Prior size dest two is " + visits2.size());
     }
-
-
 
 
     /**
@@ -215,7 +213,7 @@ public class DestinationFactory {
      * @param destination destination of user making private destination public
      * @return check to see if destinations are used in trips
      */
-    public Boolean mergeDestinations(List<Destination> destinationList, Destination destination) {
+    public void mergeDestinations(List<Destination> destinationList, Destination destination) {
         Admin defaultAdmin = Admin.find.query().where().eq("isDefault", true).findOne();
         User defaultAdminUser = User.find.query().where().eq("userid", defaultAdmin.getUserId()).findOne();
         destinationList.add(destination);
@@ -223,18 +221,35 @@ public class DestinationFactory {
             if(otherDestination.getUser() != destination.getUser()) {
                 moveVisitsToAnotherDestination(otherDestination, destination);
                 otherDestination.setVisits(new ArrayList<>());
-                otherDestination.update();
+                try {
+                    otherDestination.update();
+                } catch (Exception e) {
+                    System.out.println("merge destinations 1");
+                    e.printStackTrace();
+                }
                 List<Visit> visits = Visit.find.query().where().eq("destination", otherDestination).findList();
-                System.out.println("size is " + visits.size());
                 movePhotosToAnotherDestination(otherDestination, destination);
-                otherDestination.delete();
-                otherDestination.update();
-                destination.update();
+                try {
+                    otherDestination.delete();
+                } catch (Exception e) {
+                    System.out.println("merge destinations 2");
+                    e.printStackTrace();
+                }
+                try {
+                    destination.update();
+                } catch (Exception e) {
+                    System.out.println("merge destinations 3");
+                    e.printStackTrace();
+                }
             }
         }
         destination.setIsPublic(true);
         destination.setUser(defaultAdminUser);
-        destination.update();
-        return true;
+        try {
+            destination.update();
+        } catch (Exception e) {
+            System.out.println("merge destinations 4");
+            e.printStackTrace();
+        }
     }
 }

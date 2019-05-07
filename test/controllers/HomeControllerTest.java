@@ -386,11 +386,11 @@ public class HomeControllerTest extends WithApplication {
         UserPhoto userPhoto = UserPhoto.find.byId(2);
         assertFalse(userPhoto.isPublic());
         Http.RequestBuilder request = Helpers.fakeRequest()
-                .method(POST)
+                .method(GET)
                 .uri(routes.HomeController.makePicturePublic(2,1).url()).session("connected", "2");
         CSRFTokenHelper.addCSRFToken(request);
         Result result = route(app, request);
-        assertEquals(GET, result.status());
+        assertEquals(SEE_OTHER, result.status());
         userPhoto = UserPhoto.find.byId(2);
         assertTrue(userPhoto.isPublic());
     }

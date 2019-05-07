@@ -4,11 +4,13 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Module;
 import controllers.ApplicationManager;
+import controllers.TreasureHuntController;
 import cucumber.api.java.After;
 import cucumber.api.java.Before;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
+import factories.TreasureHuntFactory;
 import models.Destination;
 import models.TreasureHunt;
 import models.User;
@@ -27,12 +29,15 @@ import play.test.WithApplication;
 import utilities.TestDatabaseManager;
 
 import javax.inject.Inject;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static play.mvc.Http.Status.BAD_REQUEST;
 import static play.mvc.Http.Status.SEE_OTHER;
 
@@ -193,6 +198,54 @@ public class TreasureHuntSteps extends WithApplication {
     public void thereShouldBeATreasureHuntWithTheTitle(String string) {
         TreasureHunt treasureHunt = TreasureHunt.find.query().where().eq("title", string).findOne();
         assertEquals(string, treasureHunt.getTitle());
+    }
+
+    @Given("There are three treasure hunts in the database")
+    public void there_are_three_treasure_hunts_in_the_database() {
+        List<TreasureHunt> treasureHunts = TreasureHunt.find.all();
+        assertEquals(3, treasureHunts.size());
+    }
+
+    @Given("Two of the existing treasure hunts are open and one is closed")
+    public void two_of_the_existing_treasure_hunts_are_open_and_one_is_closed() {
+        TreasureHunt treasureHunt1 = TreasureHunt.find.byId(1);
+        TreasureHunt treasureHunt2 = TreasureHunt.find.byId(2);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate endDate1 = LocalDate.parse(treasureHunt1.getEndDate(), formatter);
+        LocalDate endDate2 = LocalDate.parse(treasureHunt2.getEndDate(), formatter);
+        LocalDate currentDate = LocalDate.now();
+        assertTrue(endDate1.isAfter(currentDate));
+        assertTrue(endDate2.isAfter(currentDate));
+    }
+
+    @Then("The user should only be shown two treasure hunts")
+    public void the_user_should_only_be_shown_two_treasure_hunts() {
+        TreasureHuntController treasureHuntController = new TreasureHuntController();
+        assertEquals(2, treasureHuntController.getOpenTreasureHunts().size());
+    }
+
+    @When("I edit those open treasure hunts to make it closed")
+    public void i_edit_those_open_treasure_hunts_to_make_it_closed() {
+        TreasureHunt treasureHunt1 = TreasureHunt.find.byId(1);
+        TreasureHunt treasureHunt2 = TreasureHunt.find.byId(2);
+        treasureHunt1.setStartDate("2019-01-01");
+        treasureHunt1.setEndDate("2019-01-02");
+        treasureHunt1.update();
+        treasureHunt2.setStartDate("2019-01-01");
+        treasureHunt2.setEndDate("2019-01-02");
+        treasureHunt2.update();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate endDate1 = LocalDate.parse(treasureHunt1.getEndDate(), formatter);
+        LocalDate endDate2 = LocalDate.parse(treasureHunt2.getEndDate(), formatter);
+        LocalDate currentDate = LocalDate.now();
+        assertTrue(endDate1.isBefore(currentDate));
+        assertTrue(endDate2.isBefore(currentDate));
+    }
+
+    @Then("The user should not be shown any treasure hunts")
+    public void the_user_should_not_be_shown_any_treasure_hunts() {
+        TreasureHuntController treasureHuntController = new TreasureHuntController();
+        assertEquals(0, treasureHuntController.getOpenTreasureHunts().size());
     }
 
 }

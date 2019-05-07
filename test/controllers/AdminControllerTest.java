@@ -250,6 +250,4 @@ public class AdminControllerTest extends WithApplication {
         assertEquals(2, Admin.find.all().size());
     }
 
-
-
 }

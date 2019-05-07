@@ -41,7 +41,6 @@ release-artifacts:
 update-sonar:
     stage: deploy
     script:
-        - sbt dist
         - sbt jacoco
         - /home/sengstudent/sonarqubeScanner/bin/sonar-scanner --debug
     only:

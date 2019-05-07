@@ -100,7 +100,7 @@ public class AdminController extends Controller {
                     User user = User.find.byId(currentAdmin.getUserId());
                     return ok(viewDestinationModificationRequest.render(modReq, user));
                 } else {
-                    return badRequest("Destination Modification Request does not exist");
+                    return notFound("Destination Modification Request does not exist");
                 }
             } else {
                 return unauthorized("Oops, you are not authorised.");

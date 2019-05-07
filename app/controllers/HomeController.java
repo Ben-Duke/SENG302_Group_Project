@@ -1,6 +1,5 @@
 package controllers;
 
-import ClientCode.CountriesRequest;
 import akka.http.javadsl.model.HttpRequest;
 import factories.UserFactory;
 import models.Admin;

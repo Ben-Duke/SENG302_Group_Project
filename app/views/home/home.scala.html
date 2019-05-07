@@ -320,11 +320,9 @@
                                        onclick="setProfilePictureRequest(
                                                 @photo.getPhotoId())">Set as Profile Picture</a>
                                     @if(photo.isPublic()) {
-                                            <a class="btn btn-primary" id="makePrivate" href="@routes.HomeController.showhome()" onclick="makePublicOrPrivateRequest(
-                                            '@routes.HomeController.makePicturePublic(photo.getPhotoId, false)', @photo.getPhotoId())">Make Private</a>
+                                            <a class="btn btn-primary" id="makePrivate" href="@routes.HomeController.makePicturePublic(photo.getPhotoId, 0)" >Make Private</a>
                                         } else {
-                                            <a class="btn btn-primary" id="makePublic" href="@routes.HomeController.showhome()" onclick="makePublicOrPrivateRequest(
-                                            '@routes.HomeController.makePicturePublic(photo.getPhotoId, true)', @photo.getPhotoId())">Make Public</a>
+                                            <a class="btn btn-primary" id="makePublic" href="@routes.HomeController.makePicturePublic(photo.getPhotoId, 1)" >Make Public</a>
                                         }
                                 </div>
                                 }

@@ -11,10 +11,10 @@ Feature: I can CRUD any of my treasure hunts
     Then There should be no treasure hunts in the database with title "NewTreasureHunt"
 
   Scenario: Editing an existing treasure hunt
-    When I edit a treasure hunt with the title "Surprise" by changing the destination to "Niagra Falls", riddle to "The Waterfall", start date "2019-05-04" and end date "2019-12-05"
-    Then The treasure hunt with the title "Surprise" in the database should have the destination as "Niagra Falls", riddle to "The Waterfall", start date "2019-05-04" and end date "2019-12-05"
+    When I edit a treasure hunt with the title "Surprise" by changing the destination to "Great Pyramid of Giza", riddle to "The Pyramid", start date "2019-05-04" and end date "2019-12-05"
+    Then The treasure hunt with the title "Surprise" in the database should have the destination as "Great Pyramid of Giza", riddle to "The Pyramid", start date "2019-05-04" and end date "2019-12-05"
 
   Scenario: Editing an existing treasure hunt to a duplicate title
-    When I edit a treasure hunt with the title "Surprise" by changing the title to "Surprise2"
+    When I edit a treasure hunt with the title "Surprise" by changing the title to an already existing "Surprise2"
     Then There should be only one treasure hunt with the title "Surprise2" in the database
     And There should be a treasure hunt with the title "Surprise"

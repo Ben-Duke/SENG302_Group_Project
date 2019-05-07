@@ -56,7 +56,7 @@ public class DestinationController extends Controller {
         String country = destForm.get("country");
 
         if (destName.length() < 1) {
-            return notAcceptable("ERROR: Destination name  must not be empty.");
+            return notAcceptable("ERROR: Destination name must not be empty.");
         }
 
         if (district.length() < 1) {
@@ -818,7 +818,6 @@ public class DestinationController extends Controller {
                     if(!photo.getDestinations().contains(destination)) {
                         photo.addDestination(destination);
                         photo.update();
-                        System.out.println("SUCCESS!");
                         return redirect(routes.DestinationController.indexDestination());
                     }
                     else{

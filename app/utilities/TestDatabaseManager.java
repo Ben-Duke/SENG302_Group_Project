@@ -3,6 +3,7 @@ package utilities;
 import controllers.ApplicationManager;
 import io.ebean.ExpressionList;
 import models.*;
+import play.db.Database;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;

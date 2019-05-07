@@ -23,8 +23,7 @@ public class UserController {
     CountDownLatch initCompleteLatch = new CountDownLatch(1);
 
     /**
-     * Renders the user index page, which currently displays all users registered and contains links to logout, login
-     * or register.
+     * Renders the index page and populates the in memory database
      *
      * If the wasRun attribute is false the database is populated. The populate
      * database method takes a CountDownLatch and when the database has been
@@ -54,34 +53,6 @@ public class UserController {
         List<Admin> admins = Admin.find.all();
         return ok(userIndex.render(users, admins,User.getCurrentUser(request)));
     }
-
-    /**
-     * Deprecated by TestDatabaseManager which populates the database.
-     */
-    /*
-    public void addDefaultUsers() {
-        User user = new User("admin@admin.com", "admin", "admin", "admin", LocalDate.now(), "male");
-        user.setDateOfBirth(LocalDate.of(2019, 2, 18));
-        user.setTravellerTypes(TravellerType.find.all().subList(5, 6)); // Business Traveller
-        user.setNationality(Nationality.find.all().subList(0, 2)); // First two countries alphabetically
-        user.save();
-
-        User user1 = new User("user1@admin.com", "user1", "John", "Doe", LocalDate.now(), "male");
-        user1.setDateOfBirth(LocalDate.of(2019, 2, 18));
-        user1.setTravellerTypes(TravellerType.find.all().subList(5, 6)); // Business Traveller
-        user1.setNationality(Nationality.find.all().subList(0, 2)); // First two countries alphabetically
-        user1.save();
-
-        User user2 = new User("user2@admin.com", "user2", "James", "Doe", LocalDate.now(), "male");
-        user2.setDateOfBirth(LocalDate.of(2019, 2, 18));
-        user2.setTravellerTypes(TravellerType.find.all().subList(5, 6)); // Business Traveller
-        user2.setNationality(Nationality.find.all().subList(0, 2)); // First two countries alphabetically
-        user2.save();
-
-        Admin admin = new Admin(user.userid, true);
-        admin.save();
-    }
-    */
 
     /**
      * Handles the ajax request to get a user.

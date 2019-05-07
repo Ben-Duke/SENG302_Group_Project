@@ -1,10 +1,7 @@
 package factories;
 
 import formdata.DestinationFormData;
-import models.Admin;
-import models.Destination;
-import models.User;
-import models.UserPhoto;
+import models.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -189,6 +186,26 @@ public class DestinationFactory {
         }
     }
 
+    /**
+     * Move the visits from one destination to being linked to another
+     * @param destinationOne the original destination which will no longer hold visits
+     * @param destinationTwo the new destination which will hold new visits
+     */
+    private void moveVisitsToAnotherDestination(Destination destinationOne, Destination destinationTwo){
+        List<Visit> visits = Visit.find.query().where().eq("destination", destinationOne).findList();
+        for(Visit changingVisit : visits) {
+            changingVisit.setDestination(destinationTwo);
+            System.out.println("1" + changingVisit.getDestination().getUser().getfName());
+            changingVisit.update();
+            Visit visit = Visit.find.byId(changingVisit.getVisitid());
+            System.out.println("2" + visit.getDestination().getUser().getfName());
+        }
+        visits = Visit.find.query().where().eq("destination", destinationOne).findList();
+        List<Visit> visits2 = Visit.find.query().where().eq("destination", destinationTwo).findList();
+        System.out.println("Prior size is " + visits.size());
+        System.out.println("Prior size dest two is " + visits2.size());
+    }
+
 
 
 
@@ -203,15 +220,16 @@ public class DestinationFactory {
         User defaultAdminUser = User.find.query().where().eq("userid", defaultAdmin.getUserId()).findOne();
         destinationList.add(destination);
         for (Destination otherDestination : destinationList) {
-            if (!otherDestination.visits.isEmpty()) {
-                return false;
-            } else {
-                if(otherDestination.getUser() != destination.getUser()) {
-                    movePhotosToAnotherDestination(otherDestination, destination);
-                    otherDestination.delete();
-                    otherDestination.update();
-                    destination.update();
-                }
+            if(otherDestination.getUser() != destination.getUser()) {
+                moveVisitsToAnotherDestination(otherDestination, destination);
+                otherDestination.setVisits(new ArrayList<>());
+                otherDestination.update();
+                List<Visit> visits = Visit.find.query().where().eq("destination", otherDestination).findList();
+                System.out.println("size is " + visits.size());
+                movePhotosToAnotherDestination(otherDestination, destination);
+                otherDestination.delete();
+                otherDestination.update();
+                destination.update();
             }
         }
         destination.setIsPublic(true);

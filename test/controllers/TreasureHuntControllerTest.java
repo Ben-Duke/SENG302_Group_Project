@@ -53,6 +53,7 @@ public class TreasureHuntControllerTest extends WithApplication {
                 "create table test (id bigint not null, name varchar(255));",
                 "drop table test;"
         )));
+        ApplicationManager.setUserPhotoPath("/test/resources/test_photos/user_");
         TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
         testDatabaseManager.populateDatabase();
     }
@@ -98,7 +99,7 @@ public class TreasureHuntControllerTest extends WithApplication {
     public void getOpenTreasureHunts() {
         List<TreasureHunt> treasureHunts = TreasureHunt.find.all();
         List<TreasureHunt> openTreasureHunts = treasureHuntController.getOpenTreasureHunts();
-        assertEquals(treasureHunts.size(), openTreasureHunts.size());
+        assertEquals(treasureHunts.size()-1, openTreasureHunts.size());
     }
 
     /**

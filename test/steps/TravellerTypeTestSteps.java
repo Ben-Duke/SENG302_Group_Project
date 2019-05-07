@@ -126,12 +126,13 @@ public class TravellerTypeTestSteps extends WithApplication {
     @When("The user with id {string} removes the traveller type {string}")
     public void theUserRemovesTheTravellerType(String id, String string) {
         User newUser =  User.find.all().get(Integer.parseInt(id));
+        id = Integer.toString(Integer.parseInt(id) + 1);
         TravellerType travellerType = TravellerType.find.query().where().eq("travellerTypeName", string).findOne();
         Map<String, String> formData = new HashMap<>();
-        System.out.println(travellerType.getTravellerTypeName());
+        System.out.println(newUser.getUserid() + ": " + travellerType.getTravellerTypeName());
         System.out.println(travellerType.getTtypeid().toString());
-        formData.put("travellertypesdelete", travellerType.getTtypeid().toString());
-        Http.RequestBuilder fakeRequest = Helpers.fakeRequest().bodyForm(formData).method(Helpers.POST).uri("/users/profile/delete").session("connected", "4");
+        formData.put("typeId", travellerType.getTtypeid().toString());
+        Http.RequestBuilder fakeRequest = Helpers.fakeRequest().bodyForm(formData).method(Helpers.POST).uri("/users/profile/delete/" + travellerType.getTtypeid()).session("connected", id);
         Result result = Helpers.route(application, fakeRequest);
         System.out.println(result.status());
         Assert.assertEquals(1, newUser.getTravellerTypes().size());
@@ -141,10 +142,11 @@ public class TravellerTypeTestSteps extends WithApplication {
     @When("The user with id {string} removes the only remaining traveller type {string}")
     public void theUserWithIdRemovesTheOnlyRemainingTravellerType(String id, String string) {
         User newUser =  User.find.all().get(Integer.parseInt(id));
+        id = Integer.toString(Integer.parseInt(id) + 1);
         TravellerType travellerType = TravellerType.find.query().where().eq("travellerTypeName", string).findOne();
         Map<String, String> formData = new HashMap<>();
-        formData.put("travellertypesdelete", travellerType.getTtypeid().toString());
-        Http.RequestBuilder fakeRequest = Helpers.fakeRequest().bodyForm(formData).method(Helpers.POST).uri("/users/profile/delete").session("connected", "4");
+        formData.put("typeId", travellerType.getTtypeid().toString());
+        Http.RequestBuilder fakeRequest = Helpers.fakeRequest().bodyForm(formData).method(Helpers.POST).uri("/users/profile/delete/" + travellerType.getTtypeid()).session("connected", id);
         Result result = Helpers.route(application, fakeRequest);
         Assert.assertEquals(1, newUser.getTravellerTypes().size());
     }
@@ -153,14 +155,14 @@ public class TravellerTypeTestSteps extends WithApplication {
     public void theUserHasOnlyOneTravellerType(String id, String string) {
         User newUser =  User.find.all().get(Integer.parseInt(id));
         Assert.assertEquals(1, newUser.getTravellerTypes().size());
-        Assert.assertEquals(string, newUser.getTravellerTypes().get(0));
+        Assert.assertEquals(string, newUser.getTravellerTypes().get(0).getTravellerTypeName());
     }
 
     @Then("The type {string} is not removed and still is associated with the profile with id {string}")
-    public void theTypeIsNotRemovedAndStillIsAssociatedWithTheProfile(String id, String string) {
+    public void theTypeIsNotRemovedAndStillIsAssociatedWithTheProfile(String string, String id) {
         User newUser = User.find.all().get(Integer.parseInt(id));
         Assert.assertEquals(1, newUser.getTravellerTypes().size());
-        Assert.assertEquals(string, newUser.getTravellerTypes().get(0));
+        Assert.assertEquals(string, newUser.getTravellerTypes().get(0).getTravellerTypeName());
     }
 
 }

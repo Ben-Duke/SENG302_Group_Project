@@ -606,7 +606,6 @@ public class DestinationController extends Controller {
                             }
                             return redirect(routes.DestinationController.indexDestination());
                         }
-
                     } else {
                         return badRequest("The country for this destination is not valid. The destination can not be made public");
                     }

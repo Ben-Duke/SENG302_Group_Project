@@ -19,7 +19,7 @@ public class Destination extends Model {
     public String destType;
     public String district;
     public String country;
-    public boolean isCountryValid = true;
+    private boolean isCountryValid = true;
     public double latitude;
     public double longitude;
     public boolean isPublic;

@@ -128,7 +128,7 @@ POST    /users/home         controllers.HomeController.upload(request:Request)
 
 POST    /users/home/profilePicture         controllers.HomeController.uploadProfilePicture(request:Request)
 
-POST    /users/home/photoPrivacy/:id/:setPublic         controllers.HomeController.makePicturePublic(request:Request, id: Integer, setPublic: Boolean)
+GET    /users/home/photoPrivacy/:id/:setPublic         controllers.HomeController.makePicturePublic(request:Request, id: Integer, setPublic: Integer)
 
 #Handles logout request from the user
 GET     /users/logout               controllers.LoginController.logoutrequest(request:Request)

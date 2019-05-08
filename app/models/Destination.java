@@ -182,6 +182,9 @@ public class Destination extends Model {
         this.travellerTypes.add(travellerType);
     }
 
+    public void addVisit(Visit visit) { this.visits.add(visit);}
+    public void removeVisit(Visit visit) { this.visits.remove(visit);}
+
     @Override
     public String toString() {
         return "Destination{" +

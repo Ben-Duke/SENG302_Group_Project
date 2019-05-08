@@ -11,6 +11,7 @@ import play.db.evolutions.Evolutions;
 import play.test.WithApplication;
 
 import java.util.ArrayList;
+
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -165,28 +166,6 @@ public class DestinationFactoryTest extends WithApplication {
     }
 
     @Test
-    public void removingDestinationPrivateInformation() {
-        UserPhoto userPhoto = new UserPhoto("testurl", false, false, testUser);
-        userPhoto.save();
-        Destination testPrivateDestination = new Destination("destName",
-                "destType", "district", "country",
-                45.0, 45.0, testUser, false);
-        testPrivateDestination.save();
-        userPhoto.addDestination(testPrivateDestination);
-        userPhoto.update();
-        testPrivateDestination.save();
-
-        testPrivateDestination = Destination.find.byId(testPrivateDestination.getDestId());
-
-        Integer photoCount = testPrivateDestination.getUserPhotos().size();
-        destinationFactory.removePrivateInformation(testPrivateDestination);
-        testPrivateDestination.setIsPublic(true);
-        testPrivateDestination.update();
-        assertEquals(photoCount - 1, testPrivateDestination.getUserPhotos().size());
-        assertEquals(0, UserPhoto.find.byId(userPhoto.getPhotoId()).destinations.size());
-    }
-
-    @Test
     public void testGetOtherUsersMatchingPrivateDestinationsNoMatches() {
         User user = new User("test@testytest.test", "hunter22");
         user.save();
@@ -300,8 +279,10 @@ public class DestinationFactoryTest extends WithApplication {
         List<Destination> matchingDests = destinationFactory
                 .getOtherUsersMatchingPrivateDestinations(privateUser.getUserid(), testPrivateDestination1);
 
-        Boolean result = destinationFactory.mergeDestinations(matchingDests, testPrivateDestination1);
-        assertTrue(result);
+        destinationFactory.mergeDestinations(matchingDests, testPrivateDestination1);
+        List<Destination> destinationsWithSameName = Destination.find.query().where()
+                .eq("destName", "Rotherham").findList();
+        assertEquals(1, destinationsWithSameName.size());
     }
 
     @Test
@@ -336,8 +317,25 @@ public class DestinationFactoryTest extends WithApplication {
 
         List<Destination> matchingDests = destinationFactory
                 .getOtherUsersMatchingPrivateDestinations(privateUser2.getUserid(), testPrivateDestination2);
-
-        assertTrue(destinationFactory.mergeDestinations(matchingDests, testPrivateDestination2));
+        destinationFactory.mergeDestinations(matchingDests, testPrivateDestination2);
+        List<Destination> destinationsWithSameName = Destination.find.query().where()
+                .eq("destName", "Rotherham").findList();
+        assertEquals(1, destinationsWithSameName.size());
     }
 
+
+    @Test
+    public void removingDestinationPrivatePhotos() {
+        ArrayList<UserPhoto> userPhotos = new ArrayList<UserPhoto>();
+        Boolean isPublic = true;
+        for (int i = 0; i< 10; i ++) {
+            UserPhoto userPhoto = new UserPhoto("testurl" + i, isPublic, false, testUser);
+            userPhotos.add(userPhoto);
+            isPublic = !isPublic ;
+        }
+        Integer userPhotosSize = userPhotos.size();
+        destinationFactory.removePrivatePhotos(userPhotos, testUser.getUserid() + 1);
+        assertEquals(userPhotosSize - 5, userPhotos.size());
+
+    }
 }

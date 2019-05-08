@@ -4,6 +4,8 @@ import models.Nationality;
 import models.Passport;
 import models.TravellerType;
 import models.User;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import play.mvc.Http;
 import play.mvc.Result;
 
@@ -22,6 +24,17 @@ import static play.mvc.Results.unauthorized;
  * A class for methods which check user entered data for correctness.
  */
 public class UtilityFunctions {
+
+    /** Get a default logger (application) */
+    public static Logger getLogger() {
+        return UtilityFunctions.getLogger("application");
+    }
+
+    /** Get a new logger */
+    public static Logger getLogger(String loggerName) {
+        return LoggerFactory.getLogger(loggerName);
+    }
+
 
 
     /** Check that there is a user logged in */
@@ -266,8 +279,6 @@ public class UtilityFunctions {
             System.out.println(e);
             return null;
         }
-
-
     }
 
 }

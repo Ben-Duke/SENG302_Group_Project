@@ -159,3 +159,7 @@
 }
 
 .close:hover {background: #bbb;}
+
+.list-group-item {
+    word-wrap: break-word;
+}

@@ -8,6 +8,7 @@ import io.ebean.Model;
 
 import javax.persistence.*;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -95,6 +96,8 @@ public class UserPhoto extends Model {
     public void addDestination(Destination destination) {
         this.destinations.add(destination);
     }
+
+    public void removeDestination(Destination destination) { this.destinations.remove(destination);}
     /**
      * Method to set the photo as profile picture (or not)
      * @param isProfile the boolean showing if the picture is the profile picture

@@ -11,7 +11,7 @@ import play.mvc.Http;
 import play.mvc.Result;
 import utilities.UtilityFunctions;
 import views.html.home.home;
-import views.html.users.userIndex;
+import views.html.users.*;
 
 import javax.imageio.ImageIO;
 import javax.inject.Inject;

@@ -13,7 +13,7 @@ public class CountryUtils {
 
     private static final Logger logger = UtilityFunctions.getLogger();
 
-    public static List<String> fetchCountriesFromApi() {
+    public static List<String> fetchCountriesFromApi() throws Exception{
         // Fetch the countries from the api
         List<String> countries = CountryUtils.getCountries();
 
@@ -39,13 +39,13 @@ public class CountryUtils {
     }
 
     /** Return a list of valid countries */
-    private static List<String> getCountries() {
-        Set<String> countries = Destination.getIsoCountries().keySet();
+    private static List<String> getCountries() throws Exception{
+        Set<String> countries = UtilityFunctions.countriesAsStrings();
         return new ArrayList<>(countries);
     }
 
     /** Return true if the country is valid, false otherwise */
-    public static Boolean isValidCountry(String country) {
+    public static Boolean isValidCountry(String country) throws Exception {
         return CountryUtils.getCountries().contains(country);
     }
 }

@@ -44,7 +44,11 @@ public class UserController {
 
             // Temporary - TODO move elsewhere where it will repeat while server running Noel 8/5
             // Load countries from api
-            CountryUtils.fetchCountriesFromApi();
+            try {
+                CountryUtils.fetchCountriesFromApi();
+            }catch (Exception e){
+                System.out.println(e);
+            }
         } else {
             try {
                 initCompleteLatch.await();

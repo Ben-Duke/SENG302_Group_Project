@@ -128,7 +128,7 @@ POST    /users/home         controllers.HomeController.upload(request:Request)
 
 POST    /users/home/profilePicture         controllers.HomeController.uploadProfilePicture(request:Request)
 
-POST    /users/home/photoPrivacy/:id/:setPublic         controllers.HomeController.makePicturePublic(request:Request, id: Integer, setPublic: Boolean)
+GET    /users/home/photoPrivacy/:id/:setPublic         controllers.HomeController.makePicturePublic(request:Request, id: Integer, setPublic: Integer)
 
 #Handles logout request from the user
 GET     /users/logout               controllers.LoginController.logoutrequest(request:Request)
@@ -235,13 +235,13 @@ GET     /users/treasurehunts                    controllers.TreasureHuntControll
 GET     /users/treasurehunts/create             controllers.TreasureHuntController.createTreasureHunt(request : Request)
 
 #Submit Create treasure hunt request
-GET     /users/treasurehunts/save               controllers.TreasureHuntController.createAndSaveTreasureHunt(request : Request)
+POST     /users/treasurehunts/save               controllers.TreasureHuntController.createAndSaveTreasureHunt(request : Request)
 
 #Open Edit treasure hunt page
-GET     /users/treasurehunts/edit                  controllers.TreasureHuntController.editTreasureHunt(request : Request, id : Integer)
+GET     /users/treasurehunts/edit/:id                  controllers.TreasureHuntController.editTreasureHunt(request : Request, id : Integer)
 
 #Edit treasure hunt
-GET     /users/treasurehunts/edit/save/:id                    controllers.TreasureHuntController.editAndSaveTreasureHunt(request : Request, id : Integer)
+POST     /users/treasurehunts/edit/save/:id                    controllers.TreasureHuntController.editAndSaveTreasureHunt(request : Request, id : Integer)
 
 #Delete treasure hunt
 GET     /users/treasurehunts/delete/:id                    controllers.TreasureHuntController.deleteTreasureHunt(request : Request, id : Integer)

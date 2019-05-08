@@ -31,7 +31,7 @@ import static play.test.Helpers.route;
 public class ProfileControllerTest extends WithApplication {
 
     /**
-     * The fake database
+     * The fake databasee
      */
     Database database;
 

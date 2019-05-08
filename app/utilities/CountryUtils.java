@@ -40,8 +40,13 @@ public class CountryUtils {
 
     /** Return a list of valid countries */
     private static List<String> getCountries() {
-        Set<String> countries = Destination.getIsoCountries().keySet();
-        return new ArrayList<>(countries);
+        try {
+            Set<String> countries = UtilityFunctions.countriesAsStrings();
+            return new ArrayList<>(countries);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     /** Return true if the country is valid, false otherwise */

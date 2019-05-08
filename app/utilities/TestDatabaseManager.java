@@ -3,6 +3,10 @@ package utilities;
 import controllers.ApplicationManager;
 import io.ebean.ExpressionList;
 import models.*;
+import play.db.Database;
+import play.db.Databases;
+import play.db.evolutions.Evolution;
+import play.db.evolutions.Evolutions;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -19,6 +23,22 @@ public class TestDatabaseManager {
 
     public TestDatabaseManager(){
 
+    }
+
+    public static Database getTestDatabase() {
+        Database database = Databases.inMemory();
+        Evolutions.applyEvolutions(database, Evolutions.forDefault(new Evolution(
+                1,
+                "create table test (id bigint not null, name varchar(255));",
+                "drop table test;"
+        )));
+
+        return database;
+    }
+
+    public static void shutdownTestDatabase(Database database) {
+        Evolutions.cleanupEvolutions(database);
+        database.shutdown();
     }
 
     /**
@@ -126,6 +146,14 @@ public class TestDatabaseManager {
             String natPassName1 = "New Zealand";
             String natPassName2 = "Singapore";
             String natPassName3 = "Australia";
+            String invalidNatPassName1 = "Czechoslovakia";
+
+            // Insert invalid nationality since normal insertions only include valid ones
+            Nationality invalidNationality = new Nationality(invalidNatPassName1);
+            invalidNationality.save();
+
+            Passport invalidPassport = new Passport(invalidNatPassName1);
+            invalidPassport.save();
 
             // --------------------fleshing out the sql query to debug
 
@@ -161,9 +189,12 @@ public class TestDatabaseManager {
 
             user.getNationality().add(nationality1);
             user.getNationality().add(nationality2);
+            user.addNationality(invalidNationality);
 
             user.getPassport().add(passport1);
             user.getPassport().add(passport2);
+            user.addPassport(invalidPassport);
+
             try {
                 user.save();
             }catch(Exception err){

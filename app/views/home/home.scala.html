@@ -1,7 +1,10 @@
 @import play.filters.csrf.AddCSRFToken
 @import factories.UserFactory
-@(user: User)
+@import views.html.users.profile.countryErrorMessage
 @import views.html.bootstrap3._
+
+@(user: User)
+
 @main(user, "Index"){
 
 
@@ -50,7 +53,10 @@
                     <div class="col-sm-offset-4">
                         <ul class="list-group" >
                             @for(passport <- user.passports) {
-                            <li class="list-group-item">@passport.passportName</li>
+                            <li class="list-group-item">
+                                @passport.passportName
+                                @countryErrorMessage(passport)
+                            </li>
                             }
                         </ul>
                     </div>
@@ -58,7 +64,10 @@
                 <p>Nationality(s):
                     <ul class="list-group col-sm-offset-4" >
                         @for(nationality <- user.nationality) {
-                        <li class="list-group-item">@nationality.nationalityName</li>
+                        <li class="list-group-item">
+                            @nationality.nationalityName
+                            @countryErrorMessage(nationality)
+                        </li>
                         }
                     </ul>
                 </p>
@@ -87,7 +96,11 @@
                     <div class="list-group">
                     @for(trip <- user.getTripsSorted) {
                         <a href="@routes.TripController.displaytrip(trip.tripid)" class="list-group-item list-group-item-action">
-                        @trip.tripName
+                            @if(trip.getTripStart() != null){
+                                @trip.tripName | Arrival date: @trip.getTripStart()
+                            } else{
+                                @trip.tripName | No arrival dates
+                            }
                         </a>
                     }
                     </div>
@@ -321,11 +334,9 @@
                                        onclick="setProfilePictureRequest(
                                                 @photo.getPhotoId())">Set as Profile Picture</a>
                                     @if(photo.isPublic()) {
-                                            <a class="btn btn-primary" id="makePrivate" href="@routes.HomeController.showhome()" onclick="makePublicOrPrivateRequest(
-                                            '@routes.HomeController.makePicturePublic(photo.getPhotoId, false)', @photo.getPhotoId())">Make Private</a>
+                                            <a class="btn btn-primary" id="makePrivate" href="@routes.HomeController.makePicturePublic(photo.getPhotoId, 0)" >Make Private</a>
                                         } else {
-                                            <a class="btn btn-primary" id="makePublic" href="@routes.HomeController.showhome()" onclick="makePublicOrPrivateRequest(
-                                            '@routes.HomeController.makePicturePublic(photo.getPhotoId, true)', @photo.getPhotoId())">Make Public</a>
+                                            <a class="btn btn-primary" id="makePublic" href="@routes.HomeController.makePicturePublic(photo.getPhotoId, 1)" >Make Public</a>
                                         }
                                 </div>
                                 }

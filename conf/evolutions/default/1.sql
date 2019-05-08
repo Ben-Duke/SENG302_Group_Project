@@ -16,6 +16,7 @@ create table destination (
   dest_type                     varchar(255),
   district                      varchar(255),
   country                       varchar(255),
+  is_country_valid              boolean default false not null,
   latitude                      double not null,
   longitude                     double not null,
   is_public                     boolean default false not null,

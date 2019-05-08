@@ -231,7 +231,7 @@ public class DestinationController extends Controller {
         }
         countryList.replace(destination.getCountry(), true);
         try {
-            if (!CountryUtils.isValidCountry(destination.getCountry())) {
+            if (!destination.getIsCountryValid()) {
                 flash("countryInvalid",
                         "This Destination has an invalid country!");
             }

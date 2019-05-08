@@ -1,5 +1,6 @@
 package utilities;
 
+import accessors.DestinationAccessor;
 import accessors.UserAccessor;
 import models.CountryItem;
 import models.Destination;
@@ -20,6 +21,7 @@ public class CountryUtils {
         // Update nationalities and passports validity
         List<Passport> passports = UserAccessor.getAllPassports();
         List<Nationality> nationalities = UserAccessor.getAllNationalities();
+        List<Destination> destinations = DestinationAccessor.getAllDestinations();
 
         for (Passport passport : passports) {
             if (!countries.contains(passport.passportName)) {
@@ -32,6 +34,18 @@ public class CountryUtils {
             if (!countries.contains(n.nationalityName)) {
                 n.setCountryValid(false);
                 n.update();
+            }
+        }
+
+        for (Destination d : destinations) {
+            logger.debug(d.getCountry());
+            logger.debug(countries.get(0));
+            logger.debug(Boolean.toString(countries.get(0).equals(d.getCountry())));
+
+
+            if (!countries.contains(d.getCountry())) {
+                d.setCountryValid(false);
+                d.update();
             }
         }
 
@@ -50,7 +64,7 @@ public class CountryUtils {
     }
 
     /** Return true if the country is valid, false otherwise */
-    public static Boolean isValidCountry(String country) {
-        return CountryUtils.getCountries().contains(country);
-    }
+//    public static Boolean isValidCountry(String country) {
+//        return CountryUtils.getCountries().contains(country);
+//    }
 }

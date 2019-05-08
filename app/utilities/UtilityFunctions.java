@@ -365,8 +365,6 @@ public class UtilityFunctions {
 
     public static boolean calculateIsCountryValid(String countryName) {
 
-//        System.out.println("Hello 908");
-
         try {
             Set<String> validCountries = UtilityFunctions.countriesAsStrings();
 

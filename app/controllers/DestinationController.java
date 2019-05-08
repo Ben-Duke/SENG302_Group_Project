@@ -584,27 +584,32 @@ public class DestinationController extends Controller {
 
             if (destination != null) {
                 if (destination.isUserOwner(user.userid)) {
-                    //-----------checking if a public destination equivalent
-                    // ----------already exists
-                    DestinationFactory destFactory = new DestinationFactory();
-                    if (destFactory.doesPublicDestinationExist(destination)) {
-                        // public matching destination already exists
-                        // show error
-                        destination.setIsPublic(true);
-                        destination.update();
-                        return redirect(routes.DestinationController.indexDestination());
-                    } else {
-                        //no matching pub destination exists, making public now
-                        //sets the destination to public, sets the owner to the default admin and updates the destination
-                        List<Destination> matchingDests = destFactory.getOtherUsersMatchingPrivateDestinations(user.userid, destination);
-                        if (matchingDests.size() == 0) {
+                    destination.updateIsCountryValid();
+                    if (destination.getIsCountryValid()) {
+
+                        //-----------checking if a public destination equivalent
+                        // ----------already exists
+                        DestinationFactory destFactory = new DestinationFactory();
+                        if (destFactory.doesPublicDestinationExist(destination)) {
+                            // public matching destination already exists
+                            // show error
                             destination.setIsPublic(true);
                             destination.update();
+                            return redirect(routes.DestinationController.indexDestination());
+                        } else {
+                            //no matching pub destination exists, making public now
+                            //sets the destination to public, sets the owner to the default admin and updates the destination
+                            List<Destination> matchingDests = destFactory.getOtherUsersMatchingPrivateDestinations(user.userid, destination);
+                            if (matchingDests.size() == 0) {
+                                destination.setIsPublic(true);
+                                destination.update();
+                            }
+                            return redirect(routes.DestinationController.indexDestination());
                         }
-                        return redirect(routes.DestinationController.indexDestination());
+
+                    } else {
+                        return badRequest("The country for this destination is not valid. The destination can not be made public");
                     }
-
-
                 } else {
                     return unauthorized("HEY!, not yours. You cant make public. How you get access to that anyway?... FBI!!! OPEN UP!");
                 }

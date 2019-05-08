@@ -320,6 +320,8 @@ public class UserFactory {
     }
 
     public static List<Passport> getUserPassports(int id){
+        //System.out.println(Passport.find.all().size());
+        //System.out.println(Nationality.find.all().size());
         return User.find.query().where().eq("userid", id).findOne().passports;
     }
 

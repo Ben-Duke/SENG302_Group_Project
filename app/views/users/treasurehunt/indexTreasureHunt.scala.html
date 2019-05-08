@@ -24,7 +24,7 @@
                         @*<td><a class="btn btn-success" href="@routes.DestinationController.createDestination()" role="button">*@
             @*Take a guess</a></td>*@
                         @if(user.userIsAdmin || treasureHunt.getUser.getUserid.equals(user.getUserid)) {
-                            <td>treasureHunt.getDestination</td>
+                            <td>@treasureHunt.getDestination.getDestName</td>
                         } else {
                             <td></td>
                         }

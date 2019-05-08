@@ -41,10 +41,6 @@ public class UserController {
             TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
             testDatabaseManager.populateDatabase(initCompleteLatch);
             System.out.println("populating database");
-
-            // Temporary - TODO move elsewhere where it will repeat while server running Noel 8/5
-            // Load countries from api
-            CountryUtils.fetchCountriesFromApi();
         } else {
             try {
                 initCompleteLatch.await();

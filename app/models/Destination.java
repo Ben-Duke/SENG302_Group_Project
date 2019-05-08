@@ -19,7 +19,7 @@ public class Destination extends Model {
     public String destType;
     public String district;
     public String country;
-    public boolean isCountryValid = true;
+    public boolean isCountryValid;
     public double latitude;
     public double longitude;
     public boolean isPublic;
@@ -66,6 +66,7 @@ public class Destination extends Model {
         this.destType = destType;
         this.district = district;
         this.country = country;
+        this.isCountryValid = true;
         this.latitude = latitude;
         this.longitude = longitude;
         this.isPublic = isPublic;
@@ -83,6 +84,7 @@ public class Destination extends Model {
      */
     public Destination(String destName, String destType, String district, String country, double latitude, double longitude, User user){
         this(destName, destType, district, country, latitude, longitude, user, false);
+        this.isCountryValid = true;
     }
 
     /**

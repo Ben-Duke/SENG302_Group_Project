@@ -74,7 +74,6 @@ public class UserFactory {
     public static  Map<String, Boolean> getPassports(){
         List<Passport> passports = Passport.find.all();
 
-
         SortedMap<String, Boolean> passportList = new TreeMap<>();
         for (int i = 0; i < passports.size(); i++) {
 

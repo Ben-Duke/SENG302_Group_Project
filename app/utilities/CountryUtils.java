@@ -38,6 +38,11 @@ public class CountryUtils {
         }
 
         for (Destination d : destinations) {
+            logger.debug(d.getCountry());
+            logger.debug(countries.get(0));
+            logger.debug(Boolean.toString(countries.get(0).equals(d.getCountry())));
+
+
             if (!countries.contains(d.getCountry())) {
                 d.setCountryValid(false);
                 d.update();

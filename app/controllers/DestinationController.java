@@ -179,6 +179,7 @@ public class DestinationController extends Controller {
                     Destination newDestination = formFactory.form(Destination.class)
                             .bindFromRequest(request).get();
                     newDestination.setUser(user);
+                    newDestination.setCountryValid(true);
                     newDestination.save();
 
 

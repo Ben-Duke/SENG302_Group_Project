@@ -32,6 +32,8 @@ import static play.mvc.Results.unauthorized;
  */
 public class UtilityFunctions {
 
+    private static final Logger logger = UtilityFunctions.getLogger();
+
     /** Get a default logger (application) */
     public static Logger getLogger() {
         return UtilityFunctions.getLogger("application");
@@ -212,8 +214,7 @@ public class UtilityFunctions {
                     }
                 } else {
                     for (String countryCode : countries) {
-                        Locale obj = new Locale("", countryCode);
-                        Nationality nationality = new Nationality(obj.getDisplayCountry());
+                        Nationality nationality = new Nationality(countryCode);
                         try {
                             nationality.save();
                         } catch (Exception error) {
@@ -264,9 +265,7 @@ public class UtilityFunctions {
                 }
             } else {
                 for (String countryCode : countries) {
-                    Locale obj = new Locale("", countryCode);
-
-                    Passport passport = new Passport(obj.getDisplayCountry());
+                    Passport passport = new Passport(countryCode);
                     try {
                         passport.save();
                     } catch (Exception error) {
@@ -373,7 +372,6 @@ public class UtilityFunctions {
             //print result
 
             for (JsonNode node : jsonJacksonArray) {
-                System.out.println(node.get("name").textValue());
                 countryMap.put(node.get("name").textValue(), false);
             }
         }

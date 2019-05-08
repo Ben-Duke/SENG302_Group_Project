@@ -9,6 +9,7 @@ import play.data.FormFactory;
 import play.libs.Files;
 import play.mvc.Http;
 import play.mvc.Result;
+import utilities.CountryUtils;
 import utilities.UtilityFunctions;
 import views.html.home.home;
 import views.html.users.userIndex;
@@ -56,6 +57,8 @@ public class HomeController {
             } else if(! user.hasNationality()){
                 return redirect(routes.ProfileController.updateNatPass());
             } else {
+                // Load countries from api and update validity of pass/nat/destinations
+                CountryUtils.fetchCountriesFromApi();
                 return ok(home.render(user));
             }
         }

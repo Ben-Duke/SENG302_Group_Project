@@ -36,16 +36,4 @@ public class CountryUtilsTest {
 
         assertFalse(p1.getCountryValid());
     }
-
-    @Test
-    public void isValidCountry_validCountry() {
-        Boolean result = CountryUtils.isValidCountry("New Zealand");
-        assertTrue(result);
-    }
-
-    @Test
-    public void isValidCountry_invalidCountry() {
-        Boolean result = CountryUtils.isValidCountry("xxx");
-        assertFalse(result);
-    }
 }

@@ -157,23 +157,6 @@ public class TestDatabaseManager {
 
             // --------------------fleshing out the sql query to debug
 
-            ExpressionList<Nationality> nationalityExpressionList;
-            nationalityExpressionList = Nationality.find.query().where();
-
-            ExpressionList<Nationality> natExpressionListEquals;
-            natExpressionListEquals = nationalityExpressionList.eq("nationalityName",natPassName1);
-
-            Nationality nationality1 = natExpressionListEquals.findOne();
-
-            // --------------------fleshing out the sql query to debug ^^^^^^^^^^
-
-            Nationality nationality2 = Nationality.find.query().where().eq("nationalityName",natPassName2).findOne();
-            Nationality nationality3 = Nationality.find.query().where().eq("nationalityName",natPassName3).findOne();
-
-            Passport passport1 = Passport.find.query().where().eq("passportName",natPassName1).findOne();
-            Passport passport2 = Passport.find.query().where().eq("passportName",natPassName2).findOne();
-            Passport passport3 = Passport.find.query().where().eq("passportName",natPassName3).findOne();
-
 
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             //convert String to LocalDate
@@ -187,13 +170,9 @@ public class TestDatabaseManager {
 
             user.addTravellerType(travellerType3);
 
-            user.getNationality().add(nationality1);
-            user.getNationality().add(nationality2);
-            user.addNationality(invalidNationality);
+            user.setNationality(Nationality.find.all().subList(0, 2));
 
-            user.getPassport().add(passport1);
-            user.getPassport().add(passport2);
-            user.addPassport(invalidPassport);
+            user.setPassport(Passport.find.all().subList(0, 2));
 
             try {
                 user.save();
@@ -203,9 +182,9 @@ public class TestDatabaseManager {
             }
             user2.getTravellerTypes().add(travellerType2);
 
-            user2.getNationality().add(nationality3);
+            user2.setNationality(Nationality.find.all().subList(100, 102));
 
-            user2.getPassport().add(passport3);
+            user2.setPassport(Passport.find.all().subList(100, 102));
 
             try{
                 user2.save();
@@ -216,7 +195,7 @@ public class TestDatabaseManager {
             user3.getTravellerTypes().add(travellerType1);
             user3.getTravellerTypes().add(travellerType2);
 
-            user3.getNationality().add(nationality1);
+            user3.setNationality(Nationality.find.all().subList(50, 51));
 
             try{
                 user3.save();

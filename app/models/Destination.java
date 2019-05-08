@@ -106,22 +106,6 @@ public class Destination extends Model {
      * @return A map of all countries and a boolean set to false
      */
 
-    public static Map<String, Boolean> getIsoCountries() {
-        List<String> countries = new ArrayList<>();
-        String[] locales = Locale.getISOCountries();
-        for (String countryCode : locales) {
-            Locale obj = new Locale("", countryCode);
-            countries.add(obj.getDisplayName());
-        }
-
-        Map<String, Boolean> countryMap = new TreeMap<>();
-        for (String country : countries) {
-            countryMap.put(country, false);
-        }
-        countryMap.remove("");
-        return countryMap;
-    }
-
 
     //GETTERS
     public Integer getDestId() { return destid; }

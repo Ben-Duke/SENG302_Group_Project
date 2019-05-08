@@ -1,19 +1,26 @@
 package utilities;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import controllers.ApplicationManager;
 import models.Nationality;
 import models.Passport;
 import models.TravellerType;
 import models.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import play.libs.Json;
 import play.mvc.Http;
 import play.mvc.Result;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.*;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -37,7 +44,9 @@ public class UtilityFunctions {
 
 
 
-    /** Check that there is a user logged in */
+    /**
+     * Check that there is a user logged in
+     */
     public static Result checkLoggedIn(Http.Request request) {
         User user = User.getCurrentUser(request);
         if (user == null) {
@@ -47,10 +56,10 @@ public class UtilityFunctions {
         return null;
     }
 
-    public static Set<User> retainFromLists(List<Set<User>> lists){
+    public static Set<User> retainFromLists(List<Set<User>> lists) {
         int count = 0;
         Set<User> retainedList = lists.get(count);
-        while(count < (lists.size() - 1)){
+        while (count < (lists.size() - 1)) {
             retainedList.retainAll(lists.get(count + 1));
             count += 1;
         }
@@ -60,28 +69,30 @@ public class UtilityFunctions {
     /**
      * Function that validates a given input string. If the string has more characters than the limit, return false.
      * Else return true.
-     * @param max the character limit
+     *
+     * @param max         the character limit
      * @param inputString the input string
      * @return
      */
-    public static boolean validateMaxCharLimit(String inputString, Integer max){
+    public static boolean validateMaxCharLimit(String inputString, Integer max) {
         return inputString.length() <= max;
     }
 
     /**
      * Function that validates a given input string. If the string has less characters than the limit, return false.
      * Else return true.
-     * @param min the minimum number of characters
+     *
+     * @param min         the minimum number of characters
      * @param inputString the input string
      * @return
      */
-    public static boolean validateMinCharLimit(String inputString, Integer min){
+    public static boolean validateMinCharLimit(String inputString, Integer min) {
         return min <= inputString.length();
     }
 
     /**
      * Checks a String only contains alphabetic characters. Does not support special characters (only a-z & A-Z).
-     *
+     * <p>
      * Accepts the empty String.
      *
      * @param inputString The input String to validate.
@@ -124,7 +135,7 @@ public class UtilityFunctions {
 
     /**
      * Checks if a String is alphanumeric (contains only chars a-z && A-Z && 0-9).
-     *
+     * <p>
      * Accepts the empty String
      *
      * @param inputString The input String to validate.
@@ -142,11 +153,12 @@ public class UtilityFunctions {
      * If the condition is "datetime", check that the string can be converted to a datetime.
      * If it can't, return false.
      * Format should be dd/MM/yyyy
-     * @param type "date", "datetime" (more in the future)
+     *
+     * @param type        "date", "datetime" (more in the future)
      * @param inputString the input string
      * @return
      */
-    public static boolean validateType(String inputString, String type){
+    public static boolean validateType(String inputString, String type) {
 
         return false; // TODO
     }
@@ -154,7 +166,7 @@ public class UtilityFunctions {
     /**
      * Method to check if the email entered by the user is a valid email. Is only a basic check with regex, doesn't
      * catch all emails and doesn't check if the email actually exists.
-     *
+     * <p>
      * Email regex sourced online from here:
      * https://howtodoinjava.com/regex/java-regex-validate-email-address/
      * Courtesy of Lokesh Gupta
@@ -171,30 +183,54 @@ public class UtilityFunctions {
      * Function that populates the database with the nationalities
      *
      * @return A boolean, true if all nationality are added successfully,
-     *              false otherwise.
+     * false otherwise.
      */
     public static boolean addAllNationalities() {
         boolean isInSuccessState = true;
 
         if (Nationality.find.all().isEmpty()) {
-            String[] locales = Locale.getISOCountries();
-            for (String countryCode : locales) {
-                Locale obj = new Locale("", countryCode);
-                Nationality nationality = new Nationality(obj.getDisplayCountry());
-                try{
-                    nationality.save();
-                }catch(Exception error){
-                    isInSuccessState = false;
-                    System.out.println("Failed to save nationality: " +
-                                                nationality.getNationalityName() +
-                                                " uniqueness contraint failed");
+            Set<String> countries = null;
+            try {
+                countries = countriesAsStrings();
+            } catch (Exception error) {
+                System.out.println(error);
+            }
+            //String[] locales = Locale.getISOCountries();
+            try {
+                if (ApplicationManager.isIsTest()) {
+                    for (String country : countries) {
+                        Nationality nationality = new Nationality(country);
+                        try {
+                            nationality.save();
+                        } catch (Exception error) {
+                            isInSuccessState = false;
+                            System.out.println("Failed to save nationality: " +
+                                    nationality.getNationalityName() +
+                                    " uniqueness contraint failed");
+                        }
 
+                    }
+                } else {
+                    for (String countryCode : countries) {
+                        Locale obj = new Locale("", countryCode);
+                        Nationality nationality = new Nationality(obj.getDisplayCountry());
+                        try {
+                            nationality.save();
+                        } catch (Exception error) {
+                            isInSuccessState = false;
+                            System.out.println("Failed to save nationality: " +
+                                    nationality.getNationalityName() +
+                                    " uniqueness contraint failed");
+
+                        }
+                    }
                 }
+            } catch (Exception error) {
+                System.out.println(error);
             }
         } else {
             isInSuccessState = false;
         }
-
         return isInSuccessState;
     }
 
@@ -207,25 +243,43 @@ public class UtilityFunctions {
         boolean isInSuccessState = true;
 
         if (Passport.find.all().isEmpty()) {
-            String[] locales = Locale.getISOCountries();
 
-            for (String countryCode : locales) {
-                Locale obj = new Locale("", countryCode);
+            Set<String> countries = null;
+            try {
+                countries = countriesAsStrings();
+            } catch (Exception error) {
+                System.out.println(error);
+            }
+            if (ApplicationManager.isIsTest()) {
+                for (String country : countries) {
+                    Passport passport = new Passport(country);
+                    try {
+                        passport.save();
+                    } catch (Exception error) {
+                        isInSuccessState = false;
+                        System.out.println("Passport failed to save. name: " +
+                                passport.getName() +
+                                " uniqueness constraint failed");
+                    }
+                }
+            } else {
+                for (String countryCode : countries) {
+                    Locale obj = new Locale("", countryCode);
 
-                Passport passport = new Passport(obj.getDisplayCountry());
-                try {
-                    passport.save();
-                }catch(Exception error){
-                    isInSuccessState = false;
-                    System.out.println("Passport failed to save. name: " +
-                                                passport.getName() +
-                                                " uniqueness constraint failed");
+                    Passport passport = new Passport(obj.getDisplayCountry());
+                    try {
+                        passport.save();
+                    } catch (Exception error) {
+                        isInSuccessState = false;
+                        System.out.println("Passport failed to save. name: " +
+                                passport.getName() +
+                                " uniqueness constraint failed");
+                    }
                 }
             }
         } else {
             isInSuccessState = false;
         }
-
         return isInSuccessState;
     }
 
@@ -245,10 +299,10 @@ public class UtilityFunctions {
         types.add("Backpacker");
         boolean successfullyAddedAllTravvelers = true;
         if (TravellerType.find.all().isEmpty()) {
-            for(String type : types){
-                try{
+            for (String type : types) {
+                try {
                     (new TravellerType(type)).save();
-                }catch(Exception error){
+                } catch (Exception error) {
                     //Will remove after peer check
                     successfullyAddedAllTravvelers = false;
                     System.out.println("Failed to add type: " + type + " Duplicate key");
@@ -263,13 +317,14 @@ public class UtilityFunctions {
 
     /**
      * Resizes an image given by a pathname
+     *
      * @param pathName the path to the image to be resized
      * @return the resized buffered image
      */
-    public static BufferedImage resizeImage(String pathName){
+    public static BufferedImage resizeImage(String pathName) {
         try {
             BufferedImage newProfileImage = ImageIO.read(new File(pathName));
-            int type = newProfileImage.getType() == 0? BufferedImage.TYPE_INT_ARGB : newProfileImage.getType();
+            int type = newProfileImage.getType() == 0 ? BufferedImage.TYPE_INT_ARGB : newProfileImage.getType();
             BufferedImage resizedImage = new BufferedImage(32, 32, type);
             Graphics2D g = resizedImage.createGraphics();
             g.drawImage(newProfileImage.getScaledInstance(32, 32, Image.SCALE_SMOOTH), 0, 0, 32, 32, null);
@@ -279,6 +334,98 @@ public class UtilityFunctions {
             System.out.println(e);
             return null;
         }
+
     }
+
+    /**
+     * This method sends a get request to the countries api and returns a sorted set of these countries
+     *
+     * @return
+     * @throws Exception
+     */
+    public static Map<String, Boolean> CountryUtils() throws Exception {
+        Map<String, Boolean> countryMap = new TreeMap<>();
+        if (ApplicationManager.isIsTest()) {
+            String[] locales = Locale.getISOCountries();
+            for (String countryCode : locales) {
+                Locale obj = new Locale("", countryCode);
+                countryMap.put(obj.getDisplayCountry(), false);
+            }
+        } else {
+            String url = "https://restcountries.eu/rest/v2/all";
+            URL obj = new URL(url);
+            HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+            // optional default is GET
+            con.setRequestMethod("GET");
+
+            BufferedReader in = new BufferedReader(
+                    new InputStreamReader(con.getInputStream()));
+            String inputLine;
+            StringBuffer response = new StringBuffer();
+            countryMap = new TreeMap<>();
+
+            while ((inputLine = in.readLine()) != null) {
+                response.append(inputLine);
+            }
+            in.close();
+            JsonNode jsonJacksonArray = Json.parse(response.toString());
+            //print result
+
+            for (JsonNode node : jsonJacksonArray) {
+                System.out.println(node.get("name").textValue());
+                countryMap.put(node.get("name").textValue(), false);
+            }
+        }
+
+
+        return countryMap;
+    }
+
+    /**
+     * This method sends a get request to the countries api and returns a sorted set of these countries
+     *
+     * @return
+     * @throws Exception
+     */
+    public static Set countriesAsStrings() throws Exception {
+        Set<String> countries = new HashSet<String>();
+        if (ApplicationManager.isIsTest()) {
+                String[] locales = Locale.getISOCountries();
+                for (String countryCode : locales) {
+                    Locale obj = new Locale("", countryCode);
+                    countries.add(obj.getDisplayCountry());
+                }
+        } else {
+            String url = "https://restcountries.eu/rest/v2/all";
+            URL obj = new URL(url);
+            HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+            // optional default is GET
+            con.setRequestMethod("GET");
+
+            BufferedReader in = new BufferedReader(
+                    new InputStreamReader(con.getInputStream()));
+            String inputLine;
+            StringBuffer response = new StringBuffer();
+
+
+            while ((inputLine = in.readLine()) != null) {
+                response.append(inputLine);
+            }
+            in.close();
+            JsonNode jsonJacksonArray = Json.parse(response.toString());
+            //print result
+
+            for (JsonNode node : jsonJacksonArray) {
+                countries.add((node.get("name").textValue()));
+            }
+
+        }
+        Set countrySet = new TreeSet<String>();
+        countrySet.addAll(countries);
+        return countrySet;
+    }
+
 
 }

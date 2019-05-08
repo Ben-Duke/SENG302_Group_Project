@@ -36,7 +36,7 @@ public class DestinationController extends Controller {
     DestinationFactory destFactory;
 
     private final Logger logger = LoggerFactory.getLogger("application");
-
+    UtilityFunctions utilityFunctions = new UtilityFunctions();
     /**
      * Performs validation tests on each on the users input for
      * each destination attribute.
@@ -142,7 +142,16 @@ public class DestinationController extends Controller {
             Form<DestinationFormData> destFormData;
             destFormData = formFactory.form(DestinationFormData.class);
 
-            return ok(createEditDestination.render(destFormData, null, Destination.getIsoCountries(), Destination.getTypeList(),user));
+            Map<String, Boolean> countries = null;
+
+            try{
+                countries = utilityFunctions.CountryUtils();
+            }catch(Exception error){
+                System.out.println(error);
+                System.out.println("Error geeting countires");
+            }
+
+            return ok(createEditDestination.render(destFormData, null, countries , Destination.getTypeList(),user));
         }
         return unauthorized("Oops, you are not logged in");
     }
@@ -213,7 +222,12 @@ public class DestinationController extends Controller {
         Map<String, Boolean> typeList = Destination.getTypeList();
         typeList.replace(destination.getDestType(), true);
 
-        Map<String, Boolean> countryList = Destination.getIsoCountries();
+        Map<String, Boolean> countryList = null;
+        try{
+            countryList = utilityFunctions.CountryUtils();
+        }catch(Exception error){
+            System.out.println(error);
+        }
         countryList.replace(destination.getCountry(), true);
 
         return ok(createEditDestination.render(destForm, destId, countryList, typeList, user));
@@ -296,7 +310,12 @@ public class DestinationController extends Controller {
         if (destForm.hasErrors() || hasError) {
 
             Map<String, Boolean> typeList = Destination.getTypeList();
-            Map<String, Boolean> countryList = Destination.getIsoCountries();
+            Map<String, Boolean> countryList = null;
+            try{
+                countryList = utilityFunctions.CountryUtils();
+            }catch(Exception error){
+                System.out.println(error);
+            }
 
             // Use a dynamic form to get the values of the dropdown inputs
             DynamicForm dynamicDestForm = formFactory.form().bindFromRequest(request);
@@ -333,7 +352,14 @@ public class DestinationController extends Controller {
                 Map<String, Boolean> typeList = Destination.getTypeList();
                 typeList.replace(destination.getDestType(), true);
 
-                Map<String, Boolean> countryList = Destination.getIsoCountries();
+                Map<String, Boolean> countryList = null;
+
+                try{
+                    countryList = utilityFunctions.CountryUtils();
+                }
+                catch(Exception error){
+
+                }
                 countryList.replace(destination.getCountry(), true);
 
                 List<TravellerType> travellerTypes = TravellerType.find.all();

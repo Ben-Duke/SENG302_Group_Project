@@ -1,7 +1,10 @@
 @import play.filters.csrf.AddCSRFToken
 @import factories.UserFactory
-@(user: User)
+@import views.html.users.profile.countryErrorMessage
 @import views.html.bootstrap3._
+
+@(user: User)
+
 @main(user, "Index"){
 
 
@@ -50,7 +53,10 @@
                     <div class="col-sm-offset-4">
                         <ul class="list-group" >
                             @for(passport <- user.passports) {
-                            <li class="list-group-item">@passport.passportName</li>
+                            <li class="list-group-item">
+                                @passport.passportName
+                                @countryErrorMessage(passport)
+                            </li>
                             }
                         </ul>
                     </div>
@@ -58,7 +64,10 @@
                 <p>Nationality(s):
                     <ul class="list-group col-sm-offset-4" >
                         @for(nationality <- user.nationality) {
-                        <li class="list-group-item">@nationality.nationalityName</li>
+                        <li class="list-group-item">
+                            @nationality.nationalityName
+                            @countryErrorMessage(nationality)
+                        </li>
                         }
                     </ul>
                 </p>

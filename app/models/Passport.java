@@ -12,9 +12,10 @@ import java.util.List;
 @Table(name = "passport",
         uniqueConstraints = @UniqueConstraint(columnNames = "passport_name")
 )
-public class Passport extends Model {
+public class Passport extends CountryItem {
 
     public Passport(String passportName){
+        super();
         this.passportName = passportName;
     }
 

@@ -4,6 +4,7 @@ import models.*;
 import play.libs.Json;
 import play.mvc.Http;
 import play.mvc.Result;
+import utilities.CountryUtils;
 import utilities.TestDatabaseManager;
 import utilities.UtilityFunctions;
 import views.html.users.userIndex;
@@ -40,6 +41,10 @@ public class UserController {
             TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
             testDatabaseManager.populateDatabase(initCompleteLatch);
             System.out.println("populating database");
+
+            // Temporary - TODO move elsewhere where it will repeat while server running Noel 8/5
+            // Load countries from api
+            CountryUtils.fetchCountriesFromApi();
         } else {
             try {
                 initCompleteLatch.await();
@@ -48,6 +53,8 @@ public class UserController {
             }
             System.out.println("database already populated");
         }
+
+
 
         List<User> users = User.find.all();
         List<Admin> admins = Admin.find.all();

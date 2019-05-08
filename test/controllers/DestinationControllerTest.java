@@ -7,7 +7,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import play.Application;
 import play.api.test.CSRFTokenHelper;
 import play.data.FormFactory;
@@ -22,6 +21,7 @@ import play.mvc.Result;
 import play.test.Helpers;
 import play.test.WithApplication;
 import utilities.TestDatabaseManager;
+import utilities.UtilityFunctions;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -41,9 +41,9 @@ public class DestinationControllerTest extends WithApplication {
      */
     Database database;
 
-    private int REDIRECT_HTTP_STATUS = SEE_OTHER;
+    private final Logger logger = UtilityFunctions.getLogger();
 
-    private final Logger logger = LoggerFactory.getLogger("application");
+    private int REDIRECT_HTTP_STATUS = SEE_OTHER;
 
     @Override
     protected Application provideApplication() {
@@ -589,6 +589,7 @@ public class DestinationControllerTest extends WithApplication {
         formData.put("longitude", "-50.0");
         Http.RequestBuilder request2 = Helpers.fakeRequest().bodyForm(formData).method(POST).uri("/users/destinations/update/2").session("connected", "2");
         Result result2 = route(app, request2);
+
         assertEquals(UNAUTHORIZED, result2.status());
     }
 
@@ -620,6 +621,7 @@ public class DestinationControllerTest extends WithApplication {
         Http.RequestBuilder request2 = Helpers.fakeRequest().bodyForm(formData).
                 method(POST).uri("/users/destinations/update/3").session("connected", "2");
         Result result2 = route(app, request2);
+
         assertEquals(REDIRECT_HTTP_STATUS, result2.status());
     }
 

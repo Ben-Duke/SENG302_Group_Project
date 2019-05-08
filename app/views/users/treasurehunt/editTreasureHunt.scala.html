@@ -14,28 +14,28 @@
             @text(treasureHuntForm("title"),
             label = "Title",
             placeholder = "Title",
-            help = "Title for the Treasure Hunt.")
+            help = "Title for the Treasure Hunt. (required)")
 
             @text(treasureHuntForm("riddle"),
             label = "Riddle",
             placeholder = "Riddle",
-            help = "Riddle for the Treasure Hunt.")
+            help = "Riddle for the Treasure Hunt. (required)")
 
             @select(treasureHuntForm("destination"),
             label = "Destination",
             optionMap = destinations,
             isMultiple = false,
-            help = "Destination (answer) for the Treasure Hunt.")
+            help = "Destination (answer) for the Treasure Hunt. (required)")
 
             @datepicker(treasureHuntForm("startDate"),
-            label = "Start Date",
+            label = "Start Date (NZST)",
             placeholder = "01/01/2000",
-            help = "Start date for the Treasure Hunt.")
+            help = "Start date for the Treasure Hunt. (required)")
 
             @datepicker(treasureHuntForm("endDate"),
-            label = "End Date",
+            label = "End Date (NZST)",
             placeholder = "01/01/2000",
-            help = "End date for the Treasure Hunt.")
+            help = "End date for the Treasure Hunt. (required)")
 
         </fieldset>
 

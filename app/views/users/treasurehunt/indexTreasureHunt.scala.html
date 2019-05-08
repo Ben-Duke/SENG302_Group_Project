@@ -11,20 +11,23 @@
             <thead class="thead-dark">
                 <tr>
                     <th scope="col">Title</th>
-                    <th scope="col">End Date (UTC)</th>
-                    <th scope="col">Destination</th>
+                    <th scope="col">End Date (NZST)</th>
                     <th scope="col">Riddle</th>
                 </tr>
             </thead>
             <tbody>
             @for(treasureHunt <- openTreasureHunts) {
-                    <tr data-toggle="modal" data-id="@treasureHunt.getThuntid()" data-target="#info" class="clickable">
-                        <th scope ="row">@treasureHunt.getTitle()</th>
-                        <td>@treasureHunt.getEndDate()</td>
+                    <tr data-toggle="modal" data-id="@treasureHunt.getThuntid" data-target="#info" class="clickable">
+                        <th scope ="row">@treasureHunt.getTitle</th>
+                        <td>@treasureHunt.getEndDate</td>
                         @*<td><a class="btn btn-success" href="@routes.DestinationController.createDestination()" role="button">*@
             @*Take a guess</a></td>*@
-                        <td></td>
-                        <td>@treasureHunt.getRiddle()</td>
+                        @if(user.userIsAdmin || treasureHunt.getUser.getUserid.equals(user.getUserid)) {
+                            <td>@treasureHunt.getDestination.getDestName</td>
+                        } else {
+                            <td></td>
+                        }
+                        <td>@treasureHunt.getRiddle</td>
                     </tr>
 
 
@@ -42,8 +45,8 @@
                 <tr>
                     <th scope="col">Title</th>
                     <th scope="col">Status</th>
-                    <th scope="col">Start Date (UTC)</th>
-                    <th scope="col">End Date (UTC)</th>
+                    <th scope="col">Start Date (NZST)</th>
+                    <th scope="col">End Date (NZST)</th>
                     <th scope="col">Destination</th>
                     <th scope="col">Riddle</th>
                     <th scope="col">Edit</th>
@@ -52,26 +55,48 @@
             </thead>
             <tbody>
             @for(treasureHunt <- treasureHunts) {
-                <tr data-toggle="modal" data-id="@treasureHunt.getThuntid()" data-target="#info" class="clickable">
-                    <th scope ="row">@treasureHunt.getTitle()</th>
+                <tr data-toggle="modal" data-id="@treasureHunt.getThuntid" data-target="#info" class="clickable">
+                    <th scope ="row">@treasureHunt.getTitle</th>
                     @if(openTreasureHunts.contains(treasureHunt)){
                         <td>Open</td>
                     } else{
                         <td>Closed</td>
                     }
-                    <td>@treasureHunt.getStartDate()</td>
-                    <td>@treasureHunt.getEndDate()</td>
-                    <td>@treasureHunt.getDestination().getDestName</td>
-                    <td>@treasureHunt.getRiddle()</td>
-                    <td><a href="@routes.TreasureHuntController.editTreasureHunt(treasureHunt.getThuntid())" class="btn btn-primary">
+                    <td>@treasureHunt.getStartDate</td>
+                    <td>@treasureHunt.getEndDate</td>
+                    <td>@treasureHunt.getDestination.getDestName</td>
+                    <td>@treasureHunt.getRiddle</td>
+                    <td><a href="@routes.TreasureHuntController.editTreasureHunt(treasureHunt.getThuntid)" class="btn btn-primary">
                         Edit</a></td>
-                    <td><a href="@routes.TreasureHuntController.deleteTreasureHunt(treasureHunt.getThuntid())" class="btn btn-danger">
+                    <td><a data-toggle="modal" data-target="#confirmDeleteModal" class="btn btn-danger">
                         Delete</a></td>
                 </tr>
 
+                <!-- Modal -->
+                <div id="confirmDeleteModal" class="modal fade" role="dialog">
+                    <div class="modal-dialog">
+
+                        <!-- Modal content-->
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <h4 class="modal-title">Delete Treasure Hunt</h4>
+                            </div>
+                            <div class="modal-body">
+                                <p>Are you sure you want to delete this Treasure Hunt?</p>
+                            </div>
+                            <div class="modal-footer">
+                                <a class="btn btn-danger" href="@routes.TreasureHuntController.deleteTreasureHunt(treasureHunt.getThuntid())" >Yes</a>
+                                <button type="button" class="btn btn-primary" data-dismiss="modal">No</button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
 
                 <br>
                 }
+
             </tbody>
         </table>
         <script src="@routes.Assets.at("js/indexTreasureHunt.js")" type="text/javascript"></script>

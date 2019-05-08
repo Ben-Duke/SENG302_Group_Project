@@ -320,7 +320,7 @@ public class DestinationController extends Controller {
             Map<String, Boolean> typeList = Destination.getTypeList();
             Map<String, Boolean> countryList = null;
             try{
-                utilityFunctions.CountryUtils();
+                countryList = utilityFunctions.CountryUtils();
             }catch(Exception error){
                 System.out.println(error);
             }

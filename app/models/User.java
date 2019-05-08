@@ -1,7 +1,6 @@
 package models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.ebean.ExpressionList;
 import io.ebean.Finder;
 import io.ebean.Model;
@@ -13,8 +12,6 @@ import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-
-import static play.mvc.Results.badRequest;
 
 /**
  * NOTE: This class has a natural ordering that is inconsistent with equals
@@ -154,11 +151,12 @@ public class User extends Model implements Comparable<User> {
     public static Finder<Integer,User> find = new Finder<>(User.class);
 
     //TODO remove this attribute along with getters, setters and checkboxes in create/update user story[229] tasks[1284,1301]
+    @Deprecated
     public Boolean isAdmin = false;
 
 
     //GETTERS AND SETTERS
-
+    @Deprecated
     public Boolean isAdmin() {return isAdmin;}
 
     public void setAdmin(Boolean admin) {
@@ -397,29 +395,38 @@ public class User extends Model implements Comparable<User> {
     /**
      * Gets a list of the user's trips, sorted by the earliest arrival date of their visits within each trip.
      * If there are no arrival dates set within a trip, the trip is placed at the bottom of the list.
+     * This methods also iterates through the user's list of trips and eliminates all invalid trips
+     * (ones with less than two destinations)
      * @return the list of sorted trips
      */
     public List<Trip> getTripsSorted()
     {
         HashMap<Trip,LocalDate> datesMap = new HashMap<>();
         for(Trip trip: trips){
-            ArrayList<LocalDate> datesList = new ArrayList<>();
-            for(Visit visit: trip.getVisits()){
-                if(visit.getArrival() != null && !(visit.getArrival().isEmpty())) {
-                    String arrival = visit.getArrival();
-                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-                    LocalDate arrivalDate = LocalDate.parse(arrival, formatter);
-                    datesList.add(arrivalDate);
+            if(trip.getVisits().size() < 2){
+                for(Visit visit : trip.getVisits()){
+                    visit.delete();
                 }
-                else{
-                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-                    LocalDate arrivalDate = LocalDate.parse("2100-12-25", formatter);
-                    datesList.add(arrivalDate);
-                }
+                trip.delete();
             }
-            Collections.sort(datesList);
-            if (! datesList.isEmpty()) {
-                datesMap.put(trip, datesList.get(0));
+            else {
+                ArrayList<LocalDate> datesList = new ArrayList<>();
+                for (Visit visit : trip.getVisits()) {
+                    if (visit.getArrival() != null && !(visit.getArrival().isEmpty())) {
+                        String arrival = visit.getArrival();
+                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                        LocalDate arrivalDate = LocalDate.parse(arrival, formatter);
+                        datesList.add(arrivalDate);
+                    } else {
+                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                        LocalDate arrivalDate = LocalDate.parse("2100-12-25", formatter);
+                        datesList.add(arrivalDate);
+                    }
+                }
+                Collections.sort(datesList);
+                if (!datesList.isEmpty()) {
+                    datesMap.put(trip, datesList.get(0));
+                }
             }
         }
         datesMap = sortByValues(datesMap);
@@ -451,7 +458,7 @@ public class User extends Model implements Comparable<User> {
     public boolean userIsAdmin() {
         List<Admin> admins = Admin.find.all();
         for (Admin admin : admins) {
-            if (admin.userId == userid) {
+            if (admin.userId.equals(userid)) {
                 return true;
             }
         }

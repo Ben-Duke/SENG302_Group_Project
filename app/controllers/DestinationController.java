@@ -104,6 +104,8 @@ public class DestinationController extends Controller {
         if (user != null) {
             List<Destination> destinations = user.getDestinations();
             List<Destination> allDestinations = Destination.find.all();
+
+
             return ok(indexDestination.render(destinations, allDestinations, destFactory, user));
 
 
@@ -149,7 +151,7 @@ public class DestinationController extends Controller {
                 countries = utilityFunctions.CountryUtils();
             }catch(Exception error){
                 System.out.println(error);
-                System.out.println("Error geeting countires");
+                System.out.println("Error getting countries");
             }
 
             return ok(createEditDestination.render(destFormData, null, countries , Destination.getTypeList(),user));
@@ -178,7 +180,10 @@ public class DestinationController extends Controller {
                     Destination newDestination = formFactory.form(Destination.class)
                             .bindFromRequest(request).get();
                     newDestination.setUser(user);
+                    newDestination.setCountryValid(true);
                     newDestination.save();
+
+
                     return redirect(routes.DestinationController.indexDestination());
                 }
         } else {
@@ -586,27 +591,30 @@ public class DestinationController extends Controller {
 
             if (destination != null) {
                 if (destination.isUserOwner(user.userid)) {
-                    //-----------checking if a public destination equivalent
-                    // ----------already exists
-                    DestinationFactory destFactory = new DestinationFactory();
-                    if (destFactory.doesPublicDestinationExist(destination)) {
-                        // public matching destination already exists
-                        // show error
-                        destination.setIsPublic(true);
-                        destination.update();
-                        return redirect(routes.DestinationController.indexDestination());
-                    } else {
-                        //no matching pub destination exists, making public now
-                        //sets the destination to public, sets the owner to the default admin and updates the destination
-                        List<Destination> matchingDests = destFactory.getOtherUsersMatchingPrivateDestinations(user.userid, destination);
-                        if (matchingDests.size() == 0) {
+                    if (destination.getIsCountryValid()) {
+
+                        //-----------checking if a public destination equivalent
+                        // ----------already exists
+                        DestinationFactory destFactory = new DestinationFactory();
+                        if (destFactory.doesPublicDestinationExist(destination)) {
+                            // public matching destination already exists
+                            // show error
                             destination.setIsPublic(true);
                             destination.update();
+                            return redirect(routes.DestinationController.indexDestination());
+                        } else {
+                            //no matching pub destination exists, making public now
+                            //sets the destination to public, sets the owner to the default admin and updates the destination
+                            List<Destination> matchingDests = destFactory.getOtherUsersMatchingPrivateDestinations(user.userid, destination);
+                            if (matchingDests.size() == 0) {
+                                destination.setIsPublic(true);
+                                destination.update();
+                            }
+                            return redirect(routes.DestinationController.indexDestination());
                         }
-                        return redirect(routes.DestinationController.indexDestination());
+                    } else {
+                        return badRequest("The country for this destination is not valid. The destination can not be made public");
                     }
-
-
                 } else {
                     return unauthorized("HEY!, not yours. You cant make public. How you get access to that anyway?... FBI!!! OPEN UP!");
                 }

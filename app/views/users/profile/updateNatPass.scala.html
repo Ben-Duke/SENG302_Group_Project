@@ -1,9 +1,9 @@
 @import formdata.NatFormData
 @import factories.UserFactory
 @import helper._
+@import views.html.users.profile.countryErrorMessage
+
 @(userForm : Form[NatFormData], nationalities : List[Nationality], passports : List[Passport], id : Int, user : User)
-
-
 
 
 @main(user, "Index"){
@@ -19,7 +19,10 @@
                     <div class="col-sm">
                         <ul class="list-group" >
                             @for(passport <- UserFactory.getUserPassports(id)) {
-                                <li class="list-group-item">@passport.passportName</li>
+                                <li class="list-group-item">
+                                    @passport.passportName
+                                    @countryErrorMessage(passport)
+                                </li>
                             }
                         </ul>
                     </div>
@@ -57,7 +60,10 @@
                     <p><h3><b>Nationality(s):</b></h3>
                     <ul class="list-group" >
                         @for(nationality <- UserFactory.getUserNats(id)) {
-                            <li class="list-group-item">@nationality.nationalityName</li>
+                            <li class="list-group-item">
+                                @nationality.nationalityName
+                                @countryErrorMessage(nationality)
+                            </li>
                         }
                     </ul>
                     </p>

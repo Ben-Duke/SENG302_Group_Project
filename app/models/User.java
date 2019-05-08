@@ -397,29 +397,38 @@ public class User extends Model implements Comparable<User> {
     /**
      * Gets a list of the user's trips, sorted by the earliest arrival date of their visits within each trip.
      * If there are no arrival dates set within a trip, the trip is placed at the bottom of the list.
+     * This methods also iterates through the user's list of trips and eliminates all invalid trips
+     * (ones with less than two destinations)
      * @return the list of sorted trips
      */
     public List<Trip> getTripsSorted()
     {
         HashMap<Trip,LocalDate> datesMap = new HashMap<>();
         for(Trip trip: trips){
-            ArrayList<LocalDate> datesList = new ArrayList<>();
-            for(Visit visit: trip.getVisits()){
-                if(visit.getArrival() != null && !(visit.getArrival().isEmpty())) {
-                    String arrival = visit.getArrival();
-                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-                    LocalDate arrivalDate = LocalDate.parse(arrival, formatter);
-                    datesList.add(arrivalDate);
+            if(trip.getVisits().size() < 2){
+                for(Visit visit : trip.getVisits()){
+                    visit.delete();
                 }
-                else{
-                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-                    LocalDate arrivalDate = LocalDate.parse("2100-12-25", formatter);
-                    datesList.add(arrivalDate);
-                }
+                trip.delete();
             }
-            Collections.sort(datesList);
-            if (! datesList.isEmpty()) {
-                datesMap.put(trip, datesList.get(0));
+            else {
+                ArrayList<LocalDate> datesList = new ArrayList<>();
+                for (Visit visit : trip.getVisits()) {
+                    if (visit.getArrival() != null && !(visit.getArrival().isEmpty())) {
+                        String arrival = visit.getArrival();
+                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                        LocalDate arrivalDate = LocalDate.parse(arrival, formatter);
+                        datesList.add(arrivalDate);
+                    } else {
+                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                        LocalDate arrivalDate = LocalDate.parse("2100-12-25", formatter);
+                        datesList.add(arrivalDate);
+                    }
+                }
+                Collections.sort(datesList);
+                if (!datesList.isEmpty()) {
+                    datesMap.put(trip, datesList.get(0));
+                }
             }
         }
         datesMap = sortByValues(datesMap);

@@ -44,6 +44,7 @@ public class UserControllerTest extends WithApplication {
                 "create table test (id bigint not null, name varchar(255));",
                 "drop table test;"
         )));
+        ApplicationManager.setIsTest(true);
         TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
         testDatabaseManager.populateDatabase();
     }

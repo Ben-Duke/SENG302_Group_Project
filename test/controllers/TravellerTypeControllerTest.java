@@ -47,6 +47,7 @@ public class TravellerTypeControllerTest extends WithApplication {
         //Initialises a test user with name "testUser" and saves it to the database.
         User user = new User("testUser");
         user.save();
+        ApplicationManager.setIsTest(true);
         TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
         testDatabaseManager.populateDatabase();
     }

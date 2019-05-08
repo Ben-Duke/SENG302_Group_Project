@@ -35,11 +35,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static play.mvc.Http.Status.BAD_REQUEST;
 import static play.mvc.Http.Status.SEE_OTHER;
+import static play.mvc.Http.Status.UNAUTHORIZED;
 
 public class TreasureHuntSteps extends WithApplication {
     /**
@@ -69,6 +68,7 @@ public class TreasureHuntSteps extends WithApplication {
                 .overrides(testModule);
         Guice.createInjector(builder.applicationModule()).injectMembers(this);
         Helpers.start(application);
+        ApplicationManager.setIsTest(true);
         ApplicationManager.setUserPhotoPath("/test/resources/test_photos/user_");
         testDatabaseManager.populateDatabase();
     }
@@ -246,6 +246,36 @@ public class TreasureHuntSteps extends WithApplication {
     public void the_user_should_not_be_shown_any_treasure_hunts() {
         TreasureHuntController treasureHuntController = new TreasureHuntController();
         assertEquals(0, treasureHuntController.getOpenTreasureHunts().size());
+    }
+
+    @When("I delete one my treasure hunt with the title {string}")
+    public void i_delete_one_my_treasure_hunt_with_the_title(String string) {
+        int tHuntId = TreasureHunt.find.query().where().eq("title", string).findOne().getThuntid();
+        Http.RequestBuilder fakeRequest = Helpers.fakeRequest().method(Helpers.GET).uri("/users/treasurehunts/delete/" + tHuntId).session("connected", "2");
+        Result result = Helpers.route(application, fakeRequest);
+        //User should be redirected to the index treasure hunts page
+        assertEquals(SEE_OTHER, result.status());
+    }
+
+    @Then("There should be no treasure hunt with the title {string} in the database")
+    public void there_should_be_no_treasure_hunt_with_the_title_in_the_database(String string) {
+        TreasureHunt treasureHunt = TreasureHunt.find.query().where().eq("title", string).findOne();
+        assertNull(treasureHunt);
+    }
+
+    @When("I try to delete other users treasure hunt with the title {string}")
+    public void i_try_to_delete_other_users_treasure_hunt_with_the_title(String string) {
+        int tHuntId = TreasureHunt.find.query().where().eq("title", string).findOne().getThuntid();
+        Http.RequestBuilder fakeRequest = Helpers.fakeRequest().method(Helpers.GET).uri("/users/treasurehunts/delete/" + tHuntId).session("connected", "2");
+        Result result = Helpers.route(application, fakeRequest);
+        //User should be redirected to the index treasure hunts page
+        assertEquals(UNAUTHORIZED, result.status());
+    }
+
+    @Then("The treasure hunt with the title {string} should still be in the database")
+    public void the_treasure_hunt_with_the_title_should_still_be_in_the_database(String string) {
+        TreasureHunt treasureHunt = TreasureHunt.find.query().where().eq("title", string).findOne();
+        assertNotNull(treasureHunt);
     }
 
 }

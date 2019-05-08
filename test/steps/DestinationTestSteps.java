@@ -71,6 +71,7 @@ public class DestinationTestSteps extends WithApplication {
                 .overrides(testModule);
         Guice.createInjector(builder.applicationModule()).injectMembers(this);
         Helpers.start(application);
+        ApplicationManager.setIsTest(true);
         ApplicationManager.setUserPhotoPath("/test/resources/test_photos/user_");
         testDatabaseManager.populateDatabase();
     }

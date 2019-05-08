@@ -1,3 +1,0 @@
-function showPrivateDestinations(destinations){
-    destinations = [];
-}

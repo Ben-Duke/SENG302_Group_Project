@@ -14,11 +14,9 @@ import views.html.users.treasurehunt.*;
 
 import javax.inject.Inject;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
  * The Treasure Hunt controller class which handles the viewing, creating, editing and deleting of treasure hunts.
@@ -82,7 +80,7 @@ public class TreasureHuntController extends Controller {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             LocalDate startDate = LocalDate.parse(treasureHunt.getStartDate(), formatter);
             LocalDate endDate = LocalDate.parse(treasureHunt.getEndDate(), formatter);
-            LocalDate currentDate = LocalDate.now();
+            LocalDate currentDate = LocalDate.now(ZoneId.of("Pacific/Auckland"));
             if(startDate.isBefore(currentDate) && endDate.isAfter(currentDate)){
                 openTreasureHunts.add(treasureHunt);
             }

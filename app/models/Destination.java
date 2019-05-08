@@ -158,6 +158,9 @@ public class Destination extends Model {
     public void setVisits(List<Visit> visits) {
         this.visits = visits;
     }
+    public void setCountryValid(boolean isCountryValid) {
+        this.isCountryValid = isCountryValid;
+    }
 
     public void setUser(User user) { this.user = user; }
 
@@ -171,19 +174,6 @@ public class Destination extends Model {
 
     public void addVisit(Visit visit) { this.visits.add(visit);}
     public void removeVisit(Visit visit) { this.visits.remove(visit);}
-
-    public void updateIsCountryValid() { this.isCountryValid = UtilityFunctions.calculateIsCountryValid(this.country); }
-
-    public void updateIsCountryValidGivenCountries(Set<String> validCountries) {
-        boolean countryFound = false;
-        for (String validCountry : validCountries) {
-
-            if (country.toLowerCase().equals(validCountry)) {
-                countryFound = true;
-            }
-        }
-        this.isCountryValid = countryFound;
-    }
 
     @Override
     public String toString() {

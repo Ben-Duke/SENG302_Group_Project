@@ -104,19 +104,6 @@ public class DestinationController extends Controller {
             List<Destination> destinations = user.getDestinations();
             List<Destination> allDestinations = Destination.find.all();
 
-            try {
-                Set<String> countryList = UtilityFunctions.countriesAsStrings();
-
-                for (Destination destination : destinations) {
-                    destination.updateIsCountryValidGivenCountries(countryList);
-                }
-                for (Destination destination : allDestinations) {
-                    destination.updateIsCountryValidGivenCountries(countryList);
-                }
-
-            } catch (Exception e) {
-                //Do nothing
-            }
 
             return ok(indexDestination.render(destinations, allDestinations, destFactory, user));
 
@@ -192,7 +179,6 @@ public class DestinationController extends Controller {
                     Destination newDestination = formFactory.form(Destination.class)
                             .bindFromRequest(request).get();
                     newDestination.setUser(user);
-                    newDestination.updateIsCountryValid();
                     newDestination.save();
 
 
@@ -596,7 +582,6 @@ public class DestinationController extends Controller {
 
             if (destination != null) {
                 if (destination.isUserOwner(user.userid)) {
-                    destination.updateIsCountryValid();
                     if (destination.getIsCountryValid()) {
 
                         //-----------checking if a public destination equivalent

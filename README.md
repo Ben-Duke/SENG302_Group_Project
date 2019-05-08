@@ -4,7 +4,7 @@ Basic Play project using sbt build and basic GitLab CI.
 ## URL's of live projects
 Navigate to these websites in your favourite web browser (such as Chrome or Edge).
 
-Sprint 2 Deliverable (a few minor tweaks to get https working and to remove some warnings from the console when running the app):
+Sprint 3 Deliverable :
 ```
 https://csse-s302g8.canterbury.ac.nz
 ```
@@ -12,6 +12,11 @@ https://csse-s302g8.canterbury.ac.nz
 Most up-to-date running app from our Master branch:
 ```
 https://csse-s302g8.canterbury.ac.nz:8443
+```
+
+Sonarqube Reports:
+```
+https://csse-s302g8.canterbury.ac.nz:8080
 ```
 
 ## Basic Project Structure
@@ -38,18 +43,25 @@ chmod +x ./bin/team-800
 
 And run the server 
 ```bash
-./bin/team-800 -Dplay.http.secret.key="bmcsykbm3[IAkc3XKZnWCAEX[K[RmtJMDmJCe9Nhy;?UDpNupp99fuW@^h5tcwlQ"
+./bin/team-800
 ```
 And open <http://localhost:9000/>
 
 ## Login details
+##### We reccomend you use the test user to test our system
+
 * Default admin:
 
         Email: admin@admin.com
 
         Password: admin
 
+* Test user:
 
+        Email: testuser1@uclive.ac.nz
+
+        Password: test
+        
 ## How to use
 * Create/Login using the buttons on the main page.
 * To sign up for the first time you must complete all required fields
@@ -68,3 +80,7 @@ And open <http://localhost:9000/>
         https://developers.google.com/maps/documentation/javascript/adding-a-legend
         https://developers.google.com/maps/documentation/javascript/events
         https://developers.google.com/maps/documentation/javascript/markers
+        
+## Dependencies
+
+https://eng-git.canterbury.ac.nz/seng302-2019/team-800/wikis/dependencies

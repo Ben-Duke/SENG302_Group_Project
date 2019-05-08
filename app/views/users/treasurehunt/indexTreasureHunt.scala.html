@@ -12,6 +12,7 @@
                 <tr>
                     <th scope="col">Title</th>
                     <th scope="col">End Date (NZST)</th>
+                    <th scope="col">Destination</th>
                     <th scope="col">Riddle</th>
                 </tr>
             </thead>
@@ -25,7 +26,7 @@
                         @if(user.userIsAdmin || treasureHunt.getUser.getUserid.equals(user.getUserid)) {
                             <td>@treasureHunt.getDestination.getDestName</td>
                         } else {
-                            <td></td>
+                            <td>Hidden</td>
                         }
                         <td>@treasureHunt.getRiddle</td>
                     </tr>

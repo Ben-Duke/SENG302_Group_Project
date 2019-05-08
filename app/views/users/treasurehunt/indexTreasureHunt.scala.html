@@ -23,7 +23,7 @@
                         <td>@treasureHunt.getEndDate</td>
                         @*<td><a class="btn btn-success" href="@routes.DestinationController.createDestination()" role="button">*@
             @*Take a guess</a></td>*@
-                        @if(user.userIsAdmin || treasureHunt.getUser.equals(user)) {
+                        @if(user.userIsAdmin || treasureHunt.getUser.getUserid.equals(user.getUserid)) {
                             <td>treasureHunt.getDestination</td>
                         } else {
                             <td></td>

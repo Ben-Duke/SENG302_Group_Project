@@ -162,9 +162,9 @@ public class ProfileController extends Controller {
 
             List<Nationality> nationalities = Nationality.find.all();
             List<Passport> passports = Passport.find.all();
-            return ok(updateNatPass.render(userForm, nationalities, passports, userId,User.getCurrentUser(request)));
+            return ok(updateNatPass.render(userForm, nationalities, passports, userId, User.getCurrentUser(request)));
         }
-        else{
+        else {
             return unauthorized(notLoggedInErrorStr);
         }
     }

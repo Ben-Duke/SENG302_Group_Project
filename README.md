@@ -48,6 +48,8 @@ And run the server
 And open <http://localhost:9000/>
 
 ## Login details
+##### We reccomend you use the test user to test our system
+
 * Default admin:
 
         Email: admin@admin.com

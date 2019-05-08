@@ -13,7 +13,7 @@ import java.util.Set;
 @Table(name = "nationality",
         uniqueConstraints = @UniqueConstraint(columnNames = "nationality_name")
 )
-public class Nationality extends Model {
+public class Nationality extends CountryItem {
     @Id
     public Integer natid;
 
@@ -29,6 +29,7 @@ public class Nationality extends Model {
 
     // --------------------- methods below here--------------------------------
     public Nationality(String nationality){
+        super();
         this.nationalityName = nationality;
     }
 

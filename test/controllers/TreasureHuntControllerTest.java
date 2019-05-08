@@ -459,7 +459,7 @@ public class TreasureHuntControllerTest extends WithApplication {
         Http.RequestBuilder fakeRequest = Helpers.fakeRequest().method(Helpers.GET).uri("/users/treasurehunts/delete/" + tHuntId).session("connected", "2");
         Result result = Helpers.route(app, fakeRequest);
         //User should be redirected to the index treasure hunts page
-        assertEquals(OK, result.status());
+        assertEquals(SEE_OTHER, result.status());
         //User with id 2 should still have only one treasure hunt
         assertEquals(0, User.find.byId(2).getTreasureHunts().size());
 

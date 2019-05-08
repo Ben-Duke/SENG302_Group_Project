@@ -212,7 +212,7 @@ public class TreasureHuntController extends Controller {
             if (treasureHunt != null) {
                 if (treasureHunt.getUser().getUserid() == (user.getUserid())) {
                     treasureHuntFactory.deleteTreasureHunt(treasureHunt);
-                    return ok(indexTreasureHunt.render(user.getTreasureHunts(), getOpenTreasureHunts(), user));
+                    return redirect(routes.TreasureHuntController.indexTreasureHunt());
                 } else {
                     return unauthorized("The Treasure Hunt that you are trying to delete does not belong to you.");
                 }

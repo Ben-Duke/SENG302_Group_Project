@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.ebean.Finder;
 import io.ebean.Model;
+import utilities.UtilityFunctions;
 
 import javax.persistence.*;
 import java.util.*;
@@ -18,9 +19,11 @@ public class Destination extends Model {
     public String destType;
     public String district;
     public String country;
+    public boolean isCountryValid;
     public double latitude;
     public double longitude;
     public boolean isPublic;
+
 
 
     @ManyToOne
@@ -66,6 +69,12 @@ public class Destination extends Model {
         this.latitude = latitude;
         this.longitude = longitude;
         this.isPublic = isPublic;
+
+        this.isCountryValid = UtilityFunctions.calculateIsCountryValid(country);
+
+
+        System.out.println("HElllO");
+        System.out.println(isCountryValid);
     }
 
     /**
@@ -80,6 +89,11 @@ public class Destination extends Model {
      */
     public Destination(String destName, String destType, String district, String country, double latitude, double longitude, User user){
         this(destName, destType, district, country, latitude, longitude, user, false);
+
+        this.isCountryValid = UtilityFunctions.calculateIsCountryValid(country);
+
+        System.out.println("HElllO2");
+        System.out.println(isCountryValid);
     }
 
     /**
@@ -125,7 +139,7 @@ public class Destination extends Model {
     public List<Visit> getVisits() {
         return visits;
     }
-
+    public boolean getIsCountryValid() { return isCountryValid; }
 
 
     public User getUser() { return user; }

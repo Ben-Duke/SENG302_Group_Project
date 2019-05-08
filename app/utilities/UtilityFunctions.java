@@ -355,12 +355,32 @@ public class UtilityFunctions {
 
         for(JsonNode node:jsonJacksonArray){
             countries.add((node.get("name").textValue().toLowerCase()));
-            System.out.println(node.get("name").textValue());
+//            System.out.println(node.get("name").textValue());
         }
 
         TreeSet countrySet = new TreeSet<String>();
         countrySet.addAll(countries);
         return countries;
+    }
+
+    public static boolean calculateIsCountryValid(String countryName) {
+
+        try {
+            Set<String> validCountries = UtilityFunctions.countriesAsStrings();
+
+            boolean countryFound = false;
+            for (String validCountry : validCountries) {
+                if (countryName.toLowerCase().equals(validCountry)) {
+                    countryFound = true;
+                }
+            }
+            return countryFound;
+
+        } catch (Exception e) {
+
+            System.out.println(e);
+            return false;
+        }
     }
 
 

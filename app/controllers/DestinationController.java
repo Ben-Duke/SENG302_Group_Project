@@ -148,7 +148,7 @@ public class DestinationController extends Controller {
                 countries = utilityFunctions.CountryUtils();
             }catch(Exception error){
                 System.out.println(error);
-                System.out.println("Error geeting countires");
+                System.out.println("Error getting countries");
             }
 
             return ok(createEditDestination.render(destFormData, null, countries , Destination.getTypeList(),user));

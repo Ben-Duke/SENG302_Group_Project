@@ -118,52 +118,6 @@ function setProfilePictureRequest(photoId){
             $('#addProfilePhoto').modal('show');
 }
 
-// function setProfilePictureRequest(url, photoId){
-//     var token =  $('input[name="csrfToken"]').attr('value');
-//     $.ajaxSetup({
-//         beforeSend: function(xhr) {
-//             xhr.setRequestHeader('Csrf-Token', token);
-//         }
-//     });
-//     $.ajax({
-//         url: url,
-//         method: "PUT",
-//         data: JSON.stringify({
-//             photoId: '"' + photoId + '"'
-//         }),
-//         headers: {
-//             'Content-Type': 'application/json'
-//         },
-//         success:function(res){
-//             $("#" + photoId).modal('hide');
-//             console.log("Success!");
-//         }
-//     })
-// }
-
-
-function makePublicOrPrivateRequest(url, photoId){
-    var token =  $('input[name="csrfToken"]').attr('value');
-    $.ajaxSetup({
-        beforeSend: function(xhr) {
-            xhr.setRequestHeader('Csrf-Token', token);
-        }
-    });
-    $.ajax({
-        url: url,
-        method: "POST",
-        data: JSON.stringify({
-            photoId: '"' + photoId + '"'
-        }),
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        success:function(res){
-            $("#" + photoId).modal('hide');
-            console.log("Success!");
-        }
-    })
-}
 
 /**
  * Same as the previous function, but for adding a photo from an existing destination

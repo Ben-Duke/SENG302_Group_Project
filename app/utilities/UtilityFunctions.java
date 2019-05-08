@@ -218,7 +218,8 @@ public class UtilityFunctions {
         } else {
             isInSuccessState = false;
         }
-
+        List<Nationality> nationalities = Nationality.find.all();
+        System.out.println(nationalities.size());
         return isInSuccessState;
     }
 
@@ -235,12 +236,13 @@ public class UtilityFunctions {
             Set<String> countries = null;
             try {
                 countries = countriesAsStrings();
+                System.out.println(countries.size());
             } catch (Exception error) {
                 System.out.println(error);
             }
-            //String[] locales = Locale.getISOCountries();
             if (ApplicationManager.isIsTest()) {
                 for (String country : countries) {
+                    System.out.println(country);
                     Passport passport = new Passport(country);
                     try {
                         passport.save();
@@ -269,7 +271,8 @@ public class UtilityFunctions {
         } else {
             isInSuccessState = false;
         }
-
+        List<Passport> passports = Passport.find.all();
+        System.out.println(passports.size());
         return isInSuccessState;
     }
 
@@ -365,6 +368,7 @@ public class UtilityFunctions {
             //print result
 
             for (JsonNode node : jsonJacksonArray) {
+                System.out.println(node.get("name").textValue());
                 countryMap.put(node.get("name").textValue(), false);
             }
         }
@@ -382,13 +386,11 @@ public class UtilityFunctions {
     public static Set countriesAsStrings() throws Exception {
         Set<String> countries = new HashSet<String>();
         if (ApplicationManager.isIsTest()) {
-            if (Nationality.find.all().isEmpty()) {
                 String[] locales = Locale.getISOCountries();
                 for (String countryCode : locales) {
                     Locale obj = new Locale("", countryCode);
                     countries.add(obj.getDisplayCountry());
                 }
-            }
         } else {
             String url = "https://restcountries.eu/rest/v2/all";
             URL obj = new URL(url);

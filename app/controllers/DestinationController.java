@@ -56,7 +56,7 @@ public class DestinationController extends Controller {
         String country = destForm.get("country");
 
         if (destName.length() < 1) {
-            return notAcceptable("ERROR: Destination name  must not be empty.");
+            return notAcceptable("ERROR: Destination name must not be empty.");
         }
 
         if (district.length() < 1) {
@@ -525,7 +525,19 @@ public class DestinationController extends Controller {
             Destination destination = Destination.find.query().where().eq("destid", destId).findOne();
 
             if (destination != null) {
-                if (destination.isUserOwner(user.userid) || user.userIsAdmin()) {
+                if(user.userIsAdmin()){
+                    for(Visit visit : destination.getVisits()){
+                        visit.delete();
+                    }
+                    List<TreasureHunt> treasureHunts = TreasureHunt.find.query().where().eq("destination", destination).findList();
+
+                    for(TreasureHunt treasureHunt : treasureHunts){
+                        treasureHunt.delete();
+                    }
+                    destination.delete();
+                    return redirect(routes.DestinationController.indexDestination());
+                }
+                else if (destination.isUserOwner(user.userid)) {
                     if(destination.visits.isEmpty()) {
                         List<TreasureHunt> treasureHunts = TreasureHunt.find.query().where().eq("destination", destination).findList();
                         if (treasureHunts.isEmpty()) {
@@ -840,7 +852,6 @@ public class DestinationController extends Controller {
                     if(!photo.getDestinations().contains(destination)) {
                         photo.addDestination(destination);
                         photo.update();
-                        System.out.println("SUCCESS!");
                         return redirect(routes.DestinationController.indexDestination());
                     }
                     else{

@@ -241,10 +241,12 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal">&times;</button>
-                        <h4 class="modal-title">Modal Header</h4>
+                        <h4 class="modal-title">Select Your Photo</h4>
                     </div>
                     <div class="modal-body">
-                        <p id="para"> Some text in the modal. </p>
+                        @if(user.getUserPhotos.size() == 0) {
+                            <p id="para"> Currently, You do not have any photos on your profile. Upload photos to your profile first in order to add them to destinations.</p>
+                        }
                         @for(photo <- user.getUserPhotos) {
                         <a id="addPhotoLink" class="btn btn-light" href="" onclick="addPhotoToDestinationRequest(@photo.getPhotoId())" >
                             <div class="container" id="imagesContainer" >

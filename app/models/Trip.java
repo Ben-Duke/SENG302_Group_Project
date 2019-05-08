@@ -105,8 +105,13 @@ public class Trip extends Model {
     }
 
     public String getTripStart(){
-        String startDate = Ebean.find(Visit.class).where().eq("trip", this).orderBy("arrival DESC").findList().get(0).getArrival();
-        return startDate;
+        if(this.visits.isEmpty()){
+            return null;
+        }
+        else {
+            String startDate = Ebean.find(Visit.class).where().eq("trip", this).orderBy("arrival DESC").findList().get(0).getArrival();
+            return startDate;
+        }
     }
 
     public String getTripEnd(){

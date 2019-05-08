@@ -218,8 +218,6 @@ public class UtilityFunctions {
         } else {
             isInSuccessState = false;
         }
-        List<Nationality> nationalities = Nationality.find.all();
-        System.out.println(nationalities.size());
         return isInSuccessState;
     }
 
@@ -236,13 +234,11 @@ public class UtilityFunctions {
             Set<String> countries = null;
             try {
                 countries = countriesAsStrings();
-                System.out.println(countries.size());
             } catch (Exception error) {
                 System.out.println(error);
             }
             if (ApplicationManager.isIsTest()) {
                 for (String country : countries) {
-                    System.out.println(country);
                     Passport passport = new Passport(country);
                     try {
                         passport.save();
@@ -271,8 +267,6 @@ public class UtilityFunctions {
         } else {
             isInSuccessState = false;
         }
-        List<Passport> passports = Passport.find.all();
-        System.out.println(passports.size());
         return isInSuccessState;
     }
 
@@ -339,12 +333,10 @@ public class UtilityFunctions {
     public static Map<String, Boolean> CountryUtils() throws Exception {
         Map<String, Boolean> countryMap = new TreeMap<>();
         if (ApplicationManager.isIsTest()) {
-            if (Nationality.find.all().isEmpty()) {
-                String[] locales = Locale.getISOCountries();
-                for (String countryCode : locales) {
-                    Locale obj = new Locale("", countryCode);
-                    countryMap.put(obj.getDisplayCountry(), false);
-                }
+            String[] locales = Locale.getISOCountries();
+            for (String countryCode : locales) {
+                Locale obj = new Locale("", countryCode);
+                countryMap.put(obj.getDisplayCountry(), false);
             }
         } else {
             String url = "https://restcountries.eu/rest/v2/all";

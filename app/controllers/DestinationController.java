@@ -592,10 +592,6 @@ public class DestinationController extends Controller {
                 DestinationFactory destFactory = new DestinationFactory();
                 List<Destination> matchingDests = destFactory.getOtherUsersMatchingPrivateDestinations(user.userid, destination);
                 if (destination.isUserOwner(user.userid) || user.userIsAdmin()) {
-//                    if(!destFactory.mergeDestinations(matchingDests, destination)) {
-//                        flash("visitExists",
-//                                "This destination is used in a trip!");
-//                    }
                     destFactory.mergeDestinations(matchingDests, destination);
                     return redirect(routes.DestinationController.indexDestination());
                 } else {

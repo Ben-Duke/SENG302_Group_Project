@@ -53,6 +53,7 @@ create table destination_modification_request_traveller_type (
 
 create table nationality (
   natid                         integer auto_increment not null,
+  country_valid                 boolean,
   nationality_name              varchar(255),
   constraint uq_nationality_nationality_name unique (nationality_name),
   constraint pk_nationality primary key (natid)
@@ -60,6 +61,7 @@ create table nationality (
 
 create table passport (
   passid                        integer auto_increment not null,
+  country_valid                 boolean,
   passport_name                 varchar(255),
   constraint uq_passport_passport_name unique (passport_name),
   constraint pk_passport primary key (passid)

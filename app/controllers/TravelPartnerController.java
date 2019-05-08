@@ -94,7 +94,7 @@ public class TravelPartnerController {
 
             } else {
                 List<TravellerType> travellerTypes = TravellerType.find.query().where().eq("travellerTypeName", travellerType).findList();
-                if (travellerTypes.isEmpty()) {
+                if (!travellerTypes.isEmpty()) {
                     Set<User> results = TravellerType.find.byId(travellerTypes.get(0).ttypeid).getUsers();
                     return results;
                 }

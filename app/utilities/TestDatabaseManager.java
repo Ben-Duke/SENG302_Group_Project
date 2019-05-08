@@ -3,6 +3,10 @@ package utilities;
 import controllers.ApplicationManager;
 import io.ebean.ExpressionList;
 import models.*;
+import play.db.Database;
+import play.db.Databases;
+import play.db.evolutions.Evolution;
+import play.db.evolutions.Evolutions;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -19,6 +23,22 @@ public class TestDatabaseManager {
 
     public TestDatabaseManager(){
 
+    }
+
+    public static Database getTestDatabase() {
+        Database database = Databases.inMemory();
+        Evolutions.applyEvolutions(database, Evolutions.forDefault(new Evolution(
+                1,
+                "create table test (id bigint not null, name varchar(255));",
+                "drop table test;"
+        )));
+
+        return database;
+    }
+
+    public static void shutdownTestDatabase(Database database) {
+        Evolutions.cleanupEvolutions(database);
+        database.shutdown();
     }
 
     /**
@@ -94,13 +114,13 @@ public class TestDatabaseManager {
         }
 
         if (isInSuccessState) {
-            if(ApplicationManager.getUserPhotoPath().equalsIgnoreCase("/test/resources/test_photos/user_")){
-                this.addUserPhotos();
-            }
+            this.addTreasureHunts();
         }
 
         if (isInSuccessState) {
-            this.addTreasureHunts();
+            if(ApplicationManager.getUserPhotoPath().equalsIgnoreCase("/test/resources/test_photos/user_")){
+                this.addUserPhotos();
+            }
         }
     }
 
@@ -126,6 +146,14 @@ public class TestDatabaseManager {
             String natPassName1 = "New Zealand";
             String natPassName2 = "Singapore";
             String natPassName3 = "Australia";
+            String invalidNatPassName1 = "Czechoslovakia";
+
+            // Insert invalid nationality since normal insertions only include valid ones
+            Nationality invalidNationality = new Nationality(invalidNatPassName1);
+            invalidNationality.save();
+
+            Passport invalidPassport = new Passport(invalidNatPassName1);
+            invalidPassport.save();
 
             // --------------------fleshing out the sql query to debug
 
@@ -161,9 +189,12 @@ public class TestDatabaseManager {
 
             user.getNationality().add(nationality1);
             user.getNationality().add(nationality2);
+            user.addNationality(invalidNationality);
 
             user.getPassport().add(passport1);
             user.getPassport().add(passport2);
+            user.addPassport(invalidPassport);
+
             try {
                 user.save();
             }catch(Exception err){
@@ -467,6 +498,9 @@ public class TestDatabaseManager {
         treasureHunt1.save();
         TreasureHunt treasureHunt2 = new TreasureHunt("Surprise2", "Prime example of inflation", Destination.find.byId(3), "2019-04-17", "2019-12-25", User.find.byId(3));
         treasureHunt2.save();
+        TreasureHunt treasureHunt3 = new TreasureHunt("Closed Treasure Hunt", "You should not be able to view this", Destination.find.byId(4), "2019-04-17", "2019-04-25", User.find.byId(4));
+        treasureHunt3.save();
+        ///// TODO: Update getOpenTreasureHunts test whenever you add any closed treasure hunts /////
     }
 
 }

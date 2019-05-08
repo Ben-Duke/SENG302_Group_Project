@@ -1,0 +1,6 @@
+@(countryItem: CountryItem)
+
+@if(!countryItem.getCountryValid) {
+    <span class="text-danger"
+    style="float: right"> Invalid country </span>
+}

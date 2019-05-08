@@ -386,8 +386,8 @@ public class HomeControllerTest extends WithApplication {
         UserPhoto userPhoto = UserPhoto.find.byId(2);
         assertFalse(userPhoto.isPublic());
         Http.RequestBuilder request = Helpers.fakeRequest()
-                .method(POST)
-                .uri(routes.HomeController.makePicturePublic(2,true).url()).session("connected", "2");
+                .method(GET)
+                .uri(routes.HomeController.makePicturePublic(2,1).url()).session("connected", "2");
         CSRFTokenHelper.addCSRFToken(request);
         Result result = route(app, request);
         assertEquals(SEE_OTHER, result.status());
@@ -400,8 +400,8 @@ public class HomeControllerTest extends WithApplication {
         UserPhoto userPhoto = UserPhoto.find.byId(1);
         assertTrue(userPhoto.isPublic());
         Http.RequestBuilder request = Helpers.fakeRequest()
-                .method(POST)
-                .uri(routes.HomeController.makePicturePublic(1,false).url()).session("connected", "2");
+                .method(GET)
+                .uri(routes.HomeController.makePicturePublic(1,0).url()).session("connected", "2");
         CSRFTokenHelper.addCSRFToken(request);
         Result result = route(app, request);
         assertEquals(SEE_OTHER, result.status());
@@ -412,8 +412,8 @@ public class HomeControllerTest extends WithApplication {
     @Test
     public void makePicturePublicWithMissingPhoto(){
         Http.RequestBuilder request = Helpers.fakeRequest()
-                .method(POST)
-                .uri(routes.HomeController.makePicturePublic(100,false).url()).session("connected", "2");
+                .method(GET)
+                .uri(routes.HomeController.makePicturePublic(100,0).url()).session("connected", "2");
         CSRFTokenHelper.addCSRFToken(request);
         Result result = route(app, request);
         assertEquals(NOT_FOUND, result.status());
@@ -422,8 +422,8 @@ public class HomeControllerTest extends WithApplication {
     @Test
     public void makePicturePublicWithInvalidLoginSession(){
         Http.RequestBuilder request = Helpers.fakeRequest()
-                .method(POST)
-                .uri(routes.HomeController.makePicturePublic(2,true).url()).session("connected", null);
+                .method(GET)
+                .uri(routes.HomeController.makePicturePublic(2,1).url()).session("connected", null);
         CSRFTokenHelper.addCSRFToken(request);
         Result result = route(app, request);
         assertEquals(UNAUTHORIZED, result.status());
@@ -434,8 +434,8 @@ public class HomeControllerTest extends WithApplication {
         UserPhoto userPhoto = UserPhoto.find.byId(1);
         assertTrue(userPhoto.isPublic());
         Http.RequestBuilder request = Helpers.fakeRequest()
-                .method(POST)
-                .uri(routes.HomeController.makePicturePublic(1,false).url()).session("connected", "3");
+                .method(GET)
+                .uri(routes.HomeController.makePicturePublic(1,0).url()).session("connected", "3");
         CSRFTokenHelper.addCSRFToken(request);
         Result result = route(app, request);
         assertEquals(UNAUTHORIZED, result.status());

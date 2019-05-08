@@ -7,8 +7,8 @@ import play.data.FormFactory;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
-import views.html.users.destination.viewDestinationModificationRequest;
-import views.html.users.profile.indexAdmin;
+import views.html.users.destination.*;
+import views.html.users.profile.*;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -100,7 +100,7 @@ public class AdminController extends Controller {
                     User user = User.find.byId(currentAdmin.getUserId());
                     return ok(viewDestinationModificationRequest.render(modReq, user));
                 } else {
-                    return badRequest("Destination Modification Request does not exist");
+                    return notFound("Destination Modification Request does not exist");
                 }
             } else {
                 return unauthorized("Oops, you are not authorised.");

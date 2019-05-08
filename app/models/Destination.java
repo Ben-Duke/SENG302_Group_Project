@@ -169,6 +169,9 @@ public class Destination extends Model {
         this.travellerTypes.add(travellerType);
     }
 
+    public void addVisit(Visit visit) { this.visits.add(visit);}
+    public void removeVisit(Visit visit) { this.visits.remove(visit);}
+
     public void updateIsCountryValid() { this.isCountryValid = UtilityFunctions.calculateIsCountryValid(this.country); }
 
     public void updateIsCountryValidGivenCountries(Set<String> validCountries) {

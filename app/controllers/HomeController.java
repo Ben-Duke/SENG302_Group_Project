@@ -287,14 +287,21 @@ public class HomeController {
      * @param setPublic true to make public, false to make private
      * @return Renders the home page.
      */
-    public Result makePicturePublic(Http.Request request, Integer photoId, boolean setPublic) {
+    public Result makePicturePublic(Http.Request request, Integer photoId, Integer setPublic) {
         User user = User.getCurrentUser(request);
         UserPhoto photo = UserPhoto.find.byId(photoId);
         if(user != null) {
             if (photo != null) {
                 if(user.getUserid() == photo.getUser().getUserid() || user.userIsAdmin()) {
-                    UserFactory.makePicturePublic(user.getUserid(), photo, setPublic);
-                    return redirect(routes.HomeController.showhome());
+                    if (setPublic == 0) {
+                        UserFactory.makePicturePublic(user.getUserid(), photo, false);
+                        return redirect(routes.HomeController.showhome());
+                    } else if (setPublic == 1) {
+                        UserFactory.makePicturePublic(user.getUserid(), photo, true);
+                        return redirect(routes.HomeController.showhome());
+                    } else {
+                        return badRequest("Invalid request.");
+                    }
                 }
                 else{
                     return unauthorized("Oops! This is not your photo.");

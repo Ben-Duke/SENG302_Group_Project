@@ -1,6 +1,8 @@
 @import factories.UserFactory
-@(user: User, actualUser : User)
 @import views.html.bootstrap3._
+
+@(user: User, actualUser : User)
+
 @main(actualUser, "Index") {
 
 
@@ -41,7 +43,8 @@
                 <p>Gender: @user.gender</p>
                 <p>Date of Birth: @user.dateOfBirth</p>
                 @for(nationality <- user.nationality) {
-                    <p>Nationality: @nationality.nationalityName</p>
+                    <p>Nationality: @nationality.nationalityName
+                    </p>
                 }
                 <p>Creation date: @user.creationDate</p>
                 <ul class="list-group">
@@ -55,12 +58,14 @@
                 <h2>Trips</h2>
                 <form>
                     <div class="list-group">
-                    @for(trip <- user.getTrips) {
-                        @if(trip.getIsPublic) {
-                            <a href="@routes.TripController.displaytrip(trip.tripid)" class="list-group-item list-group-item-action">
-                            @trip.tripName
-                            </a>
+                    @for(trip <- user.getTripsSorted) {
+                        <a href="@routes.TripController.displaytrip(trip.tripid)" class="list-group-item list-group-item-action">
+                        @if(trip.getTripStart() != null){
+                            @trip.tripName | Arrival date: @trip.getTripStart()
+                        } else{
+                            @trip.tripName | No arrival dates
                         }
+                        </a>
                     }
                     </div>
                 </form>

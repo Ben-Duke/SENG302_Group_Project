@@ -7,7 +7,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import play.Application;
 import play.api.test.CSRFTokenHelper;
 import play.data.FormFactory;
@@ -22,6 +21,7 @@ import play.mvc.Result;
 import play.test.Helpers;
 import play.test.WithApplication;
 import utilities.TestDatabaseManager;
+import utilities.UtilityFunctions;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -41,9 +41,9 @@ public class DestinationControllerTest extends WithApplication {
      */
     Database database;
 
-    private int REDIRECT_HTTP_STATUS = SEE_OTHER;
+    private final Logger logger = UtilityFunctions.getLogger();
 
-    private final Logger logger = LoggerFactory.getLogger("application");
+    private int REDIRECT_HTTP_STATUS = SEE_OTHER;
 
     @Override
     protected Application provideApplication() {
@@ -588,6 +588,7 @@ public class DestinationControllerTest extends WithApplication {
         formData.put("longitude", "-50.0");
         Http.RequestBuilder request2 = Helpers.fakeRequest().bodyForm(formData).method(POST).uri("/users/destinations/update/2").session("connected", "2");
         Result result2 = route(app, request2);
+
         assertEquals(UNAUTHORIZED, result2.status());
     }
 
@@ -619,6 +620,7 @@ public class DestinationControllerTest extends WithApplication {
         Http.RequestBuilder request2 = Helpers.fakeRequest().bodyForm(formData).
                 method(POST).uri("/users/destinations/update/3").session("connected", "2");
         Result result2 = route(app, request2);
+
         assertEquals(REDIRECT_HTTP_STATUS, result2.status());
     }
 
@@ -886,16 +888,13 @@ public class DestinationControllerTest extends WithApplication {
 
     @Test
     public void editPublicDestination() {
-
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(GET)
                 .uri("/users/destinations/edit/public/1")
                 .session("connected", "2");
 
         Result result = route(app, request);
-
         assertEquals(OK, result.status());
-
     }
 
     @Test
@@ -917,5 +916,119 @@ public class DestinationControllerTest extends WithApplication {
         Result result = route(app, request);
 
         assertEquals(303, result.status());
+    }
+
+    /**
+     * Test to add photo to destination.
+     */
+    @Test
+    public void addPhotoToDestination() {
+        boolean destPhotoExists = false;
+        int destPhotoSize = Destination.find.byId(1).getUserPhotos().size();
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(POST)
+                .uri("/users/destinations/1/1")
+                .session("connected", "2");
+        Result result = route(app, request);
+        assertEquals(SEE_OTHER, result.status());
+
+        List<UserPhoto> destPhotos = Destination.find.byId(1).getUserPhotos();
+        for (UserPhoto destPhoto : destPhotos) {
+            if (destPhoto.getPhotoId() == 1) {
+                destPhotoExists = true;
+            }
+        }
+        assertEquals(destPhotoSize+1, destPhotos.size());
+        assertTrue(destPhotoExists);
+    }
+
+    /**
+     * Test to add the same photo twice to the same destination.
+     */
+    @Test
+    public void addDuplicatePhotoToDestination() {
+        addPhotoToDestination();
+        boolean destPhotoExists = false;
+        int destPhotoSize = Destination.find.byId(1).getUserPhotos().size();
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(POST)
+                .uri("/users/destinations/1/1")
+                .session("connected", "2");
+        Result result = route(app, request);
+        assertEquals(BAD_REQUEST, result.status());
+
+        List<UserPhoto> destPhotos = Destination.find.byId(1).getUserPhotos();
+        for (UserPhoto destPhoto : destPhotos) {
+            if (destPhoto.getPhotoId() == 1) {
+                destPhotoExists = true;
+            }
+        }
+        assertEquals(destPhotoSize, destPhotos.size());
+        assertTrue(destPhotoExists);
+    }
+
+    /**
+     * Test to add some other user's photo to destination.
+     */
+    @Test
+    public void addPhotoToDestinationInvalidUser() {
+        int destPhotoSize = Destination.find.byId(1).getUserPhotos().size();
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(POST)
+                .uri("/users/destinations/1/1")
+                .session("connected", "1");
+        Result result = route(app, request);
+        assertEquals(UNAUTHORIZED, result.status());
+
+        List<UserPhoto> destPhotos = Destination.find.byId(1).getUserPhotos();
+        assertEquals(destPhotoSize, destPhotos.size());
+    }
+
+    /**
+     * Test to add photo to destination when no user is logged in.
+     */
+    @Test
+    public void addPhotoToDestinationInvalidLoginSession() {
+        int destPhotoSize = Destination.find.byId(1).getUserPhotos().size();
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(POST)
+                .uri("/users/destinations/1/1")
+                .session("connected", null);
+        Result result = route(app, request);
+        assertEquals(UNAUTHORIZED, result.status());
+
+        List<UserPhoto> destPhotos = Destination.find.byId(1).getUserPhotos();
+        assertEquals(destPhotoSize, destPhotos.size());
+    }
+
+    /**
+     * Test to add a photo which doesn't exist to a destination.
+     */
+    @Test
+    public void addPhotoToDestinationInvalidPhoto() {
+        int destPhotoSize = Destination.find.byId(1).getUserPhotos().size();
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(POST)
+                .uri("/users/destinations/1/10")
+                .session("connected", "2");
+        Result result = route(app, request);
+        assertEquals(NOT_FOUND, result.status());
+
+        List<UserPhoto> destPhotos = Destination.find.byId(1).getUserPhotos();
+        assertEquals(destPhotoSize, destPhotos.size());
+    }
+
+    /**
+     * Test to add a photo to a destination which doesn't exist.
+     */
+    @Test
+    public void addPhotoToDestinationInvalidDestination() {
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(POST)
+                .uri("/users/destinations/100/1")
+                .session("connected", "2");
+        Result result = route(app, request);
+        assertEquals(NOT_FOUND, result.status());
+
     }
 }

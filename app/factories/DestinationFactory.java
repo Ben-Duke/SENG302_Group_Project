@@ -1,10 +1,7 @@
 package factories;
 
 import formdata.DestinationFormData;
-import models.Admin;
-import models.Destination;
-import models.User;
-import models.UserPhoto;
+import models.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -137,6 +134,23 @@ public class DestinationFactory {
         return matchingDestinations;
     }
 
+
+    /**
+     * Remove the private photos from a list of photos so that the list can be displayed publicly on a destination
+     * Keeping the private content that the viewer owns
+     * @param userPhotos the list of photos to display
+     * @param viewerId the user Id of the person viewing the photos
+     */
+    public void removePrivatePhotos(List<UserPhoto> userPhotos, Integer viewerId) {
+        ArrayList<UserPhoto> photosToRemove = new ArrayList<UserPhoto>();
+        for (UserPhoto photo : userPhotos) {
+            if(!photo.isPublic && photo.getUser().getUserid() != viewerId) {
+                photosToRemove.add(photo);
+            }
+        }
+        userPhotos.removeAll(photosToRemove);
+    }
+
     /**
      * Returns a list of all public destinations and all private destinations that the user can see
      * @param userId the user accessing the destinations
@@ -156,21 +170,40 @@ public class DestinationFactory {
     }
 
     /**
-     * Remove the destinations private information
+     * Move the photos from one destination to being linked to another
+     * @param destinationOne the original destination which will no longer hold photos
+     * @param destinationTwo the new destination which will hold new photos
      */
-    public void removePrivateInformation(Destination destination) {
-        //Remove Private Photos from the destination
-        ArrayList<UserPhoto> photosToRemove = new ArrayList<UserPhoto>();
-        for (UserPhoto photo : destination.userPhotos) {
-            if(!photo.isPublic) {
-                photo.getDestinations().remove(this);
-                photosToRemove.add(photo);
-                photo.update();
-                destination.update();
+    private void movePhotosToAnotherDestination(Destination destinationOne, Destination destinationTwo) {
+        while(!destinationOne.getUserPhotos().isEmpty()) {
+            UserPhoto changingPhoto = destinationOne.getUserPhotos().get(0);
+            changingPhoto.removeDestination(destinationOne);
+            changingPhoto.addDestination(destinationTwo);
+            destinationOne.getUserPhotos().remove(changingPhoto);
+            changingPhoto.update();
+            destinationOne.update();
+            destinationTwo.update();
+        }
+    }
+
+    /**
+     * Move the visits from one destination to being linked to another
+     * @param destinationOne the original destination which will no longer hold visits
+     * @param destinationTwo the new destination which will hold new visits
+     */
+    private void moveVisitsToAnotherDestination(Destination destinationOne, Destination destinationTwo){
+        List<Visit> visitsFrom = Visit.find.query().where().eq("destination", destinationOne).findList();
+        for(Visit visit : visitsFrom) {
+            visit.delete();
+            //Note: Update this if new attributes are ever added to visit
+            Visit newVisit = new Visit(visit.getArrival(), visit.getDeparture(), visit.getTrip(), destinationTwo, visit.getVisitOrder());
+            newVisit.save();
+            try {
+                visit.update();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
-        destination.userPhotos.removeAll(photosToRemove);
-
     }
 
 
@@ -180,22 +213,43 @@ public class DestinationFactory {
      * @param destination destination of user making private destination public
      * @return check to see if destinations are used in trips
      */
-    public Boolean mergeDestinations(List<Destination> destinationList, Destination destination) {
+    public void mergeDestinations(List<Destination> destinationList, Destination destination) {
         Admin defaultAdmin = Admin.find.query().where().eq("isDefault", true).findOne();
         User defaultAdminUser = User.find.query().where().eq("userid", defaultAdmin.getUserId()).findOne();
         destinationList.add(destination);
         for (Destination otherDestination : destinationList) {
-            if (!otherDestination.visits.isEmpty()) {
-                return false;
-            } else {
-                if(otherDestination.getUser() != destination.getUser()) {
+            if(otherDestination.getUser() != destination.getUser()) {
+                moveVisitsToAnotherDestination(otherDestination, destination);
+                otherDestination.setVisits(new ArrayList<>());
+                try {
+                    otherDestination.update();
+                } catch (Exception e) {
+                    System.out.println("merge destinations 1");
+                    e.printStackTrace();
+                }
+                List<Visit> visits = Visit.find.query().where().eq("destination", otherDestination).findList();
+                movePhotosToAnotherDestination(otherDestination, destination);
+                try {
                     otherDestination.delete();
+                } catch (Exception e) {
+                    System.out.println("merge destinations 2");
+                    e.printStackTrace();
+                }
+                try {
+                    destination.update();
+                } catch (Exception e) {
+                    System.out.println("merge destinations 3");
+                    e.printStackTrace();
                 }
             }
         }
         destination.setIsPublic(true);
         destination.setUser(defaultAdminUser);
-        destination.update();
-        return true;
+        try {
+            destination.update();
+        } catch (Exception e) {
+            System.out.println("merge destinations 4");
+            e.printStackTrace();
+        }
     }
 }

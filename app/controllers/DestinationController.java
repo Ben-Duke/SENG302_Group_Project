@@ -56,7 +56,7 @@ public class DestinationController extends Controller {
         String country = destForm.get("country");
 
         if (destName.length() < 1) {
-            return notAcceptable("ERROR: Destination name  must not be empty.");
+            return notAcceptable("ERROR: Destination name must not be empty.");
         }
 
         if (district.length() < 1) {
@@ -543,7 +543,19 @@ public class DestinationController extends Controller {
             Destination destination = Destination.find.query().where().eq("destid", destId).findOne();
 
             if (destination != null) {
-                if (destination.isUserOwner(user.userid) || user.userIsAdmin()) {
+                if(user.userIsAdmin()){
+                    for(Visit visit : destination.getVisits()){
+                        visit.delete();
+                    }
+                    List<TreasureHunt> treasureHunts = TreasureHunt.find.query().where().eq("destination", destination).findList();
+
+                    for(TreasureHunt treasureHunt : treasureHunts){
+                        treasureHunt.delete();
+                    }
+                    destination.delete();
+                    return redirect(routes.DestinationController.indexDestination());
+                }
+                else if (destination.isUserOwner(user.userid)) {
                     if(destination.visits.isEmpty()) {
                         List<TreasureHunt> treasureHunts = TreasureHunt.find.query().where().eq("destination", destination).findList();
                         if (treasureHunts.isEmpty()) {
@@ -628,10 +640,7 @@ public class DestinationController extends Controller {
                 DestinationFactory destFactory = new DestinationFactory();
                 List<Destination> matchingDests = destFactory.getOtherUsersMatchingPrivateDestinations(user.userid, destination);
                 if (destination.isUserOwner(user.userid) || user.userIsAdmin()) {
-                    if(!destFactory.mergeDestinations(matchingDests, destination)) {
-                        flash("visitExists",
-                                "This destination is used in a trip!");
-                    }
+                    destFactory.mergeDestinations(matchingDests, destination);
                     return redirect(routes.DestinationController.indexDestination());
                 } else {
                     return unauthorized("HEY!, not yours. You cant delete. How you get access to that anyway?... FBI!!! OPEN UP!");
@@ -707,15 +716,18 @@ public class DestinationController extends Controller {
      */
     public Result getPhotos(Http.Request request, Integer destId) {
         User user = User.getCurrentUser(request);
-        if (user != null) {
-            //To add: filter between private and public, but that's another task
-            List<UserPhoto> photos = Destination.find.byId(destId).userPhotos;
-            ObjectNode result = Json.newObject();
-//            for(UserPhoto photo: photos){
-//                result.put(Integer.toString(photo.getPhotoId()), new java.io.File(photo.getUrlWithPath()).toString());
-//            }
-            return ok(Json.toJson(Destination.find.byId(destId).userPhotos));
-            //return ok(result);
+        if(user != null){
+            Destination destination = Destination.find.byId(destId);
+            List<UserPhoto> photos;
+            if(destination.getIsPublic() && !user.userIsAdmin()) {
+                photos = Destination.find.byId(destId).getUserPhotos();
+                DestinationFactory destinationFactory = new DestinationFactory();
+                destinationFactory.removePrivatePhotos(photos, user.getUserid());
+            } else {
+                photos = Destination.find.byId(destId).getUserPhotos();
+            }
+
+            return ok(Json.toJson(photos));
         } else {
             return unauthorized("Oops, you are not logged in");
         }
@@ -862,7 +874,6 @@ public class DestinationController extends Controller {
                     if(!photo.getDestinations().contains(destination)) {
                         photo.addDestination(destination);
                         photo.update();
-                        System.out.println("SUCCESS!");
                         return redirect(routes.DestinationController.indexDestination());
                     }
                     else{

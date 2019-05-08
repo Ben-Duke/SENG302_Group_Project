@@ -1,7 +1,6 @@
 package models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.ebean.ExpressionList;
 import io.ebean.Finder;
 import io.ebean.Model;
@@ -13,8 +12,6 @@ import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-
-import static play.mvc.Results.badRequest;
 
 /**
  * NOTE: This class has a natural ordering that is inconsistent with equals
@@ -154,11 +151,12 @@ public class User extends Model implements Comparable<User> {
     public static Finder<Integer,User> find = new Finder<>(User.class);
 
     //TODO remove this attribute along with getters, setters and checkboxes in create/update user story[229] tasks[1284,1301]
+    @Deprecated
     public Boolean isAdmin = false;
 
 
     //GETTERS AND SETTERS
-
+    @Deprecated
     public Boolean isAdmin() {return isAdmin;}
 
     public void setAdmin(Boolean admin) {
@@ -460,7 +458,7 @@ public class User extends Model implements Comparable<User> {
     public boolean userIsAdmin() {
         List<Admin> admins = Admin.find.all();
         for (Admin admin : admins) {
-            if (admin.userId == userid) {
+            if (admin.userId.equals(userid)) {
                 return true;
             }
         }

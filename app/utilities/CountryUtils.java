@@ -54,7 +54,7 @@ public class CountryUtils {
 //    }
 
     /** Return true if the country is valid, false otherwise */
-    public static Boolean isValidCountry(String country) {
-        return CountryUtils.getCountries().contains(country);
-    }
+//    public static Boolean isValidCountry(String country) {
+//        return CountryUtils.getCountries().contains(country);
+//    }
 }

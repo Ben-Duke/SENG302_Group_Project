@@ -365,11 +365,14 @@ public class UtilityFunctions {
 
     public static boolean calculateIsCountryValid(String countryName) {
 
+//        System.out.println("Hello 908");
+
         try {
             Set<String> validCountries = UtilityFunctions.countriesAsStrings();
 
             boolean countryFound = false;
             for (String validCountry : validCountries) {
+
                 if (countryName.toLowerCase().equals(validCountry)) {
                     countryFound = true;
                 }
@@ -377,12 +380,10 @@ public class UtilityFunctions {
             return countryFound;
 
         } catch (Exception e) {
-
             System.out.println(e);
             return false;
         }
     }
-
 
 
 }

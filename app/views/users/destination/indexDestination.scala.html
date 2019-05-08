@@ -58,9 +58,10 @@
                         </th>
                         <td>@destination.getDestType</td>
                         <td>@destination.getCountry
-                            @if(destination.getIsCountryValid()) {
-                                valid country
-                            }</td>
+                            @if(!destination.getIsCountryValid()) {
+                                <span style="color:red">invalid country</span>
+                            }
+                        </td>
                         <td>@destination.getDistrict</td>
                         <td>@destination.getLatitude</td>
                         <td>@destination.getLongitude</td>

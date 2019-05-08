@@ -19,7 +19,7 @@ public class Destination extends Model {
     public String destType;
     public String district;
     public String country;
-    public boolean isCountryValid;
+    public boolean isCountryValid = true;
     public double latitude;
     public double longitude;
     public boolean isPublic;
@@ -69,12 +69,6 @@ public class Destination extends Model {
         this.latitude = latitude;
         this.longitude = longitude;
         this.isPublic = isPublic;
-
-        this.isCountryValid = UtilityFunctions.calculateIsCountryValid(country);
-
-
-        System.out.println("HElllO");
-        System.out.println(isCountryValid);
     }
 
     /**
@@ -89,11 +83,6 @@ public class Destination extends Model {
      */
     public Destination(String destName, String destType, String district, String country, double latitude, double longitude, User user){
         this(destName, destType, district, country, latitude, longitude, user, false);
-
-        this.isCountryValid = UtilityFunctions.calculateIsCountryValid(country);
-
-        System.out.println("HElllO2");
-        System.out.println(isCountryValid);
     }
 
     /**
@@ -178,6 +167,19 @@ public class Destination extends Model {
 
     public void addTravellerType(TravellerType travellerType){
         this.travellerTypes.add(travellerType);
+    }
+
+    public void updateIsCountryValid() { this.isCountryValid = UtilityFunctions.calculateIsCountryValid(this.country); }
+
+    public void updateIsCountryValidGivenCountries(Set<String> validCountries) {
+        boolean countryFound = false;
+        for (String validCountry : validCountries) {
+
+            if (country.toLowerCase().equals(validCountry)) {
+                countryFound = true;
+            }
+        }
+        this.isCountryValid = countryFound;
     }
 
     @Override

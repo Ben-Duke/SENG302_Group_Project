@@ -103,6 +103,21 @@ public class DestinationController extends Controller {
         if (user != null) {
             List<Destination> destinations = user.getDestinations();
             List<Destination> allDestinations = Destination.find.all();
+
+            try {
+                Set<String> countryList = UtilityFunctions.countriesAsStrings();
+
+                for (Destination destination : destinations) {
+                    destination.updateIsCountryValidGivenCountries(countryList);
+                }
+                for (Destination destination : allDestinations) {
+                    destination.updateIsCountryValidGivenCountries(countryList);
+                }
+
+            } catch (Exception e) {
+                //Do nothing
+            }
+
             return ok(indexDestination.render(destinations, allDestinations, destFactory, user));
 
 
@@ -177,7 +192,10 @@ public class DestinationController extends Controller {
                     Destination newDestination = formFactory.form(Destination.class)
                             .bindFromRequest(request).get();
                     newDestination.setUser(user);
+                    newDestination.updateIsCountryValid();
                     newDestination.save();
+
+
                     return redirect(routes.DestinationController.indexDestination());
                 }
         } else {

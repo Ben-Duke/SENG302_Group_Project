@@ -1,6 +1,15 @@
+/*
 #carouselImage{
     max-height: 720px;
     width: 1280px;
+}
+*/
+
+.center {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 50%;
 }
 
 #linkButton{

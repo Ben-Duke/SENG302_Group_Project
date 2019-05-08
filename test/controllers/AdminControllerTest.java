@@ -250,12 +250,4 @@ public class AdminControllerTest extends WithApplication {
         assertEquals(2, Admin.find.all().size());
     }
 
-    /**
-     * Test to view destination modification requests.
-     */
-    @Test
-    public void viewDestinationModificationRequest() {
-        // Add test
-    }
-
 }

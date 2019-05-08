@@ -1,6 +1,8 @@
 @import factories.UserFactory
-@(user: User, actualUser : User)
 @import views.html.bootstrap3._
+
+@(user: User, actualUser : User)
+
 @main(actualUser, "Index") {
 
 
@@ -41,7 +43,8 @@
                 <p>Gender: @user.gender</p>
                 <p>Date of Birth: @user.dateOfBirth</p>
                 @for(nationality <- user.nationality) {
-                    <p>Nationality: @nationality.nationalityName</p>
+                    <p>Nationality: @nationality.nationalityName
+                    </p>
                 }
                 <p>Creation date: @user.creationDate</p>
                 <ul class="list-group">

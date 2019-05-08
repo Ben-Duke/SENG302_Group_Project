@@ -87,7 +87,11 @@
                     <div class="list-group">
                     @for(trip <- user.getTripsSorted) {
                         <a href="@routes.TripController.displaytrip(trip.tripid)" class="list-group-item list-group-item-action">
-                        @trip.tripName
+                            @if(trip.getTripStart() != null){
+                                @trip.tripName | Arrival date: @trip.getTripStart()
+                            } else{
+                                @trip.tripName | No arrival dates
+                            }
                         </a>
                     }
                     </div>

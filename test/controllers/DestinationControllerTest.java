@@ -63,6 +63,7 @@ public class DestinationControllerTest extends WithApplication {
                 "drop table test;"
         )));
         ApplicationManager.setUserPhotoPath("/test/resources/test_photos/user_");
+        ApplicationManager.setIsTest(true);
         TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
         testDatabaseManager.populateDatabase();
         //Initialises a test user with name "testUser" and saves it to the database.

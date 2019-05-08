@@ -7,6 +7,8 @@ public class ApplicationManager {
 
     private static String userPhotoPath;
 
+    private static boolean isTest = false;
+
     /**
      * Method to get the user photo path.
      *
@@ -23,5 +25,13 @@ public class ApplicationManager {
      */
     public static void setUserPhotoPath(String userPhotoPath) {
         ApplicationManager.userPhotoPath = userPhotoPath;
+    }
+
+    public static boolean isIsTest() {
+        return isTest;
+    }
+
+    public static void setIsTest(boolean isTest) {
+        ApplicationManager.isTest = isTest;
     }
 }

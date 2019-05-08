@@ -195,6 +195,7 @@ public class UtilityFunctions {
                                     nationality.getNationalityName() +
                                     " uniqueness contraint failed");
                         }
+
                     }
                 } else {
                     for (String countryCode : countries) {

@@ -499,7 +499,19 @@ public class DestinationController extends Controller {
             Destination destination = Destination.find.query().where().eq("destid", destId).findOne();
 
             if (destination != null) {
-                if (destination.isUserOwner(user.userid) || user.userIsAdmin()) {
+                if(user.userIsAdmin()){
+                    for(Visit visit : destination.getVisits()){
+                        visit.delete();
+                    }
+                    List<TreasureHunt> treasureHunts = TreasureHunt.find.query().where().eq("destination", destination).findList();
+
+                    for(TreasureHunt treasureHunt : treasureHunts){
+                        treasureHunt.delete();
+                    }
+                    destination.delete();
+                    return redirect(routes.DestinationController.indexDestination());
+                }
+                else if (destination.isUserOwner(user.userid)) {
                     if(destination.visits.isEmpty()) {
                         List<TreasureHunt> treasureHunts = TreasureHunt.find.query().where().eq("destination", destination).findList();
                         if (treasureHunts.isEmpty()) {

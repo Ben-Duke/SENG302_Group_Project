@@ -18,3 +18,11 @@ Feature: I can CRUD any of my treasure hunts
     When I edit a treasure hunt with the title "Surprise" by changing the title to an already existing "Surprise2"
     Then There should be only one treasure hunt with the title "Surprise2" in the database
     And There should be a treasure hunt with the title "Surprise"
+
+  Scenario: Deleting my treasure hunt
+    When I delete one my treasure hunt with the title "Surprise"
+    Then There should be no treasure hunt with the title "Surprise" in the database
+
+  Scenario: Deleting other user's treasure hunt
+    When I try to delete other users treasure hunt with the title "Surprise2"
+    Then The treasure hunt with the title "Surprise2" should still be in the database

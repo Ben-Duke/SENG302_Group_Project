@@ -17,6 +17,7 @@ import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
+import utilities.CountryUtils;
 import views.html.users.destination.*;
 
 import javax.inject.Inject;
@@ -104,6 +105,7 @@ public class DestinationController extends Controller {
             List<Destination> destinations = user.getDestinations();
             List<Destination> allDestinations = Destination.find.all();
 
+            CountryUtils.validateDestinationCountries();
 
             return ok(indexDestination.render(destinations, allDestinations, destFactory, user));
 

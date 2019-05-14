@@ -41,6 +41,11 @@ public class UserController {
             TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
             testDatabaseManager.populateDatabase(initCompleteLatch);
             System.out.println("populating database");
+
+            CountryUtils.updateCountries();
+            CountryUtils.validateNatPassCountries();
+            CountryUtils.validateDestinationCountries();
+
         } else {
             try {
                 initCompleteLatch.await();

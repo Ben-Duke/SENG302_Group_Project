@@ -30,7 +30,7 @@ public class CountryUtilsTest {
         Passport p1 = new Passport("invalid");
         //p1.save();
 
-        CountryUtils.fetchCountriesFromApi();
+//        CountryUtils.fetchCountriesFromApi();
 
         p1 = UserAccessor.getPassport(p1.getPassportId());
 

@@ -58,7 +58,8 @@ public class HomeController {
                 return redirect(routes.ProfileController.updateNatPass());
             } else {
                 // Load countries from api and update validity of pass/nat/destinations
-                CountryUtils.fetchCountriesFromApi();
+                CountryUtils.validateNatPassCountries();
+
                 return ok(home.render(user));
             }
         }

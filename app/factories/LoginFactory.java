@@ -50,7 +50,7 @@ public class LoginFactory {
         boolean isMatch = false;
         if (users.size() == 1) {
             User matchedUser = users.get(0);
-            String usersDatabasePasswordHash = matchedUser.getPassword();
+            String usersDatabasePasswordHash = matchedUser.getPasswordHash();
             isMatch = BCrypt.checkpw(passwordPlaintext, usersDatabasePasswordHash);
         }
 

@@ -97,7 +97,7 @@ create table trip (
 create table user (
   userid                        integer auto_increment not null,
   email                         varchar(255),
-  password                      varchar(255),
+  password_hash                 varchar(255),
   date_of_birth                 date,
   gender                        varchar(255),
   f_name                        varchar(255),

@@ -23,19 +23,13 @@ import java.util.*;
 )
 public class User extends Model implements Comparable<User> {
 
-
-
     @Column(name="email")
     public String email; // The email of the User
+
     @Id
     public Integer userid; // The ID of the user. This is the primary key.
 
-
-    //TOdo to be ENCRYPTED I THINK - gav
-    /**
-     * The password of the user
-     */
-    public String password;
+    public String passwordHash; // hashed password
 
     @Temporal(TemporalType.TIMESTAMP)
     @Formats.DateTime(pattern="yyyy-MM-dd HH:mm:ss")
@@ -116,7 +110,7 @@ public class User extends Model implements Comparable<User> {
      */
     public User(String email, String plaintextPassword){
         this.email = email.toLowerCase();
-        this.setPassword(plaintextPassword);
+        this.hashAndSetPassword(plaintextPassword);
         this.isAdmin = false;
     }
 
@@ -138,7 +132,7 @@ public class User extends Model implements Comparable<User> {
                 String gender){
 
         this.email = email.toLowerCase();
-        this.setPassword(plaintextPassword);
+        this.hashAndSetPassword(plaintextPassword);
         this.fName = fName;
         this.lName = lName;
         this.dateOfBirth = dateOfBirth;
@@ -158,8 +152,8 @@ public class User extends Model implements Comparable<User> {
      *
      * @param plaintextPassword A String, the password in plaintext.
      */
-    public void setPassword(String plaintextPassword) {
-        this.password = BCrypt.hashpw(plaintextPassword, BCrypt.gensalt());
+    public void hashAndSetPassword(String plaintextPassword) {
+        this.passwordHash = BCrypt.hashpw(plaintextPassword, BCrypt.gensalt());
     }
 
     public Map<String, Boolean> getMappedDestinations() {
@@ -202,8 +196,13 @@ public class User extends Model implements Comparable<User> {
 
     }
 
-    public String getPassword(){
-        return password;
+    /**
+     * Gets the users password hash (not plaintext pw).
+     *
+     * @return A String of the hashed password
+     */
+    public String getPasswordHash(){
+        return this.passwordHash;
     }
 
     public List<TravellerType> getTravellerTypes() {

@@ -174,6 +174,9 @@ public class TestDatabaseManager {
 
             user.setPassport(Passport.find.all().subList(0, 2));
 
+            user.addNationality(invalidNationality);
+            user.addPassport(invalidPassport);
+
             try {
                 user.save();
             }catch(Exception err){
@@ -255,6 +258,13 @@ public class TestDatabaseManager {
     public boolean addDestinationsAndVisits() {
         boolean isInSuccessState = true;
 
+        Destination invalidDestination = new Destination(
+                "Prague", "Town", "Canterbury",
+                "Czech", -43.5321, 172.6362,
+                User.find.byId(1));
+        invalidDestination.setIsPublic(true);
+        invalidDestination.addTravellerType(TravellerType.find.byId(1));
+
         // Adds destinations for user2
         Destination destination1 = new Destination(
                 "Christchurch", "Town", "Canterbury",
@@ -319,6 +329,7 @@ public class TestDatabaseManager {
 
         // saving the destinations
         List<Destination> destinations = new ArrayList<Destination>();
+        destinations.add(invalidDestination);
         destinations.add(destination1);
         destinations.add(destination2);
         destinations.add(destination3);

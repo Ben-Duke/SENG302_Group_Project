@@ -133,7 +133,11 @@
                     <tr id=@visit.getVisitid()>
                         <th scope ="row">@visit.getDestination().getDestName()</th>
                         <td>@visit.getDestination().getDestType()</td>
-                        <td>@visit.getDestination().getCountry()</td>
+                        <td>@visit.getDestination().getCountry()
+                            @if(!visit.getDestination().getIsCountryValid()) {
+                                <span style="color:red">invalid country</span>
+                            }
+                        </td>
                         <td>@visit.getArrival()</td>
                         <td>@visit.getDeparture()</td>
                         <td><a href=@routes.TripController.editvisit(visit.visitid) class="btn btn-primary">Edit</a></td>

@@ -239,6 +239,7 @@ public class DestinationController extends Controller {
             if (!destination.getIsCountryValid()) {
                 flash("countryInvalid",
                         "This Destination has an invalid country!");
+                countryList.put(destination.getCountry(), true);
             }
         } catch (Exception error) {
             System.out.println(error);

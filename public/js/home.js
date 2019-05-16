@@ -263,20 +263,22 @@ function searchPublicDestination(){
  * Sends a DELETE ajax request to the backend to unlink a destination from a photo
  * @param url to send the request to
  */
-function sendUnlinkDestinationRequest(url, photoId) {
+function sendUnlinkDestinationRequest(url, photoId, destId) {
     var token =  $('input[name="csrfToken"]').attr('value');
     $.ajaxSetup({
         beforeSend: function(xhr) {
             xhr.setRequestHeader('Csrf-Token', token);
         }
     });
-    console.log(url);
+    console.log("click unlink");
     $.ajax({
         url: url,
         method: "DELETE",
         success: function(res) {
-            $("#" + photoId).modal('hide');
-            console.log("Success!");
+            console.log("Unlink success");
+            let currentButton = $(`#link${destId}-${photoId}`);
+            let newButton = `<button class='btn btn-primary' onclick='sendLinkDestinationRequest("/users/destinations/${destId}", ${photoId}, ${destId})' > Link to destination </button>`;
+            currentButton.replaceWith(newButton);
         }
     })
 }
@@ -285,9 +287,10 @@ function sendUnlinkDestinationRequest(url, photoId) {
  * Function to link a photo with a destination
  * Sends a PUT ajax request to the backend to link destinations to a photo (the photoid is sent)
  * @param url to send the ajax request to
- * @param photoid the id of the photo you want to link
+ * @param photoId the id of the photo you want to link
+ * @param destId the id of the destination you want to link
  */
-function sendLinkDestinationRequest(url, photoid){
+function sendLinkDestinationRequest(url, photoId, destId){
 
     var token =  $('input[name="csrfToken"]').attr('value');
     $.ajaxSetup({
@@ -295,18 +298,21 @@ function sendLinkDestinationRequest(url, photoid){
             xhr.setRequestHeader('Csrf-Token', token);
         }
     });
+    console.log("click link");
     $.ajax({
         url: url,
         method: "PUT",
         data: JSON.stringify({
-            photoid: '"' + photoid + '"'
+            photoid: '"' + photoId + '"'
         }),
         headers: {
             'Content-Type': 'application/json'
         },
         success:function(res){
-            $("#" + photoid).modal('hide');
-            console.log("Success!");
+            console.log("Link success");
+            let currentButton = $(`#link${destId}-${photoId}`);
+            let newButton = `<button class='btn btn-danger' onclick='sendUnlinkDestinationRequest("/${photoId}/${destId}", ${photoId}, ${destId})' > Unlink from destination </button>`;
+            currentButton.replaceWith(newButton);
         }
     })
 }

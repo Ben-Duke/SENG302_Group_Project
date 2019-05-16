@@ -383,17 +383,16 @@
                                         <td>@destination.getLongitude</td>
                                         <td>
                                             @if(photo.getDestinations.contains(destination).equals(false)) {
-                                            <button class="btn btn-primary"
+                                            <button class="btn btn-primary" id="@{"link" + destination.getDestId + "-" + photo.getPhotoId}"
                                                     onclick="sendLinkDestinationRequest(
-                                                        '@routes.DestinationController.linkPhotoToDestination(destination.getDestId)',
-                                                        @photo.getPhotoId)">
+                                                        '@routes.DestinationController.linkPhotoToDestination(destination.getDestId)', @photo.getPhotoId, @destination.getDestId)">
                                                 Link to destination
                                             </button>
                                             } else {
-                                                <a class="btn btn-danger"
-                                                        onclick="sendUnlinkDestinationRequest('@routes.UserController.removeDestPhotoLink(photo.getPhotoId, destination.getDestId)', @photo.getPhotoId)">
+                                                <button class="btn btn-danger" id="@{"link" + destination.getDestId + "-" + photo.getPhotoId}"
+                                                        onclick="sendUnlinkDestinationRequest('@routes.UserController.removeDestPhotoLink(photo.getPhotoId, destination.getDestId)', @photo.getPhotoId, @destination.getDestId)" >
                                                     Unlink from destination
-                                                </a>
+                                                </button>
                                             }
                                         </td>
                                     </tr>

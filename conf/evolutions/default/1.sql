@@ -17,6 +17,7 @@ create table command_manager (
 
 create table delete_destination_command (
   id                            integer auto_increment not null,
+  deleted_by_admin              boolean,
   constraint pk_delete_destination_command primary key (id)
 );
 

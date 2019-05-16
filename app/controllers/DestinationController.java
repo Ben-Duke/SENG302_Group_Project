@@ -8,6 +8,8 @@ import formdata.DestinationFormData;
 import models.*;
 
 
+import models.commands.CommandManager;
+import models.commands.DeleteDestinationCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import play.data.DynamicForm;
@@ -540,22 +542,22 @@ public class DestinationController extends Controller {
 
             if (destination != null) {
                 if(user.userIsAdmin()){
-                    for(Visit visit : destination.getVisits()){
-                        visit.delete();
-                    }
-                    List<TreasureHunt> treasureHunts = TreasureHunt.find.query().where().eq("destination", destination).findList();
 
-                    for(TreasureHunt treasureHunt : treasureHunts){
-                        treasureHunt.delete();
-                    }
-                    destination.delete();
+                    DeleteDestinationCommand cmd = new DeleteDestinationCommand(
+                            destination, true);
+                    user.getCommandManager().executeCommand(cmd);
+
                     return redirect(routes.DestinationController.indexDestination());
                 }
                 else if (destination.isUserOwner(user.userid)) {
                     if(destination.visits.isEmpty()) {
                         List<TreasureHunt> treasureHunts = TreasureHunt.find.query().where().eq("destination", destination).findList();
                         if (treasureHunts.isEmpty()) {
-                            destination.delete();
+
+                            DeleteDestinationCommand cmd = new DeleteDestinationCommand(
+                                    destination, false);
+                            user.getCommandManager().executeCommand(cmd);
+
                             return redirect(routes.DestinationController.indexDestination());
                         } else {
                             return preconditionRequired("You cannot delete destinations while they are being used by the treasure hunts.");

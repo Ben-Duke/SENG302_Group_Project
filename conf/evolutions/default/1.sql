@@ -4,10 +4,20 @@
 # --- !Ups
 
 create table admin (
-  id                            bigint auto_increment not null,
+  id                            integer auto_increment not null,
   user_id                       integer,
   is_default                    boolean default false not null,
   constraint pk_admin primary key (id)
+);
+
+create table command_manager (
+  id                            integer auto_increment not null,
+  constraint pk_command_manager primary key (id)
+);
+
+create table delete_destination_command (
+  id                            integer auto_increment not null,
+  constraint pk_delete_destination_command primary key (id)
 );
 
 create table destination (
@@ -307,6 +317,10 @@ alter table visit drop constraint if exists fk_visit_trip;
 drop index if exists ix_visit_trip;
 
 drop table if exists admin;
+
+drop table if exists command_manager;
+
+drop table if exists delete_destination_command;
 
 drop table if exists destination;
 

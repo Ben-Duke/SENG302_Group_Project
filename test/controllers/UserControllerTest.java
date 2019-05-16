@@ -1,10 +1,9 @@
 package controllers;
 
-import models.User;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-    import play.Application;
+import play.Application;
 import play.db.Database;
 import play.db.Databases;
 import play.db.evolutions.Evolution;
@@ -16,13 +15,10 @@ import play.test.Helpers;
 import play.test.WithApplication;
 import utilities.TestDatabaseManager;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import static play.mvc.Http.Status.NOT_FOUND;
 import static play.mvc.Http.Status.OK;
-import static play.mvc.Http.Status.UNAUTHORIZED;
-import static play.test.Helpers.GET;
-import static play.test.Helpers.contentAsString;
-import static play.test.Helpers.route;
+import static play.test.Helpers.*;
 
 public class UserControllerTest extends WithApplication {
 

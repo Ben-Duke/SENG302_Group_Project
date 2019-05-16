@@ -43,8 +43,6 @@ public class UserController {
             System.out.println("populating database");
 
             CountryUtils.updateCountries();
-            CountryUtils.validateNatPassCountries();
-            CountryUtils.validateDestinationCountries();
 
         } else {
             try {

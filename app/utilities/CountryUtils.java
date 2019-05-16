@@ -10,10 +10,12 @@ import org.slf4j.Logger;
 
 import java.util.*;
 
+
 public class CountryUtils {
 
     private static final Logger logger = UtilityFunctions.getLogger();
 
+    private static Date lastUpdated;
     private static List<String> countries;
 
     public static List<String> getCountries() {
@@ -21,8 +23,30 @@ public class CountryUtils {
     }
 
     public static void updateCountries() {
+        System.out.println("before");
+        Date yesterdayDate = new Date(System.currentTimeMillis() - (1000 * 60 * 60 * 24));
+        System.out.println(yesterdayDate);
         try {
-            countries = new ArrayList<>(UtilityFunctions.countriesAsStrings());
+            if (lastUpdated == null || countries == null) {
+                countries = new ArrayList<>(UtilityFunctions.countriesAsStrings());
+                lastUpdated = new Date();
+                System.out.println("after");
+                System.out.println("today");
+                System.out.println(lastUpdated);
+                System.out.println(countries);
+            } else {
+//                Date yesterdayDate = new Date(System.currentTimeMillis() - (1000 * 60 * 60 * 24));
+//                System.out.println("yesterday");
+//                System.out.println(yesterdayDate);
+//                Date date = DateUtils.addDays(new Date(), -1);
+//                DateU
+//                Date dateNow = new Date();
+//                if ()
+                countries = new ArrayList<>(UtilityFunctions.countriesAsStrings());
+
+            }
+
+
 
         } catch (Exception e) {
             e.printStackTrace();

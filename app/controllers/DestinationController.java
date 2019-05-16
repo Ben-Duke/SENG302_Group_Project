@@ -236,7 +236,15 @@ public class DestinationController extends Controller {
             System.out.println(error);
         }
         countryList.replace(destination.getCountry(), true);
-
+        try {
+            if (!destination.getIsCountryValid()) {
+                flash("countryInvalid",
+                        "This Destination has an invalid country!");
+                countryList.put(destination.getCountry(), true);
+            }
+        } catch (Exception error) {
+            System.out.println(error);
+        }
         return ok(createEditDestination.render(destForm, destId, countryList, typeList, user));
     }
 

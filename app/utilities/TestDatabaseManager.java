@@ -341,7 +341,7 @@ public class TestDatabaseManager {
             } catch (Exception e) {
                 isInSuccessState = false;
                 System.out.println(String.format("Failed to save destination " +
-                        "(%s) due to uniqueness constraint fail",
+                                "(%s) due to uniqueness constraint fail",
                         destination.getDestName()));
             }
         }

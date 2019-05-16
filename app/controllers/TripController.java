@@ -20,8 +20,6 @@ import play.data.FormFactory;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
-import views.html.users.trip.createTrip;
-import views.html.users.trip.displayTrip;
 import views.html.users.trip.*;
 
 import javax.inject.Inject;

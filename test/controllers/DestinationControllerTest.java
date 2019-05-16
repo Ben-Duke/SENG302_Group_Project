@@ -18,6 +18,7 @@ import play.mvc.Http;
 import play.mvc.Result;
 import play.test.Helpers;
 import play.test.WithApplication;
+import testhelpers.BaseTestWithApplicationAndDatabase;
 import utilities.TestDatabaseManager;
 import utilities.UtilityFunctions;
 
@@ -32,7 +33,7 @@ import static play.mvc.Http.Status.SEE_OTHER;
 import static play.mvc.Http.Status.UNAUTHORIZED;
 import static play.test.Helpers.*;
 
-public class DestinationControllerTest extends WithApplication {
+public class DestinationControllerTest extends BaseTestWithApplicationAndDatabase {
 
     /**
      * The fake database
@@ -42,12 +43,6 @@ public class DestinationControllerTest extends WithApplication {
     private final Logger logger = UtilityFunctions.getLogger();
 
     private int REDIRECT_HTTP_STATUS = SEE_OTHER;
-
-    @Override
-    protected Application provideApplication() {
-        return new GuiceApplicationBuilder().build();
-    }
-
 
     /**
      * Sets up the fake database before each test
@@ -64,35 +59,6 @@ public class DestinationControllerTest extends WithApplication {
         ApplicationManager.setIsTest(true);
         TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
         testDatabaseManager.populateDatabase();
-        //Initialises a test user with name "testUser" and saves it to the database.
-//        User user = new User("testUser");
-//        user.save();
-//        User user2 = new User("testUser2");
-//        user2.save();
-//        Destination destination = new Destination("University of Canterbury",
-//                "University",
-//                "Ilam",
-//                "New Zealand",
-//                -43.525450F,
-//                172.582600F,
-//                user);
-//        destination.save();
-//        Destination destination2 = new Destination("University of Banterbury",
-//                "University",
-//                "9",
-//                "Pepestan",
-//                -100,
-//                100,
-//                user);
-//        destination2.save();
-//        Destination destination3 = new Destination("Panem",
-//                "Hunger Games",
-//                "12",
-//                "Panem",
-//                100,
-//                -100,
-//                user2);
-//        destination3.save();
     }
 
     /**
@@ -446,6 +412,22 @@ public class DestinationControllerTest extends WithApplication {
         Result result = route(app, request);
         assertEquals(PRECONDITION_REQUIRED, result.status());
         assertEquals(3, User.find.byId(2).getDestinations().size());
+    }
+
+    @Test
+    /* Undo the deletion of a destination and check the destination is not deleted */
+    public void deleteDestination_undoDeletion_checkDestinationExists() {
+        Http.RequestBuilder deleteRequest = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/destinations/delete/3").session("connected", "2");
+        route(app, deleteRequest);
+
+        Http.RequestBuilder undoRequest = Helpers.fakeRequest()
+                .method(PUT)
+                .uri("/undo").session("connected", "2");
+        route(app, undoRequest);
+
+        assertEquals(4, User.find.byId(2).getDestinations().size());
     }
 
     /**

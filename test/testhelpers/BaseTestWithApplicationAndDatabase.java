@@ -42,7 +42,6 @@ public class BaseTestWithApplicationAndDatabase extends WithApplication {
 
         User user = new User("gon12_2@uclive.ac.nz", "hunter22");
         user.save();
-
     }
 
     /**

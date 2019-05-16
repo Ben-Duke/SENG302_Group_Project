@@ -5,6 +5,7 @@ import io.ebean.ExpressionList;
 import io.ebean.Finder;
 import io.ebean.Model;
 import io.ebean.annotation.CreatedTimestamp;
+import models.commands.CommandManager;
 import play.data.format.Formats;
 import play.mvc.Http;
 
@@ -64,7 +65,7 @@ public class User extends Model implements Comparable<User> {
         this.password = password;
         this.isAdmin = false;
     }
-    //TOdo to be ENCRYPTED I THINK - gav
+
     /**
      * The password of the user
      */
@@ -119,14 +120,6 @@ public class User extends Model implements Comparable<User> {
     @OneToMany(mappedBy = "user")
     public List<Destination> destinations;
 
-    public Map<String, Boolean> getMappedDestinations() {
-        SortedMap<String, Boolean> destMap = new TreeMap<>();
-        for (Destination destination : destinations) {
-            destMap.put(destination.getDestName(), false);
-        }
-        return destMap;
-    }
-
     @JsonIgnore
     @ManyToMany
     public List<TravellerType> travellerTypes;
@@ -134,6 +127,11 @@ public class User extends Model implements Comparable<User> {
     @JsonIgnore
     @ManyToMany
     public List<TreasureHunt> guessedTHunts;
+
+    /** Command manager for user undo/redo */
+    private CommandManager commandManager = new CommandManager();
+
+
 
     /**
      * Get's a List<UserPhoto> containing all the photos of the user.
@@ -154,6 +152,13 @@ public class User extends Model implements Comparable<User> {
     @Deprecated
     public Boolean isAdmin = false;
 
+    public Map<String, Boolean> getMappedDestinations() {
+        SortedMap<String, Boolean> destMap = new TreeMap<>();
+        for (Destination destination : destinations) {
+            destMap.put(destination.getDestName(), false);
+        }
+        return destMap;
+    }
 
     //GETTERS AND SETTERS
     @Deprecated
@@ -319,6 +324,9 @@ public class User extends Model implements Comparable<User> {
         this.destinations = destinations;
     }
 
+    public CommandManager getCommandManager() {
+        return commandManager;
+    }
 
     //OTHER METHODS
     public boolean authenticate(String password){

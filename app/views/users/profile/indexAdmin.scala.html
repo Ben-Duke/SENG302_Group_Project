@@ -1,68 +1,42 @@
-@(currentUser: User, users: List[User], admins: List[Admin], adminUsers: List[User], allReqs: List[DestinationModificationRequest])
+@(currentUser: User, users: List[User], allReqs: List[DestinationModificationRequest])
 
 @main(currentUser, "Admin") {
 
 <div class="container">
     <div class="col">
-        <div class="row">
-            <h1>Admins</h1>
-            <table class="table">
-                <thead class="thead-dark">
-                <tr>
-                    <th scope="col">User ID</th>
-                    <th scope="col">First Name</th>
-                    <th scope="col">Last Name</th>
-                    <th scope="col">Gender</th>
-                    <th scope="col">Date of Birth</th>
-                    <th scope="col">Default Admin</th>
-                    <th scope="col">Remove</th>
-                </tr>
-                </thead>
-                <tbody>
-                @for(admin <- admins) {
-                @for(adminUser <- adminUsers) {
-                @if(admin.getUserId==adminUser.getUserid && adminUser.getUserid != currentUser.getUserid){
-                <tr>
-                    <th scope ="row">@adminUser.getUserid()</th>
-                    <th>@adminUser.getfName</th>
-                    <td>@adminUser.getlName()</td>
-                    <td>@adminUser.getGender()</td>
-                    <td>@adminUser.getDateOfBirth</td>
-                    <td>@if(admin.isDefault){Yes} @if(!(admin.isDefault)){No </td>
-                    <td><a class="btn btn-link" href="@routes.AdminController.adminToUser(adminUser.userid)" role="button">Remove</a></td>}
-                </tr>
 
-
-                <br>
-                }
-                }
-                }
-                </tbody>
-            </table>
-        </div>
         <div class="row">
             <h1>Users</h1>
-            <table class="table">
+            <input type="text" id="searchUsers"  onkeyup="searchUsers()" placeholder="Search for users by email">
+            <table id="userTable" class="table">
                 <thead class="thead-dark">
                 <tr>
                     <th scope="col">User ID</th>
+                    <th scope="col">Email</th>
                     <th scope="col">First Name</th>
                     <th scope="col">Last Name</th>
                     <th scope="col">Gender</th>
                     <th scope="col">Date of Birth</th>
-                    <th scope="col">Make Admin</th>
+                    <th scope="col">Change Admin Status</th>
+                    <th scope="col">Act as User</th>
                 </tr>
                 </thead>
                 <tbody>
                 @for(user <- users) {
                 @if(user.getUserid != currentUser.getUserid){
-                <tr>
+                <tr style="display:none;">
                     <th scope ="row">@user.getUserid()</th>
-                    <th>@user.getfName()</th>
+                    <td>@user.getEmail()</td>
+                    <td>@user.getfName()</td>
                     <td>@user.getlName()</td>
                     <td>@user.getGender()</td>
                     <td>@user.getDateOfBirth</td>
-                    <td><a class="btn btn-link" href="@routes.AdminController.userToAdmin(user.userid)" role="button">Yes</a></td>
+                    @if(user.userIsAdmin()) {
+                        <td><a class="btn btn-link" href="@routes.AdminController.adminToUser(user.userid)" role="button">Revoke Admin</a></td>
+                    } else {
+                        <td><a class="btn btn-link" href="@routes.AdminController.userToAdmin(user.userid)" role="button">Make Admin</a></td>
+                    }
+                    <td><a class="btn btn-link" href="#" role="button">Act as user</a></td>
 
                 </tr>
 
@@ -105,6 +79,9 @@
         </table>
     </div>
 </div>
+
 </div>
+
+    <script src="@routes.Assets.at("js/users/indexAdmin.js")" type="text/javascript"></script>
 
 }

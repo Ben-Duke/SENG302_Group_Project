@@ -16,11 +16,8 @@ import play.mvc.Result;
 import play.test.Helpers;
 import play.test.WithApplication;
 
-
 import static org.junit.Assert.assertEquals;
-import static play.mvc.Http.Status.OK;
-import static play.mvc.Http.Status.SEE_OTHER;
-import static play.mvc.Http.Status.UNAUTHORIZED;
+import static play.mvc.Http.Status.*;
 import static play.test.Helpers.GET;
 import static play.test.Helpers.route;
 

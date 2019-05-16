@@ -1,16 +1,3 @@
-import cucumber.api.java.After;
-import cucumber.api.java.Before;
-import models.User;
-import org.junit.Assert;
-import play.Application;
-import play.db.Database;
-import play.db.Databases;
-import play.db.evolutions.Evolution;
-import play.db.evolutions.Evolutions;
-import play.inject.guice.GuiceApplicationBuilder;
-import play.test.WithApplication;
-import utilities.TestDatabaseManager;
-
 public class GlobalHooks {
     /**
      * The fake database

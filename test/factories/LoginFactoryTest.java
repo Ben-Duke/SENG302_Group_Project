@@ -10,17 +10,9 @@ import play.db.Databases;
 import play.db.evolutions.Evolution;
 import play.db.evolutions.Evolutions;
 import play.inject.guice.GuiceApplicationBuilder;
-import play.mvc.Http;
-import play.mvc.Result;
-import play.test.Helpers;
 import play.test.WithApplication;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import static org.junit.Assert.*;
-import static play.mvc.Http.Status.*;
-import static play.test.Helpers.*;
 
 
 /**

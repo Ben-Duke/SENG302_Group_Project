@@ -26,32 +26,30 @@ public class CountryUtils {
      * been updated for greater than one day.
      */
     public static void updateCountries() {
-//        countries = null;
 
-        try {
+        if (lastUpdated == null || countries == null) {
+            reloadCountries();
 
-            if (lastUpdated == null || countries == null) {
+        } else {
+            Date yesterdayDate = new Date(System.currentTimeMillis() - (1000 * 60 * 60 * 24));
 
-                countries = new ArrayList<>(UtilityFunctions.countriesAsStrings());
-//                countries.add("Czechoslovakia");
-                lastUpdated = new Date();
-
-                validatePassportCountries();
-                validateNationalityCountries();
-                validateDestinationCountries();
-
-            } else {
-                Date yesterdayDate = new Date(System.currentTimeMillis() - (1000 * 60 * 60 * 24));
-
-                if (lastUpdated.compareTo(yesterdayDate) < 0) {
-                    countries = new ArrayList<>(UtilityFunctions.countriesAsStrings());
-                    lastUpdated = new Date();
-                }
-
-                validatePassportCountries();
-                validateNationalityCountries();
-                validateDestinationCountries();
+            if (lastUpdated.compareTo(yesterdayDate) < 0) {
+                reloadCountries();
             }
+        }
+    }
+
+    /**
+     * Make api call. Set last updated date. Revalidate used countries
+     */
+    private static void reloadCountries() {
+        try {
+            countries = new ArrayList<>(UtilityFunctions.countriesAsStrings());
+            lastUpdated = new Date();
+
+            validatePassportCountries();
+            validateNationalityCountries();
+            validateDestinationCountries();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -66,9 +64,12 @@ public class CountryUtils {
         List<Passport> passports = UserAccessor.getAllPassports();
 
         for (Passport passport : passports) {
+            System.out.println(passport.getName());
             if (!countries.contains(passport.getName())) {
                 passport.setCountryValid(false);
                 passport.update();
+                System.out.println(passport.getCountryValid());
+
             } else {
                 if (!passport.getCountryValid()) {
                     passport.setCountryValid(true);

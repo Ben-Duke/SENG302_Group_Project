@@ -10,17 +10,20 @@ import org.junit.Test;
 import play.Application;
 import play.db.Database;
 import play.inject.guice.GuiceApplicationBuilder;
+import play.test.WithApplication;
+
+import java.util.List;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-public class CountryUtilsTest {
+public class CountryUtilsTest extends WithApplication {
     private Database database;
 
-//    @Override
-//    protected Application provideApplication() {
-//        return new GuiceApplicationBuilder().build();
-//    }
+    @Override
+    protected Application provideApplication() {
+        return new GuiceApplicationBuilder().build();
+    }
 
 
     @Before
@@ -33,7 +36,6 @@ public class CountryUtilsTest {
         TestDatabaseManager.shutdownTestDatabase(database);
     }
 
-    @Ignore
     @Test
     public void validateInvalidPassportCountry() {
         Passport p1 = new Passport("invalid");
@@ -41,10 +43,11 @@ public class CountryUtilsTest {
 
         CountryUtils.updateCountries();
 
-        assertFalse(p1.getCountryValid());
+        Passport passport = Passport.find.byId(p1.getPassportId());
+
+        assertFalse(passport.getCountryValid());
     }
 
-    @Ignore
     @Test
     public void validateValidPassportCountry() {
         CountryUtils.updateCountries();
@@ -54,7 +57,9 @@ public class CountryUtilsTest {
 
         CountryUtils.updateCountries();
 
-        assertTrue(p1.getCountryValid());
+        Passport passport = Passport.find.byId(p1.getPassportId());
+
+        assertTrue(passport.getCountryValid());
     }
 
 }

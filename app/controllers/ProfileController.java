@@ -49,7 +49,7 @@ public class ProfileController extends Controller {
             String[] gendersArray = {"Male", "Female", "Other"};
             List gendersList = Arrays.asList(gendersArray);
 
-            return ok(updateProfile.render(updateUserForm, gendersList,user));
+            return ok(views.html.users.profile.updateProfile.render(updateUserForm, gendersList,user));
         }
         else{
             return unauthorized(notLoggedInErrorStr);
@@ -81,7 +81,7 @@ public class ProfileController extends Controller {
                 //bad request, errors present
                 String[] gendersArray = {"Male", "Female", "Other"};
                 List gendersList = Arrays.asList(gendersArray);
-                return badRequest(updateProfile.render(updateProfileForm, gendersList,user));
+                return badRequest(views.html.users.profile.updateProfile.render(updateProfileForm, gendersList,user));
             }
         } else{
             return unauthorized(notLoggedInErrorStr);
@@ -142,7 +142,7 @@ public class ProfileController extends Controller {
                 return notFound("User does not exist");
             }
 
-            return ok(showProfile.render(otherUser, user));
+            return ok(views.html.users.profile.showProfile.render(otherUser, user));
         }
         return unauthorized(notLoggedInErrorStr);
     }

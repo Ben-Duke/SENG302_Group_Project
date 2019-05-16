@@ -907,10 +907,10 @@ public class DestinationControllerTest extends WithApplication {
         formData.put("longitude", "-50.0");
 
         Http.RequestBuilder request = Helpers.fakeRequest()
-            .bodyForm(formData)
-            .method(POST)
-            .uri("/users/destinations/update/public/1")
-            .session("connected", "2");
+                .bodyForm(formData)
+                .method(POST)
+                .uri("/users/destinations/update/public/1")
+                .session("connected", "2");
 
         Result result = route(app, request);
 

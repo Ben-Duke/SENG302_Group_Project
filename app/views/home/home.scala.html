@@ -160,7 +160,7 @@
                         <p>
                             <input type="submit" value="Upload">
                             @helper.CSRF.formField
-                            <input type="checkbox" name="private" value="private"> Make photo private
+                            <input type="checkbox" name="private" value="private" title=""> Make photo private
                         </p>
 
                     }
@@ -215,7 +215,6 @@
         <div>
             <div id="modal-picture" class="modal">
                 <img class="modal-content" id="img01">
-                @*<button class="btn btn-primary" id="linkButton" href="#" data-toggle="modal" data-photo-id="">Link to destination</button>*@
             </div>
 
 
@@ -329,7 +328,7 @@
 @*                                    <div class="carousel-caption">
                                         <h2>insert caption here</h2>
                                     </div>*@
-                                    <a class="btn btn-primary" id="linkButton" href="#" data-toggle="modal" data-target="#@photo.getPhotoId()">Link to destination</a>
+                                    <a class="btn btn-primary" id="linkButton" href="#" data-toggle="modal" data-target="#@photo.getPhotoId">Link to destination</a>
                                     <a class="btn btn-primary" id="setProfilePicture"
                                        onclick="setProfilePictureRequest(
                                                 @photo.getPhotoId())">Set as Profile Picture</a>

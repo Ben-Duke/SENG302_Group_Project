@@ -2,12 +2,9 @@ package controllers;
 
 import accessors.DestinationAccessor;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import factories.DestinationFactory;
 import formdata.DestinationFormData;
 import models.*;
-
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import play.data.DynamicForm;
@@ -17,15 +14,15 @@ import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
-import views.html.users.destination.*;
+import utilities.UtilityFunctions;
+import views.html.users.destination.createEditDestination;
+import views.html.users.destination.editPublicDestination;
+import views.html.users.destination.indexDestination;
+import views.html.users.destination.viewDestination;
 
 import javax.inject.Inject;
 import java.io.File;
 import java.util.*;
-
-
-import utilities.UtilityFunctions;
-import views.html.users.destination.*;
 
 public class DestinationController extends Controller {
 
@@ -868,8 +865,7 @@ public class DestinationController extends Controller {
                 } else {
                     return unauthorized("Oops, this is not your photo!");
                 }
-            }
-            else{
+            } else {
                 return notFound();
             }
         } else {

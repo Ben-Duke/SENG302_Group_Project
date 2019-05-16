@@ -240,8 +240,11 @@
                                     <div id="coordinates" ></div>
                                     <div id="travellerTypes"></div>
                                     <div style="text-align: center">
-                                        <td><button id="addPhotoButton" class="btn btn-primary" data-toggle="modal" data-target="#myModal">
-                                            Add photo</button></td>
+                                        <td>
+                                            <button id="addPhotoButton" class="btn btn-primary" data-toggle="modal" data-target="#myModal">
+                                                Add photo
+                                            </button>
+                                        </td>
                                     </div>
                                 </div>
                             </div>
@@ -269,16 +272,16 @@
 
                 <!-- Modal content-->
                 <div class="modal-content">
-                    <div class="modal-header">
+                    <dModaliv class="modal-header">
                         <button type="button" class="close" data-dismiss="modal">&times;</button>
                         <h4 class="modal-title">Select Your Photo</h4>
-                    </div>
+                    </dModaliv>
                     <div class="modal-body">
-                        @if(user.getUserPhotos.size() == 0) {
+                        @if(user.getUserPhotos.isEmpty) {
                             <p id="para"> Currently, You do not have any photos on your profile. Upload photos to your profile first in order to add them to destinations.</p>
                         }
                         @for(photo <- user.getUserPhotos) {
-                        <a id="addPhotoLink" class="btn btn-light" href="" onclick="addPhotoToDestinationRequest(@photo.getPhotoId())" >
+                        <a id="addPhotoLink" class="btn btn-light" href="" onclick="addPhotoToDestinationRequest(@photo.getPhotoId)" >
                             <div class="container" id="imagesContainer" >
                                 <div class="overlay">
                                     <i class="icon" title="User Profile">

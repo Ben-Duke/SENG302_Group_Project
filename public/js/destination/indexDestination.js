@@ -399,7 +399,6 @@ $('#destslider').bind('slide.bs.carousel', function(e){
 });
 
 function addPhotoToDestinationRequest(photoId){
-    console.log("Button clicked");
     var token =  $('input[name="csrfToken"]').attr('value');
     $.ajaxSetup({
         beforeSend: function(xhr) {

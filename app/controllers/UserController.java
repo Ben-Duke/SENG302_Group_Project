@@ -1,21 +1,20 @@
 package controllers;
 
-import models.*;
+import models.Admin;
+import models.Destination;
+import models.User;
+import models.UserPhoto;
 import play.libs.Json;
 import play.mvc.Http;
 import play.mvc.Result;
-import utilities.CountryUtils;
 import utilities.TestDatabaseManager;
-import utilities.UtilityFunctions;
 import views.html.users.userIndex;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static play.mvc.Results.notFound;
-import static play.mvc.Results.ok;
+import static play.mvc.Results.*;
 
 public class UserController {
     // A thread safe boolean
@@ -49,17 +48,38 @@ public class UserController {
             }
             System.out.println("database already populated");
         }
-
-
-
         List<User> users = User.find.all();
         List<Admin> admins = Admin.find.all();
         return ok(userIndex.render(users, admins,User.getCurrentUser(request)));
     }
 
     /**
+     * Removes the given destination from the list of destinations in the photos
+     * @param request unused http request information
+     * @param photoId the id iof the photo to unlink
+     * @param destId the id of the destination to unlink
+     * @return response for if the removal worked
+     */
+    public Result removeDestPhotoLink(Http.Request request, int photoId, int destId){
+        UserPhoto photo = UserPhoto.find.byId(photoId);
+        Destination destination = Destination.find.byId(destId);
+        if (photo != null) {
+            photo.removeDestination(destination);
+            if (destination != null && photo.equals(destination.getPrimaryPhoto())) {
+                destination.setPrimaryPhoto(null);
+                destination.update();
+            }
+
+            photo.update();
+            return ok();
+        } else {
+            return badRequest("That destination is not linked to that photo");
+        }
+    }
+
+    /**
      * Handles the ajax request to get a user.
-     * Returns the corresponding user as a json based on the login session.
+     * @return the corresponding user as a json based on the login session.
      */
     public Result getUser(Http.Request request){
         User user = User.getCurrentUser(request);

@@ -876,15 +876,13 @@ public class DestinationController extends Controller {
 
     /**
      * Returns an image file to the requester, accepts the UserPhoto id to send back the correct image.
-     * @param request
+     * @param request the photo
      * @param destId
      * @return
      */
     public Result servePrimaryPicture(Http.Request request, Integer destId) {
-        // User user = httpRequest.session().getOptional("connected").orElse(null);
-        if(destId != null) {
-            UserPhoto primaryPicture = DestinationFactory.getprimaryProfilePicture(destId);
-            System.out.println("Path is " + primaryPicture.getUrlWithPath());
+        if (destId != null) {
+            UserPhoto primaryPicture = DestinationFactory.getPrimaryPicture(destId);
             if (primaryPicture != null) {
                 System.out.println("Sending image back");
                 return ok(new File(primaryPicture.getUrlWithPath()));
@@ -892,8 +890,7 @@ public class DestinationController extends Controller {
                 //should be 404 but then console logs an error
                 return ok();
             }
-        }
-        else{
+        } else {
             return unauthorized("Oops, you're not logged in.");
         }
     }

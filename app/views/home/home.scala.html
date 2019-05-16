@@ -1,7 +1,5 @@
-@import play.filters.csrf.AddCSRFToken
 @import factories.UserFactory
 @import views.html.users.profile.countryErrorMessage
-@import views.html.bootstrap3._
 
 @(user: User)
 
@@ -223,12 +221,12 @@
                 @for(i <- 0 to 2) {
                     <div class="col-sm-2">
 
-                    @if(i < user.getUserPhotos.size() ){
+                    @if(i < user.getUserPhotos.size ){
                         <a id="addPhotoLink" href="#" data-toggle="modal" data-target="#destination-carousel">
                             <div class="container" id="imagesContainer" >
                                 <div class="overlay">
                                     <i class="icon" title="User Profile">
-                                    @if(user.getUserPhotos.get(i).isPublic()) {
+                                    @if(user.getUserPhotos.get(i).isPublic) {
                                         <i class="fa fa-eye-green"></i>
                                     } else {
                                         <i class="fa fa-eye-red"></i>
@@ -351,8 +349,8 @@
                     </div>
                 </div>
             </div>
-    @for(photo <- user.getUserPhotos()) {
-        <div id="@photo.getPhotoId()" class="modal fade">
+    @for(photo <- user.getUserPhotos) {
+        <div id="@photo.getPhotoId" class="modal fade">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -361,7 +359,7 @@
                     </div>
                     <div class="modal-body">
                         <h2>Private destinations</h2>
-                        <input type="text" class="searchDestinations" onkeyup="searchDestination()" placeholder="Search for destinations">
+                        <input type="text" class="searchDestinations" onkeyup="searchDestination" placeholder="Search for destinations">
                         <table class="table privateDestinations">
                             <thead class="thead-dark">
                                 <tr>
@@ -374,18 +372,30 @@
                                 </tr>
                             </thead>
                             <tbody>
-                            @for(destination <- user.getDestinations()) {
-                                @if(destination.getIsPublic() == false){
+                            @for(destination <- user.getDestinations) {
+                                @if(! destination.getIsPublic){
                                     <tr>
-                                        <th scope ="row">@destination.getDestName()</th>
-                                        <td>@destination.getDestType()</td>
-                                        <td>@destination.getCountry()</td>
-                                        <td>@destination.getDistrict()</td>
-                                        <td>@destination.getLatitude()</td>
-                                        <td>@destination.getLongitude()</td>
-                                        <td><button class="btn btn-primary" onclick="sendLinkDestinationRequest(
-                                                '@routes.DestinationController.linkPhotoToDestination(destination.getDestId())',
-                                                @photo.getPhotoId())">Link to destination</button></td>
+                                        <th scope ="row">@destination.getDestName</th>
+                                        <td>@destination.getDestType</td>
+                                        <td>@destination.getCountry</td>
+                                        <td>@destination.getDistrict</td>
+                                        <td>@destination.getLatitude</td>
+                                        <td>@destination.getLongitude</td>
+                                        <td>
+                                            @if(photo.getDestinations.contains(destination).equals(false)) {
+                                            <button class="btn btn-primary"
+                                                    onclick="sendLinkDestinationRequest(
+                                                        '@routes.DestinationController.linkPhotoToDestination(destination.getDestId)',
+                                                        @photo.getPhotoId)">
+                                                Link to destination
+                                            </button>
+                                            } else {
+                                                <a class="btn btn-danger"
+                                                        onclick="sendUnlinkDestinationRequest('@routes.UserController.removeDestPhotoLink(photo.getPhotoId, destination.getDestId)', @photo.getPhotoId)">
+                                                    Unlink from destination
+                                                </a>
+                                            }
+                                        </td>
                                     </tr>
 
 
@@ -411,18 +421,18 @@
                             </thead>
                             <tbody>
                             @for(destination <- Destination.find.all()) {
-                                @if(destination.getIsPublic() == true){
+                                @if(destination.getIsPublic){
                                     <tr>
-                                        <th scope ="row">@destination.getDestName()</th>
-                                        <td>@destination.getDestType()</td>
-                                        <td>@destination.getCountry()</td>
-                                        <td>@destination.getDistrict()</td>
-                                        <td>@destination.getLatitude()</td>
-                                        <td>@destination.getLongitude()</td>
+                                        <th scope ="row">@destination.getDestName</th>
+                                        <td>@destination.getDestType</td>
+                                        <td>@destination.getCountry</td>
+                                        <td>@destination.getDistrict</td>
+                                        <td>@destination.getLatitude</td>
+                                        <td>@destination.getLongitude</td>
                                             <!-- TO BE CHANGED -->
                                         <td><button class="btn btn-primary" onclick="sendLinkDestinationRequest(
-                                                '@routes.DestinationController.linkPhotoToDestination(destination.getDestId())',
-                                                @photo.getPhotoId())">Link to destination</button></td>
+                                                '@routes.DestinationController.linkPhotoToDestination(destination.getDestId)',
+                                                @photo.getPhotoId)">Link to destination</button></td>
                                     </tr>
                                     <br>
                                     }

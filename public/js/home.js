@@ -259,12 +259,36 @@ function searchPublicDestination(){
 }
 
 /**
+ * Function to unlink a photo from a destination
+ * Sends a DELETE ajax request to the backend to unlink a destination from a photo
+ * @param url to send the request to
+ */
+function sendUnlinkDestinationRequest(url, photoId) {
+    var token =  $('input[name="csrfToken"]').attr('value');
+    $.ajaxSetup({
+        beforeSend: function(xhr) {
+            xhr.setRequestHeader('Csrf-Token', token);
+        }
+    });
+    console.log(url);
+    $.ajax({
+        url: url,
+        method: "DELETE",
+        success: function(res) {
+            $("#" + photoId).modal('hide');
+            console.log("Success!");
+        }
+    })
+}
+
+/**
  * Function to link a photo with a destination
  * Sends a PUT ajax request to the backend to link destinations to a photo (the photoid is sent)
  * @param url to send the ajax request to
  * @param photoid the id of the photo you want to link
  */
 function sendLinkDestinationRequest(url, photoid){
+
     var token =  $('input[name="csrfToken"]').attr('value');
     $.ajaxSetup({
         beforeSend: function(xhr) {

@@ -27,6 +27,8 @@ public class CountryUtils {
      */
     public static void updateCountries() {
 
+        countries = null;
+
         if (lastUpdated == null || countries == null) {
             reloadCountries();
 
@@ -47,6 +49,8 @@ public class CountryUtils {
             countries = new ArrayList<>(UtilityFunctions.countriesAsStrings());
             lastUpdated = new Date();
 
+            countries.add("Czechoslovakia");
+
             validatePassportCountries();
             validateNationalityCountries();
             validateDestinationCountries();
@@ -64,11 +68,9 @@ public class CountryUtils {
         List<Passport> passports = UserAccessor.getAllPassports();
 
         for (Passport passport : passports) {
-            System.out.println(passport.getName());
             if (!countries.contains(passport.getName())) {
                 passport.setCountryValid(false);
                 passport.update();
-                System.out.println(passport.getCountryValid());
 
             } else {
                 if (!passport.getCountryValid()) {

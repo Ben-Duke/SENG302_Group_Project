@@ -58,6 +58,8 @@ public class HomeController {
                 return redirect(routes.ProfileController.updateNatPass());
             } else {
                 CountryUtils.updateCountries();
+                //Reload the user after updating the nationality and passport countries validation
+                user = User.getCurrentUser(request);
 
                 return ok(home.render(user));
             }

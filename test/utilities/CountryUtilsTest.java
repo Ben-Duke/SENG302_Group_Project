@@ -9,7 +9,6 @@ import org.junit.Test;
 import play.db.Database;
 
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 public class CountryUtilsTest {
     private Database database;

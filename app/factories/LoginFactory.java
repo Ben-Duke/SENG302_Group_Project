@@ -1,7 +1,11 @@
 package factories;
 
+import accessors.UserAccessor;
 import io.ebean.ExpressionList;
 import models.User;
+import org.mindrot.jbcrypt.BCrypt;
+
+import java.util.List;
 
 /**
  * A class to handle accessing the database for login related things.
@@ -35,16 +39,20 @@ public class LoginFactory {
      * the database.
      *
      * @param email A String, the email to check.
-     * @param password A String, the password to check
+     * @param passwordPlaintext A String, the password to check
      * @return A boolean, true if there is a user with that email and password,
      *         false otherwise.
      */
-    public boolean isPasswordMatch(String email, String password){
-        ExpressionList<User> usersExpressionList;
-        usersExpressionList = User.find.query()
-                              .where().eq("email", email.toLowerCase())
-        .and().eq("password", password);
+    public boolean isPasswordMatch(String email, String passwordPlaintext){
+        List<User> users = UserAccessor.getUsersFromEmail(email);
 
-        return usersExpressionList.findCount() > 0;
+        boolean isMatch = false;
+        if (users.size() == 1) {
+            User matchedUser = users.get(0);
+            String usersDatabasePasswordHash = matchedUser.getPasswordHash();
+            isMatch = BCrypt.checkpw(passwordPlaintext, usersDatabasePasswordHash);
+        }
+
+        return isMatch;
     }
 }

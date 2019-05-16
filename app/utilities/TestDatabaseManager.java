@@ -172,13 +172,15 @@ public class TestDatabaseManager {
 
             user.setNationality(Nationality.find.all().subList(0, 2));
 
-            user.setPassport(Passport.find.all().subList(0, 2));
+            //user.setPassport(Passport.find.all().subList(0, 2));
+
 
             try {
                 user.save();
             }catch(Exception err){
                 isInSuccessState = false;
                 System.out.printf("User1 failed");
+                System.out.println(err);
             }
             user2.getTravellerTypes().add(travellerType2);
 
@@ -335,7 +337,7 @@ public class TestDatabaseManager {
             } catch (Exception e) {
                 isInSuccessState = false;
                 System.out.println(String.format("Failed to save destination " +
-                        "(%s) due to uniqueness constraint fail",
+                                "(%s) due to uniqueness constraint fail",
                         destination.getDestName()));
             }
         }

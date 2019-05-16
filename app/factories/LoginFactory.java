@@ -1,5 +1,6 @@
 package factories;
 
+import accessors.UserAccessor;
 import io.ebean.ExpressionList;
 import models.User;
 import org.mindrot.jbcrypt.BCrypt;
@@ -43,9 +44,7 @@ public class LoginFactory {
      *         false otherwise.
      */
     public boolean isPasswordMatch(String email, String passwordPlaintext){
-        List<User> users;
-        users  = User.find.query().where()
-                .eq("email", email.toLowerCase()).findList();
+        List<User> users = UserAccessor.getUsersFromEmail(email);
 
         boolean isMatch = false;
         if (users.size() == 1) {

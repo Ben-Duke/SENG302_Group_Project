@@ -22,6 +22,7 @@ public class CountryUtilsTest {
 //        return new GuiceApplicationBuilder().build();
 //    }
 
+
     @Before
     public void setupDatabase() {
         database = TestDatabaseManager.getTestDatabase();
@@ -32,7 +33,7 @@ public class CountryUtilsTest {
         TestDatabaseManager.shutdownTestDatabase(database);
     }
 
-    @Ignore
+//    @Ignore
     @Test
     public void validateInvalidPassportCountry() {
         Passport p1 = new Passport("invalid");
@@ -43,7 +44,7 @@ public class CountryUtilsTest {
         assertFalse(p1.getCountryValid());
     }
 
-    @Ignore
+//    @Ignore
     @Test
     public void validateValidPassportCountry() {
         CountryUtils.updateCountries();

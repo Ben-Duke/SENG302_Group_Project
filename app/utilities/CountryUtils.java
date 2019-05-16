@@ -18,20 +18,27 @@ public class CountryUtils {
     private static Date lastUpdated;
     private static List<String> countries;
 
-    public static List<String> getCountries() {
-        return countries;
-    }
+    public static List<String> getCountries() { return countries; }
 
+
+    /**
+     * Updates countries if the list of countries does not exist or has not
+     * been updated for greater than one day.
+     */
     public static void updateCountries() {
+//        countries = null;
 
         try {
 
             if (lastUpdated == null || countries == null) {
 
                 countries = new ArrayList<>(UtilityFunctions.countriesAsStrings());
+//                countries.add("Czechoslovakia");
                 lastUpdated = new Date();
 
-                validateUsedCountries();
+                validatePassportCountries();
+                validateNationalityCountries();
+                validateDestinationCountries();
 
             } else {
                 Date yesterdayDate = new Date(System.currentTimeMillis() - (1000 * 60 * 60 * 24));
@@ -40,8 +47,10 @@ public class CountryUtils {
                     countries = new ArrayList<>(UtilityFunctions.countriesAsStrings());
                     lastUpdated = new Date();
                 }
-                
-                validateUsedCountries();
+
+                validatePassportCountries();
+                validateNationalityCountries();
+                validateDestinationCountries();
             }
 
         } catch (Exception e) {
@@ -49,30 +58,64 @@ public class CountryUtils {
         }
     }
 
-
-    public static void validateUsedCountries() {
+    /**
+     * For passports check if the country associated is contained
+     * in the list of valid countries.
+     */
+    private static void validatePassportCountries() {
         List<Passport> passports = UserAccessor.getAllPassports();
-        List<Nationality> nationalities = UserAccessor.getAllNationalities();
-        List<Destination> destinations = DestinationAccessor.getAllDestinations();
 
         for (Passport passport : passports) {
             if (!countries.contains(passport.getName())) {
                 passport.setCountryValid(false);
                 passport.update();
+            } else {
+                if (!passport.getCountryValid()) {
+                    passport.setCountryValid(true);
+                    passport.update();
+                }
+            }
+
+        }
+    }
+
+    /**
+     * For nationalities check if the country associated is contained
+     * in the list of valid countries.
+     */
+    private static void validateNationalityCountries() {
+        List<Nationality> nationalities = UserAccessor.getAllNationalities();
+
+        for (Nationality nationality : nationalities) {
+            if (!countries.contains(nationality.getNationalityName())) {
+                nationality.setCountryValid(false);
+                nationality.update();
+
+            } else {
+                if (!nationality.getCountryValid()) {
+                    nationality.setCountryValid(true);
+                    nationality.update();
+                }
             }
         }
+    }
 
-        for (Nationality n : nationalities) {
-            if (!countries.contains(n.getNationalityName())) {
-                n.setCountryValid(false);
-                n.update();
-            }
-        }
+    /**
+     * For destinations check if the country associated is contained
+     * in the list of valid countries.
+     */
+    private static void validateDestinationCountries() {
+        List<Destination> destinations = DestinationAccessor.getAllDestinations();
 
-        for (Destination d : destinations) {
-            if (!countries.contains(d.getCountry())) {
-                d.setCountryValid(false);
-                d.update();
+        for (Destination destination : destinations) {
+            if (!countries.contains(destination.getCountry())) {
+                destination.setCountryValid(false);
+                destination.update();
+            } else {
+                if (!destination.getIsCountryValid()) {
+                    destination.setCountryValid(true);
+                    destination.update();
+                }
             }
         }
     }

@@ -265,7 +265,7 @@ public class DestinationController extends Controller {
             Destination oldDestination = DestinationAccessor.getDestinationById(destId);
 
             if (oldDestination != null) {
-                if (oldDestination.isUserOwner(user.userid)) {
+                if (oldDestination.isUserOwner(user.userid) || user.userIsAdmin()) {
                     oldDestination.applyEditChanges(newDestination);
                     oldDestination.update();
 

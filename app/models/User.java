@@ -348,39 +348,21 @@ public class User extends Model implements Comparable<User> {
     }
 
     //OTHER METHODS
-    public boolean authenticate(String password){
-        if(this.password.equals(password)){
-            return true;
-        }
-        else{
-            return false;
-        }
-    }
-
     public boolean hasEmptyField(){
-        if(fName == null || lName == null
-        || gender == null || dateOfBirth == null){
-            return true;
-        }
-        else{
-            return false;
-        }
+        return fName == null || lName == null
+                || gender == null || dateOfBirth == null;
     }
 
     public boolean hasNationality(){
         if (nationality != null) {
-            if (! nationality.isEmpty()) {
-                return true;
-            }
+            return !nationality.isEmpty();
         }
         return false;
     }
 
     public boolean hasTravellerTypes() {
         if (travellerTypes != null) {
-            if (! travellerTypes.isEmpty()) {
-                return true;
-            }
+            return !travellerTypes.isEmpty();
         }
         return false;
     }

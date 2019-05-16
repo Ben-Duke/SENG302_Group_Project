@@ -8,11 +8,11 @@ import play.db.evolutions.Evolution;
 import play.db.evolutions.Evolutions;
 import play.test.WithApplication;
 
-//import javax.rmi.CORBA.Util;
-
 import java.util.List;
 
 import static org.junit.Assert.*;
+
+//import javax.rmi.CORBA.Util;
 
 /**
  * Class to test the UtilityFunction class.

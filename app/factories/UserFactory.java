@@ -251,14 +251,6 @@ public class UserFactory {
         return id;
     }
 
-
-    public boolean checkpassword(String email, String password) {
-        ExpressionList<User> usersExpressionList = User.find.query()
-                .where().eq("email", email).and().eq("password", password);
-
-        return usersExpressionList.findCount() == 1;
-    }
-
     /**Tells model to create a user based on the data it is being passed
      *
      * @param userForm formdata containing primitive data type like int, String etc which has been passed from

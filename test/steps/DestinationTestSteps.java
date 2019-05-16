@@ -13,14 +13,10 @@ import models.Destination;
 import models.Trip;
 import models.User;
 import models.Visit;
-import org.junit.Assert;
 import play.Application;
 import play.ApplicationLoader;
 import play.Environment;
 import play.db.Database;
-import play.db.Databases;
-import play.db.evolutions.Evolution;
-import play.db.evolutions.Evolutions;
 import play.inject.guice.GuiceApplicationBuilder;
 import play.inject.guice.GuiceApplicationLoader;
 import play.mvc.Http;
@@ -37,9 +33,7 @@ import java.util.Map;
 import static org.junit.Assert.*;
 import static play.mvc.Http.Status.SEE_OTHER;
 import static play.mvc.Http.Status.UNAUTHORIZED;
-import static play.test.Helpers.GET;
-import static play.test.Helpers.POST;
-import static play.test.Helpers.route;
+import static play.test.Helpers.*;
 
 
 public class DestinationTestSteps extends WithApplication {

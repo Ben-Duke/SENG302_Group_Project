@@ -6,6 +6,7 @@ import io.ebean.Finder;
 import io.ebean.Model;
 import io.ebean.annotation.CreatedTimestamp;
 import models.commands.CommandManager;
+import org.mindrot.jbcrypt.BCrypt;
 import play.data.format.Formats;
 import play.mvc.Http;
 
@@ -23,53 +24,13 @@ import java.util.*;
 )
 public class User extends Model implements Comparable<User> {
 
-    /**
-     * The email of the User
-     */
     @Column(name="email")
-    public String email;
+    public String email; // The email of the User
 
-    /**
-     * The constructor for the User that takes the parameters, email, password, first name, last name, date of birth,
-     * gender, nationality and passport.
-     * @param email
-     * @param password
-     * @param fName A String parameter that is used to set the first name of the User.
-     * @param lName A String parameter that is used to set the last name of the User.
-     * @param dateOfBirth A LocalDate parameter that is used to set the User's dob.
-     * @param gender A String paramters that is used to set the gender of the User.
-     */
-    public User(String email, String password, String fName, String lName, LocalDate dateOfBirth, String gender){
-        this.email = email.toLowerCase();
-        this.password = password;
-        this.fName = fName;
-        this.lName = lName;
-        this.dateOfBirth = dateOfBirth;
-        this.gender = gender;
-        this.isAdmin = false;
-    }
-
-    public User(String email){
-        this.email = email.toLowerCase();
-        this.isAdmin = false;
-    }
-
-    /**
-     * The ID of the user. This is the primary key.
-     */
     @Id
-    public Integer userid;
+    public Integer userid; // The ID of the user. This is the primary key.
 
-    public User(String email, String password){
-        this.email = email.toLowerCase();
-        this.password = password;
-        this.isAdmin = false;
-    }
-
-    /**
-     * The password of the user
-     */
-    public String password;
+    public String passwordHash; // hashed password
 
     @Temporal(TemporalType.TIMESTAMP)
     @Formats.DateTime(pattern="yyyy-MM-dd HH:mm:ss")
@@ -131,17 +92,6 @@ public class User extends Model implements Comparable<User> {
     /** Command manager for user undo/redo */
     private CommandManager commandManager = new CommandManager();
 
-
-
-    /**
-     * Get's a List<UserPhoto> containing all the photos of the user.
-     *
-     * @return A List<UserPhoto> containing all the photos of the user.
-     */
-    public List<UserPhoto> getUserPhotos() {
-        return userPhotos;
-    }
-
     @JsonIgnore
     @OneToMany(mappedBy = "user")
     public List<UserPhoto> userPhotos;
@@ -152,12 +102,80 @@ public class User extends Model implements Comparable<User> {
     @Deprecated
     public Boolean isAdmin = false;
 
+
+    // ^^^^^ Class attributes ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    //==========================================================================
+    //       Class methods below
+
+    /**
+     * Constructor with just two attributes, email and plaintextPassword.
+     *
+     * @param email The users email (String)
+     * @param plaintextPassword The users plaintext Password (String).
+     */
+    public User(String email, String plaintextPassword){
+        this.email = email.toLowerCase();
+        this.hashAndSetPassword(plaintextPassword);
+        this.isAdmin = false;
+    }
+
+    /**
+     * The constructor for the User that takes the parameters, email, password, first name, last name, date of birth,
+     * gender, nationality and passport.
+     * @param email
+     * @param plaintextPassword The Users plaintext password
+     * @param fName A String parameter that is used to set the first name of the User.
+     * @param lName A String parameter that is used to set the last name of the User.
+     * @param dateOfBirth A LocalDate parameter that is used to set the User's dob.
+     * @param gender A String paramters that is used to set the gender of the User.
+     */
+    public User(String email,
+                String plaintextPassword,
+                String fName,
+                String lName,
+                LocalDate dateOfBirth,
+                String gender){
+
+        this.email = email.toLowerCase();
+        this.hashAndSetPassword(plaintextPassword);
+        this.fName = fName;
+        this.lName = lName;
+        this.dateOfBirth = dateOfBirth;
+        this.gender = gender;
+        this.isAdmin = false;
+    }
+
+    public User(String email){
+        this.email = email.toLowerCase();
+        this.isAdmin = false;
+    }
+
+    /**
+     * Sets the Users password. Automatically hashes the password.
+     *
+     * The password stored in the database will be the hash.
+     *
+     * @param plaintextPassword A String, the password in plaintext.
+     */
+    public void hashAndSetPassword(String plaintextPassword) {
+        this.passwordHash = BCrypt.hashpw(plaintextPassword, BCrypt.gensalt());
+    }
+
     public Map<String, Boolean> getMappedDestinations() {
         SortedMap<String, Boolean> destMap = new TreeMap<>();
         for (Destination destination : destinations) {
             destMap.put(destination.getDestName(), false);
         }
         return destMap;
+    }
+
+    /**
+     * Get's a List<UserPhoto> containing all the photos of the user.
+     *
+     * @return A List<UserPhoto> containing all the photos of the user.
+     */
+    public List<UserPhoto> getUserPhotos() {
+        return userPhotos;
     }
 
     //GETTERS AND SETTERS
@@ -183,8 +201,13 @@ public class User extends Model implements Comparable<User> {
 
     }
 
-    public String getPassword(){
-        return password;
+    /**
+     * Gets the users password hash (not plaintext pw).
+     *
+     * @return A String of the hashed password
+     */
+    public String getPasswordHash(){
+        return this.passwordHash;
     }
 
     public List<TravellerType> getTravellerTypes() {
@@ -221,10 +244,6 @@ public class User extends Model implements Comparable<User> {
 
     public String getEmail(){
         return email;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     public Date getCreationDate() {

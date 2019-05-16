@@ -10,7 +10,6 @@ import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import factories.UserFactory;
-import formdata.UserFormData;
 import models.TravellerType;
 import models.User;
 import org.junit.Assert;

@@ -85,6 +85,14 @@
                         </div>
                     </div>
                 }
+
+                @if(flash.containsKey("countryInvalid")) {
+                    <div class="well">
+                        <div id="error-message" class="text-danger">
+                        @flash.get("countryInvalid")
+                        </div>
+                    </div>
+                }
             </div>
         </p>
     }

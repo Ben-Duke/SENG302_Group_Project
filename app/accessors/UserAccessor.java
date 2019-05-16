@@ -24,5 +24,17 @@ public class UserAccessor {
         return Nationality.find.all();
     }
 
-
+    /**
+     * Gets a List of Users with a specific email.
+     *
+     * It should be a List of length 0 or 1, but you should still check
+     * for 2 or more users encase our database is in an inconsistent state again.
+     *
+     * @param email String of the users email to search for.
+     * @return A List of User objects with a matching email address.
+     */
+    public static List<User> getUsersFromEmail(String email) {
+        return  User.find.query()
+                    .where().eq("email", email.toLowerCase()).findList();
+    }
 }

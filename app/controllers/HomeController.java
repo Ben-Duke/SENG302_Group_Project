@@ -47,19 +47,23 @@ public class HomeController {
      * @return homepage, profile page or error page
      */
     public Result showhome(Http.Request request) {
-        User user = User.getCurrentUser(request);
+        List<User> users = User.getCurrentUser(request, true);
 
-        if (user != null){
-            if(user.hasEmptyField()){
+        if (users.size() != 0){
+            if(users.get(0).hasEmptyField()){
                 return redirect(routes.ProfileController.updateProfile());
-            } else if (! user.hasTravellerTypes()) {
+            } else if (! users.get(0).hasTravellerTypes()) {
                 return redirect(routes.TravellerTypeController.updateTravellerType());
-            } else if(! user.hasNationality()){
+            } else if(! users.get(0).hasNationality()){
                 return redirect(routes.ProfileController.updateNatPass());
             } else {
                 // Load countries from api and update validity of pass/nat/destinations
                 CountryUtils.fetchCountriesFromApi();
-                return ok(home.render(user));
+                if (users.size() > 1) {
+                    return ok(home.render(users.get(0), users.get(1)));
+                } else {
+                    return ok(home.render(users.get(0), null));
+                }
             }
         }
         return redirect(routes.UserController.userindex());
@@ -86,7 +90,7 @@ public class HomeController {
             if (picture != null) {
                 return getResultFromSaveUserPhoto(user, isPublic, picture);
             } else {
-                return badRequest(home.render(user));
+                return badRequest("Error uploading the picture.");
             }
         } else {
             return unauthorized("Unauthorized: Can not upload picture.");
@@ -133,9 +137,9 @@ public class HomeController {
 
             //DB saving
             newPhoto.save();
-            return ok(home.render(user));
+            return ok();
         } else {
-            return badRequest(home.render(user));
+            return badRequest();
         }
     }
 
@@ -186,10 +190,10 @@ public class HomeController {
                     }
                     //DB saving
                     UserFactory.replaceProfilePicture(user.getUserid(), newPhoto);
-                    return ok(home.render(user));
+                    return ok();
                 }
             }
-            return badRequest(home.render(user));
+            return badRequest();
         }
         else{
             return unauthorized("Oops, you're not logged in.");
@@ -270,7 +274,7 @@ public class HomeController {
             if (profilePhoto != null) {
                 if(user.getUserid() == profilePhoto.getUser().getUserid() || user.userIsAdmin()) {
                     UserFactory.replaceProfilePicture(user.getUserid(), profilePhoto);
-                    return ok(home.render(user));
+                    return ok();
                 }
                 else{
                     return unauthorized("Oops! This is not your photo.");

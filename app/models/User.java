@@ -375,10 +375,10 @@ public class User extends Model implements Comparable<User> {
             User requestUser = User.find.query().where()
                     .eq("userid", userId)
                     .findOne();
-            if(requestUser.userIsAdmin()){
+            if (requestUser.userIsAdmin()) {
                 List<Admin> adminList = Admin.find.query().where()
                         .eq("userId", userId).findList();
-                if(adminList.size() == 1){
+                if (adminList.size() == 1) {
                     Admin admin = adminList.get(0);
                     if (admin.getUserIdToActAs() != null) {
                         User userToEdit = User.find.byId(admin.getUserIdToActAs());
@@ -386,8 +386,7 @@ public class User extends Model implements Comparable<User> {
                     } else {
                         return requestUser;
                     }
-                }
-                else{
+                } else {
                     return null;
                 }
             }
@@ -396,6 +395,38 @@ public class User extends Model implements Comparable<User> {
         return null;
     }
 
+    public static List<User> getCurrentUser(Http.Request request, boolean checkForAdmin) {
+        List<User> users = new ArrayList<>();
+        String userId = request.session()
+                .getOptional("connected")
+                .orElse(null);
+        if (userId != null) {
+            User requestUser = User.find.query().where()
+                    .eq("userid", userId)
+                    .findOne();
+            users.add(requestUser);
+            if(requestUser.userIsAdmin()){
+                List<Admin> adminList = Admin.find.query().where()
+                        .eq("userId", userId).findList();
+                if(adminList.size() == 1){
+                    Admin admin = adminList.get(0);
+                    if (admin.getUserIdToActAs() != null) {
+                        User userToEdit = User.find.byId(admin.getUserIdToActAs());
+                        users.add(0,userToEdit);
+                        return users;
+                    } else {
+                        return users;
+                    }
+                }
+                else{
+                    //this should never happen
+                    return users;
+                }
+            }
+            return users;
+        }
+        return users;
+    }
     public void setEmail(String email) {
         this.email = email;
     }

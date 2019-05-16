@@ -20,6 +20,19 @@ public class Admin extends BaseModel {
     @OneToOne(mappedBy = "userid")
     public Integer userId;
 
+    public Integer getUserToEdit() {
+        return userIdToEdit;
+    }
+
+    public void setUserToEdit(Integer userIdToEdit) {
+        this.userIdToEdit = userIdToEdit;
+    }
+
+    /**
+     * The user the admin wants to edit as.
+     */
+    public Integer userIdToEdit;
+
     /**
      * True if admin is a Default admin.
      */

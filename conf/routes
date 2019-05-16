@@ -37,6 +37,9 @@ GET     /users/admin/remove/:id     controllers.AdminController.adminToUser(requ
 #Handles creating admin
 GET     /users/admin/make/:id       controllers.AdminController.userToAdmin(request: Request, id: Integer)
 
+#Handles setting a user to edit as
+GET     /users/admin/editasuser/:id controllers.AdminController.setUserToEdit(request: Request, id: Integer)
+
 #Handles view a destination modification request
 GET     /users/admin/destination_modification_request/:id   controllers.AdminController.viewDestinationModificationRequest(request: Request, id: Integer)
 

@@ -366,9 +366,34 @@ public class User extends Model implements Comparable<User> {
      * @return the current user in the session
      */
     public static User getCurrentUser(Http.Request request) {
-        String userId = request.session().getOptional("connected").orElse(null);
+        String userId = request.session()
+                .getOptional("connected")
+                .orElse(null);
         if (userId != null) {
-            User user = User.find.query().where().eq("userid", userId).findOne();
+            System.out.println("got here1");
+            User user = User.find.query().where()
+                    .eq("userid", userId)
+                    .findOne();
+            if(user.userIsAdmin()){
+                System.out.println("got here2");
+                List<Admin> adminList = Admin.find.query().where()
+                        .eq("userId", userId).findList();
+                if(adminList.size() == 1){
+                    System.out.println("got here3");
+                    Admin admin = adminList.get(0);
+                    if (admin.getUserToEdit() != null) {
+                        System.out.println("got here4");
+                        User user1 = User.find.byId(admin.getUserToEdit());
+                        return user1;
+                    } else {
+                        return user;
+                    }
+                }
+                else{
+                    //
+                    return null;
+                }
+            }
             return user;
         }
         return null;

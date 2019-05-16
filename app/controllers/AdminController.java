@@ -109,4 +109,26 @@ public class AdminController extends Controller {
             return unauthorized("Oops, you are not logged in.");
         }
     }
+
+    public Result setUserToEdit(Http.Request request, Integer userId) {
+        User currentUser = User.getCurrentUser(request);
+        if (currentUser != null && currentUser.userIsAdmin()) {
+            User userToEdit = User.find.byId(userId);
+            List<Admin> adminList = Admin.find.query().where()
+                    .eq("userId", currentUser.getUserid()).findList();
+            if(adminList.size() == 1) {
+                Admin admin = adminList.get(0);
+                System.out.println(admin.getUserToEdit() != null);
+                admin.setUserToEdit(userToEdit.getUserid());
+                System.out.println(admin.getUserToEdit() != null);
+                admin.update();
+                Admin adminTest = Admin.find.byId(currentUser.getUserid());
+                System.out.println(adminTest.getUserToEdit() != null);
+            }
+            return redirect(routes.HomeController.showhome());
+        } else {
+            return unauthorized("Unauthorized: You are not an Admin");
+        }
+
+    }
 }

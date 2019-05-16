@@ -365,9 +365,6 @@ public class UserFactory {
         }
     }
 
-    public static int getCurrentUserId(Http.Request request) {
-        return User.getCurrentUserById(request);
-    }
 
 
     /**

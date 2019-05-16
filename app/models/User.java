@@ -361,56 +361,39 @@ public class User extends Model implements Comparable<User> {
     /**
      * From an http request this method extracts the current user in the session.
      * If there is no current user, then null is returned.
+     * If the user is an admin and acting as another user, then returns the user
+     * they are acting as.
      *
      * @param request the HTTP request
-     * @return the current user in the session
+     * @return the current user in the session or the user the admin is acting as
      */
     public static User getCurrentUser(Http.Request request) {
         String userId = request.session()
                 .getOptional("connected")
                 .orElse(null);
         if (userId != null) {
-            System.out.println("got here1");
-            User user = User.find.query().where()
+            User requestUser = User.find.query().where()
                     .eq("userid", userId)
                     .findOne();
-            if(user.userIsAdmin()){
-                System.out.println("got here2");
+            if(requestUser.userIsAdmin()){
                 List<Admin> adminList = Admin.find.query().where()
                         .eq("userId", userId).findList();
                 if(adminList.size() == 1){
-                    System.out.println("got here3");
                     Admin admin = adminList.get(0);
-                    if (admin.getUserToEdit() != null) {
-                        System.out.println("got here4");
-                        User user1 = User.find.byId(admin.getUserToEdit());
-                        return user1;
+                    if (admin.getUserIdToActAs() != null) {
+                        User userToEdit = User.find.byId(admin.getUserIdToActAs());
+                        return userToEdit;
                     } else {
-                        return user;
+                        return requestUser;
                     }
                 }
                 else{
-                    //
                     return null;
                 }
             }
-            return user;
+            return requestUser;
         }
         return null;
-    }
-
-    /** Returns the id of the user and returns it if for some reason the user doesnt exist it will return -1.
-     *
-     * @param request
-     * @return userid on success or -1.
-     */
-    public static int getCurrentUserById(Http.Request request) {
-        String userId = request.session().getOptional("connected").orElse(null);
-        if (userId != null) {
-            User user = User.find.query().where().eq("userid", userId).findOne();
-            return user.getUserid();
-        }
-        return -1;
     }
 
     public void setEmail(String email) {

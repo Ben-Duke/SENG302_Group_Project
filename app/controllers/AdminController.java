@@ -110,7 +110,14 @@ public class AdminController extends Controller {
         }
     }
 
-    public Result setUserToEdit(Http.Request request, Integer userId) {
+    /**
+     * Sets the user that the admin wants to act as.
+     * Returns to the user's home page.
+     * @param request the HTTP request
+     * @param userId the user id of the user that the admin wants to act as
+     * @return redirect if the request user is an admin, unauthorized otherwise
+     */
+    public Result setUserToActAs(Http.Request request, Integer userId) {
         User currentUser = User.getCurrentUser(request);
         if (currentUser != null && currentUser.userIsAdmin()) {
             User userToEdit = User.find.byId(userId);
@@ -118,12 +125,8 @@ public class AdminController extends Controller {
                     .eq("userId", currentUser.getUserid()).findList();
             if(adminList.size() == 1) {
                 Admin admin = adminList.get(0);
-                System.out.println(admin.getUserToEdit() != null);
                 admin.setUserToEdit(userToEdit.getUserid());
-                System.out.println(admin.getUserToEdit() != null);
                 admin.update();
-                Admin adminTest = Admin.find.byId(currentUser.getUserid());
-                System.out.println(adminTest.getUserToEdit() != null);
             }
             return redirect(routes.HomeController.showhome());
         } else {

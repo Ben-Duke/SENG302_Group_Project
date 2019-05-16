@@ -250,4 +250,38 @@ public class AdminControllerTest extends WithApplication {
         assertEquals(2, Admin.find.all().size());
     }
 
+    @Test
+    public void setUserToActAsWithNoLoginSession() {
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET).uri("/users/admin/actasuser/3")
+                .session("connected", null);
+        Result result = route(app, request);
+        assertEquals(UNAUTHORIZED, result.status());
+    }
+
+    @Test
+    public void setUserToActAsWithRequestUserNotBeingAnAdmin() {
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET).uri("/users/admin/actasuser/3")
+                .session("connected", "2");
+        Result result = route(app, request);
+        assertEquals(UNAUTHORIZED, result.status());
+    }
+
+    @Test
+    public void setUserToActAsWithRequestUserAsAnAdmin() {
+        assertEquals(1, Admin.find.all().size());
+        Admin admin = new Admin(2,false);
+        admin.save();
+        assertEquals(2, Admin.find.all().size());
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET).uri("/users/admin/actasuser/3")
+                .session("connected", "2");
+        Result result = route(app, request);
+        assertEquals(SEE_OTHER, result.status());
+        admin = Admin.find.byId(2);
+        Integer userIdToEdit = admin.getUserIdToActAs();
+        assertEquals((Integer) 3, userIdToEdit);
+    }
+
 }

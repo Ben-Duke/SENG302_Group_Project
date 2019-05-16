@@ -1,7 +1,6 @@
 package controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
-
 import models.*;
 import org.junit.After;
 import org.junit.Before;
@@ -9,7 +8,6 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import play.Application;
 import play.api.test.CSRFTokenHelper;
-import play.data.FormFactory;
 import play.db.Database;
 import play.db.Databases;
 import play.db.evolutions.Evolution;
@@ -23,15 +21,15 @@ import play.test.WithApplication;
 import utilities.TestDatabaseManager;
 import utilities.UtilityFunctions;
 
-import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.*;
 
 import static org.junit.Assert.*;
-import static play.mvc.Http.Status.*;
+import static play.mvc.Http.Status.BAD_REQUEST;
+import static play.mvc.Http.Status.NOT_FOUND;
+import static play.mvc.Http.Status.OK;
+import static play.mvc.Http.Status.PRECONDITION_REQUIRED;
+import static play.mvc.Http.Status.SEE_OTHER;
+import static play.mvc.Http.Status.UNAUTHORIZED;
 import static play.test.Helpers.*;
 
 public class DestinationControllerTest extends WithApplication {

@@ -11,7 +11,6 @@ import play.db.evolutions.Evolutions;
 import play.test.WithApplication;
 
 import java.util.ArrayList;
-
 import java.util.List;
 
 import static org.junit.Assert.*;

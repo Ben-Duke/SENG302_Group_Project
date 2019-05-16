@@ -153,7 +153,7 @@
             @for(destination <- allDestinations) {
                 @if(destination.getIsPublic) {
                     <tr data-id="@destination.getDestId">
-                        <th scope ="row">
+                        <th scope="row">
                                 <span id="primary@destination.destid">
                                 @if(destination.getPrimaryPhoto != null){
                                     <img src="@routes.DestinationController.servePrimaryPicture(destination.getPrimaryPhoto.getPhotoId) " width="50" height="60">
@@ -213,22 +213,7 @@
             }
             </tbody>
         </table>
-        <div id="publicDestModal" class="modal fade">
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal">x</button>
-                        <h3 id="destTitle">Destination</h3>
-                    </div>
-                    <div class="modal-body">
-                        <p>YEET</p>
-                    </div>
-                    <div class="modal-footer">
-                        <button class="btn" data-dismiss="modal">Close</button>
-                    </div>
-                </div>
-            </div>
-        </div>
+
         <div id="orderModal" class="modal fade">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">

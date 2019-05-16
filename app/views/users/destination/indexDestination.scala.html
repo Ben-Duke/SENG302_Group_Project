@@ -59,7 +59,7 @@
                         <td>@destination.getDestType</td>
                         <td>@destination.getCountry
                             @if(!destination.getIsCountryValid()) {
-                                <span style="color:red">invalid country</span>
+                                <span class="text-danger">Invalid country</span>
                             }
                         </td>
                         <td>@destination.getDistrict</td>
@@ -170,7 +170,12 @@
                             </span>
                         </th>
                         <td>@destination.getDestType</td>
-                        <td>@destination.getCountry</td>
+                        <td>@destination.getCountry
+                            @if(!destination.getIsCountryValid()) {
+                                <span class="text-danger">Invalid country</span>
+                            }
+                        </td>
+
                         <td>@destination.getDistrict</td>
                         <td>@destination.getLatitude</td>
                         <td>@destination.getLongitude</td>

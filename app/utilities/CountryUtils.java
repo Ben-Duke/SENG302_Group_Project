@@ -114,6 +114,7 @@ public class CountryUtils {
             if (!countries.contains(destination.getCountry())) {
                 destination.setCountryValid(false);
                 destination.update();
+                
             } else {
                 if (!destination.getIsCountryValid()) {
                     destination.setCountryValid(true);

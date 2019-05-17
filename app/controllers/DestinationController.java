@@ -688,7 +688,7 @@ public class DestinationController extends Controller {
      *         notFound if the destination or photo does not exist
      *         badRequest if the destination and photo were not linked     *
      */
-    public Result unlinkPhotoFromDestination(Http.Request request, int photoId, int destId){
+    public Result unlinkPhotoFromDestination(Http.Request request, int photoId, int destId) {
         UserPhoto photo = UserPhoto.find.byId(photoId);
         Destination destination = Destination.find.byId(destId);
         if (photo == null) return notFound("No photo found with that id");
@@ -696,8 +696,8 @@ public class DestinationController extends Controller {
 
         if (! photo.removeDestination(destination)) return badRequest("The destination was not linked to this photo");
         photo.update();
-
-        if (photo.getPhotoId() == destination.getPrimaryPhoto().getPhotoId()) {
+        if ((destination.getPrimaryPhoto() != null) &&
+                (photo.getPhotoId() == destination.getPrimaryPhoto().getPhotoId())) {
             destination.setPrimaryPhoto(null);
             destination.update();
         }

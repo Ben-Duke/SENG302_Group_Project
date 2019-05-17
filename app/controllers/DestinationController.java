@@ -31,7 +31,7 @@ public class DestinationController extends Controller {
     DestinationFactory destFactory;
 
     private final Logger logger = LoggerFactory.getLogger("application");
-    UtilityFunctions utilityFunctions = new UtilityFunctions();
+
     /**
      * Performs validation tests on each on the users input for
      * each destination attribute.
@@ -143,7 +143,7 @@ public class DestinationController extends Controller {
             Map<String, Boolean> countries = null;
 
             try{
-                countries = utilityFunctions.CountryUtils();
+                countries = UtilityFunctions.CountryUtils();
             }catch(Exception error){
                 System.out.println(error);
                 System.out.println("Error getting countries");
@@ -225,7 +225,7 @@ public class DestinationController extends Controller {
 
         Map<String, Boolean> countryList = null;
         try{
-            countryList = utilityFunctions.CountryUtils();
+            countryList = UtilityFunctions.CountryUtils();
         }catch(Exception error){
             System.out.println(error);
         }
@@ -321,7 +321,7 @@ public class DestinationController extends Controller {
             Map<String, Boolean> typeList = Destination.getTypeList();
             Map<String, Boolean> countryList = null;
             try{
-                countryList = utilityFunctions.CountryUtils();
+                countryList = UtilityFunctions.CountryUtils();
             }catch(Exception error){
                 System.out.println(error);
             }
@@ -364,10 +364,10 @@ public class DestinationController extends Controller {
                 Map<String, Boolean> countryList = null;
 
                 try{
-                    countryList = utilityFunctions.CountryUtils();
+                    countryList = UtilityFunctions.CountryUtils();
                 }
-                catch(Exception error){
-
+                catch(Exception error) {
+                    //Empty Exception block
                 }
                 countryList.replace(destination.getCountry(), true);
 

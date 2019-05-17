@@ -28,16 +28,17 @@ public class AdminController extends Controller {
      * or an unauthorized message is "Oops, you are not authorised.".
      */
     public Result indexAdmin(Http.Request request) {
-        User currentUser = User.getCurrentUser(request);
+        List<User> userList = User.getCurrentUser(request, true);
+        User currentUser = userList.get(0);
         if (currentUser != null) {
             Admin currentAdmin = Admin.find.query().where().eq("userId", currentUser.userid).findOne();
             if (currentAdmin != null) {
                 List<User> users = User.find.all();
                 List<DestinationModificationRequest> allReqs = DestinationModificationRequest.find.all();
-                return ok(indexAdmin.render(currentUser, users,allReqs));
+                return ok(indexAdmin.render(currentUser, userList.get(1), users,allReqs));
             }
-
         }
+
         return unauthorized("Oops, you are not authorised.");
     }
 
@@ -53,10 +54,14 @@ public class AdminController extends Controller {
         User currentUser = User.getCurrentUser(request);
         if (currentUser != null) {
             Admin currentAdmin = Admin.find.query().where().eq("userId", currentUser.userid).findOne();
-            if (currentAdmin != null && currentAdmin.userId != requestedUserId) {
+            if (currentAdmin != null && !currentAdmin.userId.equals(requestedUserId)) {
                 Admin admin1 = Admin.find.query().where().eq("userId", requestedUserId).findOne();
-                admin1.delete();
-                return redirect(routes.AdminController.indexAdmin());
+                if (admin1 != null && !admin1.isDefault()) {
+                    admin1.delete();
+                    return redirect(routes.AdminController.indexAdmin());
+                } else {
+                    return unauthorized("You can not revoke default admin's rights.");
+                }
             }
         }
         return unauthorized("Oops, you are not authorised.");
@@ -74,7 +79,7 @@ public class AdminController extends Controller {
         User currentUser = User.getCurrentUser(request);
         if (currentUser != null) {
             Admin currentAdmin = Admin.find.query().where().eq("userId", currentUser.userid).findOne();
-            if (currentAdmin != null && currentUser.userid != requestedUserId) {
+            if (currentAdmin != null && !currentAdmin.userId.equals(requestedUserId)) {
                 Admin admin = new Admin(requestedUserId, false);
                 admin.insert();
                 return redirect(routes.AdminController.indexAdmin());

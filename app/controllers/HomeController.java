@@ -49,7 +49,7 @@ public class HomeController {
     public Result showhome(Http.Request request) {
         List<User> users = User.getCurrentUser(request, true);
 
-        if (users.size() != 0){
+        if (! users.isEmpty()){
             if(users.get(0).hasEmptyField()){
                 return redirect(routes.ProfileController.updateProfile());
             } else if (! users.get(0).hasTravellerTypes()) {

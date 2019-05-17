@@ -13,6 +13,7 @@ import play.data.FormFactory;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
+import utilities.UtilityFunctions;
 import views.html.users.profile.*;
 import javax.inject.Inject;
 import java.io.File;
@@ -36,6 +37,19 @@ public class ProfileController extends Controller {
      * @param request The HTTP request
      * @return update profile page or error page
      */
+
+    public Result deletePhoto(Http.Request request, Integer photoId){
+        UserFactory factory = new UserFactory();
+        System.out.println("Called delete photo");
+        if(factory.deletePhoto(photoId)){
+        //if(true){
+            System.out.println("Photo deletion worked sending ok request back");
+            return ok("Deleted the photo");
+        }else{
+            return badRequest("Failed to delete image");
+        }
+
+    }
     public Result updateProfile(Http.Request request){
         User user = User.getCurrentUser(request);
         if (user != null) {

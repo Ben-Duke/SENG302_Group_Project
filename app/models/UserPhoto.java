@@ -79,7 +79,18 @@ public class UserPhoto extends Model {
         return url;
     }
 
-
+    public Boolean deletePhoto(int idOfPhoto){
+        Boolean deleted = false;
+        try{
+            System.out.println(UserPhoto.find.query().where().eq("photoId", idOfPhoto));
+            UserPhoto.find.query().where().eq("photoId",idOfPhoto).delete();
+            System.out.println(UserPhoto.find.query().where().eq("photoId", idOfPhoto));
+            deleted = true;
+        }catch(Exception error){
+            System.out.println(error);
+        }
+        return deleted;
+    }
 
     /**
      * Method to return if the photo is the profile picture

@@ -47,6 +47,11 @@ public class UserFactory {
     }
 
 
+    public boolean deletePhoto(int photoId){
+        UserPhoto instance = new UserPhoto("",true,false,null);
+        return instance.deletePhoto(photoId);
+    }
+
     public static void deleteNatsOnUser(int id, String nationalityId) {
         User user = User.find.query().where().eq("userid", id).findOne();
         try {

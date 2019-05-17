@@ -119,6 +119,8 @@ function setProfilePictureRequest(photoId){
 }
 
 
+
+
 /**
  * Same as the previous function, but for adding a photo from an existing destination
  */
@@ -283,6 +285,29 @@ function sendLinkDestinationRequest(url, photoid){
         success:function(res){
             $("#" + photoid).modal('hide');
             console.log("Success!");
+        }
+    })
+}
+
+function deletePhotoRequest(url, photoid){
+    var token =  $('input[name="csrfToken"]').attr('value');
+    $.ajaxSetup({
+        beforeSend: function(xhr) {
+            xhr.setRequestHeader('Csrf-Token', token);
+        }
+    });
+    $.ajax({
+        url: url,
+        method: "Delete",
+        data: JSON.stringify({
+            photoid: '"' + photoid + '"'
+        }),
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        success:function(res){
+            $("#" + photoid).modal('hide');
+            console.log("Success Deleted photo!");
         }
     })
 }

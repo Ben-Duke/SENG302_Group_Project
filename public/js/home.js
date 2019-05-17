@@ -289,6 +289,12 @@ function sendLinkDestinationRequest(url, photoid){
     })
 }
 
+/**
+ * This function makes a request to the server to delete a photo with the passed id.
+ * @param url
+ * @param photoid
+ * @param imageId
+ */
 function deletePhotoRequest(url, photoid, imageId){
     var token =  $('input[name="csrfToken"]').attr('value');
     $.ajaxSetup({

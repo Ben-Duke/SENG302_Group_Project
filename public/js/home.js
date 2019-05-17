@@ -258,6 +258,7 @@ function searchPublicDestination(){
     }
 }
 
+
 /**
  * Function to unlink a photo from a destination
  * Sends a DELETE ajax request to the backend to unlink a destination from a photo
@@ -275,10 +276,7 @@ function sendUnlinkDestinationRequest(url, photoId, destId) {
         url: url,
         method: "DELETE",
         success: function(res) {
-            console.log("Unlink success");
-            let currentButton = $(`#link${destId}-${photoId}`);
-            let newButton = `<button class='btn btn-primary' onclick='sendLinkDestinationRequest("/users/destinations/${destId}", ${photoId}, ${destId})' > Link to destination </button>`;
-            currentButton.replaceWith(newButton);
+            toggleLinkButtonDisplays(destId, photoId);
         }
     })
 }
@@ -309,10 +307,27 @@ function sendLinkDestinationRequest(url, photoId, destId){
             'Content-Type': 'application/json'
         },
         success:function(res){
-            console.log("Link success");
-            let currentButton = $(`#link${destId}-${photoId}`);
-            let newButton = `<button class='btn btn-danger' onclick='sendUnlinkDestinationRequest("/${photoId}/${destId}", ${photoId}, ${destId})' > Unlink from destination </button>`;
-            currentButton.replaceWith(newButton);
+            toggleLinkButtonDisplays(destId, photoId)
         }
     })
+}
+
+/**
+ * Takes an html element and toggles the display of the element
+ * @param e the http element to toggle display
+ */
+function toggleDisplay(e) {
+    e.style.display === "none" ? e.style.display = "block" : e.style.display = "none"
+}
+
+/**
+ * Toggles the display of linking buttons in the linking and unlinking modal
+ * @param destId the destination id of the button
+ * @param photoId the photo id of the button
+ */
+function toggleLinkButtonDisplays(destId, photoId) {
+    let linkButton = document.querySelector(`#link${destId}-${photoId}-link`);
+    let unlinkButton = document.querySelector(`#link${destId}-${photoId}-unlink`);
+    toggleDisplay(linkButton);
+    toggleDisplay(unlinkButton);
 }

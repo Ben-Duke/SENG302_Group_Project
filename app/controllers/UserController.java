@@ -54,30 +54,6 @@ public class UserController {
     }
 
     /**
-     * Removes the given destination from the list of destinations in the photos
-     * @param request unused http request information
-     * @param photoId the id iof the photo to unlink
-     * @param destId the id of the destination to unlink
-     * @return response for if the removal worked
-     */
-    public Result removeDestPhotoLink(Http.Request request, int photoId, int destId){
-        UserPhoto photo = UserPhoto.find.byId(photoId);
-        Destination destination = Destination.find.byId(destId);
-        if (photo != null) {
-            photo.removeDestination(destination);
-            if (destination != null && photo.equals(destination.getPrimaryPhoto())) {
-                destination.setPrimaryPhoto(null);
-                destination.update();
-            }
-
-            photo.update();
-            return ok();
-        } else {
-            return badRequest("That destination is not linked to that photo");
-        }
-    }
-
-    /**
      * Handles the ajax request to get a user.
      * @return the corresponding user as a json based on the login session.
      */

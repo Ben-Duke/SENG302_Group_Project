@@ -680,6 +680,30 @@ public class DestinationController extends Controller {
     }
 
     /**
+     * Removes the given destination from the list of destinations in the photos
+     * @param request unused http request information
+     * @param photoId the id iof the photo to unlink
+     * @param destId the id of the destination to unlink
+     * @return response for if the removal worked
+     */
+    public Result unlinkPhotoFromDestination(Http.Request request, int photoId, int destId){
+        UserPhoto photo = UserPhoto.find.byId(photoId);
+        Destination destination = Destination.find.byId(destId);
+        if (photo != null) {
+            photo.removeDestination(destination);
+            if (destination != null && photo.equals(destination.getPrimaryPhoto())) {
+                destination.setPrimaryPhoto(null);
+                destination.update();
+            }
+
+            photo.update();
+            return ok();
+        } else {
+            return badRequest("That destination is not linked to that photo");
+        }
+    }
+
+    /**
      * Returns a json list of traveller types associated to a destination given by a destination id
      *
      * @param request the HTTP request

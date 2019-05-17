@@ -184,7 +184,7 @@ GET     /users/destinations/ttypes/:destid/:typeid    controllers.TravellerTypeC
 #Renders request for getting a destination's traveller types (used in ajax request)
 GET     /users/destinations/ttypes/:id    controllers.DestinationController.getTravellerTypes(request : Request, id : Integer)
 
-DELETE /:photoId/:destId                   controllers.UserController.removeDestPhotoLink(request : Request, photoId : Integer, destId: Integer)
+DELETE /:photoId/:destId                   controllers.DestinationController.unlinkPhotoFromDestination(request : Request, photoId : Integer, destId: Integer)
 
 #Renders request for getting a destination's photos (used in ajax request)
 GET     /users/destinations/photos/:id    controllers.DestinationController.getPhotos(request : Request, id : Integer)

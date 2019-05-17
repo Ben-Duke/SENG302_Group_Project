@@ -326,7 +326,7 @@
 @*                                    <div class="carousel-caption">
                                         <h2>insert caption here</h2>
                                     </div>*@
-                                    <a class="btn btn-primary" id="linkButton" href="#" data-toggle="modal" data-target="#@photo.getPhotoId">Link to destination</a>
+                                    <a class="btn btn-primary" id="linkButton" href="#" data-toggle="modal" data-target="#@photo.getPhotoId">Destinations</a>
                                     <a class="btn btn-primary" id="setProfilePicture"
                                        onclick="setProfilePictureRequest(
                                                 @photo.getPhotoId())">Set as Profile Picture</a>
@@ -354,7 +354,7 @@
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h1>Link photo to destination</h1>
+                        <h1>Link and unlink photos to destinations</h1>
                         @*<h2 class="modal-title">@visit.visitName</h2>*@
                     </div>
                     <div class="modal-body">
@@ -382,18 +382,43 @@
                                         <td>@destination.getLatitude</td>
                                         <td>@destination.getLongitude</td>
                                         <td>
-                                            @if(! photo.getDestinations.contains(destination)) {
-                                            <button class="btn btn-primary" id="@{"link" + destination.getDestId + "-" + photo.getPhotoId}"
+                                            <div>
+                                                @if(photo.getDestinations.contains(destination)) {
+                                                    <button class="btn btn-primary" style="display: none"
+                                                    id="@{"link" + destination.getDestId + "-" + photo.getPhotoId + "-link"}"
                                                     onclick="sendLinkDestinationRequest(
-                                                        '@routes.DestinationController.linkPhotoToDestination(destination.getDestId)', @photo.getPhotoId, @destination.getDestId)">
-                                                Link to destination
-                                            </button>
-                                            } else {
-                                                <button class="btn btn-danger" id="@{"link" + destination.getDestId + "-" + photo.getPhotoId}"
-                                                        onclick="sendUnlinkDestinationRequest('@routes.UserController.removeDestPhotoLink(photo.getPhotoId, destination.getDestId)', @photo.getPhotoId, @destination.getDestId)" >
+                                                            '@routes.DestinationController.linkPhotoToDestination(destination.getDestId)',
+                                                            @photo.getPhotoId,
+                                                            @destination.getDestId)">
+                                                            Link to destination
+                                                    </button>
+                                                    <button class="btn btn-danger"
+                                                    id="@{"link" + destination.getDestId + "-" + photo.getPhotoId + "-unlink"}"
+                                                    onclick="sendUnlinkDestinationRequest(
+                                                            '@routes.DestinationController.unlinkPhotoFromDestination(photo.getPhotoId, destination.getDestId)',
+                                                            @photo.getPhotoId,
+                                                            @destination.getDestId)" >
                                                     Unlink from destination
-                                                </button>
-                                            }
+                                                    </button>
+                                                } else {
+                                                    <button class="btn btn-primary"
+                                                    id="@{"link" + destination.getDestId + "-" + photo.getPhotoId + "-link"}"
+                                                    onclick="sendLinkDestinationRequest(
+                                                            '@routes.DestinationController.linkPhotoToDestination(destination.getDestId)',
+                                                            @photo.getPhotoId,
+                                                            @destination.getDestId)">
+                                                            Link to destination
+                                                    </button>
+                                                    <button class="btn btn-danger" style="display: none"
+                                                    id="@{"link" + destination.getDestId + "-" + photo.getPhotoId + "-unlink"}"
+                                                    onclick="sendUnlinkDestinationRequest(
+                                                            '@routes.DestinationController.unlinkPhotoFromDestination(photo.getPhotoId, destination.getDestId)',
+                                                            @photo.getPhotoId,
+                                                            @destination.getDestId)" >
+                                                    Unlink from destination
+                                                    </button>
+                                                }
+                                            </div>
                                         </td>
                                     </tr>
 
@@ -430,18 +455,43 @@
                                         <td>@destination.getLongitude</td>
                                             <!-- TO BE CHANGED -->
                                         <td>
-                                        @if(! photo.getDestinations.contains(destination)) {
-                                            <button class="btn btn-primary" id="@{"link" + destination.getDestId + "-" + photo.getPhotoId}"
-                                            onclick="sendLinkDestinationRequest(
-                                                    '@routes.DestinationController.linkPhotoToDestination(destination.getDestId)', @photo.getPhotoId, @destination.getDestId)">
-                                                Link to destination
-                                            </button>
-                                        } else {
-                                            <button class="btn btn-danger" id="@{"link" + destination.getDestId + "-" + photo.getPhotoId}"
-                                            onclick="sendUnlinkDestinationRequest('@routes.UserController.removeDestPhotoLink(photo.getPhotoId, destination.getDestId)', @photo.getPhotoId, @destination.getDestId)" >
-                                            Unlink from destination
-                                            </button>
-                                        }
+                                            <div>
+                                                @if(photo.getDestinations.contains(destination)) {
+                                                    <button class="btn btn-primary" style="display: none"
+                                                    id="@{"link" + destination.getDestId + "-" + photo.getPhotoId + "-link"}"
+                                                    onclick="sendLinkDestinationRequest(
+                                                            '@routes.DestinationController.linkPhotoToDestination(destination.getDestId)',
+                                                            @photo.getPhotoId,
+                                                            @destination.getDestId)">
+                                                        Link to destination
+                                                    </button>
+                                                    <button class="btn btn-danger"
+                                                    id="@{"link" + destination.getDestId + "-" + photo.getPhotoId + "-unlink"}"
+                                                    onclick="sendUnlinkDestinationRequest(
+                                                            '@routes.DestinationController.unlinkPhotoFromDestination(photo.getPhotoId, destination.getDestId)',
+                                                            @photo.getPhotoId,
+                                                            @destination.getDestId)" >
+                                                    Unlink from destination
+                                                    </button>
+                                                } else {
+                                                    <button class="btn btn-primary"
+                                                    id="@{"link" + destination.getDestId + "-" + photo.getPhotoId + "-link"}"
+                                                    onclick="sendLinkDestinationRequest(
+                                                            '@routes.DestinationController.linkPhotoToDestination(destination.getDestId)',
+                                                            @photo.getPhotoId,
+                                                            @destination.getDestId)">
+                                                        Link to destination
+                                                    </button>
+                                                    <button class="btn btn-danger" style="display: none"
+                                                    id="@{"link" + destination.getDestId + "-" + photo.getPhotoId + "-unlink"}"
+                                                    onclick="sendUnlinkDestinationRequest(
+                                                        '@routes.DestinationController.unlinkPhotoFromDestination(photo.getPhotoId, destination.getDestId)',
+                                                            @photo.getPhotoId,
+                                                            @destination.getDestId)" >
+                                                    Unlink from destination
+                                                    </button>
+                                                }
+                                            </div>
                                         </td>
                                     </tr>
                                     <br>

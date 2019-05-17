@@ -246,7 +246,7 @@ public class HomeController {
                     return ok(new File(profilePicture.getUrlWithPath()));
                 } else {
                     //should be 404 but then console logs an error
-                    return ok();
+                    return ok(new File(ApplicationManager.getDefaultUserPhotoFullURL()));
                 }
             } else {
                 return badRequest("User not found");

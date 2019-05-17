@@ -167,6 +167,7 @@ public class TestDatabaseManager {
             User user2 = new User("testuser2@uclive.ac.nz", "test", "Caitlyn", "Jenner", birthDate2, "Female");
             User user3 = new User("testuser3@uclive.ac.nz", "test", "John", "Smith", birthDate3, "Male");
 
+
             user.addTravellerType(travellerType3);
 
             user.setNationality(Nationality.find.all().subList(0, 2));
@@ -204,6 +205,7 @@ public class TestDatabaseManager {
                 isInSuccessState = false;
                 System.out.printf("User1 failed");
             }
+
 
         } catch (Exception e) {
             isInSuccessState = false;

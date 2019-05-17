@@ -28,10 +28,11 @@ public class CountryUtils {
 
     /**
      * Updates countries if the list of countries does not exist or has not
-     * been updated for greater than one day.
+     * been updated for greater than one day or the backup locales are
+     * currently loaded in place.
      */
     public static void updateCountries() {
-        if (lastUpdated == null || countries == null) {
+        if (lastUpdated == null || countries == null || !successState) {
             reloadCountries();
 
         } else {
@@ -48,17 +49,11 @@ public class CountryUtils {
      * Make api call. Set last updated date. Revalidate used countries
      */
     private static void reloadCountries() {
-        LocalDateTime dateNowUTC = LocalDateTime.now(ZoneId.of("UTC"));
-        String format = "Reloading countries at (UTC): %s | " +
-                "lastUpdated: %s | " +
-                "countries: %s | ";
-        String formattedStr = String.format(format,
-                dateNowUTC,
-                lastUpdated,
-                countries);
+
 
         try {
-            System.out.println(formattedStr + "IN PROGRESS...");
+            printLoadingCountriesMessage("IN PROGRESS...");
+
             countries = new ArrayList<>(UtilityFunctions.countriesAsStrings());
             successState = true;
 
@@ -68,10 +63,12 @@ public class CountryUtils {
             validateNationalityCountries();
             validateDestinationCountries();
 
-            System.out.println(formattedStr + "SUCCEEDED");
+
+            printLoadingCountriesMessage("SUCCEEDED");
 
         } catch (Exception e) {
-            System.out.println(formattedStr + "FAILED");
+
+            printLoadingCountriesMessage("FAILED");
 //            e.printStackTrace();
 
             if (countries == null) {
@@ -79,15 +76,31 @@ public class CountryUtils {
 
                 Locale[] locales = Locale.getAvailableLocales();
                 for (Locale locale : locales) {
-                    countries.add(locale.getDisplayName());
+                    countries.add(locale.getDisplayCountry());
                 }
 
-                System.out.println("Locales have been loaded instead");
+                printLoadingCountriesMessage("Locales loaded in place");
 
             }
 
         }
     }
+
+    private static void printLoadingCountriesMessage(String message) {
+
+        LocalDateTime dateNowUTC = LocalDateTime.now(ZoneId.of("UTC"));
+        String format = "Reloading countries at (UTC): %s | " +
+                "lastUpdated: %s | " +
+                "countries loaded: %s | ";
+        String formattedStr = String.format(format,
+                dateNowUTC,
+                lastUpdated,
+                countries != null);
+
+        System.out.println(formattedStr + message);
+
+    }
+
 
     /**
      * For passports check if the country associated is contained

@@ -1,5 +1,6 @@
 package utilities;
 
+import accessors.UserAccessor;
 import controllers.ApplicationManager;
 import io.ebean.ExpressionList;
 import models.*;
@@ -170,10 +171,6 @@ public class TestDatabaseManager {
             LocalDate birthDate3 = LocalDate.parse("2006-06-09", formatter);
 
             User user = new User("testuser1@uclive.ac.nz", "test", "Gavin", "Ong", birthDate1, "Male");
-//            CommandManager commandManager1 = user.getCommandManager();
-//            commandManager1.setUser(user);
-//            logger.debug("commandManager user: " + commandManager1.getUser());
-//            commandManager1.save();
             User user2 = new User("testuser2@uclive.ac.nz", "test", "Caitlyn", "Jenner", birthDate2, "Female");
             User user3 = new User("testuser3@uclive.ac.nz", "test", "John", "Smith", birthDate3, "Male");
 
@@ -186,14 +183,7 @@ public class TestDatabaseManager {
 
 
             try {
-                user.save();
-                User firstUser = User.find.byId(2);
-                CommandManager firstCommandManager = new CommandManager();
-                firstCommandManager.setUser(user);
-                firstCommandManager.save();
-//                logger.debug("commandManager user: " + firstCommandManager.getUser());
-//                logger.debug("user id first " + firstUser.toString());
-//                logger.debug(Integer.toString(CommandManager.find.all().size()));
+                UserAccessor.insert(user);
             }catch(Exception err){
                 isInSuccessState = false;
                 System.out.printf("User1 failed");
@@ -245,7 +235,7 @@ public class TestDatabaseManager {
         user.setNationality(Nationality.find.all().subList(0, 2)); // First two countries alphabetically
 
         try {
-            user.save();
+            UserAccessor.insert(user);
         } catch (Exception e) {
             isInSuccessState = false;
             System.out.println("Error making admin: User is already in db");

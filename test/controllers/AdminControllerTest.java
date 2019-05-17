@@ -1,5 +1,6 @@
 package controllers;
 
+import accessors.UserAccessor;
 import models.Admin;
 import models.User;
 import org.junit.After;
@@ -49,7 +50,7 @@ public class AdminControllerTest extends WithApplication {
 
         //Initialises test users and default admin and saves it to the database.
         User user = new User("testAdmin");
-        user.save();
+        UserAccessor.insert(user);
         Admin admin = new Admin(1, true);
         admin.save();
         User user1 = new User("testUser1");

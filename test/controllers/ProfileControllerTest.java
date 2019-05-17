@@ -1,5 +1,6 @@
 package controllers;
 
+import accessors.UserAccessor;
 import models.Nationality;
 import models.Passport;
 import models.TravellerType;
@@ -238,7 +239,7 @@ public class ProfileControllerTest extends WithApplication {
         user.getNationality().add(nationality2);
         user.getPassport().add(passport1);
         user.getPassport().add(passport2);
-        user.save();
+        UserAccessor.insert(user);
         user2.getTravellerTypes().add(travellerType1);
         user2.getTravellerTypes().add(travellerType2);
         user2.getPassport().add(passport1);

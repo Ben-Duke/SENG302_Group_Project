@@ -1,5 +1,6 @@
 package controllers;
 
+import accessors.UserAccessor;
 import models.Nationality;
 import models.Passport;
 import models.TravellerType;
@@ -73,7 +74,7 @@ public class TravelPartnerControllerTest extends WithApplication {
         user.getNationality().add(nationality2);
         user.getPassport().add(passport1);
         user.getPassport().add(passport2);
-        user.save();
+        UserAccessor.insert(user);
         LocalDate birthDate2 = LocalDate.parse("1995-08-12", formatter);
         User user2 = new User("test@uclive.ac.nz", "hunter2", "Billie", "Bob", birthDate2, "Female");
         user2.getTravellerTypes().add(travellerType2);

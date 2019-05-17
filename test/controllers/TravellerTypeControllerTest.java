@@ -1,5 +1,6 @@
 package controllers;
 
+import accessors.UserAccessor;
 import models.Destination;
 import models.TravellerType;
 import models.User;
@@ -46,7 +47,7 @@ public class TravellerTypeControllerTest extends WithApplication {
 
         //Initialises a test user with name "testUser" and saves it to the database.
         User user = new User("testUser");
-        user.save();
+        UserAccessor.insert(user);
         ApplicationManager.setIsTest(true);
         TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
         testDatabaseManager.populateDatabase();

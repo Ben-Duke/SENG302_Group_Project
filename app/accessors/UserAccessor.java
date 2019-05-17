@@ -56,4 +56,8 @@ public class UserAccessor {
         commandManager.setUser(user);
         commandManager.save();
     }
+
+    public static void update(User user) {
+        user.update();
+    }
 }

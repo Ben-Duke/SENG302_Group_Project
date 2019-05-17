@@ -102,7 +102,7 @@ public class RegisterControllerTest extends WithApplication {
 //                "drop table test;"
 //        )));
 //        User user = new User("testAccount@uclive.ac.nz");
-//        user.save();
+//        UserAccessor.insert(user);
 //        User user2 = new User("testAccount2@uclive.ac.nz");
 //        user2.save();
 //        assertEquals(2, User.find.all().size());

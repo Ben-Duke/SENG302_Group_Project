@@ -37,7 +37,7 @@ public class UpdateUserFormData implements Constraints.Validatable<List<Validati
 
     private String existingPasswordToCheck;
 
-    private Boolean isAdmin = false;
+    public Boolean isAdmin;
 
 
 
@@ -150,7 +150,8 @@ public class UpdateUserFormData implements Constraints.Validatable<List<Validati
         }
 
         LoginFactory loginFactory = new LoginFactory();
-        if(!this.isAdmin && !loginFactory.isPasswordMatch(existingUsername, existingPassword)) {
+
+        if(!isAdmin && !loginFactory.isPasswordMatch(existingUsername, existingPassword)) {
             errors.add(new ValidationError("existingPassword", "Incorrect password"));
         }
 

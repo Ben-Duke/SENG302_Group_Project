@@ -17,6 +17,7 @@ import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
+import utilities.CountryUtils;
 import views.html.users.destination.*;
 
 import javax.inject.Inject;
@@ -234,7 +235,15 @@ public class DestinationController extends Controller {
             System.out.println(error);
         }
         countryList.replace(destination.getCountry(), true);
-
+        try {
+            if (!destination.getIsCountryValid()) {
+                flash("countryInvalid",
+                        "This Destination has an invalid country!");
+                countryList.put(destination.getCountry(), true);
+            }
+        } catch (Exception error) {
+            System.out.println(error);
+        }
         return ok(createEditDestination.render(destForm, destId, countryList, typeList, user));
     }
 
@@ -265,7 +274,7 @@ public class DestinationController extends Controller {
             Destination oldDestination = DestinationAccessor.getDestinationById(destId);
 
             if (oldDestination != null) {
-                if (oldDestination.isUserOwner(user.userid)) {
+                if (oldDestination.isUserOwner(user.userid) || user.userIsAdmin()) {
                     oldDestination.applyEditChanges(newDestination);
                     oldDestination.update();
 

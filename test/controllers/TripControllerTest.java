@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import factories.TripFactory;
 import factories.VisitFactory;
-import formdata.TripFormData;
 import formdata.VisitFormData;
 import models.Destination;
 import models.Trip;
@@ -21,16 +20,21 @@ import play.db.evolutions.Evolution;
 import play.db.evolutions.Evolutions;
 import play.inject.guice.GuiceApplicationBuilder;
 import play.mvc.Http;
-
 import play.mvc.Result;
 import play.test.Helpers;
 import play.test.WithApplication;
 import utilities.TestDatabaseManager;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.Assert.*;
-import static play.mvc.Http.Status.*;
+import static play.mvc.Http.Status.BAD_REQUEST;
+import static play.mvc.Http.Status.NOT_FOUND;
+import static play.mvc.Http.Status.OK;
+import static play.mvc.Http.Status.SEE_OTHER;
+import static play.mvc.Http.Status.UNAUTHORIZED;
 import static play.test.Helpers.*;
 
 public class TripControllerTest extends WithApplication {

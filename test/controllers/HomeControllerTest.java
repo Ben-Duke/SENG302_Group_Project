@@ -2,14 +2,12 @@ package controllers;
 
 import akka.actor.ActorSystem;
 import akka.actor.Terminated;
-import akka.http.impl.util.JavaMapping;
 import akka.stream.ActorMaterializer;
 import akka.stream.Materializer;
 import akka.stream.javadsl.FileIO;
 import akka.stream.javadsl.Source;
 import akka.util.ByteString;
 import models.*;
-import org.hamcrest.CoreMatchers;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -41,7 +39,10 @@ import java.util.Collections;
 import static org.apache.commons.io.FileUtils.getFile;
 import static org.junit.Assert.*;
 import static play.mvc.Http.HttpVerbs.POST;
-import static play.mvc.Http.Status.*;
+import static play.mvc.Http.Status.NOT_FOUND;
+import static play.mvc.Http.Status.OK;
+import static play.mvc.Http.Status.SEE_OTHER;
+import static play.mvc.Http.Status.UNAUTHORIZED;
 import static play.test.Helpers.*;
 
 public class HomeControllerTest extends WithApplication {

@@ -46,8 +46,10 @@ public class HomeController {
             } else if(! user.hasNationality()){
                 return redirect(routes.ProfileController.updateNatPass());
             } else {
-                // Load countries from api and update validity of pass/nat/destinations
-                CountryUtils.fetchCountriesFromApi();
+                CountryUtils.updateCountries();
+                //Reload the user after updating the nationality and passport countries validation
+                user = User.getCurrentUser(request);
+
                 return ok(home.render(user));
             }
         }

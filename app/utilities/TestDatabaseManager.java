@@ -170,10 +170,15 @@ public class TestDatabaseManager {
 
             user.addTravellerType(travellerType3);
 
-            user.setNationality(Nationality.find.all().subList(0, 2));
+//            user.setNationality(Nationality.find.all().subList(0, 2));
+            List<Nationality> nats = new ArrayList<>();
+            nats.add(invalidNationality);
+            user.setNationality(nats);
 
-            //user.setPassport(Passport.find.all().subList(0, 2));
-
+//            user.setPassport(Passport.find.all().subList(0, 2));
+            List<Passport> pass = new ArrayList<>();
+            pass.add(invalidPassport);
+            user.setPassport(pass);
 
             try {
                 user.save();

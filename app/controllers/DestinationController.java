@@ -20,6 +20,7 @@ import views.html.users.destination.*;
 
 import javax.inject.Inject;
 import java.io.File;
+import java.io.IOException;
 import java.util.*;
 
 public class DestinationController extends Controller {
@@ -144,7 +145,7 @@ public class DestinationController extends Controller {
 
             try{
                 countries = UtilityFunctions.CountryUtils();
-            }catch(Exception error){
+            }catch(IOException error){
                 System.out.println(error);
                 System.out.println("Error getting countries");
             }
@@ -226,18 +227,14 @@ public class DestinationController extends Controller {
         Map<String, Boolean> countryList = null;
         try{
             countryList = UtilityFunctions.CountryUtils();
-        }catch(Exception error){
+        }catch(IOException error){
             System.out.println(error);
         }
         countryList.replace(destination.getCountry(), true);
-        try {
-            if (!destination.getIsCountryValid()) {
-                flash("countryInvalid",
-                        "This Destination has an invalid country!");
-                countryList.put(destination.getCountry(), true);
-            }
-        } catch (Exception error) {
-            System.out.println(error);
+        if (!destination.getIsCountryValid()) {
+            flash("countryInvalid",
+                    "This Destination has an invalid country!");
+            countryList.put(destination.getCountry(), true);
         }
         return ok(createEditDestination.render(destForm, destId, countryList, typeList, user));
     }
@@ -322,7 +319,7 @@ public class DestinationController extends Controller {
             Map<String, Boolean> countryList = null;
             try{
                 countryList = UtilityFunctions.CountryUtils();
-            }catch(Exception error){
+            }catch(IOException error){
                 System.out.println(error);
             }
 
@@ -366,8 +363,9 @@ public class DestinationController extends Controller {
                 try{
                     countryList = UtilityFunctions.CountryUtils();
                 }
-                catch(Exception error) {
-                    //Empty Exception block
+                catch(IOException error) {
+                    System.out.println(error);
+                    System.out.println("Error getting countries");
                 }
                 countryList.replace(destination.getCountry(), true);
 

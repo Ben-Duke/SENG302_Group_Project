@@ -39,6 +39,7 @@ public class CountryUtils {
             if (lastUpdated.compareTo(yesterdayDate) < 0) {
                 reloadCountries();
             }
+
         }
     }
 
@@ -55,7 +56,6 @@ public class CountryUtils {
                 lastUpdated,
                 countries);
 
-
         try {
             countries = new ArrayList<>(UtilityFunctions.countriesAsStrings());
             lastUpdated = new Date();
@@ -63,6 +63,7 @@ public class CountryUtils {
             validatePassportCountries();
             validateNationalityCountries();
             validateDestinationCountries();
+
             System.out.println(formattedStr + "SUCCEEDED");
 
         } catch (Exception e) {

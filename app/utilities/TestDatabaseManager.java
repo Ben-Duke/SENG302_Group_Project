@@ -50,8 +50,6 @@ public class TestDatabaseManager {
      */
     public void populateDatabase(CountDownLatch initCompleteLatch) {
 
-        System.out.println("hello 1");
-
         populateDatabase();
         initCompleteLatch.countDown();
     }
@@ -61,13 +59,9 @@ public class TestDatabaseManager {
      */
     public void populateDatabase() {
 
-        System.out.println("Helllo2");
-
         boolean isInSuccessState = true;
 
         UtilityFunctions util = new UtilityFunctions();
-
-        System.out.println("Helllo2.1");
 
 
         if(TravellerType.find.all().isEmpty()) {
@@ -78,27 +72,20 @@ public class TestDatabaseManager {
             }
         }
 
-        System.out.println("Helllo2.2");
-
         if (isInSuccessState && Nationality.find.all().isEmpty()) {
 
-            System.out.println("Helllo2.2.1");
+            System.out.println("Hello1");
 
             boolean successfullyAddedAllNationalities = util.addAllNationalities();
 
-            System.out.println("Helllo2.2.2");
+            System.out.println("Hello2");
 
-            if (! successfullyAddedAllNationalities) {
-
-                System.out.println("Helllo2.2.3");
+            if (!successfullyAddedAllNationalities) {
 
                 isInSuccessState = false;
             }
-
-            System.out.println("Helllo2.2.4");
         }
 
-        System.out.println("Helllo2.3");
 
         if (isInSuccessState && Passport.find.all().isEmpty()) {
             boolean successfullyAddedAllPassorts =  util.addAllPassports();
@@ -106,8 +93,6 @@ public class TestDatabaseManager {
                 isInSuccessState = false;
             }
         }
-
-        System.out.println("Helllo2.4");
 
         if (isInSuccessState) {
             boolean successfullyAddedAdmin = this.createDefaultAdmin();

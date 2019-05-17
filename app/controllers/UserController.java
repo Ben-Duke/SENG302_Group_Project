@@ -1,12 +1,11 @@
 package controllers;
 
 import models.Admin;
-import models.Destination;
 import models.User;
-import models.UserPhoto;
 import play.libs.Json;
 import play.mvc.Http;
 import play.mvc.Result;
+import utilities.CountryUtils;
 import utilities.TestDatabaseManager;
 import views.html.users.userIndex;
 
@@ -14,7 +13,8 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static play.mvc.Results.*;
+import static play.mvc.Results.notFound;
+import static play.mvc.Results.ok;
 
 public class UserController {
     // A thread safe boolean

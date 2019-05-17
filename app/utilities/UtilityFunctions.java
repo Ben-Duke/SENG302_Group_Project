@@ -193,12 +193,22 @@ public class UtilityFunctions {
         if (Nationality.find.all().isEmpty()) {
             Set<String> countries = null;
             try {
+
+                System.out.println("Helllo2.2.1.1");
+
                 countries = countriesAsStrings();
+
+                System.out.println("Helllo2.2.1.2");
+
+
             } catch (Exception error) {
                 System.out.println(error);
             }
             //String[] locales = Locale.getISOCountries();
             try {
+
+                System.out.println("Helllo2.2.3");
+
                 if (ApplicationManager.isIsTest()) {
                     for (String country : countries) {
                         Nationality nationality = new Nationality(country);

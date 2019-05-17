@@ -49,6 +49,9 @@ public class TestDatabaseManager {
      *                          database has been populated.
      */
     public void populateDatabase(CountDownLatch initCompleteLatch) {
+
+        System.out.println("hello 1");
+
         populateDatabase();
         initCompleteLatch.countDown();
     }
@@ -58,9 +61,14 @@ public class TestDatabaseManager {
      */
     public void populateDatabase() {
 
+        System.out.println("Helllo2");
+
         boolean isInSuccessState = true;
 
         UtilityFunctions util = new UtilityFunctions();
+
+        System.out.println("Helllo2.1");
+
 
         if(TravellerType.find.all().isEmpty()) {
             boolean successFullyAddedTravellerTypes = util.addTravellerTypes();
@@ -70,12 +78,27 @@ public class TestDatabaseManager {
             }
         }
 
+        System.out.println("Helllo2.2");
+
         if (isInSuccessState && Nationality.find.all().isEmpty()) {
+
+            System.out.println("Helllo2.2.1");
+
             boolean successfullyAddedAllNationalities = util.addAllNationalities();
+
+            System.out.println("Helllo2.2.2");
+
             if (! successfullyAddedAllNationalities) {
+
+                System.out.println("Helllo2.2.3");
+
                 isInSuccessState = false;
             }
+
+            System.out.println("Helllo2.2.4");
         }
+
+        System.out.println("Helllo2.3");
 
         if (isInSuccessState && Passport.find.all().isEmpty()) {
             boolean successfullyAddedAllPassorts =  util.addAllPassports();
@@ -84,12 +107,16 @@ public class TestDatabaseManager {
             }
         }
 
+        System.out.println("Helllo2.4");
+
         if (isInSuccessState) {
             boolean successfullyAddedAdmin = this.createDefaultAdmin();
             if (! successfullyAddedAdmin) {
                 isInSuccessState = false;
             }
         }
+
+        System.out.println("Helllo2.5");
 
         if (isInSuccessState) {
             boolean successfullyAddedAllUsers = this.populateNormalUsers();
@@ -98,12 +125,16 @@ public class TestDatabaseManager {
             }
         }
 
+        System.out.println("Helllo2.6");
+
         if (isInSuccessState) {
             boolean successfullyAddedAllTrips =  this.addTrips();
             if (! successfullyAddedAllTrips) {
                 isInSuccessState = false;
             }
         }
+
+        System.out.println("Helllo2.7");
 
         if (isInSuccessState) {
             boolean successfullyAddedDestTrips = this.addDestinationsAndVisits();
@@ -112,6 +143,8 @@ public class TestDatabaseManager {
             }
 
         }
+
+        System.out.println("Helllo2.8");
 
         if (isInSuccessState) {
             this.addTreasureHunts();
@@ -122,6 +155,9 @@ public class TestDatabaseManager {
                 this.addUserPhotos();
             }
         }
+
+        System.out.println("Helllo2.9");
+
     }
 
     /**
@@ -130,6 +166,10 @@ public class TestDatabaseManager {
      * @return A boolean, true if successfully added all normal users, else false
      */
     public boolean populateNormalUsers(){
+
+        System.out.println("Helllo");
+
+
         boolean isInSuccessState = true;
         try {
             //Groupie

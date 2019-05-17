@@ -90,7 +90,8 @@ public class User extends Model implements Comparable<User> {
     public List<TreasureHunt> guessedTHunts;
 
     /** Command manager for user undo/redo */
-    private CommandManager commandManager = new CommandManager();
+    @OneToOne(mappedBy= "user")
+    public CommandManager commandManager = new CommandManager();
 
     @JsonIgnore
     @OneToMany(mappedBy = "user")
@@ -142,12 +143,35 @@ public class User extends Model implements Comparable<User> {
         this.lName = lName;
         this.dateOfBirth = dateOfBirth;
         this.gender = gender;
-        this.isAdmin = false;
-    }
+        this.isAdmin = false;    }
 
     public User(String email){
         this.email = email.toLowerCase();
         this.isAdmin = false;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "email='" + email + '\'' +
+                ", userid=" + userid +
+                ", passwordHash='" + passwordHash + '\'' +
+                ", creationDate=" + creationDate +
+                ", nationality=" + nationality +
+                ", dateOfBirth=" + dateOfBirth +
+                ", gender='" + gender + '\'' +
+                ", fName='" + fName + '\'' +
+                ", lName='" + lName + '\'' +
+                ", passports=" + passports +
+                ", trips=" + trips +
+                ", treasureHunts=" + treasureHunts +
+                ", destinations=" + destinations +
+                ", travellerTypes=" + travellerTypes +
+                ", guessedTHunts=" + guessedTHunts +
+                ", commandManager=" + getCommandManager() +
+                ", userPhotos=" + userPhotos +
+                ", isAdmin=" + isAdmin +
+                '}';
     }
 
     /**

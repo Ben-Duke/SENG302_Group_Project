@@ -8,8 +8,7 @@ import formdata.DestinationFormData;
 import models.*;
 
 
-import models.commands.CommandManager;
-import models.commands.DeleteDestinationCommand;
+import models.commands.Destinations.DeleteDestinationCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import play.data.DynamicForm;

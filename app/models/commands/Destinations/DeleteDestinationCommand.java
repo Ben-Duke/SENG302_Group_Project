@@ -1,8 +1,10 @@
-package models.commands;
+package models.commands.Destinations;
 
+import accessors.DestinationAccessor;
 import models.Destination;
 import models.TreasureHunt;
 import models.Visit;
+import models.commands.UndoableCommand;
 
 import javax.persistence.Entity;
 import java.util.HashSet;
@@ -39,14 +41,49 @@ public class DeleteDestinationCommand extends UndoableCommand {
             }
         }
 
-        destination.delete();
+        DestinationAccessor.delete(destination);
     }
 
     public void undo() {
+        destination.save();
 
+        for (TreasureHunt treasureHunt : deletedTreasureHunts) {
+            treasureHunt.save();
+        }
+
+        for (Visit visit : deletedVisits) {
+            visit.save();
+        }
     }
 
     public void redo() {
-
+        //exectute();
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

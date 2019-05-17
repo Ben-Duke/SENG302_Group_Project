@@ -12,6 +12,8 @@ create table admin (
 
 create table command_manager (
   id                            integer auto_increment not null,
+  user                          integer,
+  constraint uq_command_manager_user unique (user),
   constraint pk_command_manager primary key (id)
 );
 
@@ -170,6 +172,8 @@ create table visit (
   constraint pk_visit primary key (visitid)
 );
 
+alter table command_manager add constraint fk_command_manager_user foreign key (user) references user (userid) on delete restrict on update restrict;
+
 create index ix_destination_primary_photo_photo_id on destination (primary_photo_photo_id);
 alter table destination add constraint fk_destination_primary_photo_photo_id foreign key (primary_photo_photo_id) references user_photo (photo_id) on delete restrict on update restrict;
 
@@ -244,6 +248,8 @@ alter table visit add constraint fk_visit_trip foreign key (trip) references tri
 
 
 # --- !Downs
+
+alter table command_manager drop constraint if exists fk_command_manager_user;
 
 alter table destination drop constraint if exists fk_destination_primary_photo_photo_id;
 drop index if exists ix_destination_primary_photo_photo_id;

@@ -13,6 +13,7 @@ import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
 import views.html.users.profile.updateNatPass;
+import views.html.users.profile.updateProfile;
 
 import javax.inject.Inject;
 import java.time.LocalDate;
@@ -47,7 +48,7 @@ public class ProfileController extends Controller {
             String[] gendersArray = {"Male", "Female", "Other"};
             List gendersList = Arrays.asList(gendersArray);
 
-            return ok(views.html.users.profile.updateProfile.render(updateUserForm, gendersList,user));
+            return ok(updateProfile.render(updateUserForm, gendersList,user));
         }
         else{
             return unauthorized(notLoggedInErrorStr);
@@ -79,7 +80,7 @@ public class ProfileController extends Controller {
                 //bad request, errors present
                 String[] gendersArray = {"Male", "Female", "Other"};
                 List gendersList = Arrays.asList(gendersArray);
-                return badRequest(views.html.users.profile.updateProfile.render(updateProfileForm, gendersList,user));
+                return badRequest(updateProfile.render(updateProfileForm, gendersList,user));
             }
         } else{
             return unauthorized(notLoggedInErrorStr);

@@ -308,8 +308,13 @@ function deletePhotoRequest(url, photoid, imageId){
         success:function(res){
             $("#" + photoid).modal('hide');
             console.log("Success Deleted photo!");
+
             console.log("ImageName is " + imageId);
-            document.getElementById(imageId).parentElement.remove();
+            document.replaceChild(document.createElement('span'),document.getElementById(imageId).parentElement);
+
+            //document.getElementById("carouselImage"+photoid).remove();
+            //document.getElementById("carouselImage"+photoid).remove();
+            //document.getElementById("caro-"+photoid).setAttribute("class","item");
         }
     })
 }

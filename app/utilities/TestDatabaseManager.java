@@ -74,11 +74,7 @@ public class TestDatabaseManager {
 
         if (isInSuccessState && Nationality.find.all().isEmpty()) {
 
-            System.out.println("Hello1");
-
             boolean successfullyAddedAllNationalities = util.addAllNationalities();
-
-            System.out.println("Hello2");
 
             if (!successfullyAddedAllNationalities) {
 

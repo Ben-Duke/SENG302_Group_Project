@@ -21,6 +21,7 @@ public class CountryUtils {
 
     private static Date lastUpdated;
     private static List<String> countries;
+    private static boolean successState = false;
 
     public static List<String> getCountries() { return countries; }
 
@@ -57,7 +58,10 @@ public class CountryUtils {
                 countries);
 
         try {
+            System.out.println(formattedStr + "IN PROGRESS...");
             countries = new ArrayList<>(UtilityFunctions.countriesAsStrings());
+            successState = true;
+
             lastUpdated = new Date();
 
             validatePassportCountries();
@@ -68,7 +72,20 @@ public class CountryUtils {
 
         } catch (Exception e) {
             System.out.println(formattedStr + "FAILED");
-            e.printStackTrace();
+//            e.printStackTrace();
+
+            if (countries == null) {
+                countries = new ArrayList<>();
+
+                Locale[] locales = Locale.getAvailableLocales();
+                for (Locale locale : locales) {
+                    countries.add(locale.getDisplayName());
+                }
+
+                System.out.println("Locales have been loaded instead");
+
+            }
+
         }
     }
 

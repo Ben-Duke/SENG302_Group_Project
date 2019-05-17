@@ -310,11 +310,8 @@ function deletePhotoRequest(url, photoid, imageId){
             console.log("Success Deleted photo!");
 
             console.log("ImageName is " + imageId);
-            document.replaceChild(document.createElement('span'),document.getElementById(imageId).parentElement);
+            document.getElementById(imageId).parentElement.remove();
 
-            //document.getElementById("carouselImage"+photoid).remove();
-            //document.getElementById("carouselImage"+photoid).remove();
-            //document.getElementById("caro-"+photoid).setAttribute("class","item");
         }
     })
 }

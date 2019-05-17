@@ -16,6 +16,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static utilities.CountryUtils.*;
 
 public class CountryUtilsTest extends WithApplication {
     private Database database;
@@ -36,17 +37,6 @@ public class CountryUtilsTest extends WithApplication {
         TestDatabaseManager.shutdownTestDatabase(database);
     }
 
-    @Test
-    public void validateInvalidPassportCountry() {
-        Passport p1 = new Passport("invalid");
-        p1.save();
-
-        CountryUtils.updateCountries();
-
-        Passport passport = Passport.find.byId(p1.getPassportId());
-
-        assertFalse(passport.getCountryValid());
-    }
 
     @Test
     public void validateValidPassportCountry() {
@@ -56,10 +46,26 @@ public class CountryUtilsTest extends WithApplication {
         p1.save();
 
         CountryUtils.updateCountries();
+        validatePassportCountries();
 
         Passport passport = Passport.find.byId(p1.getPassportId());
 
         assertTrue(passport.getCountryValid());
+    }
+
+    @Test
+    public void validateInvalidPassportCountry() {
+        Passport p1 = new Passport("invalid");
+        p1.save();
+
+        CountryUtils.updateCountries();
+        validatePassportCountries();
+
+        Passport passport = Passport.find.byId(p1.getPassportId());
+
+        System.out.println(passport.getCountryValid());
+
+        assertFalse(passport.getCountryValid());
     }
 
 }

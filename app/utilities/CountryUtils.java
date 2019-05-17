@@ -27,6 +27,8 @@ public class CountryUtils {
      */
     public static void updateCountries() {
 
+        System.out.println("Helllooooooooooo");
+
         if (lastUpdated == null || countries == null) {
             reloadCountries();
 
@@ -60,7 +62,7 @@ public class CountryUtils {
      * For passports check if the country associated is contained
      * in the list of valid countries.
      */
-    private static void validatePassportCountries() {
+    public static void validatePassportCountries() {
         List<Passport> passports = UserAccessor.getAllPassports();
 
         for (Passport passport : passports) {
@@ -68,10 +70,16 @@ public class CountryUtils {
                 passport.setCountryValid(false);
                 passport.update();
 
+                System.out.println(passport.getName());
+                System.out.println(passport.getCountryValid());
+
             } else {
                 if (!passport.getCountryValid()) {
                     passport.setCountryValid(true);
                     passport.update();
+
+                    System.out.println(passport.getName());
+                    System.out.println(passport.getCountryValid());
                 }
             }
 
@@ -82,7 +90,7 @@ public class CountryUtils {
      * For nationalities check if the country associated is contained
      * in the list of valid countries.
      */
-    private static void validateNationalityCountries() {
+    public static void validateNationalityCountries() {
         List<Nationality> nationalities = UserAccessor.getAllNationalities();
 
         for (Nationality nationality : nationalities) {
@@ -103,7 +111,7 @@ public class CountryUtils {
      * For destinations check if the country associated is contained
      * in the list of valid countries.
      */
-    private static void validateDestinationCountries() {
+    public static void validateDestinationCountries() {
         List<Destination> destinations = DestinationAccessor.getAllDestinations();
 
         for (Destination destination : destinations) {

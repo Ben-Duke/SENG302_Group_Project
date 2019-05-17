@@ -15,10 +15,7 @@ import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
 import utilities.UtilityFunctions;
-import views.html.users.destination.createEditDestination;
-import views.html.users.destination.editPublicDestination;
-import views.html.users.destination.indexDestination;
-import views.html.users.destination.viewDestination;
+import views.html.users.destination.*;
 
 import javax.inject.Inject;
 import java.io.File;

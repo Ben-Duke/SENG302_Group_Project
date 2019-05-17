@@ -27,8 +27,6 @@ public class CountryUtils {
      */
     public static void updateCountries() {
 
-        countries = null;
-
         if (lastUpdated == null || countries == null) {
             reloadCountries();
 
@@ -48,8 +46,6 @@ public class CountryUtils {
         try {
             countries = new ArrayList<>(UtilityFunctions.countriesAsStrings());
             lastUpdated = new Date();
-
-            countries.add("Czechoslovakia");
 
             validatePassportCountries();
             validateNationalityCountries();

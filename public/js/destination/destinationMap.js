@@ -28,6 +28,11 @@ function initIndexDestinationMap() {
     initMapLegend();
 }
 
+
+window.globalMap.event.addListener(window.globalMap, 'click', function( event ) {
+    alert( "Latitude: "+event.lat()+" "+", longitude: "+event.lng() );
+});
+
 /**
  * The callback function that is called after the google maps script src loads
  * with the api key.

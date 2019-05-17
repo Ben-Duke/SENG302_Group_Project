@@ -12,8 +12,7 @@ import play.data.FormFactory;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
-import views.html.users.profile.updateNatPass;
-import views.html.users.profile.updateProfile;
+import views.html.users.profile.*;
 
 import javax.inject.Inject;
 import java.time.LocalDate;

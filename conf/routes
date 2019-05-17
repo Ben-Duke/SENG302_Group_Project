@@ -142,7 +142,7 @@ POST     /users/profile/ttypes      controllers.TravellerTypeController.submitUp
 #Handles deleting a traveller type
 POST     /users/profile/delete/:typeId      controllers.TravellerTypeController.deleteUpdateTravellerType(request:Request, typeId:Integer)
 
-#Renders page for displaying a given user's profile (used for debugging)
+#Renders page for displaying a given user's profile
 GET     /users/profile/:id          controllers.ProfileController.showProfile(request : Request, id : Integer)
 
 # Map static resources from the /public folder to the /assets URL path

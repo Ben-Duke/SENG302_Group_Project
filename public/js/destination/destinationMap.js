@@ -16,15 +16,30 @@ window.globalMarkers = [];
  * The callback function that is called after the google maps script src loads
  * with the api key.
  *
- * Loads the map with all the markers.
+ * Loads the index destination map with all the markers.
  */
-function initMap() {
+function initIndexDestinationMap() {
     window.globalMap = new google.maps.Map(document.getElementById('map'), {
         center: {lat: -34.397, lng: 150.644},
         zoom: 8
     });
 
     initDestinationMarkers();
+    initMapLegend();
+}
+
+/**
+ * The callback function that is called after the google maps script src loads
+ * with the api key.
+ *
+ * Loads the create destination map without any markers.
+ */
+function initCreateDestinationMap() {
+    window.globalMap = new google.maps.Map(document.getElementById('map'), {
+        center: {lat: -34.397, lng: 150.644},
+        zoom: 8
+    });
+
     initMapLegend();
 }
 

@@ -167,14 +167,6 @@ public class TestDatabaseManager {
             User user = new User("testuser1@uclive.ac.nz", "test", "Gavin", "Ong", birthDate1, "Male");
             User user2 = new User("testuser2@uclive.ac.nz", "test", "Caitlyn", "Jenner", birthDate2, "Female");
             User user3 = new User("testuser3@uclive.ac.nz", "test", "John", "Smith", birthDate3, "Male");
-            User user4 = new User("testuser4@uclive.ac.nz", "test", "John", "Smith", birthDate3, "Male");
-            User user5 = new User("testuser5@uclive.ac.nz", "test", "John", "Smith", birthDate3, "Male");
-            User user6 = new User("testuser6@uclive.ac.nz", "test", "John", "Smith", birthDate3, "Male");
-            User user7 = new User("testuser7@uclive.ac.nz", "test", "John", "Smith", birthDate3, "Male");
-            User user8 = new User("testuser8@uclive.ac.nz", "test", "John", "Smith", birthDate3, "Male");
-            User user9 = new User("testuser9@uclive.ac.nz", "test", "John", "Smith", birthDate3, "Male");
-            User user10 = new User("testuser10@uclive.ac.nz", "test", "John", "Smith", birthDate3, "Male");
-            User user11 = new User("testuser11@uclive.ac.nz", "test", "John", "Smith", birthDate3, "Male");
 
 
             user.addTravellerType(travellerType3);
@@ -205,31 +197,9 @@ public class TestDatabaseManager {
             user3.getTravellerTypes().add(travellerType2);
 
             user3.setNationality(Nationality.find.all().subList(50, 51));
-            user4.setNationality(Nationality.find.all().subList(50, 51));
-            user5.setNationality(Nationality.find.all().subList(50, 51));
-            user6.setNationality(Nationality.find.all().subList(50, 51));
-            user7.setNationality(Nationality.find.all().subList(50, 51));
-            user8.setNationality(Nationality.find.all().subList(50, 51));
-            user9.setNationality(Nationality.find.all().subList(50, 51));
-            user10.setNationality(Nationality.find.all().subList(50, 51));
-            user11.setNationality(Nationality.find.all().subList(50, 51));
 
             try{
                 user3.save();
-            }catch(Exception err){
-                isInSuccessState = false;
-                System.out.printf("User1 failed");
-            }
-
-            try{
-                user4.save();
-                user5.save();
-                user6.save();
-                user7.save();
-                user8.save();
-                user9.save();
-                user10.save();
-                user11.save();
             }catch(Exception err){
                 isInSuccessState = false;
                 System.out.printf("User1 failed");

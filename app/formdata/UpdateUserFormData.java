@@ -37,6 +37,8 @@ public class UpdateUserFormData implements Constraints.Validatable<List<Validati
 
     private String existingPasswordToCheck;
 
+    private Boolean isAdmin = false;
+
 
 
     /**
@@ -60,6 +62,7 @@ public class UpdateUserFormData implements Constraints.Validatable<List<Validati
         this.existingUsername = user.getEmail();
         this.password = "";
         this.existingPasswordToCheck = user.getPasswordHash();
+        this.isAdmin = user.userIsAdmin();
         if (user.getDateOfBirth() == null) {
             this.dateOfBirth = "null";
         } else {
@@ -147,7 +150,7 @@ public class UpdateUserFormData implements Constraints.Validatable<List<Validati
         }
 
         LoginFactory loginFactory = new LoginFactory();
-        if(!loginFactory.isPasswordMatch(existingUsername, existingPassword)) {
+        if(!this.isAdmin && !loginFactory.isPasswordMatch(existingUsername, existingPassword)) {
             errors.add(new ValidationError("existingPassword", "Incorrect password"));
         }
 

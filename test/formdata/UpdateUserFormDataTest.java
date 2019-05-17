@@ -26,7 +26,7 @@ public class UpdateUserFormDataTest {
 
         UpdateUserFormData updateUserFormData = new UpdateUserFormData(user);
         List<ValidationError> errors = updateUserFormData.validate();
-        assertEquals(1, errors.size());
+        assertEquals(2, errors.size());
     }
 
     @Test
@@ -41,7 +41,7 @@ public class UpdateUserFormDataTest {
 
         UpdateUserFormData updateUserFormData = new UpdateUserFormData(user);
         List<ValidationError> errors = updateUserFormData.validate();
-        assertEquals(1, errors.size());
+        assertEquals(2, errors.size());
     }
 
     @Test
@@ -56,7 +56,7 @@ public class UpdateUserFormDataTest {
 
         UpdateUserFormData updateUserFormData = new UpdateUserFormData(user);
         List<ValidationError> errors = updateUserFormData.validate();
-        assertEquals(2, errors.size());
+        assertEquals(3, errors.size());
     }
 
     @Test
@@ -71,7 +71,7 @@ public class UpdateUserFormDataTest {
 
         UpdateUserFormData updateUserFormData = new UpdateUserFormData(user);
         List<ValidationError> errors = updateUserFormData.validate();
-        assertEquals(2, errors.size());
+        assertEquals(3, errors.size());
     }
 
     @Test
@@ -86,7 +86,7 @@ public class UpdateUserFormDataTest {
 
         UpdateUserFormData updateUserFormData = new UpdateUserFormData(user);
         List<ValidationError> errors = updateUserFormData.validate();
-        assertEquals(2, errors.size());
+        assertEquals(3, errors.size());
     }
 
     @Test
@@ -101,7 +101,7 @@ public class UpdateUserFormDataTest {
 
         UpdateUserFormData updateUserFormData = new UpdateUserFormData(user);
         List<ValidationError> errors = updateUserFormData.validate();
-        assertEquals(2, errors.size());
+        assertEquals(3, errors.size());
     }
 
     @Test
@@ -116,7 +116,7 @@ public class UpdateUserFormDataTest {
 
         UpdateUserFormData updateUserFormData = new UpdateUserFormData(user);
         List<ValidationError> errors = updateUserFormData.validate();
-        assertEquals(2, errors.size());
+        assertEquals(3, errors.size());
     }
 
     @Test
@@ -131,7 +131,7 @@ public class UpdateUserFormDataTest {
 
         UpdateUserFormData updateUserFormData = new UpdateUserFormData(user);
         List<ValidationError> errors = updateUserFormData.validate();
-        assertEquals(2, errors.size());
+        assertEquals(3, errors.size());
     }
 
     @Test
@@ -146,7 +146,7 @@ public class UpdateUserFormDataTest {
 
         UpdateUserFormData updateUserFormData = new UpdateUserFormData(user);
         List<ValidationError> errors = updateUserFormData.validate();
-        assertEquals(2, errors.size());
+        assertEquals(3, errors.size());
     }
 
     @Test
@@ -161,7 +161,7 @@ public class UpdateUserFormDataTest {
 
         UpdateUserFormData updateUserFormData = new UpdateUserFormData(user);
         List<ValidationError> errors = updateUserFormData.validate();
-        assertEquals(2, errors.size());
+        assertEquals(3, errors.size());
     }
 
     @Test
@@ -176,7 +176,7 @@ public class UpdateUserFormDataTest {
 
         UpdateUserFormData updateUserFormData = new UpdateUserFormData(user);
         List<ValidationError> errors = updateUserFormData.validate();
-        assertEquals(2, errors.size());
+        assertEquals(3, errors.size());
     }
 
     @Test
@@ -191,7 +191,7 @@ public class UpdateUserFormDataTest {
 
         UpdateUserFormData updateUserFormData = new UpdateUserFormData(user);
         List<ValidationError> errors = updateUserFormData.validate();
-        assertEquals(2, errors.size());
+        assertEquals(3, errors.size());
     }
 
     @Test
@@ -206,7 +206,7 @@ public class UpdateUserFormDataTest {
 
         UpdateUserFormData updateUserFormData = new UpdateUserFormData(user);
         List<ValidationError> errors = updateUserFormData.validate();
-        assertEquals(2, errors.size());
+        assertEquals(3, errors.size());
     }
 
     @Test
@@ -221,7 +221,7 @@ public class UpdateUserFormDataTest {
 
         UpdateUserFormData updateUserFormData = new UpdateUserFormData(user);
         List<ValidationError> errors = updateUserFormData.validate();
-        assertEquals(2, errors.size());
+        assertEquals(3, errors.size());
     }
 
     @Test
@@ -236,7 +236,7 @@ public class UpdateUserFormDataTest {
 
         UpdateUserFormData updateUserFormData = new UpdateUserFormData(user);
         List<ValidationError> errors = updateUserFormData.validate();
-        assertEquals(2, errors.size());
+        assertEquals(3, errors.size());
     }
 
     @Test
@@ -251,6 +251,7 @@ public class UpdateUserFormDataTest {
 
         UpdateUserFormData updateUserFormData = new UpdateUserFormData(user);
         List<ValidationError> errors = updateUserFormData.validate();
-        assertEquals(2, errors.size());
+        assertEquals(3, errors.size());
     }
+
 }

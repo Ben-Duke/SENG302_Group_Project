@@ -682,25 +682,26 @@ public class DestinationController extends Controller {
     /**
      * Removes the given destination from the list of destinations in the photos
      * @param request unused http request information
-     * @param photoId the id iof the photo to unlink
+     * @param photoId the id of the photo to unlink
      * @param destId the id of the destination to unlink
-     * @return response for if the removal worked
+     * @return response ok if the removal worked
+     *         notFound if the destination or photo does not exist
+     *         badRequest if the destination and photo were not linked     *
      */
     public Result unlinkPhotoFromDestination(Http.Request request, int photoId, int destId){
         UserPhoto photo = UserPhoto.find.byId(photoId);
         Destination destination = Destination.find.byId(destId);
-        if (photo != null) {
-            photo.removeDestination(destination);
-            if (destination != null && photo.equals(destination.getPrimaryPhoto())) {
-                destination.setPrimaryPhoto(null);
-                destination.update();
-            }
+        if (photo == null) return notFound("No photo found with that id");
+        if (destination == null) return notFound("No destination found with that id");
 
-            photo.update();
-            return ok();
-        } else {
-            return badRequest("That destination is not linked to that photo");
+        if (! photo.removeDestination(destination)) return badRequest("The destination was not linked to this photo");
+        photo.update();
+
+        if (photo.getPhotoId() == destination.getPrimaryPhoto().getPhotoId()) {
+            destination.setPrimaryPhoto(null);
+            destination.update();
         }
+        return ok();
     }
 
     /**

@@ -98,9 +98,10 @@ public class UserPhoto extends Model {
     /**
      * Unlink the photo from the given destination
      * @param destination the destination to unlink from
+     * @return true if the removal changed the list, else false
      */
-    public void removeDestination(Destination destination) {
-        this.destinations.remove(destination);
+    public boolean removeDestination(Destination destination) {
+        return this.destinations.remove(destination);
     }
     /**
      * Method to set the photo as profile picture (or not)

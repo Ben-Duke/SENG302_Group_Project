@@ -184,8 +184,6 @@ GET     /users/destinations/ttypes/:destid/:typeid    controllers.TravellerTypeC
 #Renders request for getting a destination's traveller types (used in ajax request)
 GET     /users/destinations/ttypes/:id    controllers.DestinationController.getTravellerTypes(request : Request, id : Integer)
 
-DELETE /:photoId/:destId                   controllers.DestinationController.unlinkPhotoFromDestination(request : Request, photoId : Integer, destId: Integer)
-
 #Renders request for getting a destination's photos (used in ajax request)
 GET     /users/destinations/photos/:id    controllers.DestinationController.getPhotos(request : Request, id : Integer)
 
@@ -193,7 +191,7 @@ GET     /users/destinations/photos/:id    controllers.DestinationController.getP
 GET     /users/photos/:id                   controllers.DestinationController.getPhoto(request : Request, id : Integer)
 
 #Renders request for destination traveller types
-POST     /users/destinations/ttypes/:id    controllers.TravellerTypeController.submitUpdateDestinationTravellerType(request : Request, id : Integer)
+POST    /users/destinations/ttypes/:id    controllers.TravellerTypeController.submitUpdateDestinationTravellerType(request : Request, id : Integer)
 
 #Handles making a destination public
 GET     /users/destinations/public/:id         controllers.DestinationController.makeDestinationPublic(request : Request, id : Integer)
@@ -222,6 +220,9 @@ PUT     /users/destinations/:id         controllers.DestinationController.linkPh
 #Handles linking a photo to a destination
 +nocsrf
 POST     /users/destinations/:destId/:photoId         controllers.DestinationController.addPhotoToDestination(request : Request, photoId : Integer, destId : Integer)
+
+#Handles unlinking a destination from a photo
+DELETE  /users/destinations/:photoId/:destId                   controllers.DestinationController.unlinkPhotoFromDestination(request : Request, photoId : Integer, destId: Integer)
 
 #Handles creating a destination
 POST    /users/destinations/save        controllers.DestinationController.saveDestinationFromRequest(request : Request)

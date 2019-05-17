@@ -286,3 +286,11 @@ function sendLinkDestinationRequest(url, photoid){
         }
     })
 }
+
+
+const setProfilePicDefaultBtn = document
+                            .querySelector('#change-profile-photo-to-placeholder');
+setProfilePicDefaultBtn.addEventListener('click', (event) => {
+   console.log(event);
+   //TODO handle  setting default pic
+});

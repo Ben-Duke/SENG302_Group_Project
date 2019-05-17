@@ -187,7 +187,7 @@
                     <div class="modal-body">
                         <!--<input type="file" accept="image/*" name="picture" required onchange="readURL(this);"/> -->
                         <div class="profile-pic-wraper ">
-                            <img class="img"  width = "450" height="450" id="change-profile-pic" src="@{routes.HomeController.serveProfilePicture(user.getUserid())}" alt="You have not uploaded a profile picture!"/>
+                            <img class="img"  width = "450" height="450" id="change-profile-pic" src="@{routes.HomeController.serveProfilePicture(user.getUserid())}" alt="Profile photo image"/>
                         </div>
                         <div class="preview-wrapper">
                             <div class="preview">
@@ -195,9 +195,15 @@
                             </div><br>
                         </div>
                         <br>
-                        <input id="selectProfileInput" type="file" accept="image/*" name="picture" required onchange="loadFile(event);"/>
+                        <input class="btn btn-default" id="selectProfileInput" type="file" accept="image/*" name="picture" required onchange="loadFile(event);"/>
                         <div>
-                            <button id="save-profile">Upload</button>
+                            <button class="btn btn-default" id="save-profile">
+                                Upload
+                            </button>
+                            <button class="btn btn-default"
+                                    id="change-profile-photo-to-placeholder">
+                                Use Placeholder Picture
+                            </button>
                         </div>
                     </div>
                 </div>

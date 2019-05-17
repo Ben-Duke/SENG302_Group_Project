@@ -170,3 +170,7 @@ preview-wrapper-original{
     padding: 10px;
     border: 1px solid #c1c1c1;
 }
+
+#change-profile-photo-to-placeholder {
+    float: right;
+}

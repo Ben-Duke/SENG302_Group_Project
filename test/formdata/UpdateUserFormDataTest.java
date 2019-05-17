@@ -1,9 +1,29 @@
 package formdata;
 
+import com.google.inject.AbstractModule;
+import com.google.inject.Guice;
+import com.google.inject.Module;
+import controllers.ApplicationManager;
 import models.User;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
+import play.Application;
+import play.ApplicationLoader;
+import play.Environment;
 import play.data.validation.ValidationError;
+import play.db.Database;
+import play.db.Databases;
+import play.db.evolutions.Evolution;
+import play.db.evolutions.Evolutions;
+import play.inject.guice.GuiceApplicationBuilder;
+import play.inject.guice.GuiceApplicationLoader;
+import play.test.Helpers;
+import play.test.WithApplication;
+import testhelpers.BaseTestWithApplicationAndDatabase;
+import utilities.TestDatabaseManager;
 
+import javax.inject.Inject;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -12,7 +32,9 @@ import static org.junit.Assert.assertEquals;
 /**
  * A class to to test the UpdateUserFormData class using JUnit4.
  */
-public class UpdateUserFormDataTest {
+public class UpdateUserFormDataTest extends BaseTestWithApplicationAndDatabase {
+
+
 
     @Test
     public void validateNoErrorsMale() {
@@ -23,6 +45,7 @@ public class UpdateUserFormDataTest {
                 "test",
                 localDateNow,
                 "Male");
+        user.save();
 
         UpdateUserFormData updateUserFormData = new UpdateUserFormData(user);
         List<ValidationError> errors = updateUserFormData.validate();

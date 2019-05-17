@@ -168,17 +168,25 @@ public class TestDatabaseManager {
             User user2 = new User("testuser2@uclive.ac.nz", "test", "Caitlyn", "Jenner", birthDate2, "Female");
             User user3 = new User("testuser3@uclive.ac.nz", "test", "John", "Smith", birthDate3, "Male");
 
+
             user.addTravellerType(travellerType3);
 
-            user.setNationality(Nationality.find.all().subList(0, 2));
+//            user.setNationality(Nationality.find.all().subList(0, 2));
+            List<Nationality> nats = new ArrayList<>();
+            nats.add(invalidNationality);
+            user.setNationality(nats);
 
-            user.setPassport(Passport.find.all().subList(0, 2));
+//            user.setPassport(Passport.find.all().subList(0, 2));
+            List<Passport> pass = new ArrayList<>();
+            pass.add(invalidPassport);
+            user.setPassport(pass);
 
             try {
                 user.save();
             }catch(Exception err){
                 isInSuccessState = false;
                 System.out.printf("User1 failed");
+                System.out.println(err);
             }
             user2.getTravellerTypes().add(travellerType2);
 
@@ -203,6 +211,7 @@ public class TestDatabaseManager {
                 isInSuccessState = false;
                 System.out.printf("User1 failed");
             }
+
 
         } catch (Exception e) {
             isInSuccessState = false;
@@ -335,7 +344,7 @@ public class TestDatabaseManager {
             } catch (Exception e) {
                 isInSuccessState = false;
                 System.out.println(String.format("Failed to save destination " +
-                        "(%s) due to uniqueness constraint fail",
+                                "(%s) due to uniqueness constraint fail",
                         destination.getDestName()));
             }
         }

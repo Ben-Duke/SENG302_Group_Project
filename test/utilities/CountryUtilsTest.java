@@ -1,18 +1,31 @@
 package utilities;
 
 import accessors.UserAccessor;
+import cucumber.api.java.bs.I;
 import models.Passport;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import play.Application;
 import play.db.Database;
+import play.inject.guice.GuiceApplicationBuilder;
+import play.test.WithApplication;
+
+import java.util.List;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static utilities.CountryUtils.*;
 
-public class CountryUtilsTest {
+public class CountryUtilsTest extends WithApplication {
     private Database database;
+
+    @Override
+    protected Application provideApplication() {
+        return new GuiceApplicationBuilder().build();
+    }
+
 
     @Before
     public void setupDatabase() {
@@ -24,16 +37,33 @@ public class CountryUtilsTest {
         TestDatabaseManager.shutdownTestDatabase(database);
     }
 
-    @Ignore // Database broken in some way - Noel
+
     @Test
-    public void fetchCountriesFromApi_passportWithInvalidCountry_checkInvalidated() {
-        Passport p1 = new Passport("invalid");
-        //p1.save();
+    public void validateValidPassportCountry() {
+        CountryUtils.updateCountries();
 
-        CountryUtils.fetchCountriesFromApi();
+        Passport p1 = new Passport(CountryUtils.getCountries().get(0));
+        p1.save();
 
-        p1 = UserAccessor.getPassport(p1.getPassportId());
+        CountryUtils.updateCountries();
+        validatePassportCountries();
 
-        assertFalse(p1.getCountryValid());
+        Passport passport = Passport.find.byId(p1.getPassportId());
+
+        assertTrue(passport.getCountryValid());
     }
+
+    @Test
+    public void validateInvalidPassportCountry() {
+        Passport p1 = new Passport("invalid");
+        p1.save();
+
+        CountryUtils.updateCountries();
+        validatePassportCountries();
+
+        Passport passport = Passport.find.byId(p1.getPassportId());
+
+        assertFalse(passport.getCountryValid());
+    }
+
 }

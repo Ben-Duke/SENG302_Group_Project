@@ -50,7 +50,7 @@ public class ProfileController extends Controller {
             String[] gendersArray = {"Male", "Female", "Other"};
             List gendersList = Arrays.asList(gendersArray);
 
-            return ok(updateProfile.render(updateUserForm, gendersList,user));
+            return ok(views.html.users.profile.updateProfile.render(updateUserForm, gendersList,user));
         }
         else{
             return unauthorized(notLoggedInErrorStr);
@@ -82,7 +82,7 @@ public class ProfileController extends Controller {
                 //bad request, errors present
                 String[] gendersArray = {"Male", "Female", "Other"};
                 List gendersList = Arrays.asList(gendersArray);
-                return badRequest(updateProfile.render(updateProfileForm, gendersList,user));
+                return badRequest(views.html.users.profile.updateProfile.render(updateProfileForm, gendersList,user));
             }
         } else{
             return unauthorized(notLoggedInErrorStr);
@@ -106,14 +106,18 @@ public class ProfileController extends Controller {
         String dateOfBirth = updateProfileForm.get().dateOfBirth;
         LocalDate birthDate = LocalDate.parse(dateOfBirth, formatter);
         String username = updateProfileForm.get().username;
-        String password = updateProfileForm.get().password;
+        String passwordPlainText = updateProfileForm.get().password;
 
         user.setfName(firstName);
         user.setlName(lastName);
         user.setGender(gender);
         user.setDateOfBirth(birthDate);
         user.setEmail(username);
-        user.setPassword(password);
+
+        if (0 < passwordPlainText.length()) {
+            user.hashAndSetPassword(passwordPlainText);
+        }
+
 
         user.update();
         // Show the user their home page
@@ -139,7 +143,7 @@ public class ProfileController extends Controller {
                 return notFound("User does not exist");
             }
 
-            return ok(showProfile.render(otherUser, user));
+            return ok(views.html.users.profile.showProfile.render(otherUser, user));
         }
         return unauthorized(notLoggedInErrorStr);
     }

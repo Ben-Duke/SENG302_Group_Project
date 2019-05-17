@@ -12,7 +12,7 @@ import play.mvc.Result;
 import utilities.CountryUtils;
 import utilities.UtilityFunctions;
 import views.html.home.home;
-import views.html.users.userIndex;
+import views.html.users.*;
 
 import javax.imageio.ImageIO;
 import javax.inject.Inject;
@@ -58,7 +58,7 @@ public class HomeController {
                 return redirect(routes.ProfileController.updateNatPass());
             } else {
                 // Load countries from api and update validity of pass/nat/destinations
-                CountryUtils.fetchCountriesFromApi();
+                CountryUtils.updateCountries();
                 return ok(home.render(users.get(0), users.get(1)));
             }
         }

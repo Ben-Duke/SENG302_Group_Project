@@ -399,7 +399,6 @@ $('#destslider').bind('slide.bs.carousel', function(e){
 });
 
 function addPhotoToDestinationRequest(photoId){
-    console.log("Button clicked");
     var token =  $('input[name="csrfToken"]').attr('value');
     $.ajaxSetup({
         beforeSend: function(xhr) {
@@ -422,3 +421,26 @@ function addPhotoToDestinationRequest(photoId){
         }
     })
 };
+
+
+$('#confirmDeleteDestinationModal').on('show.bs.modal', function(e) {
+    var destId = $(event.target).closest('tr').data('id');
+    var destName = $(event.target).closest('tr').data('dest-name');
+    document.getElementById("message").textContent = "Are you sure you want to delete " + destName + "?";
+    $('#yesDelete').click(function(e){
+        var token =  $('input[name="csrfToken"]').attr('value');
+        $.ajaxSetup({
+            beforeSend: function(xhr) {
+                xhr.setRequestHeader('Csrf-Token', token);
+            }
+        });
+        $.ajax({
+            url: '/users/destinations/delete/' + destId,
+            method: "GET",
+            success:function(res){
+                document.location.reload(true);
+            }
+        });
+    });
+});
+

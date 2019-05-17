@@ -32,3 +32,22 @@ function searchTreasureHunt(){
         }
     }
 }
+
+$('#confirmTreasureHuntDeleteModal').on('show.bs.modal', function(e) {
+    var treasureHuntId = $(event.target).closest('tr').data('id');
+    $('#yesDelete').click(function(e){
+        var token =  $('input[name="csrfToken"]').attr('value');
+        $.ajaxSetup({
+            beforeSend: function(xhr) {
+                xhr.setRequestHeader('Csrf-Token', token);
+            }
+        });
+        $.ajax({
+            url: '/users/treasurehunts/delete/' + treasureHuntId,
+            method: "GET",
+            success:function(res){
+                document.location.reload(true);
+            }
+        });
+    });
+});

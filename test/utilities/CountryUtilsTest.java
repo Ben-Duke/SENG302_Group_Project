@@ -63,8 +63,6 @@ public class CountryUtilsTest extends WithApplication {
 
         Passport passport = Passport.find.byId(p1.getPassportId());
 
-        System.out.println(passport.getCountryValid());
-
         assertFalse(passport.getCountryValid());
     }
 

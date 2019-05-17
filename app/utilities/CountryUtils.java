@@ -2,12 +2,16 @@ package utilities;
 
 import accessors.DestinationAccessor;
 import accessors.UserAccessor;
+import akka.actor.ProviderSelection;
 import models.CountryItem;
 import models.Destination;
 import models.Nationality;
 import models.Passport;
 import org.slf4j.Logger;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.*;
 
 
@@ -26,9 +30,6 @@ public class CountryUtils {
      * been updated for greater than one day.
      */
     public static void updateCountries() {
-
-        System.out.println("Helllooooooooooo");
-
         if (lastUpdated == null || countries == null) {
             reloadCountries();
 
@@ -45,6 +46,16 @@ public class CountryUtils {
      * Make api call. Set last updated date. Revalidate used countries
      */
     private static void reloadCountries() {
+        LocalDateTime dateNowUTC = LocalDateTime.now(ZoneId.of("UTC"));
+        String format = "Reloading countries at (UTC): %s | " +
+                "lastUpdated: %s | " +
+                "countries: %s | ";
+        String formattedStr = String.format(format,
+                dateNowUTC,
+                lastUpdated,
+                countries);
+
+
         try {
             countries = new ArrayList<>(UtilityFunctions.countriesAsStrings());
             lastUpdated = new Date();
@@ -52,8 +63,10 @@ public class CountryUtils {
             validatePassportCountries();
             validateNationalityCountries();
             validateDestinationCountries();
+            System.out.println(formattedStr + "SUCCEEDED");
 
         } catch (Exception e) {
+            System.out.println(formattedStr + "FAILED");
             e.printStackTrace();
         }
     }
@@ -69,17 +82,10 @@ public class CountryUtils {
             if (!countries.contains(passport.getName())) {
                 passport.setCountryValid(false);
                 passport.update();
-
-                System.out.println(passport.getName());
-                System.out.println(passport.getCountryValid());
-
             } else {
                 if (!passport.getCountryValid()) {
                     passport.setCountryValid(true);
                     passport.update();
-
-                    System.out.println(passport.getName());
-                    System.out.println(passport.getCountryValid());
                 }
             }
 

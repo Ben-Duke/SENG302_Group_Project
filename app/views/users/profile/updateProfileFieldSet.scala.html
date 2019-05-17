@@ -23,40 +23,47 @@
             help = "Please enter your email. (required)")
 
 
-            @password(updateUserForm("password"),
-                label = "Password",
-                placeholder = "password",
-                help = "Please enter your new password (leave empty to keep unchanged).")
+        @password(updateUserForm("existingPassword"),
+            label = "Existing Password",
+            placeholder = "password",
+            help = "Please enter your existing password")
 
 
-    <!-- FirstName -->
-    @text(updateUserForm("firstName"),
-        label = "First name",
-        placeholder = "first name",
-        help = "Please enter your first name. (required)")
+        @password(updateUserForm("password"),
+            label = "New Password",
+            placeholder = "password",
+            help = "Please enter your new password (leave empty to keep unchanged).")
 
 
-        <!-- LastName -->
-    @text(updateUserForm("lastName"),
-        label = "Last name",
-        placeholder = "last name",
-        help = "Please enter your last name. (required)")
-
-        <!-- Gender -->
-    @radiobuttons(updateUserForm("gender"),
-        label = "Gender",
-        buttonNameList = genders,
-        help = "Please select your gender. (required)")
+            <!-- FirstName -->
+        @text(updateUserForm("firstName"),
+            label = "First name",
+            placeholder = "first name",
+            help = "Please enter your first name. (required)")
 
 
-        <!-- Date of birth -->
+            <!-- LastName -->
+        @text(updateUserForm("lastName"),
+            label = "Last name",
+            placeholder = "last name",
+            help = "Please enter your last name. (required)")
+
+            <!-- Gender -->
+        @radiobuttons(updateUserForm("gender"),
+            label = "Gender",
+            buttonNameList = genders,
+            help = "Please select your gender. (required)")
+
+
+            <!-- Date of birth -->
     @datepicker(updateUserForm("dateOfBirth"),
         label = "Date of birth",
         placeholder = "01/01/2000",
         help = "Please select your Date of birth. (required)")
 
+
     <div id="hiddenExistingEmail" style="display: none;">
-        @text(updateUserForm("existingUsername"),
+    @text(updateUserForm("existingUsername"),
         label = "Email",
         placeholder = "Email",
         help = "Please enter your email. (required)")

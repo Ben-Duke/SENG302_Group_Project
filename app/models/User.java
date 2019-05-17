@@ -91,7 +91,7 @@ public class User extends Model implements Comparable<User> {
 
     /** Command manager for user undo/redo */
     @OneToOne(mappedBy= "user")
-    public CommandManager commandManager;
+    private CommandManager commandManager;
 
     @JsonIgnore
     @OneToMany(mappedBy = "user")

@@ -1,6 +1,5 @@
 package controllers;
 
-import models.commands.CommandManager;
 import factories.UserFactory;
 import formdata.NatFormData;
 import formdata.UpdateUserFormData;

@@ -4,9 +4,14 @@ import accessors.DestinationAccessor;
 import models.Destination;
 import models.TreasureHunt;
 import models.Visit;
+import models.commands.CommandManager;
 import models.commands.UndoableCommand;
+import org.slf4j.Logger;
+import utilities.UtilityFunctions;
 
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -20,6 +25,8 @@ public class DeleteDestinationCommand extends UndoableCommand {
     // Using sets as the items do not need to be ordered and are unique
     private Set<Visit> deletedVisits = new HashSet<>();
     private Set<TreasureHunt> deletedTreasureHunts = new HashSet<>();
+
+    private final Logger logger = UtilityFunctions.getLogger();
 
     public DeleteDestinationCommand(Destination destination, Boolean deletedByAdmin) {
         this.destination = destination;
@@ -45,6 +52,7 @@ public class DeleteDestinationCommand extends UndoableCommand {
     }
 
     public void undo() {
+        logger.debug("undoing command in command class");
         destination.save();
 
         for (TreasureHunt treasureHunt : deletedTreasureHunts) {

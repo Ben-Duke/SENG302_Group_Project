@@ -1,5 +1,6 @@
 package controllers;
 
+import accessors.DestinationAccessor;
 import com.fasterxml.jackson.databind.JsonNode;
 import models.*;
 import org.junit.After;
@@ -416,18 +417,24 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
 
     @Test
     /* Undo the deletion of a destination and check the destination is not deleted */
-    public void deleteDestination_undoDeletion_checkDestinationExists() {
+    public void deleteDestination_asAdmin_undoDeletion_checkDestinationExists() {
+        int destId = 1;
+        String adminId = "1";
+
+        // delete the destination
         Http.RequestBuilder deleteRequest = Helpers.fakeRequest()
                 .method(GET)
-                .uri("/users/destinations/delete/3").session("connected", "2");
+                .uri("/users/destinations/delete/" + destId).session("connected", adminId);
         route(app, deleteRequest);
 
+        // undo the deletion
         Http.RequestBuilder undoRequest = Helpers.fakeRequest()
                 .method(PUT)
-                .uri("/undo").session("connected", "2");
+                .uri("/undo").session("connected", adminId);
         route(app, undoRequest);
 
-        assertEquals(4, User.find.byId(2).getDestinations().size());
+        // check the destination exists
+        assertNotNull(DestinationAccessor.getDestinationById(destId));
     }
 
     /**

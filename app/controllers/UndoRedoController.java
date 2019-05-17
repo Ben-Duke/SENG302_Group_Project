@@ -16,18 +16,14 @@ public class UndoRedoController extends Controller {
     private CommandManager commandManager;
 
     public Result undo(Http.Request request) {
+        logger.debug("undo controller called");
+
         User user = User.getCurrentUser(request);
         if (user == null) {
             return unauthorized(unauthorizedPage.render());
         }
 
-        logger.debug("user id" + Integer.toString(user.getUserid()));
-
-        logger.debug(Integer.toString(CommandManager.find.all().size()));
         commandManager = user.getCommandManager();
-        logger.debug(user.toString());
-        logger.debug(Boolean.toString(commandManager == null));
-        logger.debug("command manager " + commandManager);
         commandManager.undo();
 
         return ok();

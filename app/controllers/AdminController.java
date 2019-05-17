@@ -32,16 +32,9 @@ public class AdminController extends Controller {
         if (currentUser != null) {
             Admin currentAdmin = Admin.find.query().where().eq("userId", currentUser.userid).findOne();
             if (currentAdmin != null) {
-                List<Admin> admins = Admin.find.all();
                 List<User> users = User.find.all();
-                List<User> adminUsers = new ArrayList<>();
-                for (int i = 0; i < admins.size(); i++) {
-                    User user1 = User.find.byId(admins.get(i).userId);
-                    users.remove(user1);
-                    adminUsers.add(user1);
-                }
                 List<DestinationModificationRequest> allReqs = DestinationModificationRequest.find.all();
-                return ok(indexAdmin.render(currentUser, users, admins, adminUsers, allReqs));
+                return ok(indexAdmin.render(currentUser, users,allReqs));
             }
 
         }

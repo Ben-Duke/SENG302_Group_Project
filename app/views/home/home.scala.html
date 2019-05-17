@@ -24,10 +24,10 @@
             @if(user.userIsAdmin) {
                 <img class="img"  width = "60" height="50" src="../assets/images/key_2_small.png">
             }
-            @if(adminUser != null) {
-                <button class="btn btn-default" formaction="@routes.DestinationController.indexDestination()">
+            @if(adminUser.userIsAdmin && user.getUserid != adminUser.getUserid) {
+                <a class="btn btn-default" href="@routes.AdminController.setUserBackToAdmin(adminUser.userid)">
                     Back to your profile
-                </button>
+                </a>
             }
         </h1>
     </div>

@@ -134,4 +134,34 @@ public class AdminController extends Controller {
         }
 
     }
+
+    /**
+     * If the admin is acting as a user, sets the user back to the admin.
+     * Returns to the admin's home page.
+     * @param request the HTTP request
+     * @param adminsUserId the user id of the admin
+     * @return redirect if the request user is an admin, unauthorized otherwise
+     */
+    public Result setUserBackToAdmin(Http.Request request, Integer adminsUserId) {
+        List<User> users = User.getCurrentUser(request, true);
+        if(users.size() == 0){
+            return unauthorized("Unauthorized: You are not logged in");
+        }
+        User currentUser = users.get(1);
+
+        if (currentUser != null && currentUser.userIsAdmin() && currentUser.getUserid() == adminsUserId) {
+            User adminUser = User.find.byId(adminsUserId);
+            List<Admin> adminList = Admin.find.query().where()
+                    .eq("userId", adminUser.getUserid()).findList();
+            if(adminList.size() == 1) {
+                Admin admin = adminList.get(0);
+                admin.setUserToEdit(null);
+                admin.update();
+            }
+            return redirect(routes.HomeController.showhome());
+        } else {
+            return unauthorized("Unauthorized: You are not an Admin");
+        }
+
+    }
 }

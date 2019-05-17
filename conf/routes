@@ -38,7 +38,10 @@ GET     /users/admin/remove/:id     controllers.AdminController.adminToUser(requ
 GET     /users/admin/make/:id       controllers.AdminController.userToAdmin(request: Request, id: Integer)
 
 #Handles setting a user to edit as
-GET     /users/admin/actasuser/:id controllers.AdminController.setUserToActAs(request: Request, id: Integer)
+GET     /users/admin/actasuser/:id      controllers.AdminController.setUserToActAs(request: Request, id: Integer)
+
+#Handles setting a user back to the admin after acting as a user
+GET     /users/admin/back_to_admin/:id      controllers.AdminController.setUserBackToAdmin(request: Request, id: Integer)
 
 #Handles view a destination modification request
 GET     /users/admin/destination_modification_request/:id   controllers.AdminController.viewDestinationModificationRequest(request: Request, id: Integer)

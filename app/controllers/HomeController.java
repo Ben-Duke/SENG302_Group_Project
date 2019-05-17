@@ -59,11 +59,7 @@ public class HomeController {
             } else {
                 // Load countries from api and update validity of pass/nat/destinations
                 CountryUtils.fetchCountriesFromApi();
-                if (users.size() > 1) {
-                    return ok(home.render(users.get(0), users.get(1)));
-                } else {
-                    return ok(home.render(users.get(0), null));
-                }
+                return ok(home.render(users.get(0), users.get(1)));
             }
         }
         return redirect(routes.UserController.userindex());
@@ -137,7 +133,7 @@ public class HomeController {
 
             //DB saving
             newPhoto.save();
-            return ok();
+            return redirect(routes.HomeController.showhome());
         } else {
             return badRequest();
         }
@@ -190,7 +186,7 @@ public class HomeController {
                     }
                     //DB saving
                     UserFactory.replaceProfilePicture(user.getUserid(), newPhoto);
-                    return ok();
+                    return redirect(routes.HomeController.showhome());
                 }
             }
             return badRequest();
@@ -248,7 +244,7 @@ public class HomeController {
                     return ok(new File(profilePicture.getUrlWithPath()));
                 } else {
                     //should be 404 but then console logs an error
-                    return ok();
+                    return redirect(routes.HomeController.showhome());
                 }
             } else {
                 return badRequest("User not found");
@@ -274,7 +270,7 @@ public class HomeController {
             if (profilePhoto != null) {
                 if(user.getUserid() == profilePhoto.getUser().getUserid() || user.userIsAdmin()) {
                     UserFactory.replaceProfilePicture(user.getUserid(), profilePhoto);
-                    return ok();
+                    return redirect(routes.HomeController.showhome());
                 }
                 else{
                     return unauthorized("Oops! This is not your photo.");

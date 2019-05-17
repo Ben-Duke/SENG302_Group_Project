@@ -17,6 +17,7 @@ import play.test.Helpers;
 import play.test.WithApplication;
 
 
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertEquals;
 import static play.mvc.Http.Status.OK;
 import static play.mvc.Http.Status.SEE_OTHER;
@@ -282,6 +283,38 @@ public class AdminControllerTest extends WithApplication {
         admin = Admin.find.byId(2);
         Integer userIdToEdit = admin.getUserIdToActAs();
         assertEquals((Integer) 3, userIdToEdit);
+    }
+
+    @Test
+    public void setUserBackToAdminWithInvalidLoginSession(){
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET).uri("/users/admin/back_to_admin/1")
+                .session("connected", null);
+        Result result = route(app, request);
+        assertEquals(UNAUTHORIZED, result.status());
+    }
+
+    @Test
+    public void setUserBackToAdminWithNonAdminLoginSession(){
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET).uri("/users/admin/back_to_admin/1")
+                .session("connected", "3");
+        Result result = route(app, request);
+        assertEquals(UNAUTHORIZED, result.status());
+    }
+
+    @Test
+    public void setUserBackToAdminWithValidAdmin(){
+        Admin admin = Admin.find.byId(1);
+        admin.setUserToEdit(3);
+        admin.update();
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET).uri("/users/admin/back_to_admin/1")
+                .session("connected", "1");
+        Result result = route(app, request);
+        assertEquals(SEE_OTHER, result.status());
+        admin = Admin.find.byId(1);
+        assertNull(admin.getUserIdToActAs());
     }
 
 }

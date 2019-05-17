@@ -13,6 +13,8 @@ import views.html.users.loginpage.*;
 
 import javax.inject.Inject;
 
+import java.util.List;
+
 import static play.mvc.Controller.flash;
 import static play.mvc.Results.*;
 
@@ -83,6 +85,10 @@ public class LoginController {
      * @return The user index page
      */
     public Result logoutrequest(Http.Request request){
+        List<User> users = User.getCurrentUser(request, true);
+        if (users.get(0).getUserid() != users.get(1).getUserid()) {
+            return redirect(routes.AdminController.setUserBackToAdmin(users.get(1).getUserid()));
+        }
         return redirect(routes.UserController.userindex())
                               .removingFromSession(request, "connected");
     }

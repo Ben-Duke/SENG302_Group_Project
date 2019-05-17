@@ -395,6 +395,19 @@ public class User extends Model implements Comparable<User> {
         return null;
     }
 
+    /**
+     * Overload method to get the current user from a HTTP request while checking if
+     * there is an admin acting as the user.
+     * If the admin is acting as a user, returns a list where the first element is
+     * the user the admin is acting as and the second element is the admin.
+     * Else if the admin is not acting as a user, the first element is the admin and
+     * the second element is also the same admin.
+     * Else if the request user is not an admin, returns the user as the first and
+     * second element.
+     * @param request the http request
+     * @param checkForAdmin overload parameter (boolean)
+     * @return a list of two users
+     */
     public static List<User> getCurrentUser(Http.Request request, boolean checkForAdmin) {
         List<User> users = new ArrayList<>();
         String userId = request.session()
@@ -415,6 +428,7 @@ public class User extends Model implements Comparable<User> {
                         users.add(0,userToEdit);
                         return users;
                     } else {
+                        users.add(requestUser);
                         return users;
                     }
                 }
@@ -422,6 +436,8 @@ public class User extends Model implements Comparable<User> {
                     //this should never happen
                     return users;
                 }
+            } else {
+                users.add(requestUser);
             }
             return users;
         }

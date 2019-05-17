@@ -10,7 +10,6 @@ import play.mvc.Result;
 import utilities.CountryUtils;
 import utilities.UtilityFunctions;
 import views.html.home.home;
-import views.html.users.*;
 
 import javax.imageio.ImageIO;
 import javax.inject.Inject;

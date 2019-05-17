@@ -2,13 +2,14 @@ package utilities;
 
 import accessors.DestinationAccessor;
 import accessors.UserAccessor;
-import models.CountryItem;
 import models.Destination;
 import models.Nationality;
 import models.Passport;
 import org.slf4j.Logger;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 public class CountryUtils {
 

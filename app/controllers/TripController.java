@@ -1,29 +1,28 @@
 package controllers;
 
-import java.util.*;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import factories.TripFactory;
-import java.util.Date;
-
 import factories.VisitFactory;
 import formdata.TripFormData;
 import formdata.VisitFormData;
-import io.ebean.Expr;
 import models.Destination;
 import models.Trip;
 import models.User;
 import models.Visit;
-import play.data.DynamicForm;
 import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
-import views.html.users.trip.*;
+import views.html.users.trip.AddTripDestinationsTable;
+import views.html.users.trip.createTrip;
+import views.html.users.trip.displayTrip;
+import views.html.users.trip.editVisit;
 
 import javax.inject.Inject;
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
 public class TripController extends Controller {

@@ -1,8 +1,5 @@
-@import formdata.DestinationFormData
-@import helper._
+@@import formdata.DestinationFormData
 @import views.html.bootstrap3._
-
-@import play.data.DynamicForm
 @(destForm : Form[DestinationFormData], destId: Integer, countryMap: Map[String, Boolean], typeMap: Map[String, Boolean], user : User)
 
 @main(user, "Destinations") {

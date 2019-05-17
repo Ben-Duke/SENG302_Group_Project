@@ -8,11 +8,10 @@ import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.Http;
 import play.mvc.Result;
-import views.html.users.destination.*;
-import views.html.users.travellertype.*;
+import views.html.users.destination.updateDestinationTraveller;
+import views.html.users.travellertype.updatetraveller;
 
 import javax.inject.Inject;
-
 import java.util.List;
 
 import static play.mvc.Controller.flash;

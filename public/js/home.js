@@ -289,7 +289,7 @@ function sendLinkDestinationRequest(url, photoid){
     })
 }
 
-function deletePhotoRequest(url, photoid){
+function deletePhotoRequest(url, photoid, imageId){
     var token =  $('input[name="csrfToken"]').attr('value');
     $.ajaxSetup({
         beforeSend: function(xhr) {
@@ -308,6 +308,8 @@ function deletePhotoRequest(url, photoid){
         success:function(res){
             $("#" + photoid).modal('hide');
             console.log("Success Deleted photo!");
+            console.log("ImageName is " + imageId);
+            document.getElementById(imageId).parentElement.remove();
         }
     })
 }

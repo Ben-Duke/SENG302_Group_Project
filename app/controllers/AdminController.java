@@ -29,16 +29,17 @@ public class AdminController extends Controller {
      */
     public Result indexAdmin(Http.Request request) {
         List<User> userList = User.getCurrentUser(request, true);
-        User currentUser = userList.get(0);
-        if (currentUser != null) {
-            Admin currentAdmin = Admin.find.query().where().eq("userId", currentUser.userid).findOne();
-            if (currentAdmin != null) {
-                List<User> users = User.find.all();
-                List<DestinationModificationRequest> allReqs = DestinationModificationRequest.find.all();
-                return ok(indexAdmin.render(currentUser, userList.get(1), users,allReqs));
+        if (!userList.isEmpty()) {
+            User currentUser = userList.get(0);
+            if (currentUser != null) {
+                Admin currentAdmin = Admin.find.query().where().eq("userId", currentUser.userid).findOne();
+                if (currentAdmin != null) {
+                    List<User> users = User.find.all();
+                    List<DestinationModificationRequest> allReqs = DestinationModificationRequest.find.all();
+                    return ok(indexAdmin.render(currentUser, userList.get(1), users,allReqs));
+                }
             }
         }
-
         return unauthorized("Oops, you are not authorised.");
     }
 

@@ -15,7 +15,6 @@ import play.test.WithApplication;
 import java.util.List;
 
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 public class CountryUtilsTest extends WithApplication {
     private Database database;

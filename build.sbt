@@ -32,3 +32,5 @@ testOptions in Test += Tests.Argument(TestFrameworks.JUnit, "-a", "-v")
 javacOptions ++= Seq("-Xlint:unchecked", "-Xlint:deprecation")
 configs(IntegrationTest)
 Defaults.itSettings
+
+libraryDependencies += "org.mindrot" % "jbcrypt" % "0.3m"

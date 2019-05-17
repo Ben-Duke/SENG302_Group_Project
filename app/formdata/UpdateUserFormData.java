@@ -53,7 +53,7 @@ public class UpdateUserFormData implements Constraints.Validatable<List<Validati
         this.gender = user.getGender();
         this.username = user.getEmail();
         this.existingUsername = user.getEmail();
-        this.password = user.getPassword();
+        this.password = "";
         if (user.getDateOfBirth() == null) {
             this.dateOfBirth = "null";
         } else {
@@ -100,11 +100,6 @@ public class UpdateUserFormData implements Constraints.Validatable<List<Validati
             errors.add(new ValidationError("username", "Username is taken"));
         }
 
-
-
-        if (password.length() == 0) {
-            errors.add(new ValidationError("password", "No password was given"));
-        }
 
         String[] gendersArray = {"Male", "Female", "Other"};
         List gendersList = Arrays.asList(gendersArray);

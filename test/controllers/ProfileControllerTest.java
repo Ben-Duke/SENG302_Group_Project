@@ -1,6 +1,9 @@
 package controllers;
 
-import models.*;
+import models.Nationality;
+import models.Passport;
+import models.TravellerType;
+import models.User;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,9 +25,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import static play.mvc.Http.Status.*;
-import static play.mvc.Http.Status.UNAUTHORIZED;
 import static play.test.Helpers.GET;
 import static play.test.Helpers.route;
 

@@ -185,6 +185,7 @@ public class TestDatabaseManager {
             }catch(Exception err){
                 isInSuccessState = false;
                 System.out.printf("User1 failed");
+                System.out.println(err);
             }
             user2.getTravellerTypes().add(travellerType2);
 

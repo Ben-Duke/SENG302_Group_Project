@@ -10,7 +10,6 @@ import cucumber.api.java.Before;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
-import factories.TreasureHuntFactory;
 import models.Destination;
 import models.TreasureHunt;
 import models.User;
@@ -36,9 +35,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.*;
-import static play.mvc.Http.Status.BAD_REQUEST;
-import static play.mvc.Http.Status.SEE_OTHER;
-import static play.mvc.Http.Status.UNAUTHORIZED;
+import static play.mvc.Http.Status.*;
 
 public class TreasureHuntSteps extends WithApplication {
     /**

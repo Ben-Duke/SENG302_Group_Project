@@ -6,6 +6,7 @@
 create table admin (
   id                            bigint auto_increment not null,
   user_id                       integer,
+  user_id_to_edit               integer,
   is_default                    boolean default false not null,
   constraint pk_admin primary key (id)
 );

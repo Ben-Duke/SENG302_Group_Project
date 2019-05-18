@@ -174,3 +174,8 @@ preview-wrapper-original{
 #change-profile-photo-to-placeholder {
     float: right;
 }
+
+.hiddenDiv {
+    display:none
+}
+

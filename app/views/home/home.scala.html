@@ -18,9 +18,9 @@
             <!-- The thumbnail in the else is being displayed to show the AC passing -->
         <h1>@user.fName @user.lName
             @if(UserFactory.getUserProfilePicture(user.getUserid()) != null){
-                <img class="img-circle"  width = "50" height="50" src="@{routes.HomeController.serveProfilePicture(user.getUserid())}">
+                <img id="thumbnailProfilePic" class="img-circle"  width = "50" height="50" src="@{routes.HomeController.serveProfilePicture(user.getUserid())}">
             } else {
-                <img class="img-circle"  width = "50" height="50" src="@{routes.Assets.at("images/Generic.png")}">
+                <img id="thumbnailProfilePic" class="img-circle"  width = "50" height="50" src="@{routes.Assets.at("images/Generic.png")}">
             }
             @if(user.userIsAdmin) {
                 <img class="img"  width = "60" height="50" src="../assets/images/key_2_small.png">
@@ -36,9 +36,9 @@
             <div class="text-center">
                 <a href="#" data-toggle="modal" data-target="#addProfilePhoto">
                     @if(UserFactory.getUserProfilePicture(user.getUserid()) != null){
-                        <img class="img-circle" width = "150" height = "150" src="@{routes.HomeController.serveProfilePicture(user.getUserid())}")>
+                        <img id="profilePicture" class="img-circle" width = "150" height = "150" src="@{routes.HomeController.serveProfilePicture(user.getUserid())}")>
                     } else {
-                        <img class="img-circle" width = "150" height = "150" src="@{routes.Assets.at("images/Generic.png")}")>
+                        <img id="profilePicture" class="img-circle" width = "150" height = "150" src="@{routes.Assets.at("images/Generic.png")}")>
                         }
                 </a>
             </div>
@@ -204,6 +204,10 @@
                                     id="change-profile-photo-to-placeholder">
                                 Use Placeholder Picture
                             </button>
+                        </div>
+                        <div id="setProfilePictureToDefaultError"
+                             class="alert alert-danger hiddenDiv"
+                             role="alert">
                         </div>
                     </div>
                 </div>

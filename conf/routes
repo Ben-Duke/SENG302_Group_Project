@@ -128,6 +128,9 @@ POST    /users/home         controllers.HomeController.upload(request:Request)
 
 POST    /users/home/profilePicture         controllers.HomeController.uploadProfilePicture(request:Request)
 
+# Sets the users profile picture back to a normal picture
+POST    /users/home/profilePicture1/removeProfilePictureStatus1  controllers.HomeController.setProfilePhotoToNormalPhoto(request:Request)
+
 GET    /users/home/photoPrivacy/:id/:setPublic         controllers.HomeController.makePicturePublic(request:Request, id: Integer, setPublic: Integer)
 
 #Handles logout request from the user

@@ -288,9 +288,67 @@ function sendLinkDestinationRequest(url, photoid){
 }
 
 
+
 const setProfilePicDefaultBtn = document
                             .querySelector('#change-profile-photo-to-placeholder');
 setProfilePicDefaultBtn.addEventListener('click', (event) => {
    console.log(event);
    //TODO handle  setting default pic
-});
+
+    fetch('/users/home/profilePicture1/removeProfilePictureStatus1', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Requested-With': '*',
+            'Csrf-Token': "nocheck"
+        },
+        body: JSON.stringify("test")})
+        .then(res => {
+            const infoAlert = document.querySelector("#setProfilePictureToDefaultError");
+
+
+            if (res.status === 500) {
+                infoAlert.classList.remove('hiddenDiv');
+                infoAlert.classList.remove('alert-success');
+                infoAlert.classList.add('alert-danger');
+                infoAlert.textContent = "Internal server error, try again later.";
+
+            } else if (res.status === 400) {
+                infoAlert.classList.remove('hiddenDiv');
+                infoAlert.classList.remove('alert-success');
+                infoAlert.classList.add('alert-danger');
+                infoAlert.textContent = "Bad request, you are already using the " +
+                    "                                       placeholder image.";
+            } else if (res.status === 200) {
+                infoAlert.classList.remove('hiddenDiv');
+                infoAlert.classList.remove('alert-danger');
+                infoAlert.classList.add('alert-success');
+                infoAlert.textContent = "Profile picture set to placeholder.";
+
+                const thumbnail = document.querySelector("#thumbnailProfilePic");
+                const fullProfilePic = document.querySelector("#profilePicture");
+                const modalProfilePic = document.querySelector("#change-profile-pic");
+
+                thumbnail.src = "/assets/images/Generic.png";
+                fullProfilePic.src = "/assets/images/Generic.png";
+                modalProfilePic.src = "/assets/images/Generic.png";
+
+            }
+
+            setTimeout(() => {
+                infoAlert.classList.add('hiddenDiv');
+            }, 5000);})
+        .catch(err => {
+            const infoAlert = document.querySelector("#setProfilePictureToDefaultError");
+
+            infoAlert.classList.remove('hiddenDiv');
+            infoAlert.classList.remove('alert-success');
+            infoAlert.classList.add('alert-danger');
+            infoAlert.textContent = "Unknown error occurred, try again later.";
+
+            setTimeout(() => {
+                infoAlert.classList.add('hiddenDiv');
+            }, 5000);
+        });
+    });
+

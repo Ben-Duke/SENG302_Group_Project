@@ -316,9 +316,21 @@ function deletePhotoRequest(url, photoid, imageId){
             console.log("Success Deleted photo!");
 
             console.log("ImageName is " + imageId);
-            //document.getElementById(imageId).setAttribute("hidden",'true');
+            $(".carousel").carousel("next");
+
+            //document.getElementById("caro-"+photoid+1).setAttribute('class','item active');
+            document.getElementById("caro-"+photoid).remove();
+            document.getElementById("item"+currentSlideIndex).remove();
             document.getElementById("addPhotoLink"+photoid).parentElement.remove();
 
         }
+
     })
 }
+var currentSlideIndex = 0;
+$("#myslider").on('slide.bs.carousel', function(evt) {
+    console.log("slide transition started")
+    console.log('current slide = ', $(this).find('.active').index())
+    currentSlideIndex = $(this).find('.active').index();
+    console.log('next slide = ', $(evt.relatedTarget).index())
+})

@@ -219,13 +219,13 @@
             </div>
 
 
-            <div class="container">
+            <div id="userImageArray" class="container">
                 <div class="row">
                 @for(i <- 0 to 2) {
                     <div class="col-sm-2">
 
                     @if(i < user.getUserPhotos.size() ){
-                        <a id="addPhotoLink" href="#" data-toggle="modal" data-target="#destination-carousel">
+                        <a id="addPhotoLink@user.getUserPhotos.get(i).getPhotoId()" href="#" data-toggle="modal" data-target="#destination-carousel">
                             <div class="container" id="imagesContainer" >
                                 <div class="overlay">
                                     <i class="icon" title="User Profile">

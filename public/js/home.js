@@ -316,7 +316,8 @@ function deletePhotoRequest(url, photoid, imageId){
             console.log("Success Deleted photo!");
 
             console.log("ImageName is " + imageId);
-            document.getElementById(imageId).parentElement.remove();
+            //document.getElementById(imageId).setAttribute("hidden",'true');
+            document.getElementById("addPhotoLink"+photoid).parentElement.remove();
 
         }
     })

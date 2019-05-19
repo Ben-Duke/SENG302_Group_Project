@@ -16,28 +16,23 @@ public class DestinationFactory {
      *
      * @return a List<Destination> of all public Destinations.
      */
-    public List<Destination> getPublicDestinations() {
-        List<Destination> allPublicDestinations = Destination.find.query()
+    private List<Destination> getPublicDestinations() {
+        return Destination.find.query()
                 .where().eq("isPublic", true).findList();
-
-        return allPublicDestinations;
     }
 
-    public static UserPhoto getprimaryProfilePicture(int photoID) {
-        UserPhoto primaryPhoto = null;
-        try{
-            primaryPhoto = UserPhoto.find.query().where().eq("photoId", photoID).findOne();
-
-        }catch(Exception error){
-            System.out.println("Error in UserPhoto method");
-            System.out.println(error);
+    /**
+     * Gets the destination's primary photo
+     * @param destID the id of the destination
+     * @return the primary photo
+     */
+    public static UserPhoto getPrimaryPicture(int destID) {
+        Destination destination = Destination.find.byId(destID);
+        if (destination != null) {
+            System.out.println("photo null?: "+ (destination.getPrimaryPhoto() == null));
+            return destination.getPrimaryPhoto();
         }
-        if(primaryPhoto != null) {
-
-            return  primaryPhoto ;
-        } else {
-            return null;
-        }
+       return null;
     }
 
     /**
@@ -51,11 +46,9 @@ public class DestinationFactory {
     public List<Destination> getUsersPrivateDestinations(int userId) {
         User user = UserFactory.getUserFromId(userId);
 
-        List<Destination> privateDestinations = Destination.find.query()
+        return Destination.find.query()
                 .where().eq("user", user).and().eq("isPublic", false)
                 .findList();
-
-        return privateDestinations;
     }
 
     /**

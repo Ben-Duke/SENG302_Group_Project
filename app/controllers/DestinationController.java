@@ -2,12 +2,9 @@ package controllers;
 
 import accessors.DestinationAccessor;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import factories.DestinationFactory;
 import formdata.DestinationFormData;
 import models.*;
-
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import play.data.DynamicForm;
@@ -18,15 +15,13 @@ import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
 import utilities.CountryUtils;
+import utilities.UtilityFunctions;
 import views.html.users.destination.*;
 
 import javax.inject.Inject;
 import java.io.File;
+import java.io.IOException;
 import java.util.*;
-
-
-import utilities.UtilityFunctions;
-import views.html.users.destination.*;
 
 public class DestinationController extends Controller {
 
@@ -37,7 +32,7 @@ public class DestinationController extends Controller {
     DestinationFactory destFactory;
 
     private final Logger logger = LoggerFactory.getLogger("application");
-    UtilityFunctions utilityFunctions = new UtilityFunctions();
+
     /**
      * Performs validation tests on each on the users input for
      * each destination attribute.
@@ -149,8 +144,8 @@ public class DestinationController extends Controller {
             Map<String, Boolean> countries = null;
 
             try{
-                countries = utilityFunctions.CountryUtils();
-            }catch(Exception error){
+                countries = UtilityFunctions.CountryUtils();
+            }catch(IOException error){
                 System.out.println(error);
                 System.out.println("Error getting countries");
             }
@@ -231,19 +226,17 @@ public class DestinationController extends Controller {
 
         Map<String, Boolean> countryList = null;
         try{
-            countryList = utilityFunctions.CountryUtils();
-        }catch(Exception error){
+            countryList = UtilityFunctions.CountryUtils();
+            countryList.replace(destination.getCountry(), true);
+        } catch(IOException error) {
             System.out.println(error);
         }
-        countryList.replace(destination.getCountry(), true);
-        try {
-            if (!destination.getIsCountryValid()) {
-                flash("countryInvalid",
-                        "This Destination has an invalid country!");
+        if (!destination.getIsCountryValid()) {
+            flash("countryInvalid",
+                    "This Destination has an invalid country!");
+            if (countryList != null) {
                 countryList.put(destination.getCountry(), true);
             }
-        } catch (Exception error) {
-            System.out.println(error);
         }
         return ok(createEditDestination.render(destForm, destId, countryList, typeList, user));
     }
@@ -326,10 +319,10 @@ public class DestinationController extends Controller {
 
             Map<String, Boolean> typeList = Destination.getTypeList();
             Map<String, Boolean> countryList = null;
-            try{
-                countryList = utilityFunctions.CountryUtils();
-            }catch(Exception error){
-                System.out.println(error);
+            try {
+                countryList = UtilityFunctions.CountryUtils();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
 
             // Use a dynamic form to get the values of the dropdown inputs
@@ -337,7 +330,9 @@ public class DestinationController extends Controller {
 
             // Select the dropdown values which were selected at form submission
             typeList.replace(dynamicDestForm.get("destType"), true);
-            countryList.replace(dynamicDestForm.get("country"), true);
+            if (countryList != null) {
+                countryList.replace(dynamicDestForm.get("country"), true);
+            }
 
             return badRequest(createEditDestination.render(destForm, destId, countryList,
                     typeList, user));
@@ -370,10 +365,11 @@ public class DestinationController extends Controller {
                 Map<String, Boolean> countryList = null;
 
                 try{
-                    countryList = utilityFunctions.CountryUtils();
+                    countryList = UtilityFunctions.CountryUtils();
                 }
-                catch(Exception error){
-
+                catch(IOException error) {
+                    System.out.println(error);
+                    System.out.println("Error getting countries");
                 }
                 countryList.replace(destination.getCountry(), true);
 
@@ -688,6 +684,31 @@ public class DestinationController extends Controller {
     }
 
     /**
+     * Removes the given destination from the list of destinations in the photos
+     * @param request unused http request information
+     * @param photoId the id of the photo to unlink
+     * @param destId the id of the destination to unlink
+     * @return response ok if the removal worked
+     *         notFound if the destination or photo does not exist
+     *         badRequest if the destination and photo were not linked     *
+     */
+    public Result unlinkPhotoFromDestination(Http.Request request, int photoId, int destId) {
+        UserPhoto photo = UserPhoto.find.byId(photoId);
+        Destination destination = Destination.find.byId(destId);
+        if (photo == null) return notFound("No photo found with that id");
+        if (destination == null) return notFound("No destination found with that id");
+
+        if (! photo.removeDestination(destination)) return badRequest("The destination was not linked to this photo");
+        photo.update();
+        if ((destination.getPrimaryPhoto() != null) &&
+                (photo.getPhotoId() == destination.getPrimaryPhoto().getPhotoId())) {
+            destination.setPrimaryPhoto(null);
+            destination.update();
+        }
+        return ok();
+    }
+
+    /**
      * Returns a json list of traveller types associated to a destination given by a destination id
      *
      * @param request the HTTP request
@@ -878,8 +899,7 @@ public class DestinationController extends Controller {
                 } else {
                     return unauthorized("Oops, this is not your photo!");
                 }
-            }
-            else{
+            } else {
                 return notFound();
             }
         } else {
@@ -890,15 +910,13 @@ public class DestinationController extends Controller {
 
     /**
      * Returns an image file to the requester, accepts the UserPhoto id to send back the correct image.
-     * @param request
+     * @param request the photo
      * @param destId
      * @return
      */
     public Result servePrimaryPicture(Http.Request request, Integer destId) {
-        // User user = httpRequest.session().getOptional("connected").orElse(null);
-        if(destId != null) {
-            UserPhoto primaryPicture = DestinationFactory.getprimaryProfilePicture(destId);
-            System.out.println("Path is " + primaryPicture.getUrlWithPath());
+        if (destId != null) {
+            UserPhoto primaryPicture = DestinationFactory.getPrimaryPicture(destId);
             if (primaryPicture != null) {
                 System.out.println("Sending image back");
                 return ok(new File(primaryPicture.getUrlWithPath()));
@@ -906,8 +924,7 @@ public class DestinationController extends Controller {
                 //should be 404 but then console logs an error
                 return ok();
             }
-        }
-        else{
+        } else {
             return unauthorized("Oops, you're not logged in.");
         }
     }

@@ -1030,4 +1030,153 @@ public class DestinationControllerTest extends WithApplication {
         assertEquals(NOT_FOUND, result.status());
 
     }
+
+    /**
+     * Test to remove a photo from a destination, checking the response code
+     */
+    @Test
+    public void unlinkPhotoFromDestinationValidCheckResponse() {
+        // Send request to link a photo to a destination
+        Http.RequestBuilder linkRequest = Helpers.fakeRequest()
+                .method(POST)
+                .uri("/users/destinations/1/1")
+                .session("connected", "2");
+        route(app, linkRequest);
+
+        Http.RequestBuilder unlinkRequest = Helpers.fakeRequest()
+                .method(DELETE)
+                .uri("/users/destinations/1/1")
+                .session("connected", "2");
+        Result result = route(app, unlinkRequest);
+        assertEquals(OK, result.status());
+    }
+
+    /**
+     * Test to remove a photo from a destination, checking the database
+     */
+    @Test
+    public void unlinkPhotoFromDestinationCheckData() {
+        // Send request to link a photo to a destination
+        Http.RequestBuilder linkRequest = Helpers.fakeRequest()
+                .method(POST)
+                .uri("/users/destinations/1/1")
+                .session("connected", "2");
+        route(app, linkRequest);
+
+        UserPhoto photo = UserPhoto.find.byId(1);
+        assert photo != null;
+        int nDestinations = photo.getDestinations().size();
+
+        Http.RequestBuilder unlinkRequest = Helpers.fakeRequest()
+                .method(DELETE)
+                .uri("/users/destinations/1/1")
+                .session("connected", "2");
+        route(app, unlinkRequest);
+
+        photo = UserPhoto.find.byId(1);
+        assert photo != null;
+        assertEquals(nDestinations - 1, photo.getDestinations().size());
+    }
+
+    /**
+     * Test to remove a photo from a destination that does not have that photo, checking the response code
+     */
+    @Test
+    public void unlinkPhotoFromDestinationNotLinkedCheckResponse() {
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(DELETE)
+                .uri("/users/destinations/1/1")
+                .session("connected", "2");
+        Result result = route(app, request);
+        assertEquals(BAD_REQUEST, result.status());
+    }
+
+    /**
+     * Test to remove a photo from a destination that does not have that photo, checking the database
+     */
+    @Test
+    public void unlinkPhotoFromDestinationNotLinkedCheckData() {
+        UserPhoto photo = UserPhoto.find.byId(1);
+        assert photo != null;
+        int nDestinations = photo.getDestinations().size();
+
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(DELETE)
+                .uri("/users/destinations/1/1")
+                .session("connected", "2");
+        route(app, request);
+
+        photo = UserPhoto.find.byId(1);
+        assert photo != null;
+        assertEquals(nDestinations, photo.getDestinations().size());
+    }
+
+    /**
+     * Test to remove a photo from a destination that doesn't exist, checking the response code
+     */
+    @Test
+    public void unlinkPhotoFromDestinationNoDestinationCheckResponse() {
+        int destId = Destination.find.all().size() + 10; // give it a few extra to be safe
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .uri("/users/destinations/1/" + destId)
+                .session("connected", "2");
+        Result result = route(app, request);
+        assertEquals(NOT_FOUND, result.status());
+    }
+
+    /**
+     * Test to remove a photo from a destination that doesn't exist, checking the database
+     */
+    @Test
+    public void unlinkPhotoFromDestinationNoDestinationCheckData() {
+        UserPhoto photo = UserPhoto.find.byId(1);
+        assert photo != null;
+        int nDestinations = photo.getDestinations().size();
+
+        int destId = Destination.find.all().size() + 10; // give it a few extra to be safe
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .uri("/users/destinations/1/" + destId)
+                .session("connected", "2");
+        route(app, request);
+        photo = UserPhoto.find.byId(1);
+        assert photo != null;
+
+        assertEquals(nDestinations, photo.getDestinations().size());
+    }
+
+    /**
+     * Test to remove a photo from a destination that doesn't exist, checking the response status code
+     */
+    @Test
+    public void unlinkPhotoFromDestinationNoPhotoCheckResponse() {
+        int photoId = UserPhoto.find.all().size() + 10; // give it a few extra to be safe
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .uri("/users/destinations/" + photoId + "/1")
+                .session("connected", "2");
+        Result result = route(app, request);
+        assertEquals(NOT_FOUND, result.status());
+    }
+
+    /**
+     * Test to remove a photo from a destination that doesn't exist, checking the
+     */
+    @Test
+    public void unlinkPhotoFromDestinationNoPhotoCheckData() {
+        UserPhoto photo = UserPhoto.find.byId(1);
+        assert photo != null;
+        int nDestinations = photo.getDestinations().size();
+
+        int photoId = UserPhoto.find.all().size() + 10; // give it a few extra to be safe
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .uri("/users/destinations/" + photoId + "/1")
+                .session("connected", "2");
+        route(app, request);
+
+        photo = UserPhoto.find.byId(1);
+        assert photo != null;
+
+        assertEquals(nDestinations, photo.getDestinations().size());
+
+    }
+
 }

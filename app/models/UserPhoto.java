@@ -1,14 +1,12 @@
 package models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import controllers.ApplicationManager;
 import io.ebean.Finder;
 import io.ebean.Model;
 
 import javax.persistence.*;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -108,7 +106,14 @@ public class UserPhoto extends Model {
         this.destinations.add(destination);
     }
 
-    public void removeDestination(Destination destination) { this.destinations.remove(destination);}
+    /**
+     * Unlink the photo from the given destination
+     * @param destination the destination to unlink from
+     * @return true if the removal changed the list, else false
+     */
+    public boolean removeDestination(Destination destination) {
+        return this.destinations.remove(destination);
+    }
     /**
      * Method to set the photo as profile picture (or not)
      * @param isProfile the boolean showing if the picture is the profile picture

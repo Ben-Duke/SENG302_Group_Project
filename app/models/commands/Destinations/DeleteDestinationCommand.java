@@ -36,13 +36,13 @@ public class DeleteDestinationCommand extends UndoableCommand {
         // If admin, cascade deletion to visits and trips which use the destination
         if (deletedByAdmin) {
             for (Visit visit : destination.getVisits()) {
-                deletedVisits.add(visit);
+                deletedVisits.add(new Visit(visit));
                 visit.delete();
             }
             List<TreasureHunt> treasureHunts = TreasureHunt.find.query().where().eq("destination", destination).findList();
 
             for (TreasureHunt treasureHunt : treasureHunts) {
-                deletedTreasureHunts.add(treasureHunt);
+                deletedTreasureHunts.add(new TreasureHunt(treasureHunt));
                 treasureHunt.delete();
             }
         }
@@ -51,16 +51,16 @@ public class DeleteDestinationCommand extends UndoableCommand {
     }
 
     public void undo() {
-
         this.destination = new Destination(destination);
-
         destination.save();
 
         for (TreasureHunt treasureHunt : deletedTreasureHunts) {
+            treasureHunt.setDestination(destination);
             treasureHunt.save();
         }
 
         for (Visit visit : deletedVisits) {
+            visit.setDestination(destination);
             visit.save();
         }
     }

@@ -1,6 +1,8 @@
 package controllers;
 
 import accessors.DestinationAccessor;
+import accessors.TreasureHuntAccessor;
+import accessors.VisitAccessor;
 import com.fasterxml.jackson.databind.JsonNode;
 import models.*;
 import org.junit.After;
@@ -416,9 +418,13 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
     }
 
     @Test
-    /* Undo the deletion of a destination and check the destination is not deleted */
+    /* Undo the deletion of a destination and check the destination is not deleted
+    *  Admin user used to check that treasure hunts/visits are remade
+    *  Covers normal user flow */
     public void deleteDestination_asAdmin_undoDeletion_checkDestinationExists() {
         int destinationSize = DestinationAccessor.getAllDestinations().size();
+        int visitSize = VisitAccessor.getAll().size();
+        int treasureHuntSize = TreasureHuntAccessor.getAll().size();
         int destId = 1;
         String adminId = "1";
         // delete the destination
@@ -434,8 +440,11 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
         route(app, undoRequest);
 
         assertEquals(destinationSize, DestinationAccessor.getAllDestinations().size());
-
+        assertEquals(treasureHuntSize, TreasureHuntAccessor.getAll().size());
+        assertEquals(visitSize, VisitAccessor.getAll().size());
     }
+
+
 
     /**
      * Test to handle deleting a destination with a login session and valid destination and valid owner

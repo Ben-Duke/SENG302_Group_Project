@@ -227,14 +227,16 @@ public class DestinationController extends Controller {
         Map<String, Boolean> countryList = null;
         try{
             countryList = UtilityFunctions.CountryUtils();
-        }catch(IOException error){
+            countryList.replace(destination.getCountry(), true);
+        } catch(IOException error) {
             System.out.println(error);
         }
-        countryList.replace(destination.getCountry(), true);
         if (!destination.getIsCountryValid()) {
             flash("countryInvalid",
                     "This Destination has an invalid country!");
-            countryList.put(destination.getCountry(), true);
+            if (countryList != null) {
+                countryList.put(destination.getCountry(), true);
+            }
         }
         return ok(createEditDestination.render(destForm, destId, countryList, typeList, user));
     }
@@ -317,10 +319,10 @@ public class DestinationController extends Controller {
 
             Map<String, Boolean> typeList = Destination.getTypeList();
             Map<String, Boolean> countryList = null;
-            try{
+            try {
                 countryList = UtilityFunctions.CountryUtils();
-            }catch(IOException error){
-                System.out.println(error);
+            } catch (IOException e) {
+                e.printStackTrace();
             }
 
             // Use a dynamic form to get the values of the dropdown inputs
@@ -328,7 +330,9 @@ public class DestinationController extends Controller {
 
             // Select the dropdown values which were selected at form submission
             typeList.replace(dynamicDestForm.get("destType"), true);
-            countryList.replace(dynamicDestForm.get("country"), true);
+            if (countryList != null) {
+                countryList.replace(dynamicDestForm.get("country"), true);
+            }
 
             return badRequest(createEditDestination.render(destForm, destId, countryList,
                     typeList, user));

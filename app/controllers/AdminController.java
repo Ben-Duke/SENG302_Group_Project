@@ -7,11 +7,10 @@ import play.data.FormFactory;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
-import views.html.users.destination.viewDestinationModificationRequest;
-import views.html.users.profile.indexAdmin;
+import views.html.users.destination.*;
+import views.html.users.profile.*;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
 import java.util.List;
 
 public class AdminController extends Controller {

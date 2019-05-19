@@ -15,8 +15,6 @@ import play.mvc.Result;
 import views.html.users.profile.*;
 
 import javax.inject.Inject;
-import javax.jws.soap.SOAPBinding;
-import java.io.File;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;

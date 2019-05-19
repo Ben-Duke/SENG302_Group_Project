@@ -41,13 +41,15 @@ public class UserController {
             TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
             testDatabaseManager.populateDatabase(initCompleteLatch);
             System.out.println("populating database");
+
+            CountryUtils.updateCountries();
+
         } else {
             try {
                 initCompleteLatch.await();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            System.out.println("database already populated");
         }
 
 

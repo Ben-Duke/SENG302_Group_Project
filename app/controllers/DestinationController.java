@@ -103,9 +103,10 @@ public class DestinationController extends Controller {
         DestinationFactory destFactory = new DestinationFactory();
 
         if (user != null) {
+            CountryUtils.updateCountries();
+
             List<Destination> destinations = user.getDestinations();
             List<Destination> allDestinations = Destination.find.all();
-
 
             return ok(indexDestination.render(destinations, allDestinations, destFactory, user));
 
@@ -275,7 +276,7 @@ public class DestinationController extends Controller {
             Destination oldDestination = DestinationAccessor.getDestinationById(destId);
 
             if (oldDestination != null) {
-                if (oldDestination.isUserOwner(user.userid)) {
+                if (oldDestination.isUserOwner(user.userid) || user.userIsAdmin()) {
                     oldDestination.applyEditChanges(newDestination);
                     oldDestination.update();
 

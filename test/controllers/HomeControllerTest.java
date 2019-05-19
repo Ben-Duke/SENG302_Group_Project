@@ -164,7 +164,7 @@ public class HomeControllerTest extends WithApplication {
                         app.asScala().materializer());
         CSRFTokenHelper.addCSRFToken(request);
         Result result = route(app, request);
-        assertEquals(OK, result.status());
+        assertEquals(SEE_OTHER, result.status());
     }
 
     /**
@@ -184,7 +184,7 @@ public class HomeControllerTest extends WithApplication {
                         app.asScala().materializer());
         CSRFTokenHelper.addCSRFToken(request);
         Result result = route(app, request);
-        assertEquals(OK, result.status());
+        assertEquals(SEE_OTHER, result.status());
     }
 
     /**
@@ -290,7 +290,7 @@ public class HomeControllerTest extends WithApplication {
                 .method(GET)
                 .uri("/users/home/serveProfilePicture/4").session("connected", "4");
         Result result = route(app, request);
-        assertEquals(OK, result.status());
+        assertEquals(SEE_OTHER, result.status());
         assertEquals("", contentAsString(result));
     }
 
@@ -335,7 +335,7 @@ public class HomeControllerTest extends WithApplication {
                 .uri("/users/home/setProfilePicture/2").session("connected", "2");
         CSRFTokenHelper.addCSRFToken(request);
         Result result = route(app, request);
-        assertEquals(OK, result.status());
+        assertEquals(SEE_OTHER, result.status());
         userPhoto1 = UserPhoto.find.byId(1);
         userPhoto2 = UserPhoto.find.byId(2);
         //Oh how the tides have turned

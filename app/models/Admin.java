@@ -20,6 +20,12 @@ public class Admin extends BaseModel {
     @OneToOne(mappedBy = "userid")
     public Integer userId;
 
+
+    /**
+     * The user the admin wants to edit as.
+     */
+    public Integer userIdToEdit;
+
     /**
      * True if admin is a Default admin.
      */
@@ -50,6 +56,14 @@ public class Admin extends BaseModel {
 
     public void setDefault(boolean aDefault) {
         isDefault = aDefault;
+    }
+
+    public Integer getUserIdToActAs() {
+        return userIdToEdit;
+    }
+
+    public void setUserToEdit(Integer userIdToEdit) {
+        this.userIdToEdit = userIdToEdit;
     }
 
     public static Finder<Integer,Admin> find = new Finder<>(Admin.class);

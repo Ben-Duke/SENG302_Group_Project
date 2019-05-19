@@ -320,6 +320,7 @@ function deletePhotoRequest(url, photoid, imageId){
 
             //document.getElementById("caro-"+photoid+1).setAttribute('class','item active');
             document.getElementById("caro-"+photoid).remove();
+            console.log(document.getElementById("addPhotoLink"+photoid));
             document.getElementById("item"+currentSlideIndex).remove();
             document.getElementById("addPhotoLink"+photoid).parentElement.remove();
 

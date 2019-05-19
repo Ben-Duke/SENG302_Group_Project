@@ -3,7 +3,7 @@
 @import views.html.users.profile.countryErrorMessage
 @import views.html.bootstrap3._
 
-@(user: User)
+@(user: User, adminUser: User)
 
 @main(user, "Index"){
 
@@ -11,7 +11,6 @@
     <head>
         <link rel="stylesheet" href="@routes.Assets.at("stylesheets/cropper.min.css")">
         <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/home.css")">
-
         <title>Home</title>
     </head>
     <div class="container">
@@ -24,6 +23,11 @@
             }
             @if(user.userIsAdmin) {
                 <img class="img"  width = "60" height="50" src="../assets/images/key_2_small.png">
+            }
+            @if(adminUser.userIsAdmin && user.getUserid != adminUser.getUserid) {
+                <a class="btn btn-default" href="@routes.AdminController.setUserBackToAdmin(adminUser.userid)">
+                    Back to your profile
+                </a>
             }
         </h1>
     </div>

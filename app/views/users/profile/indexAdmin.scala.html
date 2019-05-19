@@ -1,110 +1,88 @@
-@(currentUser: User, users: List[User], admins: List[Admin], adminUsers: List[User], allReqs: List[DestinationModificationRequest])
+@(currentUser: User, adminUser: User, users: List[User], allReqs: List[DestinationModificationRequest])
 
 @main(currentUser, "Admin") {
-
-<div class="container">
-    <div class="col">
-        <div class="row">
-            <h1>Admins</h1>
-            <table class="table">
-                <thead class="thead-dark">
-                <tr>
-                    <th scope="col">User ID</th>
-                    <th scope="col">First Name</th>
-                    <th scope="col">Last Name</th>
-                    <th scope="col">Gender</th>
-                    <th scope="col">Date of Birth</th>
-                    <th scope="col">Default Admin</th>
-                    <th scope="col">Remove</th>
-                </tr>
-                </thead>
-                <tbody>
-                @for(admin <- admins) {
-                @for(adminUser <- adminUsers) {
-                @if(admin.getUserId==adminUser.getUserid && adminUser.getUserid != currentUser.getUserid){
-                <tr>
-                    <th scope ="row">@adminUser.getUserid()</th>
-                    <th>@adminUser.getfName</th>
-                    <td>@adminUser.getlName()</td>
-                    <td>@adminUser.getGender()</td>
-                    <td>@adminUser.getDateOfBirth</td>
-                    <td>@if(admin.isDefault){Yes} @if(!(admin.isDefault)){No </td>
-                    <td><a class="btn btn-link" href="@routes.AdminController.adminToUser(adminUser.userid)" role="button">Remove</a></td>}
-                </tr>
-
-
-                <br>
-                }
-                }
-                }
-                </tbody>
-            </table>
+    <head>
+        <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.css">
+    </head>
+    <div class="container">
+        <div class="col">
+            <div class="row">
+                <h1>Users</h1>
+                <table id="userTable" class="table">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th scope="col">User ID</th>
+                            <th scope="col">Email</th>
+                            <th scope="col">First Name</th>
+                            <th scope="col">Last Name</th>
+                            <th scope="col">Gender</th>
+                            <th scope="col">Date of Birth</th>
+                            <th scope="col">Change Admin Status</th>
+                            <th scope="col">Act as User</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @for(user <- users) {
+                        @if(user.getUserid != currentUser.getUserid){
+                            <tr>
+                                <th scope ="row">@user.getUserid()</th>
+                                <td>@user.getEmail()</td>
+                                <td>@user.getfName()</td>
+                                <td>@user.getlName()</td>
+                                <td>@user.getGender()</td>
+                                <td>@user.getDateOfBirth</td>
+                                @if(user.userIsAdmin()) {
+                                    <td><a class="btn btn-link" href="@routes.AdminController.adminToUser(user.userid)" role="button">Revoke Admin</a></td>
+                                } else {
+                                    <td><a class="btn btn-link" href="@routes.AdminController.userToAdmin(user.userid)" role="button">Make Admin</a></td>
+                                }
+                                @if(currentUser.getUserid == adminUser.getUserid) {
+                                    <td><a class="btn btn-link" href="@routes.AdminController.setUserToActAs(user.userid)" role="button">Act as user</a></td>
+                                } else {
+                                    <td><a class="btn btn-link" href="@routes.AdminController.setUserToActAs(user.userid)" role="button" disabled>Act as user</a></td>
+                                }
+                            </tr>
+                         }
+                    }
+                    </tbody>
+                </table>
+            </div>
         </div>
         <div class="row">
-            <h1>Users</h1>
+            <h1>Destination Modification Requests</h1>
             <table class="table">
                 <thead class="thead-dark">
-                <tr>
-                    <th scope="col">User ID</th>
-                    <th scope="col">First Name</th>
-                    <th scope="col">Last Name</th>
-                    <th scope="col">Gender</th>
-                    <th scope="col">Date of Birth</th>
-                    <th scope="col">Make Admin</th>
-                </tr>
+                    <tr>
+                        <th scope="col">Destination ID</th>
+                        <th scope="col">Destination Name</th>
+                        <th scope="col">Author ID</th>
+                        <th scope="col">Author Name</th>
+                        <th scope="col">Date created</th>
+                        <th scope="col">View</th>
+                    </tr>
                 </thead>
                 <tbody>
-                @for(user <- users) {
-                @if(user.getUserid != currentUser.getUserid){
-                <tr>
-                    <th scope ="row">@user.getUserid()</th>
-                    <th>@user.getfName()</th>
-                    <td>@user.getlName()</td>
-                    <td>@user.getGender()</td>
-                    <td>@user.getDateOfBirth</td>
-                    <td><a class="btn btn-link" href="@routes.AdminController.userToAdmin(user.userid)" role="button">Yes</a></td>
+                @for(req <- allReqs) {
+                    <tr>
+                        <th scope ="row">@req.getOldDestination().getDestId()</th>
+                        <th>@req.getOldDestination().getDestName()</th>
+                        <td>@req.getRequestAuthor().getUserid()</td>
+                        <td>@req.getRequestAuthor().getfName() @req.getRequestAuthor().getlName()</td>
+                        <td>@req.getCreationDate()</td>
+                        <td><a class="btn btn-link" href="@routes.AdminController.viewDestinationModificationRequest(req.id)" role="button">View</a></td>
 
-                </tr>
+                    </tr>
 
-
-                <br>
-                }
                 }
                 </tbody>
             </table>
         </div>
     </div>
-    <div class="row">
-        <h1>Destination Modification Requests</h1>
-        <table class="table">
-            <thead class="thead-dark">
-            <tr>
-                <th scope="col">Destination ID</th>
-                <th scope="col">Destination Name</th>
-                <th scope="col">Author ID</th>
-                <th scope="col">Author Name</th>
-                <th scope="col">Date created</th>
-                <th scope="col">View</th>
-            </tr>
-            </thead>
-            <tbody>
-            @for(req <- allReqs) {
-
-                <tr>
-                    <th scope ="row">@req.getOldDestination().getDestId()</th>
-                    <th>@req.getOldDestination().getDestName()</th>
-                    <td>@req.getRequestAuthor().getUserid()</td>
-                    <td>@req.getRequestAuthor().getfName() @req.getRequestAuthor().getlName()</td>
-                    <td>@req.getCreationDate()</td>
-                    <td><a class="btn btn-link" href="@routes.AdminController.viewDestinationModificationRequest(req.id)" role="button">View</a></td>
-
-                </tr>
-
-            }
-            </tbody>
-        </table>
     </div>
-</div>
-</div>
-
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#userTable').DataTable();
+        });
+    </script>
 }

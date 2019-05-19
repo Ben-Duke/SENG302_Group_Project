@@ -369,33 +369,88 @@ public class User extends Model implements Comparable<User> {
     /**
      * From an http request this method extracts the current user in the session.
      * If there is no current user, then null is returned.
+     * If the user is an admin and acting as another user, then returns the user
+     * they are acting as.
      *
      * @param request the HTTP request
-     * @return the current user in the session
+     * @return the current user in the session or the user the admin is acting as
      */
     public static User getCurrentUser(Http.Request request) {
-        String userId = request.session().getOptional("connected").orElse(null);
+        String userId = request.session()
+                .getOptional("connected")
+                .orElse(null);
         if (userId != null) {
-            User user = User.find.query().where().eq("userid", userId).findOne();
-            return user;
+            User requestUser = User.find.query().where()
+                    .eq("userid", userId)
+                    .findOne();
+            if (requestUser.userIsAdmin()) {
+                List<Admin> adminList = Admin.find.query().where()
+                        .eq("userId", userId).findList();
+                if (adminList.size() == 1) {
+                    Admin admin = adminList.get(0);
+                    if (admin.getUserIdToActAs() != null) {
+                        User userToEdit = User.find.byId(admin.getUserIdToActAs());
+                        return userToEdit;
+                    } else {
+                        return requestUser;
+                    }
+                } else {
+                    return null;
+                }
+            }
+            return requestUser;
         }
         return null;
     }
 
-    /** Returns the id of the user and returns it if for some reason the user doesnt exist it will return -1.
-     *
-     * @param request
-     * @return userid on success or -1.
+    /**
+     * Overload method to get the current user from a HTTP request while checking if
+     * there is an admin acting as the user.
+     * If the admin is acting as a user, returns a list where the first element is
+     * the user the admin is acting as and the second element is the admin.
+     * Else if the admin is not acting as a user, the first element is the admin and
+     * the second element is also the same admin.
+     * Else if the request user is not an admin, returns the user as the first and
+     * second element.
+     * @param request the http request
+     * @param checkForAdmin overload parameter (boolean)
+     * @return a list of two users
      */
-    public static int getCurrentUserById(Http.Request request) {
-        String userId = request.session().getOptional("connected").orElse(null);
+    public static List<User> getCurrentUser(Http.Request request, boolean checkForAdmin) {
+        List<User> users = new ArrayList<>();
+        String userId = request.session()
+                .getOptional("connected")
+                .orElse(null);
         if (userId != null) {
-            User user = User.find.query().where().eq("userid", userId).findOne();
-            return user.getUserid();
+            User requestUser = User.find.query().where()
+                    .eq("userid", userId)
+                    .findOne();
+            users.add(requestUser);
+            if(requestUser.userIsAdmin()){
+                List<Admin> adminList = Admin.find.query().where()
+                        .eq("userId", userId).findList();
+                if(adminList.size() == 1){
+                    Admin admin = adminList.get(0);
+                    if (admin.getUserIdToActAs() != null) {
+                        User userToEdit = User.find.byId(admin.getUserIdToActAs());
+                        users.add(0,userToEdit);
+                        return users;
+                    } else {
+                        users.add(requestUser);
+                        return users;
+                    }
+                }
+                else{
+                    //this should never happen
+                    return users;
+                }
+            } else {
+                users.add(requestUser);
+            }
+            return users;
         }
-        return -1;
+        return users;
     }
-
     public void setEmail(String email) {
         this.email = email;
     }

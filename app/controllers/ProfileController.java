@@ -39,9 +39,9 @@ public class ProfileController extends Controller {
      */
     public Result updateProfile(Http.Request request){
         List<User> users = User.getCurrentUser(request, true);
-        User user = users.get(0);
         Boolean isAdmin = false;
         if (users.size() != 0) {
+            User user = users.get(0);
             if(users.get(0).getUserid() != users.get(1).getUserid()) {
                 isAdmin = true;
             }

@@ -10,19 +10,6 @@ create table admin (
   constraint pk_admin primary key (id)
 );
 
-create table command_manager (
-  id                            integer auto_increment not null,
-  user_userid                   integer,
-  constraint uq_command_manager_user_userid unique (user_userid),
-  constraint pk_command_manager primary key (id)
-);
-
-create table delete_destination_command (
-  id                            integer auto_increment not null,
-  deleted_by_admin              boolean,
-  constraint pk_delete_destination_command primary key (id)
-);
-
 create table destination (
   destid                        integer auto_increment not null,
   dest_name                     varchar(255),
@@ -107,6 +94,11 @@ create table trip (
   constraint pk_trip primary key (tripid)
 );
 
+create table undoable_command (
+  id                            integer auto_increment not null,
+  constraint pk_undoable_command primary key (id)
+);
+
 create table user (
   userid                        integer auto_increment not null,
   email                         varchar(255),
@@ -171,8 +163,6 @@ create table visit (
   visit_name                    varchar(255),
   constraint pk_visit primary key (visitid)
 );
-
-alter table command_manager add constraint fk_command_manager_user_userid foreign key (user_userid) references user (userid) on delete restrict on update restrict;
 
 create index ix_destination_primary_photo_photo_id on destination (primary_photo_photo_id);
 alter table destination add constraint fk_destination_primary_photo_photo_id foreign key (primary_photo_photo_id) references user_photo (photo_id) on delete restrict on update restrict;
@@ -249,8 +239,6 @@ alter table visit add constraint fk_visit_trip foreign key (trip) references tri
 
 # --- !Downs
 
-alter table command_manager drop constraint if exists fk_command_manager_user_userid;
-
 alter table destination drop constraint if exists fk_destination_primary_photo_photo_id;
 drop index if exists ix_destination_primary_photo_photo_id;
 
@@ -325,10 +313,6 @@ drop index if exists ix_visit_trip;
 
 drop table if exists admin;
 
-drop table if exists command_manager;
-
-drop table if exists delete_destination_command;
-
 drop table if exists destination;
 
 drop table if exists destination_traveller_type;
@@ -346,6 +330,8 @@ drop table if exists traveller_type;
 drop table if exists treasure_hunt;
 
 drop table if exists trip;
+
+drop table if exists undoable_command;
 
 drop table if exists user;
 

@@ -1,5 +1,6 @@
 package models;
 
+import accessors.CommandManagerAccessor;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.ebean.ExpressionList;
 import io.ebean.Finder;
@@ -88,10 +89,6 @@ public class User extends Model implements Comparable<User> {
     @JsonIgnore
     @ManyToMany
     public List<TreasureHunt> guessedTHunts;
-
-    /** Command manager for user undo/redo */
-    @OneToOne(mappedBy= "user")
-    private CommandManager commandManager;
 
     @JsonIgnore
     @OneToMany(mappedBy = "user")
@@ -368,7 +365,7 @@ public class User extends Model implements Comparable<User> {
     }
 
     public CommandManager getCommandManager() {
-        return commandManager;
+        return CommandManagerAccessor.getCommandManagerByEmail(this.email);
     }
 
     //OTHER METHODS

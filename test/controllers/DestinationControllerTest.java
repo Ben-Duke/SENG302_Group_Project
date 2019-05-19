@@ -418,9 +418,9 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
     @Test
     /* Undo the deletion of a destination and check the destination is not deleted */
     public void deleteDestination_asAdmin_undoDeletion_checkDestinationExists() {
+        int destinationSize = DestinationAccessor.getAllDestinations().size();
         int destId = 1;
         String adminId = "1";
-
         // delete the destination
         Http.RequestBuilder deleteRequest = Helpers.fakeRequest()
                 .method(GET)
@@ -433,8 +433,8 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
                 .uri("/undo").session("connected", adminId);
         route(app, undoRequest);
 
-        // check the destination exists
-        assertNotNull(DestinationAccessor.getDestinationById(destId));
+        assertEquals(destinationSize, DestinationAccessor.getAllDestinations().size());
+
     }
 
     /**

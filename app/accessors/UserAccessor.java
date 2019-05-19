@@ -46,15 +46,10 @@ public class UserAccessor {
         } else {
             return users.get(0);
         }
-
     }
 
     public static void insert(User user) {
         user.save();
-        user = UserAccessor.getByEmail(user.getEmail());
-        CommandManager commandManager = new CommandManager();
-        commandManager.setUser(user);
-        commandManager.save();
     }
 
     public static void update(User user) {

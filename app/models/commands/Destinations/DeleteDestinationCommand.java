@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Set;
 
 /** Command to edit a user's profile */
-@Entity
 public class DeleteDestinationCommand extends UndoableCommand {
     private Destination destination;
     private Boolean deletedByAdmin;
@@ -52,7 +51,9 @@ public class DeleteDestinationCommand extends UndoableCommand {
     }
 
     public void undo() {
-        logger.debug("undoing command in command class");
+
+        this.destination = new Destination(destination);
+
         destination.save();
 
         for (TreasureHunt treasureHunt : deletedTreasureHunts) {

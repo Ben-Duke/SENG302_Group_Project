@@ -55,7 +55,6 @@ public class UpdateUserFormData implements Constraints.Validatable<List<Validati
      * @param user The User whose data to enter into the form.
      */
     public UpdateUserFormData(User user, Boolean isAdmin) {
-        System.out.println(user.getfName());
         this.firstName = user.getfName();
         this.lastName = user.getlName();
         this.gender = user.getGender();

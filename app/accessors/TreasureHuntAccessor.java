@@ -1,5 +1,6 @@
 package accessors;
 
+import models.Destination;
 import models.TreasureHunt;
 
 import java.util.List;
@@ -23,5 +24,10 @@ public class TreasureHuntAccessor {
     /** delete the destination */
     public static void delete(TreasureHunt treasureHunt) {
         treasureHunt.delete();
+    }
+
+    public static List<TreasureHunt> getByDestination(Destination destination) {
+        return TreasureHunt.find.query().where().eq(
+                "destination", destination).findList();
     }
 }

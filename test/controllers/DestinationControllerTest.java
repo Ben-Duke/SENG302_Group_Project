@@ -417,31 +417,68 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
         assertEquals(3, User.find.byId(2).getDestinations().size());
     }
 
-    @Test
-    /* Undo the deletion of a destination and check the destination is not deleted
-    *  Admin user used to check that treasure hunts/visits are remade
-    *  Covers normal user flow */
-    public void deleteDestination_asAdmin_undoDeletion_checkDestinationExists() {
-        int destinationSize = DestinationAccessor.getAllDestinations().size();
-        int visitSize = VisitAccessor.getAll().size();
-        int treasureHuntSize = TreasureHuntAccessor.getAll().size();
-        int destId = 1;
-        String adminId = "1";
+
+    private void deleteDestinationAndUndo(int destId, String userId) {
         // delete the destination
         Http.RequestBuilder deleteRequest = Helpers.fakeRequest()
                 .method(GET)
-                .uri("/users/destinations/delete/" + destId).session("connected", adminId);
+                .uri("/users/destinations/delete/" + destId).session("connected", userId);
         route(app, deleteRequest);
 
         // undo the deletion
         Http.RequestBuilder undoRequest = Helpers.fakeRequest()
                 .method(PUT)
-                .uri("/undo").session("connected", adminId);
+                .uri("/undo").session("connected", userId);
         route(app, undoRequest);
+    }
+
+    @Test
+    /* Undo the deletion of a destination and check the destination is not deleted
+    *  Admin user used to check that treasure hunts/visits are remade
+    *  Covers normal user flow */
+    public void deleteDestination_asAdmin_undo_checkDestinationExists() {
+        int destinationSize = DestinationAccessor.getAllDestinations().size();
+        int visitSize = VisitAccessor.getAll().size();
+        int treasureHuntSize = TreasureHuntAccessor.getAll().size();
+        int destId = 1;
+        String adminId = "1";
+
+        deleteDestinationAndUndo(destId, adminId);
 
         assertEquals(destinationSize, DestinationAccessor.getAllDestinations().size());
         assertEquals(treasureHuntSize, TreasureHuntAccessor.getAll().size());
         assertEquals(visitSize, VisitAccessor.getAll().size());
+    }
+
+
+    @Test
+    /* Undo the deletion of a destination and check the destination is not deleted
+     *  Admin user used to check that treasure hunts/visits are remade
+     *  Covers normal user flow */
+    public void deleteDestination_asAdmin_undo_redo_checkDestinationDeleted() {
+        int destinationSize = DestinationAccessor.getAllDestinations().size();
+        int visitSize = VisitAccessor.getAll().size();
+        int treasureHuntSize = TreasureHuntAccessor.getAll().size();
+
+        int destId = 1;
+        String adminId = "1";
+
+        Destination destination = DestinationAccessor.getDestinationById(destId);
+        int destinationVisits = destination.getVisits().size();
+        int destinationTreasureHunts = TreasureHuntAccessor.getByDestination(
+                DestinationAccessor.getDestinationById(destId)).size();
+
+        deleteDestinationAndUndo(destId, adminId);
+
+        // redo the deletion
+        Http.RequestBuilder redoRequest = Helpers.fakeRequest()
+                .method(PUT)
+                .uri("/redo").session("connected", adminId);
+        route(app, redoRequest);
+
+        assertEquals(destinationSize-1, DestinationAccessor.getAllDestinations().size());
+        assertEquals(treasureHuntSize-destinationTreasureHunts, TreasureHuntAccessor.getAll().size());
+        assertEquals(visitSize-destinationVisits, VisitAccessor.getAll().size());
     }
 
 

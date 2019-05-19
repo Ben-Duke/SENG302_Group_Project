@@ -87,8 +87,9 @@ public class Destination extends Model {
         this.isCountryValid = true;
     }
     
-    public Destination(Destination destination) {
+    public Destination(Destination destination, List<Visit> visits) {
         this(destination.destName, destination.destType, destination.district, destination.country, destination.latitude, destination.longitude, destination.user, destination.isPublic);
+        this.visits = visits;
     }
 
     /**

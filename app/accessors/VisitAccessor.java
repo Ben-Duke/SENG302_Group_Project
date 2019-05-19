@@ -25,4 +25,5 @@ public class VisitAccessor {
     public static void delete(Visit visit) {
         visit.delete();
     }
+
 }

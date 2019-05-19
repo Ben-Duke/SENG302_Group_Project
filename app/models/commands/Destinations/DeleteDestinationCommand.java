@@ -1,6 +1,7 @@
 package models.commands.Destinations;
 
 import accessors.DestinationAccessor;
+import accessors.TreasureHuntAccessor;
 import models.Destination;
 import models.TreasureHunt;
 import models.Visit;
@@ -12,9 +13,7 @@ import utilities.UtilityFunctions;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /** Command to edit a user's profile */
 public class DeleteDestinationCommand extends UndoableCommand {
@@ -22,8 +21,8 @@ public class DeleteDestinationCommand extends UndoableCommand {
     private Boolean deletedByAdmin;
 
     // Using sets as the items do not need to be ordered and are unique
-    private Set<Visit> deletedVisits = new HashSet<>();
-    private Set<TreasureHunt> deletedTreasureHunts = new HashSet<>();
+    private List<Visit> deletedVisits = new ArrayList<>();
+    private List<TreasureHunt> deletedTreasureHunts = new ArrayList<>();
 
     private final Logger logger = UtilityFunctions.getLogger();
 
@@ -35,11 +34,13 @@ public class DeleteDestinationCommand extends UndoableCommand {
     public void execute() {
         // If admin, cascade deletion to visits and trips which use the destination
         if (deletedByAdmin) {
-            for (Visit visit : destination.getVisits()) {
+            List<Visit> visitsCopy = new ArrayList<>(destination.getVisits());
+
+            for (Visit visit : visitsCopy) {
                 deletedVisits.add(new Visit(visit));
                 visit.delete();
             }
-            List<TreasureHunt> treasureHunts = TreasureHunt.find.query().where().eq("destination", destination).findList();
+            List<TreasureHunt> treasureHunts = TreasureHuntAccessor.getByDestination(destination);
 
             for (TreasureHunt treasureHunt : treasureHunts) {
                 deletedTreasureHunts.add(new TreasureHunt(treasureHunt));
@@ -51,7 +52,7 @@ public class DeleteDestinationCommand extends UndoableCommand {
     }
 
     public void undo() {
-        this.destination = new Destination(destination);
+        this.destination = new Destination(destination, deletedVisits);
         destination.save();
 
         for (TreasureHunt treasureHunt : deletedTreasureHunts) {
@@ -66,7 +67,7 @@ public class DeleteDestinationCommand extends UndoableCommand {
     }
 
     public void redo() {
-        //exectute();
+        execute();
     }
 }
 

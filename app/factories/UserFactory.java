@@ -411,10 +411,14 @@ public class UserFactory {
 
 
     public static UpdateUserFormData getUpdateUserFormDataForm(Http.Request request) {
-        User user = User.getCurrentUser(request);
-
-        if (user != null) {
-            return new UpdateUserFormData(user);
+        List<User> users = User.getCurrentUser(request, true);
+        User user = users.get(0);
+        Boolean isAdmin = false;
+        if (users.size() != 0) {
+            if(users.get(0).getUserid() != users.get(1).getUserid()) {
+                isAdmin = true;
+            }
+            return new UpdateUserFormData(user, isAdmin);
         } else {
             return null;
         }

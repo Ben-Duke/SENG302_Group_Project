@@ -6,7 +6,7 @@
 @import views.html.helper.options
 @import views.html.helper.checkbox
 @import views.html.helper.inputDate
-@(updateUserForm : Form[UpdateUserFormData], genders: util.List[String])
+@(updateUserForm : Form[UpdateUserFormData], genders: util.List[String], isAdmin: Boolean)
 
 
 
@@ -22,11 +22,12 @@
             placeholder = "Email",
             help = "Please enter your email. (required)")
 
-
+        <div @if(isAdmin) {style="display: none;"}>
         @password(updateUserForm("existingPassword"),
             label = "Existing Password",
             placeholder = "password",
             help = "Please enter your existing password")
+        </div>
 
 
         @password(updateUserForm("password"),

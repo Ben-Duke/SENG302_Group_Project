@@ -54,7 +54,8 @@ public class UpdateUserFormData implements Constraints.Validatable<List<Validati
      *
      * @param user The User whose data to enter into the form.
      */
-    public UpdateUserFormData(User user) {
+    public UpdateUserFormData(User user, Boolean isAdmin) {
+        System.out.println(user.getfName());
         this.firstName = user.getfName();
         this.lastName = user.getlName();
         this.gender = user.getGender();
@@ -62,7 +63,7 @@ public class UpdateUserFormData implements Constraints.Validatable<List<Validati
         this.existingUsername = user.getEmail();
         this.password = "";
         this.existingPasswordToCheck = user.getPasswordHash();
-        this.isAdmin = user.userIsAdmin();
+        this.isAdmin = isAdmin;
         if (user.getDateOfBirth() == null) {
             this.dateOfBirth = "null";
         } else {
@@ -150,6 +151,8 @@ public class UpdateUserFormData implements Constraints.Validatable<List<Validati
         }
 
         LoginFactory loginFactory = new LoginFactory();
+
+
 
         if(!isAdmin && !loginFactory.isPasswordMatch(existingUsername, existingPassword)) {
             errors.add(new ValidationError("existingPassword", "Incorrect password"));

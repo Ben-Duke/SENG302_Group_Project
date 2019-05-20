@@ -4,7 +4,7 @@
 # --- !Ups
 
 create table admin (
-  id                            bigint auto_increment not null,
+  id                            integer auto_increment not null,
   user_id                       integer,
   user_id_to_edit               integer,
   is_default                    boolean default false not null,
@@ -93,6 +93,11 @@ create table trip (
   is_public                     boolean default false not null,
   user                          integer,
   constraint pk_trip primary key (tripid)
+);
+
+create table undoable_command (
+  id                            integer auto_increment not null,
+  constraint pk_undoable_command primary key (id)
 );
 
 create table user (
@@ -326,6 +331,8 @@ drop table if exists traveller_type;
 drop table if exists treasure_hunt;
 
 drop table if exists trip;
+
+drop table if exists undoable_command;
 
 drop table if exists user;
 

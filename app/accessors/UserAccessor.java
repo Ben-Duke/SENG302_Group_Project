@@ -3,6 +3,7 @@ package accessors;
 import models.Nationality;
 import models.Passport;
 import models.User;
+import models.commands.CommandManager;
 
 import java.util.List;
 
@@ -36,5 +37,22 @@ public class UserAccessor {
     public static List<User> getUsersFromEmail(String email) {
         return  User.find.query()
                     .where().eq("email", email.toLowerCase()).findList();
+    }
+
+    public static User getByEmail(String email) {
+        List<User> users = getUsersFromEmail(email);
+        if (users.isEmpty()) {
+            return null;
+        } else {
+            return users.get(0);
+        }
+    }
+
+    public static void insert(User user) {
+        user.save();
+    }
+
+    public static void update(User user) {
+        user.update();
     }
 }

@@ -1,5 +1,6 @@
 package factories;
 
+import accessors.UserAccessor;
 import models.User;
 import org.junit.After;
 import org.junit.Before;
@@ -40,7 +41,7 @@ public class LoginFactoryTest extends WithApplication {
         )));
         //Initialises a test user with name "testUser" and saves it to the database.
         User user = new User("gon12@uclive.ac.nz", "hunter22");
-        user.save();
+        UserAccessor.insert(user);
     }
 
     /**
@@ -57,7 +58,7 @@ public class LoginFactoryTest extends WithApplication {
     public void getUserIdInvalidName() {
         LoginFactory loginFactory = new LoginFactory();
         User user = new User("Timmy");
-        user.save();
+        UserAccessor.insert(user);
 //        int userId = user.getUserid();
         assertEquals(-1, loginFactory.getUserId("NotTimmy"));
     }
@@ -66,7 +67,7 @@ public class LoginFactoryTest extends WithApplication {
     public void getUserIdValidName() {
         LoginFactory loginFactory = new LoginFactory();
         User user = new User("Timmy");
-        user.save();
+        UserAccessor.insert(user);
         int userId = user.getUserid();
         assertEquals(userId, loginFactory.getUserId("Timmy"));
     }
@@ -75,7 +76,7 @@ public class LoginFactoryTest extends WithApplication {
     public void isPasswordMatchInvalidUserName() {
         LoginFactory loginFactory = new LoginFactory();
         User user = new User("Timmy", "password");
-        user.save();
+        UserAccessor.insert(user);
         assertFalse(loginFactory.isPasswordMatch("nottimmy", "notgoingtowork"));
     }
 
@@ -83,7 +84,7 @@ public class LoginFactoryTest extends WithApplication {
     public void isPasswordMatch_ValidUserName_InvalidPassword() {
         LoginFactory loginFactory = new LoginFactory();
         User user = new User("Timmy", "password");
-        user.save();
+        UserAccessor.insert(user);
         assertFalse(loginFactory.isPasswordMatch("Timmy", "notpassword"));
     }
 
@@ -91,7 +92,7 @@ public class LoginFactoryTest extends WithApplication {
     public void isPasswordMatch_ValidUserName_ValidPassword() {
         LoginFactory loginFactory = new LoginFactory();
         User user = new User("Timmy", "password");
-        user.save();
+        UserAccessor.insert(user);
         assertTrue(loginFactory.isPasswordMatch("Timmy", "password"));
     }
 }

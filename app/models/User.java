@@ -1,10 +1,12 @@
 package models;
 
+import accessors.CommandManagerAccessor;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.ebean.ExpressionList;
 import io.ebean.Finder;
 import io.ebean.Model;
 import io.ebean.annotation.CreatedTimestamp;
+import models.commands.CommandManager;
 import org.mindrot.jbcrypt.BCrypt;
 import play.data.format.Formats;
 import play.mvc.Http;
@@ -98,6 +100,7 @@ public class User extends Model implements Comparable<User> {
     @Deprecated
     public Boolean isAdmin = false;
 
+
     // ^^^^^ Class attributes ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     //==========================================================================
     //       Class methods below
@@ -137,12 +140,35 @@ public class User extends Model implements Comparable<User> {
         this.lName = lName;
         this.dateOfBirth = dateOfBirth;
         this.gender = gender;
-        this.isAdmin = false;
-    }
+        this.isAdmin = false;    }
 
     public User(String email){
         this.email = email.toLowerCase();
         this.isAdmin = false;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "email='" + email + '\'' +
+                ", userid=" + userid +
+                ", passwordHash='" + passwordHash + '\'' +
+                ", creationDate=" + creationDate +
+                ", nationality=" + nationality +
+                ", dateOfBirth=" + dateOfBirth +
+                ", gender='" + gender + '\'' +
+                ", fName='" + fName + '\'' +
+                ", lName='" + lName + '\'' +
+                ", passports=" + passports +
+                ", trips=" + trips +
+                ", treasureHunts=" + treasureHunts +
+                ", destinations=" + destinations +
+                ", travellerTypes=" + travellerTypes +
+                ", guessedTHunts=" + guessedTHunts +
+                ", commandManager=" + getCommandManager() +
+                ", userPhotos=" + userPhotos +
+                ", isAdmin=" + isAdmin +
+                '}';
     }
 
     /**
@@ -338,30 +364,26 @@ public class User extends Model implements Comparable<User> {
         this.destinations = destinations;
     }
 
+    public CommandManager getCommandManager() {
+        return CommandManagerAccessor.getCommandManagerByEmail(this.email);
+    }
+
+    //OTHER METHODS
     public boolean hasEmptyField(){
-        if(fName == null || lName == null
-        || gender == null || dateOfBirth == null){
-            return true;
-        }
-        else{
-            return false;
-        }
+        return fName == null || lName == null
+                || gender == null || dateOfBirth == null;
     }
 
     public boolean hasNationality(){
         if (nationality != null) {
-            if (! nationality.isEmpty()) {
-                return true;
-            }
+            return !nationality.isEmpty();
         }
         return false;
     }
 
     public boolean hasTravellerTypes() {
         if (travellerTypes != null) {
-            if (! travellerTypes.isEmpty()) {
-                return true;
-            }
+            return !travellerTypes.isEmpty();
         }
         return false;
     }

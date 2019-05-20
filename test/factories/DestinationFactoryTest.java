@@ -1,5 +1,6 @@
 package factories;
 
+import accessors.UserAccessor;
 import models.*;
 import org.junit.After;
 import org.junit.Before;
@@ -37,7 +38,7 @@ public class DestinationFactoryTest extends WithApplication {
         //Initialises a test user with name "testUser" and saves it to the database.
         User user = new User("gon12@uclive.ac.nz", "hunter22");
         testUser = user;
-        user.save();
+        UserAccessor.insert(user);
         testUserId = user.getUserid();
         testPublicDestination = new Destination("destName",
                 "destType", "district", "country",
@@ -151,7 +152,7 @@ public class DestinationFactoryTest extends WithApplication {
     @Test
     public void doesPublicDestinationExistMatchingPublicDestinationExistsOwnedByOtherUser() {
         User user = new User("test@testytest.test", "hunter22");
-        user.save();
+        UserAccessor.insert(user);
         Destination testPublicDestination = new Destination("destName",
                 "destType", "district", "country",
                 45.0, 45.0, user, true);
@@ -167,7 +168,7 @@ public class DestinationFactoryTest extends WithApplication {
     @Test
     public void testGetOtherUsersMatchingPrivateDestinationsNoMatches() {
         User user = new User("test@testytest.test", "hunter22");
-        user.save();
+        UserAccessor.insert(user);
         Destination testPrivateDestination = new Destination("Rotherham",
                 "Town", "North Canterbury", "New Zealand",
                 -42.699000, 172.943667, user, false);
@@ -234,14 +235,14 @@ public class DestinationFactoryTest extends WithApplication {
     @Test
     public void testGetOtherUsersMatchingPrivateDestinationWithPublicMatch() {
         User privateUser = new User("test@testytest.test", "hunter22");
-        privateUser.save();
+        UserAccessor.insert(privateUser);
         Destination testPrivateDestination = new Destination("Rotherham",
                 "Town", "North Canterbury", "New Zealand",
                 -42.699000, 172.943667, privateUser, false);
         testPrivateDestination.save();
 
         User publicUser = new User("test@testers.org", "hunter27");
-        publicUser.save();
+        UserAccessor.insert(publicUser);
         Destination testPublicDestination = new Destination("Rotherham",
                 "Town", "North Canterbury", "New Zealand",
                 -42.699000, 172.943667, publicUser, true);
@@ -256,7 +257,7 @@ public class DestinationFactoryTest extends WithApplication {
     @Test
     public void testMergingTwoPrivateDestinations() {
         User adminUser = new User("test@testytest.test", "hunter22");
-        adminUser.save();
+        UserAccessor.insert(adminUser);
         Admin admin = new Admin(adminUser.userid, true);
         admin.save();
         Destination testPrivateDestination = new Destination("Rotherham",
@@ -267,7 +268,7 @@ public class DestinationFactoryTest extends WithApplication {
         testPrivateDestination.setVisits(visitList);
 
         User privateUser = new User("test@testers.org", "hunter27");
-        privateUser.save();
+        UserAccessor.insert(privateUser);
         Destination testPrivateDestination1 = new Destination("Rotherham",
                 "Town", "North Canterbury", "New Zealand",
                 -42.699000, 172.943667, privateUser, false);
@@ -287,7 +288,7 @@ public class DestinationFactoryTest extends WithApplication {
     @Test
     public void testMergingTwoPrivateDestinations2() {
         User adminUser = new User("test@testytest.test", "hunter22");
-        adminUser.save();
+        UserAccessor.insert(adminUser);
         Admin admin = new Admin(adminUser.userid, true);
         admin.save();
         Destination testPrivateDestination = new Destination("Rotherham",

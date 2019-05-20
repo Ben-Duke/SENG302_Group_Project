@@ -29,7 +29,7 @@ public class UserTest extends BaseTestWithApplicationAndDatabase {
     @Test
     public void user_checkPasswordInDbIsNotPlaintext_constructorEmailPass() {
         User user = new User("test@test.com", this.plaintextPassword);
-        user.save();
+        UserAccessor.insert(user);
 
         User userFromDb = UserAccessor.getUsersFromEmail("test@test.com").get(0);
         assertNotEquals(userFromDb.getPasswordHash(), this.plaintextPassword);
@@ -56,7 +56,7 @@ public class UserTest extends BaseTestWithApplicationAndDatabase {
                 "bbbbbb",
                 LocalDate.now(),
                 "Male");
-        user.save();
+        UserAccessor.insert(user);
 
         User userFromDb = UserAccessor.getUsersFromEmail("test@test.com").get(0);
         assertNotEquals(userFromDb.getPasswordHash(), this.plaintextPassword);
@@ -75,10 +75,10 @@ public class UserTest extends BaseTestWithApplicationAndDatabase {
                 "bbbbbb",
                 LocalDate.now(),
                 "Male");
-        user.save();
+        UserAccessor.insert(user);
 
         user.hashAndSetPassword(this.alternativePlainTextPassword);
-        user.save();
+        UserAccessor.update(user);
 
         User userFromDb = UserAccessor.getUsersFromEmail("test@test.com").get(0);
         assertNotEquals(userFromDb.getPasswordHash(), this.alternativePlainTextPassword);
@@ -97,10 +97,10 @@ public class UserTest extends BaseTestWithApplicationAndDatabase {
                 "bbbbbb",
                 LocalDate.now(),
                 "Male");
-        user.save();
+        UserAccessor.insert(user);
 
         user.hashAndSetPassword(this.alternativePlainTextPassword);
-        user.save();
+        UserAccessor.update(user);
 
         User userFromDb = UserAccessor.getUsersFromEmail("test@test.com").get(0);
         assertTrue(BCrypt.checkpw(this.alternativePlainTextPassword,

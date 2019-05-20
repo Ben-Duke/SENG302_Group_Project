@@ -1,8 +1,12 @@
 package utilities;
 
+import accessors.UserAccessor;
 import controllers.ApplicationManager;
 import io.ebean.ExpressionList;
 import models.*;
+import models.commands.Command;
+import models.commands.CommandManager;
+import org.slf4j.Logger;
 import play.db.Database;
 import play.db.Databases;
 import play.db.evolutions.Evolution;
@@ -20,6 +24,8 @@ import java.util.concurrent.CountDownLatch;
  * for information on the layout of the test database.
  */
 public class TestDatabaseManager {
+
+    private final Logger logger = UtilityFunctions.getLogger();
 
     public TestDatabaseManager(){
 
@@ -181,8 +187,9 @@ public class TestDatabaseManager {
             pass.add(invalidPassport);
             user.setPassport(pass);
 
+
             try {
-                user.save();
+                UserAccessor.insert(user);
             }catch(Exception err){
                 isInSuccessState = false;
                 System.out.printf("User1 failed");
@@ -235,7 +242,7 @@ public class TestDatabaseManager {
         user.setNationality(Nationality.find.all().subList(0, 2)); // First two countries alphabetically
 
         try {
-            user.save();
+            UserAccessor.insert(user);
         } catch (Exception e) {
             isInSuccessState = false;
             System.out.println("Error making admin: User is already in db");

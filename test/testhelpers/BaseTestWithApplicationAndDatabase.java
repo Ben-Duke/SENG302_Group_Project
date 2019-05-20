@@ -1,5 +1,6 @@
 package testhelpers;
 
+import accessors.UserAccessor;
 import models.User;
 import org.junit.After;
 import org.junit.Before;
@@ -41,8 +42,7 @@ public class BaseTestWithApplicationAndDatabase extends WithApplication {
         )));
 
         User user = new User("gon12_2@uclive.ac.nz", "hunter22");
-        user.save();
-
+        UserAccessor.insert(user);
     }
 
     /**

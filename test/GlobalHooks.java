@@ -18,7 +18,7 @@ public class GlobalHooks {
 //                "drop table test;"
 //        )));
 //        User user = new User("testUser");
-//        user.save();
+//        UserAccessor.insert(user);
 //        User user2 = new User("testUser2");
 //        user2.save();
 //        TestDatabaseManager testDatabaseManager = new TestDatabaseManager();

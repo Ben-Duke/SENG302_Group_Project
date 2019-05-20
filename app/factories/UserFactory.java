@@ -1,5 +1,4 @@
 package factories;
-import accessors.UserAccessor;
 import controllers.ApplicationManager;
 import formdata.UpdateUserFormData;
 import formdata.UserFormData;
@@ -277,7 +276,7 @@ public class UserFactory {
             User user = new User(email, password, firstName, lastName, date, gender);
 
 
-            UserAccessor.insert(user);
+            user.save();
             for (int i = 0; i < tType.size(); i++) {
 
                 int tTypeId = getTTypeId(tType.get(i));

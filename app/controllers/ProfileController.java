@@ -6,6 +6,7 @@ import formdata.UpdateUserFormData;
 import models.Nationality;
 import models.Passport;
 import models.User;
+import models.UserPhoto;
 import play.data.DynamicForm;
 import play.data.Form;
 import play.data.FormFactory;
@@ -14,10 +15,13 @@ import play.mvc.Http;
 import play.mvc.Result;
 import views.html.users.profile.*;
 import javax.inject.Inject;
+import javax.jws.soap.SOAPBinding;
+import java.io.File;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * A Class to handle interactions from the client to the frontend.
@@ -25,7 +29,6 @@ import java.util.List;
 public class ProfileController extends Controller {
     @Inject
     FormFactory formFactory;
-
     private String notLoggedInErrorStr = "Oops, you are not logged in";
 
     /**
@@ -47,7 +50,7 @@ public class ProfileController extends Controller {
             String[] gendersArray = {"Male", "Female", "Other"};
             List gendersList = Arrays.asList(gendersArray);
 
-            return ok(updateProfile.render(updateUserForm, gendersList,user));
+            return ok(views.html.users.profile.updateProfile.render(updateUserForm, gendersList,user));
         }
         else{
             return unauthorized(notLoggedInErrorStr);
@@ -79,7 +82,7 @@ public class ProfileController extends Controller {
                 //bad request, errors present
                 String[] gendersArray = {"Male", "Female", "Other"};
                 List gendersList = Arrays.asList(gendersArray);
-                return badRequest(updateProfile.render(updateProfileForm, gendersList,user));
+                return badRequest(views.html.users.profile.updateProfile.render(updateProfileForm, gendersList,user));
             }
         } else{
             return unauthorized(notLoggedInErrorStr);
@@ -228,10 +231,15 @@ public class ProfileController extends Controller {
         Form<NatFormData> userForm = formFactory.form(NatFormData.class).bindFromRequest(request);
 
         if (userForm.hasErrors()) {
+
+//            int user = UserFactory.getCurrentUserId(request);
+//            List<Nationality> nationalities = Nationality.find.all();
+//            List<Passport> passports = Passport.find.all();
             flash("error", "Need at least one nationality, " +
                     "please add another nationality before deleting the one you selected");
+            //return badRequest(updateNatPass.render(userForm, nationalities, passports, user));
 
-        } else {
+        }else {
             String nationalityID = userForm.get().nationalitydelete;
             User user = User.getCurrentUser(request);
             if (user != null) {

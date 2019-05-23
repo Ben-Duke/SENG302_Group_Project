@@ -354,18 +354,59 @@ function deletePhotoRequest(url, photoid, imageId){
             'Content-Type': 'application/json'
         },
         success:function(res){
-            $("#" + photoid).modal('hide');
+            console.log("Got a 400 error" + JSON.stringify(res.data));
+            $("#"+"destination-carousel").modal('hide');
             console.log("Success Deleted photo!");
 
             console.log("ImageName is " + imageId);
             $(".carousel").carousel("next");
 
-            //document.getElementById("caro-"+photoid+1).setAttribute('class','item active');
             document.getElementById("caro-"+photoid).remove();
             console.log(document.getElementById("addPhotoLink"+photoid));
-            document.getElementById("item"+currentSlideIndex).remove();
-            document.getElementById("addPhotoLink"+photoid).parentElement.remove();
+            console.log(document.getElementById("addPhotoLink"+photoid).parentElement);
 
+            var parent = document.getElementById("addPhotoLink"+photoid).parentElement;
+            parent.remove();
+
+            var activeIndex = $("#myslider").find('.active').index();
+            console.log("Active slide " + activeIndex);
+            var dot = document.getElementById("item"+document.getElementById('slider').getAttribute("size"));
+            if(dot != null){
+                dot.remove();
+                document.getElementById('slider').setAttribute("size", document.getElementById('slider').getAttribute("size")-1)
+            }
+            else {
+                console.log("Dot was null");
+            }
+
+            console.log("after change" + document.getElementById('slider').getAttribute("size"));
+            console.log()
+        },
+        error: function( res){
+             console.log(res.status);
+             if(res.responseText === "Failed to delete image"){
+                 $(document.getElementById('destination-carousel')).modal('hide');
+                 $(document.getElementById('confirmDeletePhotoModal')).modal('show');
+
+                 document.getElementById('yesDeletePhoto').onclick =
+                     function(){
+                        console.log("calling unlink");
+
+
+                         $(document.getElementById('destination-carousel')).modal('show')
+                         //$(document.getElementById('confirmDeletePhotoModal')).modal('hide')
+                     };
+                 document.getElementById('noCloseDeletePhotoButton').onclick =
+                     function(){
+                         $(document.getElementById('destination-carousel')).modal('show')
+                         //$(document.getElementById('confirmDeletePhotoModal')).modal('hide')
+                 };
+
+                 $('#confirmDeletePhotoModal').on('hidden.bs.modal', function () {
+                     $(document.getElementById('destination-carousel')).modal('show');
+                 })
+
+             }
         }
 
     })

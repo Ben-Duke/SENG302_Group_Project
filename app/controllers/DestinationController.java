@@ -683,6 +683,21 @@ public class DestinationController extends Controller {
         return ok();
     }
 
+
+    public Result unlinkPhotoFromDestinationLoop(Http.Request request, int photoId) {
+        UserPhoto photo = UserPhoto.find.byId(photoId);
+        try {
+            for (Destination destination : photo.getDestinations()) {
+                unlinkPhotoFromDestination(null, photoId, destination.getDestId());
+            }
+        }catch(Exception error){
+            return badRequest();
+        }
+
+        return ok();
+    }
+
+
     /**
      * Removes the given destination from the list of destinations in the photos
      * @param request unused http request information

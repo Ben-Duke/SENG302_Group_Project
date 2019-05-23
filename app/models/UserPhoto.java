@@ -6,6 +6,7 @@ import io.ebean.Finder;
 import io.ebean.Model;
 
 import javax.persistence.*;
+import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.List;
 

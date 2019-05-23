@@ -210,6 +210,26 @@
 
 
 
+        <div id="confirmDeletePhotoModal" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+                    <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title" id="deleteTitle">Delete Destination</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p id="message">This image is linked to destination(s), do you want to
+                            unlink it from these places?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button id="yesDeletePhoto" class="btn btn-danger" data-dismiss="modal">Yes</button>
+                        <button id="noCloseDeletePhotoButton" class="btn btn-primary" data-dismiss="modal">No</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
 
         <br>
 
@@ -310,10 +330,12 @@
                     <div class="container">
                         <div class="carousel slide" id="myslider" data-ride="carousel" data-interval="false">
                             <ol class="carousel-indicators">
-                                <li data-target="#myslider" data-slide-to="0" class="active"></li>
+                                <li data-target="#myslider" id="slider" size ="@(user.getUserPhotos().length -1)" data-slide-to="@(user.getUserPhotos().length -1)
+                                " class="active"></li>
                                 @for(i <- 1 to user.getUserPhotos().length -1) {
                                     <li id="item@i" data-target="#myslider" data-slide-to="@i"></li>
                                 }
+
                             </ol>
                             <div id="carousel-inner" class="carousel-inner">
                                 @for(photo <- user.getUserPhotos()) {

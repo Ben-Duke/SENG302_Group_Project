@@ -9,6 +9,7 @@ import models.Destination;
 import models.Trip;
 import models.User;
 import models.Visit;
+import models.commands.EditVisitCommand;
 import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.Controller;
@@ -175,7 +176,8 @@ public class TripController extends Controller {
                 if(tripFactory.hasRepeatDest(trip.getVisits(), visit, "SWAP")){
                     return badRequest("You cannot visit the same destination twice in a row!");
                 }
-                visit.update();
+                EditVisitCommand editVisitCommand = new EditVisitCommand(visit);
+                editVisitCommand.execute();
                 return redirect(routes.TripController.displaytrip(trip.getTripid()));
             }
             else{

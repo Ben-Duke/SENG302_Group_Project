@@ -331,13 +331,39 @@ function toggleLinkButtonDisplays(destId, photoId) {
     toggleDisplay(unlinkButton);
 }
 
+function deletePhotoFromUI(photoId) {
+    $("#"+"destination-carousel").modal('hide');
+    console.log("Success Deleted photo!");
+
+
+    $(".carousel").carousel("next");
+
+    document.getElementById("caro-"+photoId).remove();
+
+    var parent = document.getElementById("addPhotoLink"+photoId).parentElement;
+    parent.remove();
+
+    var activeIndex = $("#myslider").find('.active').index();
+
+    var dot = document.getElementById("item"+document.getElementById('slider').getAttribute("size"));
+    if(dot != null){
+        dot.remove();
+        document.getElementById('slider').setAttribute("size", document.getElementById('slider').getAttribute("size")-1)
+    }
+    else {
+        console.log("Dot was null");
+    }
+
+    }
+
+
 /**
  * This function makes a request to the server to delete a photo with the passed id.
  * @param url
  * @param photoid
  * @param imageId
  */
-function deletePhotoRequest(url, photoid, imageId){
+function deletePhotoRequest(url, photoId, imageId){
     console.log("URL is : " + url);
     var token =  $('input[name="csrfToken"]').attr('value');
     $.ajaxSetup({
@@ -349,42 +375,17 @@ function deletePhotoRequest(url, photoid, imageId){
         url: url,
         method: "Delete",
         data: JSON.stringify({
-            photoid: '"' + photoid + '"'
+            photoid: '"' + photoId + '"'
         }),
         headers: {
             'Content-Type': 'application/json'
         },
         success:function(res){
-            console.log("Got a 400 error" + JSON.stringify(res.data));
-            $("#"+"destination-carousel").modal('hide');
-            console.log("Success Deleted photo!");
+            deletePhotoFromUI(photoId)
 
-            console.log("ImageName is " + imageId);
-            $(".carousel").carousel("next");
-
-            document.getElementById("caro-"+photoid).remove();
-            console.log(document.getElementById("addPhotoLink"+photoid));
-            console.log(document.getElementById("addPhotoLink"+photoid).parentElement);
-
-            var parent = document.getElementById("addPhotoLink"+photoid).parentElement;
-            parent.remove();
-
-            var activeIndex = $("#myslider").find('.active').index();
-            console.log("Active slide " + activeIndex);
-            var dot = document.getElementById("item"+document.getElementById('slider').getAttribute("size"));
-            if(dot != null){
-                dot.remove();
-                document.getElementById('slider').setAttribute("size", document.getElementById('slider').getAttribute("size")-1)
-            }
-            else {
-                console.log("Dot was null");
-            }
-
-            console.log("after change" + document.getElementById('slider').getAttribute("size"));
-            console.log()
         },
         error: function( res){
-             console.log(res.status);
+             //console.log(res.status);
              if(res.responseText === "Failed to delete image"){
                  $(document.getElementById('destination-carousel')).modal('hide');
                  $(document.getElementById('confirmDeletePhotoModal')).modal('show');
@@ -393,24 +394,19 @@ function deletePhotoRequest(url, photoid, imageId){
                      function(){
                         console.log("calling unlink");
                          $.ajax({
-                             url: url,
+                             url: '/users/unlinkAndDeletePicture/'+photoId,
                              method: "Delete",
-                             data: JSON.stringify({
-                                 photoid: '"' + photoid + '"'
-                             }),
-                             headers: {
-                                 'Content-Type': 'application/json'
-                             },
                              success: function (res) {
                                  console.log("unlinked and deleted photo")
+                                 deletePhotoFromUI(photoId);
                              },
                              error: function (res) {
-                                 console.log(JSON.stringify(res));
+                                 console.log(JSON.stringify(res.data));
                              }
-                         }
+                         })
 
                          $(document.getElementById('destination-carousel')).modal('show')
-                         //$(document.getElementById('confirmDeletePhotoModal')).modal('hide')
+
                      };
                  document.getElementById('noCloseDeletePhotoButton').onclick =
                      function(){

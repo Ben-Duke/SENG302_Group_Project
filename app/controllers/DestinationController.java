@@ -698,6 +698,7 @@ public class DestinationController extends Controller {
 
 
     public Result unlinkPhotoFromDestinationAndDelete(Http.Request request, int photoId) {
+        System.out.println("Got here");
         UserPhoto photo = UserPhoto.find.byId(photoId);
         try {
             for (Destination destination : photo.getDestinations()) {

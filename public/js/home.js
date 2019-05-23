@@ -1,7 +1,7 @@
 /**
  * Initilizes the page.
  */
-initSetProfilePicToDefault();
+initSetProfilePicToDefaultButton();
 
 
 
@@ -296,25 +296,27 @@ function sendLinkDestinationRequest(url, photoid){
     })
 }
 
-function initSetProfilePicToDefault() {
+function initSetProfilePicToDefaultButton() {
     const setProfilePicDefaultBtn = document
         .querySelector('#change-profile-photo-to-placeholder');
 
 
     const urlIsProfilePicSet = "/users/profilepicture/isSet";
     fetch(urlIsProfilePicSet)
-        .then(res => res.json())
-        .then(jsonBody => {
-
-            console.log(jsonBody);
-            const hasProfilePic = jsonBody['isProfilePicSet'];
-            console.log(hasProfilePic);
-            console.log(typeof hasProfilePic);
-            if(!hasProfilePic) {
-                setProfilePicDefaultBtn.style.visibility = "hidden";
+        .then(res => {
+            if (res.status === 200) {
+                res.json()
+                    .then(data => {
+                        const hasProfilePic = data['isProfilePicSet'];
+                        if(!hasProfilePic) {
+                            setProfilePicDefaultBtn.style.visibility = "hidden";
+                        }})
+                    .catch(() => {
+                        console.log('Error checking if user has profile pic.');
+                    });
+            } else {
+                console.log(res)
             }
-
-
         })
         .catch(err => {
             console.log(err);});

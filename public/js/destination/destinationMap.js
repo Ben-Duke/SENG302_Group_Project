@@ -29,9 +29,16 @@ function initIndexDestinationMap() {
 }
 
 
-window.globalMap.event.addListener(window.globalMap, 'click', function( event ) {
-    alert( "Latitude: "+event.lat()+" "+", longitude: "+event.lng() );
-});
+
+
+function mapClickHandler() {
+    console.log("hello");
+    console.log(this);
+    console.log(window.globalMap);
+}
+
+
+
 
 /**
  * The callback function that is called after the google maps script src loads
@@ -45,7 +52,13 @@ function initCreateDestinationMap() {
         zoom: 8
     });
 
-    initMapLegend();
+    // initMapLegend();
+
+
+    window.globalMap.addListener('click', function(event) {
+        document.getElementById("latitude").value = event.latLng.lat();
+        document.getElementById("longitude").value = event.latLng.lng();
+    });
 }
 
 /**

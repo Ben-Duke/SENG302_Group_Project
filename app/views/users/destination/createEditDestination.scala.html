@@ -7,6 +7,7 @@
 
 @main(user, "Destinations") {
 
+
     <head>
         <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/destination/indexDestination.css")">
         <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/destination/mapStyle.css")">
@@ -25,6 +26,8 @@
             @formBody()
         }
     }
+
+
 
     <div id="map"></div>
 
@@ -78,12 +81,12 @@
 
             @text(destForm("latitude"),
                 label = "Latitude",
-                placeholder = "latitude"
+                placeholder = "latitude (click on map)"
             )
 
             @text(destForm("longitude"),
                 label = "Longitude",
-                placeholder = "longitude"
+                placeholder = "longitude (click on map)"
             )
 
             @views.html.bootstrap3.select(destForm("destType"),

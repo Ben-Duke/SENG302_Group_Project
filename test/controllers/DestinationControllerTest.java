@@ -1035,7 +1035,7 @@ public class DestinationControllerTest extends WithApplication {
      * Test to remove a photo from a destination, checking the response code
      */
     @Test
-    public void unlinkPhotoFromDestinationValidCheckResponse() {
+    public void unlinkPhotoFromDestinationValidCheckResponseOk() {
         // Send request to link a photo to a destination
         Http.RequestBuilder linkRequest = Helpers.fakeRequest()
                 .method(POST)
@@ -1055,7 +1055,7 @@ public class DestinationControllerTest extends WithApplication {
      * Test to remove a photo from a destination, checking the database
      */
     @Test
-    public void unlinkPhotoFromDestinationCheckData() {
+    public void unlinkPhotoFromDestinationCheckPhotoRemoved() {
         // Send request to link a photo to a destination
         Http.RequestBuilder linkRequest = Helpers.fakeRequest()
                 .method(POST)
@@ -1082,7 +1082,7 @@ public class DestinationControllerTest extends WithApplication {
      * Test to remove a photo from a destination that does not have that photo, checking the response code
      */
     @Test
-    public void unlinkPhotoFromDestinationNotLinkedCheckResponse() {
+    public void unlinkPhotoFromDestinationNotLinkedCheckBadRequest() {
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(DELETE)
                 .uri("/users/destinations/1/1")
@@ -1095,7 +1095,7 @@ public class DestinationControllerTest extends WithApplication {
      * Test to remove a photo from a destination that does not have that photo, checking the database
      */
     @Test
-    public void unlinkPhotoFromDestinationNotLinkedCheckData() {
+    public void unlinkPhotoFromDestinationNotLinkedCheckDataNotChanged() {
         UserPhoto photo = UserPhoto.find.byId(1);
         assert photo != null;
         int nDestinations = photo.getDestinations().size();
@@ -1115,7 +1115,7 @@ public class DestinationControllerTest extends WithApplication {
      * Test to remove a photo from a destination that doesn't exist, checking the response code
      */
     @Test
-    public void unlinkPhotoFromDestinationNoDestinationCheckResponse() {
+    public void unlinkPhotoFromDestinationNoDestinationCheckNotFound() {
         int destId = Destination.find.all().size() + 10; // give it a few extra to be safe
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .uri("/users/destinations/1/" + destId)
@@ -1128,7 +1128,7 @@ public class DestinationControllerTest extends WithApplication {
      * Test to remove a photo from a destination that doesn't exist, checking the database
      */
     @Test
-    public void unlinkPhotoFromDestinationNoDestinationCheckData() {
+    public void unlinkPhotoFromDestinationNoDestinationCheckDataNotChanged() {
         UserPhoto photo = UserPhoto.find.byId(1);
         assert photo != null;
         int nDestinations = photo.getDestinations().size();
@@ -1148,7 +1148,7 @@ public class DestinationControllerTest extends WithApplication {
      * Test to remove a photo from a destination that doesn't exist, checking the response status code
      */
     @Test
-    public void unlinkPhotoFromDestinationNoPhotoCheckResponse() {
+    public void unlinkPhotoFromDestinationNoPhotoCheckNotFound() {
         int photoId = UserPhoto.find.all().size() + 10; // give it a few extra to be safe
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .uri("/users/destinations/" + photoId + "/1")
@@ -1161,7 +1161,7 @@ public class DestinationControllerTest extends WithApplication {
      * Test to remove a photo from a destination that doesn't exist, checking the
      */
     @Test
-    public void unlinkPhotoFromDestinationNoPhotoCheckData() {
+    public void unlinkPhotoFromDestinationNoPhotoCheckDataNotChanged() {
         UserPhoto photo = UserPhoto.find.byId(1);
         assert photo != null;
         int nDestinations = photo.getDestinations().size();

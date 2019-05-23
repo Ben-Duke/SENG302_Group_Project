@@ -1,20 +1,14 @@
 package controllers;
 
-import java.util.*;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import factories.TripFactory;
-import java.util.Date;
-
 import factories.VisitFactory;
 import formdata.TripFormData;
 import formdata.VisitFormData;
-import io.ebean.Expr;
 import models.Destination;
 import models.Trip;
 import models.User;
 import models.Visit;
-import play.data.DynamicForm;
 import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.Controller;
@@ -23,7 +17,9 @@ import play.mvc.Result;
 import views.html.users.trip.*;
 
 import javax.inject.Inject;
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
 public class TripController extends Controller {
@@ -63,7 +59,6 @@ public class TripController extends Controller {
      * database.
      * @param request
      * @param tripId the trip id
-     * @param message an error message if there is one
      * @return display visits page
      */
     public Result displaytrip(Http.Request request, Integer tripId){

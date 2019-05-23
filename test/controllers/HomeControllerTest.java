@@ -1,6 +1,5 @@
 package controllers;
 
-import accessors.UserAccessor;
 import akka.actor.ActorSystem;
 import akka.actor.Terminated;
 import akka.stream.ActorMaterializer;
@@ -100,7 +99,7 @@ public class HomeControllerTest extends WithApplication {
     @Test
     public void showHomeWithLoginSessionWithoutProfile() {
         User user = new User("testuser@test.com");
-        UserAccessor.insert(user);
+        user.save();
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(GET)
                 .uri("/users/home").session("connected", "5");
@@ -468,7 +467,7 @@ public class HomeControllerTest extends WithApplication {
         user.getNationality().add(nationality2);
         user.getPassport().add(passport1);
         user.getPassport().add(passport2);
-        UserAccessor.insert(user);
+        user.save();
         user2.getTravellerTypes().add(travellerType1);
         user2.getTravellerTypes().add(travellerType2);
         user2.getPassport().add(passport1);

@@ -28,6 +28,7 @@ public class User extends Model implements Comparable<User> {
     @Column(name="email")
     public String email; // The email of the User
 
+
     @Id
     public Integer userid; // The ID of the user. This is the primary key.
 

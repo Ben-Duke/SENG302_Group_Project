@@ -164,7 +164,7 @@ GET     /assets/*file               controllers.Assets.at(path="/public", file)
 GET     /users/destinations             controllers.DestinationController.indexDestination(request : Request)
 
 #*************_*_*_*_*_*_*_*_*_*
-GET     /users/destinations/getprimaryphoto  controllers.DestinationController.servePrimaryPicture(request : Request, id : Integer)
+GET     /users/destinations/getprimaryphoto  controllers.DestinationController.servePrimaryPicture(request : Request, destId : Integer)
 
 #Gets JSON of all public and private Destinations avaliable to a user.
 GET     /users/destinations/getalljson         controllers.DestinationController.getVisibleDestinationMarkersJSON(request : Request)
@@ -197,7 +197,7 @@ GET     /users/destinations/photos/:id    controllers.DestinationController.getP
 GET     /users/photos/:id                   controllers.DestinationController.getPhoto(request : Request, id : Integer)
 
 #Renders request for destination traveller types
-POST     /users/destinations/ttypes/:id    controllers.TravellerTypeController.submitUpdateDestinationTravellerType(request : Request, id : Integer)
+POST    /users/destinations/ttypes/:id    controllers.TravellerTypeController.submitUpdateDestinationTravellerType(request : Request, id : Integer)
 
 #Handles making a destination public
 GET     /users/destinations/public/:id         controllers.DestinationController.makeDestinationPublic(request : Request, id : Integer)
@@ -226,6 +226,9 @@ PUT     /users/destinations/:id         controllers.DestinationController.linkPh
 #Handles linking a photo to a destination
 +nocsrf
 POST     /users/destinations/:destId/:photoId         controllers.DestinationController.addPhotoToDestination(request : Request, photoId : Integer, destId : Integer)
+
+#Handles unlinking a destination from a photo
+DELETE  /users/destinations/:photoId/:destId                   controllers.DestinationController.unlinkPhotoFromDestination(request : Request, photoId : Integer, destId: Integer)
 
 #Handles creating a destination
 POST    /users/destinations/save        controllers.DestinationController.saveDestinationFromRequest(request : Request)

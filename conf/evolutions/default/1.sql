@@ -4,7 +4,7 @@
 # --- !Ups
 
 create table admin (
-  id                            integer auto_increment not null,
+  id                            bigint auto_increment not null,
   user_id                       integer,
   user_id_to_edit               integer,
   is_default                    boolean default false not null,

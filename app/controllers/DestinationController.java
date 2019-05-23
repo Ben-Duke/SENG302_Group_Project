@@ -3,6 +3,7 @@ package controllers;
 import accessors.DestinationAccessor;
 import com.fasterxml.jackson.databind.JsonNode;
 import factories.DestinationFactory;
+import factories.UserFactory;
 import formdata.DestinationFormData;
 import models.*;
 import org.slf4j.Logger;
@@ -684,12 +685,13 @@ public class DestinationController extends Controller {
     }
 
 
-    public Result unlinkPhotoFromDestinationLoop(Http.Request request, int photoId) {
+    public Result unlinkPhotoFromDestinationAndDelete(Http.Request request, int photoId) {
         UserPhoto photo = UserPhoto.find.byId(photoId);
         try {
             for (Destination destination : photo.getDestinations()) {
                 unlinkPhotoFromDestination(null, photoId, destination.getDestId());
             }
+            photo.deletePhoto(photoId);
         }catch(Exception error){
             return badRequest();
         }

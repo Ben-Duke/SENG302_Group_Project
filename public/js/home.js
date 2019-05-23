@@ -338,6 +338,7 @@ function toggleLinkButtonDisplays(destId, photoId) {
  * @param imageId
  */
 function deletePhotoRequest(url, photoid, imageId){
+    console.log("URL is : " + url);
     var token =  $('input[name="csrfToken"]').attr('value');
     $.ajaxSetup({
         beforeSend: function(xhr) {
@@ -391,7 +392,22 @@ function deletePhotoRequest(url, photoid, imageId){
                  document.getElementById('yesDeletePhoto').onclick =
                      function(){
                         console.log("calling unlink");
-
+                         $.ajax({
+                             url: url,
+                             method: "Delete",
+                             data: JSON.stringify({
+                                 photoid: '"' + photoid + '"'
+                             }),
+                             headers: {
+                                 'Content-Type': 'application/json'
+                             },
+                             success: function (res) {
+                                 console.log("unlinked and deleted photo")
+                             },
+                             error: function (res) {
+                                 console.log(JSON.stringify(res));
+                             }
+                         }
 
                          $(document.getElementById('destination-carousel')).modal('show')
                          //$(document.getElementById('confirmDeletePhotoModal')).modal('hide')

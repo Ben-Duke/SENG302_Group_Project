@@ -95,11 +95,6 @@ create table trip (
   constraint pk_trip primary key (tripid)
 );
 
-create table undoable_command (
-  id                            integer auto_increment not null,
-  constraint pk_undoable_command primary key (id)
-);
-
 create table user (
   userid                        integer auto_increment not null,
   email                         varchar(255),
@@ -331,8 +326,6 @@ drop table if exists traveller_type;
 drop table if exists treasure_hunt;
 
 drop table if exists trip;
-
-drop table if exists undoable_command;
 
 drop table if exists user;
 

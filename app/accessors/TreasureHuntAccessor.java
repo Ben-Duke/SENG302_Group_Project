@@ -7,7 +7,7 @@ import java.util.List;
 
 public class TreasureHuntAccessor {
 
-    /** Return the destination matching the id passed */
+    /** Return the TreasureHunt matching the id passed */
     public static TreasureHunt getById(int id) {
         return TreasureHunt.find.query().where().eq("thuntid", id).findOne();
     }

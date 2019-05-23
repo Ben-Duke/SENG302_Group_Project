@@ -1,10 +1,13 @@
 package controllers;
 
+import accessors.TreasureHuntAccessor;
 import factories.TreasureHuntFactory;
 import formdata.TreasureHuntFormData;
 import models.Destination;
 import models.TreasureHunt;
 import models.User;
+import models.commands.UndoableCommand;
+import models.commands.treasurehunts.DeleteTreasureHuntCommand;
 import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.Controller;
@@ -120,7 +123,7 @@ public class TreasureHuntController extends Controller {
             if (incomingForm.hasErrors()) {
                 // Change the destination map to keep track of the current destination selected in the select
                 String destName = incomingForm.rawData().get("destination");
-                if (! destName.isEmpty()) {
+                if (destName != null && !destName.isEmpty()) {
                     destinationMap.put(destName, true);
                 }
                 return badRequest(createTreasureHunt.render(incomingForm, user, destinationMap));
@@ -185,7 +188,7 @@ public class TreasureHuntController extends Controller {
                     if (incomingForm.hasErrors()) {
                         // Change the destination map to keep track of the current destination selected in the select
                         String destName = incomingForm.rawData().get("destination");
-                        if (! destName.isEmpty()) {
+                        if (destName !=null && !destName.isEmpty()) {
                             destinationMap.put(destName, true);
                         }
                         return badRequest(editTreasureHunt.render(incomingForm, treasureHunt, user, destinationMap));
@@ -218,10 +221,11 @@ public class TreasureHuntController extends Controller {
     public Result deleteTreasureHunt(Http.Request request, Integer treasureHuntId){
         User user = User.getCurrentUser(request);
         if (user != null) {
-            TreasureHunt treasureHunt = TreasureHunt.find.byId(treasureHuntId);
+            TreasureHunt treasureHunt = TreasureHuntAccessor.getById(treasureHuntId);
             if (treasureHunt != null) {
                 if (treasureHunt.getUser().getUserid() == (user.getUserid())) {
-                    treasureHuntFactory.deleteTreasureHunt(treasureHunt);
+                    UndoableCommand cmd = new DeleteTreasureHuntCommand(treasureHunt);
+                    user.getCommandManager().executeCommand(cmd);
                     return redirect(routes.TreasureHuntController.indexTreasureHunt());
                 } else {
                     return unauthorized("The Treasure Hunt that you are trying to delete does not belong to you.");

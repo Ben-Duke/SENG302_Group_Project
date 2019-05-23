@@ -8,7 +8,7 @@ import java.util.List;
 
 public class UserAccessor {
 
-    public User getDefaultAdmin(){
+    public static User getDefaultAdmin(){
         return null;
     }
 
@@ -28,7 +28,7 @@ public class UserAccessor {
      * Gets a List of Users with a specific email.
      *
      * It should be a List of length 0 or 1, but you should still check
-     * for 2 or more users encase our database is in an inconsistent state again.
+     * for 2 or more users in case our database is in an inconsistent state again.
      *
      * @param email String of the users email to search for.
      * @return A List of User objects with a matching email address.
@@ -36,5 +36,10 @@ public class UserAccessor {
     public static List<User> getUsersFromEmail(String email) {
         return  User.find.query()
                     .where().eq("email", email.toLowerCase()).findList();
+    }
+
+    /** Return the User matching the id passed */
+    public static User getById(int i) {
+        return User.find.byId(i);
     }
 }

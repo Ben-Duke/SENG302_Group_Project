@@ -9,6 +9,7 @@ import models.*;
 
 
 import models.commands.Destinations.DeleteDestinationCommand;
+import models.commands.Destinations.EditDestinationCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import play.data.DynamicForm;
@@ -278,7 +279,9 @@ public class DestinationController extends Controller {
             if (oldDestination != null) {
                 if (oldDestination.isUserOwner(user.userid) || user.userIsAdmin()) {
                     oldDestination.applyEditChanges(newDestination);
-                    oldDestination.update();
+                    EditDestinationCommand editDestinationCommand =
+                            new EditDestinationCommand(oldDestination);
+                    editDestinationCommand.execute();
 
                     return redirect(routes.DestinationController.indexDestination());
 

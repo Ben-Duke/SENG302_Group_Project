@@ -8,8 +8,12 @@ import java.util.List;
 
 public class UserAccessor {
 
-    public User getDefaultAdmin(){
-        return null;
+    public static User getDefaultAdmin(){
+        throw new UnsupportedOperationException();
+    }
+
+    public static User getById(int id) {
+        return User.find.byId(id);
     }
 
     public static Passport getPassport(int id) {

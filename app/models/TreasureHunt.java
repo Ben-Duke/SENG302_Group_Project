@@ -36,7 +36,8 @@ public class TreasureHunt extends Model {
                 treasureHunt.getDestination(),
                 treasureHunt.getStartDate(),
                 treasureHunt.getEndDate(),
-                treasureHunt.getUser());
+                treasureHunt.getUser()
+            );
     }
 
     /**

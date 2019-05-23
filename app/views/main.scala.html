@@ -37,8 +37,8 @@
                         }
                     </ul>
                         <ul class="nav navbar-nav navbar-right">
-                            <li><a href="#"><span class="glyphicon glyphicon-repeat" style="transform: scale(-1,1)"></span> Undo</a></li>
-                            <li><a href="#"><span class="glyphicon glyphicon-repeat"></span> Redo</a></li>
+                            <li><a id="undoButton" href="#"><span class="glyphicon glyphicon-repeat" style="transform: scale(-1,1)"></span> Undo</a></li>
+                            <li><a id="redoButton" href="#"><span class="glyphicon glyphicon-repeat"></span> Redo</a></li>
                             <li class="dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                                     <span class="glyphicon glyphicon-user"></span> 
@@ -99,10 +99,11 @@
         @*<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>*@
         @*<script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>*@
         @*<link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">*@
+        <script type="text/javascript" charset="utf8" src="https://cdnjs.cloudflare.com/ajax/libs/mousetrap/1.6.3/mousetrap.js"></script>
 
 
 
-            <!-- Enable tooltips. Used primarily to validate that JQuery + Bootstrap JS are loaded. Remove this script if you don't want tooltips. -->
+        <!-- Enable tooltips. Used primarily to validate that JQuery + Bootstrap JS are loaded. Remove this script if you don't want tooltips. -->
         <script type="text/javascript">
                 jQuery(function ($) {
                     $("[rel='tooltip']").tooltip()
@@ -116,6 +117,19 @@
                     $(document.body).css('padding-top', $('#topnavbar').height() + 10);
                     $(window).resize(function(){
                         $(document.body).css('padding-top', $('#topnavbar').height() + 10);
+                    });
+                });
+        </script>
+        <script>
+                $(document).ready(function() {
+                    Mousetrap.bind('ctrl+z', function() {
+                        console.log('undo');
+                        //document.getElementById("undoButton").href;
+                    });
+
+                    Mousetrap.bind('ctrl+shift+z', function() {
+                        console.log('redo');
+                        //document.getElementById("redoButton").href;
                     });
                 });
         </script>

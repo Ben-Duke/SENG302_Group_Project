@@ -444,3 +444,30 @@ $('#confirmDeleteDestinationModal').on('show.bs.modal', function(e) {
     });
 });
 
+
+/**
+ * Function that listens for when someone clicks on the button to remove a photo from the destination.
+ * Remove the photo based on the active item on the carousel displaying destination photos.
+ *
+ */
+$('#removePhotoButton').click(function(e){
+    var photo = document.getElementsByClassName("active")[0].getElementsByTagName('img')[0];
+    var photoid = photo.id;
+    photoid = parseInt(photoid.split("-")[1]);
+    url = 'destinations/' + photoid + '/' + getIdFromRow;
+    const token =  $('input[name="csrfToken"]').attr('value');
+    $.ajaxSetup({
+        beforeSend: function(xhr) {
+            xhr.setRequestHeader('Csrf-Token', token);
+        }
+    });
+    $.ajax({
+        url: url,
+        method: "DELETE",
+        success: function(res) {
+            console.log("success");
+        }
+    });
+});
+
+

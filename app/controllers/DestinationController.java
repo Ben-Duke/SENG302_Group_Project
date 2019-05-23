@@ -2,9 +2,13 @@ package controllers;
 
 import accessors.DestinationAccessor;
 import com.fasterxml.jackson.databind.JsonNode;
+
 import factories.DestinationFactory;
 import formdata.DestinationFormData;
 import models.*;
+
+
+import models.commands.Destinations.DeleteDestinationCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import play.data.DynamicForm;
@@ -14,14 +18,18 @@ import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
+
 import utilities.CountryUtils;
-import utilities.UtilityFunctions;
 import views.html.users.destination.*;
 
 import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+
+
+import utilities.UtilityFunctions;
+
 
 public class DestinationController extends Controller {
 
@@ -532,27 +540,31 @@ public class DestinationController extends Controller {
     public Result deleteDestination(Http.Request request, Integer destId) {
         User user = User.getCurrentUser(request);
 
+        logger.debug("controller method to delete dest");
+
         if (user != null) {
             Destination destination = Destination.find.query().where().eq("destid", destId).findOne();
 
             if (destination != null) {
                 if(user.userIsAdmin()){
-                    for(Visit visit : destination.getVisits()){
-                        visit.delete();
-                    }
-                    List<TreasureHunt> treasureHunts = TreasureHunt.find.query().where().eq("destination", destination).findList();
 
-                    for(TreasureHunt treasureHunt : treasureHunts){
-                        treasureHunt.delete();
-                    }
-                    destination.delete();
+                    logger.debug("admin command being called");
+                    DeleteDestinationCommand cmd = new DeleteDestinationCommand(
+                            destination, true);
+                    user.getCommandManager().executeCommand(cmd);
+
                     return redirect(routes.DestinationController.indexDestination());
                 }
                 else if (destination.isUserOwner(user.userid)) {
                     if(destination.visits.isEmpty()) {
                         List<TreasureHunt> treasureHunts = TreasureHunt.find.query().where().eq("destination", destination).findList();
                         if (treasureHunts.isEmpty()) {
-                            destination.delete();
+
+                            logger.debug("non-admin command being called");
+                            DeleteDestinationCommand cmd = new DeleteDestinationCommand(
+                                    destination, false);
+                            user.getCommandManager().executeCommand(cmd);
+
                             return redirect(routes.DestinationController.indexDestination());
                         } else {
                             return preconditionRequired("You cannot delete destinations while they are being used by the treasure hunts.");

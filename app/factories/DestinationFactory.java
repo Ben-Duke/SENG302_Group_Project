@@ -16,9 +16,11 @@ public class DestinationFactory {
      *
      * @return a List<Destination> of all public Destinations.
      */
-    private List<Destination> getPublicDestinations() {
-        return Destination.find.query()
+    public List<Destination> getPublicDestinations() {
+        List<Destination> allPublicDestinations = Destination.find.query()
                 .where().eq("isPublic", true).findList();
+
+        return allPublicDestinations;
     }
 
     /**
@@ -46,9 +48,11 @@ public class DestinationFactory {
     public List<Destination> getUsersPrivateDestinations(int userId) {
         User user = UserFactory.getUserFromId(userId);
 
-        return Destination.find.query()
+        List<Destination> privateDestinations = Destination.find.query()
                 .where().eq("user", user).and().eq("isPublic", false)
                 .findList();
+
+        return privateDestinations;
     }
 
     /**

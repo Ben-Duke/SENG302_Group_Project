@@ -12,23 +12,37 @@ import utilities.UtilityFunctions;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Command to edit a user's profile */
+/** Command to edit a destination */
 public class EditDestinationCommand extends UndoableCommand {
     private Destination uneditedDestination;
     private Destination editedDestination;
 
+    /**
+     * Constructor to create an EditDestinationCommand. Takes an edited destination
+     * as the parameter which is the destination to update the current destination to.
+     * The destination with the same dest id as the editedDestination will be updated
+     * to the edited destination.
+     * @param editedDestination the edited destination
+     */
     public EditDestinationCommand(Destination editedDestination) {
         this.editedDestination = editedDestination;
         this.uneditedDestination =
                 DestinationAccessor.getDestinationById(editedDestination.getDestId());
     }
 
+    /**
+     * Updates the destination's details
+     */
     public void execute() {
         DestinationAccessor.update(editedDestination);
     }
 
+    /**
+     * Undoes the update of the destination's details
+     */
     public void undo() {
-        DestinationAccessor.update(uneditedDestination);
+        editedDestination.applyEditChanges(uneditedDestination);
+        DestinationAccessor.update(editedDestination);
     }
 
     public void redo() {

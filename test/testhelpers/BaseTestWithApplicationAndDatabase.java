@@ -1,5 +1,6 @@
 package testhelpers;
 
+import controllers.ApplicationManager;
 import models.User;
 import org.junit.After;
 import org.junit.Before;
@@ -34,6 +35,8 @@ public class BaseTestWithApplicationAndDatabase extends WithApplication {
      */
     @Before
     public void setUpDatabase() {
+        ApplicationManager.setUserPhotoPath("/test/resources/test_photos/user_");
+        ApplicationManager.setIsTest(true);
         database = Databases.inMemory();
         Evolutions.applyEvolutions(database, Evolutions.forDefault(new Evolution(
                 1,

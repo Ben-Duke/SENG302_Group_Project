@@ -342,7 +342,7 @@ public class UtilityFunctions {
      * @return
      * @throws Exception
      */
-    public static Map<String, Boolean> CountryUtils() throws Exception {
+    public static Map<String, Boolean> CountryUtils() throws IOException {
         Map<String, Boolean> countryMap = new TreeMap<>();
         if (ApplicationManager.isIsTest()) {
             String[] locales = Locale.getISOCountries();

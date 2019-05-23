@@ -104,7 +104,8 @@ public class LoginControllerTest extends WithApplication {
     public void logoutrequest() {
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(GET)
-                .uri("/users/logout");
+                .uri("/users/logout")
+                .session("connected", "1");
         Result result = route(app, request);
         assertEquals(SEE_OTHER, result.status());
     }

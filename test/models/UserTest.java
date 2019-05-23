@@ -6,9 +6,9 @@ import org.mindrot.jbcrypt.BCrypt;
 import testhelpers.BaseTestWithApplicationAndDatabase;
 
 import java.time.LocalDate;
-import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
 
 
 /**

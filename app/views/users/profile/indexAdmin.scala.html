@@ -1,4 +1,4 @@
-@(currentUser: User, users: List[User], allReqs: List[DestinationModificationRequest])
+@(currentUser: User, adminUser: User, users: List[User], allReqs: List[DestinationModificationRequest])
 
 @main(currentUser, "Admin") {
     <head>
@@ -36,8 +36,11 @@
                                 } else {
                                     <td><a class="btn btn-link" href="@routes.AdminController.userToAdmin(user.userid)" role="button">Make Admin</a></td>
                                 }
-                                <td><a class="btn btn-link" href="#" role="button">Act as user</a></td>
-
+                                @if(currentUser.getUserid == adminUser.getUserid) {
+                                    <td><a class="btn btn-link" href="@routes.AdminController.setUserToActAs(user.userid)" role="button">Act as user</a></td>
+                                } else {
+                                    <td><a class="btn btn-link" href="@routes.AdminController.setUserToActAs(user.userid)" role="button" disabled>Act as user</a></td>
+                                }
                             </tr>
                          }
                     }

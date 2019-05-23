@@ -12,7 +12,6 @@ import views.html.users.destination.*;
 import views.html.users.travellertype.*;
 
 import javax.inject.Inject;
-
 import java.util.List;
 
 import static play.mvc.Controller.flash;

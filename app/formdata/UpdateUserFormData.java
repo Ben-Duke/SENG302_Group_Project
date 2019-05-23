@@ -12,8 +12,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static play.mvc.Results.unauthorized;
-
 /**
  * A class to hold data from the client that is entered when updating a users basic
  * profile. Validates the data.

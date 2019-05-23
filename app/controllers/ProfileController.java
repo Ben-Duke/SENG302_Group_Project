@@ -13,6 +13,7 @@ import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
 import views.html.users.profile.*;
+
 import javax.inject.Inject;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -25,7 +26,6 @@ import java.util.List;
 public class ProfileController extends Controller {
     @Inject
     FormFactory formFactory;
-
     private String notLoggedInErrorStr = "Oops, you are not logged in";
 
     /**
@@ -228,10 +228,15 @@ public class ProfileController extends Controller {
         Form<NatFormData> userForm = formFactory.form(NatFormData.class).bindFromRequest(request);
 
         if (userForm.hasErrors()) {
+
+//            int user = UserFactory.getCurrentUserId(request);
+//            List<Nationality> nationalities = Nationality.find.all();
+//            List<Passport> passports = Passport.find.all();
             flash("error", "Need at least one nationality, " +
                     "please add another nationality before deleting the one you selected");
+            //return badRequest(updateNatPass.render(userForm, nationalities, passports, user));
 
-        } else {
+        }else {
             String nationalityID = userForm.get().nationalitydelete;
             User user = User.getCurrentUser(request);
             if (user != null) {

@@ -64,7 +64,7 @@ public class TripControllerTest extends WithApplication {
         testDatabaseManager.populateDatabase();
         //Initialises a test user with name "testUser" and saves it to the database.
 //        User user = new User("testUser");
-//        UserAccessor.insert(user);
+//        user.save();
 //        //Initialises a test trip with name "testTrip" and saves it to the database.
 //        TripFormData tripForm = new TripFormData("testTrip", user);
 //        int tripid = tripfactory.createTrip(tripForm, user);

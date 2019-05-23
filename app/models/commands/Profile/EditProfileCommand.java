@@ -8,6 +8,7 @@ import models.commands.UndoableCommand;
 public class EditProfileCommand extends UndoableCommand {
     private User uneditedUser;
     private User editedUser;
+    private User actualUser;
 
     /**
      * Constructor to create an EditProfileCommand. Takes an edited user
@@ -17,7 +18,9 @@ public class EditProfileCommand extends UndoableCommand {
      * @param editedUser the edited user
      */
     public EditProfileCommand(User editedUser) {
-        this.editedUser = editedUser;
+        this.editedUser = new User();
+        actualUser = editedUser;
+        this.editedUser.applyEditChanges(actualUser);
         this.uneditedUser =
                 UserAccessor.getUserById(editedUser.getUserid());
     }
@@ -26,17 +29,21 @@ public class EditProfileCommand extends UndoableCommand {
      * Updates the user's details
      */
     public void execute() {
-        UserAccessor.update(editedUser);
+        actualUser.applyEditChanges(editedUser);
+        UserAccessor.update(actualUser);
     }
 
     /**
      * Undoes the update of the user's details
      */
     public void undo() {
-        editedUser.applyEditChanges(uneditedUser);
-        UserAccessor.update(editedUser);
+        actualUser.applyEditChanges(uneditedUser);
+        UserAccessor.update(actualUser);
     }
 
+    /**
+     * Redos the update of the user's details
+     */
     public void redo() {
         execute();
     }

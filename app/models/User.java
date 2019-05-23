@@ -149,6 +149,13 @@ public class User extends Model implements Comparable<User> {
         this.isAdmin = false;
     }
 
+    /**
+     * Empty constructor for users
+     */
+    public User(){
+
+    }
+
     @Override
     public String toString() {
         return "User{" +

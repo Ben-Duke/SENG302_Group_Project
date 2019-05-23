@@ -49,6 +49,9 @@ public class EditDestinationCommand extends UndoableCommand {
         DestinationAccessor.update(actualDestination);
     }
 
+    /**
+     * Redos the update of the destination's detalis
+     */
     public void redo() {
         execute();
     }

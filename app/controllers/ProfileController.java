@@ -15,6 +15,7 @@ import play.mvc.Http;
 import play.mvc.Result;
 import views.html.users.profile.*;
 import javax.inject.Inject;
+import javax.jws.soap.SOAPBinding;
 import java.io.File;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -157,16 +158,17 @@ public class ProfileController extends Controller {
      * @return create profile page or error page
      */
     public Result updateNatPass(Http.Request request){
-        int userId = UserFactory.getCurrentUserId(request);
-        if (userId != -1) {
+
+        User user = User.getCurrentUser(request);
+        if (user != null) {
             NatFormData formData = new NatFormData();
 
-            formData.userId = userId;
+            formData.userId = user.getUserid();
             Form<NatFormData> userForm = formFactory.form(NatFormData.class).fill(formData);
 
             List<Nationality> nationalities = Nationality.find.all();
             List<Passport> passports = Passport.find.all();
-            return ok(updateNatPass.render(userForm, nationalities, passports, userId, User.getCurrentUser(request)));
+            return ok(updateNatPass.render(userForm, nationalities, passports, user.getUserid(), User.getCurrentUser(request)));
         }
         else {
             return unauthorized(notLoggedInErrorStr);
@@ -184,10 +186,10 @@ public class ProfileController extends Controller {
     public Result submitUpdateNationality(Http.Request request){
         DynamicForm userForm = formFactory.form().bindFromRequest(request);
         String nationalityID = userForm.get("nationality");
-        int user = UserFactory.getCurrentUserId(request);
-        if (user != -1) {
+        User user = User.getCurrentUser(request);
+        if (user != null) {
 
-            UserFactory.addNatsOnUser(user, nationalityID);
+            UserFactory.addNatsOnUser(user.getUserid(), nationalityID);
 
         }
         else{
@@ -208,9 +210,8 @@ public class ProfileController extends Controller {
         DynamicForm userForm = formFactory.form().bindFromRequest(request);
         String passportID = userForm.get("passport");
         User user = User.getCurrentUser(request);
-        int userId = UserFactory.getCurrentUserId(request);
-        if (userId != -1) {
-            UserFactory.addPassportToUser(userId, passportID);
+        if (user != null) {
+            UserFactory.addPassportToUser(user.getUserid(), passportID);
         }
         else{
             return unauthorized(notLoggedInErrorStr);
@@ -240,9 +241,9 @@ public class ProfileController extends Controller {
 
         }else {
             String nationalityID = userForm.get().nationalitydelete;
-            int userId = UserFactory.getCurrentUserId(request);
-            if (userId != -1) {
-                UserFactory.deleteNatsOnUser(userId, nationalityID);
+            User user = User.getCurrentUser(request);
+            if (user != null) {
+                UserFactory.deleteNatsOnUser(user.getUserid(), nationalityID);
             } else {
                 return unauthorized("Oops, you are not logged in");
 
@@ -263,9 +264,9 @@ public class ProfileController extends Controller {
     public Result deletePassport(Http.Request request){
         DynamicForm userForm = formFactory.form().bindFromRequest(request);
         String passportID = userForm.get("passportdelete");
-        int userId = UserFactory.getCurrentUserId(request);
-        if (userId != -1) {
-            UserFactory.deletePassportOnUser(userId, passportID);
+        User user = User.getCurrentUser(request);
+        if (user != null) {
+            UserFactory.deletePassportOnUser(user.getUserid(), passportID);
         }
         else{
             return unauthorized(notLoggedInErrorStr);

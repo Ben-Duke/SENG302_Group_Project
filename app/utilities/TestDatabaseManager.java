@@ -137,9 +137,6 @@ public class TestDatabaseManager {
      */
     public boolean populateNormalUsers(){
 
-        System.out.println("Helllo");
-
-
         boolean isInSuccessState = true;
         try {
             //Groupie

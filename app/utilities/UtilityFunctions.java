@@ -190,22 +190,16 @@ public class UtilityFunctions {
     public static boolean addAllNationalities() {
         boolean isInSuccessState = true;
 
-        System.out.println("Helllo1.1");
-
         CountryUtils.updateCountries();
-
-        System.out.println("Helllo1.2");
 
         if (Nationality.find.all().isEmpty()) {
             try {
-                System.out.println("Helllo2.2.3");
 
                 if (CountryUtils.getCountries() == null){
 
                     System.out.println("Countries have not been loaded. " +
                             "Nationalities will not be loaded. " +
                             "Restart Server?");
-
 
                 } else {
                     for (String country : CountryUtils.getCountries()) {

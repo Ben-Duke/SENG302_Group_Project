@@ -1,18 +1,19 @@
 package factories;
+
 import controllers.ApplicationManager;
 import formdata.UpdateUserFormData;
 import formdata.UserFormData;
 import models.*;
-import io.ebean.ExpressionList;
 import play.data.FormFactory;
 import play.mvc.Http;
 
-import java.util.*;
+import javax.inject.Inject;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-
-
-import javax.inject.Inject;
+import java.util.List;
+import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 public class UserFactory {
 

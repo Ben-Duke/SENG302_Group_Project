@@ -11,7 +11,6 @@ import views.html.users.destination.*;
 import views.html.users.profile.*;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
 import java.util.List;
 
 public class AdminController extends Controller {

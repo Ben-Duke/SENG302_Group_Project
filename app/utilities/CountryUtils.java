@@ -2,14 +2,11 @@ package utilities;
 
 import accessors.DestinationAccessor;
 import accessors.UserAccessor;
-import akka.actor.ProviderSelection;
-import models.CountryItem;
 import models.Destination;
 import models.Nationality;
 import models.Passport;
 import org.slf4j.Logger;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;

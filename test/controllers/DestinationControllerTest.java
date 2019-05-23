@@ -1,5 +1,8 @@
 package controllers;
 
+import accessors.DestinationAccessor;
+import accessors.TreasureHuntAccessor;
+import accessors.VisitAccessor;
 import com.fasterxml.jackson.databind.JsonNode;
 import models.*;
 import org.junit.After;
@@ -18,6 +21,7 @@ import play.mvc.Http;
 import play.mvc.Result;
 import play.test.Helpers;
 import play.test.WithApplication;
+import testhelpers.BaseTestWithApplicationAndDatabase;
 import utilities.TestDatabaseManager;
 import utilities.UtilityFunctions;
 
@@ -32,7 +36,7 @@ import static play.mvc.Http.Status.SEE_OTHER;
 import static play.mvc.Http.Status.UNAUTHORIZED;
 import static play.test.Helpers.*;
 
-public class DestinationControllerTest extends WithApplication {
+public class DestinationControllerTest extends BaseTestWithApplicationAndDatabase {
 
     /**
      * The fake database
@@ -42,12 +46,6 @@ public class DestinationControllerTest extends WithApplication {
     private final Logger logger = UtilityFunctions.getLogger();
 
     private int REDIRECT_HTTP_STATUS = SEE_OTHER;
-
-    @Override
-    protected Application provideApplication() {
-        return new GuiceApplicationBuilder().build();
-    }
-
 
     /**
      * Sets up the fake database before each test
@@ -64,35 +62,6 @@ public class DestinationControllerTest extends WithApplication {
         ApplicationManager.setIsTest(true);
         TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
         testDatabaseManager.populateDatabase();
-        //Initialises a test user with name "testUser" and saves it to the database.
-//        User user = new User("testUser");
-//        user.save();
-//        User user2 = new User("testUser2");
-//        user2.save();
-//        Destination destination = new Destination("University of Canterbury",
-//                "University",
-//                "Ilam",
-//                "New Zealand",
-//                -43.525450F,
-//                172.582600F,
-//                user);
-//        destination.save();
-//        Destination destination2 = new Destination("University of Banterbury",
-//                "University",
-//                "9",
-//                "Pepestan",
-//                -100,
-//                100,
-//                user);
-//        destination2.save();
-//        Destination destination3 = new Destination("Panem",
-//                "Hunger Games",
-//                "12",
-//                "Panem",
-//                100,
-//                -100,
-//                user2);
-//        destination3.save();
     }
 
     /**
@@ -447,6 +416,72 @@ public class DestinationControllerTest extends WithApplication {
         assertEquals(PRECONDITION_REQUIRED, result.status());
         assertEquals(3, User.find.byId(2).getDestinations().size());
     }
+
+
+    private void deleteDestinationAndUndo(int destId, String userId) {
+        // delete the destination
+        Http.RequestBuilder deleteRequest = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/destinations/delete/" + destId).session("connected", userId);
+        route(app, deleteRequest);
+
+        // undo the deletion
+        Http.RequestBuilder undoRequest = Helpers.fakeRequest()
+                .method(PUT)
+                .uri("/undo").session("connected", userId);
+        route(app, undoRequest);
+    }
+
+    @Test
+    /* Undo the deletion of a destination and check the destination is not deleted
+    *  Admin user used to check that treasure hunts/visits are remade
+    *  Covers normal user flow */
+    public void deleteDestination_asAdmin_undo_checkDestinationExists() {
+        int destinationSize = DestinationAccessor.getAllDestinations().size();
+        int visitSize = VisitAccessor.getAll().size();
+        int treasureHuntSize = TreasureHuntAccessor.getAll().size();
+        int destId = 1;
+        String adminId = "1";
+
+        deleteDestinationAndUndo(destId, adminId);
+
+        assertEquals(destinationSize, DestinationAccessor.getAllDestinations().size());
+        assertEquals(treasureHuntSize, TreasureHuntAccessor.getAll().size());
+        assertEquals(visitSize, VisitAccessor.getAll().size());
+    }
+
+
+    @Test
+    /* Undo the deletion of a destination and check the destination is not deleted
+     *  Admin user used to check that treasure hunts/visits are remade
+     *  Covers normal user flow */
+    public void deleteDestination_asAdmin_undo_redo_checkDestinationDeleted() {
+        int destinationSize = DestinationAccessor.getAllDestinations().size();
+        int visitSize = VisitAccessor.getAll().size();
+        int treasureHuntSize = TreasureHuntAccessor.getAll().size();
+
+        int destId = 1;
+        String adminId = "1";
+
+        Destination destination = DestinationAccessor.getDestinationById(destId);
+        int destinationVisits = destination.getVisits().size();
+        int destinationTreasureHunts = TreasureHuntAccessor.getByDestination(
+                DestinationAccessor.getDestinationById(destId)).size();
+
+        deleteDestinationAndUndo(destId, adminId);
+
+        // redo the deletion
+        Http.RequestBuilder redoRequest = Helpers.fakeRequest()
+                .method(PUT)
+                .uri("/redo").session("connected", adminId);
+        route(app, redoRequest);
+
+        assertEquals(destinationSize-1, DestinationAccessor.getAllDestinations().size());
+        assertEquals(treasureHuntSize-destinationTreasureHunts, TreasureHuntAccessor.getAll().size());
+        assertEquals(visitSize-destinationVisits, VisitAccessor.getAll().size());
+    }
+
+
 
     /**
      * Test to handle deleting a destination with a login session and valid destination and valid owner
@@ -1030,153 +1065,4 @@ public class DestinationControllerTest extends WithApplication {
         assertEquals(NOT_FOUND, result.status());
 
     }
-
-    /**
-     * Test to remove a photo from a destination, checking the response code
-     */
-    @Test
-    public void unlinkPhotoFromDestinationValidCheckResponse() {
-        // Send request to link a photo to a destination
-        Http.RequestBuilder linkRequest = Helpers.fakeRequest()
-                .method(POST)
-                .uri("/users/destinations/1/1")
-                .session("connected", "2");
-        route(app, linkRequest);
-
-        Http.RequestBuilder unlinkRequest = Helpers.fakeRequest()
-                .method(DELETE)
-                .uri("/users/destinations/1/1")
-                .session("connected", "2");
-        Result result = route(app, unlinkRequest);
-        assertEquals(OK, result.status());
-    }
-
-    /**
-     * Test to remove a photo from a destination, checking the database
-     */
-    @Test
-    public void unlinkPhotoFromDestinationCheckData() {
-        // Send request to link a photo to a destination
-        Http.RequestBuilder linkRequest = Helpers.fakeRequest()
-                .method(POST)
-                .uri("/users/destinations/1/1")
-                .session("connected", "2");
-        route(app, linkRequest);
-
-        UserPhoto photo = UserPhoto.find.byId(1);
-        assert photo != null;
-        int nDestinations = photo.getDestinations().size();
-
-        Http.RequestBuilder unlinkRequest = Helpers.fakeRequest()
-                .method(DELETE)
-                .uri("/users/destinations/1/1")
-                .session("connected", "2");
-        route(app, unlinkRequest);
-
-        photo = UserPhoto.find.byId(1);
-        assert photo != null;
-        assertEquals(nDestinations - 1, photo.getDestinations().size());
-    }
-
-    /**
-     * Test to remove a photo from a destination that does not have that photo, checking the response code
-     */
-    @Test
-    public void unlinkPhotoFromDestinationNotLinkedCheckResponse() {
-        Http.RequestBuilder request = Helpers.fakeRequest()
-                .method(DELETE)
-                .uri("/users/destinations/1/1")
-                .session("connected", "2");
-        Result result = route(app, request);
-        assertEquals(BAD_REQUEST, result.status());
-    }
-
-    /**
-     * Test to remove a photo from a destination that does not have that photo, checking the database
-     */
-    @Test
-    public void unlinkPhotoFromDestinationNotLinkedCheckData() {
-        UserPhoto photo = UserPhoto.find.byId(1);
-        assert photo != null;
-        int nDestinations = photo.getDestinations().size();
-
-        Http.RequestBuilder request = Helpers.fakeRequest()
-                .method(DELETE)
-                .uri("/users/destinations/1/1")
-                .session("connected", "2");
-        route(app, request);
-
-        photo = UserPhoto.find.byId(1);
-        assert photo != null;
-        assertEquals(nDestinations, photo.getDestinations().size());
-    }
-
-    /**
-     * Test to remove a photo from a destination that doesn't exist, checking the response code
-     */
-    @Test
-    public void unlinkPhotoFromDestinationNoDestinationCheckResponse() {
-        int destId = Destination.find.all().size() + 10; // give it a few extra to be safe
-        Http.RequestBuilder request = Helpers.fakeRequest()
-                .uri("/users/destinations/1/" + destId)
-                .session("connected", "2");
-        Result result = route(app, request);
-        assertEquals(NOT_FOUND, result.status());
-    }
-
-    /**
-     * Test to remove a photo from a destination that doesn't exist, checking the database
-     */
-    @Test
-    public void unlinkPhotoFromDestinationNoDestinationCheckData() {
-        UserPhoto photo = UserPhoto.find.byId(1);
-        assert photo != null;
-        int nDestinations = photo.getDestinations().size();
-
-        int destId = Destination.find.all().size() + 10; // give it a few extra to be safe
-        Http.RequestBuilder request = Helpers.fakeRequest()
-                .uri("/users/destinations/1/" + destId)
-                .session("connected", "2");
-        route(app, request);
-        photo = UserPhoto.find.byId(1);
-        assert photo != null;
-
-        assertEquals(nDestinations, photo.getDestinations().size());
-    }
-
-    /**
-     * Test to remove a photo from a destination that doesn't exist, checking the response status code
-     */
-    @Test
-    public void unlinkPhotoFromDestinationNoPhotoCheckResponse() {
-        int photoId = UserPhoto.find.all().size() + 10; // give it a few extra to be safe
-        Http.RequestBuilder request = Helpers.fakeRequest()
-                .uri("/users/destinations/" + photoId + "/1")
-                .session("connected", "2");
-        Result result = route(app, request);
-        assertEquals(NOT_FOUND, result.status());
-    }
-
-    /**
-     * Test to remove a photo from a destination that doesn't exist, checking the
-     */
-    @Test
-    public void unlinkPhotoFromDestinationNoPhotoCheckData() {
-        UserPhoto photo = UserPhoto.find.byId(1);
-        assert photo != null;
-        int nDestinations = photo.getDestinations().size();
-
-        int photoId = UserPhoto.find.all().size() + 10; // give it a few extra to be safe
-        Http.RequestBuilder request = Helpers.fakeRequest()
-                .uri("/users/destinations/" + photoId + "/1")
-                .session("connected", "2");
-        route(app, request);
-
-        photo = UserPhoto.find.byId(1);
-        assert photo != null;
-
-        assertEquals(nDestinations, photo.getDestinations().size());
-
-    }
-
 }

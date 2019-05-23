@@ -14,10 +14,7 @@ import play.data.FormFactory;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
-import views.html.users.trip.AddTripDestinationsTable;
-import views.html.users.trip.createTrip;
-import views.html.users.trip.displayTrip;
-import views.html.users.trip.editVisit;
+import views.html.users.trip.*;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -62,7 +59,6 @@ public class TripController extends Controller {
      * database.
      * @param request
      * @param tripId the trip id
-     * @param message an error message if there is one
      * @return display visits page
      */
     public Result displaytrip(Http.Request request, Integer tripId){

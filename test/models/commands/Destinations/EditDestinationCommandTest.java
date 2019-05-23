@@ -73,4 +73,18 @@ public class EditDestinationCommandTest extends BaseTestWithApplicationAndDataba
         assertEquals(172.6362, undoneDestination.getLongitude(), 0.01);
         assertEquals("Town", undoneDestination.getDestType());
     }
+
+    @Test
+    public void testRedo(){
+        editDestinationCommand.execute();
+        editDestinationCommand.undo();
+        editDestinationCommand.redo();
+        Destination updatedDestination = Destination.find.byId(1);
+        assertEquals("Auckland", updatedDestination.getDestName());
+        assertEquals("District 12", updatedDestination.getDistrict());
+        assertEquals("New Zealand", updatedDestination.getCountry());
+        assertEquals(-36.8485, updatedDestination.getLatitude(), 0.01);
+        assertEquals(174.7633, updatedDestination.getLongitude(), 0.01);
+        assertEquals("Attraction", updatedDestination.getDestType());
+    }
 }

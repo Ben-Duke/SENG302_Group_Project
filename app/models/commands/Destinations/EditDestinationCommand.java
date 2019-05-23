@@ -16,6 +16,7 @@ import java.util.List;
 public class EditDestinationCommand extends UndoableCommand {
     private Destination uneditedDestination;
     private Destination editedDestination;
+    private Destination actualDestination;
 
     /**
      * Constructor to create an EditDestinationCommand. Takes an edited destination
@@ -25,7 +26,9 @@ public class EditDestinationCommand extends UndoableCommand {
      * @param editedDestination the edited destination
      */
     public EditDestinationCommand(Destination editedDestination) {
-        this.editedDestination = editedDestination;
+        this.editedDestination = new Destination();
+        actualDestination = editedDestination;
+        this.editedDestination.applyEditChanges(actualDestination);
         this.uneditedDestination =
                 DestinationAccessor.getDestinationById(editedDestination.getDestId());
     }
@@ -34,15 +37,16 @@ public class EditDestinationCommand extends UndoableCommand {
      * Updates the destination's details
      */
     public void execute() {
-        DestinationAccessor.update(editedDestination);
+        actualDestination.applyEditChanges(editedDestination);
+        DestinationAccessor.update(actualDestination);
     }
 
     /**
      * Undoes the update of the destination's details
      */
     public void undo() {
-        editedDestination.applyEditChanges(uneditedDestination);
-        DestinationAccessor.update(editedDestination);
+        actualDestination.applyEditChanges(uneditedDestination);
+        DestinationAccessor.update(actualDestination);
     }
 
     public void redo() {

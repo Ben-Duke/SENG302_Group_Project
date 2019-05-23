@@ -1,6 +1,7 @@
 package models;
 
 import accessors.CommandManagerAccessor;
+import accessors.UserAccessor;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.ebean.ExpressionList;
 import io.ebean.Finder;
@@ -553,6 +554,18 @@ public class User extends Model implements Comparable<User> {
 
     public int compareTo(User other) {
         return this.userid.compareTo(other.getUserid());
+    }
+
+    /** Modifies the fields of this User which are included in the
+     *   profile editing form to be equal to those fields of the user
+     *   passed in */
+    public void applyEditChanges(User editedUser) {
+        this.fName = editedUser.getfName();
+        this.lName = editedUser.getlName();
+        this.gender = editedUser.getGender();
+        this.dateOfBirth = editedUser.getDateOfBirth();
+        this.email = editedUser.getEmail();
+        this.passwordHash = editedUser.getPasswordHash();
     }
 }
 

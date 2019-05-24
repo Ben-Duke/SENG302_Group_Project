@@ -26,8 +26,6 @@ var loadFile = function (event) {
         crop: function (e) {
             var imageData = $(this).cropper('getImageData');
             croppedCanvas = $(this).cropper('getCroppedCanvas');
-            console.log($(this).cropper('getCroppedCanvas'));
-            console.log(croppedCanvas.toDataURL());
             $('.preview').html('<img src="' + croppedCanvas.toDataURL() + '" class="thumb-lg img-circle" style="width:100px;height:100px;">');
             var previewAspectRatio = e.width / e.height;
             $previews.each(function (){

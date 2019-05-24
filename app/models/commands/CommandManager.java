@@ -74,6 +74,7 @@ public class CommandManager extends BaseModel {
     public void undo() {
         // To prevent a crash if a redo is requested before an undoable action occurs
         if (undoCommand != null) {
+            System.out.println("undo edit");
             undoCommand.undo();
             redoCommand = undoCommand;
         }

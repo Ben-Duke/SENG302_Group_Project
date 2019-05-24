@@ -37,8 +37,8 @@
                         }
                     </ul>
                         <ul class="nav navbar-nav navbar-right">
-                            <li><a id="undoButton" href="#"><span class="glyphicon glyphicon-repeat" style="transform: scale(-1,1)"></span> Undo</a></li>
-                            <li><a id="redoButton" href="#"><span class="glyphicon glyphicon-repeat"></span> Redo</a></li>
+                            <li><a id="undoButton"><span class="glyphicon glyphicon-repeat" style="transform: scale(-1,1)"></span> Undo</a></li>
+                            <li><a id="redoButton"><span class="glyphicon glyphicon-repeat"></span> Redo</a></li>
                             <li class="dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                                     <span class="glyphicon glyphicon-user"></span> 
@@ -119,14 +119,85 @@
                     });
                 });
         </script>
+
         <script>
                 $(document).keydown('undo_redo', function(e) {
                     if ((e.ctrlKey && e.keyCode === 90) && e.shiftKey !== true) {
-                        console.log('undo');
+                        var token =  $('input[name="csrfToken"]').attr('value');
+                        $.ajaxSetup({
+                            beforeSend: function (xhr) {
+                                xhr.setRequestHeader('Csrf-Token', token);
+                            }
+                        });
+                        $.ajax({
+                            type: 'PUT',
+                            url: '/undo',
+                            success:function(res, textStatus, xhr){
+                                location.reload();
+                            },
+                            error: function(xhr, textStatus, errorThrown){
+                                console.log(xhr.status + " " + textStatus + " " + errorThrown);
+                            }
+                        })
                     } else if (e.ctrlKey && e.shiftKey && e.keyCode === 90) {
-                        console.log('redo');
-                    }
-                    //document.getElementById("redoButton").href;
+                        var token =  $('input[name="csrfToken"]').attr('value');
+                        $.ajaxSetup({
+                            beforeSend: function (xhr) {
+                                xhr.setRequestHeader('Csrf-Token', token);
+                            }
+                        });
+                        $.ajax({
+                            type: 'PUT',
+                            url: '/redo',
+                            success:function(res, textStatus, xhr){
+                                location.reload();
+                            },
+                            error: function(xhr, textStatus, errorThrown){
+                                console.log(xhr.status + " " + textStatus + " " + errorThrown);
+                            }
+                        })
+                    };
+                });
+        </script>
+
+        <script type="text/javascript" id="undo">
+                $('#undoButton').click( function(e) {
+                    var token =  $('input[name="csrfToken"]').attr('value');
+                    $.ajaxSetup({
+                        beforeSend: function (xhr) {
+                            xhr.setRequestHeader('Csrf-Token', token);
+                        }
+                    });
+                    $.ajax({
+                        type: 'PUT',
+                        url: '/undo',
+                        success:function(res, textStatus, xhr){
+                            location.reload();
+                        },
+                        error: function(xhr, textStatus, errorThrown){
+                            console.log(xhr.status + " " + textStatus + " " + errorThrown);
+                        }
+                    })
+                });
+        </script>
+        <script type="text/javascript" id="redo">
+                $('#redoButton').click( function(e) {
+                    var token =  $('input[name="csrfToken"]').attr('value');
+                    $.ajaxSetup({
+                        beforeSend: function (xhr) {
+                            xhr.setRequestHeader('Csrf-Token', token);
+                        }
+                    });
+                    $.ajax({
+                        type: 'PUT',
+                        url: '/redo',
+                        success:function(res, textStatus, xhr){
+                            location.reload();
+                        },
+                        error: function(xhr, textStatus, errorThrown){
+                            console.log(xhr.status + " " + textStatus + " " + errorThrown);
+                        }
+                    })
                 });
         </script>
     </body>

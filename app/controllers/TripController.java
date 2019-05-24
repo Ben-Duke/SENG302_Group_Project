@@ -9,15 +9,14 @@ import models.Destination;
 import models.Trip;
 import models.User;
 import models.Visit;
+import models.commands.Trips.DeleteTripCommand;
 import play.data.Form;
 import play.data.FormFactory;
+import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
-import views.html.users.trip.AddTripDestinationsTable;
-import views.html.users.trip.createTrip;
-import views.html.users.trip.displayTrip;
-import views.html.users.trip.editVisit;
+import views.html.users.trip.*;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -62,7 +61,6 @@ public class TripController extends Controller {
      * database.
      * @param request
      * @param tripId the trip id
-     * @param message an error message if there is one
      * @return display visits page
      */
     public Result displaytrip(Http.Request request, Integer tripId){
@@ -235,21 +233,15 @@ public class TripController extends Controller {
      * @param tripid the trip id of the trip
      * @return
      */
-    public Result cancelTrip(Http.Request request, Integer tripid) {
+    public Result deleteTrip(Http.Request request, Integer tripid) {
         Trip trip = Trip.find.byId(tripid);
         User user = User.getCurrentUser(request);
         if (user != null) {
             if(trip != null) {
                 if (trip.getUser().getUserid() == user.getUserid() || user.userIsAdmin()) {
-                    if (trip.hasVisit()) {
-                        List<Visit> visits = trip.getVisits();
-                        for (Visit visit : visits) {
-                            visit.delete();
-                        }
-                    }
-                    trip = Trip.find.byId(tripid);
-                    trip.delete();
-                    return redirect(routes.TripController.createtrip());
+                    DeleteTripCommand deleteTripCommand = new DeleteTripCommand(trip);
+                    user.getCommandManager().executeCommand(deleteTripCommand);
+                    return redirect(routes.HomeController.showhome());
                 } else {
                     return unauthorized("Oops, this is not your trip.");
                 }
@@ -392,6 +384,27 @@ public class TripController extends Controller {
         }
         else{
             return unauthorized();
+        }
+    }
+
+    /**
+     * Returns the trip as a json based on a trip ID
+     *
+     * @param request the HTTP request
+     * @param tripId  the trip ID
+     * @return the trip as a json
+     */
+    public Result getTrip(Http.Request request, Integer tripId){
+        User user = User.getCurrentUser(request);
+        if (user != null) {
+            Trip trip = Trip.find.byId(tripId);
+            if (trip.getUser().getUserid() == user.getUserid() || user.userIsAdmin()) {
+                return ok(Json.toJson(trip));
+            } else {
+                return unauthorized("Oops, this is a private trip and you don't own it.");
+            }
+        } else {
+            return unauthorized("Oops, you are not logged in");
         }
     }
 

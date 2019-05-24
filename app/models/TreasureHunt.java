@@ -30,6 +30,15 @@ public class TreasureHunt extends Model {
         this.users = new ArrayList<>();
     }
 
+    public TreasureHunt(TreasureHunt treasureHunt) {
+        this(treasureHunt.getTitle(),
+                treasureHunt.getRiddle(),
+                treasureHunt.getDestination(),
+                treasureHunt.getStartDate(),
+                treasureHunt.getEndDate(),
+                treasureHunt.getUser());
+    }
+
     /**
      * The id of the treasure hunt
      */

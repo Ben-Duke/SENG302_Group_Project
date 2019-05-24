@@ -2,9 +2,14 @@ package controllers;
 
 import accessors.DestinationAccessor;
 import com.fasterxml.jackson.databind.JsonNode;
+
 import factories.DestinationFactory;
 import formdata.DestinationFormData;
 import models.*;
+
+
+import models.commands.Destinations.DeleteDestinationCommand;
+import models.commands.Destinations.EditDestinationCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import play.data.DynamicForm;
@@ -14,14 +19,18 @@ import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
+
 import utilities.CountryUtils;
-import utilities.UtilityFunctions;
 import views.html.users.destination.*;
 
 import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+
+
+import utilities.UtilityFunctions;
+
 
 public class DestinationController extends Controller {
 
@@ -100,6 +109,7 @@ public class DestinationController extends Controller {
             CountryUtils.updateCountries();
 
             List<Destination> destinations = user.getDestinations();
+            
             List<Destination> allDestinations = Destination.find.all();
 
             return ok(indexDestination.render(destinations, allDestinations, destFactory, user));
@@ -141,16 +151,9 @@ public class DestinationController extends Controller {
             Form<DestinationFormData> destFormData;
             destFormData = formFactory.form(DestinationFormData.class);
 
-            Map<String, Boolean> countries = null;
+            Map<String, Boolean> countryList = CountryUtils.getCountriesMap();
 
-            try{
-                countries = UtilityFunctions.CountryUtils();
-            }catch(IOException error){
-                System.out.println(error);
-                System.out.println("Error getting countries");
-            }
-
-            return ok(createEditDestination.render(destFormData, null, countries , Destination.getTypeList(),user));
+            return ok(createEditDestination.render(destFormData, null, countryList , Destination.getTypeList(),user));
         }
         return unauthorized("Oops, you are not logged in");
     }
@@ -224,13 +227,11 @@ public class DestinationController extends Controller {
         Map<String, Boolean> typeList = Destination.getTypeList();
         typeList.replace(destination.getDestType(), true);
 
-        Map<String, Boolean> countryList = null;
-        try{
-            countryList = UtilityFunctions.CountryUtils();
-            countryList.replace(destination.getCountry(), true);
-        } catch(IOException error) {
-            System.out.println(error);
-        }
+
+        Map<String, Boolean> countryList = CountryUtils.getCountriesMap();
+        countryList.replace(destination.getCountry(), true);
+
+
         if (!destination.getIsCountryValid()) {
             flash("countryInvalid",
                     "This Destination has an invalid country!");
@@ -270,7 +271,9 @@ public class DestinationController extends Controller {
             if (oldDestination != null) {
                 if (oldDestination.isUserOwner(user.userid) || user.userIsAdmin()) {
                     oldDestination.applyEditChanges(newDestination);
-                    oldDestination.update();
+                    EditDestinationCommand editDestinationCommand =
+                            new EditDestinationCommand(oldDestination);
+                    editDestinationCommand.execute();
 
                     return redirect(routes.DestinationController.indexDestination());
 
@@ -318,12 +321,8 @@ public class DestinationController extends Controller {
         if (destForm.hasErrors() || hasError) {
 
             Map<String, Boolean> typeList = Destination.getTypeList();
-            Map<String, Boolean> countryList = null;
-            try {
-                countryList = UtilityFunctions.CountryUtils();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            Map<String, Boolean> countryList = CountryUtils.getCountriesMap();
+
 
             // Use a dynamic form to get the values of the dropdown inputs
             DynamicForm dynamicDestForm = formFactory.form().bindFromRequest(request);
@@ -362,15 +361,7 @@ public class DestinationController extends Controller {
                 Map<String, Boolean> typeList = Destination.getTypeList();
                 typeList.replace(destination.getDestType(), true);
 
-                Map<String, Boolean> countryList = null;
-
-                try{
-                    countryList = UtilityFunctions.CountryUtils();
-                }
-                catch(IOException error) {
-                    System.out.println(error);
-                    System.out.println("Error getting countries");
-                }
+                Map<String, Boolean> countryList = CountryUtils.getCountriesMap();
                 countryList.replace(destination.getCountry(), true);
 
                 List<TravellerType> travellerTypes = TravellerType.find.all();
@@ -532,27 +523,31 @@ public class DestinationController extends Controller {
     public Result deleteDestination(Http.Request request, Integer destId) {
         User user = User.getCurrentUser(request);
 
+        logger.debug("controller method to delete dest");
+
         if (user != null) {
             Destination destination = Destination.find.query().where().eq("destid", destId).findOne();
 
             if (destination != null) {
                 if(user.userIsAdmin()){
-                    for(Visit visit : destination.getVisits()){
-                        visit.delete();
-                    }
-                    List<TreasureHunt> treasureHunts = TreasureHunt.find.query().where().eq("destination", destination).findList();
 
-                    for(TreasureHunt treasureHunt : treasureHunts){
-                        treasureHunt.delete();
-                    }
-                    destination.delete();
+                    logger.debug("admin command being called");
+                    DeleteDestinationCommand cmd = new DeleteDestinationCommand(
+                            destination, true);
+                    user.getCommandManager().executeCommand(cmd);
+
                     return redirect(routes.DestinationController.indexDestination());
                 }
                 else if (destination.isUserOwner(user.userid)) {
                     if(destination.visits.isEmpty()) {
                         List<TreasureHunt> treasureHunts = TreasureHunt.find.query().where().eq("destination", destination).findList();
                         if (treasureHunts.isEmpty()) {
-                            destination.delete();
+
+                            logger.debug("non-admin command being called");
+                            DeleteDestinationCommand cmd = new DeleteDestinationCommand(
+                                    destination, false);
+                            user.getCommandManager().executeCommand(cmd);
+
                             return redirect(routes.DestinationController.indexDestination());
                         } else {
                             return preconditionRequired("You cannot delete destinations while they are being used by the treasure hunts.");

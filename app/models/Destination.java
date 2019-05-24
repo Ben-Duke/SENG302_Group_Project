@@ -86,6 +86,18 @@ public class Destination extends Model {
         this(destName, destType, district, country, latitude, longitude, user, false);
         this.isCountryValid = true;
     }
+    
+    public Destination(Destination destination, List<Visit> visits) {
+        this(destination.destName, destination.destType, destination.district,
+                destination.country, destination.latitude, destination.longitude,
+                destination.user, destination.isPublic);
+        this.visits = visits;
+    }
+
+    /**
+     * Destination constructor
+     */
+    public Destination(){}
 
     /**
      * A function that is called when creating a destination to the the types

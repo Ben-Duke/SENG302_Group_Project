@@ -56,6 +56,15 @@ public class Visit extends Model {
     public Visit() {
     }
 
+    public Visit(Visit visit) {
+        this(visit.getArrival(),
+                visit.getDeparture(),
+                visit.getTrip(),
+                visit.getDestination(),
+                visit.getVisitOrder()
+        );
+    }
+
 
     public static Finder<Integer,Visit> find = new Finder<>(Visit.class);
 

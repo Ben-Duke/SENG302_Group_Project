@@ -6,6 +6,7 @@ import formdata.UpdateUserFormData;
 import models.Nationality;
 import models.Passport;
 import models.User;
+import models.commands.Profile.EditProfileCommand;
 import play.data.DynamicForm;
 import play.data.Form;
 import play.data.FormFactory;
@@ -35,8 +36,13 @@ public class ProfileController extends Controller {
      * @return update profile page or error page
      */
     public Result updateProfile(Http.Request request){
-        User user = User.getCurrentUser(request);
-        if (user != null) {
+        List<User> users = User.getCurrentUser(request, true);
+        Boolean isAdmin = false;
+        if (users.size() != 0) {
+            User user = users.get(0);
+            if(users.get(0).getUserid() != users.get(1).getUserid()) {
+                isAdmin = true;
+            }
             UpdateUserFormData updateUserFormData = UserFactory
                                             .getUpdateUserFormDataForm(request);
 
@@ -47,7 +53,7 @@ public class ProfileController extends Controller {
             String[] gendersArray = {"Male", "Female", "Other"};
             List gendersList = Arrays.asList(gendersArray);
 
-            return ok(updateProfile.render(updateUserForm, gendersList,user));
+            return ok(views.html.users.profile.updateProfile.render(updateUserForm, gendersList,user, isAdmin));
         }
         else{
             return unauthorized(notLoggedInErrorStr);
@@ -67,8 +73,14 @@ public class ProfileController extends Controller {
         Form<UpdateUserFormData> updateProfileForm = formFactory
                             .form(UpdateUserFormData.class).bindFromRequest(request);
         // checking if a user is logged in.
-        User user = User.getCurrentUser(request);
-        if (user != null) {
+        List<User> users = User.getCurrentUser(request, true);
+        Boolean isAdmin = false;
+        if (users.size() != 0) {
+            User user = users.get(0);
+            if(users.get(0).getUserid() != users.get(1).getUserid())
+            {
+                isAdmin = true;
+            }
             if (! updateProfileForm.hasErrors()) {
                 // good update user information request
                 // processing it
@@ -79,7 +91,7 @@ public class ProfileController extends Controller {
                 //bad request, errors present
                 String[] gendersArray = {"Male", "Female", "Other"};
                 List gendersList = Arrays.asList(gendersArray);
-                return badRequest(updateProfile.render(updateProfileForm, gendersList,user));
+                return badRequest(views.html.users.profile.updateProfile.render(updateProfileForm, gendersList,user, isAdmin));
             }
         } else{
             return unauthorized(notLoggedInErrorStr);
@@ -115,8 +127,8 @@ public class ProfileController extends Controller {
             user.hashAndSetPassword(passwordPlainText);
         }
 
-
-        user.update();
+        EditProfileCommand editProfileCommand = new EditProfileCommand(user);
+        editProfileCommand.execute();
         // Show the user their home page
     }
 

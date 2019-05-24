@@ -279,9 +279,13 @@ public class DestinationController extends Controller {
             if (oldDestination != null) {
                 if (oldDestination.isUserOwner(user.userid) || user.userIsAdmin()) {
                     oldDestination.applyEditChanges(newDestination);
+                    System.out.println(oldDestination.getDestName());
+                    System.out.println(newDestination.getDestName());
                     EditDestinationCommand editDestinationCommand =
                             new EditDestinationCommand(oldDestination);
-                    editDestinationCommand.execute();
+                    System.out.println(editDestinationCommand);
+                    user.getCommandManager().executeCommand(editDestinationCommand);
+
 
                     return redirect(routes.DestinationController.indexDestination());
 

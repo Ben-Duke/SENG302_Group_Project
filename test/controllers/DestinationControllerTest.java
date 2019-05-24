@@ -1179,4 +1179,144 @@ public class DestinationControllerTest extends WithApplication {
 
     }
 
+    /**
+     * Test to remove a photo from a destination, where the user is not the owner Of the
+     * Destination nor the Photo. Checking the response code.
+     */
+    @Test
+    public void unlinkPhotoFromDestinationUserNotOwnerOfPhotoCheckResponse() {
+        // Send request to link a photo to a destination
+        Http.RequestBuilder linkRequest = Helpers.fakeRequest()
+                .method(POST)
+                .uri("/users/destinations/1/1")
+                .session("connected", "2");
+        route(app, linkRequest);
+
+        Http.RequestBuilder unlinkRequest = Helpers.fakeRequest()
+                .method(DELETE)
+                .uri("/users/destinations/1/1")
+                .session("connected", "1");
+        Result result = route(app, unlinkRequest);
+        assertEquals(UNAUTHORIZED, result.status());
+    }
+
+    /**
+     * Test to remove a photo from a destination, where the user is not the owner Of the
+     * Destination nor the Photo. Checks the photo is still linked to the destination.
+     */
+    @Test
+    public void unlinkPhotoFromDestinationUserNotOwnerOfPhotoCheckPhotoNotRemoved() {
+        // Send request to link a photo to a destination
+        Http.RequestBuilder linkRequest = Helpers.fakeRequest()
+                .method(POST)
+                .uri("/users/destinations/1/1")
+                .session("connected", "2");
+        route(app, linkRequest);
+
+        Destination destination = Destination.find.byId(1);
+        int destPhotosSize = destination.getUserPhotos().size();
+
+        Http.RequestBuilder unlinkRequest = Helpers.fakeRequest()
+                .method(DELETE)
+                .uri("/users/destinations/1/1")
+                .session("connected", "1");
+        route(app, unlinkRequest);
+        Destination destinationAfterDelete = Destination.find.byId(1);
+
+        assertEquals(destPhotosSize, destinationAfterDelete.getUserPhotos().size());
+    }
+
+    /**
+     * Test to remove a photo from a destination, where the user is the owner Of the
+     * Destination but not the Photo. Checking the response code.
+     */
+    @Test
+    public void unlinkPhotoFromDestinationUserOwnerOfDestinationNotPhotoCheckResponse() {
+        // Send request to link a photo to a destination
+        Http.RequestBuilder linkRequest = Helpers.fakeRequest()
+                .method(POST)
+                .uri("/users/destinations/4/1")
+                .session("connected", "2");
+        route(app, linkRequest);
+
+        Http.RequestBuilder unlinkRequest = Helpers.fakeRequest()
+                .method(DELETE)
+                .uri("/users/destinations/1/4")
+                .session("connected", "3");
+        Result result = route(app, unlinkRequest);
+        assertEquals(OK, result.status());
+    }
+
+    /**
+     * Test to remove a photo from a destination, where the user is the owner Of the
+     * Destination but not the Photo. Checks the photo is still linked to the destination.
+     */
+    @Test
+    public void unlinkPhotoFromDestinationUserOwnerOfDestinationNotPhotoCheckPhotoRemoved() {
+        // Send request to link a photo to a destination
+        Http.RequestBuilder linkRequest = Helpers.fakeRequest()
+                .method(POST)
+                .uri("/users/destinations/4/1")
+                .session("connected", "2");
+        route(app, linkRequest);
+
+        Destination destination = Destination.find.byId(4);
+        int destPhotosSize = destination.getUserPhotos().size();
+
+        Http.RequestBuilder unlinkRequest = Helpers.fakeRequest()
+                .method(DELETE)
+                .uri("/users/destinations/1/4")
+                .session("connected", "3");
+        route(app, unlinkRequest);
+        Destination destinationAfterDelete = Destination.find.byId(4);
+
+        assertEquals(destPhotosSize-1, destinationAfterDelete.getUserPhotos().size());
+    }
+
+    /**
+     * Test to remove a photo from a destination, where the user is not the owner Of the
+     * Destination but of the Photo. Checking the response code.
+     */
+    @Test
+    public void unlinkPhotoFromDestinationUserOwnerOfPhotoNotDestinationCheckResponse() {
+        // Send request to link a photo to a destination
+        Http.RequestBuilder linkRequest = Helpers.fakeRequest()
+                .method(POST)
+                .uri("/users/destinations/4/1")
+                .session("connected", "2");
+        route(app, linkRequest);
+
+        Http.RequestBuilder unlinkRequest = Helpers.fakeRequest()
+                .method(DELETE)
+                .uri("/users/destinations/1/4")
+                .session("connected", "2");
+        Result result = route(app, unlinkRequest);
+        assertEquals(OK, result.status());
+    }
+
+    /**
+     * Test to remove a photo from a destination, where the user is not the owner Of the
+     * Destination but of the Photo. Checks the photo is still linked to the destination.
+     */
+    @Test
+    public void unlinkPhotoFromDestinationUserOwnerOfPhotoNotDestinationCheckPhotoRemoved() {
+        // Send request to link a photo to a destination
+        Http.RequestBuilder linkRequest = Helpers.fakeRequest()
+                .method(POST)
+                .uri("/users/destinations/4/1")
+                .session("connected", "2");
+        route(app, linkRequest);
+
+        Destination destination = Destination.find.byId(4);
+        int destPhotosSize = destination.getUserPhotos().size();
+
+        Http.RequestBuilder unlinkRequest = Helpers.fakeRequest()
+                .method(DELETE)
+                .uri("/users/destinations/1/4")
+                .session("connected", "2");
+        route(app, unlinkRequest);
+        Destination destinationAfterDelete = Destination.find.byId(4);
+
+        assertEquals(destPhotosSize-1, destinationAfterDelete.getUserPhotos().size());
+    }
 }

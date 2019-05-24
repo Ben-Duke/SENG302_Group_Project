@@ -56,6 +56,17 @@ public class UserPhoto extends Model {
     }
 
 
+    public UserPhoto(String url, boolean isPublic, boolean isProfile, User user, List<Destination> destinations,
+                     List<Destination> primaryPhotoDestinations) {
+        this.url = url;
+        this.isPublic = isPublic;
+        this.user = user;
+        this.isProfile = isProfile;
+        this.destinations = destinations;
+        this.primaryPhotoDestinations = primaryPhotoDestinations;
+    }
+
+
     /**
      * Gets an unused user photo url.
      *
@@ -170,6 +181,11 @@ public class UserPhoto extends Model {
      */
     public User getUser() {
         return user;
+    }
+
+
+    public List<Destination> getPrimaryPhotoDestinations() {
+        return primaryPhotoDestinations;
     }
 
 }

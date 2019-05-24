@@ -414,22 +414,24 @@ public class User extends Model implements Comparable<User> {
             User requestUser = User.find.query().where()
                     .eq("userid", userId)
                     .findOne();
-            if (requestUser.userIsAdmin()) {
-                List<Admin> adminList = Admin.find.query().where()
-                        .eq("userId", userId).findList();
-                if (adminList.size() == 1) {
-                    Admin admin = adminList.get(0);
-                    if (admin.getUserIdToActAs() != null) {
-                        User userToEdit = User.find.byId(admin.getUserIdToActAs());
-                        return userToEdit;
+            if(requestUser != null) {
+                if (requestUser.userIsAdmin()) {
+                    List<Admin> adminList = Admin.find.query().where()
+                            .eq("userId", userId).findList();
+                    if (adminList.size() == 1) {
+                        Admin admin = adminList.get(0);
+                        if (admin.getUserIdToActAs() != null) {
+                            User userToEdit = User.find.byId(admin.getUserIdToActAs());
+                            return userToEdit;
+                        } else {
+                            return requestUser;
+                        }
                     } else {
-                        return requestUser;
+                        return null;
                     }
-                } else {
-                    return null;
                 }
+                return requestUser;
             }
-            return requestUser;
         }
         return null;
     }

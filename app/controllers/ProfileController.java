@@ -6,6 +6,7 @@ import formdata.UpdateUserFormData;
 import models.Nationality;
 import models.Passport;
 import models.User;
+import models.commands.Profile.EditProfileCommand;
 import play.data.DynamicForm;
 import play.data.Form;
 import play.data.FormFactory;
@@ -126,8 +127,8 @@ public class ProfileController extends Controller {
             user.hashAndSetPassword(passwordPlainText);
         }
 
-
-        user.update();
+        EditProfileCommand editProfileCommand = new EditProfileCommand(user);
+        editProfileCommand.execute();
         // Show the user their home page
     }
 

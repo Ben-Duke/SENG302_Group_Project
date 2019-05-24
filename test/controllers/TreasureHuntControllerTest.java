@@ -521,7 +521,6 @@ public class TreasureHuntControllerTest extends WithApplication {
     public void undoEditTreasureHunt() {
         User user = UserAccessor.getById(2);
         TreasureHunt treasureHunt = user.getTreasureHunts().get(0);
-        System.out.println(Json.toJson(treasureHunt));
         Map<String, String> formData = new HashMap<>();
         formData.put("title", "test123");
         formData.put("riddle", "The garden city");
@@ -543,8 +542,6 @@ public class TreasureHuntControllerTest extends WithApplication {
         Helpers.route(app, undoRequest);
 
         user = UserAccessor.getById(2);
-        System.out.println(Json.toJson(treasureHunt));
-        System.out.println(Json.toJson(user.getTreasureHunts().get(0)));
         assertEquals(new TreasureHunt(treasureHunt), new TreasureHunt(user.getTreasureHunts().get(0)));
     }
 

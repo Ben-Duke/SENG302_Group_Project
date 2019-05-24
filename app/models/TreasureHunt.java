@@ -177,4 +177,16 @@ public class TreasureHunt extends Model {
                 startDate.equals(other.startDate) &&
                 endDate.equals(other.endDate);
     }
+
+    /** Modifies the fields of this Treasure Hunt which are included in the
+     *   treasure hunt editing form to be equal to those fields of the TreasureHunt
+     *   passed in */
+    public void applyEditChanges(TreasureHunt editedTreasureHunt) {
+        this.title = editedTreasureHunt.getTitle();
+        this.destination = editedTreasureHunt.getDestination();
+        this.riddle = editedTreasureHunt.getRiddle();
+        this.startDate = editedTreasureHunt.getStartDate();
+        this.endDate = editedTreasureHunt.getEndDate();
+        this.users = editedTreasureHunt.getUsers();
+    }
 }

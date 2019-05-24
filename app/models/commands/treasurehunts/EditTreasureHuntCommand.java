@@ -10,11 +10,12 @@ public class EditTreasureHuntCommand extends UndoableCommand {
     private TreasureHunt editedTreasureHunt;
     private TreasureHunt actualTreasureHunt;
 
-    public EditTreasureHuntCommand(TreasureHunt newTreasureHunt) {
-        this.editedTreasureHunt = new TreasureHunt(newTreasureHunt);
-        this.actualTreasureHunt = newTreasureHunt;
+    public EditTreasureHuntCommand(TreasureHunt editedTreasureHunt) {
+        this.editedTreasureHunt = new TreasureHunt();
+        this.actualTreasureHunt = editedTreasureHunt;
+        this.editedTreasureHunt.applyEditChanges(actualTreasureHunt);
         this.unEditedTreasureHunt =
-                TreasureHuntAccessor.getById(newTreasureHunt.getThuntid());
+                TreasureHuntAccessor.getById(editedTreasureHunt.getThuntid());
     }
 
     /**
@@ -22,6 +23,7 @@ public class EditTreasureHuntCommand extends UndoableCommand {
      */
     @Override
     public void execute() {
+        actualTreasureHunt.applyEditChanges(editedTreasureHunt);
         TreasureHuntAccessor.update(actualTreasureHunt);
     }
 
@@ -30,7 +32,7 @@ public class EditTreasureHuntCommand extends UndoableCommand {
      */
     @Override
     public void undo() {
-        actualTreasureHunt = unEditedTreasureHunt;
+        actualTreasureHunt.applyEditChanges(unEditedTreasureHunt);
         TreasureHuntAccessor.update(actualTreasureHunt);
     }
 

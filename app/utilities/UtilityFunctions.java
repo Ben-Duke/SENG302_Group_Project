@@ -390,6 +390,7 @@ public class UtilityFunctions {
 
             // optional default is GET
             con.setRequestMethod("GET");
+            con.setConnectTimeout(5000); // 5 seconds
 
             BufferedReader in = new BufferedReader(
                     new InputStreamReader(con.getInputStream()));

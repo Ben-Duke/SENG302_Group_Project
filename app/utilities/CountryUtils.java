@@ -20,7 +20,23 @@ public class CountryUtils {
     private static Date lastUpdated;
     private static List<String> countries;
 
-    public static List<String> getCountries() { return countries; }
+
+    public static List<String> getCountries() {
+        updateCountries();
+        return countries;
+    }
+
+    public static Map<String, Boolean> getCountriesMap() {
+        updateCountries();
+
+        Map<String, Boolean> countryMap = new TreeMap<>();
+
+        for (String country : countries) {
+            countryMap.put(country, false);
+        }
+
+         return countryMap;
+    }
 
 
     /**
@@ -46,7 +62,6 @@ public class CountryUtils {
      * Make api call. Set last updated date. Revalidate used countries
      */
     private static void reloadCountries() {
-
 
         try {
             printLoadingCountriesMessage("IN PROGRESS...");

@@ -179,7 +179,7 @@ public class TripController extends Controller {
                     return badRequest("You cannot visit the same destination twice in a row!");
                 }
                 EditVisitCommand editVisitCommand = new EditVisitCommand(visit);
-                editVisitCommand.execute();
+                user.getCommandManager().executeCommand(editVisitCommand);
                 return redirect(routes.TripController.displaytrip(trip.getTripid()));
             }
             else{

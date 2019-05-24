@@ -38,8 +38,13 @@ public class UserAccessor {
                     .where().eq("email", email.toLowerCase()).findList();
     }
 
-    /** Return the User matching the id passed */
+    /**
+     * Return the User matching the id passed
+     */
     public static User getById(int i) {
         return User.find.byId(i);
     }
+
+    /** Update the user */
+    public static void update(User user) { user.update(); }
 }

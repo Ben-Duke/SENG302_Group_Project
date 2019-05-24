@@ -220,7 +220,9 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
     }
 
 
-
+    /**
+     * Tests the unlinking of a photo and deleting it.
+     */
     @Test
     public void checkUnlinkFromDestinationAndDelete(){
         DestinationController testDestinationController = new DestinationController();
@@ -229,11 +231,11 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
         UserPhoto photo = new UserPhoto("/test",true,false,null);
         photo.addDestination(destination);
         photo.save();
-
         int beforeDeletion = photo.find.all().size();
-        testDestinationController.unlinkPhotoFromDestination(null,photo.getPhotoId(),destination.getDestId());
-        photo.save();
+        testDestinationController.unlinkPhotoFromDestinationAndDelete(null,photo.getPhotoId());
         int afterDeletion = photo.find.all().size();
+        System.out.println(afterDeletion);
+
         assertEquals(afterDeletion ,beforeDeletion-1);
     }
 

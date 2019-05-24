@@ -33,7 +33,7 @@ public class UserPhotoTest extends BaseTestWithApplicationAndDatabase{
         UserPhoto photo = new UserPhoto("/test",false,false,null);
 
         int beforeDelete = photo.find.all().size();
-        photo.deletePhoto(10000);
+        photo.deletePhoto(1000000);
 
         int afterDelete = photo.find.all().size();
         assertEquals(afterDelete,beforeDelete);

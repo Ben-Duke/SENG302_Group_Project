@@ -23,21 +23,18 @@ public class DestinationFactory {
         return allPublicDestinations;
     }
 
-    public static UserPhoto getprimaryProfilePicture(int photoID) {
-        UserPhoto primaryPhoto = null;
-        try{
-            primaryPhoto = UserPhoto.find.query().where().eq("photoId", photoID).findOne();
-
-        }catch(Exception error){
-            System.out.println("Error in UserPhoto method");
-            System.out.println(error);
+    /**
+     * Gets the destination's primary photo
+     * @param destID the id of the destination
+     * @return the primary photo
+     */
+    public static UserPhoto getPrimaryPicture(int destID) {
+        Destination destination = Destination.find.byId(destID);
+        if (destination != null) {
+            System.out.println("photo null?: "+ (destination.getPrimaryPhoto() == null));
+            return destination.getPrimaryPhoto();
         }
-        if(primaryPhoto != null) {
-
-            return  primaryPhoto ;
-        } else {
-            return null;
-        }
+       return null;
     }
 
     /**

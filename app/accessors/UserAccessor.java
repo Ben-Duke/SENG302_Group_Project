@@ -3,7 +3,6 @@ package accessors;
 import models.Nationality;
 import models.Passport;
 import models.User;
-import models.commands.CommandManager;
 
 import java.util.List;
 
@@ -26,6 +25,15 @@ public class UserAccessor {
     }
 
     /**
+     * Finds a user in the database by their user id
+     * @param id the user id
+     * @return the user
+     */
+    public static User getUserById(int id) {
+        return User.find.byId(id);
+    }
+
+    /**
      * Gets a List of Users with a specific email.
      *
      * It should be a List of length 0 or 1, but you should still check
@@ -39,20 +47,6 @@ public class UserAccessor {
                     .where().eq("email", email.toLowerCase()).findList();
     }
 
-    public static User getByEmail(String email) {
-        List<User> users = getUsersFromEmail(email);
-        if (users.isEmpty()) {
-            return null;
-        } else {
-            return users.get(0);
-        }
-    }
-
-    public static void insert(User user) {
-        user.save();
-    }
-
-    public static void update(User user) {
-        user.update();
-    }
+    /** Update the user */
+    public static void update(User user) { user.update(); }
 }

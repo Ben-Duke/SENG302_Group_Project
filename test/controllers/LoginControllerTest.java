@@ -1,6 +1,5 @@
 package controllers;
 
-import accessors.UserAccessor;
 import models.User;
 import org.junit.After;
 import org.junit.Before;
@@ -47,7 +46,7 @@ public class LoginControllerTest extends WithApplication {
         )));
         //Initialises a test user with name "testUser" and saves it to the database.
         User user = new User("gon12@uclive.ac.nz", "hunter22");
-        UserAccessor.insert(user);
+        user.save();
     }
 
     /**

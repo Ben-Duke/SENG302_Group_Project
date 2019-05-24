@@ -1,5 +1,6 @@
 package formdata;
 
+import factories.LoginFactory;
 import factories.UserFactory;
 import models.User;
 import play.data.validation.Constraints;
@@ -11,6 +12,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
 
 import static play.mvc.Results.unauthorized;
 
@@ -31,6 +33,11 @@ public class UpdateUserFormData implements Constraints.Validatable<List<Validati
     public String password;
 
     public String existingUsername;
+    public String existingPassword;
+
+    private String existingPasswordToCheck;
+
+    public Boolean isAdmin;
 
 
 
@@ -47,13 +54,15 @@ public class UpdateUserFormData implements Constraints.Validatable<List<Validati
      *
      * @param user The User whose data to enter into the form.
      */
-    public UpdateUserFormData(User user) {
+    public UpdateUserFormData(User user, Boolean isAdmin) {
         this.firstName = user.getfName();
         this.lastName = user.getlName();
         this.gender = user.getGender();
         this.username = user.getEmail();
         this.existingUsername = user.getEmail();
         this.password = "";
+        this.existingPasswordToCheck = user.getPasswordHash();
+        this.isAdmin = isAdmin;
         if (user.getDateOfBirth() == null) {
             this.dateOfBirth = "null";
         } else {
@@ -138,6 +147,14 @@ public class UpdateUserFormData implements Constraints.Validatable<List<Validati
                     errors.add(new ValidationError("dateOfBirth", dateOfBirthErrorStr));
                 }
             }
+        }
+
+        LoginFactory loginFactory = new LoginFactory();
+
+
+
+        if(!isAdmin && !loginFactory.isPasswordMatch(existingUsername, existingPassword)) {
+            errors.add(new ValidationError("existingPassword", "Incorrect password"));
         }
 
         return errors;

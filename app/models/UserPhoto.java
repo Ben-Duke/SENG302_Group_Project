@@ -78,15 +78,19 @@ public class UserPhoto extends Model {
         return url;
     }
 
+    /**
+     * Calling this function will delete a user photo that has that photoId does nothing if the photoId doesn't
+     * match a photo in the database
+     * @param idOfPhoto
+     * @return
+     */
     public Boolean deletePhoto(int idOfPhoto){
         Boolean deleted = false;
         try{
-            System.out.println(UserPhoto.find.query().where().eq("photoId", idOfPhoto));
             UserPhoto.find.query().where().eq("photoId",idOfPhoto).delete();
-            System.out.println(UserPhoto.find.query().where().eq("photoId", idOfPhoto));
             deleted = true;
         }catch(Exception error){
-            System.out.println(error);
+            System.err.println(error.getMessage());
         }
         return deleted;
     }

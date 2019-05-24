@@ -704,7 +704,9 @@ public class DestinationController extends Controller {
             for (Destination destination : photo.getDestinations()) {
                 unlinkPhotoFromDestination(null, photoId, destination.getDestId());
             }
+            System.out.println(UserPhoto.find.all().size());
             photo.deletePhoto(photoId);
+            System.out.println(UserPhoto.find.all().size());
         }catch(Exception error){
             return badRequest();
         }

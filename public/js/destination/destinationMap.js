@@ -31,15 +31,6 @@ function initIndexDestinationMap() {
 
 
 
-function mapClickHandler() {
-    console.log("hello");
-    console.log(this);
-    console.log(window.globalMap);
-}
-
-
-
-
 /**
  * The callback function that is called after the google maps script src loads
  * with the api key.

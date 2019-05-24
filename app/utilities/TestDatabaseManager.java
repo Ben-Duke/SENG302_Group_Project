@@ -48,6 +48,7 @@ public class TestDatabaseManager {
      *                          database has been populated.
      */
     public void populateDatabase(CountDownLatch initCompleteLatch) {
+
         populateDatabase();
         initCompleteLatch.countDown();
     }
@@ -61,6 +62,7 @@ public class TestDatabaseManager {
 
         UtilityFunctions util = new UtilityFunctions();
 
+
         if(TravellerType.find.all().isEmpty()) {
             boolean successFullyAddedTravellerTypes = util.addTravellerTypes();
 
@@ -70,11 +72,15 @@ public class TestDatabaseManager {
         }
 
         if (isInSuccessState && Nationality.find.all().isEmpty()) {
+
             boolean successfullyAddedAllNationalities = util.addAllNationalities();
-            if (! successfullyAddedAllNationalities) {
+
+            if (!successfullyAddedAllNationalities) {
+
                 isInSuccessState = false;
             }
         }
+
 
         if (isInSuccessState && Passport.find.all().isEmpty()) {
             boolean successfullyAddedAllPassorts =  util.addAllPassports();
@@ -121,6 +127,7 @@ public class TestDatabaseManager {
                 this.addUserPhotos();
             }
         }
+
     }
 
     /**
@@ -129,6 +136,7 @@ public class TestDatabaseManager {
      * @return A boolean, true if successfully added all normal users, else false
      */
     public boolean populateNormalUsers(){
+
         boolean isInSuccessState = true;
         try {
             //Groupie
@@ -170,6 +178,7 @@ public class TestDatabaseManager {
 
             user.addTravellerType(travellerType3);
 
+
 //            user.setNationality(Nationality.find.all().subList(0, 2));
             List<Nationality> nats = new ArrayList<>();
             nats.add(invalidNationality);
@@ -187,11 +196,12 @@ public class TestDatabaseManager {
                 System.out.printf("User1 failed");
                 System.out.println(err);
             }
+
             user2.getTravellerTypes().add(travellerType2);
 
-            user2.setNationality(Nationality.find.all().subList(100, 102));
+            user2.setNationality(Nationality.find.all().subList(70, 72));
 
-            user2.setPassport(Passport.find.all().subList(100, 102));
+            user2.setPassport(Passport.find.all().subList(70, 72));
 
             try{
                 user2.save();
@@ -213,6 +223,9 @@ public class TestDatabaseManager {
 
 
         } catch (Exception e) {
+
+            System.out.println(e);
+
             isInSuccessState = false;
             System.out.println("Failed to create all users");
         }

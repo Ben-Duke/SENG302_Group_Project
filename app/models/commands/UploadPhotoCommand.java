@@ -39,14 +39,12 @@ public class UploadPhotoCommand extends UndoableCommand {
     }
 
     public void undo() {
-        System.out.println("Undo");
         File file = new File(userPhoto.getUrlWithPath());
         file.delete();
         UserPhotoAccessor.delete(userPhoto);
     }
 
     public void redo() {
-        System.out.println("Redo");
         userPhoto = new UserPhoto(userPhoto.getUrl(), userPhoto.isPublic(), userPhoto.isProfile(), userPhoto.getUser(),
                 userPhoto.getDestinations(), userPhoto.getPrimaryPhotoDestinations());
         execute();

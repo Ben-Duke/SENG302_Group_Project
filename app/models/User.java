@@ -1,6 +1,7 @@
 package models;
 
 import accessors.CommandManagerAccessor;
+import accessors.UserAccessor;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.ebean.ExpressionList;
 import io.ebean.Finder;
@@ -146,6 +147,13 @@ public class User extends Model implements Comparable<User> {
     public User(String email){
         this.email = email.toLowerCase();
         this.isAdmin = false;
+    }
+
+    /**
+     * Empty constructor for users
+     */
+    public User(){
+
     }
 
     @Override
@@ -406,22 +414,25 @@ public class User extends Model implements Comparable<User> {
             User requestUser = User.find.query().where()
                     .eq("userid", userId)
                     .findOne();
-            if (requestUser.userIsAdmin()) {
-                List<Admin> adminList = Admin.find.query().where()
-                        .eq("userId", userId).findList();
-                if (adminList.size() == 1) {
-                    Admin admin = adminList.get(0);
-                    if (admin.getUserIdToActAs() != null) {
-                        User userToEdit = User.find.byId(admin.getUserIdToActAs());
-                        return userToEdit;
+
+            if (requestUser != null) {
+                if (requestUser.userIsAdmin()) {
+                    List<Admin> adminList = Admin.find.query().where()
+                            .eq("userId", userId).findList();
+                    if (adminList.size() == 1) {
+                        Admin admin = adminList.get(0);
+                        if (admin.getUserIdToActAs() != null) {
+                            User userToEdit = User.find.byId(admin.getUserIdToActAs());
+                            return userToEdit;
+                        } else {
+                            return requestUser;
+                        }
                     } else {
-                        return requestUser;
+                        return null;
                     }
-                } else {
-                    return null;
                 }
+                return requestUser;
             }
-            return requestUser;
         }
         return null;
     }
@@ -449,28 +460,30 @@ public class User extends Model implements Comparable<User> {
                     .eq("userid", userId)
                     .findOne();
             users.add(requestUser);
-            if(requestUser.userIsAdmin()){
-                List<Admin> adminList = Admin.find.query().where()
-                        .eq("userId", userId).findList();
-                if(adminList.size() == 1){
-                    Admin admin = adminList.get(0);
-                    if (admin.getUserIdToActAs() != null) {
-                        User userToEdit = User.find.byId(admin.getUserIdToActAs());
-                        users.add(0,userToEdit);
-                        return users;
+
+            if (requestUser != null) {
+                if (requestUser.userIsAdmin()) {
+                    List<Admin> adminList = Admin.find.query().where()
+                            .eq("userId", userId).findList();
+                    if (adminList.size() == 1) {
+                        Admin admin = adminList.get(0);
+                        if (admin.getUserIdToActAs() != null) {
+                            User userToEdit = User.find.byId(admin.getUserIdToActAs());
+                            users.add(0, userToEdit);
+                            return users;
+                        } else {
+                            users.add(requestUser);
+                            return users;
+                        }
                     } else {
-                        users.add(requestUser);
+                        //this should never happen
                         return users;
                     }
+                } else {
+                    users.add(requestUser);
                 }
-                else{
-                    //this should never happen
-                    return users;
-                }
-            } else {
-                users.add(requestUser);
+                return users;
             }
-            return users;
         }
         return users;
     }
@@ -553,6 +566,18 @@ public class User extends Model implements Comparable<User> {
 
     public int compareTo(User other) {
         return this.userid.compareTo(other.getUserid());
+    }
+
+    /** Modifies the fields of this User which are included in the
+     *   profile editing form to be equal to those fields of the user
+     *   passed in */
+    public void applyEditChanges(User editedUser) {
+        this.fName = editedUser.getfName();
+        this.lName = editedUser.getlName();
+        this.gender = editedUser.getGender();
+        this.dateOfBirth = editedUser.getDateOfBirth();
+        this.email = editedUser.getEmail();
+        this.passwordHash = editedUser.getPasswordHash();
     }
 }
 

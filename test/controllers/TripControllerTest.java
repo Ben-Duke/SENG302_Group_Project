@@ -23,6 +23,7 @@ import play.mvc.Http;
 import play.mvc.Result;
 import play.test.Helpers;
 import play.test.WithApplication;
+import testhelpers.BaseTestWithApplicationAndDatabase;
 import utilities.TestDatabaseManager;
 
 import java.util.ArrayList;
@@ -37,76 +38,9 @@ import static play.mvc.Http.Status.SEE_OTHER;
 import static play.mvc.Http.Status.UNAUTHORIZED;
 import static play.test.Helpers.*;
 
-public class TripControllerTest extends WithApplication {
+public class TripControllerTest extends BaseTestWithApplicationAndDatabase {
 
-    /**
-     * The fake database
-     */
-    Database database;
-
-
-    TripFactory tripfactory = new TripFactory();
-    VisitFactory visitfactory = new VisitFactory();
-
-    /**
-     * Sets up the fake database before each test
-     */
-    @Before
-    public void setupDatabase() {
-        database = Databases.inMemory();
-        Evolutions.applyEvolutions(database, Evolutions.forDefault(new Evolution(
-                1,
-                "create table test (id bigint not null, name varchar(255));",
-                "drop table test;"
-        )));
-        ApplicationManager.setIsTest(true);
-        TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
-        testDatabaseManager.populateDatabase();
-        //Initialises a test user with name "testUser" and saves it to the database.
-//        User user = new User("testUser");
-//        user.save();
-//        //Initialises a test trip with name "testTrip" and saves it to the database.
-//        TripFormData tripForm = new TripFormData("testTrip", user);
-//        int tripid = tripfactory.createTrip(tripForm, user);
-//        Destination destination = new Destination("University of Canterbury",
-//                "University",
-//                "Ilam",
-//                "New Zealand",
-//                -43.525450F,
-//                172.582600F,
-//                user);
-//        destination.save();
-//        Destination destination2 = new Destination("University of Banterbury",
-//                "University",
-//                "9",
-//                "Pepestan",
-//                -100,
-//                100,
-//                user);
-//        destination2.save();
-//        Destination destination3 = new Destination("Panem",
-//                "Hunger Games",
-//                "12",
-//                "Panem",
-//                100,
-//                -100,
-//                user);
-//        destination3.save();
-    }
-
-    /**
-     * Clears the fake database after each test
-     */
-    @After
-    public void shutdownDatabase() {
-        Evolutions.cleanupEvolutions(database);
-        database.shutdown();
-    }
-
-    @Override
-    protected Application provideApplication() {
-        return new GuiceApplicationBuilder().build();
-    }
+    private VisitFactory visitfactory = new VisitFactory();
 
     /**
      * Unit test for trip creation page

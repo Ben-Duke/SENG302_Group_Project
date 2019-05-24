@@ -5,10 +5,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import play.db.Database;
-import play.db.Databases;
-import play.db.evolutions.Evolution;
-import play.db.evolutions.Evolutions;
-import play.test.WithApplication;
+import testhelpers.BaseTestWithApplicationAndDatabase;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,22 +15,14 @@ import static org.junit.Assert.*;
 /**
  * JUnit 4 tests for DestinationFactory
  */
-public class DestinationFactoryTest extends WithApplication {
-    private Database database;
+public class DestinationFactoryTest extends BaseTestWithApplicationAndDatabase {
     private int testUserId = -1;
-    private DestinationFactory destinationFactory;
+    private DestinationFactory destinationFactory = new DestinationFactory();
     private User testUser;
-    Destination testPublicDestination;
+    private Destination testPublicDestination;
 
     @Before
     public void setUpDatabase() {
-        destinationFactory = new DestinationFactory();
-        database = Databases.inMemory();
-        Evolutions.applyEvolutions(database, Evolutions.forDefault(new Evolution(
-                1,
-                "create table test (id bigint not null, name varchar(255));",
-                "drop table test;"
-        )));
         //Initialises a test user with name "testUser" and saves it to the database.
         User user = new User("gon12@uclive.ac.nz", "hunter22");
         testUser = user;
@@ -49,9 +38,6 @@ public class DestinationFactoryTest extends WithApplication {
      */
     @After
     public void shutdownDatabase() {
-        Evolutions.cleanupEvolutions(database);
-        database.shutdown();
-        database = null;
         testUserId = -1;
         destinationFactory = null;
         testUser = null;

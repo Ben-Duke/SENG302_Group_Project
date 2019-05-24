@@ -18,6 +18,7 @@ import play.mvc.Http;
 import play.mvc.Result;
 import play.test.Helpers;
 import play.test.WithApplication;
+import testhelpers.BaseTestWithApplicationAndDatabase;
 import utilities.TestDatabaseManager;
 
 import java.util.HashMap;
@@ -33,51 +34,12 @@ import static play.mvc.Http.Status.SEE_OTHER;
 import static play.mvc.Http.Status.UNAUTHORIZED;
 import static play.test.Helpers.*;
 
-public class TreasureHuntControllerTest extends WithApplication {
-
-    /**
-     * The fake database
-     */
-    Database database;
+public class TreasureHuntControllerTest extends BaseTestWithApplicationAndDatabase {
 
     /**
      * Instance of the TreasureHuntController
      * */
-    TreasureHuntController treasureHuntController = new TreasureHuntController();
-
-    /**
-     * Sets up the fake database before each test
-     */
-    @Before
-    public void setupDatabase() {
-        database = Databases.inMemory();
-        Evolutions.applyEvolutions(database, Evolutions.forDefault(new Evolution(
-                1,
-                "create table test (id bigint not null, name varchar(255));",
-                "drop table test;"
-        )));
-        ApplicationManager.setUserPhotoPath("/test/resources/test_photos/user_");
-        ApplicationManager.setIsTest(true);
-        TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
-        testDatabaseManager.populateDatabase();
-    }
-
-    /**
-     * Clears the fake database after each test
-     */
-    @After
-    public void shutdownDatabase() {
-        Evolutions.cleanupEvolutions(database);
-        database.shutdown();
-    }
-
-    /**
-     * Gives the built GUI application
-     */
-    @Override
-    protected Application provideApplication() {
-        return new GuiceApplicationBuilder().build();
-    }
+    private TreasureHuntController treasureHuntController = new TreasureHuntController();
 
     /**
      * Test for getting to the index treasure hunts page.

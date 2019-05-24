@@ -10,6 +10,7 @@ import play.mvc.Http;
 import play.mvc.Result;
 import play.test.Helpers;
 import play.test.WithApplication;
+import testhelpers.BaseTestWithApplicationAndDatabase;
 
 import static org.junit.Assert.*;
 import static play.mvc.Http.Status.OK;
@@ -24,17 +25,7 @@ import static play.test.Helpers.route;
  * Username refers to text of an email address before the @
  * Domain refers to the text of an email address after the @
  */
-public class RegisterControllerTest extends WithApplication {
-
-    /**
-     * The fake database
-     */
-    Database database;
-
-    @Override
-    protected Application provideApplication() {
-        return new GuiceApplicationBuilder().build();
-    }
+public class RegisterControllerTest extends BaseTestWithApplicationAndDatabase {
 
     private RegisterController registerController;
 

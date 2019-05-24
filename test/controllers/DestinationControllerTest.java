@@ -38,40 +38,9 @@ import static play.test.Helpers.*;
 
 public class DestinationControllerTest extends BaseTestWithApplicationAndDatabase {
 
-    /**
-     * The fake database
-     */
-    Database database;
-
     private final Logger logger = UtilityFunctions.getLogger();
 
     private int REDIRECT_HTTP_STATUS = SEE_OTHER;
-
-    /**
-     * Sets up the fake database before each test
-     */
-    @Before
-    public void setUpDatabase() {
-        database = Databases.inMemory();
-        Evolutions.applyEvolutions(database, Evolutions.forDefault(new Evolution(
-                1,
-                "create table test (id bigint not null, name varchar(255));",
-                "drop table test;"
-        )));
-        ApplicationManager.setUserPhotoPath("/test/resources/test_photos/user_");
-        ApplicationManager.setIsTest(true);
-        TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
-        testDatabaseManager.populateDatabase();
-    }
-
-    /**
-     * Clears the fake database after each test
-     */
-    @After
-    public void shutdownDatabase() {
-        Evolutions.cleanupEvolutions(database);
-        database.shutdown();
-    }
 
     /**
      * Test to render destination index with no login session

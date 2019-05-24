@@ -19,7 +19,6 @@ public class CountryUtils {
 
     private static Date lastUpdated;
     private static List<String> countries;
-    private static boolean successState = false;
 
     public static List<String> getCountries() { return countries; }
 
@@ -30,7 +29,7 @@ public class CountryUtils {
      * currently loaded in place.
      */
     public static void updateCountries() {
-        if (lastUpdated == null || countries == null || !successState) {
+        if (lastUpdated == null || countries == null) {
             reloadCountries();
 
         } else {
@@ -52,19 +51,16 @@ public class CountryUtils {
         try {
             printLoadingCountriesMessage("IN PROGRESS...");
 
-            throw new Exception();
+            countries = new ArrayList<>(UtilityFunctions.countriesAsStrings());
 
-//            countries = new ArrayList<>(UtilityFunctions.countriesAsStrings());
-//            successState = true;
-//
-//            lastUpdated = new Date();
-//
-//            validatePassportCountries();
-//            validateNationalityCountries();
-//            validateDestinationCountries();
-//
-//
-//            printLoadingCountriesMessage("SUCCEEDED");
+            lastUpdated = new Date();
+
+            validatePassportCountries();
+            validateNationalityCountries();
+            validateDestinationCountries();
+
+
+            printLoadingCountriesMessage("SUCCEEDED");
 
         } catch (Exception e) {
 
@@ -76,13 +72,16 @@ public class CountryUtils {
 
                 Locale[] locales = Locale.getAvailableLocales();
                 for (Locale locale : locales) {
-                    System.out.println(locale.getDisplayCountry());
-                    countries.add(locale.getDisplayCountry());
+
+                    if (locale.getDisplayCountry() != "" &&
+                            !countries.contains(locale.getDisplayCountry())) {
+
+                        countries.add(locale.getDisplayCountry());
+                    }
                 }
 
+                lastUpdated = new Date();
                 printLoadingCountriesMessage("Locales loaded in place");
-
-                System.out.println(countries);
 
             }
 

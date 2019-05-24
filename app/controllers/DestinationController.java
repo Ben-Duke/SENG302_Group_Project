@@ -109,6 +109,7 @@ public class DestinationController extends Controller {
             CountryUtils.updateCountries();
 
             List<Destination> destinations = user.getDestinations();
+            
             List<Destination> allDestinations = Destination.find.all();
 
             return ok(indexDestination.render(destinations, allDestinations, destFactory, user));

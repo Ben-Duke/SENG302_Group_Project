@@ -178,6 +178,7 @@ public class TestDatabaseManager {
 
             user.addTravellerType(travellerType3);
 
+
 //            user.setNationality(Nationality.find.all().subList(0, 2));
             List<Nationality> nats = new ArrayList<>();
             nats.add(invalidNationality);
@@ -195,11 +196,12 @@ public class TestDatabaseManager {
                 System.out.printf("User1 failed");
                 System.out.println(err);
             }
+
             user2.getTravellerTypes().add(travellerType2);
 
-            user2.setNationality(Nationality.find.all().subList(100, 102));
+            user2.setNationality(Nationality.find.all().subList(70, 72));
 
-            user2.setPassport(Passport.find.all().subList(100, 102));
+            user2.setPassport(Passport.find.all().subList(70, 72));
 
             try{
                 user2.save();
@@ -221,6 +223,9 @@ public class TestDatabaseManager {
 
 
         } catch (Exception e) {
+
+            System.out.println(e);
+
             isInSuccessState = false;
             System.out.println("Failed to create all users");
         }

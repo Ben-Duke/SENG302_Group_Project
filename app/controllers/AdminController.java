@@ -104,7 +104,7 @@ public class AdminController extends Controller {
                 return unauthorized("Oops, you are not authorised.");
             }
         } else {
-            return unauthorized("Oops, you are not logged in.");
+            return redirect(routes.UserController.userindex());
         }
     }
 

@@ -51,7 +51,7 @@ public class TripController extends Controller {
             return ok(createTrip.render(incomingForm, user));
         }
         else{
-            return unauthorized("Oops, you are not logged in");
+            return redirect(routes.UserController.userindex());
         }
     }
 
@@ -80,7 +80,7 @@ public class TripController extends Controller {
             }
         }
         else{
-            return unauthorized("Oops, you are not logged in");
+            return redirect(routes.UserController.userindex());
         }
     }
 
@@ -110,7 +110,7 @@ public class TripController extends Controller {
             return redirect(routes.TripController.addTripDestinations(tripid));
         }
         else{
-            return unauthorized("Oops, you are not logged in");
+            return redirect(routes.UserController.userindex());
         }
         //return redirect(routes.UserController.userindex());
     }
@@ -139,7 +139,7 @@ public class TripController extends Controller {
             }
         }
         else{
-            return unauthorized("Oops, you are not logged in");
+            return redirect(routes.UserController.userindex());
         }
     }
 
@@ -185,7 +185,7 @@ public class TripController extends Controller {
             }
         }
         else{
-            return unauthorized("Oops, you are not logged in");
+            return redirect(routes.UserController.userindex());
         }
     }
 
@@ -222,7 +222,7 @@ public class TripController extends Controller {
             }
         }
         else{
-            return unauthorized("Oops, you are not logged in");
+            return redirect(routes.UserController.userindex());
         }
     }
 
@@ -251,7 +251,7 @@ public class TripController extends Controller {
             }
         }
         else{
-            return unauthorized("Oops, you are not logged in");
+            return redirect(routes.UserController.userindex());
         }
     }
 
@@ -310,7 +310,7 @@ public class TripController extends Controller {
             }
         }
         else{
-            return unauthorized("Oops, you are not logged in");
+            return redirect(routes.UserController.userindex());
         }
     }
 
@@ -404,7 +404,7 @@ public class TripController extends Controller {
                 return unauthorized("Oops, this is a private trip and you don't own it.");
             }
         } else {
-            return unauthorized("Oops, you are not logged in");
+            return redirect(routes.UserController.userindex());
         }
     }
 
@@ -440,7 +440,7 @@ public class TripController extends Controller {
             }
         }
         else{
-            return unauthorized("Oops, you are not logged in");
+            return redirect(routes.UserController.userindex());
         }
         //return redirect(routes.UserController.userindex());
         */

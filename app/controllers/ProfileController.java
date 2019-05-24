@@ -254,7 +254,7 @@ public class ProfileController extends Controller {
             if (user != null) {
                 UserFactory.deleteNatsOnUser(user.getUserid(), nationalityID);
             } else {
-                return unauthorized("Oops, you are not logged in");
+                return redirect(routes.UserController.userindex());
 
             }
         }

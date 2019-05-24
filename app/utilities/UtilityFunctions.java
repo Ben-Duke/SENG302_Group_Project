@@ -203,10 +203,18 @@ public class UtilityFunctions {
 
                 } else {
                     for (String country : CountryUtils.getCountries()) {
+
+
                         Nationality nationality = new Nationality(country);
+
+
                         try {
                             nationality.save();
                         } catch (Exception error) {
+
+//                            System.out.println(error);
+
+
                             isInSuccessState = false;
                             System.out.println("Failed to save nationality: " +
                                     nationality.getNationalityName() +

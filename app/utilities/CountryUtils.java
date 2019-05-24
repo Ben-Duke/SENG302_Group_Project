@@ -6,6 +6,7 @@ import models.Destination;
 import models.Nationality;
 import models.Passport;
 import org.slf4j.Logger;
+import play.api.PlayException;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -51,17 +52,19 @@ public class CountryUtils {
         try {
             printLoadingCountriesMessage("IN PROGRESS...");
 
-            countries = new ArrayList<>(UtilityFunctions.countriesAsStrings());
-            successState = true;
+            throw new Exception();
 
-            lastUpdated = new Date();
-
-            validatePassportCountries();
-            validateNationalityCountries();
-            validateDestinationCountries();
-
-
-            printLoadingCountriesMessage("SUCCEEDED");
+//            countries = new ArrayList<>(UtilityFunctions.countriesAsStrings());
+//            successState = true;
+//
+//            lastUpdated = new Date();
+//
+//            validatePassportCountries();
+//            validateNationalityCountries();
+//            validateDestinationCountries();
+//
+//
+//            printLoadingCountriesMessage("SUCCEEDED");
 
         } catch (Exception e) {
 
@@ -73,10 +76,13 @@ public class CountryUtils {
 
                 Locale[] locales = Locale.getAvailableLocales();
                 for (Locale locale : locales) {
+                    System.out.println(locale.getDisplayCountry());
                     countries.add(locale.getDisplayCountry());
                 }
 
                 printLoadingCountriesMessage("Locales loaded in place");
+
+                System.out.println(countries);
 
             }
 

@@ -9,6 +9,8 @@ import models.*;
 
 
 import models.commands.Destinations.DeleteDestinationCommand;
+import models.commands.Destinations.LinkPhotoDestinationCommand;
+import models.commands.Destinations.UnlinkPhotoDestinationCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import play.data.DynamicForm;
@@ -678,8 +680,11 @@ public class DestinationController extends Controller {
                     //add checks for private destinations here once destinations have been merged in.
                     //You can only link a photo to a private destination if you own the private destination.
                     if (!photo.getDestinations().contains(destination)) {
-                        photo.addDestination(destination);
-                        photo.update();
+
+                        LinkPhotoDestinationCommand cmd = new LinkPhotoDestinationCommand(photo, destination);
+                        user.getCommandManager().executeCommand(cmd);
+
+
                     } else {
                         return badRequest("You have already linked the photo to this destination.");
                     }
@@ -705,18 +710,20 @@ public class DestinationController extends Controller {
      *         badRequest if the destination and photo were not linked     *
      */
     public Result unlinkPhotoFromDestination(Http.Request request, int photoId, int destId) {
+        User user = User.getCurrentUser(request);
         UserPhoto photo = UserPhoto.find.byId(photoId);
         Destination destination = Destination.find.byId(destId);
+
+        if (user == null) return unauthorized("Oops, you are not logged in");
         if (photo == null) return notFound("No photo found with that id");
         if (destination == null) return notFound("No destination found with that id");
 
-        if (! photo.removeDestination(destination)) return badRequest("The destination was not linked to this photo");
-        photo.update();
-        if ((destination.getPrimaryPhoto() != null) &&
-                (photo.getPhotoId() == destination.getPrimaryPhoto().getPhotoId())) {
-            destination.setPrimaryPhoto(null);
-            destination.update();
-        }
+        if (!photo.getDestinations().contains(destination)) return badRequest("The destination was not linked to this photo");
+//        if (! photo.removeDestination(destination)) return badRequest("The destination was not linked to this photo");
+
+        UnlinkPhotoDestinationCommand cmd = new UnlinkPhotoDestinationCommand(photo, destination);
+        user.getCommandManager().executeCommand(cmd);
+
         return ok();
     }
 

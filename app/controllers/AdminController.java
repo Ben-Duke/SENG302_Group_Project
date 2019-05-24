@@ -37,6 +37,8 @@ public class AdminController extends Controller {
                     List<DestinationModificationRequest> allReqs = DestinationModificationRequest.find.all();
                     return ok(indexAdmin.render(currentUser, userList.get(1), users,allReqs));
                 }
+            } else {
+                return redirect(routes.UserController.userindex());
             }
         }
         return unauthorized("Oops, you are not authorised.");
@@ -64,7 +66,7 @@ public class AdminController extends Controller {
                 }
             }
         }
-        return unauthorized("Oops, you are not authorised.");
+        return redirect(routes.UserController.userindex());
     }
 
     /**
@@ -85,7 +87,7 @@ public class AdminController extends Controller {
                 return redirect(routes.AdminController.indexAdmin());
             }
         }
-        return unauthorized("Oops, you are not authorised.");
+        return redirect(routes.UserController.userindex());
     }
 
     public Result viewDestinationModificationRequest(Http.Request request, Integer destModReqId) {

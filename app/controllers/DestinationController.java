@@ -710,7 +710,7 @@ public class DestinationController extends Controller {
             }
             return ok();
         }
-        return unauthorized("You are not logged in.");
+        return redirect(routes.UserController.userindex());
     }
 
     /**
@@ -930,7 +930,7 @@ public class DestinationController extends Controller {
                 return ok();
             }
         } else {
-            return unauthorized("Oops, you're not logged in.");
+            return redirect(routes.UserController.userindex());
         }
     }
 

@@ -9,6 +9,7 @@ import models.Destination;
 import models.Trip;
 import models.User;
 import models.Visit;
+import models.commands.Trips.DeleteTripCommand;
 import play.data.Form;
 import play.data.FormFactory;
 import play.libs.Json;
@@ -238,10 +239,8 @@ public class TripController extends Controller {
         if (user != null) {
             if(trip != null) {
                 if (trip.getUser().getUserid() == user.getUserid() || user.userIsAdmin()) {
-                    for(Visit visit : trip.getVisits()){
-                        visit.delete();
-                    }
-                    trip.delete();
+                    DeleteTripCommand deleteTripCommand = new DeleteTripCommand(trip);
+                    user.getCommandManager().executeCommand(deleteTripCommand);
                     return redirect(routes.HomeController.showhome());
                 } else {
                     return unauthorized("Oops, this is not your trip.");

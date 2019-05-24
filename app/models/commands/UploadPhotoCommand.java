@@ -16,13 +16,14 @@ public class UploadPhotoCommand extends UndoableCommand {
     private UserPhoto userPhoto;
     private Files.TemporaryFile fileObject;
 
-
-
     public UploadPhotoCommand(UserPhoto photo, Files.TemporaryFile fileObject) {
         this.userPhoto = photo;
         this.fileObject = fileObject;
     }
 
+    /**
+     * Execute an upload photo command
+     */
     public void execute() {
         try {
             java.nio.file.Files.createDirectories(Paths.get(
@@ -38,12 +39,18 @@ public class UploadPhotoCommand extends UndoableCommand {
 
     }
 
+    /**
+     * Undo a photo upload
+     */
     public void undo() {
         File file = new File(userPhoto.getUrlWithPath());
         file.delete();
         UserPhotoAccessor.delete(userPhoto);
     }
 
+    /**
+     * Redo a photo upload
+     */
     public void redo() {
         userPhoto = new UserPhoto(userPhoto.getUrl(), userPhoto.isPublic(), userPhoto.isProfile(), userPhoto.getUser(),
                 userPhoto.getDestinations(), userPhoto.getPrimaryPhotoDestinations());

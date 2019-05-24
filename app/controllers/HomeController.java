@@ -1,8 +1,6 @@
 package controllers;
 
-import akka.http.javadsl.model.HttpRequest;
 import factories.UserFactory;
-import models.Admin;
 import models.User;
 import models.UserPhoto;
 import play.data.FormFactory;
@@ -12,24 +10,16 @@ import play.mvc.Result;
 import utilities.CountryUtils;
 import utilities.UtilityFunctions;
 import views.html.home.home;
-import views.html.users.*;
 
 import javax.imageio.ImageIO;
 import javax.inject.Inject;
-
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
-
-import static play.mvc.Controller.request;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
 
-import static play.mvc.Http.Status.OK;
 import static play.mvc.Results.*;
 
 public class HomeController {
@@ -74,9 +64,9 @@ public class HomeController {
     public Result upload(Http.Request request) {
         User user = User.getCurrentUser(request);
         if(user != null) {
-            Map<String, String[]> datapart = request.body().asMultipartFormData().asFormUrlEncoded();
+            Map<String, String[]> dataPart = request.body().asMultipartFormData().asFormUrlEncoded();
             boolean isPublic = false;
-            if (datapart.get("private") == null) {
+            if (dataPart.get("private") == null) {
                 isPublic = true;
             }
 

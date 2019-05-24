@@ -6,7 +6,6 @@ import formdata.UpdateUserFormData;
 import models.Nationality;
 import models.Passport;
 import models.User;
-import models.UserPhoto;
 import play.data.DynamicForm;
 import play.data.Form;
 import play.data.FormFactory;
@@ -14,14 +13,12 @@ import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
 import views.html.users.profile.*;
+
 import javax.inject.Inject;
-import javax.jws.soap.SOAPBinding;
-import java.io.File;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Locale;
 
 /**
  * A Class to handle interactions from the client to the frontend.

@@ -44,7 +44,7 @@
                         <th scope ="row">
                             <span id="primary@destination.destid">
                             @if(destination.getPrimaryPhoto != null){
-                                <img src="@routes.DestinationController.servePrimaryPicture(destination.getPrimaryPhoto.getPhotoId) " width="50" height="60">
+                                <img src="@routes.DestinationController.servePrimaryPicture(destination.getDestId) " width="50" height="60">
                                 }
                             </span>
                             <a href="javascript:" onclick="viewDestination(@destination.getDestId)"> <span>@destination.getDestName</span></a>
@@ -132,7 +132,7 @@
             @for(destination <- allDestinations) {
                 @if(destination.getIsPublic) {
                     <tr data-id="@destination.getDestId" data-dest-name="@destination.getDestName">
-                        <th scope ="row">
+                        <th scope="row">
                                 <span id="primary@destination.destid">
                                 @if(destination.getPrimaryPhoto != null){
                                     <img src="@routes.DestinationController.servePrimaryPicture(destination.getPrimaryPhoto.getPhotoId) " width="50" height="60">
@@ -194,26 +194,10 @@
                         <button type="button" class="btn btn-primary" data-dismiss="modal">No</button>
                     </div>
                 </div>
-
             </div>
         </div>
+        <br>
 
-        <div id="publicDestModal" class="modal fade">
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal">x</button>
-                        <h3 id="destTitle">Destination</h3>
-                    </div>
-                    <div class="modal-body">
-                        <p>YEET</p>
-                    </div>
-                    <div class="modal-footer">
-                        <button class="btn" data-dismiss="modal">Close</button>
-                    </div>
-                </div>
-            </div>
-        </div>
         <div id="orderModal" class="modal fade">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
@@ -240,8 +224,11 @@
                                     <div id="coordinates" ></div>
                                     <div id="travellerTypes"></div>
                                     <div style="text-align: center">
-                                        <td><button id="addPhotoButton" class="btn btn-primary" data-toggle="modal" data-target="#myModal">
-                                            Add photo</button></td>
+                                        <td>
+                                            <button id="addPhotoButton" class="btn btn-primary" data-toggle="modal" data-target="#myModal">
+                                                Add photo
+                                            </button>
+                                        </td>
                                     </div>
                                 </div>
                             </div>
@@ -269,16 +256,16 @@
 
                 <!-- Modal content-->
                 <div class="modal-content">
-                    <div class="modal-header">
+                    <dModaliv class="modal-header">
                         <button type="button" class="close" data-dismiss="modal">&times;</button>
                         <h4 class="modal-title">Select Your Photo</h4>
-                    </div>
+                    </dModaliv>
                     <div class="modal-body">
-                        @if(user.getUserPhotos.size() == 0) {
+                        @if(user.getUserPhotos.isEmpty) {
                             <p id="para"> Currently, You do not have any photos on your profile. Upload photos to your profile first in order to add them to destinations.</p>
                         }
                         @for(photo <- user.getUserPhotos) {
-                        <a id="addPhotoLink" class="btn btn-light" href="" onclick="addPhotoToDestinationRequest(@photo.getPhotoId())" >
+                        <a id="addPhotoLink" class="btn btn-light" href="" onclick="addPhotoToDestinationRequest(@photo.getPhotoId)" >
                             <div class="container" id="imagesContainer" >
                                 <div class="overlay">
                                     <i class="icon" title="User Profile">
@@ -336,7 +323,7 @@
 
     <script src="@routes.Assets.at("js/destination/indexDestination.js")" type="text/javascript"></script>
     <script src="@routes.Assets.at("js/destination/destinationMap.js")"></script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDCyC_ON0GgSmJIfPlL7oke5PZgbR8TLbg&callback=initMap&libraries=drawing"
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDCyC_ON0GgSmJIfPlL7oke5PZgbR8TLbg&callback=initIndexDestinationMap&libraries=drawing"
         async defer>
     </script>
 </body>

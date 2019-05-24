@@ -13,6 +13,9 @@ GET     /users                      controllers.UserController.userindex(request
 #Handles AJAX request to get the user
 GET     /users/get                  controllers.UserController.getUser(request:Request)
 
+#Handles AJAX request to get the user
+GET     /users/photos                  controllers.UserController.getUserPhotosAjax(request:Request)
+
 #Renders register page
 GET     /users/register             controllers.RegisterController.createuser()
 

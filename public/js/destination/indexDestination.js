@@ -162,10 +162,6 @@ function viewDestination(destid){
  */
 function populateViewDestinationModal()
 {
-    // do something...
-    //getIdFromRow = $(event.target).closest('tr').data('id');
-    //make your ajax call populate items or what even you need
-    //$(this).find('#orderDetails').html($('<b> Destination Id selected: ' + getIdFromRow  + '</b>'));
     var token =  $('input[name="csrfToken"]').attr('value');
     $.ajaxSetup({
         beforeSend: function(xhr) {
@@ -178,6 +174,14 @@ function populateViewDestinationModal()
         contentType: 'application/json',
         success: function(userData){
            user = userData;
+        }
+    });
+    $.ajax({
+       type: 'GET',
+       url: '/users/photos',
+        contentType: 'application/json',
+        success: function(photosData){
+           userPhotos = photosData;
         }
     });
     $.ajax({
@@ -233,7 +237,6 @@ function populateViewDestinationModal()
                     photos = data;
                     if(photos.length > 0)
                     {
-                        console.log("got here");
                         var outerDivNode = document.createElement("div");
                         outerDivNode.classList.add("carousel-inner");
                         $.each(data, function(index, element){
@@ -255,6 +258,18 @@ function populateViewDestinationModal()
                             imgNode.id = "photo" + "-" + element["photoId"];
                             itemNode.appendChild(imgNode);
                             outerDivNode.appendChild(itemNode);
+                            if (destinationOwner !== user) {
+                                var found = userPhotos.find(function(elementId) {
+                                    return elementId == element["photoId"];
+                                });
+                                if (!found) {
+                                    $('#removePhotoButton').hide();
+                                } else {
+                                    $('#removePhotoButton').show();
+                                }
+                            } else {
+                                $('#removePhotoButton').show();
+                            }
                         });
                         $('#destslider').html(outerDivNode);
                         if(destinationOwner !== user){
@@ -263,6 +278,9 @@ function populateViewDestinationModal()
                         else{
                             $('#primaryPhotoButton').show();
                         }
+
+                        $('.left').show();
+                        $('.right').show();
                     }
                     else {
                         $('#removePhotoButton').hide();
@@ -356,7 +374,6 @@ $('#destslider').bind('slid.bs.carousel', function(e){
     var photo = document.getElementsByClassName("active")[0].getElementsByTagName('img')[0];
     var photoid = photo.id;
     photoid = photoid.split("-")[1];
-    console.log(destData["primaryPhoto"]["photoId"]);
     if(destData["primaryPhoto"] != null) {
         if (destData["primaryPhoto"]["photoId"] == photoid) {
             $('#primaryPhotoButton').attr('disabled', 'disabled');
@@ -445,7 +462,6 @@ $('#removePhotoButton').click(function(e){
         method: "DELETE",
         success: function(res) {
             populateViewDestinationModal();
-            console.log("success");
         }
     });
 });

@@ -22,7 +22,6 @@ public class EditTreasureHuntCommand extends UndoableCommand {
      */
     @Override
     public void execute() {
-        actualTreasureHunt = new TreasureHunt(editedTreasureHunt);
         TreasureHuntAccessor.update(actualTreasureHunt);
     }
 
@@ -31,7 +30,7 @@ public class EditTreasureHuntCommand extends UndoableCommand {
      */
     @Override
     public void undo() {
-        actualTreasureHunt = new TreasureHunt(unEditedTreasureHunt);
+        actualTreasureHunt = unEditedTreasureHunt;
         TreasureHuntAccessor.update(actualTreasureHunt);
     }
 

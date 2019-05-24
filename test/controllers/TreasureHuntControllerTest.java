@@ -1,6 +1,7 @@
 package controllers;
 
 
+import accessors.DestinationAccessor;
 import accessors.TreasureHuntAccessor;
 import accessors.UserAccessor;
 import models.Destination;
@@ -16,6 +17,7 @@ import play.db.Databases;
 import play.db.evolutions.Evolution;
 import play.db.evolutions.Evolutions;
 import play.inject.guice.GuiceApplicationBuilder;
+import play.libs.Json;
 import play.mvc.Http;
 import play.mvc.Result;
 import play.test.Helpers;
@@ -519,6 +521,7 @@ public class TreasureHuntControllerTest extends WithApplication {
     public void undoEditTreasureHunt() {
         User user = UserAccessor.getById(2);
         TreasureHunt treasureHunt = user.getTreasureHunts().get(0);
+        System.out.println(Json.toJson(treasureHunt));
         Map<String, String> formData = new HashMap<>();
         formData.put("title", "test123");
         formData.put("riddle", "The garden city");
@@ -540,13 +543,15 @@ public class TreasureHuntControllerTest extends WithApplication {
         Helpers.route(app, undoRequest);
 
         user = UserAccessor.getById(2);
-        assertEquals(treasureHunt, user.getTreasureHunts().get(0));
+        System.out.println(Json.toJson(treasureHunt));
+        System.out.println(Json.toJson(user.getTreasureHunts().get(0)));
+        assertEquals(new TreasureHunt(treasureHunt), new TreasureHunt(user.getTreasureHunts().get(0)));
     }
 
     @Test
     public void redoEditTreasureHunt() {
         User user = UserAccessor.getById(2);
-        TreasureHunt treasureHunt = user.getTreasureHunts().get(0);
+        int tHuntId = user.getTreasureHunts().get(0).thuntid;
         Map<String, String> formData = new HashMap<>();
         formData.put("title", "test123");
         formData.put("riddle", "The garden city");
@@ -556,7 +561,7 @@ public class TreasureHuntControllerTest extends WithApplication {
         Http.RequestBuilder fakeRequest = Helpers.fakeRequest()
                 .bodyForm(formData)
                 .method(Helpers.POST)
-                .uri("/users/treasurehunts/edit/save/" + treasureHunt.thuntid)
+                .uri("/users/treasurehunts/edit/save/" + tHuntId)
                 .session("connected", "2");
         fakeRequest = CSRFTokenHelper.addCSRFToken(fakeRequest);
         Helpers.route(app, fakeRequest);
@@ -574,6 +579,19 @@ public class TreasureHuntControllerTest extends WithApplication {
         Helpers.route(app, redoRequest);
 
         user = UserAccessor.getById(2);
-        assertEquals(formData, user.getTreasureHunts().get(0).toString());
+        TreasureHunt treasureHunt = getTreasureHuntFromMap(formData);
+        assertEquals(treasureHunt, new TreasureHunt(user.getTreasureHunts().get(0)));
+    }
+
+    private TreasureHunt getTreasureHuntFromMap(Map<String, String> formMap) {
+        TreasureHunt treasureHunt = new TreasureHunt();
+        treasureHunt.setTitle( formMap.get("title"));
+        treasureHunt.setDestination(
+                DestinationAccessor.getPublicDestinationbyName(formMap.get("destination"))
+        );
+        treasureHunt.setRiddle(formMap.get("riddle"));
+        treasureHunt.setStartDate(formMap.get("startDate"));
+        treasureHunt.setEndDate(formMap.get("endDate"));
+        return treasureHunt;
     }
 }

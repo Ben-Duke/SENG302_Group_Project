@@ -93,6 +93,11 @@ public class Destination extends Model {
     }
 
     /**
+     * Destination constructor
+     */
+    public Destination(){}
+
+    /**
      * A function that is called when creating a destination to the the types
      *
      * @return A map of all destination types and a boolean set to false

@@ -16,12 +16,82 @@ window.globalMarkers = [];
  * The callback function that is called after the google maps script src loads
  * with the api key.
  *
- * Loads the map with all the markers.
+ * Loads the index destination map with all the markers.
  */
-function initMap() {
+function initIndexDestinationMap() {
     window.globalMap = new google.maps.Map(document.getElementById('map'), {
-        center: {lat: -34.397, lng: 150.644},
-        zoom: 8
+        center: {lat: -43.522057156877615, lng: 172.62360347218828},
+        zoom: 5
+    });
+
+    initDestinationMarkers();
+    initMapLegend();
+}
+
+
+
+
+/**
+ * The callback function that is called after the google maps script src loads
+ * with the api key.
+ * Adds listener that gets lat and lng out of map onlick click and fills
+ * form fields with those values.
+ * Add listeners to the lat and lng fields, so on input it centers the map
+ * to that location
+ *
+ * Loads the create destination map without any markers.
+ */
+function initCreateDestinationMap() {
+
+    window.globalMap = new google.maps.Map(document.getElementById('map'), {
+        zoom: 5
+    });
+
+    var initLatLng = new google.maps.LatLng(
+        -43.522057156877615, 172.62360347218828
+    );
+
+    if (document.getElementById("latitude").value !== "" &&
+        document.getElementById("longitude").value !== "") {
+
+        initLatLng = new google.maps.LatLng(
+            document.getElementById("latitude").value,
+            document.getElementById("longitude").value
+        );
+
+        window.globalMap.setZoom(8);
+    }
+
+    window.globalMap.setCenter(initLatLng);
+
+
+    document.getElementById("latitude").addEventListener('input', function(event) {
+
+        if (!isNaN(document.getElementById("latitude").value)) {
+            var latlng = new google.maps.LatLng(
+                document.getElementById("latitude").value,
+                window.globalMap.center.lng());
+
+            window.globalMap.setCenter(latlng);
+
+        }
+    });
+
+    document.getElementById("longitude").addEventListener('input', function(event) {
+
+        if (!isNaN(document.getElementById("longitude").value)) {
+
+            var latlng = new google.maps.LatLng(
+                window.globalMap.center.lat(),
+                document.getElementById("longitude").value);
+
+            window.globalMap.setCenter(latlng);
+        }
+    });
+
+    window.globalMap.addListener('click', function(event) {
+        document.getElementById("latitude").value = event.latLng.lat();
+        document.getElementById("longitude").value = event.latLng.lng();
     });
 
     initDestinationMarkers();
@@ -180,7 +250,7 @@ function initDestinationMarkers() {
         .then(destinations => {
             let marker;
             let infoWindow;
-            console.log(destinations);
+            // console.log(destinations);
             for (let index = 0; index < destinations.length; index++) {
                 marker = new google.maps.Marker({
                     position: {

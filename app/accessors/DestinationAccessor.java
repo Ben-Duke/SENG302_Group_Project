@@ -35,4 +35,7 @@ public class DestinationAccessor {
     public static void delete(Destination destination) {
         destination.delete();
     }
+
+    /** Update the destination */
+    public static void update(Destination destination) { destination.update(); }
 }

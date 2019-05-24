@@ -29,6 +29,15 @@ public class UserAccessor {
     }
 
     /**
+     * Finds a user in the database by their user id
+     * @param id the user id
+     * @return the user
+     */
+    public static User getUserById(int id) {
+        return User.find.byId(id);
+    }
+
+    /**
      * Gets a List of Users with a specific email.
      *
      * It should be a List of length 0 or 1, but you should still check
@@ -41,4 +50,7 @@ public class UserAccessor {
         return  User.find.query()
                     .where().eq("email", email.toLowerCase()).findList();
     }
+
+    /** Update the user */
+    public static void update(User user) { user.update(); }
 }

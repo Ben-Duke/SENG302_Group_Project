@@ -1,7 +1,5 @@
 package models.commands.UserPhotos;
-import akka.stream.javadsl.FileIO;
-import akka.stream.javadsl.Source;
-import akka.util.ByteString;
+
 import controllers.ApplicationManager;
 
 import models.User;
@@ -15,13 +13,11 @@ import play.db.Databases;
 import play.db.evolutions.Evolution;
 import play.db.evolutions.Evolutions;
 import play.libs.Files;
-import play.mvc.Http;
 import testhelpers.BaseTestWithApplicationAndDatabase;
 import utilities.TestDatabaseManager;
 
 import java.io.File;
 import java.nio.file.Paths;
-import java.time.format.DateTimeFormatter;
 
 import static org.apache.commons.io.FileUtils.getFile;
 import static org.junit.Assert.assertEquals;

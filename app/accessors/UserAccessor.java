@@ -40,9 +40,10 @@ public class UserAccessor {
 
     /**
      * Return the User matching the id passed
+     * @param id the id of the user
      */
-    public static User getById(int i) {
-        return User.find.byId(i);
+    public static User getById(int id) {
+        return User.find.byId(id);
     }
 
     /** Update the user */

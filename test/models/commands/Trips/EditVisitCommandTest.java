@@ -1,9 +1,7 @@
 package models.commands.Trips;
 
 import controllers.ApplicationManager;
-import factories.LoginFactory;
-import models.Destination;
-import models.User;
+
 import models.Visit;
 import models.commands.EditVisitCommand;
 import org.junit.After;
@@ -16,7 +14,6 @@ import play.db.evolutions.Evolutions;
 import testhelpers.BaseTestWithApplicationAndDatabase;
 import utilities.TestDatabaseManager;
 
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 import static org.junit.Assert.assertEquals;
@@ -25,8 +22,6 @@ import static org.junit.Assert.assertEquals;
 public class EditVisitCommandTest extends BaseTestWithApplicationAndDatabase {
     private Database database;
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-    private LocalDate arrivalDate = LocalDate.parse("1995-04-01", formatter);
-    private LoginFactory loginFactory = new LoginFactory();
     private EditVisitCommand editVisitCommand;
     private Visit visit;
 
@@ -58,7 +53,6 @@ public class EditVisitCommandTest extends BaseTestWithApplicationAndDatabase {
 
     @Test
     public void testExecute() {
-        System.out.println("Start arrival: " + visit.getArrival());
         assertEquals("Trip to New Zealand", visit.getTrip().getTripName());
         assertEquals("Christchurch", visit.getDestination().getDestName());
         assertEquals("2018-05-04", visit.getArrival());
@@ -68,21 +62,18 @@ public class EditVisitCommandTest extends BaseTestWithApplicationAndDatabase {
         editVisitCommand = new EditVisitCommand(visit);
         editVisitCommand.execute();
         Visit updatedVisit = Visit.find.byId(1);
-        System.out.println("End arrival: " + updatedVisit.getArrival());
         assertEquals("2018-06-04", updatedVisit.getArrival());
         assertEquals("2018-06-06", updatedVisit.getDeparture());
     }
 
     @Test
     public void testUndo() {
-        System.out.println("Start arrival: " + visit.getArrival());
         visit.setArrival("2018-06-04");
         visit.setDeparture("2018-06-06");
         editVisitCommand = new EditVisitCommand(visit);
         editVisitCommand.execute();
         editVisitCommand.undo();
         Visit undoneVisit = Visit.find.byId(1);
-        System.out.println("End arrival: " + undoneVisit.getArrival());
         assertEquals("2018-05-04", undoneVisit.getArrival());
         assertEquals("2018-05-06", undoneVisit.getDeparture());
     }

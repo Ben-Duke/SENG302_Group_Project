@@ -1,5 +1,6 @@
 package testhelpers;
 
+import controllers.ApplicationManager;
 import models.User;
 import org.junit.After;
 import org.junit.Before;
@@ -10,6 +11,7 @@ import play.db.evolutions.Evolution;
 import play.db.evolutions.Evolutions;
 import play.inject.guice.GuiceApplicationBuilder;
 import play.test.WithApplication;
+import utilities.TestDatabaseManager;
 
 /**
  * A Generic helper class for running tests with a dummy application and database.
@@ -40,9 +42,10 @@ public class BaseTestWithApplicationAndDatabase extends WithApplication {
                 "drop table test;"
         )));
 
-        User user = new User("gon12_2@uclive.ac.nz", "hunter22");
-        user.save();
-
+        ApplicationManager.setUserPhotoPath("/test/resources/test_photos/user_");
+        ApplicationManager.setIsTest(true);
+        TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
+        testDatabaseManager.populateDatabase();
     }
 
     /**

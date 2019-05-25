@@ -110,6 +110,7 @@
         </script>
 
         <script src="@routes.Assets.at("js/custom.js")" type="text/javascript"></script>
+        <script src="@routes.Assets.at("js/main.js")" type="text/javascript"></script>
 
         <script>
                 $(document).ready(function(){
@@ -117,87 +118,6 @@
                     $(window).resize(function(){
                         $(document.body).css('padding-top', $('#topnavbar').height() + 10);
                     });
-                });
-        </script>
-
-        <script>
-                $(document).keydown('undo_redo', function(e) {
-                    if ((e.ctrlKey && e.keyCode === 90) && e.shiftKey !== true) {
-                        var token =  $('input[name="csrfToken"]').attr('value');
-                        $.ajaxSetup({
-                            beforeSend: function (xhr) {
-                                xhr.setRequestHeader('Csrf-Token', token);
-                            }
-                        });
-                        $.ajax({
-                            type: 'PUT',
-                            url: '/undo',
-                            success:function(res, textStatus, xhr){
-                                location.reload();
-                            },
-                            error: function(xhr, textStatus, errorThrown){
-                                console.log(xhr.status + " " + textStatus + " " + errorThrown);
-                            }
-                        })
-                    } else if (e.ctrlKey && e.shiftKey && e.keyCode === 90) {
-                        var token =  $('input[name="csrfToken"]').attr('value');
-                        $.ajaxSetup({
-                            beforeSend: function (xhr) {
-                                xhr.setRequestHeader('Csrf-Token', token);
-                            }
-                        });
-                        $.ajax({
-                            type: 'PUT',
-                            url: '/redo',
-                            success:function(res, textStatus, xhr){
-                                location.reload();
-                            },
-                            error: function(xhr, textStatus, errorThrown){
-                                console.log(xhr.status + " " + textStatus + " " + errorThrown);
-                            }
-                        })
-                    };
-                });
-        </script>
-
-        <script type="text/javascript" id="undo">
-                $('#undoButton').click( function(e) {
-                    var token =  $('input[name="csrfToken"]').attr('value');
-                    $.ajaxSetup({
-                        beforeSend: function (xhr) {
-                            xhr.setRequestHeader('Csrf-Token', token);
-                        }
-                    });
-                    $.ajax({
-                        type: 'PUT',
-                        url: '/undo',
-                        success:function(res, textStatus, xhr){
-                            location.reload();
-                        },
-                        error: function(xhr, textStatus, errorThrown){
-                            console.log(xhr.status + " " + textStatus + " " + errorThrown);
-                        }
-                    })
-                });
-        </script>
-        <script type="text/javascript" id="redo">
-                $('#redoButton').click( function(e) {
-                    var token =  $('input[name="csrfToken"]').attr('value');
-                    $.ajaxSetup({
-                        beforeSend: function (xhr) {
-                            xhr.setRequestHeader('Csrf-Token', token);
-                        }
-                    });
-                    $.ajax({
-                        type: 'PUT',
-                        url: '/redo',
-                        success:function(res, textStatus, xhr){
-                            location.reload();
-                        },
-                        error: function(xhr, textStatus, errorThrown){
-                            console.log(xhr.status + " " + textStatus + " " + errorThrown);
-                        }
-                    })
                 });
         </script>
     </body>

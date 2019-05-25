@@ -109,6 +109,7 @@ public class DestinationController extends Controller {
             CountryUtils.updateCountries();
 
             List<Destination> destinations = user.getDestinations();
+            
             List<Destination> allDestinations = Destination.find.all();
 
             return ok(indexDestination.render(destinations, allDestinations, destFactory, user));
@@ -150,16 +151,9 @@ public class DestinationController extends Controller {
             Form<DestinationFormData> destFormData;
             destFormData = formFactory.form(DestinationFormData.class);
 
-            Map<String, Boolean> countries = null;
+            Map<String, Boolean> countryList = CountryUtils.getCountriesMap();
 
-            try{
-                countries = UtilityFunctions.CountryUtils();
-            }catch(IOException error){
-                System.out.println(error);
-                System.out.println("Error getting countries");
-            }
-
-            return ok(createEditDestination.render(destFormData, null, countries , Destination.getTypeList(),user));
+            return ok(createEditDestination.render(destFormData, null, countryList , Destination.getTypeList(),user));
         }
         return unauthorized("Oops, you are not logged in");
     }
@@ -233,13 +227,11 @@ public class DestinationController extends Controller {
         Map<String, Boolean> typeList = Destination.getTypeList();
         typeList.replace(destination.getDestType(), true);
 
-        Map<String, Boolean> countryList = null;
-        try{
-            countryList = UtilityFunctions.CountryUtils();
-            countryList.replace(destination.getCountry(), true);
-        } catch(IOException error) {
-            System.out.println(error);
-        }
+
+        Map<String, Boolean> countryList = CountryUtils.getCountriesMap();
+        countryList.replace(destination.getCountry(), true);
+
+
         if (!destination.getIsCountryValid()) {
             flash("countryInvalid",
                     "This Destination has an invalid country!");
@@ -279,13 +271,9 @@ public class DestinationController extends Controller {
             if (oldDestination != null) {
                 if (oldDestination.isUserOwner(user.userid) || user.userIsAdmin()) {
                     oldDestination.applyEditChanges(newDestination);
-                    System.out.println(oldDestination.getDestName());
-                    System.out.println(newDestination.getDestName());
                     EditDestinationCommand editDestinationCommand =
                             new EditDestinationCommand(oldDestination);
-                    System.out.println(editDestinationCommand);
                     user.getCommandManager().executeCommand(editDestinationCommand);
-
 
                     return redirect(routes.DestinationController.indexDestination());
 
@@ -333,12 +321,8 @@ public class DestinationController extends Controller {
         if (destForm.hasErrors() || hasError) {
 
             Map<String, Boolean> typeList = Destination.getTypeList();
-            Map<String, Boolean> countryList = null;
-            try {
-                countryList = UtilityFunctions.CountryUtils();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            Map<String, Boolean> countryList = CountryUtils.getCountriesMap();
+
 
             // Use a dynamic form to get the values of the dropdown inputs
             DynamicForm dynamicDestForm = formFactory.form().bindFromRequest(request);
@@ -377,15 +361,7 @@ public class DestinationController extends Controller {
                 Map<String, Boolean> typeList = Destination.getTypeList();
                 typeList.replace(destination.getDestType(), true);
 
-                Map<String, Boolean> countryList = null;
-
-                try{
-                    countryList = UtilityFunctions.CountryUtils();
-                }
-                catch(IOException error) {
-                    System.out.println(error);
-                    System.out.println("Error getting countries");
-                }
+                Map<String, Boolean> countryList = CountryUtils.getCountriesMap();
                 countryList.replace(destination.getCountry(), true);
 
                 List<TravellerType> travellerTypes = TravellerType.find.all();

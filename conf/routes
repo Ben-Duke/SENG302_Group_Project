@@ -127,7 +127,7 @@ GET     /users/home/serveDestPicture/:id               controllers.HomeControlle
 GET     /users/home/servePicture/:path                 controllers.HomeController.index(request: Request, path:String)
 
 #Unlinks the photo from destinations and deletes the UserPhoto with the photoID
-DELETE /users/unlinkAndDeletePicture/:photoId                  controllers.DestinationController.unlinkPhotoFromDestinationAndDelete(request: Request, photoId: Integer)
+DELETE /users/unlinkAndDeletePicture/:photoId                  controllers.DestinationController.unlinkAndDelete(request: Request, photoId: Integer)
 
 #Deletes the UserPhoto with the photoId
 DELETE /users/home/deletePicture/                  controllers.ProfileController.deletePhoto(request: Request, photoId: Integer)

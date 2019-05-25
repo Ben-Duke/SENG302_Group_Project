@@ -11,6 +11,7 @@ import models.*;
 
 import models.commands.Destinations.DeleteDestinationCommand;
 import models.commands.Destinations.EditDestinationCommand;
+import models.commands.Photos.DeletePhotoCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import play.data.DynamicForm;
@@ -677,6 +678,24 @@ public class DestinationController extends Controller {
             return unauthorized("Oops, you are not logged in");
         }
         return ok();
+    }
+
+    public Result unlinkAndDelete(Http.Request request, int photoId){
+        UserPhoto photo = UserPhoto.find.byId(photoId);
+        DeletePhotoCommand deletePhotoCommand = new DeletePhotoCommand(photo);
+        User user = User.getCurrentUser(request);
+        if(user != null){
+            if(photo.getUser().getUserid() == user.getUserid()) {
+                user.getCommandManager().executeCommand(deletePhotoCommand);
+                return ok();
+            }
+            else{
+                return forbidden("Oops, this is not your photo");
+            }
+        }
+        else{
+            return unauthorized("Oops, you are not logged in");
+        }
     }
 
 

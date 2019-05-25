@@ -351,7 +351,7 @@ public class TripController extends Controller {
         }
         else{
             //flash("danger", "You are not logged in.");
-            return unauthorized();
+            return redirect(routes.UserController.userindex());
         }
         //flash("success", "Destination deleted.");
         return ok();
@@ -383,7 +383,7 @@ public class TripController extends Controller {
             }
         }
         else{
-            return unauthorized();
+            return redirect(routes.UserController.userindex());
         }
     }
 

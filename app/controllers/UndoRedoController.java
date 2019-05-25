@@ -20,7 +20,7 @@ public class UndoRedoController extends Controller {
 
         User user = User.getCurrentUser(request);
         if (user == null) {
-            return unauthorized(unauthorizedPage.render());
+            return redirect(routes.UserController.userindex());
         }
 
         commandManager = user.getCommandManager();
@@ -32,7 +32,7 @@ public class UndoRedoController extends Controller {
     public Result redo(Http.Request request) {
         User user = User.getCurrentUser(request);
         if (user == null) {
-            return unauthorized(unauthorizedPage.render());
+            return redirect(routes.UserController.userindex());
         }
 
         commandManager = user.getCommandManager();

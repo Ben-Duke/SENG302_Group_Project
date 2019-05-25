@@ -145,7 +145,7 @@ public class AdminController extends Controller {
     public Result setUserBackToAdmin(Http.Request request, Integer adminsUserId) {
         List<User> users = User.getCurrentUser(request, true);
         if(users.size() == 0){
-            return unauthorized("Unauthorized: You are not logged in");
+            return redirect(routes.UserController.userindex());
         }
         User currentUser = users.get(1);
 

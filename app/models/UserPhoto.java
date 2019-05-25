@@ -74,6 +74,23 @@ public class UserPhoto extends Model {
         this.primaryPhotoDestinations = primaryPhotoDestinations;
     }
 
+    public UserPhoto(UserPhoto userPhoto){
+        this.url = userPhoto.getUrl();
+        this.isPublic = userPhoto.getIsPhotoPublic();
+        this.user = userPhoto.getUser();
+        this.isProfile = userPhoto.getIsProfilePhoto();
+        this.destinations = userPhoto.getDestinations();
+        this.primaryPhotoDestinations = userPhoto.getPrimaryPhotoDestinations();
+    }
+
+
+    public boolean getIsPhotoPublic(){
+        return this.isPublic;
+    }
+
+    public boolean getIsProfilePhoto(){
+        return this.isProfile;
+    }
 
     /**
      * Gets an unused user photo url.
@@ -95,6 +112,7 @@ public class UserPhoto extends Model {
 
         return url;
     }
+
 
     /**
      * Calling this function will delete a user photo that has that photoId does nothing if the photoId doesn't

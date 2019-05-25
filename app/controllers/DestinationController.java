@@ -681,15 +681,14 @@ public class DestinationController extends Controller {
 
 
     public Result unlinkPhotoFromDestinationAndDelete(Http.Request request, int photoId) {
-        System.out.println("Got here");
         UserPhoto photo = UserPhoto.find.byId(photoId);
         try {
             for (Destination destination : photo.getDestinations()) {
                 unlinkPhotoFromDestination(null, photoId, destination.getDestId());
             }
-            System.out.println(UserPhoto.find.all().size());
+
             photo.deletePhoto(photoId);
-            System.out.println(UserPhoto.find.all().size());
+
         }catch(Exception error){
             return badRequest();
         }

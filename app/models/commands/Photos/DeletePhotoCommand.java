@@ -31,7 +31,7 @@ public class DeletePhotoCommand extends UndoableCommand {
     }
 
     /**
-     * Deletes the UserPhoto
+     * Deletes the UserPhoto and unlinks photos to destinations
      */
     public void execute() {
         DestinationController destinationController = new DestinationController();
@@ -39,7 +39,7 @@ public class DeletePhotoCommand extends UndoableCommand {
     }
 
     /**
-     * Undoes the deletion of the UserPhoto
+     * Undoes the deletion of the UserPhoto and relinks the photo to destinations
      */
     public void undo() {
         UserPhoto userPhoto = new UserPhoto(this.userPhoto);

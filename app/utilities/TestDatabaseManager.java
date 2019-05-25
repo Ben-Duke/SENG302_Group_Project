@@ -193,8 +193,8 @@ public class TestDatabaseManager {
                 user.save();
             }catch(Exception err){
                 isInSuccessState = false;
-                System.out.printf("User1 failed");
-                System.out.println(err);
+                //System.out.printf("User1 failed");
+                err.printStackTrace();
             }
 
             user2.getTravellerTypes().add(travellerType2);
@@ -477,17 +477,20 @@ public class TestDatabaseManager {
     }
 
     public void addUserPhotos(){
-        UserPhoto userphoto1 = new UserPhoto("shrek.jpeg", true, true, User.find.byId(2));
-        UserPhoto userphoto2 = new UserPhoto("placeholder.png", false, false, User.find.byId(2));
-
+        UserPhoto userPhoto1 = new UserPhoto("shrek.jpeg", true, true, User.find.byId(2));
+        UserPhoto userPhoto2 = new UserPhoto("placeholder.png", false, false, User.find.byId(2));
+        Destination christchurch = Destination.find.byId(1);
+        Destination wellington = Destination.find.byId(2);
+        userPhoto1.addDestination(christchurch);
+        userPhoto1.addDestination(wellington);
         try {
-            userphoto1.save();
+            userPhoto1.save();
         } catch (Exception e) {
             System.out.println("Failed to add user1 photos");
         }
 
         try {
-            userphoto2.save();
+            userPhoto2.save();
         } catch (Exception e) {
             System.out.println("Failed to add user2 photos");
         }

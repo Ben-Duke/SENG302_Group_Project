@@ -1,5 +1,6 @@
 package controllers;
 
+import accessors.CommandManagerAccessor;
 import factories.LoginFactory;
 import formdata.LoginFormData;
 import models.User;
@@ -86,6 +87,8 @@ public class LoginController {
      */
     public Result logoutrequest(Http.Request request){
         List<User> users = User.getCurrentUser(request, true);
+        // Resets/Clears the Command Manager for Undo/Redo actions
+        CommandManagerAccessor.resetCommandManager(users.get(0).getEmail());
         if (users.get(0).getUserid() != users.get(1).getUserid()) {
             return redirect(routes.AdminController.setUserBackToAdmin(users.get(1).getUserid()));
         }

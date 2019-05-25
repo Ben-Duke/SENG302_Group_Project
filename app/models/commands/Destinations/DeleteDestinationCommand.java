@@ -2,8 +2,10 @@ package models.commands.Destinations;
 
 import accessors.DestinationAccessor;
 import accessors.TreasureHuntAccessor;
+import controllers.DestinationController;
 import models.Destination;
 import models.TreasureHunt;
+import models.UserPhoto;
 import models.Visit;
 import models.commands.CommandManager;
 import models.commands.UndoableCommand;
@@ -23,12 +25,14 @@ public class DeleteDestinationCommand extends UndoableCommand {
     // Using sets as the items do not need to be ordered and are unique
     private List<Visit> deletedVisits = new ArrayList<>();
     private List<TreasureHunt> deletedTreasureHunts = new ArrayList<>();
+    private List<UserPhoto> destinationPhotos = new ArrayList<>();
 
     private final Logger logger = UtilityFunctions.getLogger();
 
     public DeleteDestinationCommand(Destination destination, Boolean deletedByAdmin) {
         this.destination = destination;
         this.deletedByAdmin = deletedByAdmin;
+        this.destinationPhotos = destination.getUserPhotos();
     }
 
     public void execute() {
@@ -46,6 +50,12 @@ public class DeleteDestinationCommand extends UndoableCommand {
                 deletedTreasureHunts.add(new TreasureHunt(treasureHunt));
                 treasureHunt.delete();
             }
+
+            for (UserPhoto userPhoto : destination.getUserPhotos()){
+                DestinationController destinationController = new DestinationController();
+                destinationController.unlinkPhotoFromDestination(
+                        null, userPhoto.getPhotoId(), destination.getDestId());
+            }
         }
 
         DestinationAccessor.delete(destination);
@@ -53,6 +63,7 @@ public class DeleteDestinationCommand extends UndoableCommand {
 
     public void undo() {
         this.destination = new Destination(destination, deletedVisits);
+        destination.setUserPhotos(destinationPhotos);
         destination.save();
 
         for (TreasureHunt treasureHunt : deletedTreasureHunts) {

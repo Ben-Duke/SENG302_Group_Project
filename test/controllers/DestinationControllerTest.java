@@ -979,15 +979,15 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
     @Test
     public void addPhotoToDestination() {
         boolean destPhotoExists = false;
-        int destPhotoSize = Destination.find.byId(1).getUserPhotos().size();
+        int destPhotoSize = Destination.find.byId(3).getUserPhotos().size();
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(POST)
-                .uri("/users/destinations/1/1")
+                .uri("/users/destinations/3/1")
                 .session("connected", "2");
         Result result = route(app, request);
         assertEquals(SEE_OTHER, result.status());
 
-        List<UserPhoto> destPhotos = Destination.find.byId(1).getUserPhotos();
+        List<UserPhoto> destPhotos = Destination.find.byId(3).getUserPhotos();
         for (UserPhoto destPhoto : destPhotos) {
             if (destPhoto.getPhotoId() == 1) {
                 destPhotoExists = true;

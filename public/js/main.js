@@ -43,6 +43,7 @@ function undoRedoRequest(url){
         type: 'PUT',
         url: '/' + url,
         success:function(res, textStatus, xhr){
+            console.log(res)
             sessionStorage.reloadAfterPageLoad = url;
             window.location.reload();
         },
@@ -58,11 +59,11 @@ function undoRedoRequest(url){
  * Sets session storage to false after
  */
 $(function () {
-        if ( sessionStorage.reloadAfterPageLoad !== false) {
+    if (sessionStorage.reloadAfterPageLoad !== false) {
             if (sessionStorage.reloadAfterPageLoad === "undo") {
-                showMessage("undone")
+                showMessage(sessionStorage.reloadAfterPageLoad, "undone")
             } else if (sessionStorage.reloadAfterPageLoad === "redo") {
-                showMessage("redone")
+                showMessage(sessionStorage.reloadAfterPageLoad, "redone")
             }
             sessionStorage.reloadAfterPageLoad = false;
         }
@@ -79,7 +80,6 @@ function showMessage(message) {
     // Add the "show" class to DIV
     x.className = "show";
     x.innerText = message;
-    console.log(x.innerText);
     // After 3 seconds, remove the show class from DIV
     setTimeout(function(){
         x.className = x.className.replace("show", "");

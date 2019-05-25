@@ -22,11 +22,10 @@ public class UndoRedoController extends Controller {
         if (user == null) {
             return unauthorized(unauthorizedPage.render());
         }
-
         commandManager = user.getCommandManager();
         commandManager.undo();
 
-        return ok();
+        return ok ("" + commandManager.getUndoCommand());
     }
 
     public Result redo(Http.Request request) {
@@ -38,6 +37,6 @@ public class UndoRedoController extends Controller {
         commandManager = user.getCommandManager();
         commandManager.redo();
 
-        return ok();
+        return ok("" + commandManager.getRedoCommand());
     }
 }

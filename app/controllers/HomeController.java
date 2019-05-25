@@ -3,6 +3,7 @@ package controllers;
 import factories.UserFactory;
 import models.User;
 import models.UserPhoto;
+import models.commands.UploadPhotoCommand;
 import play.data.FormFactory;
 import play.libs.Files;
 import play.mvc.Http;
@@ -107,22 +108,8 @@ public class HomeController {
             UserPhoto newPhoto = new UserPhoto(origionalFilePath, isPublic, false, user);
             String unusedPhotoUrl = newPhoto.getUnusedUserPhotoFileName();
             newPhoto.setUrl(unusedPhotoUrl);
-
-            String unusedAbsoluteFilePath = Paths.get(".").toAbsolutePath().normalize().toString() + ApplicationManager.getUserPhotoPath() + user.getUserid() + "/" + unusedPhotoUrl;
-
-            try {
-                // creates the photo directory for the user if does not exist
-                java.nio.file.Files.createDirectories(Paths.get(Paths.get(".").toAbsolutePath().normalize().toString() + ApplicationManager.getUserPhotoPath() + user.getUserid() + "/"));
-            } catch (IOException e) {
-                System.out.println(e);
-                return internalServerError("Oops, something went wrong.");
-            }
-
-            //Save the file, replacing the existing one if the name is taken
-            fileObject.copyTo(Paths.get(unusedAbsoluteFilePath), true);
-
-            //DB saving
-            newPhoto.save();
+            UploadPhotoCommand uploadPhotoCommand = new UploadPhotoCommand(newPhoto, fileObject);
+            user.getCommandManager().executeCommand(uploadPhotoCommand);
             return redirect(routes.HomeController.showhome());
         } else {
             return badRequest();

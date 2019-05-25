@@ -55,6 +55,24 @@ public class UserPhoto extends Model {
         this.isProfile = isProfile;
     }
 
+    /**
+     * Create a UserPhoto with all filled in fields
+     * @param url A String representing the relative path to the photo resource.
+     * @param isPublic A boolean, true if the photo is visible to everybody, false otherwise.
+     * @param user The User who owns this photograph.
+     * @param destinations the photos linked destinations
+     * @param primaryPhotoDestinations the photos linked primary photo destinations
+     */
+    public UserPhoto(String url, boolean isPublic, boolean isProfile, User user, List<Destination> destinations,
+                     List<Destination> primaryPhotoDestinations) {
+        this.url = url;
+        this.isPublic = isPublic;
+        this.user = user;
+        this.isProfile = isProfile;
+        this.destinations = destinations;
+        this.primaryPhotoDestinations = primaryPhotoDestinations;
+    }
+
 
     /**
      * Gets an unused user photo url.
@@ -170,6 +188,14 @@ public class UserPhoto extends Model {
      */
     public User getUser() {
         return user;
+    }
+
+    /**
+     * Get the primary photo destinations of the photo
+     * @return the primary photo list
+     */
+    public List<Destination> getPrimaryPhotoDestinations() {
+        return primaryPhotoDestinations;
     }
 
 }

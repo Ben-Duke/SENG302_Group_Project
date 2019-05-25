@@ -289,7 +289,7 @@ public class AdminControllerTest extends WithApplication {
                 .method(GET).uri("/users/admin/back_to_admin/1")
                 .session("connected", null);
         Result result = route(app, request);
-        assertEquals(UNAUTHORIZED, result.status());
+        assertEquals(SEE_OTHER, result.status());
     }
 
     @Test

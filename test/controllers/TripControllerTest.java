@@ -424,7 +424,7 @@ public class TripControllerTest extends WithApplication {
         //visit of id 5 is in this trip
         Http.RequestBuilder fakeRequest = Helpers.fakeRequest().method(Helpers.DELETE).uri("/users/trips/edit/5").session("connected", null);
         Result result = Helpers.route(app, fakeRequest);
-        assertEquals(UNAUTHORIZED, result.status());
+        assertEquals(SEE_OTHER, result.status());
         assertEquals(4, Trip.find.byId(2).getVisits().size());
     }
 
@@ -711,7 +711,7 @@ public class TripControllerTest extends WithApplication {
                 .bodyJson(array)
                 .uri("/users/trips/edit/2").session("connected", null);
         Result result = route(app, request);
-        assertEquals(UNAUTHORIZED, result.status());
+        assertEquals(SEE_OTHER, result.status());
         trip = Trip.find.byId(2);
         //2nd and third index should not be swapped
         assertEquals(visit1.getVisitid(), trip.getOrderedVisits().get(0).getVisitid());

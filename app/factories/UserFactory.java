@@ -20,9 +20,8 @@ public class UserFactory {
     @Inject
     static FormFactory formFactory;
 
-    public UserFactory(){//Just used to instanciate
+    public UserFactory(){//Just used to instantiate
     }
-
 
     /**Returns 1 if in the database and 0 if not in the database
      *
@@ -47,6 +46,10 @@ public class UserFactory {
 
     }
 
+    public boolean deletePhoto(int photoId){
+        UserPhoto instance = new UserPhoto("",true,false,null);
+        return instance.deletePhoto(photoId);
+    }
 
     public static void deleteNatsOnUser(int id, String nationalityId) {
         User user = User.find.query().where().eq("userid", id).findOne();

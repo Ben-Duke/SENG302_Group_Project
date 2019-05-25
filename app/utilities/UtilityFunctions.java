@@ -2,10 +2,7 @@ package utilities;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import controllers.ApplicationManager;
-import models.Nationality;
-import models.Passport;
-import models.TravellerType;
-import models.User;
+import models.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import play.libs.Json;
@@ -324,6 +321,8 @@ public class UtilityFunctions {
         }
 
     }
+
+
 
     /**
      * This method sends a get request to the countries api and returns a sorted set of these countries

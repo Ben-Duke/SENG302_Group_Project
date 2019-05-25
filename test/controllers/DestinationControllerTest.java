@@ -219,6 +219,27 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
         assertEquals(BAD_REQUEST, result.status());
     }
 
+
+    /**
+     * Tests the unlinking of a photo and deleting it.
+     */
+    @Test
+    public void checkUnlinkFromDestinationAndDelete(){
+        DestinationController testDestinationController = new DestinationController();
+        Destination destination = new Destination("test","dest","1","test",0.00,0.00,null,true);
+        destination.save();
+        UserPhoto photo = new UserPhoto("/test",true,false,null);
+        photo.addDestination(destination);
+        photo.save();
+        int beforeDeletion = photo.find.all().size();
+        testDestinationController.unlinkPhotoFromDestinationAndDelete(null,photo.getPhotoId());
+        int afterDeletion = photo.find.all().size();
+        System.out.println(afterDeletion);
+
+        assertEquals(afterDeletion ,beforeDeletion-1);
+    }
+
+
     /**
      * Test to check if boundary longitude value is not picked up by the validation
      */

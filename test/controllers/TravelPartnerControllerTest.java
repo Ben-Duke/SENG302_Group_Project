@@ -18,6 +18,7 @@ import play.mvc.Http;
 import play.mvc.Result;
 import play.test.Helpers;
 import play.test.WithApplication;
+import testhelpers.BaseTestWithApplicationAndDatabase;
 import utilities.UtilityFunctions;
 
 import java.time.LocalDate;
@@ -33,23 +34,13 @@ import static play.test.Helpers.route;
 
 
 
-public class TravelPartnerControllerTest extends WithApplication {
-    /**
-     * The fake database
-     */
-    Database database;
+public class TravelPartnerControllerTest extends BaseTestWithApplicationAndDatabase {
 
     /**
      * Sets up the fake database before each test
      */
     @Before
     public void setupDatabase() {
-        database = Databases.inMemory();
-        Evolutions.applyEvolutions(database, Evolutions.forDefault(new Evolution(
-                1,
-                "create table test (id bigint not null, name varchar(255));",
-                "drop table test;"
-        )));
         UtilityFunctions.addAllNationalities();
         UtilityFunctions.addAllPassports();
         UtilityFunctions.addTravellerTypes();
@@ -83,19 +74,6 @@ public class TravelPartnerControllerTest extends WithApplication {
         user2.getPassport().add(passport2);
         user2.getPassport().add(passport3);
         user2.save();
-    }
-
-    /**
-     * Clears the fake database after each test
-     */
-    @After
-    public void shutdownDatabase() {
-        Evolutions.cleanupEvolutions(database);
-        database.shutdown();
-    }
-    @Override
-    protected Application provideApplication() {
-        return new GuiceApplicationBuilder().build();
     }
 
     /**

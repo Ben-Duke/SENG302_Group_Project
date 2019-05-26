@@ -23,6 +23,7 @@ import play.mvc.Http;
 import play.mvc.Result;
 import play.test.Helpers;
 import play.test.WithApplication;
+import testhelpers.BaseTestWithApplicationAndDatabase;
 import utilities.TestDatabaseManager;
 
 import javax.inject.Inject;
@@ -36,22 +37,12 @@ import static play.mvc.Http.Status.UNAUTHORIZED;
 import static play.test.Helpers.*;
 
 
-public class DestinationTestSteps extends WithApplication {
+public class DestinationTestSteps extends BaseTestWithApplicationAndDatabase {
 
-    /**
-     * The fake database
-     */
-    //Database database = Databases.inMemory();
-    Database database;
-    TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
+    private TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
 
     @Inject
     private Application application;
-
-    @Override
-    protected Application provideApplication() {
-        return new GuiceApplicationBuilder().build();
-    }
 
     @Before
     public void setup(){

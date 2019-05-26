@@ -138,4 +138,13 @@ public class Visit extends Model {
             return false;
         }
     }
+
+    /**
+     * Apply the changes from another visit to this visit
+     * @param editedVisit the visit with the changes
+     */
+    public void applyEditChanges(Visit editedVisit) {
+        this.arrival = editedVisit.arrival;
+        this.departure = editedVisit.departure;
+    }
 }

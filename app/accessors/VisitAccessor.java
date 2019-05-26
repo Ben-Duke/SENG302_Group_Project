@@ -26,4 +26,10 @@ public class VisitAccessor {
         visit.delete();
     }
 
+    /**
+     * Update the visit
+     * @param visit the visit to update
+     */
+    public static void update(Visit visit) { visit.update();}
+
 }

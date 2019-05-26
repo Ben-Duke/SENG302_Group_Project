@@ -11,16 +11,29 @@ public class LinkPhotoDestinationCommand extends UndoableCommand {
     private UserPhoto photo;
     private Destination destination;
 
+    /**
+     * A user photo and a destination is needed to link the two together
+     * @param photo
+     * @param destination
+     */
     public LinkPhotoDestinationCommand(UserPhoto photo, Destination destination) {
         this.photo = photo;
         this.destination = destination;
     }
 
+    /**
+     * Link the destination to the photo
+     */
     public void execute() {
         photo.addDestination(destination);
         UserPhotoAccessor.update(photo);
     }
 
+    /**
+     * Unlink the destination from the photo.
+     * Set primary photo to null if the primary photo
+     * was unlinked.
+     */
     public void undo() {
         photo.removeDestination(destination);
         UserPhotoAccessor.update(photo);
@@ -31,6 +44,9 @@ public class LinkPhotoDestinationCommand extends UndoableCommand {
         }
     }
 
+    /**
+     * Relink the photo to the destination.
+     */
     public void redo() {
         execute();
     }

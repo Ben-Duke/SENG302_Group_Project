@@ -155,7 +155,7 @@
                     <div class="modal-body">
                     @helper.form(action = routes.HomeController.upload, 'id -> "myForm", 'enctype -> "multipart/form-data") {
                         @helper.CSRF.formField
-                        <input type="file" name="picture" required>
+                        <input type="file" name="picture" accept="image/*" required>
 
                         <br>
 

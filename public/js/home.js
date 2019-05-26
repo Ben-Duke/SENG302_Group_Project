@@ -12,36 +12,45 @@ var photoIdToEdit;
  */
 var loadFile = function (event) {
     var output = document.getElementById('change-profile-pic');
-    output.src = URL.createObjectURL(event.target.files[0]);
-    filename = event.target.files[0].name;
-    $('#change-profile-pic').cropper("destroy");
+    var upload = document.getElementById('selectProfileInput');
 
-    var $previews = $('.preview');
-    $('#change-profile-pic').cropper({
-        aspectRatio:1,
-        data:{
-            width: 150,
-            height: 150
-        },
-        crop: function (e) {
-            var imageData = $(this).cropper('getImageData');
-            croppedCanvas = $(this).cropper('getCroppedCanvas');
-            $('.preview').html('<img src="' + croppedCanvas.toDataURL() + '" class="thumb-lg img-circle" style="width:100px;height:100px;">');
-            var previewAspectRatio = e.width / e.height;
-            $previews.each(function (){
-                var $preview = $(this);
-                var previewWidth = $preview.width();
-                var previewHeight = previewWidth / previewAspectRatio;
-                var imageScaledRatio = e.width / previewWidth;
-                $preview.height(previewHeight).find('img').css({
-                    width: imageData.naturalWidth / imageScaledRatio,
-                    height: imageData.naturalHeight / imageScaledRatio,
-                    marginLeft: -e.x / imageScaledRatio,
-                    marginTop: -e.y / imageScaledRatio
+    if(upload.files[0].size > 2097152){
+        alert("File is too big!");
+        upload.value = "";
+    } else {
+        output.src = URL.createObjectURL(event.target.files[0]);
+        filename = event.target.files[0].name;
+        $('#change-profile-pic').cropper("destroy");
+
+        var $previews = $('.preview');
+        $('#change-profile-pic').cropper({
+            aspectRatio:1,
+            data:{
+                width: 150,
+                height: 150
+            },
+            crop: function (e) {
+                var imageData = $(this).cropper('getImageData');
+                croppedCanvas = $(this).cropper('getCroppedCanvas');
+                $('.preview').html('<img src="' + croppedCanvas.toDataURL() + '" class="thumb-lg img-circle" style="width:100px;height:100px;">');
+                var previewAspectRatio = e.width / e.height;
+                $previews.each(function (){
+                    var $preview = $(this);
+                    var previewWidth = $preview.width();
+                    var previewHeight = previewWidth / previewAspectRatio;
+                    var imageScaledRatio = e.width / previewWidth;
+                    $preview.height(previewHeight).find('img').css({
+                        width: imageData.naturalWidth / imageScaledRatio,
+                        height: imageData.naturalHeight / imageScaledRatio,
+                        marginLeft: -e.x / imageScaledRatio,
+                        marginTop: -e.y / imageScaledRatio
+                    });
                 });
-            });
-        }
-    })
+            }
+        })
+    }
+
+
 };
 
 /**

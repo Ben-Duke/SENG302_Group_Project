@@ -275,7 +275,7 @@ public class DestinationController extends Controller {
                     oldDestination.applyEditChanges(newDestination);
                     EditDestinationCommand editDestinationCommand =
                             new EditDestinationCommand(oldDestination);
-                    editDestinationCommand.execute();
+                    user.getCommandManager().executeCommand(editDestinationCommand);
 
                     return redirect(routes.DestinationController.indexDestination());
 
@@ -700,8 +700,15 @@ public class DestinationController extends Controller {
         if (user == null) return unauthorized("Oops, you are not logged in");
         if (photo == null) return notFound("No photo found with that id");
         if (destination == null) return notFound("No destination found with that id");
-
-        if (!photo.getDestinations().contains(destination)) return badRequest("The destination was not linked to this photo");
+        // This block checks if the user is the owner of either the photo or the destination.
+        // If not the owner then returns an unauthorized error else proceeds as usual.
+        if (destination.getUser().getUserid() != user.getUserid()) {
+            if (photo.getUser().getUserid() != user.getUserid()) {
+                return unauthorized("You cannot unlink this photo from this destination as neither of those belong to you.");
+            }
+        }
+        if (!photo.getDestinations().contains(destination))
+            return badRequest("The destination was not linked to this photo");
 
         UnlinkPhotoDestinationCommand cmd = new UnlinkPhotoDestinationCommand(photo, destination);
         user.getCommandManager().executeCommand(cmd);

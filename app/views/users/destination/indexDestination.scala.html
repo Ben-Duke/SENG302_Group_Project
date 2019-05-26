@@ -17,7 +17,7 @@
 
         <h1>
             My private destinations
-            <a class="btn btn-primary col-sm-offset-8" href="@routes.DestinationController.createDestination()" role="button">
+            <a  class="btn btn-primary col-sm-offset-8" href="@routes.DestinationController.createDestination()" role="button">
                 Create Destination
             </a>
         </h1>
@@ -223,12 +223,13 @@
 
                                     <div id="coordinates" ></div>
                                     <div id="travellerTypes"></div>
-                                    <div style="text-align: center">
-                                        <td>
-                                            <button id="addPhotoButton" class="btn btn-primary" data-toggle="modal" data-target="#myModal">
-                                                Add photo
-                                            </button>
-                                        </td>
+                                    <div class="row">
+                                        <button id="removePhotoButton" class="btn btn-danger" >
+                                            Remove Photo
+                                        </button>
+                                        <button id="addPhotoButton" class="btn btn-primary" data-toggle="modal" data-target="#myModal">
+                                            Add photo
+                                        </button>
                                     </div>
                                 </div>
                             </div>

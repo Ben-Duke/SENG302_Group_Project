@@ -18,8 +18,8 @@ import utilities.TestDatabaseManager;
 import static org.junit.Assert.assertEquals;
 
 
-public class LinkingPhotosToDestinationsCommandTest extends BaseTestWithApplicationAndDatabase {
-    private LinkPhotoDestinationCommand linkCmd;
+public class UnlinkingPhotosToDestinationsCommandTest extends BaseTestWithApplicationAndDatabase {
+    private UnlinkPhotoDestinationCommand unlinkCmd;
     private Database database;
     private User user;
     private UserPhoto photo;
@@ -46,10 +46,12 @@ public class LinkingPhotosToDestinationsCommandTest extends BaseTestWithApplicat
         photo.setUrl(unusedPhotoUrl);
         UserPhotoAccessor.insert(photo);
 
-
         destination = DestinationAccessor.getDestinationById(1);
 
-        linkCmd = new LinkPhotoDestinationCommand(photo, destination);
+        photo.addDestination(destination);
+        UserPhotoAccessor.update(photo);
+
+        unlinkCmd = new UnlinkPhotoDestinationCommand(photo, destination);
     }
 
     @Override
@@ -62,17 +64,17 @@ public class LinkingPhotosToDestinationsCommandTest extends BaseTestWithApplicat
     @Test
     public void testExecute() {
         int beforeSize = destination.getUserPhotos().size();
-        user.getCommandManager().executeCommand(linkCmd);
+        user.getCommandManager().executeCommand(unlinkCmd);
         destination = DestinationAccessor.getDestinationById(1);
         int afterSize = destination.getUserPhotos().size();
 
-        assertEquals(beforeSize + 1, afterSize);
+        assertEquals(beforeSize - 1, afterSize);
     }
 
     @Test
     public void testUndo() {
         int beforeSize = destination.getUserPhotos().size();
-        user.getCommandManager().executeCommand(linkCmd);
+        user.getCommandManager().executeCommand(unlinkCmd);
         user.getCommandManager().undo();
         destination = DestinationAccessor.getDestinationById(1);
         int afterSize = destination.getUserPhotos().size();
@@ -83,13 +85,13 @@ public class LinkingPhotosToDestinationsCommandTest extends BaseTestWithApplicat
     @Test
     public void testRedo() {
         int beforeSize = destination.getUserPhotos().size();
-        user.getCommandManager().executeCommand(linkCmd);
+        user.getCommandManager().executeCommand(unlinkCmd);
         user.getCommandManager().undo();
         user.getCommandManager().redo();
         destination = DestinationAccessor.getDestinationById(1);
         int afterSize = destination.getUserPhotos().size();
 
-        assertEquals(beforeSize + 1, afterSize);
+        assertEquals(beforeSize - 1, afterSize);
     }
 
 

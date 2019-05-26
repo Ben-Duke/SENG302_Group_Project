@@ -1,5 +1,7 @@
 package models.commands.Destinations;
 
+import accessors.DestinationAccessor;
+import accessors.UserPhotoAccessor;
 import models.Destination;
 import models.UserPhoto;
 import models.commands.UndoableCommand;
@@ -16,16 +18,16 @@ public class LinkPhotoDestinationCommand extends UndoableCommand {
 
     public void execute() {
         photo.addDestination(destination);
-        photo.update();
+        UserPhotoAccessor.update(photo);
     }
 
     public void undo() {
         photo.removeDestination(destination);
-        photo.update();
+        UserPhotoAccessor.update(photo);
         if ((destination.getPrimaryPhoto() != null) &&
                 (photo.getPhotoId() == destination.getPrimaryPhoto().getPhotoId())) {
             destination.setPrimaryPhoto(null);
-            destination.update();
+            DestinationAccessor.update(destination);
         }
     }
 

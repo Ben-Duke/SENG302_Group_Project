@@ -702,7 +702,6 @@ public class DestinationController extends Controller {
         if (destination == null) return notFound("No destination found with that id");
 
         if (!photo.getDestinations().contains(destination)) return badRequest("The destination was not linked to this photo");
-//        if (! photo.removeDestination(destination)) return badRequest("The destination was not linked to this photo");
 
         UnlinkPhotoDestinationCommand cmd = new UnlinkPhotoDestinationCommand(photo, destination);
         user.getCommandManager().executeCommand(cmd);

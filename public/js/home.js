@@ -15,7 +15,7 @@ var loadFile = function (event) {
     var upload = document.getElementById('selectProfileInput');
 
     if(upload.files[0].size > 2097152){
-        alert("File is too big!");
+        alert("File is too big! (larger than 2MB)");
         upload.value = "";
     } else {
         output.src = URL.createObjectURL(event.target.files[0]);

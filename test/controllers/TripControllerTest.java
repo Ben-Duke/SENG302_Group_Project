@@ -51,7 +51,7 @@ public class TripControllerTest extends BaseTestWithApplicationAndDatabase {
                 .method(GET)
                 .uri("/users/trips/create").session("connected", null);
         Result result = route(app, request);
-        assertEquals(UNAUTHORIZED, result.status());
+        assertEquals(SEE_OTHER, result.status());
         request = Helpers.fakeRequest()
                 .method(GET)
                 .uri("/users/trips/create").session("connected", "1");
@@ -122,7 +122,7 @@ public class TripControllerTest extends BaseTestWithApplicationAndDatabase {
         CSRFTokenHelper.addCSRFToken(fakeRequest);
         Result result = Helpers.route(app, fakeRequest);
         //User with id 2 should still have two trips
-        assertEquals(UNAUTHORIZED, result.status());
+        assertEquals(SEE_OTHER, result.status());
     }
 
     @Test
@@ -131,7 +131,7 @@ public class TripControllerTest extends BaseTestWithApplicationAndDatabase {
                 .method(GET)
                 .uri("/users/trips/visit/edit/1").session("connected", null);
         Result result = route(app, request);
-        assertEquals(UNAUTHORIZED, result.status());
+        assertEquals(SEE_OTHER, result.status());
     }
 
     @Test
@@ -162,7 +162,7 @@ public class TripControllerTest extends BaseTestWithApplicationAndDatabase {
         Http.RequestBuilder request = Helpers.fakeRequest().bodyForm(formData).method(Helpers.POST).uri("/users/trips/visit/edit/1").session("connected", null);
         CSRFTokenHelper.addCSRFToken(request);
         Result result = route(app, request);
-        assertEquals(UNAUTHORIZED, result.status());
+        assertEquals(SEE_OTHER, result.status());
     }
 
     @Test
@@ -280,7 +280,7 @@ public class TripControllerTest extends BaseTestWithApplicationAndDatabase {
                 .method(GET)
                 .uri("/users/trips/1").session("connected", null);
         Result result = route(app, request);
-        assertEquals(UNAUTHORIZED, result.status());
+        assertEquals(SEE_OTHER, result.status());
     }
 
     @Test
@@ -357,7 +357,7 @@ public class TripControllerTest extends BaseTestWithApplicationAndDatabase {
         //visit of id 5 is in this trip
         Http.RequestBuilder fakeRequest = Helpers.fakeRequest().method(Helpers.DELETE).uri("/users/trips/edit/5").session("connected", null);
         Result result = Helpers.route(app, fakeRequest);
-        assertEquals(UNAUTHORIZED, result.status());
+        assertEquals(SEE_OTHER, result.status());
         assertEquals(4, Trip.find.byId(2).getVisits().size());
     }
 
@@ -378,7 +378,7 @@ public class TripControllerTest extends BaseTestWithApplicationAndDatabase {
                 .method(GET)
                 .uri("/users/trips/addDestinations/1").session("connected", null);
         Result result = route(app, request);
-        assertEquals(UNAUTHORIZED, result.status());
+        assertEquals(SEE_OTHER, result.status());
     }
 
     @Test
@@ -415,7 +415,7 @@ public class TripControllerTest extends BaseTestWithApplicationAndDatabase {
                 .method(GET)
                 .uri("/users/trips/table/edit/1/1").session("connected", null);
         Result result = route(app, request);
-        assertEquals(UNAUTHORIZED, result.status());
+        assertEquals(SEE_OTHER, result.status());
         assertEquals(2, Trip.find.byId(1).getVisits().size());
     }
 
@@ -644,7 +644,7 @@ public class TripControllerTest extends BaseTestWithApplicationAndDatabase {
                 .bodyJson(array)
                 .uri("/users/trips/edit/2").session("connected", null);
         Result result = route(app, request);
-        assertEquals(UNAUTHORIZED, result.status());
+        assertEquals(SEE_OTHER, result.status());
         trip = Trip.find.byId(2);
         //2nd and third index should not be swapped
         assertEquals(visit1.getVisitid(), trip.getOrderedVisits().get(0).getVisitid());
@@ -701,7 +701,7 @@ public class TripControllerTest extends BaseTestWithApplicationAndDatabase {
                 .method(DELETE)
                 .uri("/users/trips/2").session("connected", null);
         Result result = route(app, request);
-        assertEquals(UNAUTHORIZED, result.status());
+        assertEquals(SEE_OTHER, result.status());
         trip = Trip.find.byId(2);
         assertNotNull(trip);
     }

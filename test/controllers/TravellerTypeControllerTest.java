@@ -27,7 +27,7 @@ public class TravellerTypeControllerTest extends BaseTestWithApplicationAndDatab
                 .method(GET)
                 .uri("/users/profile/ttypes").session("connected", null);
         Result result = route(app, request);
-        assertEquals(UNAUTHORIZED, result.status());
+        assertEquals(SEE_OTHER, result.status());
         request = Helpers.fakeRequest()
                 .method(GET)
                 .uri("/users/profile/ttypes").session("connected", "1");

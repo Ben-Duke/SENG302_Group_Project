@@ -72,7 +72,7 @@ public class ProfileControllerTest extends WithApplication {
                 .method(GET)
                 .uri("/users/profile/update").session("connected", null);
         Result result = route(app, request);
-        assertEquals(UNAUTHORIZED, result.status());
+        assertEquals(SEE_OTHER, result.status());
     }
 
     @Test
@@ -119,7 +119,7 @@ public class ProfileControllerTest extends WithApplication {
                 .method(GET)
                 .uri("/users/profile/1").session("connected", null);
         Result result = route(app, request);
-        assertEquals(UNAUTHORIZED, result.status());
+        assertEquals(SEE_OTHER, result.status());
     }
 
     @Test

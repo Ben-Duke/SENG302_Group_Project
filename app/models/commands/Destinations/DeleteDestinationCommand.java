@@ -5,12 +5,15 @@ import accessors.TreasureHuntAccessor;
 import models.Destination;
 import models.TreasureHunt;
 import models.Visit;
+import models.commands.CommandManager;
 import models.commands.UndoableCommand;
 import org.slf4j.Logger;
 import utilities.UtilityFunctions;
 
-import java.util.ArrayList;
-import java.util.List;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
+import java.util.*;
 
 /** Command to delete a destination */
 public class DeleteDestinationCommand extends UndoableCommand {

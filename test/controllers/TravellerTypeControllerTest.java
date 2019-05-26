@@ -92,20 +92,27 @@ public class TravellerTypeControllerTest extends BaseTestWithApplicationAndDatab
      */
     @Test
     public void deleteUpdateTravellerType() {
-        //add a "Thrillseeker" traveller type to user
         User user = User.find.byId(1);
+        assert user != null;
+        int initialTypes = user.getTravellerTypes().size();
+
+        //add a "Thrillseeker" traveller type to user
         user.addTravellerType(TravellerType.find.byId(2));
         user.update();
-        //There should be 1 traveller type
-        assertEquals(1, User.find.byId(1).getTravellerTypes().size());
+
+        // Check it was added
+        assertEquals(initialTypes + 1, User.find.byId(1).getTravellerTypes().size());
+
         Map<String, String> formData = new HashMap<>();
         formData.put("travellertypes", "2");
         Http.RequestBuilder fakeRequest = Helpers.fakeRequest().bodyForm(formData).method(Helpers.POST).uri("/users/profile/delete/2").session("connected", "1");
         Result result = Helpers.route(app, fakeRequest);
+
         //User should be redirected to the update traveller type page
         assertEquals(303, result.status());
-        //There should be one traveller type since can't remove from 1
-        assertEquals(1, User.find.byId(1).getTravellerTypes().size());
+
+        // There should be one traveller type since can't remove from 1
+        assertEquals(initialTypes, User.find.byId(1).getTravellerTypes().size());
     }
 
     /**

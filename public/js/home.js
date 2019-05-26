@@ -401,9 +401,52 @@ function deletePhotoRequest(url, photoId, imageId){
 
         },
         error: function( res){
-             console.log(res.body);
+
             if(res.responseText === "Is profile picture ask user"){
                 console.log("Need to ask the user for permission");
+                $(document.getElementById('destination-carousel')).modal('hide');
+                $(document.getElementById('confirmDeleteProfilePhotoModal')).modal('show');
+
+                document.getElementById('yesDeleteProfilePhoto').onclick =
+                    function(){
+                        console.log("calling unlink");
+                        $.ajax({
+                            url: url,
+                            method: "Delete",
+                            data: JSON.stringify({
+                                photoid: '"' + photoId + '"',
+                                response: true
+                            }),
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            success:function(res) {
+                                deletePhotoFromUI(photoId)
+
+
+                                let profileImage = document.getElementById("profilePicture");
+                                let thumbProfileImage = document.getElementById("profilePictureThumb");
+                                //image.src="https://static.interestingengineering.com/images/APRIL/sizes/black_hole_resize_md.jpg";
+                                profileImage.src = "/assets/images/Generic.png";
+                                thumbProfileImage.src = "/assets/images/Generic.png";
+                            }
+
+
+                            })
+
+                        $(document.getElementById('destination-carousel')).modal('show')
+
+                        }
+                        document.getElementById('noCloseDeleteProfilePhotoButton').onclick =
+                    function(){
+                        $(document.getElementById('destination-carousel')).modal('show')
+                        //$(document.getElementById('confirmDeletePhotoModal')).modal('hide')
+                    };
+
+                $('#confirmDeletePhotoModal').on('hidden.bs.modal', function () {
+                    $(document.getElementById('destination-carousel')).modal('show');
+                })
+
             }
              else if(res.responseText === "Failed to delete image"){
                  $(document.getElementById('destination-carousel')).modal('hide');

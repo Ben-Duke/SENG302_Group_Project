@@ -13,6 +13,9 @@ GET     /users                      controllers.UserController.userindex(request
 #Handles AJAX request to get the user
 GET     /users/get                  controllers.UserController.getUser(request:Request)
 
+#Handles AJAX request to get the user
+GET     /users/photos                  controllers.UserController.getUserPhotosAjax(request:Request)
+
 #Renders register page
 GET     /users/register             controllers.RegisterController.createuser()
 
@@ -239,6 +242,7 @@ PUT     /users/destinations/:id         controllers.DestinationController.linkPh
 POST     /users/destinations/:destId/:photoId         controllers.DestinationController.addPhotoToDestination(request : Request, photoId : Integer, destId : Integer)
 
 #Handles unlinking a destination from a photo
++nocsrf
 DELETE  /users/destinations/:photoId/:destId                   controllers.DestinationController.unlinkPhotoFromDestination(request : Request, photoId : Integer, destId: Integer)
 
 #Handles creating a destination
@@ -267,7 +271,9 @@ POST     /users/treasurehunts/edit/save/:id                    controllers.Treas
 GET     /users/treasurehunts/delete/:id                    controllers.TreasureHuntController.deleteTreasureHunt(request : Request, id : Integer)
 
 # Undo
++nocsrf
 PUT     /undo                                              controllers.UndoRedoController.undo(request: Request)
 
 # Redo
++nocsrf
 PUT     /redo                                              controllers.UndoRedoController.redo(request: Request)

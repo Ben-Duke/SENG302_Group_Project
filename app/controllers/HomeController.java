@@ -167,8 +167,7 @@ public class HomeController {
                 }
             }
             return badRequest();
-        }
-        else{
+        } else {
             return unauthorized("Oops, you're not logged in.");
         }
     }

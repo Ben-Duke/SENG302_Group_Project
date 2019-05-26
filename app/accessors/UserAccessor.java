@@ -1,10 +1,15 @@
 package accessors;
 
+import factories.UserFactory;
 import models.Nationality;
 import models.Passport;
 import models.User;
+import models.UserPhoto;
 
+import java.io.File;
 import java.util.List;
+
+import static play.mvc.Results.ok;
 
 public class UserAccessor {
 
@@ -31,6 +36,23 @@ public class UserAccessor {
      */
     public static User getUserById(int id) {
         return User.find.byId(id);
+    }
+
+    /**
+     * Finds a user's profile picture in the database by their user id.
+     * The user must exist in the database.
+     * @param userId the user id
+     * @throws IllegalArgumentException if the user doesn't exist
+     * @return the user's profile picture or null if no profile picture exists
+     */
+    public static UserPhoto getUserProfilePictureByUserId(int userId) {
+        User user = getUserById(userId);
+        if (user != null) {
+            return UserFactory.getUserProfilePicture(userId);
+        } else {
+            throw new IllegalArgumentException("The User must exist in the database.");
+        }
+
     }
 
     /**

@@ -41,6 +41,10 @@ public class UserPhoto extends Model {
 
     public static Finder<Integer,UserPhoto> find = new Finder<>(UserPhoto.class);
 
+    /** Default constructor */
+    public UserPhoto() {
+    }
+
     /**
      * Constructor method for UserPhoto.
      *

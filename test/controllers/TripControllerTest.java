@@ -654,12 +654,12 @@ public class TripControllerTest extends BaseTestWithApplicationAndDatabase {
     }
 
     @Test
-    public void cancelTripWithLoginSessionWithValidOwner(){
+    public void deleteTripWithLoginSessionWithValidOwner(){
         Trip trip = Trip.find.byId(2);
         assertNotNull(trip);
         Http.RequestBuilder request = Helpers.fakeRequest()
-                .method(GET)
-                .uri("/users/trips/cancel/2").session("connected", "2");
+                .method(DELETE)
+                .uri("/users/trips/2").session("connected", "2");
         Result result = route(app, request);
         assertEquals(SEE_OTHER, result.status());
         trip = Trip.find.byId(2);
@@ -667,12 +667,12 @@ public class TripControllerTest extends BaseTestWithApplicationAndDatabase {
     }
 
     @Test
-    public void cancelTripWithLoginSessionWithInvalidOwner(){
+    public void deleteTripWithLoginSessionWithInvalidOwner(){
         Trip trip = Trip.find.byId(2);
         assertNotNull(trip);
         Http.RequestBuilder request = Helpers.fakeRequest()
-                .method(GET)
-                .uri("/users/trips/cancel/2").session("connected", "3");
+                .method(DELETE)
+                .uri("/users/trips/2").session("connected", "3");
         Result result = route(app, request);
         assertEquals(UNAUTHORIZED, result.status());
         trip = Trip.find.byId(2);
@@ -680,13 +680,13 @@ public class TripControllerTest extends BaseTestWithApplicationAndDatabase {
     }
 
     @Test
-    public void cancelTripWithLoginSessionWithAdmin(){
+    public void deleteTripWithLoginSessionWithAdmin(){
         Trip trip = Trip.find.byId(2);
         assertNotNull(trip);
         assertFalse(trip.getUser().getUserid() == 1);
         Http.RequestBuilder request = Helpers.fakeRequest()
-                .method(GET)
-                .uri("/users/trips/cancel/2").session("connected", "1");
+                .method(DELETE)
+                .uri("/users/trips/2").session("connected", "1");
         Result result = route(app, request);
         assertEquals(SEE_OTHER, result.status());
         trip = Trip.find.byId(2);
@@ -694,12 +694,12 @@ public class TripControllerTest extends BaseTestWithApplicationAndDatabase {
     }
 
     @Test
-    public void cancelTripWithInvalidLoginSession(){
+    public void deleteTripWithInvalidLoginSession(){
         Trip trip = Trip.find.byId(2);
         assertNotNull(trip);
         Http.RequestBuilder request = Helpers.fakeRequest()
-                .method(GET)
-                .uri("/users/trips/cancel/2").session("connected", null);
+                .method(DELETE)
+                .uri("/users/trips/2").session("connected", null);
         Result result = route(app, request);
         assertEquals(UNAUTHORIZED, result.status());
         trip = Trip.find.byId(2);
@@ -707,10 +707,10 @@ public class TripControllerTest extends BaseTestWithApplicationAndDatabase {
     }
 
     @Test
-    public void cancelTripWithValidLoginSessionWithInvalidTrip(){
+    public void deleteTripWithValidLoginSessionWithInvalidTrip(){
         Http.RequestBuilder request = Helpers.fakeRequest()
-                .method(GET)
-                .uri("/users/trips/cancel/10").session("connected", "1");
+                .method(DELETE)
+                .uri("/users/trips/10").session("connected", "1");
         Result result = route(app, request);
         assertEquals(NOT_FOUND, result.status());
     }

@@ -44,7 +44,7 @@ function undoRedoRequest(url){
         url: '/' + url,
         success:function(res, textStatus, xhr){
             console.log(res)
-            sessionStorage.reloadAfterPageLoad = url;
+            sessionStorage.setItem(url, res);
             window.location.reload();
         },
         error: function(xhr, textStatus, errorThrown){
@@ -59,13 +59,13 @@ function undoRedoRequest(url){
  * Sets session storage to false after
  */
 $(function () {
-    if (sessionStorage.reloadAfterPageLoad !== false) {
-            if (sessionStorage.reloadAfterPageLoad === "undo") {
-                showMessage(sessionStorage.reloadAfterPageLoad, "undone")
-            } else if (sessionStorage.reloadAfterPageLoad === "redo") {
-                showMessage(sessionStorage.reloadAfterPageLoad, "redone")
+    if (sessionStorage !== false) {
+            if (sessionStorage.getItem("undo")) {
+                showMessage(sessionStorage.getItem("undo"), "undone")
+            } else if (sessionStorage.getItem("redo")) {
+                showMessage(sessionStorage.getItem("redo"), "redone")
             }
-            sessionStorage.reloadAfterPageLoad = false;
+            sessionStorage.clear()
         }
     }
 );
@@ -74,12 +74,12 @@ $(function () {
  * Shows notification message for given undo/redo request
  * @param message Either Undo or Redo
  */
-function showMessage(message) {
+function showMessage(message, action) {
     var x = document.getElementById("snackbar");
 
     // Add the "show" class to DIV
     x.className = "show";
-    x.innerText = message;
+    x.innerText = message + " " + action;
     // After 3 seconds, remove the show class from DIV
     setTimeout(function(){
         x.className = x.className.replace("show", "");

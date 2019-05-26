@@ -57,4 +57,8 @@ public class UploadPhotoCommand extends UndoableCommand {
         execute();
 
     }
+    public String toString() {
+        return this.userPhoto.getUrl() + " uploading";
+    }
+
 }

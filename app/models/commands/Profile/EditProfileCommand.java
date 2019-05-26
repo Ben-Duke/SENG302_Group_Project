@@ -47,6 +47,10 @@ public class EditProfileCommand extends UndoableCommand {
     public void redo() {
         execute();
     }
+
+    public String toString() {
+        return this.actualUser.getfName() + this.actualUser.lName + " editing";
+    }
 }
 
 

@@ -60,4 +60,8 @@ public class DeleteTripCommand extends UndoableCommand {
     public void redo() {
         execute();
     }
+
+    public String toString() {
+        return "Trip " + this.trip.getTripName() + " deletion";
+    }
 }

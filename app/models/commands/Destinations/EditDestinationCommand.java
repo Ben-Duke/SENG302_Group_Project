@@ -55,6 +55,10 @@ public class EditDestinationCommand extends UndoableCommand {
     public void redo() {
         execute();
     }
+
+    public String toString() {
+        return this.actualDestination.getDestName() + " editing";
+    }
 }
 
 

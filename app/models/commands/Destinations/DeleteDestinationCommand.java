@@ -69,6 +69,10 @@ public class DeleteDestinationCommand extends UndoableCommand {
     public void redo() {
         execute();
     }
+
+    public String toString() {
+        return "Destination " + this.destination.getDestName() + " deletion";
+    }
 }
 
 

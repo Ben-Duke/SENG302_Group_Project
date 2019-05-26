@@ -20,6 +20,7 @@ public class CommandManagerAccessor {
 
     private static CommandManager getNewCommandManager(String email) {
         CommandManager commandManager = new CommandManager();
+        commandManager.setUser(UserAccessor.getUserByEmail(email));
         commandManagers.put(email, commandManager);
         return commandManager;
     }

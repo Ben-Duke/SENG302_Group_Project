@@ -53,7 +53,7 @@ public class ProfileController extends Controller {
             String[] gendersArray = {"Male", "Female", "Other"};
             List gendersList = Arrays.asList(gendersArray);
 
-            return ok(views.html.users.profile.updateProfile.render(updateUserForm, gendersList,user, isAdmin));
+            return ok(updateProfile.render(updateUserForm, gendersList,user, isAdmin));
         }
         else{
             return redirect(routes.UserController.userindex());
@@ -91,7 +91,7 @@ public class ProfileController extends Controller {
                 //bad request, errors present
                 String[] gendersArray = {"Male", "Female", "Other"};
                 List gendersList = Arrays.asList(gendersArray);
-                return badRequest(views.html.users.profile.updateProfile.render(updateProfileForm, gendersList,user, isAdmin));
+                return badRequest(updateProfile.render(updateProfileForm, gendersList, user, isAdmin));
             }
         } else{
             return redirect(routes.UserController.userindex());

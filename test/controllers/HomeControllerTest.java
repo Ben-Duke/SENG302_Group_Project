@@ -25,6 +25,7 @@ import play.test.WithApplication;
 import scala.concurrent.Await;
 import scala.concurrent.Future;
 import scala.concurrent.duration.Duration;
+import testhelpers.BaseTestWithApplicationAndDatabase;
 import utilities.TestDatabaseManager;
 import utilities.UtilityFunctions;
 
@@ -45,41 +46,7 @@ import static play.mvc.Http.Status.SEE_OTHER;
 import static play.mvc.Http.Status.UNAUTHORIZED;
 import static play.test.Helpers.*;
 
-public class HomeControllerTest extends WithApplication {
-
-    /**
-     * The fake database
-     */
-    Database database;
-
-    @Override
-    protected Application provideApplication() {
-        return new GuiceApplicationBuilder().build();
-    }
-
-    @Before
-    public void setUpDatabase() {
-        database = Databases.inMemory();
-        Evolutions.applyEvolutions(database, Evolutions.forDefault(new Evolution(
-                1,
-                "create table test (id bigint not null, name varchar(255));",
-                "drop table test;"
-        )));
-        //Initialises a test user with name "testUser" and saves it to the database.
-        ApplicationManager.setUserPhotoPath("/test/resources/test_photos/user_");
-        ApplicationManager.setIsTest(true);
-        TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
-        testDatabaseManager.populateDatabase();
-    }
-
-    /**
-     * Clears the fake database after each test
-     */
-    @After
-    public void shutdownDatabase() {
-        Evolutions.cleanupEvolutions(database);
-        database.shutdown();
-    }
+public class HomeControllerTest extends BaseTestWithApplicationAndDatabase {
 
     /**
      * Test to render home with no login session

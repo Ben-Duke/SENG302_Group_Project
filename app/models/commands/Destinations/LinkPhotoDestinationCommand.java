@@ -20,7 +20,13 @@ public class LinkPhotoDestinationCommand extends UndoableCommand {
     }
 
     public void undo() {
-
+        photo.removeDestination(destination);
+        photo.update();
+        if ((destination.getPrimaryPhoto() != null) &&
+                (photo.getPhotoId() == destination.getPrimaryPhoto().getPhotoId())) {
+            destination.setPrimaryPhoto(null);
+            destination.update();
+        }
     }
 
     public void redo() {

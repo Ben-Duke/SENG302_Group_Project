@@ -25,7 +25,8 @@ public class UnlinkPhotoDestinationCommand extends UndoableCommand {
     }
 
     public void undo() {
-
+        photo.addDestination(destination);
+        photo.update();
     }
 
     public void redo() {

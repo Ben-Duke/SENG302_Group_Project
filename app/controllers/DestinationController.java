@@ -273,7 +273,7 @@ public class DestinationController extends Controller {
                     oldDestination.applyEditChanges(newDestination);
                     EditDestinationCommand editDestinationCommand =
                             new EditDestinationCommand(oldDestination);
-                    editDestinationCommand.execute();
+                    user.getCommandManager().executeCommand(editDestinationCommand);
 
                     return redirect(routes.DestinationController.indexDestination());
 
@@ -688,19 +688,29 @@ public class DestinationController extends Controller {
      *         badRequest if the destination and photo were not linked     *
      */
     public Result unlinkPhotoFromDestination(Http.Request request, int photoId, int destId) {
-        UserPhoto photo = UserPhoto.find.byId(photoId);
-        Destination destination = Destination.find.byId(destId);
-        if (photo == null) return notFound("No photo found with that id");
-        if (destination == null) return notFound("No destination found with that id");
-
-        if (! photo.removeDestination(destination)) return badRequest("The destination was not linked to this photo");
-        photo.update();
-        if ((destination.getPrimaryPhoto() != null) &&
-                (photo.getPhotoId() == destination.getPrimaryPhoto().getPhotoId())) {
-            destination.setPrimaryPhoto(null);
-            destination.update();
+        User user = User.getCurrentUser(request);
+        if (user !=  null) {
+            UserPhoto photo = UserPhoto.find.byId(photoId);
+            Destination destination = Destination.find.byId(destId);
+            if (photo == null) return notFound("No photo found with that id");
+            if (destination == null) return notFound("No destination found with that id");
+            // This block checks if the user is the owner of either the photo or the destination.
+            // If not the owner then returns an unauthorized error else proceeds as usual.
+            if (destination.getUser().getUserid() != user.getUserid()) {
+                if (photo.getUser().getUserid() != user.getUserid()) {
+                    return unauthorized("You cannot unlink this photo from this destination as neither of those belong to you.");
+                }
+            }
+            if (! photo.removeDestination(destination)) return badRequest("The destination was not linked to this photo");
+            photo.update();
+            if ((destination.getPrimaryPhoto() != null) &&
+                    (photo.getPhotoId() == destination.getPrimaryPhoto().getPhotoId())) {
+                destination.setPrimaryPhoto(null);
+                destination.update();
+            }
+            return ok();
         }
-        return ok();
+        return unauthorized("You are not logged in.");
     }
 
     /**

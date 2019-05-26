@@ -8,7 +8,7 @@ import play.mvc.Http;
 import play.mvc.Result;
 
 import utilities.UtilityFunctions;
-import views.html.responses.unauthorizedPage;
+import views.html.responses.*;
 
 /** Controller to handle undo/redo of actions */
 public class UndoRedoController extends Controller {

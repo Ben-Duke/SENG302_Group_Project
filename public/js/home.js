@@ -276,6 +276,14 @@ function sendUnlinkDestinationRequest(url, photoId, destId) {
         method: "DELETE",
         success: function(res) {
             toggleLinkButtonDisplays(destId, photoId);
+
+            $.ajax({
+                url: "/users/profile/get_generic_profile_image",
+                method: "GET",
+                success: function(res) {
+                    document.getElementById('')
+                }
+            })
         }
     })
 }

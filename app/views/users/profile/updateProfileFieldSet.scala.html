@@ -1,8 +1,13 @@
-@import java.util.List;
+@import java.util;
 
 @import formdata.UpdateUserFormData
 @import views.html.bootstrap3._
-@(updateUserForm : Form[UpdateUserFormData], genders: java.util.List[String])
+
+@import views.html.helper.inputRadioGroup
+@import views.html.helper.options
+@import views.html.helper.checkbox
+@import views.html.helper.inputDate
+@(updateUserForm : Form[UpdateUserFormData], genders: util.List[String], isAdmin: Boolean)
 
 
 
@@ -18,44 +23,59 @@
             placeholder = "Email",
             help = "Please enter your email. (required)")
 
-
-            @password(updateUserForm("password"),
-                label = "Password",
-                placeholder = "password",
-                help = "Please enter your new password (leave empty to keep unchanged).")
-
-
-    <!-- FirstName -->
-    @text(updateUserForm("firstName"),
-        label = "First name",
-        placeholder = "first name",
-        help = "Please enter your first name. (required)")
+        <div @if(isAdmin) {style="display: none;"}>
+        @password(updateUserForm("existingPassword"),
+            label = "Existing Password",
+            placeholder = "password",
+            help = "Please enter your existing password")
+        </div>
 
 
-        <!-- LastName -->
-    @text(updateUserForm("lastName"),
-        label = "Last name",
-        placeholder = "last name",
-        help = "Please enter your last name. (required)")
-
-        <!-- Gender -->
-    @radiobuttons(updateUserForm("gender"),
-        label = "Gender",
-        buttonNameList = genders,
-        help = "Please select your gender. (required)")
+        @password(updateUserForm("password"),
+            label = "New Password",
+            placeholder = "password",
+            help = "Please enter your new password (leave empty to keep unchanged).")
 
 
-        <!-- Date of birth -->
+            <!-- FirstName -->
+        @text(updateUserForm("firstName"),
+            label = "First name",
+            placeholder = "first name",
+            help = "Please enter your first name. (required)")
+
+
+            <!-- LastName -->
+        @text(updateUserForm("lastName"),
+            label = "Last name",
+            placeholder = "last name",
+            help = "Please enter your last name. (required)")
+
+            <!-- Gender -->
+        @radiobuttons(updateUserForm("gender"),
+            label = "Gender",
+            buttonNameList = genders,
+            help = "Please select your gender. (required)")
+
+
+            <!-- Date of birth -->
     @datepicker(updateUserForm("dateOfBirth"),
         label = "Date of birth",
         placeholder = "01/01/2000",
         help = "Please select your Date of birth. (required)")
 
+
     <div id="hiddenExistingEmail" style="display: none;">
-        @text(updateUserForm("existingUsername"),
+    @text(updateUserForm("existingUsername"),
         label = "Email",
         placeholder = "Email",
         help = "Please enter your email. (required)")
+    </div>
+
+    <div id="hiddenisAdmin" style="display: none;">
+    @text(updateUserForm("isAdmin"),
+        label = "isAdmin",
+        placeholder = "Admin",
+        help = "Please enter your admin. (required)")
     </div>
 
 

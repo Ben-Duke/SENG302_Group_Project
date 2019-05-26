@@ -4,13 +4,13 @@
 @import java.util
 
 @import views.html.users.profile.updateProfileFieldSet
-@(updateUserForm : Form[UpdateUserFormData], genders: util.List[String], user : User)
+@(updateUserForm : Form[UpdateUserFormData], genders: util.List[String], user : User, isAdmin:Boolean)
 
 @main(user, "Index") {
     <div class="container">
         <div class="well">
         @form(helper.CSRF(routes.ProfileController.updateProfileRequest()) , 'class -> "form-horizontal") {
-            @updateProfileFieldSet(updateUserForm, genders)
+            @updateProfileFieldSet(updateUserForm, genders, isAdmin)
         }
 
         </div>

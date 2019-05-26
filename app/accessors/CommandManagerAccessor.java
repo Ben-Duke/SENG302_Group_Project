@@ -28,4 +28,8 @@ public class CommandManagerAccessor {
     public static void update(CommandManager commandManager) {
         commandManager.update();
     }
+
+    public static void resetCommandManagers() {
+        commandManagers = new HashMap<>();
+    }
 }

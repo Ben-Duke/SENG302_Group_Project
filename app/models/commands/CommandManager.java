@@ -75,4 +75,12 @@ public class CommandManager extends BaseModel {
             }
         }
     }
+
+    public boolean isUndoStackEmpty() {
+        return undoStack.isEmpty();
+    }
+
+    public boolean isRedoStackEmpty() {
+        return redoStack.isEmpty();
+    }
 }

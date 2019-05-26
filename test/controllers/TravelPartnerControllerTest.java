@@ -28,6 +28,7 @@ import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static play.mvc.Http.Status.OK;
+import static play.mvc.Http.Status.SEE_OTHER;
 import static play.mvc.Http.Status.UNAUTHORIZED;
 import static play.test.Helpers.GET;
 import static play.test.Helpers.route;
@@ -85,7 +86,7 @@ public class TravelPartnerControllerTest extends BaseTestWithApplicationAndDatab
                 .method(GET)
                 .uri("/users/profile/search").session("connected", null);
         Result result = route(app, request);
-        assertEquals(UNAUTHORIZED, result.status());
+        assertEquals(SEE_OTHER, result.status());
         request = Helpers.fakeRequest()
                 .method(GET)
                 .uri("/users/profile/search").session("connected", "1");

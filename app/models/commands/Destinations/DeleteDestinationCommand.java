@@ -13,7 +13,7 @@ import utilities.UtilityFunctions;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Command to edit a user's profile */
+/** Command to delete a user's destination */
 public class DeleteDestinationCommand extends UndoableCommand {
     private Destination destination;
     private Boolean deletedByAdmin;

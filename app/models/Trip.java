@@ -15,6 +15,14 @@ import java.util.List;
 @Entity
 public class Trip extends Model {
 
+    public Trip(Trip trip, List<Visit> visits) {
+        this.tripName = trip.getTripName();
+        this.removedVisits = trip.getRemovedVisits();
+        this.isPublic = trip.getIsPublic();
+        this.user = trip.getUser();
+        this.visits = visits;
+    }
+
     @Id
     public Integer tripid;
 

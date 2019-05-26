@@ -61,7 +61,7 @@ public class TreasureHuntFormData implements Constraints.Validatable<List<Valida
         String min = "1900-01-01";
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDate minDate = LocalDate.parse(min, formatter);
-        LocalDate userStartDate;
+        LocalDate userStartDate = null;
         LocalDate userEndDate;
 
         if (title == null || title.length() == 0) {
@@ -79,16 +79,28 @@ public class TreasureHuntFormData implements Constraints.Validatable<List<Valida
                 errors.add(new ValidationError("endDate", "Please enter a end date"));
             }
         } else {
-            userStartDate = LocalDate.parse(startDate, formatter);
+            try{
+                userStartDate = LocalDate.parse(startDate, formatter);
             if (userStartDate.compareTo(minDate) < 0) {
                 errors.add(new ValidationError("startDate", "Please select a date after 1/1/1900"));
+
             }
+            }catch(Exception error){
+                errors.add(new ValidationError("startDate", "Please enter a valid date in the form d/m/yyyy"));
+            }
+
             if (endDate.isEmpty()) {
                 errors.add(new ValidationError("endDate", "Please enter a end date"));
             } else {
-                userEndDate = LocalDate.parse(endDate, formatter);
-                if (userEndDate.compareTo(userStartDate) < 0) {
-                    errors.add(new ValidationError("endDate", "Please select a date which is after the start date."));
+                try {
+                    userEndDate = LocalDate.parse(endDate, formatter);
+                    if(userStartDate != null) {
+                        if (userEndDate.compareTo(userStartDate) < 0) {
+                            errors.add(new ValidationError("endDate", "Please select a date which is after the start date."));
+                        }
+                    }
+                }catch(Exception error){
+                    errors.add(new ValidationError("endDate", "Please enter a date in the form d/m/yyyy"));
                 }
             }
         }

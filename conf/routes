@@ -55,8 +55,6 @@ GET  /users/admin/destination_modification_request/reject/:id    controllers.Des
 #Handles updating a destination then deleting a destination modification request on acceptance by admin
 GET  /users/admin/destination_modification_request/accept/:id    controllers.DestinationController.destinationModificationAccept(request: Request, id: Integer)
 
-#Handles call to get the generic profile picture image
-GET /users/profile/get_generic_profile_image             controllers.HomeController.getGenericProfileImage(request: Request)
 
 #Handles updating profile
 POST    /users/profile/update       controllers.ProfileController.updateProfileRequest(request: Request)

@@ -74,6 +74,9 @@ public class UserPhoto extends Model {
         this.primaryPhotoDestinations = primaryPhotoDestinations;
     }
 
+    public boolean getIsProfile(){
+        return this.isProfile;
+    }
 
     /**
      * Gets an unused user photo url.

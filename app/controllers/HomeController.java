@@ -233,7 +233,7 @@ public class HomeController {
     }
 
     public Result getGenericProfileImage(Http.Request request){
-        return ok(new File("public/images/Generic.png"));
+        return ok((new File("public/images/Generic.png")).getPath());
     }
 
     /**

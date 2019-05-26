@@ -381,7 +381,8 @@ function deletePhotoRequest(url, photoId, imageId){
         url: url,
         method: "Delete",
         data: JSON.stringify({
-            photoid: '"' + photoId + '"'
+            photoid: '"' + photoId + '"',
+            response: false
         }),
         headers: {
             'Content-Type': 'application/json'
@@ -389,10 +390,22 @@ function deletePhotoRequest(url, photoId, imageId){
         success:function(res){
             deletePhotoFromUI(photoId)
 
+
+            let profileImage = document.getElementById("profilePicture");
+            let thumbProfileImage = document.getElementById("profilePictureThumb");
+            //image.src="https://static.interestingengineering.com/images/APRIL/sizes/black_hole_resize_md.jpg";
+            profileImage.src= "/assets/images/Generic.png";
+            thumbProfileImage.src= "/assets/images/Generic.png";
+
+
+
         },
         error: function( res){
-             //console.log(res.status);
-             if(res.responseText === "Failed to delete image"){
+             console.log(res.body);
+            if(res.responseText === "Is profile picture ask user"){
+                console.log("Need to ask the user for permission");
+            }
+             else if(res.responseText === "Failed to delete image"){
                  $(document.getElementById('destination-carousel')).modal('hide');
                  $(document.getElementById('confirmDeletePhotoModal')).modal('show');
 

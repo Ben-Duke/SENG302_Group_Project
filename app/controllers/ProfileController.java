@@ -1,11 +1,13 @@
 package controllers;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import factories.UserFactory;
 import formdata.NatFormData;
 import formdata.UpdateUserFormData;
 import models.Nationality;
 import models.Passport;
 import models.User;
+import models.UserPhoto;
 import models.commands.Profile.EditProfileCommand;
 import play.data.DynamicForm;
 import play.data.Form;
@@ -40,9 +42,15 @@ public class ProfileController extends Controller {
     public Result deletePhoto(Http.Request request, Integer photoId){
         UserFactory factory = new UserFactory();
         System.out.println("Called delete photo");
+        UserPhoto photo = UserPhoto.find.byId(photoId);
+        JsonNode json = request.body().asJson();
+        boolean userInput = json.get("response").asBoolean();
+        System.out.println("User option is " + userInput);
+        boolean needToAskUser = photo.getIsProfile();
+        if(needToAskUser){
+            return badRequest("Is profile picture ask user");
+        }
         if(factory.deletePhoto(photoId)){
-        //if(true){
-            System.out.println("Photo deletion worked sending ok request back");
             return ok("Deleted the photo");
         }else{
             return badRequest("Failed to delete image");

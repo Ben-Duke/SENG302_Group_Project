@@ -692,6 +692,7 @@ public class DestinationController extends Controller {
                 unlinkPhotoFromDestination(null, photoId, destination.getDestId());
             }
             photo.deletePhoto(photoId);
+
         }catch(Exception error){
             return badRequest();
         }

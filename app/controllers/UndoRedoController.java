@@ -8,7 +8,7 @@ import play.mvc.Http;
 import play.mvc.Result;
 
 import utilities.UtilityFunctions;
-import views.html.responses.unauthorizedPage;
+import views.html.responses.*;
 
 /** Controller to handle undo/redo of actions */
 public class UndoRedoController extends Controller {
@@ -20,7 +20,7 @@ public class UndoRedoController extends Controller {
 
         User user = User.getCurrentUser(request);
         if (user == null) {
-            return unauthorized(unauthorizedPage.render());
+            return redirect(routes.UserController.userindex());
         }
         commandManager = user.getCommandManager();
         commandManager.undo();
@@ -31,7 +31,7 @@ public class UndoRedoController extends Controller {
     public Result redo(Http.Request request) {
         User user = User.getCurrentUser(request);
         if (user == null) {
-            return unauthorized(unauthorizedPage.render());
+            return redirect(routes.UserController.userindex());
         }
 
         commandManager = user.getCommandManager();

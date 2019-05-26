@@ -5,9 +5,9 @@ var user;
  * Completes given undo or redo request
  */
 $(document).keydown('undo_redo', function(e) {
-    if ((e.ctrlKey && e.keyCode === 90) && e.shiftKey !== true) {
+    if (e.ctrlKey && e.keyCode === 90) {
         undoRedoRequest("undo")
-    } else if (e.ctrlKey && e.shiftKey && e.keyCode === 90) {
+    } else if (e.ctrlKey && e.keyCode === 89) {
         undoRedoRequest("redo")
     };
 });

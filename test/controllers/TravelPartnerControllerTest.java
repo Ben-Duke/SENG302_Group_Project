@@ -18,6 +18,7 @@ import play.mvc.Http;
 import play.mvc.Result;
 import play.test.Helpers;
 import play.test.WithApplication;
+import testhelpers.BaseTestWithApplicationAndDatabase;
 import utilities.UtilityFunctions;
 
 import java.time.LocalDate;
@@ -27,29 +28,20 @@ import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static play.mvc.Http.Status.OK;
+import static play.mvc.Http.Status.SEE_OTHER;
 import static play.mvc.Http.Status.UNAUTHORIZED;
 import static play.test.Helpers.GET;
 import static play.test.Helpers.route;
 
 
 
-public class TravelPartnerControllerTest extends WithApplication {
-    /**
-     * The fake database
-     */
-    Database database;
+public class TravelPartnerControllerTest extends BaseTestWithApplicationAndDatabase {
 
     /**
      * Sets up the fake database before each test
      */
     @Before
     public void setupDatabase() {
-        database = Databases.inMemory();
-        Evolutions.applyEvolutions(database, Evolutions.forDefault(new Evolution(
-                1,
-                "create table test (id bigint not null, name varchar(255));",
-                "drop table test;"
-        )));
         UtilityFunctions.addAllNationalities();
         UtilityFunctions.addAllPassports();
         UtilityFunctions.addTravellerTypes();
@@ -86,19 +78,6 @@ public class TravelPartnerControllerTest extends WithApplication {
     }
 
     /**
-     * Clears the fake database after each test
-     */
-    @After
-    public void shutdownDatabase() {
-        Evolutions.cleanupEvolutions(database);
-        database.shutdown();
-    }
-    @Override
-    protected Application provideApplication() {
-        return new GuiceApplicationBuilder().build();
-    }
-
-    /**
      * Unit test for rendering the search profile page
      */
     @Test
@@ -107,7 +86,7 @@ public class TravelPartnerControllerTest extends WithApplication {
                 .method(GET)
                 .uri("/users/profile/search").session("connected", null);
         Result result = route(app, request);
-        assertEquals(UNAUTHORIZED, result.status());
+        assertEquals(SEE_OTHER, result.status());
         request = Helpers.fakeRequest()
                 .method(GET)
                 .uri("/users/profile/search").session("connected", "1");

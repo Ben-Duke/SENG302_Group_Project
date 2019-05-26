@@ -273,7 +273,7 @@ public class DestinationController extends Controller {
                     oldDestination.applyEditChanges(newDestination);
                     EditDestinationCommand editDestinationCommand =
                             new EditDestinationCommand(oldDestination);
-                    editDestinationCommand.execute();
+                    user.getCommandManager().executeCommand(editDestinationCommand);
 
                     return redirect(routes.DestinationController.indexDestination());
 

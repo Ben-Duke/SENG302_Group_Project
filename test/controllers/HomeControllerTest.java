@@ -203,7 +203,7 @@ public class HomeControllerTest extends WithApplication {
                         app.asScala().materializer());
         CSRFTokenHelper.addCSRFToken(request);
         Result result = route(app, request);
-        assertEquals(UNAUTHORIZED, result.status());
+        assertEquals(SEE_OTHER, result.status());
     }
 
     @Test
@@ -221,7 +221,7 @@ public class HomeControllerTest extends WithApplication {
                 .method(GET)
                 .uri("/users/home/serveDestPicture/1").session("connected", null);
         Result result = route(app, request);
-        assertEquals(UNAUTHORIZED, result.status());
+        assertEquals(SEE_OTHER, result.status());
     }
 
     @Test
@@ -299,7 +299,7 @@ public class HomeControllerTest extends WithApplication {
                 .method(GET)
                 .uri("/users/home/serveProfilePicture/1").session("connected", null);
         Result result = route(app, request);
-        assertEquals(UNAUTHORIZED, result.status());
+        assertEquals(SEE_OTHER, result.status());
     }
 
     @Test
@@ -370,7 +370,7 @@ public class HomeControllerTest extends WithApplication {
                 .uri("/users/home/setProfilePicture/2").session("connected", null);
         CSRFTokenHelper.addCSRFToken(request);
         Result result = route(app, request);
-        assertEquals(UNAUTHORIZED, result.status());
+        assertEquals(SEE_OTHER, result.status());
     }
 
     @Test
@@ -428,7 +428,7 @@ public class HomeControllerTest extends WithApplication {
                 .uri(routes.HomeController.makePicturePublic(2,1).url()).session("connected", null);
         CSRFTokenHelper.addCSRFToken(request);
         Result result = route(app, request);
-        assertEquals(UNAUTHORIZED, result.status());
+        assertEquals(SEE_OTHER, result.status());
     }
 
     @Test

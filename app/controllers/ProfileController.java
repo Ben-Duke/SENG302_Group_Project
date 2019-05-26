@@ -56,7 +56,7 @@ public class ProfileController extends Controller {
             return ok(views.html.users.profile.updateProfile.render(updateUserForm, gendersList,user, isAdmin));
         }
         else{
-            return unauthorized(notLoggedInErrorStr);
+            return redirect(routes.UserController.userindex());
         }
     }
 
@@ -94,7 +94,7 @@ public class ProfileController extends Controller {
                 return badRequest(views.html.users.profile.updateProfile.render(updateProfileForm, gendersList,user, isAdmin));
             }
         } else{
-            return unauthorized(notLoggedInErrorStr);
+            return redirect(routes.UserController.userindex());
         }
     }
 
@@ -154,7 +154,7 @@ public class ProfileController extends Controller {
 
             return ok(views.html.users.profile.showProfile.render(otherUser, user));
         }
-        return unauthorized(notLoggedInErrorStr);
+        return redirect(routes.UserController.userindex());
     }
 
 
@@ -180,7 +180,7 @@ public class ProfileController extends Controller {
             return ok(updateNatPass.render(userForm, nationalities, passports, user.getUserid(), User.getCurrentUser(request)));
         }
         else {
-            return unauthorized(notLoggedInErrorStr);
+            return redirect(routes.UserController.userindex());
         }
     }
 
@@ -202,7 +202,7 @@ public class ProfileController extends Controller {
 
         }
         else{
-            return unauthorized(notLoggedInErrorStr);
+            return redirect(routes.UserController.userindex());
         }
         return redirect(routes.ProfileController.updateNatPass());
     }
@@ -223,7 +223,7 @@ public class ProfileController extends Controller {
             UserFactory.addPassportToUser(user.getUserid(), passportID);
         }
         else{
-            return unauthorized(notLoggedInErrorStr);
+            return redirect(routes.UserController.userindex());
         }
         return redirect(routes.ProfileController.updateNatPass());
     }
@@ -254,7 +254,7 @@ public class ProfileController extends Controller {
             if (user != null) {
                 UserFactory.deleteNatsOnUser(user.getUserid(), nationalityID);
             } else {
-                return unauthorized("Oops, you are not logged in");
+                return redirect(routes.UserController.userindex());
 
             }
         }
@@ -278,7 +278,7 @@ public class ProfileController extends Controller {
             UserFactory.deletePassportOnUser(user.getUserid(), passportID);
         }
         else{
-            return unauthorized(notLoggedInErrorStr);
+            return redirect(routes.UserController.userindex());
         }
         return redirect(routes.ProfileController.updateNatPass());
     }

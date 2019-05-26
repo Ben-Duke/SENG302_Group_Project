@@ -82,7 +82,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
                 .method(GET)
                 .uri("/users/destinations").session("connected", null);
         Result result = route(app, request);
-        assertEquals(UNAUTHORIZED, result.status());
+        assertEquals(SEE_OTHER, result.status());
     }
 
     /**
@@ -106,7 +106,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
                 .method(GET)
                 .uri("/users/destinations/1").session("connected", null);
         Result result = route(app, request);
-        assertEquals(UNAUTHORIZED, result.status());
+        assertEquals(SEE_OTHER, result.status());
     }
 
     /**
@@ -130,7 +130,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
                 .method(GET)
                 .uri("/users/destinations/create/").session("connected", null);
         Result result = route(app, request);
-        assertEquals(UNAUTHORIZED, result.status());
+        assertEquals(SEE_OTHER, result.status());
     }
 
     /**
@@ -159,7 +159,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
         formData.put("longitude", "-50.0");
         Http.RequestBuilder request = Helpers.fakeRequest().bodyForm(formData).method(POST).uri("/users/destinations/save").session("connected", null);
         Result result = route(app, request);
-        assertEquals(UNAUTHORIZED, result.status());
+        assertEquals(SEE_OTHER, result.status());
     }
 
     /**
@@ -246,7 +246,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
                 .method(GET)
                 .uri("/users/destinations/edit/1").session("connected", null);
         Result result = route(app, request);
-        assertEquals(UNAUTHORIZED, result.status());
+        assertEquals(SEE_OTHER, result.status());
     }
 
     /**
@@ -300,7 +300,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
         formData.put("longitude", "-50.0");
         Http.RequestBuilder request = Helpers.fakeRequest().bodyForm(formData).method(POST).uri("/users/destinations/update/1").session("connected", null);
         Result result = route(app, request);
-        assertEquals(UNAUTHORIZED, result.status());
+        assertEquals(SEE_OTHER, result.status());
     }
 
     /**
@@ -375,7 +375,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
                 .method(GET)
                 .uri("/users/destinations/delete/1").session("connected", null);
         Result result = route(app, request);
-        assertEquals(UNAUTHORIZED, result.status());
+        assertEquals(SEE_OTHER, result.status());
     }
 
     /**
@@ -513,7 +513,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
                 .method(GET)
                 .uri("/users/destinations/public/1").session("connected", null);
         Result result = route(app, request);
-        assertEquals(UNAUTHORIZED, result.status());
+        assertEquals(SEE_OTHER, result.status());
     }
 
     /**
@@ -779,7 +779,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
                 .method(GET)
                 .uri("/users/destinations/getalljson").session("connected", null);
         Result result = route(app, request);
-        assertEquals(UNAUTHORIZED, result.status());
+        assertEquals(SEE_OTHER, result.status());
     }
 
     /** THIS TEST IS EXPECTED TO FAIL LOCALLY
@@ -1029,7 +1029,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
                 .uri("/users/destinations/1/1")
                 .session("connected", null);
         Result result = route(app, request);
-        assertEquals(UNAUTHORIZED, result.status());
+        assertEquals(SEE_OTHER, result.status());
 
         List<UserPhoto> destPhotos = Destination.find.byId(1).getUserPhotos();
         assertEquals(destPhotoSize, destPhotos.size());

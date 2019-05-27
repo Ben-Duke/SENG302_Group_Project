@@ -8,8 +8,12 @@ import java.util.List;
 
 public class UserAccessor {
 
-    public User getDefaultAdmin(){
-        return null;
+    public static User getDefaultAdmin(){
+        throw new UnsupportedOperationException();
+    }
+
+    public static User getById(int id) {
+        return User.find.byId(id);
     }
 
     public static Passport getPassport(int id) {
@@ -45,6 +49,14 @@ public class UserAccessor {
     public static List<User> getUsersFromEmail(String email) {
         return  User.find.query()
                     .where().eq("email", email.toLowerCase()).findList();
+    }
+
+    public static User getUserByEmail(String email) {
+        List<User> users = getUsersFromEmail(email);
+        if (!users.isEmpty()) {
+            return users.get(0);
+        }
+        return null;
     }
 
     /** Update the user */

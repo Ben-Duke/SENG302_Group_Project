@@ -1,6 +1,7 @@
 package models.commands;
 
 import accessors.CommandManagerAccessor;
+import accessors.UserAccessor;
 import io.ebean.Finder;
 import models.BaseModel;
 import models.User;
@@ -12,6 +13,9 @@ import javax.persistence.JoinColumn;
 
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.swing.undo.UndoableEdit;
+import java.util.ArrayDeque;
+import java.util.Deque;
 
 /** Invoker in the command pattern used for undo/redo
  *
@@ -20,13 +24,10 @@ import javax.persistence.OneToOne;
  *  Singleton
  **/
 public class CommandManager extends BaseModel {
-    /* Used Deque not Stack as a stack is synchronised (thread safe) but slower
-     than a de-synchronized Deque - Sonarlint gave warning for stack
-    */
-    private UndoableCommand undoCommand;
+    /* Deque is the accepted java implementation for a stack */
+    private Deque<UndoableCommand> undoStack = new ArrayDeque<>();
 
-    //@OneToOne(mappedBy = "commandManager")
-    private UndoableCommand redoCommand;
+    private Deque<UndoableCommand> redoStack = new ArrayDeque<>();
 
     private final Logger logger = UtilityFunctions.getLogger();
 
@@ -40,50 +41,46 @@ public class CommandManager extends BaseModel {
         this.user = user;
     }
 
-    public UndoableCommand getUndoCommand() {
-        return undoCommand;
-    }
 
-    public void setUndoCommand(UndoableCommand undoCommand) {
-        this.undoCommand = undoCommand;
-    }
-
-    public UndoableCommand getRedoCommand() {
-        return redoCommand;
-    }
-
-    public void setRedoCommand(UndoableCommand redoCommand) {
-        this.redoCommand = redoCommand;
-    }
-
-    @Override
-    public String toString() {
-        return "CommandManager{" +
-                "undoCommand=" + undoCommand +
-                ", redoCommand=" + redoCommand +
-                '}';
-    }
 
     public void executeCommand(Command command) {
         command.execute();
         if (command instanceof UndoableCommand) {
-            undoCommand = (UndoableCommand) command;
+            undoStack.push((UndoableCommand) command);
         }
     }
 
     public void undo() {
-        // To prevent a crash if a redo is requested before an undoable action occurs
-        if (undoCommand != null) {
-            undoCommand.undo();
-            redoCommand = undoCommand;
+        if (!undoStack.isEmpty()) {
+            UndoableCommand undoCommand = undoStack.pop();
+            try {
+                undoCommand.undo();
+                redoStack.push(undoCommand);
+            } catch(Exception exception){
+                user.setUndoRedoError(true);
+                UserAccessor.update(user);
+            }
         }
     }
 
     public void redo() {
-        // To prevent a crash if a redo is requested before an undoable action occurs
-        if (redoCommand != null) {
-            redoCommand.redo();
-            undoCommand = redoCommand;
+        if (!redoStack.isEmpty()) {
+            UndoableCommand redoCommand = redoStack.pop();
+            try {
+                redoCommand.redo();
+                undoStack.push(redoCommand);
+            } catch(Exception exception){
+                user.setUndoRedoError(true);
+                UserAccessor.update(user);
+            }
         }
+    }
+
+    public boolean isUndoStackEmpty() {
+        return undoStack.isEmpty();
+    }
+
+    public boolean isRedoStackEmpty() {
+        return redoStack.isEmpty();
     }
 }

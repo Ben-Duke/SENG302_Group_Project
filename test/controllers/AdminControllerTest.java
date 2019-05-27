@@ -102,7 +102,7 @@ public class AdminControllerTest extends WithApplication {
                 .method(GET)
                 .uri("/users/admin/make/2").session("connected", null);
         Result result = route(app, request);
-        assertEquals(UNAUTHORIZED, result.status());
+        assertEquals(SEE_OTHER, result.status());
     }
 
     /**
@@ -129,7 +129,7 @@ public class AdminControllerTest extends WithApplication {
                 .method(GET).uri("/users/admin/make/3")
                 .session("connected", "2");
         Result result = route(app, request);
-        assertEquals(UNAUTHORIZED, result.status());
+        assertEquals(SEE_OTHER, result.status());
         assertEquals(1, Admin.find.all().size());
     }
 
@@ -143,7 +143,7 @@ public class AdminControllerTest extends WithApplication {
                 .method(GET).uri("/users/admin/make/2")
                 .session("connected", "2");
         Result result = route(app, request);
-        assertEquals(UNAUTHORIZED, result.status());
+        assertEquals(SEE_OTHER, result.status());
         assertEquals(1, Admin.find.all().size());
     }
 
@@ -160,7 +160,7 @@ public class AdminControllerTest extends WithApplication {
                 .method(GET).uri("/users/admin/make/2")
                 .session("connected", "2");
         Result result = route(app, request);
-        assertEquals(UNAUTHORIZED, result.status());
+        assertEquals(SEE_OTHER, result.status());
         assertEquals(2, Admin.find.all().size());
     }
 
@@ -173,7 +173,7 @@ public class AdminControllerTest extends WithApplication {
                 .method(GET)
                 .uri("/users/admin/remove/2").session("connected", null);
         Result result = route(app, request);
-        assertEquals(UNAUTHORIZED, result.status());
+        assertEquals(SEE_OTHER, result.status());
     }
 
     /**
@@ -200,7 +200,7 @@ public class AdminControllerTest extends WithApplication {
                 .method(GET)
                 .uri("/users/admin/remove/1").session("connected", null);
         Result result = route(app, request);
-        assertEquals(UNAUTHORIZED, result.status());
+        assertEquals(SEE_OTHER, result.status());
     }
 
     /**
@@ -213,7 +213,7 @@ public class AdminControllerTest extends WithApplication {
                 .method(GET).uri("/users/admin/remove/1")
                 .session("connected", "2");
         Result result = route(app, request);
-        assertEquals(UNAUTHORIZED, result.status());
+        assertEquals(SEE_OTHER, result.status());
         assertEquals(1, Admin.find.all().size());
     }
 
@@ -228,7 +228,7 @@ public class AdminControllerTest extends WithApplication {
                 .method(GET).uri("/users/admin/remove/3")
                 .session("connected", "2");
         Result result = route(app, request);
-        assertEquals(UNAUTHORIZED, result.status());
+        assertEquals(SEE_OTHER, result.status());
         assertEquals(1, Admin.find.all().size());
     }
 
@@ -245,7 +245,7 @@ public class AdminControllerTest extends WithApplication {
                 .method(GET).uri("/users/admin/remove/2")
                 .session("connected", "2");
         Result result = route(app, request);
-        assertEquals(UNAUTHORIZED, result.status());
+        assertEquals(SEE_OTHER, result.status());
         assertEquals(2, Admin.find.all().size());
     }
 
@@ -289,7 +289,7 @@ public class AdminControllerTest extends WithApplication {
                 .method(GET).uri("/users/admin/back_to_admin/1")
                 .session("connected", null);
         Result result = route(app, request);
-        assertEquals(UNAUTHORIZED, result.status());
+        assertEquals(SEE_OTHER, result.status());
     }
 
     @Test

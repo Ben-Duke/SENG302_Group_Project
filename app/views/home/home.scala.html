@@ -379,7 +379,7 @@
                                                 @photo.getPhotoId())">Set as Profile Picture</a>
 
                                     <button class="btn btn-danger" onclick="deletePhotoRequest(
-                                            '@routes.ProfileController.deletePhoto(photo.getPhotoId())', @photo.getPhotoId(), '@photo.getUrl()')">Delete Photo</button></td>
+                                            '@routes.ProfileController.deletePhoto(photo.getPhotoId(),false)', @photo.getPhotoId(), '@photo.getUrl(), false')">Delete Photo</button></td>
                                     @if(photo.isPublic()) {
                                             <a class="btn btn-primary" id="makePrivate" href="@routes.HomeController.makePicturePublic(photo.getPhotoId, 0)" >Make Private</a>
                                         } else {

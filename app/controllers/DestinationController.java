@@ -13,10 +13,15 @@ import models.commands.Destinations.DeleteDestinationCommand;
 import models.commands.Destinations.EditDestinationCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import play.api.http.MediaRange;
+import play.api.mvc.Request;
 import play.data.DynamicForm;
 import play.data.Form;
 import play.data.FormFactory;
+import play.i18n.Lang;
 import play.libs.Json;
+import play.libs.typedmap.TypedKey;
+import play.libs.typedmap.TypedMap;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
@@ -27,6 +32,7 @@ import views.html.users.destination.*;
 import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
+import java.security.cert.X509Certificate;
 import java.util.*;
 
 
@@ -689,8 +695,10 @@ public class DestinationController extends Controller {
         UserPhoto photo = UserPhoto.find.byId(photoId);
         try {
             for (Destination destination : photo.getDestinations()) {
+                //photo.removeDestination(destination);
                 unlinkPhotoFromDestination(null, photoId, destination.getDestId());
             }
+
             photo.deletePhoto(photoId);
 
         }catch(Exception error){

@@ -39,12 +39,10 @@ public class ProfileController extends Controller {
      * @return update profile page or error page
      */
 
-    public Result deletePhoto(Http.Request request, Integer photoId){
+    public Result deletePhoto(Integer photoId, Boolean userInput){
         UserFactory factory = new UserFactory();
         System.out.println("Called delete photo");
         UserPhoto photo = UserPhoto.find.byId(photoId);
-        JsonNode json = request.body().asJson();
-        boolean userInput = json.get("response").asBoolean();
         System.out.println("User option is " + userInput);
         boolean needToAskUser = photo.getIsProfile();
         if(needToAskUser && !userInput){

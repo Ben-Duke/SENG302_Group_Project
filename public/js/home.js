@@ -429,6 +429,9 @@ function deletePhotoRequest(url, photoId, imageId){
                                 //image.src="https://static.interestingengineering.com/images/APRIL/sizes/black_hole_resize_md.jpg";
                                 profileImage.src = "/assets/images/Generic.png";
                                 thumbProfileImage.src = "/assets/images/Generic.png";
+                            },
+                            error:function(res){
+                                console.log(res.responseText);
                             }
 
 

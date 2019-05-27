@@ -101,9 +101,7 @@ public class CountryUtils {
 
                 lastUpdated = new Date();
                 printLoadingCountriesMessage("Locales loaded in place");
-
             }
-
         }
     }
 
@@ -139,7 +137,6 @@ public class CountryUtils {
                     passport.update();
                 }
             }
-
         }
     }
 
@@ -184,6 +181,4 @@ public class CountryUtils {
             }
         }
     }
-
-
 }

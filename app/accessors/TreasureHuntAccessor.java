@@ -18,6 +18,7 @@ public class TreasureHuntAccessor {
 
     /** Insert the TreasureHunt  */
     public static void insert(TreasureHunt treasureHunt) {
+        treasureHunt.thuntid = null;
         treasureHunt.save();
     }
 

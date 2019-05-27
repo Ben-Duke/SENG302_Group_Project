@@ -155,7 +155,12 @@
                     <div class="modal-body">
                     @helper.form(action = routes.HomeController.upload, 'id -> "myForm", 'enctype -> "multipart/form-data") {
                         @helper.CSRF.formField
-                        <input id="photoUpload" type="file" name="picture" required>
+                        <input id="photoUpload"
+                                type="file"
+                                name="picture"
+                                accept="image/png,image/jpeg"
+                                required
+                        >
 
                         <br>
 
@@ -187,7 +192,7 @@
                     </div>
 
                     <div class="modal-body">
-                        <!--<input type="file" accept="image/*" name="picture" required onchange="readURL(this);"/> -->
+
                         <div class="profile-pic-wraper ">
                             <img class="img"  width = "450" height="375" id="change-profile-pic" src="@{routes.HomeController.serveProfilePicture(user.getUserid())}" alt="You have not uploaded a profile picture!"/>
                         </div>
@@ -197,7 +202,7 @@
                             </div><br>
                         </div>
                         <br>
-                        <input id="selectProfileInput" type="file" accept="image/*" name="picture" required onchange="loadFile(event);"/>
+                        <input id="selectProfileInput" type="file" accept="image/png,image/jpeg" name="picture" required onchange="loadFile(event);"/>
                         <p>
                             <button id="save-profile">Upload</button>
                         </p>

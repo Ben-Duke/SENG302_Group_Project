@@ -23,6 +23,7 @@ import play.mvc.Http;
 import play.mvc.Result;
 import play.test.Helpers;
 import play.test.WithApplication;
+import testhelpers.BaseTestWithApplicationAndDatabase;
 import utilities.TestDatabaseManager;
 
 import javax.inject.Inject;
@@ -31,14 +32,9 @@ import java.util.Map;
 
 import static play.test.Helpers.route;
 
-public class TravellerTypeTestSteps extends WithApplication {
+public class TravellerTypeTestSteps extends BaseTestWithApplicationAndDatabase {
 
-    /**
-     * The fake database
-     */
-    //Database database = Databases.inMemory();
-    Database database;
-    TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
+    private TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
 
     @Inject
     private Application application;

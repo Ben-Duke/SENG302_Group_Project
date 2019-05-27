@@ -39,7 +39,7 @@ public class TravellerTypeController {
             return ok(updatetraveller.render(userForm, travellerTypes, user));
         }
         else {
-            return unauthorized("Oops, you are not logged in");
+            return redirect(routes.UserController.userindex());
         }
     }
 
@@ -70,7 +70,7 @@ public class TravellerTypeController {
             }
         }
         else{
-            return unauthorized("Oops, you are not logged in");
+            return redirect(routes.UserController.userindex());
         }
     }
 
@@ -96,7 +96,7 @@ public class TravellerTypeController {
             }
         }
         else{
-            return unauthorized("Oops, you are not logged in");
+            return redirect(routes.UserController.userindex());
         }
         return redirect(routes.TravellerTypeController.updateTravellerType());
     }
@@ -134,7 +134,7 @@ public class TravellerTypeController {
             }
         }
         else{
-            return unauthorized("Oops, you are not logged in");
+            return redirect(routes.UserController.userindex());
         }
     }
 
@@ -149,7 +149,7 @@ public class TravellerTypeController {
     public Result deleteUpdateTravellerType(Http.Request request, Integer typeId){
         User user = User.getCurrentUser(request);
         if (user == null) {
-            return unauthorized("Oops, you are not logged in");
+            return redirect(routes.UserController.userindex());
         } else if (! (user.getTravellerTypes().size() > 1)) {
             flash("error", "Need at least one traveller type, " +
                     "please add another traveller type before deleting the one you selected");
@@ -179,7 +179,7 @@ public class TravellerTypeController {
         User user = User.getCurrentUser(request);
         Destination destination = Destination.find.byId(destId);
         if (user == null) {
-            return unauthorized("Oops, you are not logged in");
+            return redirect(routes.UserController.userindex());
         }  else {
             try {
                 TravellerType travellerType = TravellerType.find.byId(typeId);

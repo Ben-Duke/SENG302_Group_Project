@@ -76,7 +76,7 @@ public class TravelPartnerController {
             return displayRenderedFilterPage(resultProfiles, user);
         }
         else{
-            return unauthorized("Oops, you are not logged in");
+            return redirect(routes.UserController.userindex());
         }
     }
 
@@ -239,7 +239,7 @@ public class TravelPartnerController {
             return displayRenderedFilterPage(resultProfiles,user);
 
         } else{
-            return unauthorized("Oops, you're not logged in!");
+            return redirect(routes.UserController.userindex());
         }
     }
 

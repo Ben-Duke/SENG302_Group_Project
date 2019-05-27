@@ -64,7 +64,7 @@ public class TreasureHuntController extends Controller {
             return ok(indexTreasureHunt.render(user.getTreasureHunts(), getOpenTreasureHunts(), user));
         }
         else{
-            return unauthorized("Oops, you are not logged in");
+            return redirect(routes.UserController.userindex());
         }
     }
 
@@ -102,7 +102,7 @@ public class TreasureHuntController extends Controller {
             return ok(createTreasureHunt.render(incomingForm, user, destinationMap));
         }
         else{
-            return unauthorized("Oops, you are not logged in");
+            return redirect(routes.UserController.userindex());
         }
     }
 
@@ -130,7 +130,7 @@ public class TreasureHuntController extends Controller {
             return redirect(routes.TreasureHuntController.indexTreasureHunt());
         }
         else{
-            return unauthorized("Oops, you are not logged in");
+            return redirect(routes.UserController.userindex());
         }
     }
 
@@ -160,7 +160,7 @@ public class TreasureHuntController extends Controller {
                 return notFound("The given Treasure Hunt doesn't exist.");
             }
         }
-        return unauthorized("Oops, you are not logged in");
+        return redirect(routes.UserController.userindex());
     }
 
     /**
@@ -196,7 +196,7 @@ public class TreasureHuntController extends Controller {
                 return notFound("The given Treasure Hunt doesn't exist.");
             }
         }
-        return unauthorized("Oops, you are not logged in");
+        return redirect(routes.UserController.userindex());
     }
 
     /**
@@ -220,7 +220,7 @@ public class TreasureHuntController extends Controller {
                 return notFound("The Treasure Hunt that you are trying to find does not exist.");
             }
         } else {
-            return unauthorized("Oops, you are not logged in");
+            return redirect(routes.UserController.userindex());
         }
     }
 }

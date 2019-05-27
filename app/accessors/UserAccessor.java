@@ -73,6 +73,14 @@ public class UserAccessor {
                     .where().eq("email", email.toLowerCase()).findList();
     }
 
+    public static User getUserByEmail(String email) {
+        List<User> users = getUsersFromEmail(email);
+        if (!users.isEmpty()) {
+            return users.get(0);
+        }
+        return null;
+    }
+
     /** Update the user */
     public static void update(User user) { user.update(); }
 }

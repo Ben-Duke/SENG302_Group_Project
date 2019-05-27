@@ -103,6 +103,7 @@ create table user (
   gender                        varchar(255),
   f_name                        varchar(255),
   l_name                        varchar(255),
+  undo_redo_error               boolean default false not null,
   is_admin                      boolean,
   creation_date                 timestamp not null,
   constraint uq_user_email unique (email),

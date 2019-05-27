@@ -4,6 +4,8 @@ import formdata.TreasureHuntFormData;
 import models.Destination;
 import models.TreasureHunt;
 import models.User;
+import models.commands.UndoableCommand;
+import models.commands.treasurehunts.EditTreasureHuntCommand;
 
 import java.util.List;
 
@@ -34,7 +36,7 @@ public class TreasureHuntFactory {
      * @param treasureHuntId The id of the Treasure Hunt to be edited
      * @param treasureHuntFormData TreasureHuntFormData
      */
-    public void editTreasureHunt(Integer treasureHuntId, TreasureHuntFormData treasureHuntFormData) {
+    public void editTreasureHunt(User user, Integer treasureHuntId, TreasureHuntFormData treasureHuntFormData) {
         TreasureHunt treasureHunt = TreasureHunt.find.byId(treasureHuntId);
         if (treasureHunt != null) {
             treasureHunt.setTitle(treasureHuntFormData.title);
@@ -47,7 +49,8 @@ public class TreasureHuntFactory {
             }
             treasureHunt.setStartDate(treasureHuntFormData.startDate);
             treasureHunt.setEndDate(treasureHuntFormData.endDate);
-            treasureHunt.update();
+            UndoableCommand cmd = new EditTreasureHuntCommand(treasureHunt);
+            user.getCommandManager().executeCommand(cmd);
         }
     }
 }

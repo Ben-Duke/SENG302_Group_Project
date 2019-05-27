@@ -262,7 +262,9 @@ POST     /users/treasurehunts/edit/save/:id                    controllers.Treas
 GET     /users/treasurehunts/delete/:id                    controllers.TreasureHuntController.deleteTreasureHunt(request : Request, id : Integer)
 
 # Undo
++nocsrf
 PUT     /undo                                              controllers.UndoRedoController.undo(request: Request)
 
 # Redo
++nocsrf
 PUT     /redo                                              controllers.UndoRedoController.redo(request: Request)

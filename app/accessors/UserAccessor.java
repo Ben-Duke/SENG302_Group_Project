@@ -9,7 +9,7 @@ import java.util.List;
 public class UserAccessor {
 
     public static User getDefaultAdmin(){
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     public static Passport getPassport(int id) {
@@ -44,6 +44,14 @@ public class UserAccessor {
      */
     public static User getById(int id) {
         return User.find.byId(id);
+    }
+
+    public static User getUserByEmail(String email) {
+        List<User> users = getUsersFromEmail(email);
+        if (!users.isEmpty()) {
+            return users.get(0);
+        }
+        return null;
     }
 
     /** Update the user */

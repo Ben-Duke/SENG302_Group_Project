@@ -16,15 +16,19 @@ public class TreasureHuntAccessor {
         return TreasureHunt.find.all();
     }
 
-    /** Insert the destination */
+    /** Insert the TreasureHunt  */
     public static void insert(TreasureHunt treasureHunt) {
         treasureHunt.thuntid = null;
         treasureHunt.save();
     }
 
-    /** delete the destination */
+    /** delete the TreasureHunt */
     public static void delete(TreasureHunt treasureHunt) {
         treasureHunt.delete();
+    }
+
+    public static void update(TreasureHunt treasureHunt) {
+        treasureHunt.update();
     }
 
     public static List<TreasureHunt> getByDestination(Destination destination) {

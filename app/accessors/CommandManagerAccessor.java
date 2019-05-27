@@ -20,11 +20,16 @@ public class CommandManagerAccessor {
 
     private static CommandManager getNewCommandManager(String email) {
         CommandManager commandManager = new CommandManager();
+        commandManager.setUser(UserAccessor.getUserByEmail(email));
         commandManagers.put(email, commandManager);
         return commandManager;
     }
 
     public static void update(CommandManager commandManager) {
         commandManager.update();
+    }
+
+    public static void resetCommandManagers() {
+        commandManagers = new HashMap<>();
     }
 }

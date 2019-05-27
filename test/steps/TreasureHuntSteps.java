@@ -25,6 +25,7 @@ import play.mvc.Http;
 import play.mvc.Result;
 import play.test.Helpers;
 import play.test.WithApplication;
+import testhelpers.BaseTestWithApplicationAndDatabase;
 import utilities.TestDatabaseManager;
 
 import javax.inject.Inject;
@@ -37,13 +38,9 @@ import java.util.Map;
 import static org.junit.Assert.*;
 import static play.mvc.Http.Status.*;
 
-public class TreasureHuntSteps extends WithApplication {
-    /**
-     * The fake database
-     */
-    //Database database = Databases.inMemory();
-    Database database;
-    TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
+public class TreasureHuntSteps extends BaseTestWithApplicationAndDatabase {
+
+    private TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
 
     @Inject
     private Application application;

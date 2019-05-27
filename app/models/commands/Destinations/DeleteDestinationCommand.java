@@ -13,7 +13,7 @@ import utilities.UtilityFunctions;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Command to delete a user's destination */
+/** Command to delete a destination */
 public class DeleteDestinationCommand extends UndoableCommand {
     private Destination destination;
     private Boolean deletedByAdmin;
@@ -29,6 +29,9 @@ public class DeleteDestinationCommand extends UndoableCommand {
         this.deletedByAdmin = deletedByAdmin;
     }
 
+    /**
+     * Deletes the command's destination
+     */
     @Override
     public void execute() {
         // If admin, cascade deletion to visits and trips which use the destination
@@ -50,6 +53,9 @@ public class DeleteDestinationCommand extends UndoableCommand {
         DestinationAccessor.delete(destination);
     }
 
+    /**
+     * Undoes the deletion of a Destination
+     */
     @Override
     public void undo() {
         this.destination = new Destination(destination, deletedVisits);
@@ -66,6 +72,9 @@ public class DeleteDestinationCommand extends UndoableCommand {
         }
     }
 
+    /**
+     * Redoes the previously executed undo
+     */
     @Override
     public void redo() {
         execute();

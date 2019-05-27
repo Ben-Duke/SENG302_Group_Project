@@ -25,6 +25,7 @@ import play.test.WithApplication;
 import scala.concurrent.Await;
 import scala.concurrent.Future;
 import scala.concurrent.duration.Duration;
+import testhelpers.BaseTestWithApplicationAndDatabase;
 import utilities.TestDatabaseManager;
 import utilities.UtilityFunctions;
 
@@ -45,41 +46,7 @@ import static play.mvc.Http.Status.SEE_OTHER;
 import static play.mvc.Http.Status.UNAUTHORIZED;
 import static play.test.Helpers.*;
 
-public class HomeControllerTest extends WithApplication {
-
-    /**
-     * The fake database
-     */
-    Database database;
-
-    @Override
-    protected Application provideApplication() {
-        return new GuiceApplicationBuilder().build();
-    }
-
-    @Before
-    public void setUpDatabase() {
-        database = Databases.inMemory();
-        Evolutions.applyEvolutions(database, Evolutions.forDefault(new Evolution(
-                1,
-                "create table test (id bigint not null, name varchar(255));",
-                "drop table test;"
-        )));
-        //Initialises a test user with name "testUser" and saves it to the database.
-        ApplicationManager.setUserPhotoPath("/test/resources/test_photos/user_");
-        ApplicationManager.setIsTest(true);
-        TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
-        testDatabaseManager.populateDatabase();
-    }
-
-    /**
-     * Clears the fake database after each test
-     */
-    @After
-    public void shutdownDatabase() {
-        Evolutions.cleanupEvolutions(database);
-        database.shutdown();
-    }
+public class HomeControllerTest extends BaseTestWithApplicationAndDatabase {
 
     /**
      * Test to render home with no login session
@@ -203,7 +170,7 @@ public class HomeControllerTest extends WithApplication {
                         app.asScala().materializer());
         CSRFTokenHelper.addCSRFToken(request);
         Result result = route(app, request);
-        assertEquals(UNAUTHORIZED, result.status());
+        assertEquals(SEE_OTHER, result.status());
     }
 
     @Test
@@ -221,7 +188,7 @@ public class HomeControllerTest extends WithApplication {
                 .method(GET)
                 .uri("/users/home/serveDestPicture/1").session("connected", null);
         Result result = route(app, request);
-        assertEquals(UNAUTHORIZED, result.status());
+        assertEquals(SEE_OTHER, result.status());
     }
 
     @Test
@@ -299,7 +266,7 @@ public class HomeControllerTest extends WithApplication {
                 .method(GET)
                 .uri("/users/home/serveProfilePicture/1").session("connected", null);
         Result result = route(app, request);
-        assertEquals(UNAUTHORIZED, result.status());
+        assertEquals(SEE_OTHER, result.status());
     }
 
     @Test
@@ -370,7 +337,7 @@ public class HomeControllerTest extends WithApplication {
                 .uri("/users/home/setProfilePicture/2").session("connected", null);
         CSRFTokenHelper.addCSRFToken(request);
         Result result = route(app, request);
-        assertEquals(UNAUTHORIZED, result.status());
+        assertEquals(SEE_OTHER, result.status());
     }
 
     @Test
@@ -428,7 +395,7 @@ public class HomeControllerTest extends WithApplication {
                 .uri(routes.HomeController.makePicturePublic(2,1).url()).session("connected", null);
         CSRFTokenHelper.addCSRFToken(request);
         Result result = route(app, request);
-        assertEquals(UNAUTHORIZED, result.status());
+        assertEquals(SEE_OTHER, result.status());
     }
 
     @Test

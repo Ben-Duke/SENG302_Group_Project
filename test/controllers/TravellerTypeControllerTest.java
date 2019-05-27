@@ -3,19 +3,11 @@ package controllers;
 import models.Destination;
 import models.TravellerType;
 import models.User;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
-import play.db.Database;
-import play.db.Databases;
-import play.db.evolutions.Evolution;
-import play.db.evolutions.Evolutions;
 import play.mvc.Http;
 import play.mvc.Result;
 import play.test.Helpers;
-import play.test.WithApplication;
-import utilities.TestDatabaseManager;
-
+import testhelpers.BaseTestWithApplicationAndDatabase;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,43 +16,7 @@ import static play.mvc.Http.Status.*;
 import static play.test.Helpers.GET;
 import static play.test.Helpers.route;
 
-public class TravellerTypeControllerTest extends WithApplication {
-
-    /**
-     * The fake database
-     */
-    Database database;
-
-    /**
-     * Sets up the fake database before each test
-     */
-    @Before
-    public void setupDatabase() {
-        database = Databases.inMemory();
-        Evolutions.applyEvolutions(database, Evolutions.forDefault(new Evolution(
-                1,
-                "create table test (id bigint not null, name varchar(255));",
-                "drop table test;"
-        )));
-
-
-        //Initialises a test user with name "testUser" and saves it to the database.
-        User user = new User("testUser");
-        user.save();
-        ApplicationManager.setIsTest(true);
-        TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
-        testDatabaseManager.populateDatabase();
-    }
-
-    /**
-     * Clears the fake database after each test
-     */
-    @After
-    public void shutdownDatabase() {
-        Evolutions.cleanupEvolutions(database);
-        database.shutdown();
-    }
-
+public class TravellerTypeControllerTest extends BaseTestWithApplicationAndDatabase {
 
     /**
      * Unit test for rendering the traveller type page
@@ -71,7 +27,7 @@ public class TravellerTypeControllerTest extends WithApplication {
                 .method(GET)
                 .uri("/users/profile/ttypes").session("connected", null);
         Result result = route(app, request);
-        assertEquals(UNAUTHORIZED, result.status());
+        assertEquals(SEE_OTHER, result.status());
         request = Helpers.fakeRequest()
                 .method(GET)
                 .uri("/users/profile/ttypes").session("connected", "1");
@@ -136,20 +92,27 @@ public class TravellerTypeControllerTest extends WithApplication {
      */
     @Test
     public void deleteUpdateTravellerType() {
-        //add a "Thrillseeker" traveller type to user
         User user = User.find.byId(1);
+        assert user != null;
+        int initialTypes = user.getTravellerTypes().size();
+
+        //add a "Thrillseeker" traveller type to user
         user.addTravellerType(TravellerType.find.byId(2));
         user.update();
-        //There should be 1 traveller type
-        assertEquals(1, User.find.byId(1).getTravellerTypes().size());
+
+        // Check it was added
+        assertEquals(initialTypes + 1, User.find.byId(1).getTravellerTypes().size());
+
         Map<String, String> formData = new HashMap<>();
         formData.put("travellertypes", "2");
         Http.RequestBuilder fakeRequest = Helpers.fakeRequest().bodyForm(formData).method(Helpers.POST).uri("/users/profile/delete/2").session("connected", "1");
         Result result = Helpers.route(app, fakeRequest);
+
         //User should be redirected to the update traveller type page
         assertEquals(303, result.status());
-        //There should be one traveller type since can't remove from 1
-        assertEquals(1, User.find.byId(1).getTravellerTypes().size());
+
+        // There should be one traveller type since can't remove from 1
+        assertEquals(initialTypes, User.find.byId(1).getTravellerTypes().size());
     }
 
     /**

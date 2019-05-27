@@ -58,6 +58,16 @@ public class CountryUtils {
     }
 
     /**
+     * Runs the methods for validating passports
+     * nationalities and destinations.
+     */
+    public static void validateUsedCountries() {
+        validatePassportCountries();
+        validateNationalityCountries();
+        validateDestinationCountries();
+    }
+
+    /**
      * Make api call. Set last updated date. Revalidate used countries
      */
     private static void reloadCountries() {
@@ -69,9 +79,7 @@ public class CountryUtils {
 
             lastUpdated = new Date();
 
-            validatePassportCountries();
-            validateNationalityCountries();
-            validateDestinationCountries();
+            validateUsedCountries();
 
             logger.info("SUCCEEDED");
 
@@ -83,7 +91,6 @@ public class CountryUtils {
                 countries = new ArrayList<>();
 
                 Locale[] locales = Locale.getAvailableLocales();
-
                 for (Locale locale : locales) {
                     if (!locale.getDisplayCountry().equals("") &&
                             !countries.contains(locale.getDisplayCountry())) {
@@ -100,7 +107,6 @@ public class CountryUtils {
         }
     }
 
-
     private static void printLoadingCountriesMessage(String message) {
 
         LocalDateTime dateNowUTC = LocalDateTime.now(ZoneId.of("UTC"));
@@ -115,7 +121,6 @@ public class CountryUtils {
 
         logger.info(formattedStr);
     }
-
 
     /**
      * For passports check if the country associated is contained

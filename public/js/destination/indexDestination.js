@@ -11,6 +11,7 @@ var destinationOwner;
 function searchDestination(){
     // Declare variables
     var input, elements, filter, tables, table, tr, th, td, td2, i, txtValue, txtValue2, txtValue3;
+    let districtTd, districtValue;
     elements = document.getElementsByClassName("searchDestinations");
     for(var a=0; a<elements.length; a++) {
         input = elements[a];
@@ -23,12 +24,14 @@ function searchDestination(){
             th = tr[i].getElementsByTagName("th")[0];
             td = tr[i].getElementsByTagName("td")[0];
             td2 = tr[i].getElementsByTagName("td")[1];
+            districtTd = tr[i].getElementsByTagName("td")[2];
             if (td) {
                 txtValue = td.textContent || td.innerText;
                 txtValue2 = th.textContent || th.innerText;
                 txtValue3 = td2.textContent || td2.innerText;
+                districtValue = districtTd.textContent || districtTd.innerText;
                 if (txtValue.toUpperCase().indexOf(filter) > -1 || txtValue2.toUpperCase().indexOf(filter) > -1
-                    || txtValue3.toUpperCase().indexOf(filter) > -1) {
+                    || txtValue3.toUpperCase().indexOf(filter) > -1 || districtValue.toUpperCase().indexOf(filter) > -1) {
                     tr[i].style.display = "";
                 } else {
                     tr[i].style.display = "none";
@@ -45,6 +48,7 @@ function searchDestination(){
 function searchPublicDestination(){
     // Declare variables
     var input, elements, filter, tables, table, tr, th, td, td2, i, txtValue, txtValue2, txtValue3;
+    let districtTd, districtValue;
     elements = document.getElementsByClassName("searchPublicDestinations");
     for(var a=0; a<elements.length; a++) {
         input = elements[a];
@@ -58,12 +62,14 @@ function searchPublicDestination(){
             th = tr[i].getElementsByTagName("th")[0];
             td = tr[i].getElementsByTagName("td")[0];
             td2 = tr[i].getElementsByTagName("td")[1];
+            districtTd = tr[i].getElementsByTagName("td")[2];
             if (td) {
                 txtValue = td.textContent || td.innerText;
                 txtValue2 = th.textContent || th.innerText;
                 txtValue3 = td2.textContent || td2.innerText;
+                districtValue = districtTd.textContent || districtTd.innerText;
                 if (txtValue.toUpperCase().indexOf(filter) > -1 || txtValue2.toUpperCase().indexOf(filter) > -1
-                    || txtValue3.toUpperCase().indexOf(filter) > -1) {
+                    || txtValue3.toUpperCase().indexOf(filter) > -1 || districtValue.toUpperCase().indexOf(filter) > -1) {
                     tr[i].style.display = "";
                 } else {
                     tr[i].style.display = "none";
@@ -154,16 +160,14 @@ function viewDestination(destid){
 }
 
 /**
- * Event is called while the modal is popping up.
  * Displays the destination's photos as a carousel and the destination's
  * traveller type on the fly using ajax queries
  * based on the destination id retrieved from the table row clicked.
+ * If there are no photos in the destination, hide the carousel and
+ * display a html message that the destination does not have any images.
  */
-$('#orderModal').on('show.bs.modal', function (e) {
-    // do something...
-    //getIdFromRow = $(event.target).closest('tr').data('id');
-    //make your ajax call populate items or what even you need
-    //$(this).find('#orderDetails').html($('<b> Destination Id selected: ' + getIdFromRow  + '</b>'));
+function populateViewDestinationModal()
+{
     var token =  $('input[name="csrfToken"]').attr('value');
     $.ajaxSetup({
         beforeSend: function(xhr) {
@@ -176,6 +180,14 @@ $('#orderModal').on('show.bs.modal', function (e) {
         contentType: 'application/json',
         success: function(userData){
            user = userData;
+        }
+    });
+    $.ajax({
+       type: 'GET',
+       url: '/users/photos',
+        contentType: 'application/json',
+        success: function(photosData){
+           userPhotos = photosData;
         }
     });
     $.ajax({
@@ -229,92 +241,83 @@ $('#orderModal').on('show.bs.modal', function (e) {
                 contentType: 'application/json',
                 success: function(data) {
                     photos = data;
-                    var outerDivNode = document.createElement("div");
-                    outerDivNode.classList.add("carousel-inner");
-                    $.each(data, function(index, element){
-                        var itemNode = document.createElement("div");
-                        itemNode.classList.add("item");
-                        if(destData["primaryPhoto"] != null) {
-                            if (element["photoId"] == destData["primaryPhoto"]["photoId"]) {
-                                itemNode.classList.add("active")
+                    if(photos.length > 0)
+                    {
+                        var outerDivNode = document.createElement("div");
+                        outerDivNode.classList.add("carousel-inner");
+                        $.each(data, function(index, element){
+                            var itemNode = document.createElement("div");
+                            itemNode.classList.add("item");
+                            if(destData["primaryPhoto"] != null) {
+                                if (element["photoId"] == destData["primaryPhoto"]["photoId"]) {
+                                    itemNode.classList.add("active")
+                                }
                             }
+                            else{
+                                if(index === 0){
+                                    itemNode.classList.add("active")
+                                }
+                            }
+                            var imgNode = document.createElement("img");
+                            imgNode.src="/users/home/serveDestPicture/" + element["photoId"];
+                            imgNode.classList.add("destination-image");
+                            imgNode.id = "photo" + "-" + element["photoId"];
+                            itemNode.appendChild(imgNode);
+                            outerDivNode.appendChild(itemNode);
+                            if (destinationOwner !== user) {
+                                var found = userPhotos.find(function(elementId) {
+                                    return elementId == element["photoId"];
+                                });
+                                if (!found) {
+                                    $('#removePhotoButton').hide();
+                                } else {
+                                    $('#removePhotoButton').show();
+                                }
+                            } else {
+                                $('#removePhotoButton').show();
+                            }
+                        });
+                        $('#destslider').html(outerDivNode);
+                        if(destinationOwner !== user){
+                            $('#primaryPhotoButton').hide();
                         }
                         else{
-                            if(index === 0){
-                                itemNode.classList.add("active")
-                            }
+                            $('#primaryPhotoButton').show();
                         }
-                        var imgNode = document.createElement("img");
-                        imgNode.src="/users/home/serveDestPicture/" + element["photoId"];
-                        imgNode.classList.add("destination-image");
-                        imgNode.id = "photo" + "-" + element["photoId"];
-                        itemNode.appendChild(imgNode);
-                        outerDivNode.appendChild(itemNode);
-                        // $.ajax({
-                        //    type: 'GET',
-                        //     url: '/users/photos/' + element["photoId"],
-                        //     contentType: 'image/png',
-                        //     success: function(data){
-                        //        imgNode.src = data;
-                        //        itemNode.appendChild(imgNode);
-                        //        $('#carousel-images').append(itemNode);
-                        //     }
-                        // });
-                        //console.log(element["urlWithPath"]);
-                        //imgNode.src = element["urlWithPath"];
-                    });
-                    $('#destslider').html(outerDivNode);
-                    if(destinationOwner !== user){
-                        $('#primaryPhotoButton').hide();
+
+                        $('.left').show();
+                        $('.right').show();
                     }
-                    else{
-                        $('#primaryPhotoButton').show();
+                    else {
+                        $('#removePhotoButton').hide();
+                        $('#primaryPhotoButton').hide();
+                        $('.left').hide();
+                        $('.right').hide();
+                        var outerDivNode = document.createElement("div");
+                        // outerDivNode.classList.
+                        var imgNode = document.createElement("img");
+                        imgNode.src= "/assets/images/destinationPlaceHolder.png";
+                        imgNode.setAttribute("width", "200");
+                        imgNode.setAttribute("height", "150");
+                        var textNode = document.createTextNode(destData["destName"] + " has no pictures!");
+                        outerDivNode.appendChild(textNode);
+                        outerDivNode.appendChild(imgNode);
+
+                        $('#destslider').html(outerDivNode);
                     }
                 }
             });
         }
     });
-});
+}
 
 /**
- * Event when the modal is shown. If there are no photos in the destination, hide the carousel and
- * display a html message that the destination does not have any images.
+ * Event is called while the view destination modal is popping up.
  */
-$('#orderModal').on('shown.bs.modal', function (e) {
-
-    if(photos.length > 0) {
-        var photo = document.getElementsByClassName("active")[0].getElementsByTagName('img')[0];
-        var photoid = photo.id;
-        photoid = photoid.split("-")[1];
-        if (destData["primaryPhoto"] != null) {
-            if (destData["primaryPhoto"]["photoId"] == photoid) {
-                $('#primaryPhotoButton').attr('disabled', 'disabled');
-            }
-            else {
-                $('#primaryPhotoButton').removeAttr('disabled');
-            }
-        }
-        else {
-            $('#primaryPhotoButton').removeAttr('disabled');
-        }
-    }
-    else{
-        $('#primaryPhotoButton').hide();
-        $('.left').hide();
-        $('.right').hide();
-        var outerDivNode = document.createElement("div");
-        // outerDivNode.classList.
-        var imgNode = document.createElement("img");
-        imgNode.src= "/assets/images/destinationPlaceHolder.png";
-        imgNode.setAttribute("width", "200");
-        imgNode.setAttribute("height", "150");
-        var textNode = document.createTextNode(destData["destName"] + " has no pictures!");
-        outerDivNode.appendChild(textNode);
-        outerDivNode.appendChild(imgNode);
-
-        $('#destslider').html(outerDivNode);
-    }
+$('#orderModal').on('show.bs.modal', function (e){
+    populateViewDestinationModal();
 });
+
 
 /**
  * Function that listens for when someone clicks on the button to set a primary photo.
@@ -377,7 +380,6 @@ $('#destslider').bind('slid.bs.carousel', function(e){
     var photo = document.getElementsByClassName("active")[0].getElementsByTagName('img')[0];
     var photoid = photo.id;
     photoid = photoid.split("-")[1];
-    console.log(destData["primaryPhoto"]["photoId"]);
     if(destData["primaryPhoto"] != null) {
         if (destData["primaryPhoto"]["photoId"] == photoid) {
             $('#primaryPhotoButton').attr('disabled', 'disabled');
@@ -443,4 +445,31 @@ $('#confirmDeleteDestinationModal').on('show.bs.modal', function(e) {
         });
     });
 });
+
+
+/**
+ * Function that listens for when someone clicks on the button to remove a photo from the destination.
+ * Remove the photo based on the active item on the carousel displaying destination photos.
+ *
+ */
+$('#removePhotoButton').click(function(e){
+    var photo = document.getElementsByClassName("active")[0].getElementsByTagName('img')[0];
+    var photoid = photo.id;
+    photoid = parseInt(photoid.split("-")[1]);
+    url = 'destinations/' + photoid + '/' + getIdFromRow;
+    const token =  $('input[name="csrfToken"]').attr('value');
+    $.ajaxSetup({
+        beforeSend: function(xhr) {
+            xhr.setRequestHeader('Csrf-Token', token);
+        }
+    });
+    $.ajax({
+        url: url,
+        method: "DELETE",
+        success: function(res) {
+            populateViewDestinationModal();
+        }
+    });
+});
+
 

@@ -896,9 +896,10 @@ public class DestinationController extends Controller {
                 if (photo.getUser().getUserid() == user.getUserid()) {
                     //add checks for private destinations here once destinations have been merged in.
                     //You can only link a photo to a private destination if you own the private destination.
-                    if(!photo.getDestinations().contains(destination)) {
-                        photo.addDestination(destination);
-                        photo.update();
+                    if (!photo.getDestinations().contains(destination)) {
+                        LinkPhotoDestinationCommand cmd = new LinkPhotoDestinationCommand(photo, destination);
+                        user.getCommandManager().executeCommand(cmd);
+
                         return redirect(routes.DestinationController.indexDestination());
                     }
                     else{

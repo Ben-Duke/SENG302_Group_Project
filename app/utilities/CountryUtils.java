@@ -61,7 +61,7 @@ public class CountryUtils {
      * Runs the methods for validating passports
      * nationalities and destinations.
      */
-    public static void validateUsedCountries() {
+     static void validateUsedCountries() {
         validatePassportCountries();
         validateNationalityCountries();
         validateDestinationCountries();

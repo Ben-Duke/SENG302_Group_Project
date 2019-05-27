@@ -15,7 +15,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import java.util.*;
 
-/** Command to delete a user's destination */
+/** Command to delete a destination */
 public class DeleteDestinationCommand extends UndoableCommand {
     private Destination destination;
     private Boolean deletedByAdmin;
@@ -31,6 +31,9 @@ public class DeleteDestinationCommand extends UndoableCommand {
         this.deletedByAdmin = deletedByAdmin;
     }
 
+    /**
+     * Deletes the command's destination
+     */
     public void execute() {
         // If admin, cascade deletion to visits and trips which use the destination
         if (deletedByAdmin) {
@@ -51,6 +54,9 @@ public class DeleteDestinationCommand extends UndoableCommand {
         DestinationAccessor.delete(destination);
     }
 
+    /**
+     * Undoes the deletion of a Destination
+     */
     public void undo() {
         this.destination = new Destination(destination, deletedVisits);
         destination.save();
@@ -66,6 +72,9 @@ public class DeleteDestinationCommand extends UndoableCommand {
         }
     }
 
+    /**
+     * Redoes the previously executed undo
+     */
     public void redo() {
         execute();
     }

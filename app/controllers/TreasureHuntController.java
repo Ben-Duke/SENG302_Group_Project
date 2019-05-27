@@ -187,7 +187,7 @@ public class TreasureHuntController extends Controller {
                         }
                     }
                     TreasureHuntFormData edited = incomingForm.get();
-                    treasureHuntFactory.editTreasureHunt(treasureHuntId, edited);
+                    treasureHuntFactory.editTreasureHunt(user, treasureHuntId, edited);
                     return redirect(routes.TreasureHuntController.indexTreasureHunt());
                 } else {
                     return unauthorized("This Treasure Hunt does not belong to you.");

@@ -128,6 +128,8 @@ public class TestDatabaseManager {
             }
         }
 
+        CountryUtils.validateUsedCountries();
+
     }
 
     /**

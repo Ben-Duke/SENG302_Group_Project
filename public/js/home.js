@@ -1,7 +1,7 @@
 /**
  * Initilizes the page.
  */
-initSetProfilePicToDefaultButton();
+this.initSetProfilePicToDefaultButton();
 
 
 

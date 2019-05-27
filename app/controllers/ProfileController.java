@@ -293,8 +293,6 @@ public class ProfileController extends Controller {
      * @return a HTTP result with a body containing JSON
      */
     public Result isProfilePictureSet(Http.Request request) {
-        System.out.println(request);
-        System.out.println("check");
         User user = User.getCurrentUser(request);
 
 

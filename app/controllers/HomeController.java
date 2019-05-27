@@ -168,7 +168,7 @@ public class HomeController {
             }
             return badRequest();
         } else {
-            return unauthorized("Oops, you're not logged in.");
+            return redirect(routes.UserController.userindex());
         }
     }
 
@@ -190,7 +190,7 @@ public class HomeController {
             }
         }
         else{
-            return unauthorized("Oops, you're not logged in.");
+            return redirect(routes.UserController.userindex());
         }
     }
 
@@ -227,7 +227,7 @@ public class HomeController {
             }
         }
         else{
-            return unauthorized("Oops, you're not logged in.");
+            return redirect(routes.UserController.userindex());
         }
     }
 
@@ -256,7 +256,7 @@ public class HomeController {
                 return notFound("Invalid Picture selected");
             }
         }
-        return unauthorized("Oops! You are not logged in.");
+        return redirect(routes.UserController.userindex());
     }
 
     /**
@@ -288,6 +288,6 @@ public class HomeController {
             }
             return notFound("Invalid Picture selected");
         }
-        return unauthorized("Oops! You are not logged in.");
+        return redirect(routes.UserController.userindex());
     }
 }

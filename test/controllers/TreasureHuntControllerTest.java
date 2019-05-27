@@ -559,20 +559,16 @@ public class TreasureHuntControllerTest extends BaseTestWithApplicationAndDataba
     public void undoDeleteTreasureHunt() {
         User user = UserAccessor.getById(2);
         int nTreasureHunts = user.getTreasureHunts().size();
-        System.out.println("n = " + nTreasureHunts);
         Integer tHuntId = user.getTreasureHunts().get(0).thuntid;
-        System.out.println(("id = " + tHuntId));
 
         // Delete
         Http.RequestBuilder fakeRequest = Helpers.fakeRequest().method(Helpers.GET).uri("/users/treasurehunts/delete/" + tHuntId).session("connected", "2");
         Helpers.route(app, fakeRequest);
-        user = UserAccessor.getById(2);
         // Undo the delete
         Http.RequestBuilder undoRequest = Helpers.fakeRequest()
                 .method(PUT)
                 .uri("/undo").session("connected", "2");
         Helpers.route(app, undoRequest);
-        user = UserAccessor.getById(2);
         user = UserAccessor.getById(2);
         assertEquals(nTreasureHunts, user.getTreasureHunts().size());
     }

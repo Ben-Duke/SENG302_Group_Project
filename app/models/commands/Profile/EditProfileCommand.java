@@ -48,6 +48,10 @@ public class EditProfileCommand extends UndoableCommand {
         execute();
     }
 
+    /**
+     * Returns result from the undo/redo command as a string
+     * @return String result of command
+     */
     public String toString() {
         return this.actualUser.getfName() + this.actualUser.lName + " editing";
     }

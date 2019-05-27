@@ -61,6 +61,10 @@ public class DeleteTripCommand extends UndoableCommand {
         execute();
     }
 
+    /**
+     * Returns result from the undo/redo command as a string
+     * @return String result of command
+     */
     public String toString() {
         return "Trip " + this.trip.getTripName() + " deletion";
     }

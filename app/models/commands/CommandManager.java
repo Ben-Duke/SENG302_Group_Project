@@ -56,7 +56,7 @@ public class CommandManager extends BaseModel {
             redoStack.push(undoCommand);
             return undoCommand.toString();
         }
-        return "";
+        return null;
     }
 
     public String redo() {
@@ -66,6 +66,6 @@ public class CommandManager extends BaseModel {
             undoStack.push(redoCommand);
             return redoCommand.toString();
         }
-        return "";
+        return null;
     }
 }

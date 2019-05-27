@@ -47,4 +47,12 @@ public class EditVisitCommand extends UndoableCommand {
     public void redo() {
         execute();
     }
+
+    /**
+     * Returns result from the undo/redo command as a string
+     * @return String result of command
+     */
+    public String toString() {
+        return "Visit " + this.actualVisit.getVisitName() + " editing";
+    }
 }

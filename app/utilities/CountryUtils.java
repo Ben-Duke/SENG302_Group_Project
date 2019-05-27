@@ -20,7 +20,7 @@ public class CountryUtils {
     private static List<String> countries;
 
 
-    public static List<String> getCountries() {
+    static List<String> getCountries() {
         updateCountries();
         return countries;
     }

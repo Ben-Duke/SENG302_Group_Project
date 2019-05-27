@@ -1,10 +1,9 @@
-package models.commands;
+package models.commands.photos;
 
 import accessors.UserPhotoAccessor;
 import controllers.ApplicationManager;
-import models.User;
 import models.UserPhoto;
-import models.commands.UndoableCommand;
+import models.commands.general.UndoableCommand;
 import play.libs.Files;
 
 import java.io.File;

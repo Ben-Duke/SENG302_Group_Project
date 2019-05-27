@@ -1,18 +1,10 @@
-package models.commands;
+package models.commands.general;
 
-import accessors.CommandManagerAccessor;
-import io.ebean.Finder;
 import models.BaseModel;
 import models.User;
 import org.slf4j.Logger;
 import utilities.UtilityFunctions;
 
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.swing.undo.UndoableEdit;
 import java.util.ArrayDeque;
 import java.util.Deque;
 

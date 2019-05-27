@@ -9,7 +9,7 @@ import models.Destination;
 import models.Trip;
 import models.User;
 import models.Visit;
-import models.commands.EditVisitCommand;
+import models.commands.visits.EditVisitCommand;
 import models.commands.Trips.DeleteTripCommand;
 import play.data.Form;
 import play.data.FormFactory;

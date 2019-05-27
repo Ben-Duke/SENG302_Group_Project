@@ -1,14 +1,13 @@
 package controllers;
 
 import models.User;
-import models.commands.CommandManager;
+import models.commands.general.CommandManager;
 import org.slf4j.Logger;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
 
 import utilities.UtilityFunctions;
-import views.html.responses.*;
 
 /** Controller to handle undo/redo of actions */
 public class UndoRedoController extends Controller {

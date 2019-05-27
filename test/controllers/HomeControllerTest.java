@@ -7,6 +7,7 @@ import akka.stream.Materializer;
 import akka.stream.javadsl.FileIO;
 import akka.stream.javadsl.Source;
 import akka.util.ByteString;
+import com.fasterxml.jackson.databind.JsonNode;
 import models.*;
 import org.junit.After;
 import org.junit.Before;
@@ -18,6 +19,7 @@ import play.db.Databases;
 import play.db.evolutions.Evolution;
 import play.db.evolutions.Evolutions;
 import play.inject.guice.GuiceApplicationBuilder;
+import play.libs.Json;
 import play.mvc.Http;
 import play.mvc.Result;
 import play.test.Helpers;
@@ -469,5 +471,29 @@ public class HomeControllerTest extends BaseTestWithApplicationAndDatabase {
             }
         }
         return null;
+    }
+
+    @Test
+    public void setProfilePhotoToNormalPhoto_withExistingProfilePhoto_checkStatus200() {
+        UserPhoto profilePic = new UserPhoto("/test/url", true,
+                                            true, User.find.byId(1));
+        profilePic.save();
+
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(Helpers.POST)
+                .uri("/users/home/profilePicture1/removeProfilePictureStatus1")
+                .session("connected", "1");
+        Result result = route(app, request);
+        assertEquals(OK, result.status());
+    }
+
+    @Test
+    public void setProfilePhotoToNormalPhoto_withNoProfilePhoto_checkStatus400() {
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(Helpers.POST)
+                .uri("/users/home/profilePicture1/removeProfilePictureStatus1")
+                .session("connected", "1");
+        Result result = route(app, request);
+        assertEquals(BAD_REQUEST, result.status());
     }
 }

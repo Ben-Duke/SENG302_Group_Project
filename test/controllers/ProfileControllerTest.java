@@ -254,6 +254,11 @@ public class ProfileControllerTest extends WithApplication {
         user3.save();
     }
 
+    /**
+     * Test which checks the isProfilePictureSet method returns a JSON body
+     * with the "isProfilePicSet" attribute mapping to the boolean false, for a
+     * user that has no profile picture.
+     */
     @Test
     public void isProfilePictureSet_withNoProfilePic_checkJsonHasFalseField() {
         Http.RequestBuilder request = Helpers.fakeRequest().method(Helpers.GET)
@@ -264,6 +269,11 @@ public class ProfileControllerTest extends WithApplication {
         assertFalse(jsonJacksonObject.get("isProfilePicSet").asBoolean());
     }
 
+    /**
+     * Test which checks the isProfilePictureSet method returns a JSON body
+     * with the "isProfilePicSet" attribute mapping to the boolean true, for a
+     * user that does have a profile picture.
+     */
     @Test
     public void isProfilePictureSet_withProfilePic_checkJsonHasTrueField() {
         UserPhoto profilePic = new UserPhoto("/test/url", true, true, User.find.byId(1));

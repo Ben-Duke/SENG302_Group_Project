@@ -473,6 +473,10 @@ public class HomeControllerTest extends BaseTestWithApplicationAndDatabase {
         return null;
     }
 
+    /**
+     * Tests the setProfilePhotoToNormalPhoto method returns a status 200 (OK)
+     * when a user with an existing profile photo removes it.
+     */
     @Test
     public void setProfilePhotoToNormalPhoto_withExistingProfilePhoto_checkStatus200() {
         UserPhoto profilePic = new UserPhoto("/test/url", true,
@@ -487,6 +491,10 @@ public class HomeControllerTest extends BaseTestWithApplicationAndDatabase {
         assertEquals(OK, result.status());
     }
 
+    /**
+     * Tests the setProfilePhotoToNormalPhoto method returns a status 400 (bad request)
+     * when a user without an existing profile photo attempts to remove it.
+     */
     @Test
     public void setProfilePhotoToNormalPhoto_withNoProfilePhoto_checkStatus400() {
         Http.RequestBuilder request = Helpers.fakeRequest()

@@ -252,14 +252,18 @@ public class HomeControllerTest extends BaseTestWithApplicationAndDatabase {
         assertEquals(fileAsString, convertResultFileToString(result));
     }
 
+    /**
+     * Checks the serveProfilePicture method returns an ok (200) status when getting
+     * a users profile picture when they don't have one (it sends the generic
+     * placeholder).
+     */
     @Test
-    public void serveProfilePictureForUserWithoutProfilePicture(){
+    public void serveProfilePicture_ForUserWithoutProfilePicture_check200Status(){
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(GET)
                 .uri("/users/home/serveProfilePicture/4").session("connected", "4");
         Result result = route(app, request);
-        assertEquals(SEE_OTHER, result.status());
-        assertEquals("", contentAsString(result));
+        assertEquals(OK, result.status());
     }
 
     @Test

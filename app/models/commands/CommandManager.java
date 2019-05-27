@@ -49,19 +49,23 @@ public class CommandManager extends BaseModel {
         }
     }
 
-    public void undo() {
+    public String undo() {
         if (!undoStack.isEmpty()) {
             UndoableCommand undoCommand = undoStack.pop();
             undoCommand.undo();
             redoStack.push(undoCommand);
+            return undoCommand.toString();
         }
+        return "";
     }
 
-    public void redo() {
+    public String redo() {
         if (!redoStack.isEmpty()) {
             UndoableCommand redoCommand = redoStack.pop();
             redoCommand.redo();
             undoStack.push(redoCommand);
+            return redoCommand.toString();
         }
+        return "";
     }
 }

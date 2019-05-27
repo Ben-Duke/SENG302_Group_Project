@@ -43,7 +43,6 @@ function undoRedoRequest(url){
         type: 'PUT',
         url: '/' + url,
         success:function(res, textStatus, xhr){
-            console.log(res)
             sessionStorage.setItem(url, res);
             window.location.reload();
         },

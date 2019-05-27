@@ -1,7 +1,6 @@
 package testhelpers;
 
 import controllers.ApplicationManager;
-import models.User;
 import org.junit.After;
 import org.junit.Before;
 import play.Application;
@@ -43,11 +42,9 @@ public class BaseTestWithApplicationAndDatabase extends WithApplication {
                 "create table test (id bigint not null, name varchar(255));",
                 "drop table test;"
         )));
+
         TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
         testDatabaseManager.populateDatabase();
-//        User user = new User("gon12_2@uclive.ac.nz", "hunter22");
-//        user.save();
-
     }
 
     /**

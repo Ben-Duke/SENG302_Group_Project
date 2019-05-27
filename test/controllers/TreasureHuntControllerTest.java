@@ -18,6 +18,7 @@ import play.mvc.Http;
 import play.mvc.Result;
 import play.test.Helpers;
 import play.test.WithApplication;
+import testhelpers.BaseTestWithApplicationAndDatabase;
 import utilities.TestDatabaseManager;
 
 import java.util.HashMap;
@@ -33,51 +34,12 @@ import static play.mvc.Http.Status.SEE_OTHER;
 import static play.mvc.Http.Status.UNAUTHORIZED;
 import static play.test.Helpers.*;
 
-public class TreasureHuntControllerTest extends WithApplication {
-
-    /**
-     * The fake database
-     */
-    Database database;
+public class TreasureHuntControllerTest extends BaseTestWithApplicationAndDatabase {
 
     /**
      * Instance of the TreasureHuntController
      * */
-    TreasureHuntController treasureHuntController = new TreasureHuntController();
-
-    /**
-     * Sets up the fake database before each test
-     */
-    @Before
-    public void setupDatabase() {
-        database = Databases.inMemory();
-        Evolutions.applyEvolutions(database, Evolutions.forDefault(new Evolution(
-                1,
-                "create table test (id bigint not null, name varchar(255));",
-                "drop table test;"
-        )));
-        ApplicationManager.setUserPhotoPath("/test/resources/test_photos/user_");
-        ApplicationManager.setIsTest(true);
-        TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
-        testDatabaseManager.populateDatabase();
-    }
-
-    /**
-     * Clears the fake database after each test
-     */
-    @After
-    public void shutdownDatabase() {
-        Evolutions.cleanupEvolutions(database);
-        database.shutdown();
-    }
-
-    /**
-     * Gives the built GUI application
-     */
-    @Override
-    protected Application provideApplication() {
-        return new GuiceApplicationBuilder().build();
-    }
+    private TreasureHuntController treasureHuntController = new TreasureHuntController();
 
     /**
      * Test for getting to the index treasure hunts page.
@@ -88,7 +50,7 @@ public class TreasureHuntControllerTest extends WithApplication {
                 .method(GET)
                 .uri("/users/treasurehunts").session("connected", null);
         Result result = route(app, request);
-        assertEquals(UNAUTHORIZED, result.status());
+        assertEquals(SEE_OTHER, result.status());
         request = Helpers.fakeRequest()
                 .method(GET)
                 .uri("/users/treasurehunts").session("connected", "2");
@@ -135,7 +97,7 @@ public class TreasureHuntControllerTest extends WithApplication {
                 .method(GET)
                 .uri("/users/treasurehunts/create").session("connected", null);
         Result result = route(app, request);
-        assertEquals(UNAUTHORIZED, result.status());
+        assertEquals(SEE_OTHER, result.status());
         request = Helpers.fakeRequest()
                 .method(GET)
                 .uri("/users/treasurehunts/create").session("connected", "1");
@@ -183,7 +145,7 @@ public class TreasureHuntControllerTest extends WithApplication {
         Http.RequestBuilder fakeRequest = Helpers.fakeRequest().bodyForm(formData).method(Helpers.POST).uri("/users/treasurehunts/save").session("connected", null);
         Result result = Helpers.route(app, fakeRequest);
         //User should not be authorized.
-        assertEquals(UNAUTHORIZED, result.status());
+        assertEquals(SEE_OTHER, result.status());
         //User with id 2 should still have only one treasure hunt
         assertEquals(1, User.find.byId(2).getTreasureHunts().size());
     }
@@ -262,7 +224,7 @@ public class TreasureHuntControllerTest extends WithApplication {
                 .method(GET)
                 .uri("/users/treasurehunts/edit/1").session("connected", null);
         Result result = route(app, request);
-        assertEquals(UNAUTHORIZED, result.status());
+        assertEquals(SEE_OTHER, result.status());
         request = Helpers.fakeRequest()
                 .method(GET)
                 .uri("/users/treasurehunts/edit/1").session("connected", "2");
@@ -381,7 +343,7 @@ public class TreasureHuntControllerTest extends WithApplication {
         Http.RequestBuilder fakeRequest = Helpers.fakeRequest().bodyForm(formData).method(Helpers.POST).uri("/users/treasurehunts/edit/save/" + tHuntId).session("connected", null);
         Result result = Helpers.route(app, fakeRequest);
         //User should not be authorized.
-        assertEquals(UNAUTHORIZED, result.status());
+        assertEquals(SEE_OTHER, result.status());
         //User with id 2 should still have only one treasure hunt
         assertEquals(1, User.find.byId(2).getTreasureHunts().size());
     }
@@ -508,7 +470,7 @@ public class TreasureHuntControllerTest extends WithApplication {
         Http.RequestBuilder fakeRequest = Helpers.fakeRequest().method(Helpers.GET).uri("/users/treasurehunts/delete/" + tHuntId).session("connected", null);
         Result result = Helpers.route(app, fakeRequest);
         //User should not be authorized.
-        assertEquals(UNAUTHORIZED, result.status());
+        assertEquals(SEE_OTHER, result.status());
         //User with id 2 should still have only one treasure hunt
         assertEquals(1, User.find.byId(2).getTreasureHunts().size());
     }

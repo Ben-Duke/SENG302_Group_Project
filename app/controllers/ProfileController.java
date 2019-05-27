@@ -47,7 +47,7 @@ public class ProfileController extends Controller {
         boolean userInput = json.get("response").asBoolean();
         System.out.println("User option is " + userInput);
         boolean needToAskUser = photo.getIsProfile();
-        if(needToAskUser){
+        if(needToAskUser && !userInput){
             return badRequest("Is profile picture ask user");
         }
         if(factory.deletePhoto(photoId)){

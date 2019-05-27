@@ -479,19 +479,25 @@ public class TestDatabaseManager {
     }
 
     public void addUserPhotos(){
-        UserPhoto userphoto1 = new UserPhoto("shrek.jpeg", true, true, User.find.byId(2));
-        UserPhoto userphoto2 = new UserPhoto("placeholder.png", false, false, User.find.byId(2));
+        UserPhoto userPhoto1 = new UserPhoto("shrek.jpeg", true, true, User.find.byId(2));
+        UserPhoto userPhoto2 = new UserPhoto("placeholder.png", false, false, User.find.byId(2));
+        UserPhoto userPhoto3 = new UserPhoto("shrek.png", false, false, User.find.byId(3));
 
         try {
-            userphoto1.save();
+            userPhoto1.save();
         } catch (Exception e) {
             System.out.println("Failed to add user1 photos");
         }
 
         try {
-            userphoto2.save();
+            userPhoto2.save();
         } catch (Exception e) {
             System.out.println("Failed to add user2 photos");
+        }
+        try {
+            userPhoto3.save();
+        } catch (Exception e) {
+            System.out.println("Failed to add user photo 3");
         }
     }
 

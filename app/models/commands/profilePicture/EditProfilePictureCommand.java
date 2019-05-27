@@ -24,7 +24,7 @@ public class EditProfilePictureCommand extends UndoableCommand {
      */
     @Override
     public void undo() {
-        UserFactory.replaceProfilePicture(userId, oldPhoto);
+        UserFactory.replaceProfilePictureLogic(userId, oldPhoto);
     }
 
     /**
@@ -32,6 +32,7 @@ public class EditProfilePictureCommand extends UndoableCommand {
      */
     @Override
     public void redo() {
+        System.out.println("editedPhoto: " + editedPhoto.photoId);
         execute();
     }
 
@@ -40,6 +41,6 @@ public class EditProfilePictureCommand extends UndoableCommand {
      */
     @Override
     public void execute() {
-        UserFactory.replaceProfilePicture(userId, editedPhoto);
+        UserFactory.replaceProfilePictureLogic(userId, editedPhoto);
     }
 }

@@ -1,9 +1,13 @@
 package factories;
 
+import accessors.UserAccessor;
 import controllers.ApplicationManager;
 import formdata.UpdateUserFormData;
 import formdata.UserFormData;
 import models.*;
+import models.commands.CommandManager;
+import models.commands.UndoableCommand;
+import models.commands.profilePicture.EditProfilePictureCommand;
 import play.data.FormFactory;
 import play.mvc.Http;
 
@@ -366,7 +370,7 @@ public class UserFactory {
      * @return the UserPhoto that is the profile picture if it exists, otherwise null
      */
     public static UserPhoto getUserProfilePicture(int userId) {
-        User user = User.find.query().where().eq("userid", userId).findOne();
+        User user = UserAccessor.getUserById(userId);
         UserPhoto userPhoto = UserPhoto.find.query().where().eq("user", user).and().eq("isProfile", true).findOne();
         if(userPhoto != null) {
             return  userPhoto;
@@ -388,16 +392,36 @@ public class UserFactory {
     }
 
     /**
-     * Replace the user's existing profile picture with an new photo
+     * Replace the user's existing profile picture with a new photo
+     * @param userId the user id of the user whose profile picture is to be replaced
+     * @param newPhoto the new photo that is to become the user's profile picture
+     */
+    public static void replaceProfilePictureLogic(int userId, UserPhoto newPhoto) {
+        if (newPhoto != null) {
+            System.out.println(getUserProfilePicture(userId));
+            if (!newPhoto.equals(getUserProfilePicture(userId))) {
+                removeExistingProfilePicture(userId);
+                System.out.println(newPhoto);
+                newPhoto.setProfile(true);
+                System.out.println("Hello World");
+                newPhoto.update();
+                System.out.println(getUserProfilePicture(userId));
+            }
+        } else {
+            removeExistingProfilePicture(userId);
+        }
+    }
+
+    /**
+     * Calls the execute command using the command manager for replacing the profile picture
+     * of the user.
      * @param userId the user id of the user whose profile picture is to be replaced
      * @param newPhoto the new photo that is to become the user's profile picture
      */
     public static void replaceProfilePicture(int userId, UserPhoto newPhoto) {
-        if (!newPhoto.equals(getUserProfilePicture(userId))) {
-            removeExistingProfilePicture(userId);
-            newPhoto.setProfile(true);
-            newPhoto.save();
-        }
+        UndoableCommand editProfilePictureCommand = new EditProfilePictureCommand(userId, newPhoto);
+        CommandManager manager = UserAccessor.getById(userId).getCommandManager();
+        manager.executeCommand(editProfilePictureCommand);
     }
 
     /**

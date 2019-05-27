@@ -16,6 +16,8 @@ import play.mvc.Result;
 import play.test.Helpers;
 import play.test.WithApplication;
 
+
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertEquals;
 import static play.mvc.Http.Status.*;
 import static play.test.Helpers.GET;
@@ -100,7 +102,7 @@ public class AdminControllerTest extends WithApplication {
                 .method(GET)
                 .uri("/users/admin/make/2").session("connected", null);
         Result result = route(app, request);
-        assertEquals(UNAUTHORIZED, result.status());
+        assertEquals(SEE_OTHER, result.status());
     }
 
     /**
@@ -127,7 +129,7 @@ public class AdminControllerTest extends WithApplication {
                 .method(GET).uri("/users/admin/make/3")
                 .session("connected", "2");
         Result result = route(app, request);
-        assertEquals(UNAUTHORIZED, result.status());
+        assertEquals(SEE_OTHER, result.status());
         assertEquals(1, Admin.find.all().size());
     }
 
@@ -141,7 +143,7 @@ public class AdminControllerTest extends WithApplication {
                 .method(GET).uri("/users/admin/make/2")
                 .session("connected", "2");
         Result result = route(app, request);
-        assertEquals(UNAUTHORIZED, result.status());
+        assertEquals(SEE_OTHER, result.status());
         assertEquals(1, Admin.find.all().size());
     }
 
@@ -158,7 +160,7 @@ public class AdminControllerTest extends WithApplication {
                 .method(GET).uri("/users/admin/make/2")
                 .session("connected", "2");
         Result result = route(app, request);
-        assertEquals(UNAUTHORIZED, result.status());
+        assertEquals(SEE_OTHER, result.status());
         assertEquals(2, Admin.find.all().size());
     }
 
@@ -171,7 +173,7 @@ public class AdminControllerTest extends WithApplication {
                 .method(GET)
                 .uri("/users/admin/remove/2").session("connected", null);
         Result result = route(app, request);
-        assertEquals(UNAUTHORIZED, result.status());
+        assertEquals(SEE_OTHER, result.status());
     }
 
     /**
@@ -198,7 +200,7 @@ public class AdminControllerTest extends WithApplication {
                 .method(GET)
                 .uri("/users/admin/remove/1").session("connected", null);
         Result result = route(app, request);
-        assertEquals(UNAUTHORIZED, result.status());
+        assertEquals(SEE_OTHER, result.status());
     }
 
     /**
@@ -211,7 +213,7 @@ public class AdminControllerTest extends WithApplication {
                 .method(GET).uri("/users/admin/remove/1")
                 .session("connected", "2");
         Result result = route(app, request);
-        assertEquals(UNAUTHORIZED, result.status());
+        assertEquals(SEE_OTHER, result.status());
         assertEquals(1, Admin.find.all().size());
     }
 
@@ -226,7 +228,7 @@ public class AdminControllerTest extends WithApplication {
                 .method(GET).uri("/users/admin/remove/3")
                 .session("connected", "2");
         Result result = route(app, request);
-        assertEquals(UNAUTHORIZED, result.status());
+        assertEquals(SEE_OTHER, result.status());
         assertEquals(1, Admin.find.all().size());
     }
 
@@ -243,8 +245,74 @@ public class AdminControllerTest extends WithApplication {
                 .method(GET).uri("/users/admin/remove/2")
                 .session("connected", "2");
         Result result = route(app, request);
-        assertEquals(UNAUTHORIZED, result.status());
+        assertEquals(SEE_OTHER, result.status());
         assertEquals(2, Admin.find.all().size());
+    }
+
+    @Test
+    public void setUserToActAsWithNoLoginSession() {
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET).uri("/users/admin/actasuser/3")
+                .session("connected", null);
+        Result result = route(app, request);
+        assertEquals(UNAUTHORIZED, result.status());
+    }
+
+    @Test
+    public void setUserToActAsWithRequestUserNotBeingAnAdmin() {
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET).uri("/users/admin/actasuser/3")
+                .session("connected", "2");
+        Result result = route(app, request);
+        assertEquals(UNAUTHORIZED, result.status());
+    }
+
+    @Test
+    public void setUserToActAsWithRequestUserAsAnAdmin() {
+        assertEquals(1, Admin.find.all().size());
+        Admin admin = new Admin(2,false);
+        admin.save();
+        assertEquals(2, Admin.find.all().size());
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET).uri("/users/admin/actasuser/3")
+                .session("connected", "2");
+        Result result = route(app, request);
+        assertEquals(SEE_OTHER, result.status());
+        admin = Admin.find.byId(2);
+        Integer userIdToEdit = admin.getUserIdToActAs();
+        assertEquals((Integer) 3, userIdToEdit);
+    }
+
+    @Test
+    public void setUserBackToAdminWithInvalidLoginSession(){
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET).uri("/users/admin/back_to_admin/1")
+                .session("connected", null);
+        Result result = route(app, request);
+        assertEquals(SEE_OTHER, result.status());
+    }
+
+    @Test
+    public void setUserBackToAdminWithNonAdminLoginSession(){
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET).uri("/users/admin/back_to_admin/1")
+                .session("connected", "3");
+        Result result = route(app, request);
+        assertEquals(UNAUTHORIZED, result.status());
+    }
+
+    @Test
+    public void setUserBackToAdminWithValidAdmin(){
+        Admin admin = Admin.find.byId(1);
+        admin.setUserToEdit(3);
+        admin.update();
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET).uri("/users/admin/back_to_admin/1")
+                .session("connected", "1");
+        Result result = route(app, request);
+        assertEquals(SEE_OTHER, result.status());
+        admin = Admin.find.byId(1);
+        assertNull(admin.getUserIdToActAs());
     }
 
 }

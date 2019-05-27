@@ -1,58 +1,20 @@
 package controllers;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
-import play.Application;
-import play.db.Database;
-import play.db.Databases;
-import play.db.evolutions.Evolution;
-import play.db.evolutions.Evolutions;
-import play.inject.guice.GuiceApplicationBuilder;
+
 import play.mvc.Http;
 import play.mvc.Result;
 import play.test.Helpers;
-import play.test.WithApplication;
-import utilities.TestDatabaseManager;
+import testhelpers.BaseTestWithApplicationAndDatabase;
+
 
 import static org.junit.Assert.assertEquals;
 import static play.mvc.Http.Status.NOT_FOUND;
 import static play.mvc.Http.Status.OK;
 import static play.test.Helpers.*;
 
-public class UserControllerTest extends WithApplication {
+public class UserControllerTest extends BaseTestWithApplicationAndDatabase {
 
-    /**
-     * The fake database
-     */
-    Database database;
-
-    @Override
-    protected Application provideApplication() {
-        return new GuiceApplicationBuilder().build();
-    }
-
-    @Before
-    public void setUpDatabase() {
-        database = Databases.inMemory();
-        Evolutions.applyEvolutions(database, Evolutions.forDefault(new Evolution(
-                1,
-                "create table test (id bigint not null, name varchar(255));",
-                "drop table test;"
-        )));
-        ApplicationManager.setIsTest(true);
-        TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
-        testDatabaseManager.populateDatabase();
-    }
-
-    /**
-     * Clears the fake database after each test
-     */
-    @After
-    public void shutdownDatabase() {
-        Evolutions.cleanupEvolutions(database);
-        database.shutdown();
-    }
     @Test
     public void userindex() {
         Http.RequestBuilder request = Helpers.fakeRequest()

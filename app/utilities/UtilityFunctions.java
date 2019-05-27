@@ -2,6 +2,7 @@ package utilities;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import controllers.ApplicationManager;
+import controllers.routes;
 import models.Nationality;
 import models.Passport;
 import models.TravellerType;
@@ -25,6 +26,7 @@ import java.util.*;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import static play.mvc.Results.redirect;
 import static play.mvc.Results.unauthorized;
 
 /**
@@ -52,7 +54,7 @@ public class UtilityFunctions {
     public static Result checkLoggedIn(Http.Request request) {
         User user = User.getCurrentUser(request);
         if (user == null) {
-            return unauthorized("Oops, you are not logged in");
+            return redirect(routes.UserController.userindex());
         }
 
         return null;
@@ -190,42 +192,40 @@ public class UtilityFunctions {
     public static boolean addAllNationalities() {
         boolean isInSuccessState = true;
 
+        CountryUtils.updateCountries();
+
         if (Nationality.find.all().isEmpty()) {
-            Set<String> countries = null;
             try {
-                countries = countriesAsStrings();
-            } catch (Exception error) {
-                System.out.println(error);
-            }
-            //String[] locales = Locale.getISOCountries();
-            try {
-                if (ApplicationManager.isIsTest()) {
-                    for (String country : countries) {
-                        Nationality nationality = new Nationality(country);
-                        try {
-                            nationality.save();
-                        } catch (Exception error) {
-                            isInSuccessState = false;
-                            System.out.println("Failed to save nationality: " +
-                                    nationality.getNationalityName() +
-                                    " uniqueness contraint failed");
-                        }
 
-                    }
+                if (CountryUtils.getCountries() == null){
+
+                    System.out.println("Countries have not been loaded. " +
+                            "Nationalities will not be loaded. " +
+                            "Restart Server?");
+
                 } else {
-                    for (String countryCode : countries) {
-                        Nationality nationality = new Nationality(countryCode);
+                    for (String country : CountryUtils.getCountries()) {
+
+
+                        Nationality nationality = new Nationality(country);
+
+
                         try {
                             nationality.save();
                         } catch (Exception error) {
+
+//                            System.out.println(error);
+
+
                             isInSuccessState = false;
                             System.out.println("Failed to save nationality: " +
                                     nationality.getNationalityName() +
                                     " uniqueness contraint failed");
-
                         }
+
                     }
                 }
+
             } catch (Exception error) {
                 System.out.println(error);
             }
@@ -243,16 +243,18 @@ public class UtilityFunctions {
     public static boolean addAllPassports() {
         boolean isInSuccessState = true;
 
-        if (Passport.find.all().isEmpty()) {
+        CountryUtils.updateCountries();
 
-            Set<String> countries = null;
-            try {
-                countries = countriesAsStrings();
-            } catch (Exception error) {
-                System.out.println(error);
-            }
-            if (ApplicationManager.isIsTest()) {
-                for (String country : countries) {
+        if (Passport.find.all().isEmpty()) {
+            if (CountryUtils.getCountries() == null){
+
+                System.out.println("Countries have not been loaded. " +
+                        "Passports will not be loaded. " +
+                        "Restart Server?");
+
+
+            } else {
+                for (String country : CountryUtils.getCountries()) {
                     Passport passport = new Passport(country);
                     try {
                         passport.save();
@@ -263,19 +265,8 @@ public class UtilityFunctions {
                                 " uniqueness constraint failed");
                     }
                 }
-            } else {
-                for (String countryCode : countries) {
-                    Passport passport = new Passport(countryCode);
-                    try {
-                        passport.save();
-                    } catch (Exception error) {
-                        isInSuccessState = false;
-                        System.out.println("Passport failed to save. name: " +
-                                passport.getName() +
-                                " uniqueness constraint failed");
-                    }
-                }
             }
+
         } else {
             isInSuccessState = false;
         }
@@ -342,7 +333,7 @@ public class UtilityFunctions {
      * @return
      * @throws Exception
      */
-    public static Map<String, Boolean> CountryUtils() throws Exception {
+    public static Map<String, Boolean> CountryUtils() throws IOException {
         Map<String, Boolean> countryMap = new TreeMap<>();
         if (ApplicationManager.isIsTest()) {
             String[] locales = Locale.getISOCountries();
@@ -401,6 +392,7 @@ public class UtilityFunctions {
 
             // optional default is GET
             con.setRequestMethod("GET");
+            con.setConnectTimeout(5000); // 5 seconds
 
             BufferedReader in = new BufferedReader(
                     new InputStreamReader(con.getInputStream()));

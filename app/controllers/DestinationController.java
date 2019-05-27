@@ -2,12 +2,14 @@ package controllers;
 
 import accessors.DestinationAccessor;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+
 import factories.DestinationFactory;
 import formdata.DestinationFormData;
 import models.*;
 
 
+import models.commands.Destinations.DeleteDestinationCommand;
+import models.commands.Destinations.EditDestinationCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import play.data.DynamicForm;
@@ -17,16 +19,18 @@ import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
+
 import utilities.CountryUtils;
 import views.html.users.destination.*;
 
 import javax.inject.Inject;
 import java.io.File;
+import java.io.IOException;
 import java.util.*;
 
 
 import utilities.UtilityFunctions;
-import views.html.users.destination.*;
+
 
 public class DestinationController extends Controller {
 
@@ -37,7 +41,7 @@ public class DestinationController extends Controller {
     DestinationFactory destFactory;
 
     private final Logger logger = LoggerFactory.getLogger("application");
-    UtilityFunctions utilityFunctions = new UtilityFunctions();
+
     /**
      * Performs validation tests on each on the users input for
      * each destination attribute.
@@ -105,13 +109,14 @@ public class DestinationController extends Controller {
             CountryUtils.updateCountries();
 
             List<Destination> destinations = user.getDestinations();
+            
             List<Destination> allDestinations = Destination.find.all();
 
             return ok(indexDestination.render(destinations, allDestinations, destFactory, user));
 
 
         }
-        return unauthorized("Oops, you are not logged in");
+        return redirect(routes.UserController.userindex());
     }
 
     /**
@@ -130,7 +135,7 @@ public class DestinationController extends Controller {
             Destination destination = Destination.find.byId(destId);
             return ok(viewDestination.render(destination));
         }
-        return unauthorized("Oops, you are not logged in");
+        return redirect(routes.UserController.userindex());
     }
 
     /**
@@ -146,18 +151,11 @@ public class DestinationController extends Controller {
             Form<DestinationFormData> destFormData;
             destFormData = formFactory.form(DestinationFormData.class);
 
-            Map<String, Boolean> countries = null;
+            Map<String, Boolean> countryList = CountryUtils.getCountriesMap();
 
-            try{
-                countries = utilityFunctions.CountryUtils();
-            }catch(Exception error){
-                System.out.println(error);
-                System.out.println("Error getting countries");
-            }
-
-            return ok(createEditDestination.render(destFormData, null, countries , Destination.getTypeList(),user));
+            return ok(createEditDestination.render(destFormData, null, countryList , Destination.getTypeList(),user));
         }
-        return unauthorized("Oops, you are not logged in");
+        return redirect(routes.UserController.userindex());
     }
 
     /**
@@ -188,7 +186,7 @@ public class DestinationController extends Controller {
                     return redirect(routes.DestinationController.indexDestination());
                 }
         } else {
-            return unauthorized("Oops, you are not logged in");
+            return redirect(routes.UserController.userindex());
         }
     }
 
@@ -229,21 +227,17 @@ public class DestinationController extends Controller {
         Map<String, Boolean> typeList = Destination.getTypeList();
         typeList.replace(destination.getDestType(), true);
 
-        Map<String, Boolean> countryList = null;
-        try{
-            countryList = utilityFunctions.CountryUtils();
-        }catch(Exception error){
-            System.out.println(error);
-        }
+
+        Map<String, Boolean> countryList = CountryUtils.getCountriesMap();
         countryList.replace(destination.getCountry(), true);
-        try {
-            if (!destination.getIsCountryValid()) {
-                flash("countryInvalid",
-                        "This Destination has an invalid country!");
+
+
+        if (!destination.getIsCountryValid()) {
+            flash("countryInvalid",
+                    "This Destination has an invalid country!");
+            if (countryList != null) {
                 countryList.put(destination.getCountry(), true);
             }
-        } catch (Exception error) {
-            System.out.println(error);
         }
         return ok(createEditDestination.render(destForm, destId, countryList, typeList, user));
     }
@@ -277,7 +271,9 @@ public class DestinationController extends Controller {
             if (oldDestination != null) {
                 if (oldDestination.isUserOwner(user.userid) || user.userIsAdmin()) {
                     oldDestination.applyEditChanges(newDestination);
-                    oldDestination.update();
+                    EditDestinationCommand editDestinationCommand =
+                            new EditDestinationCommand(oldDestination);
+                    user.getCommandManager().executeCommand(editDestinationCommand);
 
                     return redirect(routes.DestinationController.indexDestination());
 
@@ -289,7 +285,7 @@ public class DestinationController extends Controller {
             }
 
         } else {
-            return unauthorized("Oops, you are not logged in");
+            return redirect(routes.UserController.userindex());
         }
     }
 
@@ -325,19 +321,17 @@ public class DestinationController extends Controller {
         if (destForm.hasErrors() || hasError) {
 
             Map<String, Boolean> typeList = Destination.getTypeList();
-            Map<String, Boolean> countryList = null;
-            try{
-                countryList = utilityFunctions.CountryUtils();
-            }catch(Exception error){
-                System.out.println(error);
-            }
+            Map<String, Boolean> countryList = CountryUtils.getCountriesMap();
+
 
             // Use a dynamic form to get the values of the dropdown inputs
             DynamicForm dynamicDestForm = formFactory.form().bindFromRequest(request);
 
             // Select the dropdown values which were selected at form submission
             typeList.replace(dynamicDestForm.get("destType"), true);
-            countryList.replace(dynamicDestForm.get("country"), true);
+            if (countryList != null) {
+                countryList.replace(dynamicDestForm.get("country"), true);
+            }
 
             return badRequest(createEditDestination.render(destForm, destId, countryList,
                     typeList, user));
@@ -367,14 +361,7 @@ public class DestinationController extends Controller {
                 Map<String, Boolean> typeList = Destination.getTypeList();
                 typeList.replace(destination.getDestType(), true);
 
-                Map<String, Boolean> countryList = null;
-
-                try{
-                    countryList = utilityFunctions.CountryUtils();
-                }
-                catch(Exception error){
-
-                }
+                Map<String, Boolean> countryList = CountryUtils.getCountriesMap();
                 countryList.replace(destination.getCountry(), true);
 
                 List<TravellerType> travellerTypes = TravellerType.find.all();
@@ -393,7 +380,7 @@ public class DestinationController extends Controller {
                 return notFound("Destination does not exist");
             }
         } else {
-            return unauthorized("Oops, you are not logged in");
+            return redirect(routes.UserController.userindex());
         }
     }
 
@@ -443,7 +430,7 @@ public class DestinationController extends Controller {
                 return notFound("The destination you are trying to update no longer exists");
             }
         } else {
-            return unauthorized("Oops, you are not logged in");
+            return redirect(routes.UserController.userindex());
         }
     }
 
@@ -473,7 +460,7 @@ public class DestinationController extends Controller {
                 return unauthorized("Oops, you are not authorised.");
             }
         } else {
-            return unauthorized("Oops, you are not logged in.");
+            return redirect(routes.UserController.userindex());
         }
     }
 
@@ -521,7 +508,7 @@ public class DestinationController extends Controller {
                 return unauthorized("Oops, you are not authorised.");
             }
         } else {
-            return unauthorized("Oops, you are not logged in.");
+            return redirect(routes.UserController.userindex());
         }
     }
 
@@ -536,27 +523,31 @@ public class DestinationController extends Controller {
     public Result deleteDestination(Http.Request request, Integer destId) {
         User user = User.getCurrentUser(request);
 
+        logger.debug("controller method to delete dest");
+
         if (user != null) {
             Destination destination = Destination.find.query().where().eq("destid", destId).findOne();
 
             if (destination != null) {
                 if(user.userIsAdmin()){
-                    for(Visit visit : destination.getVisits()){
-                        visit.delete();
-                    }
-                    List<TreasureHunt> treasureHunts = TreasureHunt.find.query().where().eq("destination", destination).findList();
 
-                    for(TreasureHunt treasureHunt : treasureHunts){
-                        treasureHunt.delete();
-                    }
-                    destination.delete();
+                    logger.debug("admin command being called");
+                    DeleteDestinationCommand cmd = new DeleteDestinationCommand(
+                            destination, true);
+                    user.getCommandManager().executeCommand(cmd);
+
                     return redirect(routes.DestinationController.indexDestination());
                 }
                 else if (destination.isUserOwner(user.userid)) {
                     if(destination.visits.isEmpty()) {
                         List<TreasureHunt> treasureHunts = TreasureHunt.find.query().where().eq("destination", destination).findList();
                         if (treasureHunts.isEmpty()) {
-                            destination.delete();
+
+                            logger.debug("non-admin command being called");
+                            DeleteDestinationCommand cmd = new DeleteDestinationCommand(
+                                    destination, false);
+                            user.getCommandManager().executeCommand(cmd);
+
                             return redirect(routes.DestinationController.indexDestination());
                         } else {
                             return preconditionRequired("You cannot delete destinations while they are being used by the treasure hunts.");
@@ -572,7 +563,7 @@ public class DestinationController extends Controller {
                 return notFound("Destination does not exist");
             }
         } else {
-            return unauthorized("Oops, you are not logged in");
+            return redirect(routes.UserController.userindex());
         }
 
     }
@@ -624,7 +615,7 @@ public class DestinationController extends Controller {
                 return notFound("Destination does not exist");
             }
         } else {
-            return unauthorized("Oops, you are not logged in");
+            return redirect(routes.UserController.userindex());
         }
     }
 
@@ -645,7 +636,7 @@ public class DestinationController extends Controller {
                 return notFound("Destination does not exist");
             }
         } else {
-            return unauthorized("Oops, you are not logged in");
+            return redirect(routes.UserController.userindex());
         }
     }
 
@@ -682,9 +673,44 @@ public class DestinationController extends Controller {
                 return notFound();
             }
         } else {
-            return unauthorized("Oops, you are not logged in");
+            return redirect(routes.UserController.userindex());
         }
         return ok();
+    }
+
+    /**
+     * Removes the given destination from the list of destinations in the photos
+     * @param request unused http request information
+     * @param photoId the id of the photo to unlink
+     * @param destId the id of the destination to unlink
+     * @return response ok if the removal worked
+     *         notFound if the destination or photo does not exist
+     *         badRequest if the destination and photo were not linked     *
+     */
+    public Result unlinkPhotoFromDestination(Http.Request request, int photoId, int destId) {
+        User user = User.getCurrentUser(request);
+        if (user !=  null) {
+            UserPhoto photo = UserPhoto.find.byId(photoId);
+            Destination destination = Destination.find.byId(destId);
+            if (photo == null) return notFound("No photo found with that id");
+            if (destination == null) return notFound("No destination found with that id");
+            // This block checks if the user is the owner of either the photo or the destination.
+            // If not the owner then returns an unauthorized error else proceeds as usual.
+            if (destination.getUser().getUserid() != user.getUserid()) {
+                if (photo.getUser().getUserid() != user.getUserid()) {
+                    return unauthorized("You cannot unlink this photo from this destination as neither of those belong to you.");
+                }
+            }
+            if (! photo.removeDestination(destination)) return badRequest("The destination was not linked to this photo");
+            photo.update();
+            if ((destination.getPrimaryPhoto() != null) &&
+                    (photo.getPhotoId() == destination.getPrimaryPhoto().getPhotoId())) {
+                destination.setPrimaryPhoto(null);
+                destination.update();
+            }
+            return ok();
+        }
+        return redirect(routes.UserController.userindex());
     }
 
     /**
@@ -699,7 +725,7 @@ public class DestinationController extends Controller {
         if (user != null) {
             return ok(Json.toJson(Destination.find.byId(destId).travellerTypes));
         } else {
-            return unauthorized("Oops, you are not logged in");
+            return redirect(routes.UserController.userindex());
         }
     }
 
@@ -725,7 +751,7 @@ public class DestinationController extends Controller {
 
             return ok(Json.toJson(photos));
         } else {
-            return unauthorized("Oops, you are not logged in");
+            return redirect(routes.UserController.userindex());
         }
     }
 
@@ -745,7 +771,7 @@ public class DestinationController extends Controller {
                 return unauthorized("Oops, you do not have the rights to view this photo");
             }
         } else {
-            return unauthorized("Oops, you are not logged in");
+            return redirect(routes.UserController.userindex());
         }
     }
 
@@ -766,7 +792,7 @@ public class DestinationController extends Controller {
                 return unauthorized("Oops, this is a private destination and you don't own it.");
             }
         } else {
-            return unauthorized("Oops, you are not logged in");
+            return redirect(routes.UserController.userindex());
         }
     }
 
@@ -783,7 +809,7 @@ public class DestinationController extends Controller {
         if (user != null) {
             return ok(Json.toJson(user.getUserid()));
         } else {
-            return unauthorized("Oops, you are not logged in");
+            return redirect(routes.UserController.userindex());
         }
     }
 
@@ -815,7 +841,7 @@ public class DestinationController extends Controller {
                 return notFound();
             }
         } else {
-            return unauthorized("Oops, you are not logged in");
+            return redirect(routes.UserController.userindex());
         }
         return ok();
     }
@@ -847,7 +873,7 @@ public class DestinationController extends Controller {
 
             return ok(Json.toJson(allVisibleDestination));
         } else {
-            return unauthorized("Oops, you are not logged in");
+            return redirect(routes.UserController.userindex());
         }
     }
 
@@ -878,27 +904,24 @@ public class DestinationController extends Controller {
                 } else {
                     return unauthorized("Oops, this is not your photo!");
                 }
-            }
-            else{
+            } else {
                 return notFound();
             }
         } else {
-            return unauthorized("Oops, you are not logged in");
+            return redirect(routes.UserController.userindex());
         }
     }
 
 
     /**
      * Returns an image file to the requester, accepts the UserPhoto id to send back the correct image.
-     * @param request
+     * @param request the photo
      * @param destId
      * @return
      */
     public Result servePrimaryPicture(Http.Request request, Integer destId) {
-        // User user = httpRequest.session().getOptional("connected").orElse(null);
-        if(destId != null) {
-            UserPhoto primaryPicture = DestinationFactory.getprimaryProfilePicture(destId);
-            System.out.println("Path is " + primaryPicture.getUrlWithPath());
+        if (destId != null) {
+            UserPhoto primaryPicture = DestinationFactory.getPrimaryPicture(destId);
             if (primaryPicture != null) {
                 System.out.println("Sending image back");
                 return ok(new File(primaryPicture.getUrlWithPath()));
@@ -906,9 +929,8 @@ public class DestinationController extends Controller {
                 //should be 404 but then console logs an error
                 return ok();
             }
-        }
-        else{
-            return unauthorized("Oops, you're not logged in.");
+        } else {
+            return redirect(routes.UserController.userindex());
         }
     }
 

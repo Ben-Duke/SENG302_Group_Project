@@ -2,14 +2,11 @@ package utilities;
 
 import accessors.DestinationAccessor;
 import accessors.UserAccessor;
-import akka.actor.ProviderSelection;
-import models.CountryItem;
 import models.Destination;
 import models.Nationality;
 import models.Passport;
 import org.slf4j.Logger;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
@@ -22,12 +19,29 @@ public class CountryUtils {
     private static Date lastUpdated;
     private static List<String> countries;
 
-    public static List<String> getCountries() { return countries; }
+
+    static List<String> getCountries() {
+        updateCountries();
+        return countries;
+    }
+
+    public static Map<String, Boolean> getCountriesMap() {
+        updateCountries();
+
+        Map<String, Boolean> countryMap = new TreeMap<>();
+
+        for (String country : countries) {
+            countryMap.put(country, false);
+        }
+
+         return countryMap;
+    }
 
 
     /**
      * Updates countries if the list of countries does not exist or has not
-     * been updated for greater than one day.
+     * been updated for greater than one day or the backup locales are
+     * currently loaded in place.
      */
     public static void updateCountries() {
         if (lastUpdated == null || countries == null) {
@@ -39,43 +53,78 @@ public class CountryUtils {
             if (lastUpdated.compareTo(yesterdayDate) < 0) {
                 reloadCountries();
             }
+
         }
+    }
+
+    /**
+     * Runs the methods for validating passports
+     * nationalities and destinations.
+     */
+     static void validateUsedCountries() {
+        validatePassportCountries();
+        validateNationalityCountries();
+        validateDestinationCountries();
     }
 
     /**
      * Make api call. Set last updated date. Revalidate used countries
      */
     private static void reloadCountries() {
+
+        try {
+            printLoadingCountriesMessage("IN PROGRESS...");
+
+            countries = new ArrayList<>(UtilityFunctions.countriesAsStrings());
+
+            lastUpdated = new Date();
+
+            validateUsedCountries();
+
+            logger.info("SUCCEEDED");
+
+        } catch (Exception e) {
+
+            logger.error("FAILED");
+
+            if (countries == null) {
+                countries = new ArrayList<>();
+
+                Locale[] locales = Locale.getAvailableLocales();
+                for (Locale locale : locales) {
+                    if (!locale.getDisplayCountry().equals("") &&
+                            !countries.contains(locale.getDisplayCountry())) {
+
+                        countries.add(locale.getDisplayCountry());
+                    }
+                }
+
+                lastUpdated = new Date();
+                printLoadingCountriesMessage("Locales loaded in place");
+            }
+        }
+    }
+
+    private static void printLoadingCountriesMessage(String message) {
+
         LocalDateTime dateNowUTC = LocalDateTime.now(ZoneId.of("UTC"));
         String format = "Reloading countries at (UTC): %s | " +
                 "lastUpdated: %s | " +
-                "countries: %s | ";
+                "countries loaded: %s | %s";
         String formattedStr = String.format(format,
                 dateNowUTC,
                 lastUpdated,
-                countries);
+                countries != null,
+                message);
 
-
-        try {
-            countries = new ArrayList<>(UtilityFunctions.countriesAsStrings());
-            lastUpdated = new Date();
-
-            validatePassportCountries();
-            validateNationalityCountries();
-            validateDestinationCountries();
-            System.out.println(formattedStr + "SUCCEEDED");
-
-        } catch (Exception e) {
-            System.out.println(formattedStr + "FAILED");
-            e.printStackTrace();
-        }
+        logger.info(formattedStr);
     }
 
     /**
      * For passports check if the country associated is contained
      * in the list of valid countries.
      */
-    public static void validatePassportCountries() {
+    static void validatePassportCountries() {
         List<Passport> passports = UserAccessor.getAllPassports();
 
         for (Passport passport : passports) {
@@ -88,7 +137,6 @@ public class CountryUtils {
                     passport.update();
                 }
             }
-
         }
     }
 
@@ -96,7 +144,7 @@ public class CountryUtils {
      * For nationalities check if the country associated is contained
      * in the list of valid countries.
      */
-    public static void validateNationalityCountries() {
+    private static void validateNationalityCountries() {
         List<Nationality> nationalities = UserAccessor.getAllNationalities();
 
         for (Nationality nationality : nationalities) {
@@ -117,7 +165,7 @@ public class CountryUtils {
      * For destinations check if the country associated is contained
      * in the list of valid countries.
      */
-    public static void validateDestinationCountries() {
+    private static void validateDestinationCountries() {
         List<Destination> destinations = DestinationAccessor.getAllDestinations();
 
         for (Destination destination : destinations) {
@@ -133,6 +181,4 @@ public class CountryUtils {
             }
         }
     }
-
-
 }

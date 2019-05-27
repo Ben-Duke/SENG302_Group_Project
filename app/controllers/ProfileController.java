@@ -8,7 +8,7 @@ import io.ebean.DuplicateKeyException;
 import models.Nationality;
 import models.Passport;
 import models.User;
-import models.UserPhoto;
+import models.commands.Profile.EditProfileCommand;
 import play.data.DynamicForm;
 import play.data.Form;
 import play.data.FormFactory;
@@ -17,13 +17,12 @@ import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
 import views.html.users.profile.*;
+
 import javax.inject.Inject;
-import java.io.File;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Locale;
 
 /**
  * A Class to handle interactions from the client to the frontend.
@@ -40,8 +39,13 @@ public class ProfileController extends Controller {
      * @return update profile page or error page
      */
     public Result updateProfile(Http.Request request){
-        User user = User.getCurrentUser(request);
-        if (user != null) {
+        List<User> users = User.getCurrentUser(request, true);
+        Boolean isAdmin = false;
+        if (users.size() != 0) {
+            User user = users.get(0);
+            if(users.get(0).getUserid() != users.get(1).getUserid()) {
+                isAdmin = true;
+            }
             UpdateUserFormData updateUserFormData = UserFactory
                                             .getUpdateUserFormDataForm(request);
 
@@ -52,10 +56,10 @@ public class ProfileController extends Controller {
             String[] gendersArray = {"Male", "Female", "Other"};
             List gendersList = Arrays.asList(gendersArray);
 
-            return ok(views.html.users.profile.updateProfile.render(updateUserForm, gendersList,user));
+            return ok(updateProfile.render(updateUserForm, gendersList,user, isAdmin));
         }
         else{
-            return unauthorized(notLoggedInErrorStr);
+            return redirect(routes.UserController.userindex());
         }
     }
 
@@ -72,8 +76,14 @@ public class ProfileController extends Controller {
         Form<UpdateUserFormData> updateProfileForm = formFactory
                             .form(UpdateUserFormData.class).bindFromRequest(request);
         // checking if a user is logged in.
-        User user = User.getCurrentUser(request);
-        if (user != null) {
+        List<User> users = User.getCurrentUser(request, true);
+        Boolean isAdmin = false;
+        if (users.size() != 0) {
+            User user = users.get(0);
+            if(users.get(0).getUserid() != users.get(1).getUserid())
+            {
+                isAdmin = true;
+            }
             if (! updateProfileForm.hasErrors()) {
                 // good update user information request
                 // processing it
@@ -84,10 +94,10 @@ public class ProfileController extends Controller {
                 //bad request, errors present
                 String[] gendersArray = {"Male", "Female", "Other"};
                 List gendersList = Arrays.asList(gendersArray);
-                return badRequest(views.html.users.profile.updateProfile.render(updateProfileForm, gendersList,user));
+                return badRequest(updateProfile.render(updateProfileForm, gendersList, user, isAdmin));
             }
         } else{
-            return unauthorized(notLoggedInErrorStr);
+            return redirect(routes.UserController.userindex());
         }
     }
 
@@ -120,8 +130,8 @@ public class ProfileController extends Controller {
             user.hashAndSetPassword(passwordPlainText);
         }
 
-
-        user.update();
+        EditProfileCommand editProfileCommand = new EditProfileCommand(user);
+        editProfileCommand.execute();
         // Show the user their home page
     }
 
@@ -147,7 +157,7 @@ public class ProfileController extends Controller {
 
             return ok(views.html.users.profile.showProfile.render(otherUser, user));
         }
-        return unauthorized(notLoggedInErrorStr);
+        return redirect(routes.UserController.userindex());
     }
 
 
@@ -160,19 +170,20 @@ public class ProfileController extends Controller {
      * @return create profile page or error page
      */
     public Result updateNatPass(Http.Request request){
-        int userId = UserFactory.getCurrentUserId(request);
-        if (userId != -1) {
+
+        User user = User.getCurrentUser(request);
+        if (user != null) {
             NatFormData formData = new NatFormData();
 
-            formData.userId = userId;
+            formData.userId = user.getUserid();
             Form<NatFormData> userForm = formFactory.form(NatFormData.class).fill(formData);
 
             List<Nationality> nationalities = Nationality.find.all();
             List<Passport> passports = Passport.find.all();
-            return ok(updateNatPass.render(userForm, nationalities, passports, userId, User.getCurrentUser(request)));
+            return ok(updateNatPass.render(userForm, nationalities, passports, user.getUserid(), User.getCurrentUser(request)));
         }
         else {
-            return unauthorized(notLoggedInErrorStr);
+            return redirect(routes.UserController.userindex());
         }
     }
 
@@ -187,14 +198,14 @@ public class ProfileController extends Controller {
     public Result submitUpdateNationality(Http.Request request){
         DynamicForm userForm = formFactory.form().bindFromRequest(request);
         String nationalityID = userForm.get("nationality");
-        int user = UserFactory.getCurrentUserId(request);
-        if (user != -1) {
+        User user = User.getCurrentUser(request);
+        if (user != null) {
 
-            UserFactory.addNatsOnUser(user, nationalityID);
+            UserFactory.addNatsOnUser(user.getUserid(), nationalityID);
 
         }
         else{
-            return unauthorized(notLoggedInErrorStr);
+            return redirect(routes.UserController.userindex());
         }
         return redirect(routes.ProfileController.updateNatPass());
     }
@@ -211,12 +222,11 @@ public class ProfileController extends Controller {
         DynamicForm userForm = formFactory.form().bindFromRequest(request);
         String passportID = userForm.get("passport");
         User user = User.getCurrentUser(request);
-        int userId = UserFactory.getCurrentUserId(request);
-        if (userId != -1) {
-            UserFactory.addPassportToUser(userId, passportID);
+        if (user != null) {
+            UserFactory.addPassportToUser(user.getUserid(), passportID);
         }
         else{
-            return unauthorized(notLoggedInErrorStr);
+            return redirect(routes.UserController.userindex());
         }
         return redirect(routes.ProfileController.updateNatPass());
     }
@@ -243,11 +253,11 @@ public class ProfileController extends Controller {
 
         }else {
             String nationalityID = userForm.get().nationalitydelete;
-            int userId = UserFactory.getCurrentUserId(request);
-            if (userId != -1) {
-                UserFactory.deleteNatsOnUser(userId, nationalityID);
+            User user = User.getCurrentUser(request);
+            if (user != null) {
+                UserFactory.deleteNatsOnUser(user.getUserid(), nationalityID);
             } else {
-                return unauthorized("Oops, you are not logged in");
+                return redirect(routes.UserController.userindex());
 
             }
         }
@@ -266,12 +276,12 @@ public class ProfileController extends Controller {
     public Result deletePassport(Http.Request request){
         DynamicForm userForm = formFactory.form().bindFromRequest(request);
         String passportID = userForm.get("passportdelete");
-        int userId = UserFactory.getCurrentUserId(request);
-        if (userId != -1) {
-            UserFactory.deletePassportOnUser(userId, passportID);
+        User user = User.getCurrentUser(request);
+        if (user != null) {
+            UserFactory.deletePassportOnUser(user.getUserid(), passportID);
         }
         else{
-            return unauthorized(notLoggedInErrorStr);
+            return redirect(routes.UserController.userindex());
         }
         return redirect(routes.ProfileController.updateNatPass());
     }

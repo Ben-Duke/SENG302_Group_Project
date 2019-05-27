@@ -6,11 +6,16 @@ import io.ebean.Model;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 @Entity
 public class TreasureHunt extends Model {
 
+    /**
+     * Default Constructor
+     */
+    public TreasureHunt() {}
 
     /**
      * Constructor to create a treasure hunt
@@ -28,6 +33,16 @@ public class TreasureHunt extends Model {
         this.endDate = endDate;
         this.user = user;
         this.users = new ArrayList<>();
+    }
+
+    public TreasureHunt(TreasureHunt treasureHunt) {
+        this(treasureHunt.getTitle(),
+                treasureHunt.getRiddle(),
+                treasureHunt.getDestination(),
+                treasureHunt.getStartDate(),
+                treasureHunt.getEndDate(),
+                treasureHunt.getUser()
+            );
     }
 
     /**
@@ -138,5 +153,40 @@ public class TreasureHunt extends Model {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = 17;
+        result = 31 * result + title.hashCode();
+        result = 31 * result + riddle.hashCode();
+        result = 31 * result + destination.hashCode();
+        result = 31 * result + startDate.hashCode();
+        result = 31 * result + endDate.hashCode();
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) return true;
+        if (!(obj instanceof TreasureHunt)) return false;
+        TreasureHunt other = (TreasureHunt) obj;
+        return title.equals(other.title) &&
+                riddle.equals(other.riddle) &&
+                destination.equals(other.destination) &&
+                startDate.equals(other.startDate) &&
+                endDate.equals(other.endDate);
+    }
+
+    /** Modifies the fields of this Treasure Hunt which are included in the
+     *   treasure hunt editing form to be equal to those fields of the TreasureHunt
+     *   passed in */
+    public void applyEditChanges(TreasureHunt editedTreasureHunt) {
+        this.title = editedTreasureHunt.getTitle();
+        this.destination = editedTreasureHunt.getDestination();
+        this.riddle = editedTreasureHunt.getRiddle();
+        this.startDate = editedTreasureHunt.getStartDate();
+        this.endDate = editedTreasureHunt.getEndDate();
+        this.users = editedTreasureHunt.getUsers();
     }
 }

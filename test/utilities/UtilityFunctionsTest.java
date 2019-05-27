@@ -12,16 +12,11 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 
-//import javax.rmi.CORBA.Util;
 
 /**
  * Class to test the UtilityFunction class.
  */
 public class UtilityFunctionsTest extends WithApplication {
-
-//    @Test //TODO
-//    public void retainFromLists() {
-//    }
 
     @Test
     public void validateMaxCharLimitEmptyStringZeroMax() {

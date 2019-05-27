@@ -9,10 +9,11 @@ import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.Http;
 import play.mvc.Result;
-import views.html.users.loginpage.*;
-import views.html.users.loginpage.*;
+import views.html.users.loginpage.loginPage;
 
 import javax.inject.Inject;
+
+import java.util.List;
 
 import static play.mvc.Controller.flash;
 import static play.mvc.Results.*;
@@ -84,7 +85,16 @@ public class LoginController {
      * @return The user index page
      */
     public Result logoutrequest(Http.Request request){
-        return redirect(routes.UserController.userindex())
-                              .removingFromSession(request, "connected");
+        User user = User.getCurrentUser(request);
+        if(user != null) {
+            List<User> users = User.getCurrentUser(request, true);
+            if (users.get(0).getUserid() != users.get(1).getUserid()) {
+                return redirect(routes.AdminController.setUserBackToAdmin(users.get(1).getUserid()));
+            }
+            return redirect(routes.UserController.userindex())
+                    .removingFromSession(request, "connected");
+        } else {
+            return redirect(routes.UserController.userindex());
+        }
     }
 }

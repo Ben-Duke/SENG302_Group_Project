@@ -267,14 +267,39 @@ function searchPublicDestination(){
     }
 }
 
+
+/**
+ * Function to unlink a photo from a destination
+ * Sends a DELETE ajax request to the backend to unlink a destination from a photo
+ * @param url to send the request to
+ * @param photoId the id of the photo being linked
+ * @param destId the id of the destination being linked
+ */
+function sendUnlinkDestinationRequest(url, photoId, destId) {
+    const token =  $('input[name="csrfToken"]').attr('value');
+    $.ajaxSetup({
+        beforeSend: function(xhr) {
+            xhr.setRequestHeader('Csrf-Token', token);
+        }
+    });
+    $.ajax({
+        url: url,
+        method: "DELETE",
+        success: function(res) {
+            toggleLinkButtonDisplays(destId, photoId);
+        }
+    })
+}
+
 /**
  * Function to link a photo with a destination
  * Sends a PUT ajax request to the backend to link destinations to a photo (the photoid is sent)
  * @param url to send the ajax request to
- * @param photoid the id of the photo you want to link
+ * @param photoId the id of the photo you want to link
+ * @param destId the id of the destination you want to link
  */
-function sendLinkDestinationRequest(url, photoid){
-    var token =  $('input[name="csrfToken"]').attr('value');
+function sendLinkDestinationRequest(url, photoId, destId) {
+    const token = $('input[name="csrfToken"]').attr('value');
     $.ajaxSetup({
         beforeSend: function(xhr) {
             xhr.setRequestHeader('Csrf-Token', token);
@@ -284,14 +309,13 @@ function sendLinkDestinationRequest(url, photoid){
         url: url,
         method: "PUT",
         data: JSON.stringify({
-            photoid: '"' + photoid + '"'
+            photoid: '"' + photoId + '"'
         }),
         headers: {
             'Content-Type': 'application/json'
         },
         success:function(res){
-            $("#" + photoid).modal('hide');
-            console.log("Success!");
+            toggleLinkButtonDisplays(destId, photoId)
         }
     })
 }
@@ -385,7 +409,25 @@ function initSetProfilePicToDefaultButton() {
     });
 }
 
+/**
+ * Takes an html element and toggles the display of the element
+ * @param e the http element to toggle display
+ */
+function toggleDisplay(e) {
+    e.style.display === "none" ? e.style.display = "block" : e.style.display = "none"
+}
 
+/**
+ * Toggles the display of linking buttons in the linking and unlinking modal
+ * @param destId the destination id of the button
+ * @param photoId the photo id of the button
+ */
+function toggleLinkButtonDisplays(destId, photoId) {
+    let linkButton = document.querySelector(`#link${destId}-${photoId}-link`);
+    let unlinkButton = document.querySelector(`#link${destId}-${photoId}-unlink`);
+    toggleDisplay(linkButton);
+    toggleDisplay(unlinkButton);
+}
 
 
 

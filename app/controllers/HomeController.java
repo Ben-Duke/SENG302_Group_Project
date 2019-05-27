@@ -7,6 +7,7 @@ import io.ebean.DuplicateKeyException;
 import models.Admin;
 import models.User;
 import models.UserPhoto;
+import models.commands.UploadPhotoCommand;
 import play.data.FormFactory;
 import play.libs.Files;
 import play.libs.Json;
@@ -15,24 +16,16 @@ import play.mvc.Result;
 import utilities.CountryUtils;
 import utilities.UtilityFunctions;
 import views.html.home.home;
-import views.html.users.*;
 
 import javax.imageio.ImageIO;
 import javax.inject.Inject;
-
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
-
-import static play.mvc.Controller.request;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
 
-import static play.mvc.Http.Status.OK;
 import static play.mvc.Results.*;
 
 public class HomeController {
@@ -50,21 +43,19 @@ public class HomeController {
      * @return homepage, profile page or error page
      */
     public Result showhome(Http.Request request) {
-        User user = User.getCurrentUser(request);
+        List<User> users = User.getCurrentUser(request, true);
 
-        if (user != null){
-            if(user.hasEmptyField()){
+        if (! users.isEmpty()){
+            if(users.get(0).hasEmptyField()){
                 return redirect(routes.ProfileController.updateProfile());
-            } else if (! user.hasTravellerTypes()) {
+            } else if (! users.get(0).hasTravellerTypes()) {
                 return redirect(routes.TravellerTypeController.updateTravellerType());
-            } else if(! user.hasNationality()){
+            } else if(! users.get(0).hasNationality()){
                 return redirect(routes.ProfileController.updateNatPass());
             } else {
+                // Load countries from api and update validity of pass/nat/destinations
                 CountryUtils.updateCountries();
-                //Reload the user after updating the nationality and passport countries validation
-                user = User.getCurrentUser(request);
-
-                return ok(home.render(user));
+                return ok(home.render(users.get(0), users.get(1)));
             }
         }
         return redirect(routes.UserController.userindex());
@@ -79,9 +70,9 @@ public class HomeController {
     public Result upload(Http.Request request) {
         User user = User.getCurrentUser(request);
         if(user != null) {
-            Map<String, String[]> datapart = request.body().asMultipartFormData().asFormUrlEncoded();
+            Map<String, String[]> dataPart = request.body().asMultipartFormData().asFormUrlEncoded();
             boolean isPublic = false;
-            if (datapart.get("private") == null) {
+            if (dataPart.get("private") == null) {
                 isPublic = true;
             }
 
@@ -91,7 +82,7 @@ public class HomeController {
             if (picture != null) {
                 return getResultFromSaveUserPhoto(user, isPublic, picture);
             } else {
-                return badRequest(home.render(user));
+                return badRequest("Error uploading the picture.");
             }
         } else {
             return unauthorized("Unauthorized: Can not upload picture.");
@@ -122,25 +113,11 @@ public class HomeController {
             UserPhoto newPhoto = new UserPhoto(origionalFilePath, isPublic, false, user);
             String unusedPhotoUrl = newPhoto.getUnusedUserPhotoFileName();
             newPhoto.setUrl(unusedPhotoUrl);
-
-            String unusedAbsoluteFilePath = Paths.get(".").toAbsolutePath().normalize().toString() + ApplicationManager.getUserPhotoPath() + user.getUserid() + "/" + unusedPhotoUrl;
-
-            try {
-                // creates the photo directory for the user if does not exist
-                java.nio.file.Files.createDirectories(Paths.get(Paths.get(".").toAbsolutePath().normalize().toString() + ApplicationManager.getUserPhotoPath() + user.getUserid() + "/"));
-            } catch (IOException e) {
-                System.out.println(e);
-                return internalServerError("Oops, something went wrong.");
-            }
-
-            //Save the file, replacing the existing one if the name is taken
-            fileObject.copyTo(Paths.get(unusedAbsoluteFilePath), true);
-
-            //DB saving
-            newPhoto.save();
-            return ok(home.render(user));
+            UploadPhotoCommand uploadPhotoCommand = new UploadPhotoCommand(newPhoto, fileObject);
+            user.getCommandManager().executeCommand(uploadPhotoCommand);
+            return redirect(routes.HomeController.showhome());
         } else {
-            return badRequest(home.render(user));
+            return badRequest();
         }
     }
 
@@ -191,13 +168,13 @@ public class HomeController {
                     }
                     //DB saving
                     UserFactory.replaceProfilePicture(user.getUserid(), newPhoto);
-                    return ok(home.render(user));
+                    return redirect(routes.HomeController.showhome());
                 }
             }
-            return badRequest(home.render(user));
+            return badRequest();
         }
         else{
-            return unauthorized("Oops, you're not logged in.");
+            return redirect(routes.UserController.userindex());
         }
     }
 
@@ -219,7 +196,7 @@ public class HomeController {
             }
         }
         else{
-            return unauthorized("Oops, you're not logged in.");
+            return redirect(routes.UserController.userindex());
         }
     }
 
@@ -256,7 +233,7 @@ public class HomeController {
             }
         }
         else{
-            return unauthorized("Oops, you're not logged in.");
+            return redirect(routes.UserController.userindex());
         }
     }
 
@@ -275,7 +252,7 @@ public class HomeController {
             if (profilePhoto != null) {
                 if(user.getUserid() == profilePhoto.getUser().getUserid() || user.userIsAdmin()) {
                     UserFactory.replaceProfilePicture(user.getUserid(), profilePhoto);
-                    return ok(home.render(user));
+                    return redirect(routes.HomeController.showhome());
                 }
                 else{
                     return unauthorized("Oops! This is not your photo.");
@@ -285,7 +262,7 @@ public class HomeController {
                 return notFound("Invalid Picture selected");
             }
         }
-        return unauthorized("Oops! You are not logged in.");
+        return redirect(routes.UserController.userindex());
     }
 
     /**
@@ -317,7 +294,7 @@ public class HomeController {
             }
             return notFound("Invalid Picture selected");
         }
-        return unauthorized("Oops! You are not logged in.");
+        return redirect(routes.UserController.userindex());
     }
 
     /**

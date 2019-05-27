@@ -10,8 +10,12 @@ import java.util.List;
 
 public class UserAccessor {
 
-    public User getDefaultAdmin(){
-        return null;
+    public static User getDefaultAdmin(){
+        throw new UnsupportedOperationException();
+    }
+
+    public static User getById(int id) {
+        return User.find.byId(id);
     }
 
     public static Passport getPassport(int id) {
@@ -27,6 +31,15 @@ public class UserAccessor {
     }
 
     /**
+     * Finds a user in the database by their user id
+     * @param id the user id
+     * @return the user
+     */
+    public static User getUserById(int id) {
+        return User.find.byId(id);
+    }
+
+    /**
      * Gets a List of Users with a specific email.
      *
      * It should be a List of length 0 or 1, but you should still check
@@ -39,6 +52,17 @@ public class UserAccessor {
         return  User.find.query()
                     .where().eq("email", email.toLowerCase()).findList();
     }
+
+    public static User getUserByEmail(String email) {
+        List<User> users = getUsersFromEmail(email);
+        if (!users.isEmpty()) {
+            return users.get(0);
+        }
+        return null;
+    }
+
+    /** Update the user */
+    public static void update(User user) { user.update(); }
 
     /**
      * Gets the profile picture for a User. Returns null if they have no profile

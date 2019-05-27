@@ -1,15 +1,16 @@
 package controllers;
 
-import models.*;
+import models.Admin;
+import models.User;
+import models.UserPhoto;
 import play.libs.Json;
 import play.mvc.Http;
 import play.mvc.Result;
 import utilities.CountryUtils;
 import utilities.TestDatabaseManager;
-import utilities.UtilityFunctions;
 import views.html.users.userIndex;
 
-import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -51,9 +52,6 @@ public class UserController {
                 e.printStackTrace();
             }
         }
-
-
-
         List<User> users = User.find.all();
         List<Admin> admins = Admin.find.all();
         return ok(userIndex.render(users, admins,User.getCurrentUser(request)));
@@ -61,12 +59,33 @@ public class UserController {
 
     /**
      * Handles the ajax request to get a user.
-     * Returns the corresponding user as a json based on the login session.
+     * @return the corresponding user as a json based on the login session.
      */
     public Result getUser(Http.Request request){
         User user = User.getCurrentUser(request);
         if(user != null) {
             return ok(Json.toJson(user.getUserid()));
+        }
+        else{
+            return notFound();
+        }
+    }
+
+    /**
+     * Handles the ajax request to get a user.
+     * @return the corresponding user as a json based on the login session.
+     */
+    public Result getUserPhotosAjax(Http.Request request){
+        User user = User.getCurrentUser(request);
+        if(user != null) {
+            List<UserPhoto> userPhotos = user.getUserPhotos();
+            List<Integer> photoIds = new ArrayList<>();
+            if (userPhotos != null) {
+                for (UserPhoto photo: userPhotos) {
+                    photoIds.add(photo.photoId);
+                }
+            }
+            return ok(Json.toJson(photoIds));
         }
         else{
             return notFound();

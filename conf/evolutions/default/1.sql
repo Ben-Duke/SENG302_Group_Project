@@ -6,6 +6,7 @@
 create table admin (
   id                            bigint auto_increment not null,
   user_id                       integer,
+  user_id_to_edit               integer,
   is_default                    boolean default false not null,
   constraint pk_admin primary key (id)
 );
@@ -102,6 +103,7 @@ create table user (
   gender                        varchar(255),
   f_name                        varchar(255),
   l_name                        varchar(255),
+  undo_redo_error               boolean default false not null,
   is_admin                      boolean,
   creation_date                 timestamp not null,
   constraint uq_user_email unique (email),

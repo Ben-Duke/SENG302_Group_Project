@@ -59,6 +59,16 @@ public class CountryUtils {
     }
 
     /**
+     * Runs the methods for validating passports
+     * nationalities and destinations.
+     */
+    public static void validateUsedCountries() {
+        validatePassportCountries();
+        validateNationalityCountries();
+        validateDestinationCountries();
+    }
+
+    /**
      * Make api call. Set last updated date. Revalidate used countries
      */
     private static void reloadCountries() {
@@ -70,10 +80,7 @@ public class CountryUtils {
 
             lastUpdated = new Date();
 
-            validatePassportCountries();
-            validateNationalityCountries();
-            validateDestinationCountries();
-
+            validateUsedCountries();
 
             printLoadingCountriesMessage("SUCCEEDED");
 

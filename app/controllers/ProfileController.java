@@ -8,6 +8,7 @@ import io.ebean.DuplicateKeyException;
 import models.Nationality;
 import models.Passport;
 import models.User;
+import models.UserPhoto;
 import models.commands.Profile.EditProfileCommand;
 import play.data.DynamicForm;
 import play.data.Form;

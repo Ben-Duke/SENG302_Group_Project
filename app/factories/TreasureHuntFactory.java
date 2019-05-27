@@ -53,27 +53,4 @@ public class TreasureHuntFactory {
             user.getCommandManager().executeCommand(cmd);
         }
     }
-
-    /**
-     * The method to delete the Treasure Hunt.
-     * @param treasureHunt The Treasure Hunt to be edited
-     */
-    public void deleteTreasureHunt(TreasureHunt treasureHunt) {
-        treasureHunt.delete();
-    }
-
-    /**
-     * The method to view the Treasure Hunt.
-     * @param tHuntId The id of Treasure Hunt to be viewed
-     * @param user The user who wants to view this treasure hunt
-     */
-    public TreasureHunt viewTreasureHunt(int tHuntId, User user) {
-        if (User.find.byId(user.getUserid()) != null) {
-            TreasureHunt treasureHunt = TreasureHunt.find.byId(tHuntId);
-            return treasureHunt;
-        } else {
-            System.out.println("ERROR: You cannot delete this Treasure hunt as you do not belong here.");
-            return null;
-        }
-    }
 }

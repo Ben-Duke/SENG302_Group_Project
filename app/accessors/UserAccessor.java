@@ -1,8 +1,10 @@
 package accessors;
 
+import io.ebean.Ebean;
 import models.Nationality;
 import models.Passport;
 import models.User;
+import models.UserPhoto;
 
 import java.util.List;
 
@@ -56,4 +58,29 @@ public class UserAccessor {
 
     /** Update the user */
     public static void update(User user) { user.update(); }
+
+    /**
+     * Gets the profile picture for a User. Returns null if they have no profile
+     * photo.
+     *
+     * @param user The User to get the photo of.
+     * @return A UserPhoto representing the users profile picture.
+     * @throws io.ebean.DuplicateKeyException If the user has more than 1
+     *          profile picture (should never happen).
+     */
+    public static UserPhoto getProfilePhoto(User user) throws io.ebean.DuplicateKeyException {
+        List<UserPhoto> userProfilePhotoList = UserPhoto.find.query()
+                .where().eq("user", user)
+                .and().eq("isProfile", true)
+                .findList();
+
+        if (0 == userProfilePhotoList.size()) {
+            return null;
+        } else if (1 == userProfilePhotoList.size()) {
+            return userProfilePhotoList.get(0);
+        } else {
+            throw new io.ebean.DuplicateKeyException("Multiple profile photos.",
+                    new Throwable("Multiple profile photos."));
+        }
+    }
 }

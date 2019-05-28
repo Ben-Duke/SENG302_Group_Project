@@ -46,8 +46,8 @@ public class UserFactory {
 
     }
 
-    public boolean deletePhoto(int photoId){
-        return UserPhoto.deletePhoto(photoId);
+    public void deletePhoto(int photoId){
+         UserPhoto.deletePhoto(photoId);
     }
 
     public static void deleteNatsOnUser(int id, String nationalityId) {
@@ -315,8 +315,6 @@ public class UserFactory {
     }
 
     public static List<Passport> getUserPassports(int id){
-        //System.out.println(Passport.find.all().size());
-        //System.out.println(Nationality.find.all().size());
         return User.find.query().where().eq("userid", id).findOne().passports;
     }
 

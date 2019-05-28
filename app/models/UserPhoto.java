@@ -105,15 +105,8 @@ public class UserPhoto extends Model {
      * @param idOfPhoto
      * @return
      */
-    public static Boolean deletePhoto(int idOfPhoto){
-        Boolean deleted = false;
-        try {
-            UserPhoto.find.query().where().eq("photoId",idOfPhoto).delete();
-            deleted = true;
-        } catch(Exception error) {
-            error.printStackTrace();
-        }
-        return deleted;
+    public static void deletePhoto(int idOfPhoto){
+        UserPhoto.find.query().where().eq("photoId",idOfPhoto).delete();
     }
 
     /**

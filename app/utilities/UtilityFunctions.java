@@ -213,10 +213,6 @@ public class UtilityFunctions {
                         try {
                             nationality.save();
                         } catch (Exception error) {
-
-//                            System.out.println(error);
-
-
                             isInSuccessState = false;
                             System.out.println("Failed to save nationality: " +
                                     nationality.getNationalityName() +

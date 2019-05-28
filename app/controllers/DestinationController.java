@@ -696,12 +696,8 @@ public class DestinationController extends Controller {
         UserPhoto photo = UserPhoto.find.byId(photoId);
             if (photo != null) {
                 for (Destination destination : photo.getDestinations()) {
-                    System.out.println(photo.getPhotoId());
-                    //
                     unlinkPhotoFromDestination(request, photoId, destination.getDestId());
                 }
-
-                System.out.println("Dest size is " + photo.getDestinations().size());
                 UserPhoto.deletePhoto(photoId);
             }
 

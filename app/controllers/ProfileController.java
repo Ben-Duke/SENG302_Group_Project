@@ -4,6 +4,7 @@ import accessors.UserAccessor;
 import factories.UserFactory;
 import formdata.NatFormData;
 import formdata.UpdateUserFormData;
+import io.ebean.DataIntegrityException;
 import io.ebean.DuplicateKeyException;
 import models.Nationality;
 import models.Passport;
@@ -17,9 +18,7 @@ import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
-import utilities.UtilityFunctions;
 import views.html.users.profile.*;
-
 import javax.inject.Inject;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -42,22 +41,19 @@ public class ProfileController extends Controller {
 
     public Result deletePhoto(Integer photoId, Boolean userInput){
         UserFactory factory = new UserFactory();
-        System.out.println("Called delete photo");
         UserPhoto photo = UserPhoto.find.byId(photoId);
-        System.out.println("User option is " + userInput);
-        System.out.println(userInput);
-
-        if(photo.getIsProfile() && (userInput != true)){
-            return  badRequest("Is profile picture ask user");
+        if (photo != null && photo.getIsProfile() && (!userInput)) {
+            return badRequest("Is profile picture ask user");
         }
-        if(factory.deletePhoto(photoId) && (userInput == true)){
-            return ok("Deleted the photo");
-        }else{
 
+        try {
+            factory.deletePhoto(photoId);
+        } catch (DataIntegrityException e){
             return badRequest("Failed to delete image");
         }
-
+        return ok();
     }
+
     public Result updateProfile(Http.Request request){
         List<User> users = User.getCurrentUser(request, true);
         Boolean isAdmin = false;
@@ -263,13 +259,8 @@ public class ProfileController extends Controller {
         Form<NatFormData> userForm = formFactory.form(NatFormData.class).bindFromRequest(request);
 
         if (userForm.hasErrors()) {
-
-//            int user = UserFactory.getCurrentUserId(request);
-//            List<Nationality> nationalities = Nationality.find.all();
-//            List<Passport> passports = Passport.find.all();
             flash("error", "Need at least one nationality, " +
                     "please add another nationality before deleting the one you selected");
-            //return badRequest(updateNatPass.render(userForm, nationalities, passports, user));
 
         }else {
             String nationalityID = userForm.get().nationalitydelete;

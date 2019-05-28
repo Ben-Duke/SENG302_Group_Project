@@ -225,6 +225,48 @@
 
 
 
+        <div id="confirmDeleteProfilePhotoModal" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+                    <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title" id="deleteTitle">Delete Destination</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p id="message">This image is your profile picture, do you want to delete it? This will also unlink it from any
+                        destinations</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button id="yesDeleteProfilePhoto" class="btn btn-danger" data-dismiss="modal">Yes</button>
+                        <button id="noCloseDeleteProfilePhotoButton" class="btn btn-primary" data-dismiss="modal">No</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+
+        <div id="confirmDeletePhotoModal" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+                    <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title" id="deleteTitle">Delete Destination</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p id="message">This image is linked to destination(s), do you want to
+                            unlink it from these places?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button id="yesDeletePhoto" class="btn btn-danger" data-dismiss="modal">Yes</button>
+                        <button id="noCloseDeletePhotoButton" class="btn btn-primary" data-dismiss="modal">No</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
 
         <br>
 
@@ -235,13 +277,13 @@
             </div>
 
 
-            <div class="container">
+            <div id="userImageArray" class="container">
                 <div class="row">
                 @for(i <- 0 to 2) {
                     <div class="col-sm-2">
 
-                    @if(i < user.getUserPhotos.size ){
-                        <a id="addPhotoLink" href="#" data-toggle="modal" data-target="#destination-carousel">
+                    @if(i < user.getUserPhotos.size() ){
+                        <a id="addPhotoLink@user.getUserPhotos.get(i).getPhotoId()" href="#" data-toggle="modal" data-target="#destination-carousel">
                             <div class="container" id="imagesContainer" >
                                 <div class="overlay">
                                     <i class="icon" title="User Profile">
@@ -269,7 +311,7 @@
                     <div class="col-sm-2">
 
                     @if(i < user.getUserPhotos.size() ){
-                        <a id="addPhotoLink" href="#" data-toggle="modal" data-target="#destination-carousel">
+                        <a id="addPhotoLink@user.getUserPhotos.get(i).getPhotoId()" href="#" data-toggle="modal" data-target="#destination-carousel">
                             <div class="container" id="imagesContainer" >
                                 <div class="overlay">
                                     <i class="icon" title="User Profile">
@@ -296,7 +338,7 @@
                     <div class="col-sm-2">
 
                     @if(i < user.getUserPhotos.size() ){
-                        <a id="addPhotoLink" href="#" data-toggle="modal" data-target="#destination-carousel">
+                        <a id="addPhotoLink@user.getUserPhotos.get(i).getPhotoId()" href="#" data-toggle="modal" data-target="#destination-carousel">
                             <div class="container" id="imagesContainer" >
                                 <div class="overlay">
                                     <i class="icon" title="User Profile">
@@ -325,22 +367,24 @@
                     <div class="container">
                         <div class="carousel slide" id="myslider" data-ride="carousel" data-interval="false">
                             <ol class="carousel-indicators">
-                                <li data-target="#myslider" data-slide-to="0" class="active"></li>
+                                <li data-target="#myslider" id="slider" size ="@(user.getUserPhotos().length -1)" data-slide-to="@(user.getUserPhotos().length -1)
+                                " class="active"></li>
                                 @for(i <- 1 to user.getUserPhotos().length -1) {
-                                    <li data-target="#myslider" data-slide-to="@i"></li>
+                                    <li id="item@i" data-target="#myslider" data-slide-to="@i"></li>
                                 }
+
                             </ol>
-                            <div class="carousel-inner">
+                            <div id="carousel-inner" class="carousel-inner">
                                 @for(photo <- user.getUserPhotos()) {
                                     <!-- Sets the first image to be the first image displayed. To be changed to the image clicked-->
                                     @if(photo == user.getUserPhotos().get(0)){
-                                        <div class="item active">
+                                        <div id="caro-@photo.getPhotoId" class="item active">
                                         } else{
-                                        <div class="item">
+                                        <div id="caro-@photo.getPhotoId" class="item">
                                         }
                                     @*<a href="#" data-toggle="modal" data-target=#@photo.getPhotoId()>*@
                                         @*<img id="carouselImage" src="@{routes.HomeController.index(photo.getUrlWithPath)}" width="1280">*@
-                                    <img class="center" id="carouselImage" src="@{routes.HomeController.index(photo.getUrlWithPath)}">
+                                    <img class="center" id="carouselImage@photo.getPhotoId()" src="@{routes.HomeController.index(photo.getUrlWithPath)}">
                                     @*</a>*@
 @*                                    <div class="carousel-caption">
                                         <h2>insert caption here</h2>
@@ -349,6 +393,9 @@
                                     <a class="btn btn-primary" id="setProfilePicture"
                                        onclick="setProfilePictureRequest(
                                                 @photo.getPhotoId())">Set as Profile Picture</a>
+
+                                    <button class="btn btn-danger" onclick="deletePhotoRequest(
+                                            '@routes.ProfileController.deletePhoto(photo.getPhotoId(),false)', @photo.getPhotoId(), '@photo.getUrl(), false')">Delete Photo</button></td>
                                     @if(photo.isPublic()) {
                                             <a class="btn btn-primary" id="makePrivate" href="@routes.HomeController.makePicturePublic(photo.getPhotoId, 0)" >Make Private</a>
                                         } else {

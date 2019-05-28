@@ -180,7 +180,6 @@ public class TravelPartnerController {
                     }
                 } catch (ParseException e) {
                     //Do Nothing
-                    //                System.out.println(e);
                 }
             }
         }

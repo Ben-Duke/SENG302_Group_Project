@@ -4,6 +4,7 @@ import accessors.UserAccessor;
 import factories.UserFactory;
 import formdata.NatFormData;
 import formdata.UpdateUserFormData;
+import io.ebean.DataIntegrityException;
 import io.ebean.DuplicateKeyException;
 import models.Nationality;
 import models.Passport;
@@ -18,7 +19,6 @@ import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
 import views.html.users.profile.*;
-
 import javax.inject.Inject;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -36,9 +36,24 @@ public class ProfileController extends Controller {
     /**
      * If the user is logged in, renders the update profile page.
      * If the user is not logged in, returns an error.
-     * @param request The HTTP request
      * @return update profile page or error page
      */
+
+    public Result deletePhoto(Integer photoId, Boolean userInput){
+        UserFactory factory = new UserFactory();
+        UserPhoto photo = UserPhoto.find.byId(photoId);
+        if (photo != null && photo.getIsProfile() && (!userInput)) {
+            return badRequest("Is profile picture ask user");
+        }
+
+        try {
+            factory.deletePhoto(photoId);
+        } catch (DataIntegrityException e){
+            return badRequest("Failed to delete image");
+        }
+        return ok();
+    }
+
     public Result updateProfile(Http.Request request){
         List<User> users = User.getCurrentUser(request, true);
         Boolean isAdmin = false;
@@ -244,13 +259,8 @@ public class ProfileController extends Controller {
         Form<NatFormData> userForm = formFactory.form(NatFormData.class).bindFromRequest(request);
 
         if (userForm.hasErrors()) {
-
-//            int user = UserFactory.getCurrentUserId(request);
-//            List<Nationality> nationalities = Nationality.find.all();
-//            List<Passport> passports = Passport.find.all();
             flash("error", "Need at least one nationality, " +
                     "please add another nationality before deleting the one you selected");
-            //return badRequest(updateNatPass.render(userForm, nationalities, passports, user));
 
         }else {
             String nationalityID = userForm.get().nationalitydelete;

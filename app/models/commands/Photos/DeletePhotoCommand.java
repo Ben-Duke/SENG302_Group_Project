@@ -6,7 +6,7 @@ import controllers.DestinationController;
 import models.Destination;
 import models.UserPhoto;
 import models.Visit;
-import models.commands.UndoableCommand;
+import models.commands.general.UndoableCommand;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -52,5 +52,9 @@ public class DeletePhotoCommand extends UndoableCommand {
      */
     public void redo() {
         execute();
+    }
+
+    public String toString() {
+        return this.userPhoto.getUrl() + "Deleting";
     }
 }

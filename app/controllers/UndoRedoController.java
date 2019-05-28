@@ -21,6 +21,7 @@ public class UndoRedoController extends Controller {
             return redirect(routes.UserController.userindex());
         }
         commandManager = user.getCommandManager();
+        commandManager.isUndoStackEmpty();
         String result = commandManager.undo();
 
         return ok(result);

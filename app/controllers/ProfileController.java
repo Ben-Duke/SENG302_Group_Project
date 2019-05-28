@@ -9,6 +9,7 @@ import models.Nationality;
 import models.Passport;
 import models.User;
 import models.UserPhoto;
+import models.commands.Photos.DeletePhotoCommand;
 import models.commands.Profile.EditProfileCommand;
 import play.data.DynamicForm;
 import play.data.Form;
@@ -44,8 +45,11 @@ public class ProfileController extends Controller {
     public Result deletePhoto(Http.Request request, Integer photoId){
         UserFactory factory = new UserFactory();
         System.out.println("Called delete photo");
+        User user = User.getCurrentUser(request);
+        DeletePhotoCommand deletePhotoCommand = new DeletePhotoCommand(UserPhoto.find.byId(photoId));
+        user.getCommandManager().executeCommand(deletePhotoCommand);
         if(factory.deletePhoto(photoId)){
-        //if(true){
+
             System.out.println("Photo deletion worked sending ok request back");
             return ok("Deleted the photo");
         }else{

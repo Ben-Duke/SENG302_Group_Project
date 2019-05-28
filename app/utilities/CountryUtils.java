@@ -52,6 +52,8 @@ public class CountryUtils {
 
             if (lastUpdated.compareTo(yesterdayDate) < 0) {
                 reloadCountries();
+            } else {
+                validateUsedCountries();
             }
 
         }
@@ -81,11 +83,11 @@ public class CountryUtils {
 
             validateUsedCountries();
 
-            logger.info("SUCCEEDED");
+            printLoadingCountriesMessage("SUCCEEDED");
 
         } catch (Exception e) {
 
-            logger.error("FAILED");
+            printLoadingCountriesMessage("FAILED");
 
             if (countries == null) {
                 countries = new ArrayList<>();
@@ -117,7 +119,12 @@ public class CountryUtils {
                 countries != null,
                 message);
 
-        logger.info(formattedStr);
+        if (message.equals("FAILED")) {
+            logger.error(formattedStr);
+        } else {
+            logger.info(formattedStr);
+        }
+
     }
 
     /**

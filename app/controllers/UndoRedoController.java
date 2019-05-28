@@ -15,7 +15,6 @@ public class UndoRedoController extends Controller {
     private CommandManager commandManager;
 
     public Result undo(Http.Request request) {
-        logger.debug("undo controller called");
 
         User user = User.getCurrentUser(request);
         if (user == null) {

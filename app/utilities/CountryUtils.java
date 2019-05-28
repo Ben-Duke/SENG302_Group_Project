@@ -54,6 +54,7 @@ public class CountryUtils {
                 reloadCountries();
             }
 
+            validateUsedCountries();
         }
     }
 

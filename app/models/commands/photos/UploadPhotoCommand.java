@@ -61,7 +61,7 @@ public class UploadPhotoCommand extends UndoableCommand {
      * @return String result of command
      */
     public String toString() {
-        return this.userPhoto.getUrl() + " uploading";
+        return "Photo " + this.userPhoto.getUrl() + " uploading";
     }
 
 }

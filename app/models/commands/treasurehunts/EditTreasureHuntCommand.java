@@ -49,6 +49,6 @@ public class EditTreasureHuntCommand extends UndoableCommand {
      * @return String result of command
      */
     public String toString() {
-        return "Trip " + this.actualTreasureHunt.getTitle() + " editing";
+        return "Treasure hunt " + this.actualTreasureHunt.getTitle() + " editing";
     }
 }

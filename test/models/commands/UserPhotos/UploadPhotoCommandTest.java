@@ -4,7 +4,7 @@ import controllers.ApplicationManager;
 
 import models.User;
 import models.UserPhoto;
-import models.commands.UploadPhotoCommand;
+import models.commands.photos.UploadPhotoCommand;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

@@ -3,7 +3,7 @@ package models.commands.treasurehunts;
 import accessors.TreasureHuntAccessor;
 import accessors.UserAccessor;
 import models.TreasureHunt;
-import models.commands.UndoableCommand;
+import models.commands.general.UndoableCommand;
 
 /** Command to delete a treasure hunt */
 public class DeleteTreasureHuntCommand extends UndoableCommand {

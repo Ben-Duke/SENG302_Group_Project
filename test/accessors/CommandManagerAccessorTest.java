@@ -66,13 +66,4 @@ public class CommandManagerAccessorTest extends WithApplication {
         int sizeAfter = commandManagers.size();
         assertEquals(sizeBefore+1, sizeAfter);
     }
-
-    @Test
-    public void resetCommandManager() {
-        CommandManager oldCM = CommandManagerAccessor.getCommandManagerByEmail("TestEmail");
-        oldCM.setUser(User.find.byId(1));
-        CommandManagerAccessor.resetCommandManager("TestEmail");
-        CommandManager newCM = CommandManagerAccessor.getCommandManagerByEmail("TestEmail");
-        assertNotEquals(oldCM.getUser(), newCM.getUser());
-    }
 }

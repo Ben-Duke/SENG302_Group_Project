@@ -56,6 +56,7 @@ public class CommandManager extends BaseModel {
             try {
                 undoCommand.undo();
                 redoStack.push(undoCommand);
+                logger.debug("Undo: " + undoStack + "\nRed0: " + redoStack);
                 return undoCommand.toString();
             } catch(Exception exception){
                 user.setUndoRedoError(true);

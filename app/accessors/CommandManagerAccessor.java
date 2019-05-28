@@ -28,19 +28,6 @@ public class CommandManagerAccessor {
         return commandManager;
     }
 
-    /**
-     * The method to reset the Command Manager so that all the undo redo actions are cleared.
-     * @param email
-     */
-    public static void resetCommandManager(String email) {
-        CommandManager newCommandManager = new CommandManager();
-        if (commandManagers.containsKey(email)) {
-            commandManagers.replace(email, newCommandManager);
-        } else {
-            commandManagers.put(email, newCommandManager);
-        }
-    }
-
     public static void update(CommandManager commandManager) {
         commandManager.update();
     }

@@ -236,7 +236,9 @@ public class HomeController {
         }
     }
 
-
+    public Result getGenericProfileImage(Http.Request request){
+        return ok((new File("public/images/Generic.png")).getPath());
+    }
 
     /**
      * Replaces the profile picture with the photo corresponding to the photoId given.

@@ -1,6 +1,7 @@
 package controllers;
 
 import accessors.CommandManagerAccessor;
+import accessors.UserAccessor;
 import factories.LoginFactory;
 import formdata.LoginFormData;
 import models.User;
@@ -89,6 +90,7 @@ public class LoginController {
         User user = User.getCurrentUser(request);
         if(user != null) {
             List<User> users = User.getCurrentUser(request, true);
+            users.get(0).getCommandManager().resetUndoRedoStack();
             if (users.get(0).getUserid() != users.get(1).getUserid()) {
                 return redirect(routes.AdminController.setUserBackToAdmin(users.get(1).getUserid()));
             }

@@ -87,4 +87,9 @@ public class CommandManager extends BaseModel {
     public boolean isRedoStackEmpty() {
         return redoStack.isEmpty();
     }
+
+    public void resetUndoRedoStack() {
+        this.undoStack = new ArrayDeque<>();
+        this.redoStack = new ArrayDeque<>();
+    }
 }

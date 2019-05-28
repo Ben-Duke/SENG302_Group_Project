@@ -1,7 +1,7 @@
 package accessors;
 
 import models.User;
-import models.commands.CommandManager;
+import models.commands.general.CommandManager;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -12,6 +12,7 @@ import play.db.evolutions.Evolution;
 import play.db.evolutions.Evolutions;
 import play.inject.guice.GuiceApplicationBuilder;
 import play.test.WithApplication;
+
 
 import java.util.Map;
 

@@ -16,7 +16,7 @@ https://csse-s302g8.canterbury.ac.nz:8443
 
 Sonarqube Reports:
 ```
-https://csse-s302g8.canterbury.ac.nz:8080
+http://csse-s302g8.canterbury.ac.nz:8080
 ```
 
 ## Basic Project Structure
@@ -45,7 +45,7 @@ And run the server
 ```bash
 ./bin/team-800
 ```
-And open <http://localhost:9000/>
+And open <https://localhost:9000/>
 
 ## Login details
 ##### We reccomend you use the test user to test our system
@@ -72,6 +72,18 @@ And open <http://localhost:9000/>
 * An admin can accept or reject modification requests for public destinations.
 * To get back to the main page Logout from the navigation bar.
 * Note: Home/TravelEA buttons navigate to the profile page but only if you are logged in.
+
+## How to run tests
+Clone the repository as above
+```bash
+git clone https://eng-git.canterbury.ac.nz/seng302-2019/team-800
+```
+
+Navigate to the root of the cloned repository and execute the test command
+```bash
+sbt test
+```
+All tests will run and a summary will be displayed. This will take a few minutes
 
 ## Attribution
 

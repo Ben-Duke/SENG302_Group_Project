@@ -1,6 +1,10 @@
 package controllers;
 
 
+import accessors.DestinationAccessor;
+import accessors.TreasureHuntAccessor;
+import accessors.UserAccessor;
+import accessors.UserAccessor;
 import models.Destination;
 import models.TreasureHunt;
 import models.User;
@@ -14,10 +18,12 @@ import play.db.Databases;
 import play.db.evolutions.Evolution;
 import play.db.evolutions.Evolutions;
 import play.inject.guice.GuiceApplicationBuilder;
+import play.libs.Json;
 import play.mvc.Http;
 import play.mvc.Result;
 import play.test.Helpers;
 import play.test.WithApplication;
+import testhelpers.BaseTestWithApplicationAndDatabase;
 import utilities.TestDatabaseManager;
 
 import java.util.HashMap;
@@ -33,51 +39,12 @@ import static play.mvc.Http.Status.SEE_OTHER;
 import static play.mvc.Http.Status.UNAUTHORIZED;
 import static play.test.Helpers.*;
 
-public class TreasureHuntControllerTest extends WithApplication {
-
-    /**
-     * The fake database
-     */
-    Database database;
+public class TreasureHuntControllerTest extends BaseTestWithApplicationAndDatabase {
 
     /**
      * Instance of the TreasureHuntController
      * */
-    TreasureHuntController treasureHuntController = new TreasureHuntController();
-
-    /**
-     * Sets up the fake database before each test
-     */
-    @Before
-    public void setupDatabase() {
-        database = Databases.inMemory();
-        Evolutions.applyEvolutions(database, Evolutions.forDefault(new Evolution(
-                1,
-                "create table test (id bigint not null, name varchar(255));",
-                "drop table test;"
-        )));
-        ApplicationManager.setUserPhotoPath("/test/resources/test_photos/user_");
-        ApplicationManager.setIsTest(true);
-        TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
-        testDatabaseManager.populateDatabase();
-    }
-
-    /**
-     * Clears the fake database after each test
-     */
-    @After
-    public void shutdownDatabase() {
-        Evolutions.cleanupEvolutions(database);
-        database.shutdown();
-    }
-
-    /**
-     * Gives the built GUI application
-     */
-    @Override
-    protected Application provideApplication() {
-        return new GuiceApplicationBuilder().build();
-    }
+    private TreasureHuntController treasureHuntController = new TreasureHuntController();
 
     /**
      * Test for getting to the index treasure hunts page.
@@ -511,5 +478,131 @@ public class TreasureHuntControllerTest extends WithApplication {
         assertEquals(SEE_OTHER, result.status());
         //User with id 2 should still have only one treasure hunt
         assertEquals(1, User.find.byId(2).getTreasureHunts().size());
+    }
+
+    @Test
+    public void undoEditTreasureHunt() {
+        User user = UserAccessor.getById(2);
+        TreasureHunt treasureHunt = user.getTreasureHunts().get(0);
+        Map<String, String> formData = new HashMap<>();
+        formData.put("title", "test123");
+        formData.put("riddle", "The garden city");
+        formData.put("destination", "Christchurch");
+        formData.put("startDate", "2019-04-17");
+        formData.put("endDate", "2019-12-25");
+        Http.RequestBuilder fakeRequest = Helpers.fakeRequest()
+                .bodyForm(formData)
+                .method(Helpers.POST)
+                .uri("/users/treasurehunts/edit/save/" + treasureHunt.thuntid)
+                .session("connected", "2");
+        fakeRequest = CSRFTokenHelper.addCSRFToken(fakeRequest);
+        Helpers.route(app, fakeRequest);
+
+        // Undo the edit
+        Http.RequestBuilder undoRequest = Helpers.fakeRequest()
+                .method(PUT)
+                .uri("/undo").session("connected", "2");
+        Helpers.route(app, undoRequest);
+
+        user = UserAccessor.getById(2);
+        assertEquals(new TreasureHunt(treasureHunt), new TreasureHunt(user.getTreasureHunts().get(0)));
+    }
+
+    @Test
+    public void redoEditTreasureHunt() {
+        User user = UserAccessor.getById(2);
+        int tHuntId = user.getTreasureHunts().get(0).thuntid;
+        Map<String, String> formData = new HashMap<>();
+        formData.put("title", "test123");
+        formData.put("riddle", "The garden city");
+        formData.put("destination", "Christchurch");
+        formData.put("startDate", "2019-04-17");
+        formData.put("endDate", "2019-12-25");
+        Http.RequestBuilder fakeRequest = Helpers.fakeRequest()
+                .bodyForm(formData)
+                .method(Helpers.POST)
+                .uri("/users/treasurehunts/edit/save/" + tHuntId)
+                .session("connected", "2");
+        fakeRequest = CSRFTokenHelper.addCSRFToken(fakeRequest);
+        Helpers.route(app, fakeRequest);
+
+        // Undo the edit
+        Http.RequestBuilder undoRequest = Helpers.fakeRequest()
+                .method(PUT)
+                .uri("/undo").session("connected", "2");
+        Helpers.route(app, undoRequest);
+
+        // Redo the edit
+        Http.RequestBuilder redoRequest = Helpers.fakeRequest()
+                .method(PUT)
+                .uri("/redo").session("connected", "2");
+        Helpers.route(app, redoRequest);
+
+        user = UserAccessor.getById(2);
+        TreasureHunt treasureHunt = getTreasureHuntFromMap(formData);
+        assertEquals(treasureHunt, new TreasureHunt(user.getTreasureHunts().get(0)));
+    }
+
+    private TreasureHunt getTreasureHuntFromMap(Map<String, String> formMap) {
+        TreasureHunt treasureHunt = new TreasureHunt();
+        treasureHunt.setTitle( formMap.get("title"));
+        treasureHunt.setDestination(
+                DestinationAccessor.getPublicDestinationbyName(formMap.get("destination"))
+        );
+        treasureHunt.setRiddle(formMap.get("riddle"));
+        treasureHunt.setStartDate(formMap.get("startDate"));
+        treasureHunt.setEndDate(formMap.get("endDate"));
+        return treasureHunt;
+    }
+
+    @Test
+    public void undoDeleteTreasureHunt() {
+        User user = UserAccessor.getById(2);
+        int nTreasureHunts = user.getTreasureHunts().size();
+        Integer tHuntId = user.getTreasureHunts().get(0).thuntid;
+
+        // Delete
+        Http.RequestBuilder fakeRequest = Helpers.fakeRequest().method(Helpers.GET).uri("/users/treasurehunts/delete/" + tHuntId).session("connected", "2");
+        Helpers.route(app, fakeRequest);
+        // Undo the delete
+        Http.RequestBuilder undoRequest = Helpers.fakeRequest()
+                .method(PUT)
+                .uri("/undo").session("connected", "2");
+        Helpers.route(app, undoRequest);
+        user = UserAccessor.getById(2);
+        assertEquals(nTreasureHunts, user.getTreasureHunts().size());
+    }
+
+    @Test
+    public void redoDeleteTreasureHuntCommand() {
+        User user = UserAccessor.getById(2);
+        int nTreasureHunts = user.getTreasureHunts().size();
+        Integer tHuntId = user.getTreasureHunts().get(0).thuntid;
+
+        // Delete
+        Http.RequestBuilder fakeRequest = Helpers.fakeRequest().method(Helpers.GET).uri("/users/treasurehunts/delete/" + tHuntId).session("connected", "2");
+        Helpers.route(app, fakeRequest);
+        user = UserAccessor.getById(2);
+        System.out.println(user.getTreasureHunts().size());
+        // Undo the delete
+        Http.RequestBuilder undoRequest = Helpers.fakeRequest()
+                .method(PUT)
+                .uri("/undo").session("connected", "2");
+        Helpers.route(app, undoRequest);
+
+        user = UserAccessor.getById(2);
+        System.out.println(user.getTreasureHunts().size());
+
+        // Redo the delete
+        Http.RequestBuilder redoRequest = Helpers.fakeRequest()
+                .method(PUT)
+                .uri("/redo").session("connected", "2");
+        Helpers.route(app, redoRequest);
+
+        user = UserAccessor.getById(2);
+        System.out.println(user.getTreasureHunts().size());
+
+        user = UserAccessor.getById(2);
+        assertEquals(nTreasureHunts-1, user.getTreasureHunts().size());
     }
 }

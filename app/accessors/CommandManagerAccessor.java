@@ -1,11 +1,9 @@
 package accessors;
 
-import models.commands.CommandManager;
+import models.commands.general.CommandManager;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 public class CommandManagerAccessor {
 
@@ -25,6 +23,7 @@ public class CommandManagerAccessor {
 
     private static CommandManager getNewCommandManager(String email) {
         CommandManager commandManager = new CommandManager();
+        commandManager.setUser(UserAccessor.getUserByEmail(email));
         commandManagers.put(email, commandManager);
         return commandManager;
     }
@@ -44,5 +43,9 @@ public class CommandManagerAccessor {
 
     public static void update(CommandManager commandManager) {
         commandManager.update();
+    }
+
+    public static void resetCommandManagers() {
+        commandManagers = new HashMap<>();
     }
 }

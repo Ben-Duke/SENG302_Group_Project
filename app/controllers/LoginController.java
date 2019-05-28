@@ -86,13 +86,16 @@ public class LoginController {
      * @return The user index page
      */
     public Result logoutrequest(Http.Request request){
-        List<User> users = User.getCurrentUser(request, true);
-        // Resets/Clears the Command Manager for Undo/Redo actions
-        CommandManagerAccessor.resetCommandManager(users.get(0).getEmail());
-        if (users.get(0).getUserid() != users.get(1).getUserid()) {
-            return redirect(routes.AdminController.setUserBackToAdmin(users.get(1).getUserid()));
+        User user = User.getCurrentUser(request);
+        if(user != null) {
+            List<User> users = User.getCurrentUser(request, true);
+            if (users.get(0).getUserid() != users.get(1).getUserid()) {
+                return redirect(routes.AdminController.setUserBackToAdmin(users.get(1).getUserid()));
+            }
+            return redirect(routes.UserController.userindex())
+                    .removingFromSession(request, "connected");
+        } else {
+            return redirect(routes.UserController.userindex());
         }
-        return redirect(routes.UserController.userindex())
-                              .removingFromSession(request, "connected");
     }
 }

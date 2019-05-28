@@ -1,15 +1,19 @@
 package controllers;
 
+import accessors.UserAccessor;
 import factories.UserFactory;
 import formdata.NatFormData;
 import formdata.UpdateUserFormData;
+import io.ebean.DuplicateKeyException;
 import models.Nationality;
 import models.Passport;
 import models.User;
+import models.UserPhoto;
 import models.commands.Profile.EditProfileCommand;
 import play.data.DynamicForm;
 import play.data.Form;
 import play.data.FormFactory;
+import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
@@ -53,7 +57,7 @@ public class ProfileController extends Controller {
             String[] gendersArray = {"Male", "Female", "Other"};
             List gendersList = Arrays.asList(gendersArray);
 
-            return ok(views.html.users.profile.updateProfile.render(updateUserForm, gendersList,user, isAdmin));
+            return ok(updateProfile.render(updateUserForm, gendersList,user, isAdmin));
         }
         else{
             return redirect(routes.UserController.userindex());
@@ -91,7 +95,7 @@ public class ProfileController extends Controller {
                 //bad request, errors present
                 String[] gendersArray = {"Male", "Female", "Other"};
                 List gendersList = Arrays.asList(gendersArray);
-                return badRequest(views.html.users.profile.updateProfile.render(updateProfileForm, gendersList,user, isAdmin));
+                return badRequest(updateProfile.render(updateProfileForm, gendersList, user, isAdmin));
             }
         } else{
             return redirect(routes.UserController.userindex());
@@ -281,6 +285,41 @@ public class ProfileController extends Controller {
             return redirect(routes.UserController.userindex());
         }
         return redirect(routes.ProfileController.updateNatPass());
+    }
+
+    /**
+     * AJAX endpoint to check if profile picture exists
+     * @param request the HTTP request
+     * @return a HTTP result with a body containing JSON
+     */
+    public Result isProfilePictureSet(Http.Request request) {
+        User user = User.getCurrentUser(request);
+
+
+        if(user != null) {
+            UserPhoto profilePicture = null;
+            try {
+                profilePicture =  UserAccessor.getProfilePhoto(user);
+
+            } catch (DuplicateKeyException e) {
+                System.out.println("ERROR: duplicate profile photos");
+            }
+
+            String resultFormat = "{\"isProfilePicSet\": %s}";
+            String body = null;
+
+            if (profilePicture == null) {
+                body = String.format(resultFormat, false);
+            } else {
+                body = String.format(resultFormat, true);
+            }
+
+
+            return ok(Json.parse(body));
+        } else {
+            return unauthorized("Oops! You are not logged in.");
+        }
+
     }
 
 }

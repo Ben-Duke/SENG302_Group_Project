@@ -1,13 +1,12 @@
 package models;
 
 import accessors.CommandManagerAccessor;
-import accessors.UserAccessor;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.ebean.ExpressionList;
 import io.ebean.Finder;
 import io.ebean.Model;
 import io.ebean.annotation.CreatedTimestamp;
-import models.commands.CommandManager;
+import models.commands.general.CommandManager;
 import org.mindrot.jbcrypt.BCrypt;
 import play.data.format.Formats;
 import play.mvc.Http;
@@ -65,6 +64,12 @@ public class User extends Model implements Comparable<User> {
      * The last name of the user
      */
     public String lName;
+
+    /**
+     * True if there was an error undoing or redoing the stack, false otherwise.
+     */
+    private boolean undoRedoError;
+
     /**
      * The passport of the user.
      */
@@ -282,6 +287,14 @@ public class User extends Model implements Comparable<User> {
 
     public void setCreationDate(Date creationDate) {
         this.creationDate = creationDate;
+    }
+
+    public boolean isUndoRedoError() {
+        return undoRedoError;
+    }
+
+    public void setUndoRedoError(boolean undoRedoError) {
+        this.undoRedoError = undoRedoError;
     }
 
     public List<Nationality> getNationality() {

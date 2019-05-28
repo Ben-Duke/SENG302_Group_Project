@@ -212,3 +212,11 @@
     to {bottom: 0; opacity: 0;}
 }
 
+#undoButton {
+    cursor: pointer;
+}
+
+#redoButton {
+    cursor: pointer;
+}
+

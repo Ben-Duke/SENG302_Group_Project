@@ -1,7 +1,13 @@
+/**
+ * Initilizes the page.
+ */
+this.initSetProfilePicToDefaultButton();
+
 var croppedCanvas;
 var filename;
 var isExistingPhoto = false;
 var photoIdToEdit;
+
 
 /**
  * This function is called when an image file is chosen and uploaded by the user.
@@ -49,8 +55,6 @@ var loadFile = function (event) {
             }
         })
     }
-
-
 };
 
 /**
@@ -316,6 +320,117 @@ function sendLinkDestinationRequest(url, photoId, destId) {
             toggleLinkButtonDisplays(destId, photoId)
         }
     })
+}
+
+/**
+ * Shows an error message to the user in the set profile pic modal.
+ *
+ * @param message A String of the message to show the user.
+ */
+function showPlaceHolderImageError(message) {
+    const infoAlert = document.querySelector("#setProfilePictureToDefaultError");
+
+    infoAlert.classList.remove('hiddenDiv');
+    infoAlert.classList.remove('alert-success');
+    infoAlert.classList.add('alert-danger');
+    infoAlert.textContent = message;
+}
+
+/**
+ * Function to hide the errors shown if setting the profile picture to the placeholder
+ * fails, after a set timeout.
+ *
+ * @param delayMS An integer, milliseconds after which to hide the error.
+ */
+function hideErrorDivDelay(delayMS) {
+    const infoAlert = document.querySelector("#setProfilePictureToDefaultError");
+
+    setTimeout(() => {
+        infoAlert.classList.add('hiddenDiv');
+    }, delayMS);
+}
+
+/**
+ * Function to set up the event handler for clicking on the "Use Placeholder
+ * Picture" button.
+ *
+ * Event fires an ajax request to set the users profile pic to the placeholder.
+ * If it a status 200 is received it refreshes the page to show changes.
+ * If not status 200 the page shows some error that hides after 5 seconds.
+ */
+function initUseDefaultProfilePicButtonEventHandler() {
+    const setProfilePicDefaultBtn = document
+                          .querySelector('#change-profile-photo-to-placeholder');
+
+    setProfilePicDefaultBtn.addEventListener('click', (event) => {
+        fetch('/users/home/profilePicture1/removeProfilePictureStatus1', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': '*',
+                'Csrf-Token': "nocheck"
+            },
+            body: JSON.stringify("test")
+        })
+            .then(res => {
+                if (res.status === 500) {
+                    this.showPlaceHolderImageError("Internal server error, try again later.");
+                    this.hideErrorDivDelay(5000);
+                } else if (res.status === 400) {
+                    this.showPlaceHolderImageError("Bad request, you are already using the " +
+                                                            "placeholder image.");
+                    this.hideErrorDivDelay(5000);
+                } else if (res.status === 200) {
+                    window.location = '/users/home' //refresh the page to show changes
+                }
+            })
+            .catch(err => {
+                this.showPlaceHolderImageError("Unknown error occurred, try again later.");
+                this.hideErrorDivDelay(5000);
+            });
+    });
+}
+
+/**
+ * Sets the "use placeholder image" buttons visibility to visible if the user
+ * has a profile picture, else it hides the button.
+ *
+ * Sends an AJAX request.
+ *
+ */
+function initSetProfilePicToDefaultButtonVisibility() {
+    const setProfilePicDefaultBtn = document
+                        .querySelector('#change-profile-photo-to-placeholder');
+    const urlIsProfilePicSet = "/users/profilepicture/isSet";
+    fetch(urlIsProfilePicSet)
+        .then(res => {
+            if (res.status === 200) {
+                res.json()
+                    .then(data => {
+                        const hasProfilePic = data['isProfilePicSet'];
+                        if (!hasProfilePic) {
+                            setProfilePicDefaultBtn.style.visibility = "hidden";
+                        }
+                    })
+                    .catch(() => {
+                        console.log('Error checking if user has profile pic.');
+                    });
+            } else {
+                console.log(res)
+            }
+        })
+        .catch(err => {
+            console.log(err);
+        });
+}
+
+/**
+ * Helper function which calls all methods related to setting up the "use
+ * placeholder" button.
+ */
+function initSetProfilePicToDefaultButton() {
+    this.initSetProfilePicToDefaultButtonVisibility();
+    this.initUseDefaultProfilePicButtonEventHandler();
 }
 
 /**

@@ -79,6 +79,8 @@ GET     /users/profile/search       controllers.TravelPartnerController.renderFi
 #Handles searching for travel partners
 POST    /users/profile/search       controllers.TravelPartnerController.searchByAttribute(request: Request)
 
+GET     /users/profilepicture/isSet     controllers.ProfileController.isProfilePictureSet(request: Request)
+
 
 #Renders page for creating trips
 GET     /users/trips/create         controllers.TripController.createtrip(request: Request)
@@ -139,6 +141,9 @@ POST    /users/home         controllers.HomeController.upload(request:Request)
 
 POST    /users/home/profilePicture         controllers.HomeController.uploadProfilePicture(request:Request)
 
+# Sets the users profile picture back to a normal picture
+POST    /users/home/profilePicture1/removeProfilePictureStatus1  controllers.HomeController.setProfilePhotoToNormalPhoto(request:Request)
+
 GET    /users/home/photoPrivacy/:id/:setPublic         controllers.HomeController.makePicturePublic(request:Request, id: Integer, setPublic: Integer)
 
 #Handles logout request from the user
@@ -153,7 +158,7 @@ POST     /users/profile/ttypes      controllers.TravellerTypeController.submitUp
 #Handles deleting a traveller type
 POST     /users/profile/delete/:typeId      controllers.TravellerTypeController.deleteUpdateTravellerType(request:Request, typeId:Integer)
 
-#Renders page for displaying a given user's profile (used for debugging)
+#Renders page for displaying a given user's profile
 GET     /users/profile/:id          controllers.ProfileController.showProfile(request : Request, id : Integer)
 
 # Map static resources from the /public folder to the /assets URL path

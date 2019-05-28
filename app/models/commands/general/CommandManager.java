@@ -1,6 +1,7 @@
-package models.commands;
+package models.commands.general;
 
 import accessors.CommandManagerAccessor;
+import accessors.UserAccessor;
 import io.ebean.Finder;
 import models.BaseModel;
 import models.User;
@@ -49,19 +50,41 @@ public class CommandManager extends BaseModel {
         }
     }
 
-    public void undo() {
+    public String undo() {
         if (!undoStack.isEmpty()) {
             UndoableCommand undoCommand = undoStack.pop();
-            undoCommand.undo();
-            redoStack.push(undoCommand);
+            try {
+                undoCommand.undo();
+                redoStack.push(undoCommand);
+                return undoCommand.toString();
+            } catch(Exception exception){
+                user.setUndoRedoError(true);
+                UserAccessor.update(user);
+            }
         }
+        return "";
     }
 
-    public void redo() {
+    public String redo() {
         if (!redoStack.isEmpty()) {
             UndoableCommand redoCommand = redoStack.pop();
-            redoCommand.redo();
-            undoStack.push(redoCommand);
+            try {
+                redoCommand.redo();
+                undoStack.push(redoCommand);
+                return redoCommand.toString();
+            } catch(Exception exception){
+                user.setUndoRedoError(true);
+                UserAccessor.update(user);
+            }
         }
+        return "";
+    }
+
+    public boolean isUndoStackEmpty() {
+        return undoStack.isEmpty();
+    }
+
+    public boolean isRedoStackEmpty() {
+        return redoStack.isEmpty();
     }
 }

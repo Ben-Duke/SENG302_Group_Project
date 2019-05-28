@@ -1,10 +1,13 @@
 package controllers;
 
+import accessors.TreasureHuntAccessor;
 import factories.TreasureHuntFactory;
 import formdata.TreasureHuntFormData;
 import models.Destination;
 import models.TreasureHunt;
 import models.User;
+import models.commands.general.UndoableCommand;
+import models.commands.treasurehunts.DeleteTreasureHuntCommand;
 import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.Controller;
@@ -26,7 +29,7 @@ public class TreasureHuntController extends Controller {
     @Inject
     FormFactory formFactory;
 
-    TreasureHuntFactory treasureHuntFactory = new TreasureHuntFactory();
+    private TreasureHuntFactory treasureHuntFactory = new TreasureHuntFactory();
 
     /**
      * The option map of public destinations for treasure hunts.
@@ -36,7 +39,7 @@ public class TreasureHuntController extends Controller {
     /**
      * Creates the option map of public destinations for treasure hunts.
      */
-    public void createPublicDestinationsMap() {
+    void createPublicDestinationsMap() {
         List<Destination> allDestinations = Destination.find.query().where().eq("is_public", true).findList();
         for (Destination destination: allDestinations) {
             destinationMap.put(destination.getDestName(), false);
@@ -48,7 +51,7 @@ public class TreasureHuntController extends Controller {
      * @param destName Name of the destination
      * @param isTrue Boolean value to be changed to.
      */
-    public void modifyPublicDestinationsMap(String destName, boolean isTrue) {
+    void modifyPublicDestinationsMap(String destName, boolean isTrue) {
         destinationMap.replace(destName, isTrue);
     }
 
@@ -118,6 +121,11 @@ public class TreasureHuntController extends Controller {
             Form<TreasureHuntFormData> incomingForm = formFactory.form(TreasureHuntFormData.class).bindFromRequest(request);
             createPublicDestinationsMap();
             if (incomingForm.hasErrors()) {
+                // Change the destination map to keep track of the current destination selected in the select
+                String destName = incomingForm.rawData().get("destination");
+                if (destName != null && !destName.isEmpty()) {
+                    destinationMap.put(destName, true);
+                }
                 return badRequest(createTreasureHunt.render(incomingForm, user, destinationMap));
             }
             for (TreasureHunt tHunt: TreasureHunt.find.all()) {
@@ -178,6 +186,11 @@ public class TreasureHuntController extends Controller {
                     Form<TreasureHuntFormData> incomingForm = formFactory.form(TreasureHuntFormData.class).bindFromRequest(request);
                     createPublicDestinationsMap();
                     if (incomingForm.hasErrors()) {
+                        // Change the destination map to keep track of the current destination selected in the select
+                        String destName = incomingForm.rawData().get("destination");
+                        if (destName !=null && !destName.isEmpty()) {
+                            destinationMap.put(destName, true);
+                        }
                         return badRequest(editTreasureHunt.render(incomingForm, treasureHunt, user, destinationMap));
                     }
                     for (TreasureHunt userTreasureHunt: TreasureHunt.find.all()) {
@@ -208,10 +221,11 @@ public class TreasureHuntController extends Controller {
     public Result deleteTreasureHunt(Http.Request request, Integer treasureHuntId){
         User user = User.getCurrentUser(request);
         if (user != null) {
-            TreasureHunt treasureHunt = TreasureHunt.find.byId(treasureHuntId);
+            TreasureHunt treasureHunt = TreasureHuntAccessor.getById(treasureHuntId);
             if (treasureHunt != null) {
                 if (treasureHunt.getUser().getUserid() == (user.getUserid())) {
-                    treasureHuntFactory.deleteTreasureHunt(treasureHunt);
+                    UndoableCommand cmd = new DeleteTreasureHuntCommand(treasureHunt);
+                    user.getCommandManager().executeCommand(cmd);
                     return redirect(routes.TreasureHuntController.indexTreasureHunt());
                 } else {
                     return unauthorized("The Treasure Hunt that you are trying to delete does not belong to you.");

@@ -68,6 +68,8 @@ And open <http://localhost:9000/>
 * Once logged in successfully, you will be directed to your profile page.
 * You can perform all profile actions from the profile page.
 * The admin button is only visible if you are an admin.
+* An admin can act as another user to reset their password or do other user tasks through the admin panel.
+* An admin can accept or reject modification requests for public destinations.
 * To get back to the main page Logout from the navigation bar.
 * Note: Home/TravelEA buttons navigate to the profile page but only if you are logged in.
 

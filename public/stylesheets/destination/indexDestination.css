@@ -5,6 +5,11 @@
     border: 1px solid #ddd; /* Add a grey border */
     margin-bottom: 12px; /* Add some space below the input */
 }
+.toast {
+    top: 12px;
+    margin: 0 auto;
+    right: 50%;
+}
 
 .searchPublicDestinations {
     width: 100%;

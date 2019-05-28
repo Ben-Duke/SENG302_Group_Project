@@ -1,11 +1,16 @@
 package controllers;
 
+import accessors.UserAccessor;
+import akka.http.javadsl.model.HttpRequest;
 import factories.UserFactory;
+import io.ebean.DuplicateKeyException;
+import models.Admin;
 import models.User;
 import models.UserPhoto;
 import models.commands.UploadPhotoCommand;
 import play.data.FormFactory;
 import play.libs.Files;
+import play.libs.Json;
 import play.mvc.Http;
 import play.mvc.Result;
 import utilities.CountryUtils;
@@ -169,7 +174,7 @@ public class HomeController {
             return badRequest();
         }
         else{
-            return unauthorized("Oops, you're not logged in.");
+            return redirect(routes.UserController.userindex());
         }
     }
 
@@ -191,7 +196,7 @@ public class HomeController {
             }
         }
         else{
-            return unauthorized("Oops, you're not logged in.");
+            return redirect(routes.UserController.userindex());
         }
     }
 
@@ -221,14 +226,14 @@ public class HomeController {
                     return ok(new File(profilePicture.getUrlWithPath()));
                 } else {
                     //should be 404 but then console logs an error
-                    return redirect(routes.HomeController.showhome());
+                    return ok(new File(ApplicationManager.getDefaultUserPhotoFullURL()));
                 }
             } else {
                 return badRequest("User not found");
             }
         }
         else{
-            return unauthorized("Oops, you're not logged in.");
+            return redirect(routes.UserController.userindex());
         }
     }
 
@@ -259,7 +264,7 @@ public class HomeController {
                 return notFound("Invalid Picture selected");
             }
         }
-        return unauthorized("Oops! You are not logged in.");
+        return redirect(routes.UserController.userindex());
     }
 
     /**
@@ -291,6 +296,52 @@ public class HomeController {
             }
             return notFound("Invalid Picture selected");
         }
-        return unauthorized("Oops! You are not logged in.");
+        return redirect(routes.UserController.userindex());
+    }
+
+    /**
+     * Removes a Users profile photo (default to the placeholder).
+     *
+     * NOTE: the photo is not deleted, just has it profile photo attribute set
+     * to false.
+     *
+     * @param request The HTTP request.
+     * @return A HTTP response, with status:
+     *      500: duplicate profile photos
+     *      400: no profile photo to remove
+     *      200: successfully set the profile photo to a normal photo.
+     */
+    public Result setProfilePhotoToNormalPhoto(Http.Request request) {
+        System.out.println(request);
+        System.out.println("check");
+        User user = User.getCurrentUser(request);
+
+        if(user != null) {
+            UserPhoto profilePicture = null;
+            boolean hasDuplicateProfilephotos = false;
+
+            try {
+                profilePicture =  UserAccessor.getProfilePhoto(user);
+            } catch (DuplicateKeyException e) {
+                System.out.println("ERROR: duplicate profile photos");
+                hasDuplicateProfilephotos = true;
+            }
+
+            if (hasDuplicateProfilephotos) {
+                return internalServerError("help");
+            } else if (profilePicture == null) {
+                return badRequest("help");
+            } else {
+                //TODO extract to accessor class
+                profilePicture.setProfile(false);
+                profilePicture.save();
+
+                return ok(Json.toJson(profilePicture));
+            }
+
+        } else {
+            return unauthorized("Oops! You are not logged in.");
+        }
+
     }
 }

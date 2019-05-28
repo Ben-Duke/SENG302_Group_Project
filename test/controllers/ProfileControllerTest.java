@@ -1,9 +1,7 @@
 package controllers;
 
-import models.Nationality;
-import models.Passport;
-import models.TravellerType;
-import models.User;
+import com.fasterxml.jackson.databind.JsonNode;
+import models.*;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -14,6 +12,7 @@ import play.db.Databases;
 import play.db.evolutions.Evolution;
 import play.db.evolutions.Evolutions;
 import play.inject.guice.GuiceApplicationBuilder;
+import play.libs.Json;
 import play.mvc.Http;
 import play.mvc.Result;
 import play.test.Helpers;
@@ -26,8 +25,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static play.mvc.Http.Status.*;
 import static play.test.Helpers.GET;
+import static play.test.Helpers.contentAsString;
 import static play.test.Helpers.route;
 
 public class ProfileControllerTest extends WithApplication {
@@ -72,7 +73,7 @@ public class ProfileControllerTest extends WithApplication {
                 .method(GET)
                 .uri("/users/profile/update").session("connected", null);
         Result result = route(app, request);
-        assertEquals(UNAUTHORIZED, result.status());
+        assertEquals(SEE_OTHER, result.status());
     }
 
     @Test
@@ -119,7 +120,7 @@ public class ProfileControllerTest extends WithApplication {
                 .method(GET)
                 .uri("/users/profile/1").session("connected", null);
         Result result = route(app, request);
-        assertEquals(UNAUTHORIZED, result.status());
+        assertEquals(SEE_OTHER, result.status());
     }
 
     @Test
@@ -251,5 +252,38 @@ public class ProfileControllerTest extends WithApplication {
         user3.getNationality().add(nationality1);
         user3.getNationality().add(nationality2);
         user3.save();
+    }
+
+    /**
+     * Test which checks the isProfilePictureSet method returns a JSON body
+     * with the "isProfilePicSet" attribute mapping to the boolean false, for a
+     * user that has no profile picture.
+     */
+    @Test
+    public void isProfilePictureSet_withNoProfilePic_checkJsonHasFalseField() {
+        Http.RequestBuilder request = Helpers.fakeRequest().method(Helpers.GET)
+                                            .uri("/users/profilepicture/isSet")
+                                            .session("connected", "1");
+        Result result = route(app, request);
+        JsonNode jsonJacksonObject = Json.parse(contentAsString(result));
+        assertFalse(jsonJacksonObject.get("isProfilePicSet").asBoolean());
+    }
+
+    /**
+     * Test which checks the isProfilePictureSet method returns a JSON body
+     * with the "isProfilePicSet" attribute mapping to the boolean true, for a
+     * user that does have a profile picture.
+     */
+    @Test
+    public void isProfilePictureSet_withProfilePic_checkJsonHasTrueField() {
+        UserPhoto profilePic = new UserPhoto("/test/url", true, true, User.find.byId(1));
+        profilePic.save();
+
+        Http.RequestBuilder request = Helpers.fakeRequest().method(Helpers.GET)
+                .uri("/users/profilepicture/isSet")
+                .session("connected", "1");
+        Result result = route(app, request);
+        JsonNode jsonJacksonObject = Json.parse(contentAsString(result));
+        assertEquals(true, jsonJacksonObject.get("isProfilePicSet").asBoolean());
     }
 }

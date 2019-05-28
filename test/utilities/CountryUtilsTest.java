@@ -11,6 +11,7 @@ import play.Application;
 import play.db.Database;
 import play.inject.guice.GuiceApplicationBuilder;
 import play.test.WithApplication;
+import testhelpers.BaseTestWithApplicationAndDatabase;
 
 import java.util.List;
 
@@ -19,24 +20,6 @@ import static org.junit.Assert.assertTrue;
 import static utilities.CountryUtils.*;
 
 public class CountryUtilsTest extends WithApplication {
-    private Database database;
-
-    @Override
-    protected Application provideApplication() {
-        return new GuiceApplicationBuilder().build();
-    }
-
-
-    @Before
-    public void setupDatabase() {
-        database = TestDatabaseManager.getTestDatabase();
-    }
-
-    @After
-    public void shutdownDatabase() {
-        TestDatabaseManager.shutdownTestDatabase(database);
-    }
-
 
     @Test
     public void validateValidPassportCountry() {

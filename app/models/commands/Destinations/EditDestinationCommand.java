@@ -1,16 +1,8 @@
 package models.commands.Destinations;
 
 import accessors.DestinationAccessor;
-import accessors.TreasureHuntAccessor;
 import models.Destination;
-import models.TreasureHunt;
-import models.Visit;
 import models.commands.UndoableCommand;
-import org.slf4j.Logger;
-import utilities.UtilityFunctions;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /** Command to edit a destination */
 public class EditDestinationCommand extends UndoableCommand {
@@ -50,7 +42,7 @@ public class EditDestinationCommand extends UndoableCommand {
     }
 
     /**
-     * Redos the update of the destination's detalis
+     * Redos the update of the destination's details
      */
     public void redo() {
         execute();

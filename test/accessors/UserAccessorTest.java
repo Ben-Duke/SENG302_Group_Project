@@ -1,6 +1,7 @@
 package accessors;
 
 import models.User;
+import models.UserPhoto;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -11,52 +12,23 @@ import play.db.evolutions.Evolution;
 import play.db.evolutions.Evolutions;
 import play.inject.guice.GuiceApplicationBuilder;
 import play.test.WithApplication;
+import testhelpers.BaseTestWithApplicationAndDatabase;
 
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Class to JUnit test the UserAccessor class.
  */
-public class UserAccessorTest extends WithApplication {
+public class UserAccessorTest extends BaseTestWithApplicationAndDatabase {
 
-    private Database database;
-
-    /**
-     * Set's up a dummy application for the tests.
-     *
-     * @return The dummy Application.
-     */
-    @Override
-    protected Application provideApplication() {
-        return new GuiceApplicationBuilder().build();
-    }
-
-    /**
-     * Initilizes the test database. Only contains one user.
-     */
     @Before
-    public void setUpDatabase() {
-        database = Databases.inMemory();
-        Evolutions.applyEvolutions(database, Evolutions.forDefault(new Evolution(
-                1,
-                "create table test (id bigint not null, name varchar(255));",
-                "drop table test;"
-        )));
-
+    public void setup() {
         User user = new User("gon12_2@uclive.ac.nz", "hunter22");
         user.save();
-
-    }
-
-    /**
-     * Clears the fake database after each test
-     */
-    @After
-    public void shutdownDatabase() {
-        Evolutions.cleanupEvolutions(database);
-        database.shutdown();
     }
 
     /**
@@ -87,5 +59,70 @@ public class UserAccessorTest extends WithApplication {
     public void getUsersFromEmail_checkHasOneUser_ExistingEmail() {
         List<User> users = UserAccessor.getUsersFromEmail("gon12_2@uclive.ac.nz");
         assertEquals(1, users.size());
+    }
+
+    /**
+     * Checks the getProfilePhoto method gets the correct url of their profile photo.
+     */
+    @Test
+    public void getProfilePhoto_withProfilePhoto_checkURL() {
+        String photoURL = "/test/url";
+        UserPhoto profilePic = new UserPhoto(photoURL, true,
+                                            true, User.find.byId(1));
+        profilePic.save();
+
+        UserPhoto photo = UserAccessor.getProfilePhoto(User.find.byId(1));
+        assertTrue(photo.getUrl().equals(photoURL));
+    }
+
+    /**
+     * Checks the getProfilePhoto method gets the correct url of their profile photo,
+     * when they have other non profile photos.
+     */
+    @Test
+    public void getProfilePhoto_withProfilePhotoAndOtherPhotos_checkURL() {
+        String profilePhotoURL = "/test/url";
+        UserPhoto profilePic = new UserPhoto(profilePhotoURL, true,
+                true, User.find.byId(1));
+        profilePic.save();
+
+        UserPhoto nonProfilePic = new UserPhoto("/not/profile/pic", true,
+                false, User.find.byId(1));
+        nonProfilePic.save();
+
+        UserPhoto nonProfilePicPrivate = new UserPhoto("/not/profile/pic/2",
+                false, false, User.find.byId(1));
+        nonProfilePicPrivate.save();
+
+        UserPhoto photo = UserAccessor.getProfilePhoto(User.find.byId(1));
+        assertTrue(photo.getUrl().equals(profilePhotoURL));
+    }
+
+    /**
+     * Checks the getProfilePhoto method gets the correct url of their profile photo,
+     * when they have other non profile photos.
+     */
+    @Test
+    public void getProfilePhoto_withNoProfilePicButOtherPhotos_checkIsNull() {
+        UserPhoto nonProfilePic = new UserPhoto("/not/profile/pic", true,
+                false, User.find.byId(1));
+        nonProfilePic.save();
+
+        UserPhoto nonProfilePicPrivate = new UserPhoto("/not/profile/pic/2",
+                false, false, User.find.byId(1));
+        nonProfilePicPrivate.save();
+
+        UserPhoto photo = UserAccessor.getProfilePhoto(User.find.byId(1));
+        assertNull(photo);
+    }
+
+    /**
+     * Checks the getProfilePhoto method returns null when a user has no profile
+     * photo.
+     */
+    @Test
+    public void getProfilePhoto_without_checkIsNull() {
+        UserPhoto photo = UserAccessor.getProfilePhoto(User.find.byId(1));
+        assertNull(photo);
     }
 }

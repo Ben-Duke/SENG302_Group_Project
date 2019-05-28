@@ -18,6 +18,7 @@ public class VisitAccessor {
 
     /** Insert the destination */
     public static void insert(Visit visit) {
+        visit.setVisitid(null);
         visit.save();
     }
 
@@ -25,5 +26,11 @@ public class VisitAccessor {
     public static void delete(Visit visit) {
         visit.delete();
     }
+
+    /**
+     * Update the visit
+     * @param visit the visit to update
+     */
+    public static void update(Visit visit) { visit.update();}
 
 }

@@ -69,13 +69,16 @@
                             <td><a class="btn btn-link" href="@routes.ProfileController.showProfile(profile.getUserid)">View</a></td>
                         </tr>
                         }
+                        </tbody>
+                    </table>
                 } else {
                 </tbody>
             </table>
-
             <h2 align="center">No results found</h2>
             }
 
+        } else {
+            <h2 align="center">No results displayed</h2>
         }
 
     }

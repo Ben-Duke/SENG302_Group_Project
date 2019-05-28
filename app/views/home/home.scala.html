@@ -15,9 +15,9 @@
             <!-- The thumbnail in the else is being displayed to show the AC passing -->
         <h1>@user.fName @user.lName
             @if(UserFactory.getUserProfilePicture(user.getUserid()) != null){
-                <img id="profilePictureThumb" class="img-circle"  width = "50" height="50" src="@{routes.HomeController.serveProfilePicture(user.getUserid())}">
+                <img id="thumbnailProfilePic" class="img-circle"  width = "50" height="50" src="@{routes.HomeController.serveProfilePicture(user.getUserid())}">
             } else {
-                <img id="profilePictureThumb" class="img-circle"  width = "50" height="50" src="@{routes.Assets.at("images/Generic.png")}">
+                <img id="thumbnailProfilePic" class="img-circle"  width = "50" height="50" src="@{routes.Assets.at("images/Generic.png")}">
             }
             @if(user.userIsAdmin) {
                 <img class="img"  width = "60" height="50" src="../assets/images/key_2_small.png">
@@ -189,7 +189,7 @@
                     <div class="modal-body">
                         <!--<input type="file" accept="image/*" name="picture" required onchange="readURL(this);"/> -->
                         <div class="profile-pic-wraper ">
-                            <img class="img"  width = "450" height="375" id="change-profile-pic" src="@{routes.HomeController.serveProfilePicture(user.getUserid())}" alt="You have not uploaded a profile picture!"/>
+                            <img class="img"  width = "450" height="450" id="change-profile-pic" src="@{routes.HomeController.serveProfilePicture(user.getUserid())}" alt="Profile photo image"/>
                         </div>
                         <div class="preview-wrapper">
                             <div class="preview">
@@ -197,10 +197,20 @@
                             </div><br>
                         </div>
                         <br>
-                        <input id="selectProfileInput" type="file" accept="image/*" name="picture" required onchange="loadFile(event);"/>
-                        <p>
-                            <button id="save-profile">Upload</button>
-                        </p>
+                        <input class="btn btn-default" id="selectProfileInput" type="file" accept="image/*" name="picture" required onchange="loadFile(event);"/>
+                        <div>
+                            <button class="btn btn-default" id="save-profile">
+                                Upload
+                            </button>
+                            <button class="btn btn-default"
+                                    id="change-profile-photo-to-placeholder">
+                                Use Placeholder Picture
+                            </button>
+                        </div>
+                        <div id="setProfilePictureToDefaultError"
+                             class="alert alert-danger hiddenDiv"
+                             role="alert">
+                        </div>
                     </div>
                 </div>
             </div>

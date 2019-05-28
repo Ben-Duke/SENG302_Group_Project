@@ -11,6 +11,7 @@ import play.db.evolutions.Evolution;
 import play.db.evolutions.Evolutions;
 import play.inject.guice.GuiceApplicationBuilder;
 import play.test.WithApplication;
+import testhelpers.BaseTestWithApplicationAndDatabase;
 
 import static org.junit.Assert.*;
 
@@ -18,7 +19,7 @@ import static org.junit.Assert.*;
 /**
  * JUnit 4 tests for LoginFactory.
  */
-public class LoginFactoryTest extends WithApplication {
+public class LoginFactoryTest extends BaseTestWithApplicationAndDatabase {
 
     /**
      * The fake database

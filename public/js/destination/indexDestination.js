@@ -11,6 +11,7 @@ var destinationOwner;
 function searchDestination(){
     // Declare variables
     var input, elements, filter, tables, table, tr, th, td, td2, i, txtValue, txtValue2, txtValue3;
+    let districtTd, districtValue;
     elements = document.getElementsByClassName("searchDestinations");
     for(var a=0; a<elements.length; a++) {
         input = elements[a];
@@ -23,12 +24,14 @@ function searchDestination(){
             th = tr[i].getElementsByTagName("th")[0];
             td = tr[i].getElementsByTagName("td")[0];
             td2 = tr[i].getElementsByTagName("td")[1];
+            districtTd = tr[i].getElementsByTagName("td")[2];
             if (td) {
                 txtValue = td.textContent || td.innerText;
                 txtValue2 = th.textContent || th.innerText;
                 txtValue3 = td2.textContent || td2.innerText;
+                districtValue = districtTd.textContent || districtTd.innerText;
                 if (txtValue.toUpperCase().indexOf(filter) > -1 || txtValue2.toUpperCase().indexOf(filter) > -1
-                    || txtValue3.toUpperCase().indexOf(filter) > -1) {
+                    || txtValue3.toUpperCase().indexOf(filter) > -1 || districtValue.toUpperCase().indexOf(filter) > -1) {
                     tr[i].style.display = "";
                 } else {
                     tr[i].style.display = "none";
@@ -45,6 +48,7 @@ function searchDestination(){
 function searchPublicDestination(){
     // Declare variables
     var input, elements, filter, tables, table, tr, th, td, td2, i, txtValue, txtValue2, txtValue3;
+    let districtTd, districtValue;
     elements = document.getElementsByClassName("searchPublicDestinations");
     for(var a=0; a<elements.length; a++) {
         input = elements[a];
@@ -58,12 +62,14 @@ function searchPublicDestination(){
             th = tr[i].getElementsByTagName("th")[0];
             td = tr[i].getElementsByTagName("td")[0];
             td2 = tr[i].getElementsByTagName("td")[1];
+            districtTd = tr[i].getElementsByTagName("td")[2];
             if (td) {
                 txtValue = td.textContent || td.innerText;
                 txtValue2 = th.textContent || th.innerText;
                 txtValue3 = td2.textContent || td2.innerText;
+                districtValue = districtTd.textContent || districtTd.innerText;
                 if (txtValue.toUpperCase().indexOf(filter) > -1 || txtValue2.toUpperCase().indexOf(filter) > -1
-                    || txtValue3.toUpperCase().indexOf(filter) > -1) {
+                    || txtValue3.toUpperCase().indexOf(filter) > -1 || districtValue.toUpperCase().indexOf(filter) > -1) {
                     tr[i].style.display = "";
                 } else {
                     tr[i].style.display = "none";

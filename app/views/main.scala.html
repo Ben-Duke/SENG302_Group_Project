@@ -1,3 +1,5 @@
+@import accessors.UserAccessor
+
 @(user : User, title: String)(content: Html)
 
 <!DOCTYPE html>
@@ -20,6 +22,8 @@
     </head>
     <body>
 
+    @content
+
 
         <nav class="navbar navbar-custom navbar-fixed-top" id="topnavbar">
 
@@ -30,7 +34,13 @@
                 <ul class="nav navbar-nav">
                     <li><a href="@routes.HomeController.showhome()">Home</a></li>
                     @if(user != null) {
-
+                        @if(user.isUndoRedoError()) {
+                            <script>
+                                alert("Undo/Redo Failed");
+                            </script>
+                            @user.setUndoRedoError(false);
+                            @UserAccessor.update(user);
+                        }
                         <li><a href="@routes.TreasureHuntController.indexTreasureHunt()">Treasure hunts</a></li>
                         @if(user.userIsAdmin) {
                             <li><a href="@routes.AdminController.indexAdmin()">Admin</a></li>
@@ -93,7 +103,7 @@
             </div>
         </nav>
 
-        @content
+
         @*<script src="http://code.jquery.com/jquery.min.js"></script>*@
         @*<script src="http://maxcdn.bootstrapcdn.com/bootstiv /3.3.2/js/bootstrap.min.js"></script>*@
         @*<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>*@

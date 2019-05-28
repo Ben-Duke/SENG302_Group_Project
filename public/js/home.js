@@ -411,22 +411,15 @@ function deletePhotoRequest(url, photoId, imageId){
                     function(){
                         console.log("calling unlink");
                         $.ajax({
-                            url: url,
+                            url: "/users/home/deletePicture/?photoId=" + photoId + "&userInput=true",
                             method: "Delete",
-                            data: JSON.stringify({
-                                photoid: '"' + photoId + '"',
-                                response: true
-                            }),
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
                             success:function(res) {
                                 deletePhotoFromUI(photoId)
 
 
                                 let profileImage = document.getElementById("profilePicture");
                                 let thumbProfileImage = document.getElementById("profilePictureThumb");
-                                //image.src="https://static.interestingengineering.com/images/APRIL/sizes/black_hole_resize_md.jpg";
+
                                 profileImage.src = "/assets/images/Generic.png";
                                 thumbProfileImage.src = "/assets/images/Generic.png";
                             },
@@ -466,7 +459,7 @@ function deletePhotoRequest(url, photoId, imageId){
                                  deletePhotoFromUI(photoId);
                              },
                              error: function (res) {
-                                 console.log(JSON.stringify(res.data));
+                                 console.log(JSON.stringify(res));
                              }
                          })
 

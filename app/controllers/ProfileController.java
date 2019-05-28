@@ -44,13 +44,15 @@ public class ProfileController extends Controller {
         System.out.println("Called delete photo");
         UserPhoto photo = UserPhoto.find.byId(photoId);
         System.out.println("User option is " + userInput);
-        boolean needToAskUser = photo.getIsProfile();
-        if(needToAskUser && !userInput){
-            return badRequest("Is profile picture ask user");
+        System.out.println(userInput);
+
+        if(photo.getIsProfile() && (userInput != true)){
+            return  badRequest("Is profile picture ask user");
         }
-        if(factory.deletePhoto(photoId)){
+        if(factory.deletePhoto(photoId) && (userInput == true)){
             return ok("Deleted the photo");
         }else{
+
             return badRequest("Failed to delete image");
         }
 

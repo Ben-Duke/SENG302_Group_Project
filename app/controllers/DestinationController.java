@@ -695,14 +695,15 @@ public class DestinationController extends Controller {
         UserPhoto photo = UserPhoto.find.byId(photoId);
         try {
             for (Destination destination : photo.getDestinations()) {
-                //photo.removeDestination(destination);
-                unlinkPhotoFromDestination(null, photoId, destination.getDestId());
+                System.out.println(photo.getPhotoId());
+//
+                unlinkPhotoFromDestination(request, photoId, destination.getDestId());
             }
-
+            System.out.println("Dest size is " + photo.getDestinations().size());
             photo.deletePhoto(photoId);
 
         }catch(Exception error){
-            return badRequest();
+            return badRequest("Could not delete photo " + error);
         }
 
         return ok();

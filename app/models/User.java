@@ -1,13 +1,12 @@
 package models;
 
 import accessors.CommandManagerAccessor;
-import accessors.UserAccessor;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.ebean.ExpressionList;
 import io.ebean.Finder;
 import io.ebean.Model;
 import io.ebean.annotation.CreatedTimestamp;
-import models.commands.CommandManager;
+import models.commands.general.CommandManager;
 import org.mindrot.jbcrypt.BCrypt;
 import play.data.format.Formats;
 import play.mvc.Http;

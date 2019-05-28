@@ -46,7 +46,8 @@
                             <li><a href="@routes.AdminController.indexAdmin()">Admin</a></li>
                         }
                     </ul>
-                        <ul class="nav navbar-nav navbar-right">
+                        <ul class="nav navbar-nav navbar-right"><!-- Use a button to open the snackbar -->
+                            <div id="snackbar"></div>
                             <li><a id="undoButton"><span class="glyphicon glyphicon-repeat" style="transform: scale(-1,1)"></span> Undo</a></li>
                             <li><a id="redoButton"><span class="glyphicon glyphicon-repeat"></span> Redo</a></li>
                             <li class="dropdown">
@@ -89,17 +90,13 @@
                                     </li>
 
                                 </ul>
+
                             </li>
 
 
 
                         </ul>
-
-
                     }
-
-
-
             </div>
         </nav>
 

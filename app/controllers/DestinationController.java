@@ -694,24 +694,19 @@ public class DestinationController extends Controller {
      */
     public Result unlinkPhotoFromDestinationAndDelete(Http.Request request, int photoId) {
         UserPhoto photo = UserPhoto.find.byId(photoId);
-        try {
-            for (Destination destination : photo.getDestinations()) {
-                System.out.println(photo.getPhotoId());
-//
-                unlinkPhotoFromDestination(request, photoId, destination.getDestId());
-            }
-            System.out.println("Dest size is " + photo.getDestinations().size());
-            photo.deletePhoto(photoId);
+            if (photo != null) {
+                for (Destination destination : photo.getDestinations()) {
+                    System.out.println(photo.getPhotoId());
+                    //
+                    unlinkPhotoFromDestination(request, photoId, destination.getDestId());
+                }
 
-       }
-// catch(Exception error){
-//            return badRequest("Could not delete photo " + error);
-//        }
-        catch(DuplicateKeyException error){
-            return badRequest("Could not delete photo " + error);
-        }
+                System.out.println("Dest size is " + photo.getDestinations().size());
+                UserPhoto.deletePhoto(photoId);
+            }
 
         return ok();
+
     }
 
 

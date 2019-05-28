@@ -47,8 +47,7 @@ public class UserFactory {
     }
 
     public boolean deletePhoto(int photoId){
-        UserPhoto instance = new UserPhoto("",true,false,null);
-        return instance.deletePhoto(photoId);
+        return UserPhoto.deletePhoto(photoId);
     }
 
     public static void deleteNatsOnUser(int id, String nationalityId) {

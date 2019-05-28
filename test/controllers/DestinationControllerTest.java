@@ -201,19 +201,16 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
         photo.addDestination(destination);
         photo.save();
 
+        int beforeDeletion = UserPhoto.find.all().size();
 
         Http.RequestBuilder request = Helpers.fakeRequest()
-                .method(Helpers.GET)
-                .uri("/users/").session("connected", "2");
+                .method(DELETE)
+                .uri("/users/unlinkAndDeletePicture/" + photo.getPhotoId())
+                .session("connected", "2");
         CSRFTokenHelper.addCSRFToken(request);
+        route(app, request);
 
-        int beforeDeletion = photo.find.all().size();
-        System.out.println("Before: "+beforeDeletion);
-        System.out.println(testDestinationController.unlinkPhotoFromDestinationAndDelete(request, photo.getPhotoId()).body().as("application/json"));
-        System.out.println("phot0 size " + photo.getDestinations().size());
-        int afterDeletion = photo.find.all().size();
-        System.out.println("After: " + afterDeletion);
-        assertEquals(afterDeletion ,beforeDeletion-1);
+        assertEquals(beforeDeletion - 1, UserPhoto.find.all().size());
     }
 
 

@@ -529,7 +529,7 @@ function deletePhotoRequest(url, photoId, imageId){
                             url: '/users/unlinkAndDeletePicture/'+photoId,
                             method: "Delete",
                             success:function(res) {
-                                deletePhotoFromUI(photoId)
+                                deletePhotoFromUI(photoId);
 
 
                                 let profileImage = document.getElementById("profilePicture");
@@ -544,15 +544,14 @@ function deletePhotoRequest(url, photoId, imageId){
                             }
 
 
-                            })
+                            });
 
                         $(document.getElementById('destination-carousel')).modal('show')
 
-                        }
+                        };
                         document.getElementById('noCloseDeleteProfilePhotoButton').onclick =
                     function(){
                         $(document.getElementById('destination-carousel')).modal('show')
-                        //$(document.getElementById('confirmDeletePhotoModal')).modal('hide')
                     };
 
                 $('#confirmDeletePhotoModal').on('hidden.bs.modal', function () {
@@ -571,7 +570,7 @@ function deletePhotoRequest(url, photoId, imageId){
                              url: '/users/unlinkAndDeletePicture/'+photoId,
                              method: "Delete",
                              success: function (res) {
-                                 console.log("unlinked and deleted photo")
+                                 console.log("unlinked and deleted photo");
                                  deletePhotoFromUI(photoId);
                              },
                              error: function (res) {

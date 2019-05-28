@@ -30,12 +30,11 @@ public class UserPhotoTest extends BaseTestWithApplicationAndDatabase{
      */
     @Test
     public void checkDeletionOfUserPhotoBadIndex (){
-        UserPhoto photo = new UserPhoto("/test",false,false,null);
 
-        int beforeDelete = photo.find.all().size();
-        photo.deletePhoto(1000000);
+        int beforeDelete = UserPhoto.find.all().size();
+        UserPhoto.deletePhoto(1000000);
 
-        int afterDelete = photo.find.all().size();
-        assertEquals(afterDelete,beforeDelete);
+        int afterDelete = UserPhoto.find.all().size();
+        assertEquals(beforeDelete, afterDelete);
     }
 }

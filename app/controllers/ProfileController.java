@@ -37,7 +37,6 @@ public class ProfileController extends Controller {
     /**
      * If the user is logged in, renders the update profile page.
      * If the user is not logged in, returns an error.
-     * @param request The HTTP request
      * @return update profile page or error page
      */
 

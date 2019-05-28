@@ -6,7 +6,7 @@ import accessors.VisitAccessor;
 import models.Destination;
 import models.TreasureHunt;
 import models.Visit;
-import models.commands.UndoableCommand;
+import models.commands.general.UndoableCommand;
 import org.slf4j.Logger;
 import utilities.UtilityFunctions;
 
@@ -78,6 +78,14 @@ public class DeleteDestinationCommand extends UndoableCommand {
     @Override
     public void redo() {
         execute();
+    }
+
+    /**
+     * Returns result from the undo/redo command as a string
+     * @return String result of command
+     */
+    public String toString() {
+        return "Destination " + this.destination.getDestName() + " deletion";
     }
 }
 

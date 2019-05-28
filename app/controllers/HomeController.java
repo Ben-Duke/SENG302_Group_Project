@@ -7,7 +7,7 @@ import io.ebean.DuplicateKeyException;
 import models.Admin;
 import models.User;
 import models.UserPhoto;
-import models.commands.UploadPhotoCommand;
+import models.commands.photos.UploadPhotoCommand;
 import play.data.FormFactory;
 import play.libs.Files;
 import play.libs.Json;

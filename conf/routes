@@ -251,7 +251,7 @@ DELETE  /users/destinations/:photoId/:destId                   controllers.Desti
 #Handles creating a destination
 POST    /users/destinations/save        controllers.DestinationController.saveDestinationFromRequest(request : Request)
 
-#Handles deleting a destination //TODO needs to be changed from get request
+#Handles deleting a destination
 GET     /users/destinations/delete/:id   controllers.DestinationController.deleteDestination(request : Request, id : Integer)
 
 #Treasure Hunts

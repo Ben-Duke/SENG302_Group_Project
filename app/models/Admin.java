@@ -34,10 +34,11 @@ public class Admin extends BaseModel {
 
     /**
      * The constructor for the Admin that takes the parameters, userId, isDefault.
-     * @param userId An Integer which is the UserId of the Admin User.
+     *
+     * @param userId    An Integer which is the UserId of the Admin User.
      * @param isDefault A boolean true if the Admin is a default admin else false.
      */
-    public Admin(Integer userId, boolean isDefault){
+    public Admin(Integer userId, boolean isDefault) {
         this.userId = userId;
         this.isDefault = isDefault;
     }
@@ -66,26 +67,5 @@ public class Admin extends BaseModel {
         this.userIdToEdit = userIdToEdit;
     }
 
-    public static Finder<Integer,Admin> find = new Finder<>(Admin.class);
-
-//    /**
-//     * TODO: USE the code below when switching to Form data stuff.
-//     * The method to make a user an admin.
-//     * @param userId An Integer which is the user id of the user which is to be made an admin.
-//     * @return Admin An admin that has been just created.
-//     */
-//    public Admin userToAdmin(Integer userId) {
-//        Admin admin = new Admin(userId, false);
-//        return admin;
-//    }
-//
-//    /**
-//     * The method to remove a user from admins.
-//     * @param admin An Admin which is to be removed from the admins.
-//     */
-//    public void adminToUser(Admin admin) {
-//        Integer userId = admin.userId;
-//        Admin admin1 = Admin.find.query().where().eq("userid", userId).findOne();
-//        admin1.delete();
-//    }
+    public static Finder<Integer, Admin> find = new Finder<>(Admin.class);
 }

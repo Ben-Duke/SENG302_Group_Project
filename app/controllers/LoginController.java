@@ -70,6 +70,7 @@ public class LoginController {
                 return internalServerError(loginPage.render(userLoginForm,
                                                 User.getCurrentUser(request)));
             } else {
+                UserAccessor.getById(Integer.parseInt(userId)).getCommandManager().resetUndoRedoStack();
                 return redirect(routes.HomeController.showhome())
                            .addingToSession(request, "connected", userId);
             }

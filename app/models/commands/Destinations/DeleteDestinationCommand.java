@@ -2,22 +2,18 @@ package models.commands.Destinations;
 
 import accessors.DestinationAccessor;
 import accessors.TreasureHuntAccessor;
-import controllers.DestinationController;
+import accessors.VisitAccessor;
 import models.Destination;
 import models.TreasureHunt;
-import models.UserPhoto;
 import models.Visit;
-import models.commands.CommandManager;
-import models.commands.UndoableCommand;
+import models.commands.general.UndoableCommand;
 import org.slf4j.Logger;
 import utilities.UtilityFunctions;
 
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
-/** Command to delete a user's destination */
+/** Command to delete a destination */
 public class DeleteDestinationCommand extends UndoableCommand {
     private Destination destination;
     private Boolean deletedByAdmin;
@@ -25,16 +21,18 @@ public class DeleteDestinationCommand extends UndoableCommand {
     // Using sets as the items do not need to be ordered and are unique
     private List<Visit> deletedVisits = new ArrayList<>();
     private List<TreasureHunt> deletedTreasureHunts = new ArrayList<>();
-    private List<UserPhoto> destinationPhotos = new ArrayList<>();
 
     private final Logger logger = UtilityFunctions.getLogger();
 
     public DeleteDestinationCommand(Destination destination, Boolean deletedByAdmin) {
         this.destination = destination;
         this.deletedByAdmin = deletedByAdmin;
-        this.destinationPhotos = destination.getUserPhotos();
     }
 
+    /**
+     * Deletes the command's destination
+     */
+    @Override
     public void execute() {
         // If admin, cascade deletion to visits and trips which use the destination
         if (deletedByAdmin) {
@@ -42,43 +40,52 @@ public class DeleteDestinationCommand extends UndoableCommand {
 
             for (Visit visit : visitsCopy) {
                 deletedVisits.add(new Visit(visit));
-                visit.delete();
+                VisitAccessor.delete(visit);
             }
             List<TreasureHunt> treasureHunts = TreasureHuntAccessor.getByDestination(destination);
 
             for (TreasureHunt treasureHunt : treasureHunts) {
                 deletedTreasureHunts.add(new TreasureHunt(treasureHunt));
-                treasureHunt.delete();
-            }
-
-            for (UserPhoto userPhoto : destination.getUserPhotos()){
-                DestinationController destinationController = new DestinationController();
-                destinationController.unlinkPhotoFromDestination(
-                        null, userPhoto.getPhotoId(), destination.getDestId());
+                TreasureHuntAccessor.delete(treasureHunt);
             }
         }
 
         DestinationAccessor.delete(destination);
     }
 
+    /**
+     * Undoes the deletion of a Destination
+     */
+    @Override
     public void undo() {
         this.destination = new Destination(destination, deletedVisits);
-        destination.setUserPhotos(destinationPhotos);
         destination.save();
 
         for (TreasureHunt treasureHunt : deletedTreasureHunts) {
             treasureHunt.setDestination(destination);
-            treasureHunt.save();
+            TreasureHuntAccessor.insert(treasureHunt);
         }
 
         for (Visit visit : deletedVisits) {
             visit.setDestination(destination);
-            visit.save();
+            VisitAccessor.insert(visit);
         }
     }
 
+    /**
+     * Redoes the previously executed undo
+     */
+    @Override
     public void redo() {
         execute();
+    }
+
+    /**
+     * Returns result from the undo/redo command as a string
+     * @return String result of command
+     */
+    public String toString() {
+        return "Destination " + this.destination.getDestName() + " deletion";
     }
 }
 

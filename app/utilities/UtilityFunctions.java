@@ -2,7 +2,11 @@ package utilities;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import controllers.ApplicationManager;
-import models.*;
+import controllers.routes;
+import models.Nationality;
+import models.Passport;
+import models.TravellerType;
+import models.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import play.libs.Json;
@@ -22,6 +26,7 @@ import java.util.*;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import static play.mvc.Results.redirect;
 import static play.mvc.Results.unauthorized;
 
 /**
@@ -49,7 +54,7 @@ public class UtilityFunctions {
     public static Result checkLoggedIn(Http.Request request) {
         User user = User.getCurrentUser(request);
         if (user == null) {
-            return unauthorized("Oops, you are not logged in");
+            return redirect(routes.UserController.userindex());
         }
 
         return null;
@@ -123,7 +128,7 @@ public class UtilityFunctions {
      * @param inputString The input String to validate.
      * @return A boolean, true if String represents an int (can be converted to an int), false otherwise.
      */
-    public static boolean isStringAnInt(String inputString) {
+    static boolean isStringAnInt(String inputString) {
         try {
             int intFromInput = Integer.parseInt(inputString);
             return true;
@@ -140,26 +145,9 @@ public class UtilityFunctions {
      * @param inputString The input String to validate.
      * @return A boolean, true if String is alphanumeric, false otherwise.
      */
-    public static boolean isStringAlphaNumeric(String inputString) {
+    static boolean isStringAlphaNumeric(String inputString) {
         String alphanumericRegex = "^$|[a-zA-Z0-9]*"; // regex specifying a word
         return Pattern.matches(alphanumericRegex, inputString);
-    }
-
-
-    /**
-     * Function that validates a given input string to check if it can be converted to a given type
-     * If the condition is "date", check that the string can be converted to a Date
-     * If the condition is "datetime", check that the string can be converted to a datetime.
-     * If it can't, return false.
-     * Format should be dd/MM/yyyy
-     *
-     * @param type        "date", "datetime" (more in the future)
-     * @param inputString the input string
-     * @return
-     */
-    public static boolean validateType(String inputString, String type) {
-
-        return false; // TODO
     }
 
     /**
@@ -321,8 +309,6 @@ public class UtilityFunctions {
         }
 
     }
-
-
 
     /**
      * This method sends a get request to the countries api and returns a sorted set of these countries

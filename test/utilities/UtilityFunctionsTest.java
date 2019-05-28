@@ -12,16 +12,11 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 
-//import javax.rmi.CORBA.Util;
 
 /**
  * Class to test the UtilityFunction class.
  */
 public class UtilityFunctionsTest extends WithApplication {
-
-//    @Test //TODO
-//    public void retainFromLists() {
-//    }
 
     @Test
     public void validateMaxCharLimitEmptyStringZeroMax() {
@@ -178,20 +173,10 @@ public class UtilityFunctionsTest extends WithApplication {
         assertTrue(UtilityFunctions.isStringADouble(Double.toString(Double.MAX_VALUE)));
     }
 
-//    @Test //TODO unsure how to test this case
-//    public void isStringADoubleAboveMaxDouble() {
-//        assertFalse(UtilityFunctions.isStringADouble(Double.toString(Double.MAX_VALUE) + "1"));
-//    }
-
     @Test
     public void isStringADoubleAtMinDouble() {
         assertTrue(UtilityFunctions.isStringADouble(Double.toString(Double.MIN_VALUE)));
     }
-
-//    @Test //TODO not sure how to do this as it wraps around
-//    public void isStringADoubleBelowMinDouble() {
-//        assertFalse(UtilityFunctions.isStringADouble(Double.toString(Double.MIN_VALUE - 1)));
-//    }
 
     @Test
     public void isStringAnIntEmptyString() {

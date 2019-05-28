@@ -13,6 +13,9 @@ GET     /users                      controllers.UserController.userindex(request
 #Handles AJAX request to get the user
 GET     /users/get                  controllers.UserController.getUser(request:Request)
 
+#Handles AJAX request to get the user
+GET     /users/photos                  controllers.UserController.getUserPhotosAjax(request:Request)
+
 #Renders register page
 GET     /users/register             controllers.RegisterController.createuser()
 
@@ -75,6 +78,8 @@ GET     /users/profile/search       controllers.TravelPartnerController.renderFi
 
 #Handles searching for travel partners
 POST    /users/profile/search       controllers.TravelPartnerController.searchByAttribute(request: Request)
+
+GET     /users/profilepicture/isSet     controllers.ProfileController.isProfilePictureSet(request: Request)
 
 
 #Renders page for creating trips
@@ -142,6 +147,9 @@ POST    /users/home         controllers.HomeController.upload(request:Request)
 
 POST    /users/home/profilePicture         controllers.HomeController.uploadProfilePicture(request:Request)
 
+# Sets the users profile picture back to a normal picture
+POST    /users/home/profilePicture1/removeProfilePictureStatus1  controllers.HomeController.setProfilePhotoToNormalPhoto(request:Request)
+
 GET    /users/home/photoPrivacy/:id/:setPublic         controllers.HomeController.makePicturePublic(request:Request, id: Integer, setPublic: Integer)
 
 #Handles logout request from the user
@@ -156,7 +164,7 @@ POST     /users/profile/ttypes      controllers.TravellerTypeController.submitUp
 #Handles deleting a traveller type
 POST     /users/profile/delete/:typeId      controllers.TravellerTypeController.deleteUpdateTravellerType(request:Request, typeId:Integer)
 
-#Renders page for displaying a given user's profile (used for debugging)
+#Renders page for displaying a given user's profile
 GET     /users/profile/:id          controllers.ProfileController.showProfile(request : Request, id : Integer)
 
 # Map static resources from the /public folder to the /assets URL path
@@ -236,12 +244,13 @@ PUT     /users/destinations/:id         controllers.DestinationController.linkPh
 POST     /users/destinations/:destId/:photoId         controllers.DestinationController.addPhotoToDestination(request : Request, photoId : Integer, destId : Integer)
 
 #Handles unlinking a destination from a photo
++nocsrf
 DELETE  /users/destinations/:photoId/:destId                   controllers.DestinationController.unlinkPhotoFromDestination(request : Request, photoId : Integer, destId: Integer)
 
 #Handles creating a destination
 POST    /users/destinations/save        controllers.DestinationController.saveDestinationFromRequest(request : Request)
 
-#Handles deleting a destination //TODO needs to be changed from get request
+#Handles deleting a destination
 GET     /users/destinations/delete/:id   controllers.DestinationController.deleteDestination(request : Request, id : Integer)
 
 #Treasure Hunts
@@ -264,7 +273,9 @@ POST     /users/treasurehunts/edit/save/:id                    controllers.Treas
 GET     /users/treasurehunts/delete/:id                    controllers.TreasureHuntController.deleteTreasureHunt(request : Request, id : Integer)
 
 # Undo
++nocsrf
 PUT     /undo                                              controllers.UndoRedoController.undo(request: Request)
 
 # Redo
++nocsrf
 PUT     /redo                                              controllers.UndoRedoController.redo(request: Request)

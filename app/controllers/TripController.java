@@ -9,6 +9,7 @@ import models.Destination;
 import models.Trip;
 import models.User;
 import models.Visit;
+import models.commands.visits.EditVisitCommand;
 import models.commands.Trips.DeleteTripCommand;
 import play.data.Form;
 import play.data.FormFactory;
@@ -51,7 +52,7 @@ public class TripController extends Controller {
             return ok(createTrip.render(incomingForm, user));
         }
         else{
-            return unauthorized("Oops, you are not logged in");
+            return redirect(routes.UserController.userindex());
         }
     }
 
@@ -80,7 +81,7 @@ public class TripController extends Controller {
             }
         }
         else{
-            return unauthorized("Oops, you are not logged in");
+            return redirect(routes.UserController.userindex());
         }
     }
 
@@ -110,7 +111,7 @@ public class TripController extends Controller {
             return redirect(routes.TripController.addTripDestinations(tripid));
         }
         else{
-            return unauthorized("Oops, you are not logged in");
+            return redirect(routes.UserController.userindex());
         }
         //return redirect(routes.UserController.userindex());
     }
@@ -139,7 +140,7 @@ public class TripController extends Controller {
             }
         }
         else{
-            return unauthorized("Oops, you are not logged in");
+            return redirect(routes.UserController.userindex());
         }
     }
 
@@ -177,7 +178,8 @@ public class TripController extends Controller {
                 if(tripFactory.hasRepeatDest(trip.getVisits(), visit, "SWAP")){
                     return badRequest("You cannot visit the same destination twice in a row!");
                 }
-                visit.update();
+                EditVisitCommand editVisitCommand = new EditVisitCommand(visit);
+                user.getCommandManager().executeCommand(editVisitCommand);
                 return redirect(routes.TripController.displaytrip(trip.getTripid()));
             }
             else{
@@ -185,7 +187,7 @@ public class TripController extends Controller {
             }
         }
         else{
-            return unauthorized("Oops, you are not logged in");
+            return redirect(routes.UserController.userindex());
         }
     }
 
@@ -222,7 +224,7 @@ public class TripController extends Controller {
             }
         }
         else{
-            return unauthorized("Oops, you are not logged in");
+            return redirect(routes.UserController.userindex());
         }
     }
 
@@ -251,7 +253,7 @@ public class TripController extends Controller {
             }
         }
         else{
-            return unauthorized("Oops, you are not logged in");
+            return redirect(routes.UserController.userindex());
         }
     }
 
@@ -310,7 +312,7 @@ public class TripController extends Controller {
             }
         }
         else{
-            return unauthorized("Oops, you are not logged in");
+            return redirect(routes.UserController.userindex());
         }
     }
 
@@ -351,7 +353,7 @@ public class TripController extends Controller {
         }
         else{
             //flash("danger", "You are not logged in.");
-            return unauthorized();
+            return redirect(routes.UserController.userindex());
         }
         //flash("success", "Destination deleted.");
         return ok();
@@ -383,7 +385,7 @@ public class TripController extends Controller {
             }
         }
         else{
-            return unauthorized();
+            return redirect(routes.UserController.userindex());
         }
     }
 
@@ -404,7 +406,7 @@ public class TripController extends Controller {
                 return unauthorized("Oops, this is a private trip and you don't own it.");
             }
         } else {
-            return unauthorized("Oops, you are not logged in");
+            return redirect(routes.UserController.userindex());
         }
     }
 
@@ -440,7 +442,7 @@ public class TripController extends Controller {
             }
         }
         else{
-            return unauthorized("Oops, you are not logged in");
+            return redirect(routes.UserController.userindex());
         }
         //return redirect(routes.UserController.userindex());
         */

@@ -1,4 +1,4 @@
-package models.commands;
+package models.commands.general;
 
 import models.BaseModel;
 

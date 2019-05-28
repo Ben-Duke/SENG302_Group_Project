@@ -130,7 +130,7 @@ public class HomeController {
     public Result uploadProfilePicture(Http.Request request) {
         User user = User.getCurrentUser(request);
         if(user != null) {
-            Map<String, String[]> datapart = request.body().asMultipartFormData().asFormUrlEncoded();
+//            Map<String, String[]> datapart = request.body().asMultipartFormData().asFormUrlEncoded();
             boolean isPublic = true;
 
             //Get the photo data from the multipart form data encoding

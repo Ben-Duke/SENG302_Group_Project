@@ -32,7 +32,6 @@ public class EditProfilePictureCommand extends UndoableCommand {
      */
     @Override
     public void redo() {
-        System.out.println("editedPhoto: " + editedPhoto.photoId);
         execute();
     }
 

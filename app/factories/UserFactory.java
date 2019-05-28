@@ -317,8 +317,6 @@ public class UserFactory {
     }
 
     public static List<Passport> getUserPassports(int id){
-        //System.out.println(Passport.find.all().size());
-        //System.out.println(Nationality.find.all().size());
         return User.find.query().where().eq("userid", id).findOne().passports;
     }
 
@@ -383,7 +381,7 @@ public class UserFactory {
      * Remove the user's existing profile picture if it exists
      * @param userId the user id of the user whose profile picture is to be removed
      */
-    public static void removeExistingProfilePicture(int userId) {
+    private static void removeExistingProfilePicture(int userId) {
         UserPhoto existingProfile = getUserProfilePicture(userId);
         if (existingProfile != null) {
             existingProfile.setProfile(false);
@@ -398,14 +396,10 @@ public class UserFactory {
      */
     public static void replaceProfilePictureLogic(int userId, UserPhoto newPhoto) {
         if (newPhoto != null) {
-            System.out.println(getUserProfilePicture(userId));
             if (!newPhoto.equals(getUserProfilePicture(userId))) {
                 removeExistingProfilePicture(userId);
-                System.out.println(newPhoto);
                 newPhoto.setProfile(true);
-                System.out.println("Hello World");
-                newPhoto.update();
-                System.out.println(getUserProfilePicture(userId));
+                newPhoto.save();
             }
         } else {
             removeExistingProfilePicture(userId);

@@ -122,7 +122,7 @@ public class UndoRedoControllerTest extends BaseTestWithApplicationAndDatabase {
     public void undo_concurrency_checkErrorFlagSet() {
         editThenDeleteDestinationConcurrently(concurrencyUserId);
         undo(concurrencyUserId);
-        User user = UserAccessor.getUserById(Integer.parseInt(concurrencyUserId));
+        User user = UserAccessor.getById(Integer.parseInt(concurrencyUserId));
         assertTrue(user.isUndoRedoError());
     }
 
@@ -130,7 +130,7 @@ public class UndoRedoControllerTest extends BaseTestWithApplicationAndDatabase {
     public void undo_concurrency_checkRemovedFromStack() {
         editThenDeleteDestinationConcurrently(concurrencyUserId);
         undo(concurrencyUserId);
-        User user = UserAccessor.getUserById(Integer.parseInt(concurrencyUserId));
+        User user = UserAccessor.getById(Integer.parseInt(concurrencyUserId));
 
         assertTrue(user.getCommandManager().isUndoStackEmpty());
     }
@@ -151,7 +151,7 @@ public class UndoRedoControllerTest extends BaseTestWithApplicationAndDatabase {
     public void redo_concurrency_checkErrorFlagSet() {
         editUndoDeleteRedo();
 
-        User user = UserAccessor.getUserById(Integer.parseInt(concurrencyUserId));
+        User user = UserAccessor.getById(Integer.parseInt(concurrencyUserId));
 
         assertTrue(user.isUndoRedoError());
     }
@@ -160,7 +160,7 @@ public class UndoRedoControllerTest extends BaseTestWithApplicationAndDatabase {
     public void redo_concurrency_checkRemovedFromStack() {
         editUndoDeleteRedo();
 
-        User user = UserAccessor.getUserById(Integer.parseInt(concurrencyUserId));
+        User user = UserAccessor.getById(Integer.parseInt(concurrencyUserId));
 
         assertTrue(user.getCommandManager().isRedoStackEmpty());
     }

@@ -128,7 +128,6 @@ public class HomeController {
      * If the overwritten picture was a personal photo, it should persist as a personal photo.
      * If the overwritten picture was previously uploaded with this method (not a personal photo) it should not persist.
      *
-     * //TODO not persisting part
      * @param request the HTTP request
      * @return the homepage or an error page
      */
@@ -330,7 +329,6 @@ public class HomeController {
             } else if (profilePicture == null) {
                 return badRequest("help");
             } else {
-                //TODO extract to accessor class
                 profilePicture.setProfile(false);
                 profilePicture.save();
 

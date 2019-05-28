@@ -103,7 +103,6 @@ function initCreateDestinationMap() {
  *
  * Code from here
  * https://developers.google.com/maps/documentation/javascript/adding-a-legend
- * TODO put in README
  */
 function initMapLegend() {
     let icons = getAllMarkerIcons();

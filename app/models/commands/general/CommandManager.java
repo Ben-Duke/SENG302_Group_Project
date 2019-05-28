@@ -1,4 +1,4 @@
-package models.commands;
+package models.commands.general;
 
 import accessors.CommandManagerAccessor;
 import accessors.UserAccessor;
@@ -53,35 +53,31 @@ public class CommandManager extends BaseModel {
     public String undo() {
         if (!undoStack.isEmpty()) {
             UndoableCommand undoCommand = undoStack.pop();
-            undoCommand.undo();
-            redoStack.push(undoCommand);
-            return undoCommand.toString();
             try {
                 undoCommand.undo();
                 redoStack.push(undoCommand);
+                return undoCommand.toString();
             } catch(Exception exception){
                 user.setUndoRedoError(true);
                 UserAccessor.update(user);
             }
         }
-        return null;
+        return "";
     }
 
     public String redo() {
         if (!redoStack.isEmpty()) {
             UndoableCommand redoCommand = redoStack.pop();
-            redoCommand.redo();
-            undoStack.push(redoCommand);
-            return redoCommand.toString();
             try {
                 redoCommand.redo();
                 undoStack.push(redoCommand);
+                return redoCommand.toString();
             } catch(Exception exception){
                 user.setUndoRedoError(true);
                 UserAccessor.update(user);
             }
         }
-        return null;
+        return "";
     }
 
     public boolean isUndoStackEmpty() {

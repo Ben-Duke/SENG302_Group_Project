@@ -2,7 +2,7 @@ package models.commands.Destinations;
 
 import accessors.DestinationAccessor;
 import models.Destination;
-import models.commands.general.UndoableCommand;
+import models.commands.UndoableCommand;
 
 /** Command to edit a destination */
 public class EditDestinationCommand extends UndoableCommand {
@@ -42,7 +42,7 @@ public class EditDestinationCommand extends UndoableCommand {
     }
 
     /**
-     * Redos the update of the destination's detalis
+     * Redos the update of the destination's details
      */
     public void redo() {
         execute();

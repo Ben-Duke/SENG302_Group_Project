@@ -1,10 +1,19 @@
-package models.commands.general;
+package models.commands;
 
+import accessors.CommandManagerAccessor;
+import accessors.UserAccessor;
+import io.ebean.Finder;
 import models.BaseModel;
 import models.User;
 import org.slf4j.Logger;
 import utilities.UtilityFunctions;
 
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.swing.undo.UndoableEdit;
 import java.util.ArrayDeque;
 import java.util.Deque;
 
@@ -47,6 +56,13 @@ public class CommandManager extends BaseModel {
             undoCommand.undo();
             redoStack.push(undoCommand);
             return undoCommand.toString();
+            try {
+                undoCommand.undo();
+                redoStack.push(undoCommand);
+            } catch(Exception exception){
+                user.setUndoRedoError(true);
+                UserAccessor.update(user);
+            }
         }
         return null;
     }
@@ -57,7 +73,22 @@ public class CommandManager extends BaseModel {
             redoCommand.redo();
             undoStack.push(redoCommand);
             return redoCommand.toString();
+            try {
+                redoCommand.redo();
+                undoStack.push(redoCommand);
+            } catch(Exception exception){
+                user.setUndoRedoError(true);
+                UserAccessor.update(user);
+            }
         }
         return null;
+    }
+
+    public boolean isUndoStackEmpty() {
+        return undoStack.isEmpty();
+    }
+
+    public boolean isRedoStackEmpty() {
+        return redoStack.isEmpty();
     }
 }

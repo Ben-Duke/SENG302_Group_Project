@@ -22,7 +22,7 @@ public class EditProfileCommand extends UndoableCommand {
         actualUser = editedUser;
         this.editedUser.applyEditChanges(actualUser);
         this.uneditedUser =
-                UserAccessor.getUserById(editedUser.getUserid());
+                UserAccessor.getById(editedUser.getUserid());
     }
 
     /**

@@ -7,6 +7,7 @@ import akka.stream.Materializer;
 import akka.stream.javadsl.FileIO;
 import akka.stream.javadsl.Source;
 import akka.util.ByteString;
+import com.fasterxml.jackson.databind.JsonNode;
 import models.*;
 import org.junit.After;
 import org.junit.Before;
@@ -18,6 +19,7 @@ import play.db.Databases;
 import play.db.evolutions.Evolution;
 import play.db.evolutions.Evolutions;
 import play.inject.guice.GuiceApplicationBuilder;
+import play.libs.Json;
 import play.mvc.Http;
 import play.mvc.Result;
 import play.test.Helpers;
@@ -250,14 +252,18 @@ public class HomeControllerTest extends BaseTestWithApplicationAndDatabase {
         assertEquals(fileAsString, convertResultFileToString(result));
     }
 
+    /**
+     * Checks the serveProfilePicture method returns an ok (200) status when getting
+     * a users profile picture when they don't have one (it sends the generic
+     * placeholder).
+     */
     @Test
-    public void serveProfilePictureForUserWithoutProfilePicture(){
+    public void serveProfilePicture_ForUserWithoutProfilePicture_check200Status(){
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(GET)
                 .uri("/users/home/serveProfilePicture/4").session("connected", "4");
         Result result = route(app, request);
-        assertEquals(SEE_OTHER, result.status());
-        assertEquals("", contentAsString(result));
+        assertEquals(OK, result.status());
     }
 
     @Test
@@ -469,5 +475,37 @@ public class HomeControllerTest extends BaseTestWithApplicationAndDatabase {
             }
         }
         return null;
+    }
+
+    /**
+     * Tests the setProfilePhotoToNormalPhoto method returns a status 200 (OK)
+     * when a user with an existing profile photo removes it.
+     */
+    @Test
+    public void setProfilePhotoToNormalPhoto_withExistingProfilePhoto_checkStatus200() {
+        UserPhoto profilePic = new UserPhoto("/test/url", true,
+                                            true, User.find.byId(1));
+        profilePic.save();
+
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(Helpers.POST)
+                .uri("/users/home/profilePicture1/removeProfilePictureStatus1")
+                .session("connected", "1");
+        Result result = route(app, request);
+        assertEquals(OK, result.status());
+    }
+
+    /**
+     * Tests the setProfilePhotoToNormalPhoto method returns a status 400 (bad request)
+     * when a user without an existing profile photo attempts to remove it.
+     */
+    @Test
+    public void setProfilePhotoToNormalPhoto_withNoProfilePhoto_checkStatus400() {
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(Helpers.POST)
+                .uri("/users/home/profilePicture1/removeProfilePictureStatus1")
+                .session("connected", "1");
+        Result result = route(app, request);
+        assertEquals(BAD_REQUEST, result.status());
     }
 }

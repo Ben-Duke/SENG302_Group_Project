@@ -6,7 +6,6 @@ import models.Destination;
 import models.Nationality;
 import models.Passport;
 import org.slf4j.Logger;
-import play.api.PlayException;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -21,7 +20,7 @@ public class CountryUtils {
     private static List<String> countries;
 
 
-    public static List<String> getCountries() {
+    static List<String> getCountries() {
         updateCountries();
         return countries;
     }
@@ -62,7 +61,7 @@ public class CountryUtils {
      * Runs the methods for validating passports
      * nationalities and destinations.
      */
-    public static void validateUsedCountries() {
+     static void validateUsedCountries() {
         validatePassportCountries();
         validateNationalityCountries();
         validateDestinationCountries();
@@ -82,20 +81,18 @@ public class CountryUtils {
 
             validateUsedCountries();
 
-            printLoadingCountriesMessage("SUCCEEDED");
+            logger.info("SUCCEEDED");
 
         } catch (Exception e) {
 
-            printLoadingCountriesMessage("FAILED");
-//            e.printStackTrace();
+            logger.error("FAILED");
 
             if (countries == null) {
                 countries = new ArrayList<>();
 
                 Locale[] locales = Locale.getAvailableLocales();
                 for (Locale locale : locales) {
-
-                    if (locale.getDisplayCountry() != "" &&
+                    if (!locale.getDisplayCountry().equals("") &&
                             !countries.contains(locale.getDisplayCountry())) {
 
                         countries.add(locale.getDisplayCountry());
@@ -104,9 +101,7 @@ public class CountryUtils {
 
                 lastUpdated = new Date();
                 printLoadingCountriesMessage("Locales loaded in place");
-
             }
-
         }
     }
 
@@ -115,22 +110,21 @@ public class CountryUtils {
         LocalDateTime dateNowUTC = LocalDateTime.now(ZoneId.of("UTC"));
         String format = "Reloading countries at (UTC): %s | " +
                 "lastUpdated: %s | " +
-                "countries loaded: %s | ";
+                "countries loaded: %s | %s";
         String formattedStr = String.format(format,
                 dateNowUTC,
                 lastUpdated,
-                countries != null);
+                countries != null,
+                message);
 
-        System.out.println(formattedStr + message);
-
+        logger.info(formattedStr);
     }
-
 
     /**
      * For passports check if the country associated is contained
      * in the list of valid countries.
      */
-    public static void validatePassportCountries() {
+    static void validatePassportCountries() {
         List<Passport> passports = UserAccessor.getAllPassports();
 
         for (Passport passport : passports) {
@@ -143,7 +137,6 @@ public class CountryUtils {
                     passport.update();
                 }
             }
-
         }
     }
 
@@ -151,7 +144,7 @@ public class CountryUtils {
      * For nationalities check if the country associated is contained
      * in the list of valid countries.
      */
-    public static void validateNationalityCountries() {
+    private static void validateNationalityCountries() {
         List<Nationality> nationalities = UserAccessor.getAllNationalities();
 
         for (Nationality nationality : nationalities) {
@@ -172,7 +165,7 @@ public class CountryUtils {
      * For destinations check if the country associated is contained
      * in the list of valid countries.
      */
-    public static void validateDestinationCountries() {
+    private static void validateDestinationCountries() {
         List<Destination> destinations = DestinationAccessor.getAllDestinations();
 
         for (Destination destination : destinations) {
@@ -188,6 +181,4 @@ public class CountryUtils {
             }
         }
     }
-
-
 }

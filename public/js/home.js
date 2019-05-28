@@ -411,7 +411,8 @@ function deletePhotoRequest(url, photoId, imageId){
                     function(){
                         console.log("calling unlink");
                         $.ajax({
-                            url: "/users/home/deletePicture/?photoId=" + photoId + "&userInput=true",
+                            //url: "/users/home/deletePicture/?photoId=" + photoId + "&userInput=true",
+                            url: '/users/unlinkAndDeletePicture/'+photoId,
                             method: "Delete",
                             success:function(res) {
                                 deletePhotoFromUI(photoId)

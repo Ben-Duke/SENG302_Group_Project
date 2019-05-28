@@ -2,7 +2,7 @@ package models.commands.Destinations;
 
 import accessors.DestinationAccessor;
 import models.Destination;
-import models.commands.UndoableCommand;
+import models.commands.general.UndoableCommand;
 
 /** Command to edit a destination */
 public class EditDestinationCommand extends UndoableCommand {
@@ -46,6 +46,14 @@ public class EditDestinationCommand extends UndoableCommand {
      */
     public void redo() {
         execute();
+    }
+
+    /**
+     * Returns result from the undo/redo command as a string
+     * @return String result of command
+     */
+    public String toString() {
+        return this.actualDestination.getDestName() + " editing";
     }
 }
 

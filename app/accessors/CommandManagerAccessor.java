@@ -1,11 +1,9 @@
 package accessors;
 
-import models.commands.CommandManager;
+import models.commands.general.CommandManager;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 public class CommandManagerAccessor {
     private static Map<String, CommandManager> commandManagers = new HashMap<>();

@@ -2,7 +2,7 @@ package models.commands.treasurehunts;
 
 import accessors.TreasureHuntAccessor;
 import models.TreasureHunt;
-import models.commands.UndoableCommand;
+import models.commands.general.UndoableCommand;
 
 /** Command to delete a destination */
 public class EditTreasureHuntCommand extends UndoableCommand {
@@ -42,5 +42,13 @@ public class EditTreasureHuntCommand extends UndoableCommand {
     @Override
     public void redo() {
         execute();
+    }
+
+    /**
+     * Returns result from the undo/redo command as a string
+     * @return String result of command
+     */
+    public String toString() {
+        return "Trip " + this.actualTreasureHunt.getTitle() + " editing";
     }
 }

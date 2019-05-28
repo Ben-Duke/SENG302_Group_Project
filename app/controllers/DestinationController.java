@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import factories.DestinationFactory;
 import factories.UserFactory;
 import formdata.DestinationFormData;
+import io.ebean.DuplicateKeyException;
 import models.*;
 
 
@@ -702,7 +703,11 @@ public class DestinationController extends Controller {
             System.out.println("Dest size is " + photo.getDestinations().size());
             photo.deletePhoto(photoId);
 
-        }catch(Exception error){
+       }
+// catch(Exception error){
+//            return badRequest("Could not delete photo " + error);
+//        }
+        catch(DuplicateKeyException error){
             return badRequest("Could not delete photo " + error);
         }
 

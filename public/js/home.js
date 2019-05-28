@@ -506,11 +506,11 @@ function deletePhotoRequest(url, photoId, imageId){
 
 
             let profileImage = document.getElementById("profilePicture");
-            let thumbProfileImage = document.getElementById("profilePictureThumb");
-            //image.src="https://static.interestingengineering.com/images/APRIL/sizes/black_hole_resize_md.jpg";
+            let thumbProfileImage = document.getElementById("thumbnailProfilePic");
+            let picturePicker = document.getElementById("change-profile-pic");
             profileImage.src= "/assets/images/Generic.png";
             thumbProfileImage.src= "/assets/images/Generic.png";
-
+            picturePicker.src = "/assets/images/Generic.png";
 
 
         },
@@ -533,10 +533,11 @@ function deletePhotoRequest(url, photoId, imageId){
 
 
                                 let profileImage = document.getElementById("profilePicture");
-                                let thumbProfileImage = document.getElementById("profilePictureThumb");
-
+                                let thumbProfileImage = document.getElementById("thumbnailProfilePic");
+                                let picturePicker = document.getElementById("change-profile-pic");
                                 profileImage.src = "/assets/images/Generic.png";
                                 thumbProfileImage.src = "/assets/images/Generic.png";
+                                picturePicker.src = "/assets/images/Generic.png";
                             },
                             error:function(res){
                                 console.log(res.responseText);

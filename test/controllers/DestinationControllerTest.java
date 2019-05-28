@@ -195,16 +195,24 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
     @Test
     public void checkUnlinkFromDestinationAndDelete(){
         DestinationController testDestinationController = new DestinationController();
-        Destination destination = new Destination("test","dest","1","test",0.00,0.00,null,true);
+        Destination destination = new Destination("test","dest","1","test",0.00,0.00,User.find.byId(2),true);
         destination.save();
-        UserPhoto photo = new UserPhoto("/test",true,false,null);
+        UserPhoto photo = new UserPhoto("/test",true,false,User.find.byId(2));
         photo.addDestination(destination);
         photo.save();
-        int beforeDeletion = photo.find.all().size();
-        testDestinationController.unlinkPhotoFromDestinationAndDelete(null,photo.getPhotoId());
-        int afterDeletion = photo.find.all().size();
-        System.out.println(afterDeletion);
 
+
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(Helpers.GET)
+                .uri("/users/").session("connected", "2");
+        CSRFTokenHelper.addCSRFToken(request);
+
+        int beforeDeletion = photo.find.all().size();
+        System.out.println("Before: "+beforeDeletion);
+        System.out.println(testDestinationController.unlinkPhotoFromDestinationAndDelete(request, photo.getPhotoId()).body().as("application/json"));
+        System.out.println("phot0 size " + photo.getDestinations().size());
+        int afterDeletion = photo.find.all().size();
+        System.out.println("After: " + afterDeletion);
         assertEquals(afterDeletion ,beforeDeletion-1);
     }
 

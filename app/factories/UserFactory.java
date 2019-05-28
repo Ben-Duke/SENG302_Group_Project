@@ -370,7 +370,7 @@ public class UserFactory {
      * @return the UserPhoto that is the profile picture if it exists, otherwise null
      */
     public static UserPhoto getUserProfilePicture(int userId) {
-        User user = UserAccessor.getUserById(userId);
+        User user = UserAccessor.getById(userId);
         UserPhoto userPhoto = UserPhoto.find.query().where().eq("user", user).and().eq("isProfile", true).findOne();
         if(userPhoto != null) {
             return  userPhoto;

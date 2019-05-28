@@ -35,7 +35,7 @@ public class UserAccessor {
      * @return the user's profile picture or null if no profile picture exists
      */
     public static UserPhoto getUserProfilePictureByUserId(int userId) {
-        User user = getUserById(userId);
+        User user = getById(userId);
         if (user != null) {
             return UserFactory.getUserProfilePicture(userId);
         } else {

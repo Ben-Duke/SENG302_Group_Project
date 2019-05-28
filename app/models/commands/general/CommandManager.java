@@ -1,10 +1,19 @@
 package models.commands.general;
 
+import accessors.CommandManagerAccessor;
+import accessors.UserAccessor;
+import io.ebean.Finder;
 import models.BaseModel;
 import models.User;
 import org.slf4j.Logger;
 import utilities.UtilityFunctions;
 
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.swing.undo.UndoableEdit;
 import java.util.ArrayDeque;
 import java.util.Deque;
 
@@ -44,20 +53,38 @@ public class CommandManager extends BaseModel {
     public String undo() {
         if (!undoStack.isEmpty()) {
             UndoableCommand undoCommand = undoStack.pop();
-            undoCommand.undo();
-            redoStack.push(undoCommand);
-            return undoCommand.toString();
+            try {
+                undoCommand.undo();
+                redoStack.push(undoCommand);
+                return undoCommand.toString();
+            } catch(Exception exception){
+                user.setUndoRedoError(true);
+                UserAccessor.update(user);
+            }
         }
-        return null;
+        return "";
     }
 
     public String redo() {
         if (!redoStack.isEmpty()) {
             UndoableCommand redoCommand = redoStack.pop();
-            redoCommand.redo();
-            undoStack.push(redoCommand);
-            return redoCommand.toString();
+            try {
+                redoCommand.redo();
+                undoStack.push(redoCommand);
+                return redoCommand.toString();
+            } catch(Exception exception){
+                user.setUndoRedoError(true);
+                UserAccessor.update(user);
+            }
         }
-        return null;
+        return "";
+    }
+
+    public boolean isUndoStackEmpty() {
+        return undoStack.isEmpty();
+    }
+
+    public boolean isRedoStackEmpty() {
+        return redoStack.isEmpty();
     }
 }

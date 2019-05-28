@@ -4,6 +4,7 @@ package controllers;
 import accessors.DestinationAccessor;
 import accessors.TreasureHuntAccessor;
 import accessors.UserAccessor;
+import accessors.UserAccessor;
 import models.Destination;
 import models.TreasureHunt;
 import models.User;
@@ -552,5 +553,56 @@ public class TreasureHuntControllerTest extends BaseTestWithApplicationAndDataba
         treasureHunt.setStartDate(formMap.get("startDate"));
         treasureHunt.setEndDate(formMap.get("endDate"));
         return treasureHunt;
+    }
+
+    @Test
+    public void undoDeleteTreasureHunt() {
+        User user = UserAccessor.getById(2);
+        int nTreasureHunts = user.getTreasureHunts().size();
+        Integer tHuntId = user.getTreasureHunts().get(0).thuntid;
+
+        // Delete
+        Http.RequestBuilder fakeRequest = Helpers.fakeRequest().method(Helpers.GET).uri("/users/treasurehunts/delete/" + tHuntId).session("connected", "2");
+        Helpers.route(app, fakeRequest);
+        // Undo the delete
+        Http.RequestBuilder undoRequest = Helpers.fakeRequest()
+                .method(PUT)
+                .uri("/undo").session("connected", "2");
+        Helpers.route(app, undoRequest);
+        user = UserAccessor.getById(2);
+        assertEquals(nTreasureHunts, user.getTreasureHunts().size());
+    }
+
+    @Test
+    public void redoDeleteTreasureHuntCommand() {
+        User user = UserAccessor.getById(2);
+        int nTreasureHunts = user.getTreasureHunts().size();
+        Integer tHuntId = user.getTreasureHunts().get(0).thuntid;
+
+        // Delete
+        Http.RequestBuilder fakeRequest = Helpers.fakeRequest().method(Helpers.GET).uri("/users/treasurehunts/delete/" + tHuntId).session("connected", "2");
+        Helpers.route(app, fakeRequest);
+        user = UserAccessor.getById(2);
+        System.out.println(user.getTreasureHunts().size());
+        // Undo the delete
+        Http.RequestBuilder undoRequest = Helpers.fakeRequest()
+                .method(PUT)
+                .uri("/undo").session("connected", "2");
+        Helpers.route(app, undoRequest);
+
+        user = UserAccessor.getById(2);
+        System.out.println(user.getTreasureHunts().size());
+
+        // Redo the delete
+        Http.RequestBuilder redoRequest = Helpers.fakeRequest()
+                .method(PUT)
+                .uri("/redo").session("connected", "2");
+        Helpers.route(app, redoRequest);
+
+        user = UserAccessor.getById(2);
+        System.out.println(user.getTreasureHunts().size());
+
+        user = UserAccessor.getById(2);
+        assertEquals(nTreasureHunts-1, user.getTreasureHunts().size());
     }
 }

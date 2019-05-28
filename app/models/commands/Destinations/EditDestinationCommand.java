@@ -42,7 +42,7 @@ public class EditDestinationCommand extends UndoableCommand {
     }
 
     /**
-     * Redos the update of the destination's detalis
+     * Redos the update of the destination's details
      */
     public void redo() {
         execute();

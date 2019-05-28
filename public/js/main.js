@@ -33,11 +33,16 @@ $('#redoButton').click( function(e) {
  * @param url Either Undo or Redo
  */
 function undoRedoRequest(url){
+    var token =  $('input[name="csrfToken"]').attr('value');
+    $.ajaxSetup({
+        beforeSend: function (xhr) {
+            xhr.setRequestHeader('Csrf-Token', token);
+        }
+    });
     $.ajax({
         type: 'PUT',
         url: '/' + url,
-
-        success:function(res){
+        success:function(res, textStatus, xhr){
             sessionStorage.setItem(url, res);
             window.location.reload();
         },
@@ -45,7 +50,7 @@ function undoRedoRequest(url){
             console.log(xhr.status + " " + textStatus + " " + errorThrown);
         }
     })
-}
+};
 
 
 /**

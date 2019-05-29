@@ -369,7 +369,13 @@ public class UserFactory {
      */
     public static UserPhoto getUserProfilePicture(int userId) {
         User user = UserAccessor.getById(userId);
-        UserPhoto userPhoto = UserPhoto.find.query().where().eq("user", user).and().eq("isProfile", true).findOne();
+        List<UserPhoto> userPhotos = UserPhoto.find.query().where()
+                .eq("user", user).and()
+                .eq("isProfile", true).findList();
+        UserPhoto userPhoto = null;
+        if(!userPhotos.isEmpty()){
+            userPhoto = userPhotos.get(0);
+        }
         if(userPhoto != null) {
             return  userPhoto;
         } else {
@@ -397,8 +403,9 @@ public class UserFactory {
     public static void replaceProfilePictureLogic(int userId, UserPhoto newPhoto) {
         if (newPhoto != null) {
             removeExistingProfilePicture(userId);
-            newPhoto.setProfile(true);
-            newPhoto.update();
+            UserPhoto uneditedPhoto = UserPhoto.find.byId(newPhoto.photoId);
+            uneditedPhoto.setProfile(true);
+            uneditedPhoto.update();
         } else {
             removeExistingProfilePicture(userId);
         }

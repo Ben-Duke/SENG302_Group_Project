@@ -10,10 +10,7 @@ import io.ebean.DuplicateKeyException;
 import models.*;
 
 
-import models.commands.Destinations.DeleteDestinationCommand;
-import models.commands.Destinations.LinkPhotoDestinationCommand;
-import models.commands.Destinations.UnlinkPhotoDestinationCommand;
-import models.commands.Destinations.EditDestinationCommand;
+import models.commands.Destinations.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import play.api.http.MediaRange;

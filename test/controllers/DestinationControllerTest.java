@@ -977,6 +977,16 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
      */
     @Test
     public void addDuplicatePhotoToDestination() {
+        UserPhoto userPhoto1 = UserPhoto.find.byId(1);
+        Destination christchurch = Destination.find.byId(1);
+        Destination wellington = Destination.find.byId(2);
+        userPhoto1.addDestination(christchurch);
+        userPhoto1.addDestination(wellington);
+        userPhoto1.save();
+
+
+
+
         addPhotoToDestination();
         boolean destPhotoExists = false;
         int destPhotoSize = Destination.find.byId(1).getUserPhotos().size();

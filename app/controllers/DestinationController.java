@@ -944,6 +944,9 @@ public class DestinationController extends Controller {
                 if (photo.getUser().getUserid() == user.getUserid()) {
                     //add checks for private destinations here once destinations have been merged in.
                     //You can only link a photo to a private destination if you own the private destination.
+
+                    System.out.println(photo.getDestinations().contains(destination));
+                    System.out.println(photo.getDestinations());
                     if (!photo.getDestinations().contains(destination)) {
                         LinkPhotoDestinationCommand cmd = new LinkPhotoDestinationCommand(photo, destination);
                         user.getCommandManager().executeCommand(cmd);

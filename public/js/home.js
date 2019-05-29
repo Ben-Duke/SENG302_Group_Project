@@ -497,7 +497,8 @@ function deletePhotoRequest(url, photoId, imageId){
         url: url,
         method: "Delete",
         data: JSON.stringify({
-            photoid: '"' + photoId + '"'
+            photoid: '"' + photoId + '"',
+            response: false
         }),
         headers: {
             'Content-Type': 'application/json'
@@ -505,10 +506,62 @@ function deletePhotoRequest(url, photoId, imageId){
         success:function(res){
             deletePhotoFromUI(photoId)
 
+
+            let profileImage = document.getElementById("profilePicture");
+            let thumbProfileImage = document.getElementById("thumbnailProfilePic");
+            let picturePicker = document.getElementById("change-profile-pic");
+            profileImage.src= "/assets/images/Generic.png";
+            thumbProfileImage.src= "/assets/images/Generic.png";
+            picturePicker.src = "/assets/images/Generic.png";
+
+
         },
         error: function( res){
-             //console.log(res.status);
-             if(res.responseText === "Failed to delete image"){
+
+            if(res.responseText === "Is profile picture ask user"){
+                console.log("Need to ask the user for permission");
+                $(document.getElementById('destination-carousel')).modal('hide');
+                $(document.getElementById('confirmDeleteProfilePhotoModal')).modal('show');
+
+                document.getElementById('yesDeleteProfilePhoto').onclick =
+                    function(){
+                        console.log("calling unlink");
+                        $.ajax({
+                            //url: "/users/home/deletePicture/?photoId=" + photoId + "&userInput=true",
+                            url: '/users/unlinkAndDeletePicture/'+photoId,
+                            method: "Delete",
+                            success:function(res) {
+                                deletePhotoFromUI(photoId);
+
+
+                                let profileImage = document.getElementById("profilePicture");
+                                let thumbProfileImage = document.getElementById("thumbnailProfilePic");
+                                let picturePicker = document.getElementById("change-profile-pic");
+                                profileImage.src = "/assets/images/Generic.png";
+                                thumbProfileImage.src = "/assets/images/Generic.png";
+                                picturePicker.src = "/assets/images/Generic.png";
+                            },
+                            error:function(res){
+                                console.log(res.responseText);
+                            }
+
+
+                            });
+
+                        $(document.getElementById('destination-carousel')).modal('show')
+
+                        };
+                        document.getElementById('noCloseDeleteProfilePhotoButton').onclick =
+                    function(){
+                        $(document.getElementById('destination-carousel')).modal('show')
+                    };
+
+                $('#confirmDeletePhotoModal').on('hidden.bs.modal', function () {
+                    $(document.getElementById('destination-carousel')).modal('show');
+                })
+
+            }
+             else if(res.responseText === "Failed to delete image"){
                  $(document.getElementById('destination-carousel')).modal('hide');
                  $(document.getElementById('confirmDeletePhotoModal')).modal('show');
 
@@ -519,11 +572,11 @@ function deletePhotoRequest(url, photoId, imageId){
                              url: '/users/unlinkAndDeletePicture/'+photoId,
                              method: "Delete",
                              success: function (res) {
-                                 console.log("unlinked and deleted photo")
+                                 console.log("unlinked and deleted photo");
                                  deletePhotoFromUI(photoId);
                              },
                              error: function (res) {
-                                 console.log(JSON.stringify(res.data));
+                                 console.log(JSON.stringify(res));
                              }
                          })
 

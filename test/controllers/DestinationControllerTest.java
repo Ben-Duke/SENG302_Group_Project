@@ -195,17 +195,22 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
     @Test
     public void checkUnlinkFromDestinationAndDelete(){
         DestinationController testDestinationController = new DestinationController();
-        Destination destination = new Destination("test","dest","1","test",0.00,0.00,null,true);
+        Destination destination = new Destination("test","dest","1","test",0.00,0.00,User.find.byId(2),true);
         destination.save();
-        UserPhoto photo = new UserPhoto("/test",true,false,null);
+        UserPhoto photo = new UserPhoto("/test",true,false,User.find.byId(2));
         photo.addDestination(destination);
         photo.save();
-        int beforeDeletion = photo.find.all().size();
-        testDestinationController.unlinkPhotoFromDestinationAndDelete(null,photo.getPhotoId());
-        int afterDeletion = photo.find.all().size();
-        System.out.println(afterDeletion);
 
-        assertEquals(afterDeletion ,beforeDeletion-1);
+        int beforeDeletion = UserPhoto.find.all().size();
+
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(DELETE)
+                .uri("/users/unlinkAndDeletePicture/" + photo.getPhotoId())
+                .session("connected", "2");
+        CSRFTokenHelper.addCSRFToken(request);
+        route(app, request);
+
+        assertEquals(beforeDeletion - 1, UserPhoto.find.all().size());
     }
 
 

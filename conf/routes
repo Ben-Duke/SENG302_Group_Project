@@ -55,6 +55,7 @@ GET  /users/admin/destination_modification_request/reject/:id    controllers.Des
 #Handles updating a destination then deleting a destination modification request on acceptance by admin
 GET  /users/admin/destination_modification_request/accept/:id    controllers.DestinationController.destinationModificationAccept(request: Request, id: Integer)
 
+
 #Handles updating profile
 POST    /users/profile/update       controllers.ProfileController.updateProfileRequest(request: Request)
 
@@ -135,7 +136,7 @@ GET     /users/home/servePicture/:path                 controllers.HomeControlle
 DELETE /users/unlinkAndDeletePicture/:photoId                  controllers.DestinationController.unlinkAndDelete(request: Request, photoId: Integer)
 
 #Deletes the UserPhoto with the photoId
-DELETE /users/home/deletePicture/                  controllers.ProfileController.deletePhoto(request: Request, photoId: Integer)
+DELETE /users/home/deletePicture/                  controllers.ProfileController.deletePhoto(photoId: Integer, userInput : Boolean)
 
 #Serve the profile picture
 GET     /users/home/serveProfilePicture/:id              controllers.HomeController.serveProfilePicture(request: Request, id:Integer)

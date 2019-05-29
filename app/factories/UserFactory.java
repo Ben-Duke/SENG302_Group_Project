@@ -23,7 +23,6 @@ public class UserFactory {
 
     @Inject
     static FormFactory formFactory;
-    public static Logger logger = LoggerFactory.getLogger("application");
 
     public UserFactory(){//Just used to instanciate
     }

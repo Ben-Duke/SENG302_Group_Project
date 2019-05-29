@@ -77,6 +77,23 @@ public class UserPhoto extends Model {
     public boolean getIsProfile(){
         return this.isProfile;
     }
+    public UserPhoto(UserPhoto userPhoto){
+        this.url = userPhoto.getUrl();
+        this.isPublic = userPhoto.getIsPhotoPublic();
+        this.user = userPhoto.getUser();
+        this.isProfile = userPhoto.getIsProfilePhoto();
+        this.destinations = userPhoto.getDestinations();
+        this.primaryPhotoDestinations = userPhoto.getPrimaryPhotoDestinations();
+    }
+
+
+    public boolean getIsPhotoPublic(){
+        return this.isPublic;
+    }
+
+    public boolean getIsProfilePhoto(){
+        return this.isProfile;
+    }
 
     /**
      * Gets an unused user photo url.
@@ -210,4 +227,8 @@ public class UserPhoto extends Model {
         return primaryPhotoDestinations;
     }
 
+    @Override
+    public String toString() {
+        return "url is " + this.url + " Id is " + this.getPhotoId();
+    }
 }

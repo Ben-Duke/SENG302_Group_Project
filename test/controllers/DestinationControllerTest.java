@@ -432,6 +432,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
     *  Admin user used to check that treasure hunts/visits are remade
     *  Covers normal user flow */
     public void deleteDestination_asAdmin_undo_checkDestinationExists() {
+
         int destinationSize = DestinationAccessor.getAllDestinations().size();
         int visitSize = VisitAccessor.getAll().size();
         int treasureHuntSize = TreasureHuntAccessor.getAll().size();
@@ -953,15 +954,15 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
     @Test
     public void addPhotoToDestination() {
         boolean destPhotoExists = false;
-        int destPhotoSize = Destination.find.byId(1).getUserPhotos().size();
+        int destPhotoSize = Destination.find.byId(3).getUserPhotos().size();
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(POST)
-                .uri("/users/destinations/1/1")
+                .uri("/users/destinations/3/1")
                 .session("connected", "2");
         Result result = route(app, request);
         assertEquals(SEE_OTHER, result.status());
 
-        List<UserPhoto> destPhotos = Destination.find.byId(1).getUserPhotos();
+        List<UserPhoto> destPhotos = Destination.find.byId(3).getUserPhotos();
         for (UserPhoto destPhoto : destPhotos) {
             if (destPhoto.getPhotoId() == 1) {
                 destPhotoExists = true;
@@ -976,6 +977,16 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
      */
     @Test
     public void addDuplicatePhotoToDestination() {
+        UserPhoto userPhoto1 = UserPhoto.find.byId(1);
+        Destination christchurch = Destination.find.byId(1);
+        Destination wellington = Destination.find.byId(2);
+        userPhoto1.addDestination(christchurch);
+        userPhoto1.addDestination(wellington);
+        userPhoto1.save();
+
+
+
+
         addPhotoToDestination();
         boolean destPhotoExists = false;
         int destPhotoSize = Destination.find.byId(1).getUserPhotos().size();

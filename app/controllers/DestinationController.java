@@ -10,10 +10,7 @@ import io.ebean.DuplicateKeyException;
 import models.*;
 
 
-import models.commands.Destinations.DeleteDestinationCommand;
-import models.commands.Destinations.LinkPhotoDestinationCommand;
-import models.commands.Destinations.UnlinkPhotoDestinationCommand;
-import models.commands.Destinations.EditDestinationCommand;
+import models.commands.Destinations.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import play.api.http.MediaRange;
@@ -116,6 +113,8 @@ public class DestinationController extends Controller {
         DestinationFactory destFactory = new DestinationFactory();
 
         if (user != null) {
+            user.getCommandManager().setAllowedType(DestinationPageCommand.class);
+
             CountryUtils.updateCountries();
 
             List<Destination> destinations = user.getDestinations();
@@ -533,15 +532,12 @@ public class DestinationController extends Controller {
     public Result deleteDestination(Http.Request request, Integer destId) {
         User user = User.getCurrentUser(request);
 
-        logger.debug("controller method to delete dest");
-
         if (user != null) {
             Destination destination = Destination.find.query().where().eq("destid", destId).findOne();
 
             if (destination != null) {
                 if(user.userIsAdmin()){
 
-                    logger.debug("admin command being called");
                     DeleteDestinationCommand cmd = new DeleteDestinationCommand(
                             destination, true);
                     user.getCommandManager().executeCommand(cmd);
@@ -553,7 +549,6 @@ public class DestinationController extends Controller {
                         List<TreasureHunt> treasureHunts = TreasureHunt.find.query().where().eq("destination", destination).findList();
                         if (treasureHunts.isEmpty()) {
 
-                            logger.debug("non-admin command being called");
                             DeleteDestinationCommand cmd = new DeleteDestinationCommand(
                                     destination, false);
                             user.getCommandManager().executeCommand(cmd);

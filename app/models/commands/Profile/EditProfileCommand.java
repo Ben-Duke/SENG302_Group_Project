@@ -5,7 +5,7 @@ import models.User;
 import models.commands.General.UndoableCommand;
 
 /** Command to edit a user profile */
-public class EditProfileCommand extends UndoableCommand {
+public class EditProfileCommand extends HomePageCommand {
     private User uneditedUser;
     private User editedUser;
     private User actualUser;

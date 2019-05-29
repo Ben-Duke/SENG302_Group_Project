@@ -5,6 +5,7 @@ import factories.UserFactory;
 import io.ebean.DuplicateKeyException;
 import models.User;
 import models.UserPhoto;
+import models.commands.Profile.HomePageCommand;
 import models.commands.Photos.UploadPhotoCommand;
 import play.data.FormFactory;
 import play.libs.Files;
@@ -44,16 +45,21 @@ public class HomeController {
         List<User> users = User.getCurrentUser(request, true);
 
         if (! users.isEmpty()){
-            if(users.get(0).hasEmptyField()){
+            User user = users.get(0);
+
+            if(user.hasEmptyField()){
                 return redirect(routes.ProfileController.updateProfile());
-            } else if (! users.get(0).hasTravellerTypes()) {
+            } else if (! user.hasTravellerTypes()) {
                 return redirect(routes.TravellerTypeController.updateTravellerType());
-            } else if(! users.get(0).hasNationality()){
+            } else if(! user.hasNationality()){
                 return redirect(routes.ProfileController.updateNatPass());
             } else {
+                // Clear command stack
+                user.getCommandManager().setAllowedType(HomePageCommand.class);
+
                 // Load countries from api and update validity of pass/nat/destinations
                 CountryUtils.updateCountries();
-                return ok(home.render(users.get(0), users.get(1)));
+                return ok(home.render(user, users.get(1)));
             }
         }
         return redirect(routes.UserController.userindex());

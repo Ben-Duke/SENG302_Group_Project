@@ -1,7 +1,7 @@
 package controllers;
 
 import models.User;
-import models.commands.CommandManager;
+import models.commands.General.CommandManager;
 import org.slf4j.Logger;
 import play.mvc.Controller;
 import play.mvc.Http;

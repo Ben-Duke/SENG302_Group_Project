@@ -1,11 +1,15 @@
 package controllers;
 
+import accessors.UserAccessor;
 import factories.UserFactory;
+import io.ebean.DuplicateKeyException;
 import models.User;
 import models.UserPhoto;
-import models.commands.UploadPhotoCommand;
+import models.commands.Profile.HomePageCommand;
+import models.commands.Photos.UploadPhotoCommand;
 import play.data.FormFactory;
 import play.libs.Files;
+import play.libs.Json;
 import play.mvc.Http;
 import play.mvc.Result;
 import utilities.CountryUtils;
@@ -41,16 +45,21 @@ public class HomeController {
         List<User> users = User.getCurrentUser(request, true);
 
         if (! users.isEmpty()){
-            if(users.get(0).hasEmptyField()){
+            User user = users.get(0);
+
+            if(user.hasEmptyField()){
                 return redirect(routes.ProfileController.updateProfile());
-            } else if (! users.get(0).hasTravellerTypes()) {
+            } else if (! user.hasTravellerTypes()) {
                 return redirect(routes.TravellerTypeController.updateTravellerType());
-            } else if(! users.get(0).hasNationality()){
+            } else if(! user.hasNationality()){
                 return redirect(routes.ProfileController.updateNatPass());
             } else {
+                // Clear command stack
+                user.getCommandManager().setAllowedType(HomePageCommand.class);
+
                 // Load countries from api and update validity of pass/nat/destinations
                 CountryUtils.updateCountries();
-                return ok(home.render(users.get(0), users.get(1)));
+                return ok(home.render(user, users.get(1)));
             }
         }
         return redirect(routes.UserController.userindex());
@@ -123,7 +132,6 @@ public class HomeController {
      * If the overwritten picture was a personal photo, it should persist as a personal photo.
      * If the overwritten picture was previously uploaded with this method (not a personal photo) it should not persist.
      *
-     * //TODO not persisting part
      * @param request the HTTP request
      * @return the homepage or an error page
      */
@@ -231,7 +239,9 @@ public class HomeController {
         }
     }
 
-
+    public Result getGenericProfileImage(Http.Request request){
+        return ok((new File("public/images/Generic.png")).getPath());
+    }
 
     /**
      * Replaces the profile picture with the photo corresponding to the photoId given.
@@ -289,5 +299,50 @@ public class HomeController {
             return notFound("Invalid Picture selected");
         }
         return redirect(routes.UserController.userindex());
+    }
+
+    /**
+     * Removes a Users profile photo (default to the placeholder).
+     *
+     * NOTE: the photo is not deleted, just has it profile photo attribute set
+     * to false.
+     *
+     * @param request The HTTP request.
+     * @return A HTTP response, with status:
+     *      500: duplicate profile photos
+     *      400: no profile photo to remove
+     *      200: successfully set the profile photo to a normal photo.
+     */
+    public Result setProfilePhotoToNormalPhoto(Http.Request request) {
+        System.out.println(request);
+        System.out.println("check");
+        User user = User.getCurrentUser(request);
+
+        if(user != null) {
+            UserPhoto profilePicture = null;
+            boolean hasDuplicateProfilephotos = false;
+
+            try {
+                profilePicture =  UserAccessor.getProfilePhoto(user);
+            } catch (DuplicateKeyException e) {
+                System.out.println("ERROR: duplicate profile photos");
+                hasDuplicateProfilephotos = true;
+            }
+
+            if (hasDuplicateProfilephotos) {
+                return internalServerError("help");
+            } else if (profilePicture == null) {
+                return badRequest("help");
+            } else {
+                profilePicture.setProfile(false);
+                profilePicture.save();
+
+                return ok(Json.toJson(profilePicture));
+            }
+
+        } else {
+            return unauthorized("Oops! You are not logged in.");
+        }
+
     }
 }

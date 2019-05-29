@@ -1,12 +1,11 @@
-package models.commands.treasurehunts;
+package models.commands.Treasurehunts;
 
 import accessors.TreasureHuntAccessor;
-import accessors.UserAccessor;
 import models.TreasureHunt;
-import models.commands.UndoableCommand;
+import models.commands.General.UndoableCommand;
 
 /** Command to delete a treasure hunt */
-public class DeleteTreasureHuntCommand extends UndoableCommand {
+public class DeleteTreasureHuntCommand extends TreasureHuntPageCommand {
     private TreasureHunt treasureHunt;
 
     public DeleteTreasureHuntCommand(TreasureHunt treasureHunt) {
@@ -37,4 +36,13 @@ public class DeleteTreasureHuntCommand extends UndoableCommand {
     public void redo() {
         execute();
     }
+
+    /**
+     * Returns result from the undo/redo command as a string
+     * @return String result of command
+     */
+    public String toString() {
+       return  "Treasure hunt " + this.treasureHunt.getTitle() + " deleting";
+    }
+
 }

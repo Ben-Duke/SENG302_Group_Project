@@ -3,7 +3,7 @@ package models.commands.profilePicture;
 import accessors.UserAccessor;
 import factories.UserFactory;
 import models.UserPhoto;
-import models.commands.UndoableCommand;
+import models.commands.General.UndoableCommand;
 
 /**
  * Command to edit a profile picture

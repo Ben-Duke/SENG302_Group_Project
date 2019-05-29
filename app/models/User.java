@@ -7,7 +7,7 @@ import io.ebean.ExpressionList;
 import io.ebean.Finder;
 import io.ebean.Model;
 import io.ebean.annotation.CreatedTimestamp;
-import models.commands.CommandManager;
+import models.commands.General.CommandManager;
 import org.mindrot.jbcrypt.BCrypt;
 import play.data.format.Formats;
 import play.mvc.Http;
@@ -104,7 +104,6 @@ public class User extends Model implements Comparable<User> {
 
     public static Finder<Integer,User> find = new Finder<>(User.class);
 
-    //TODO remove this attribute along with getters, setters and checkboxes in create/update user story[229] tasks[1284,1301]
     @Deprecated
     public Boolean isAdmin = false;
 

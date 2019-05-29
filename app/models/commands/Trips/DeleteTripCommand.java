@@ -4,14 +4,15 @@ import accessors.TripAccessor;
 import accessors.VisitAccessor;
 import models.Trip;
 import models.Visit;
-import models.commands.UndoableCommand;
-import utilities.UtilityFunctions;
+import models.commands.Profile.HomePageCommand;
 
 import java.util.ArrayList;
 import java.util.List;
 
-/** Command to delete a user's trip */
-public class DeleteTripCommand extends UndoableCommand {
+/** Command to delete a user's trip
+ *  extends HomePageCommand as you undo it from the home page not the trip page
+ * */
+public class DeleteTripCommand extends HomePageCommand {
     private Trip trip;
     private Trip savedTrip;
 
@@ -59,5 +60,13 @@ public class DeleteTripCommand extends UndoableCommand {
      */
     public void redo() {
         execute();
+    }
+
+    /**
+     * Returns result from the undo/redo command as a string
+     * @return String result of command
+     */
+    public String toString() {
+        return "Trip " + this.trip.getTripName() + " deletion";
     }
 }

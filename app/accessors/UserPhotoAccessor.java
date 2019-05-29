@@ -3,6 +3,8 @@ package accessors;
 import models.User;
 import models.UserPhoto;
 
+import java.util.List;
+
 public class UserPhotoAccessor {
 
     /**
@@ -20,4 +22,6 @@ public class UserPhotoAccessor {
     public static void delete(UserPhoto userPhoto) {
         userPhoto.delete();
     }
+
+    public static void update(UserPhoto userPhoto) { userPhoto.update(); }
 }

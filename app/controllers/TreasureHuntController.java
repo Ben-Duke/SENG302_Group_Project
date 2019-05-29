@@ -6,8 +6,9 @@ import formdata.TreasureHuntFormData;
 import models.Destination;
 import models.TreasureHunt;
 import models.User;
-import models.commands.UndoableCommand;
-import models.commands.treasurehunts.DeleteTreasureHuntCommand;
+import models.commands.General.UndoableCommand;
+import models.commands.Treasurehunts.DeleteTreasureHuntCommand;
+import models.commands.Treasurehunts.TreasureHuntPageCommand;
 import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.Controller;
@@ -64,6 +65,7 @@ public class TreasureHuntController extends Controller {
     public Result indexTreasureHunt(Http.Request request){
         User user = User.getCurrentUser(request);
         if (user != null) {
+            user.getCommandManager().setAllowedType(TreasureHuntPageCommand.class); // clear stack
             return ok(indexTreasureHunt.render(user.getTreasureHunts(), getOpenTreasureHunts(), user));
         }
         else{

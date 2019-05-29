@@ -1,17 +1,16 @@
-package models.commands;
+package models.commands.Photos;
 
 import accessors.UserPhotoAccessor;
 import controllers.ApplicationManager;
-import models.User;
 import models.UserPhoto;
-import models.commands.UndoableCommand;
+import models.commands.Profile.HomePageCommand;
 import play.libs.Files;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
 
-public class UploadPhotoCommand extends UndoableCommand {
+public class UploadPhotoCommand extends HomePageCommand {
 
     private UserPhoto userPhoto;
     private Files.TemporaryFile fileObject;
@@ -57,4 +56,12 @@ public class UploadPhotoCommand extends UndoableCommand {
         execute();
 
     }
+    /**
+     * Returns result from the undo/redo command as a string
+     * @return String result of command
+     */
+    public String toString() {
+        return "Photo " + this.userPhoto.getUrl() + " uploading";
+    }
+
 }

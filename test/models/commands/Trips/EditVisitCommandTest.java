@@ -4,7 +4,7 @@ import controllers.ApplicationManager;
 
 import models.User;
 import models.Visit;
-import models.commands.EditVisitCommand;
+import models.commands.Visits.EditVisitCommand;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

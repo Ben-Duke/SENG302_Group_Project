@@ -1,4 +1,4 @@
-package models.commands;
+package models.commands.General;
 
 /** A command (action) which cannot be undone */
 public abstract class UndoableCommand extends Command {

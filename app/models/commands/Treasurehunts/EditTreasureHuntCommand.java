@@ -1,11 +1,11 @@
-package models.commands.treasurehunts;
+package models.commands.Treasurehunts;
 
 import accessors.TreasureHuntAccessor;
 import models.TreasureHunt;
-import models.commands.UndoableCommand;
+import models.commands.General.UndoableCommand;
 
 /** Command to delete a destination */
-public class EditTreasureHuntCommand extends UndoableCommand {
+public class EditTreasureHuntCommand extends TreasureHuntPageCommand {
     private TreasureHunt unEditedTreasureHunt;
     private TreasureHunt editedTreasureHunt;
     private TreasureHunt actualTreasureHunt;
@@ -42,5 +42,13 @@ public class EditTreasureHuntCommand extends UndoableCommand {
     @Override
     public void redo() {
         execute();
+    }
+
+    /**
+     * Returns result from the undo/redo command as a string
+     * @return String result of command
+     */
+    public String toString() {
+        return "Treasure hunt " + this.actualTreasureHunt.getTitle() + " editing";
     }
 }

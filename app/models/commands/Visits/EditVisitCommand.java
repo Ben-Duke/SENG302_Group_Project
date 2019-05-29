@@ -1,13 +1,13 @@
-package models.commands;
+package models.commands.Visits;
 
 import accessors.VisitAccessor;
 import models.Visit;
-import models.commands.UndoableCommand;
+import models.commands.Trips.TripPageCommand;
 
 /**
  * Command to edit a visit
  */
-public class EditVisitCommand extends UndoableCommand {
+public class EditVisitCommand extends TripPageCommand {
 
     private Visit uneditedVisit;
     private Visit editedVisit;
@@ -46,5 +46,13 @@ public class EditVisitCommand extends UndoableCommand {
      */
     public void redo() {
         execute();
+    }
+
+    /**
+     * Returns result from the undo/redo command as a string
+     * @return String result of command
+     */
+    public String toString() {
+        return "Visit " + this.actualVisit.getVisitName() + " editing";
     }
 }

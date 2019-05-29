@@ -2,10 +2,10 @@ package models.commands.Profile;
 
 import accessors.UserAccessor;
 import models.User;
-import models.commands.UndoableCommand;
+import models.commands.General.UndoableCommand;
 
 /** Command to edit a user profile */
-public class EditProfileCommand extends UndoableCommand {
+public class EditProfileCommand extends HomePageCommand {
     private User uneditedUser;
     private User editedUser;
     private User actualUser;
@@ -46,6 +46,14 @@ public class EditProfileCommand extends UndoableCommand {
      */
     public void redo() {
         execute();
+    }
+
+    /**
+     * Returns result from the undo/redo command as a string
+     * @return String result of command
+     */
+    public String toString() {
+        return this.actualUser.getfName() + " " + this.actualUser.lName + " editing";
     }
 }
 

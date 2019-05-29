@@ -123,7 +123,6 @@ public class HomeController {
      * If the overwritten picture was a personal photo, it should persist as a personal photo.
      * If the overwritten picture was previously uploaded with this method (not a personal photo) it should not persist.
      *
-     * //TODO not persisting part
      * @param request the HTTP request
      * @return the homepage or an error page
      */
@@ -231,7 +230,9 @@ public class HomeController {
         }
     }
 
-
+    public Result getGenericProfileImage(Http.Request request){
+        return ok((new File("public/images/Generic.png")).getPath());
+    }
 
     /**
      * Replaces the profile picture with the photo corresponding to the photoId given.
@@ -289,5 +290,50 @@ public class HomeController {
             return notFound("Invalid Picture selected");
         }
         return redirect(routes.UserController.userindex());
+    }
+
+    /**
+     * Removes a Users profile photo (default to the placeholder).
+     *
+     * NOTE: the photo is not deleted, just has it profile photo attribute set
+     * to false.
+     *
+     * @param request The HTTP request.
+     * @return A HTTP response, with status:
+     *      500: duplicate profile photos
+     *      400: no profile photo to remove
+     *      200: successfully set the profile photo to a normal photo.
+     */
+    public Result setProfilePhotoToNormalPhoto(Http.Request request) {
+        System.out.println(request);
+        System.out.println("check");
+        User user = User.getCurrentUser(request);
+
+        if(user != null) {
+            UserPhoto profilePicture = null;
+            boolean hasDuplicateProfilephotos = false;
+
+            try {
+                profilePicture =  UserAccessor.getProfilePhoto(user);
+            } catch (DuplicateKeyException e) {
+                System.out.println("ERROR: duplicate profile photos");
+                hasDuplicateProfilephotos = true;
+            }
+
+            if (hasDuplicateProfilephotos) {
+                return internalServerError("help");
+            } else if (profilePicture == null) {
+                return badRequest("help");
+            } else {
+                profilePicture.setProfile(false);
+                profilePicture.save();
+
+                return ok(Json.toJson(profilePicture));
+            }
+
+        } else {
+            return unauthorized("Oops! You are not logged in.");
+        }
+
     }
 }

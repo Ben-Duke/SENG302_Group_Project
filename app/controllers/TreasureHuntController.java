@@ -8,6 +8,7 @@ import models.TreasureHunt;
 import models.User;
 import models.commands.General.UndoableCommand;
 import models.commands.Treasurehunts.DeleteTreasureHuntCommand;
+import models.commands.Treasurehunts.TreasureHuntPageCommand;
 import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.Controller;

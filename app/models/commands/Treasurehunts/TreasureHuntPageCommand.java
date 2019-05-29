@@ -1,4 +1,4 @@
-package models.commands.treasurehunts;
+package models.commands.Treasurehunts;
 
 import models.commands.General.UndoableCommand;
 

@@ -10,7 +10,6 @@ import models.Trip;
 import models.User;
 import models.Visit;
 import models.commands.Trips.TripPageCommand;
-import models.commands.visits.EditVisitCommand;
 import models.commands.Visits.EditVisitCommand;
 import models.commands.Trips.DeleteTripCommand;
 import play.data.Form;

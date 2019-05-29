@@ -4,7 +4,6 @@ import accessors.UserPhotoAccessor;
 import controllers.ApplicationManager;
 import models.UserPhoto;
 import models.commands.Profile.HomePageCommand;
-import models.commands.General.UndoableCommand;
 import play.libs.Files;
 
 import java.io.File;

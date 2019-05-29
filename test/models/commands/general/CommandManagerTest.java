@@ -5,7 +5,6 @@ import models.User;
 import models.commands.Profile.EditProfileCommand;
 import models.commands.Profile.EditProfileCommandTest;
 import models.commands.UserPhotos.UploadPhotoCommandTest;
-import models.commands.photos.UploadPhotoCommand;
 import org.junit.Test;
 import play.mvc.Http;
 import play.mvc.Result;

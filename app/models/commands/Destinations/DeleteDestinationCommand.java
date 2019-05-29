@@ -32,7 +32,6 @@ public class DeleteDestinationCommand extends DestinationPageCommand {
     /**
      * Deletes the command's destination
      */
-    @Override
     public void execute() {
         // If admin, cascade deletion to visits and trips which use the destination
         if (deletedByAdmin) {
@@ -56,7 +55,6 @@ public class DeleteDestinationCommand extends DestinationPageCommand {
     /**
      * Undoes the deletion of a Destination
      */
-    @Override
     public void undo() {
         this.destination = new Destination(destination, deletedVisits);
         destination.save();
@@ -75,7 +73,6 @@ public class DeleteDestinationCommand extends DestinationPageCommand {
     /**
      * Redoes the previously executed undo
      */
-    @Override
     public void redo() {
         execute();
     }

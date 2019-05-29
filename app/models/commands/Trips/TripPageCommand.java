@@ -1,6 +1,6 @@
 package models.commands.Trips;
 
-import models.commands.general.UndoableCommand;
+import models.commands.General.UndoableCommand;
 
 public abstract class TripPageCommand extends UndoableCommand {
 }

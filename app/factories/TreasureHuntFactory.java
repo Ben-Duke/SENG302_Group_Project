@@ -4,8 +4,8 @@ import formdata.TreasureHuntFormData;
 import models.Destination;
 import models.TreasureHunt;
 import models.User;
-import models.commands.general.UndoableCommand;
-import models.commands.treasurehunts.EditTreasureHuntCommand;
+import models.commands.General.UndoableCommand;
+import models.commands.Treasurehunts.EditTreasureHuntCommand;
 
 import java.util.List;
 

@@ -11,15 +11,13 @@ import models.commands.General.UndoableCommand;
 public class EditProfilePictureCommand extends UndoableCommand {
     private UserPhoto oldPhoto;
     private UserPhoto editedPhoto;
-    private UserPhoto actualEditedPhoto;
     private int userId;
 
     public EditProfilePictureCommand(int userId, UserPhoto editedPhoto) {
-        this.editedPhoto = editedPhoto;
-        this.actualEditedPhoto = new UserPhoto(editedPhoto.url, editedPhoto.isPublic,
-                editedPhoto.isProfile, editedPhoto.user);
-        this.userId = userId;
         this.oldPhoto = UserAccessor.getUserProfilePictureByUserId(userId);
+        editedPhoto.save();
+        this.editedPhoto = editedPhoto;
+        this.userId = userId;
     }
 
     /**

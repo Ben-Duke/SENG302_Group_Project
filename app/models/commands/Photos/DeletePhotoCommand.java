@@ -9,7 +9,7 @@ import models.Destination;
 import models.UserPhoto;
 import models.Visit;
 import models.commands.Destinations.UnlinkPhotoDestinationCommand;
-import models.commands.general.UndoableCommand;
+import models.commands.General.UndoableCommand;
 
 import java.util.ArrayList;
 import java.util.HashSet;

@@ -329,11 +329,27 @@ public class User extends Model implements Comparable<User> {
         return fName;
     }
 
+    /**
+     * Quality Bug fix by Jason and Gavin
+     * @return
+     */
+    public String getFName() {
+        return fName;
+    }
+
     public void setfName(String fName) {
         this.fName = fName;
     }
 
     public String getlName() {
+        return lName;
+    }
+
+    /**
+     * Quality Bug fix by Jason and Gavin
+     * @return
+     */
+    public String getLName() {
         return lName;
     }
 
@@ -345,6 +361,10 @@ public class User extends Model implements Comparable<User> {
         return passports;
     }
 
+    public List<Passport> getPassports() {
+        return passports;
+    }
+
     public void setPassport(List<Passport> passport) {
         this.passports = passport;
     }
@@ -352,7 +372,6 @@ public class User extends Model implements Comparable<User> {
     public void setUserid(Integer userid) {
         this.userid = userid;
     }
-
     public List<Trip> getTrips() {
         return trips;
     }

@@ -35,8 +35,6 @@ public class DeleteDestinationCommand extends UndoableCommand {
     @Override
     public void execute() {
 
-        System.out.println("4.0");
-
         // If admin, cascade deletion to visits and trips which use the destination
         if (deletedByAdmin) {
             List<Visit> visitsCopy = new ArrayList<>(destination.getVisits());
@@ -53,11 +51,7 @@ public class DeleteDestinationCommand extends UndoableCommand {
             }
         }
 
-        System.out.println("4.2");
-
         DestinationAccessor.delete(destination);
-
-        System.out.println("4.3");
     }
 
     /**

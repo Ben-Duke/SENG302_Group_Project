@@ -13,7 +13,7 @@
     </head>
     <div class="container">
             <!-- The thumbnail in the else is being displayed to show the AC passing -->
-        <h1>@user.fName @user.lName
+        <h1>@user.getfName() @user.lName
             @if(UserFactory.getUserProfilePicture(user.getUserid()) != null){
                 <img id="thumbnailProfilePic" class="img-circle"  width = "50" height="50" src="@{routes.HomeController.serveProfilePicture(user.getUserid())}">
             } else {

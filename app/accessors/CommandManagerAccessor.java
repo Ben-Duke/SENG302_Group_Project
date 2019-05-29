@@ -1,6 +1,6 @@
 package accessors;
 
-import models.commands.general.CommandManager;
+import models.commands.General.CommandManager;
 
 import java.util.HashMap;
 import java.util.Map;

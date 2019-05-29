@@ -1,10 +1,10 @@
-package models.commands.photos;
+package models.commands.Photos;
 
 import accessors.UserPhotoAccessor;
 import controllers.ApplicationManager;
 import models.UserPhoto;
 import models.commands.Profile.HomePageCommand;
-import models.commands.general.UndoableCommand;
+import models.commands.General.UndoableCommand;
 import play.libs.Files;
 
 import java.io.File;
@@ -62,7 +62,7 @@ public class UploadPhotoCommand extends HomePageCommand {
      * @return String result of command
      */
     public String toString() {
-        return this.userPhoto.getUrl() + " uploading";
+        return "Photo " + this.userPhoto.getUrl() + " uploading";
     }
 
 }

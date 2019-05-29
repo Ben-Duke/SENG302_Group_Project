@@ -2,7 +2,7 @@ package models.commands.Destinations;
 
 import accessors.DestinationAccessor;
 import models.Destination;
-import models.commands.general.UndoableCommand;
+import models.commands.General.UndoableCommand;
 
 /** Command to edit a destination */
 public class EditDestinationCommand extends DestinationPageCommand {

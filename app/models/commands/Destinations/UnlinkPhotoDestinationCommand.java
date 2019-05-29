@@ -4,7 +4,7 @@ import accessors.DestinationAccessor;
 import accessors.UserPhotoAccessor;
 import models.Destination;
 import models.UserPhoto;
-import models.commands.general.UndoableCommand;
+import models.commands.General.UndoableCommand;
 
 public class UnlinkPhotoDestinationCommand extends DestinationPageCommand  {
 
@@ -49,5 +49,13 @@ public class UnlinkPhotoDestinationCommand extends DestinationPageCommand  {
      */
     public void redo() {
         execute();
+    }
+
+    /**
+     * Returns result from the undo/redo command as a string
+     * @return String result of command
+     */
+    public String toString() {
+        return "Photo" + this.photo.getUrl() + " unlinked to" + this.destination.destName;
     }
 }

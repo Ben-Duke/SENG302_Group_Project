@@ -41,7 +41,7 @@
                             @user.setUndoRedoError(false);
                             @UserAccessor.update(user);
                         }
-                        <li><a href="@routes.TreasureHuntController.indexTreasureHunt()">Treasure hunts</a></li>
+                        <li><a href="@routes.TreasureHuntController.indexTreasureHunt()" >Treasure hunts</a></li>
                         @if(user.userIsAdmin) {
                             <li><a href="@routes.AdminController.indexAdmin()">Admin</a></li>
                         }
@@ -125,6 +125,7 @@
 
         <script>
                 $(document).ready(function(){
+                    $('[data-toggle="tooltip"]').tooltip();
                     $(document.body).css('padding-top', $('#topnavbar').height() + 10);
                     $(window).resize(function(){
                         $(document.body).css('padding-top', $('#topnavbar').height() + 10);

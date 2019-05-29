@@ -22,4 +22,8 @@ public class UserPhotoAccessor {
     }
 
     public static void update(UserPhoto userPhoto) { userPhoto.update(); }
+
+    public static UserPhoto getUserPhotoById(int id) {
+        return UserPhoto.find.byId(id);
+    }
 }

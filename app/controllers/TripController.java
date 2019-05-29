@@ -68,6 +68,9 @@ public class TripController extends Controller {
         User user = User.getCurrentUser(request);
         if (user != null) {
             Trip trip = Trip.find.byId(tripId);
+            if (trip == null) {
+                return redirect(routes.HomeController.showhome());
+            }
             List<Visit> visits = trip.getVisits();
             visits.sort(Comparator.comparing(Visit::getVisitOrder));
 

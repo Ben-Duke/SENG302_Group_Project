@@ -227,4 +227,8 @@ public class UserPhoto extends Model {
         return primaryPhotoDestinations;
     }
 
+    @Override
+    public String toString() {
+        return "url is " + this.url + " Id is " + this.getPhotoId();
+    }
 }

@@ -48,13 +48,13 @@ public class ProfileController extends Controller {
             return badRequest("Is profile picture ask user");
         }
 
-        try {
-            factory.deletePhoto(photoId);
-            DeletePhotoCommand deletePhotoCommand = new DeletePhotoCommand(UserPhoto.find.byId(photoId));
-            user.getCommandManager().executeCommand(deletePhotoCommand);
-        } catch (DataIntegrityException e){
+        if (photo.getDestinations().size() > 0) {
             return badRequest("Failed to delete image");
         }
+
+        DeletePhotoCommand deletePhotoCommand = new DeletePhotoCommand(UserPhoto.find.byId(photoId));
+        user.getCommandManager().executeCommand(deletePhotoCommand);
+
         return ok();
     }
 

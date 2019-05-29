@@ -1,11 +1,14 @@
 package models.commands.Photos;
 
+import accessors.DestinationAccessor;
 import accessors.UserPhotoAccessor;
 import accessors.VisitAccessor;
 import controllers.DestinationController;
+import factories.UserFactory;
 import models.Destination;
 import models.UserPhoto;
 import models.Visit;
+import models.commands.Destinations.UnlinkPhotoDestinationCommand;
 import models.commands.general.UndoableCommand;
 
 import java.util.ArrayList;
@@ -17,25 +20,45 @@ public class DeletePhotoCommand extends UndoableCommand {
     private UserPhoto userPhoto;
     private UserPhoto savedUserPhoto;
     private HashSet<Destination> refToDestinations = new HashSet<>();
+    private HashSet<Destination> refToPrimaryPhotoDestinations = new HashSet<>();
     /**
      * Constructor to create an DeleteUserPhotoCommand. Takes the UserPhoto to delete
      * as the parameter.
-     * @param UserPhoto the UserPhoto to delete
+     * @param userPhoto the UserPhoto to delete
      */
-    public DeletePhotoCommand(UserPhoto UserPhoto) {
-        this.userPhoto = UserPhoto;
-        this.savedUserPhoto = UserPhoto;
-        for (Destination destination : UserPhoto.getDestinations()) {
+    public DeletePhotoCommand(UserPhoto userPhoto) {
+
+        this.userPhoto = userPhoto;
+
+        for (Destination destination : userPhoto.getDestinations()) {
             refToDestinations.add(destination);
         }
+        for (Destination destination : userPhoto.getPrimaryPhotoDestinations()) {
+            refToPrimaryPhotoDestinations.add(destination);
+        }
+
     }
 
     /**
      * Deletes the UserPhoto and unlinks photos to destinations
      */
     public void execute() {
-        DestinationController destinationController = new DestinationController();
-        destinationController.unlinkPhotoFromDestinationAndDelete(null, savedUserPhoto.getPhotoId());
+
+        for (Destination destination : refToDestinations) {
+
+            userPhoto.removeDestination(destination);
+            UserPhotoAccessor.update(userPhoto);
+            if ((destination.getPrimaryPhoto() != null) &&
+                    (userPhoto.getPhotoId() == destination.getPrimaryPhoto().getPhotoId())) {
+                destination.setPrimaryPhoto(null);
+                DestinationAccessor.update(destination);
+            }
+        }
+
+        UserFactory factory = new UserFactory();
+        factory.deletePhoto(userPhoto.getPhotoId());
+
+
     }
 
     /**
@@ -43,15 +66,39 @@ public class DeletePhotoCommand extends UndoableCommand {
      */
     public void undo() {
         UserPhoto userPhoto = new UserPhoto(this.userPhoto);
-        userPhoto.save();
-        savedUserPhoto = userPhoto;
+        for(Destination destination: refToDestinations){
+            userPhoto.addDestination(destination);
+        }
+        System.out.println("Userphoto is " + userPhoto.toString());
+
+        UserPhotoAccessor.insert(userPhoto);
+        savedUserPhoto = UserPhotoAccessor.getUserPhotoById(userPhoto.getPhotoId());
+
+        for (Destination destination : refToPrimaryPhotoDestinations) {
+            destination.setPrimaryPhoto(userPhoto);
+            DestinationAccessor.update(destination);
+        }
+
+
     }
 
     /**
      * Redos the deletion of the UserPhoto
      */
     public void redo() {
-        execute();
+        for (Destination destination : refToDestinations) {
+
+            savedUserPhoto.removeDestination(destination);
+            UserPhotoAccessor.update(savedUserPhoto);
+            if ((destination.getPrimaryPhoto() != null) &&
+                    (savedUserPhoto.getPhotoId() == destination.getPrimaryPhoto().getPhotoId())) {
+                destination.setPrimaryPhoto(null);
+                DestinationAccessor.update(destination);
+            }
+        }
+
+        UserFactory factory = new UserFactory();
+        factory.deletePhoto(savedUserPhoto.getPhotoId());
     }
 
     public String toString() {

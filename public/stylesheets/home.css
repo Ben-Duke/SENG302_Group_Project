@@ -190,3 +190,12 @@ ul#mylist li:first-child {
 ul#mylist li:last-child {
     margin-right: 0;
 }
+
+#change-profile-photo-to-placeholder {
+    float: right;
+}
+
+.hiddenDiv {
+    display:none
+}
+

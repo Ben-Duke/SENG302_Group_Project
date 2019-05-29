@@ -4,6 +4,8 @@ import formdata.TreasureHuntFormData;
 import models.Destination;
 import models.TreasureHunt;
 import models.User;
+import models.commands.general.UndoableCommand;
+import models.commands.treasurehunts.EditTreasureHuntCommand;
 
 import java.util.List;
 
@@ -34,7 +36,7 @@ public class TreasureHuntFactory {
      * @param treasureHuntId The id of the Treasure Hunt to be edited
      * @param treasureHuntFormData TreasureHuntFormData
      */
-    public void editTreasureHunt(Integer treasureHuntId, TreasureHuntFormData treasureHuntFormData) {
+    public void editTreasureHunt(User user, Integer treasureHuntId, TreasureHuntFormData treasureHuntFormData) {
         TreasureHunt treasureHunt = TreasureHunt.find.byId(treasureHuntId);
         if (treasureHunt != null) {
             treasureHunt.setTitle(treasureHuntFormData.title);
@@ -47,30 +49,8 @@ public class TreasureHuntFactory {
             }
             treasureHunt.setStartDate(treasureHuntFormData.startDate);
             treasureHunt.setEndDate(treasureHuntFormData.endDate);
-            treasureHunt.update();
-        }
-    }
-
-    /**
-     * The method to delete the Treasure Hunt.
-     * @param treasureHunt The Treasure Hunt to be edited
-     */
-    public void deleteTreasureHunt(TreasureHunt treasureHunt) {
-        treasureHunt.delete();
-    }
-
-    /**
-     * The method to view the Treasure Hunt.
-     * @param tHuntId The id of Treasure Hunt to be viewed
-     * @param user The user who wants to view this treasure hunt
-     */
-    public TreasureHunt viewTreasureHunt(int tHuntId, User user) {
-        if (User.find.byId(user.getUserid()) != null) {
-            TreasureHunt treasureHunt = TreasureHunt.find.byId(tHuntId);
-            return treasureHunt;
-        } else {
-            System.out.println("ERROR: You cannot delete this Treasure hunt as you do not belong here.");
-            return null;
+            UndoableCommand cmd = new EditTreasureHuntCommand(treasureHunt);
+            user.getCommandManager().executeCommand(cmd);
         }
     }
 }

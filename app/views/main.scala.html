@@ -1,3 +1,5 @@
+@import accessors.UserAccessor
+
 @(user : User, title: String)(content: Html)
 
 <!DOCTYPE html>
@@ -20,6 +22,8 @@
     </head>
     <body>
 
+    @content
+
 
         <nav class="navbar navbar-custom navbar-fixed-top" id="topnavbar">
 
@@ -30,21 +34,28 @@
                 <ul class="nav navbar-nav">
                     <li><a href="@routes.HomeController.showhome()">Home</a></li>
                     @if(user != null) {
-
+                        @if(user.isUndoRedoError()) {
+                            <script>
+                                alert("Undo/Redo Failed");
+                            </script>
+                            @user.setUndoRedoError(false);
+                            @UserAccessor.update(user);
+                        }
                         <li><a href="@routes.TreasureHuntController.indexTreasureHunt()">Treasure hunts</a></li>
                         @if(user.userIsAdmin) {
                             <li><a href="@routes.AdminController.indexAdmin()">Admin</a></li>
                         }
                     </ul>
-                        <ul class="nav navbar-nav navbar-right">
-                            <li><a id="undoButton"><span class="glyphicon glyphicon-repeat" style="transform: scale(-1,1)"></span> Undo</a></li>
-                            <li><a id="redoButton"><span class="glyphicon glyphicon-repeat"></span> Redo</a></li>
+                        <ul class="nav navbar-nav navbar-right"><!-- Use a button to open the snackbar -->
+                            <div id="snackbar"></div>
+                            <li><a id="undoButton" class="@getUndoRedoButtonClass(true)"><span class="glyphicon glyphicon-repeat" style="transform: scale(-1,1)"></span> Undo</a></li>
+                            <li><a id="redoButton" class="@getUndoRedoButtonClass(false)"><span class="glyphicon glyphicon-repeat"></span> Redo</a></li>
                             <li class="dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                                     <span class="glyphicon glyphicon-user"></span> 
                                     <strong>@user.getfName()</strong>
                                     <span class="glyphicon glyphicon-chevron-down"></span>
-                                </a>
+                                </a>b
                                 <ul class="dropdown-menu">
                                     <li>
                                         <div class="navbar-login">
@@ -83,21 +94,17 @@
                                     </li>
 
                                 </ul>
+
                             </li>
 
 
 
                         </ul>
-
-
                     }
-
-
-
             </div>
         </nav>
 
-        @content
+
         @*<script src="http://code.jquery.com/jquery.min.js"></script>*@
         @*<script src="http://maxcdn.bootstrapcdn.com/bootstiv /3.3.2/js/bootstrap.min.js"></script>*@
         @*<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>*@
@@ -126,3 +133,14 @@
         </script>
     </body>
 </html>
+
+    <!-- 'return' the classname of the undo/redo buttons. True = undo button, false = redo button -->
+    @getUndoRedoButtonClass(undo : Boolean) = @{
+        if (undo && user.getCommandManager.isUndoStackEmpty) {
+            "disabled"
+        } else if (!undo && user.getCommandManager.isRedoStackEmpty) {
+            "disabled"
+        } else {
+            ""
+        }
+    }

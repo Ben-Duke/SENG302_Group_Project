@@ -4,7 +4,7 @@ import controllers.ApplicationManager;
 
 import models.User;
 import models.Visit;
-import models.commands.EditVisitCommand;
+import models.commands.visits.EditVisitCommand;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -14,8 +14,6 @@ import play.db.evolutions.Evolution;
 import play.db.evolutions.Evolutions;
 import testhelpers.BaseTestWithApplicationAndDatabase;
 import utilities.TestDatabaseManager;
-
-import java.time.format.DateTimeFormatter;
 
 import static org.junit.Assert.assertEquals;
 

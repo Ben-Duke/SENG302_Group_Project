@@ -4,18 +4,27 @@ import accessors.DestinationAccessor;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import factories.DestinationFactory;
+import factories.UserFactory;
 import formdata.DestinationFormData;
+import io.ebean.DuplicateKeyException;
 import models.*;
 
 
 import models.commands.Destinations.DeleteDestinationCommand;
+import models.commands.Destinations.LinkPhotoDestinationCommand;
+import models.commands.Destinations.UnlinkPhotoDestinationCommand;
 import models.commands.Destinations.EditDestinationCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import play.api.http.MediaRange;
+import play.api.mvc.Request;
 import play.data.DynamicForm;
 import play.data.Form;
 import play.data.FormFactory;
+import play.i18n.Lang;
 import play.libs.Json;
+import play.libs.typedmap.TypedKey;
+import play.libs.typedmap.TypedMap;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
@@ -26,6 +35,7 @@ import views.html.users.destination.*;
 import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
+import java.security.cert.X509Certificate;
 import java.util.*;
 
 
@@ -109,14 +119,14 @@ public class DestinationController extends Controller {
             CountryUtils.updateCountries();
 
             List<Destination> destinations = user.getDestinations();
-            
+
             List<Destination> allDestinations = Destination.find.all();
 
             return ok(indexDestination.render(destinations, allDestinations, destFactory, user));
 
 
         }
-        return unauthorized("Oops, you are not logged in");
+        return redirect(routes.UserController.userindex());
     }
 
     /**
@@ -135,7 +145,7 @@ public class DestinationController extends Controller {
             Destination destination = Destination.find.byId(destId);
             return ok(viewDestination.render(destination));
         }
-        return unauthorized("Oops, you are not logged in");
+        return redirect(routes.UserController.userindex());
     }
 
     /**
@@ -155,7 +165,7 @@ public class DestinationController extends Controller {
 
             return ok(createEditDestination.render(destFormData, null, countryList , Destination.getTypeList(),user));
         }
-        return unauthorized("Oops, you are not logged in");
+        return redirect(routes.UserController.userindex());
     }
 
     /**
@@ -186,7 +196,7 @@ public class DestinationController extends Controller {
                     return redirect(routes.DestinationController.indexDestination());
                 }
         } else {
-            return unauthorized("Oops, you are not logged in");
+            return redirect(routes.UserController.userindex());
         }
     }
 
@@ -285,7 +295,7 @@ public class DestinationController extends Controller {
             }
 
         } else {
-            return unauthorized("Oops, you are not logged in");
+            return redirect(routes.UserController.userindex());
         }
     }
 
@@ -380,7 +390,7 @@ public class DestinationController extends Controller {
                 return notFound("Destination does not exist");
             }
         } else {
-            return unauthorized("Oops, you are not logged in");
+            return redirect(routes.UserController.userindex());
         }
     }
 
@@ -430,7 +440,7 @@ public class DestinationController extends Controller {
                 return notFound("The destination you are trying to update no longer exists");
             }
         } else {
-            return unauthorized("Oops, you are not logged in");
+            return redirect(routes.UserController.userindex());
         }
     }
 
@@ -460,7 +470,7 @@ public class DestinationController extends Controller {
                 return unauthorized("Oops, you are not authorised.");
             }
         } else {
-            return unauthorized("Oops, you are not logged in.");
+            return redirect(routes.UserController.userindex());
         }
     }
 
@@ -508,7 +518,7 @@ public class DestinationController extends Controller {
                 return unauthorized("Oops, you are not authorised.");
             }
         } else {
-            return unauthorized("Oops, you are not logged in.");
+            return redirect(routes.UserController.userindex());
         }
     }
 
@@ -563,7 +573,7 @@ public class DestinationController extends Controller {
                 return notFound("Destination does not exist");
             }
         } else {
-            return unauthorized("Oops, you are not logged in");
+            return redirect(routes.UserController.userindex());
         }
 
     }
@@ -615,7 +625,7 @@ public class DestinationController extends Controller {
                 return notFound("Destination does not exist");
             }
         } else {
-            return unauthorized("Oops, you are not logged in");
+            return redirect(routes.UserController.userindex());
         }
     }
 
@@ -636,7 +646,7 @@ public class DestinationController extends Controller {
                 return notFound("Destination does not exist");
             }
         } else {
-            return unauthorized("Oops, you are not logged in");
+            return redirect(routes.UserController.userindex());
         }
     }
 
@@ -661,8 +671,11 @@ public class DestinationController extends Controller {
                     //add checks for private destinations here once destinations have been merged in.
                     //You can only link a photo to a private destination if you own the private destination.
                     if (!photo.getDestinations().contains(destination)) {
-                        photo.addDestination(destination);
-                        photo.update();
+
+                        LinkPhotoDestinationCommand cmd = new LinkPhotoDestinationCommand(photo, destination);
+                        user.getCommandManager().executeCommand(cmd);
+
+
                     } else {
                         return badRequest("You have already linked the photo to this destination.");
                     }
@@ -673,10 +686,30 @@ public class DestinationController extends Controller {
                 return notFound();
             }
         } else {
-            return unauthorized("Oops, you are not logged in");
+            return redirect(routes.UserController.userindex());
         }
         return ok();
     }
+
+    /**
+     * Unlinks the UserPhoto from any destinations and then deletes it
+     * @param request
+     * @param photoId
+     * @return
+     */
+    public Result unlinkPhotoFromDestinationAndDelete(Http.Request request, int photoId) {
+        UserPhoto photo = UserPhoto.find.byId(photoId);
+            if (photo != null) {
+                for (Destination destination : photo.getDestinations()) {
+                    unlinkPhotoFromDestination(request, photoId, destination.getDestId());
+                }
+                UserPhoto.deletePhoto(photoId);
+            }
+
+        return ok();
+
+    }
+
 
     /**
      * Removes the given destination from the list of destinations in the photos
@@ -689,28 +722,26 @@ public class DestinationController extends Controller {
      */
     public Result unlinkPhotoFromDestination(Http.Request request, int photoId, int destId) {
         User user = User.getCurrentUser(request);
-        if (user !=  null) {
-            UserPhoto photo = UserPhoto.find.byId(photoId);
-            Destination destination = Destination.find.byId(destId);
-            if (photo == null) return notFound("No photo found with that id");
-            if (destination == null) return notFound("No destination found with that id");
-            // This block checks if the user is the owner of either the photo or the destination.
-            // If not the owner then returns an unauthorized error else proceeds as usual.
-            if (destination.getUser().getUserid() != user.getUserid()) {
-                if (photo.getUser().getUserid() != user.getUserid()) {
-                    return unauthorized("You cannot unlink this photo from this destination as neither of those belong to you.");
-                }
+        UserPhoto photo = UserPhoto.find.byId(photoId);
+        Destination destination = Destination.find.byId(destId);
+
+        if (user == null) return redirect(routes.UserController.userindex());
+        if (photo == null) return notFound("No photo found with that id");
+        if (destination == null) return notFound("No destination found with that id");
+        // This block checks if the user is the owner of either the photo or the destination.
+        // If not the owner then returns an unauthorized error else proceeds as usual.
+        if (destination.getUser().getUserid() != user.getUserid()) {
+            if (photo.getUser().getUserid() != user.getUserid()) {
+                return unauthorized("You cannot unlink this photo from this destination as neither of those belong to you.");
             }
-            if (! photo.removeDestination(destination)) return badRequest("The destination was not linked to this photo");
-            photo.update();
-            if ((destination.getPrimaryPhoto() != null) &&
-                    (photo.getPhotoId() == destination.getPrimaryPhoto().getPhotoId())) {
-                destination.setPrimaryPhoto(null);
-                destination.update();
-            }
-            return ok();
         }
-        return unauthorized("You are not logged in.");
+        if (!photo.getDestinations().contains(destination))
+            return badRequest("The destination was not linked to this photo");
+
+        UnlinkPhotoDestinationCommand cmd = new UnlinkPhotoDestinationCommand(photo, destination);
+        user.getCommandManager().executeCommand(cmd);
+
+        return ok();
     }
 
     /**
@@ -725,7 +756,7 @@ public class DestinationController extends Controller {
         if (user != null) {
             return ok(Json.toJson(Destination.find.byId(destId).travellerTypes));
         } else {
-            return unauthorized("Oops, you are not logged in");
+            return redirect(routes.UserController.userindex());
         }
     }
 
@@ -751,7 +782,7 @@ public class DestinationController extends Controller {
 
             return ok(Json.toJson(photos));
         } else {
-            return unauthorized("Oops, you are not logged in");
+            return redirect(routes.UserController.userindex());
         }
     }
 
@@ -771,7 +802,7 @@ public class DestinationController extends Controller {
                 return unauthorized("Oops, you do not have the rights to view this photo");
             }
         } else {
-            return unauthorized("Oops, you are not logged in");
+            return redirect(routes.UserController.userindex());
         }
     }
 
@@ -792,7 +823,7 @@ public class DestinationController extends Controller {
                 return unauthorized("Oops, this is a private destination and you don't own it.");
             }
         } else {
-            return unauthorized("Oops, you are not logged in");
+            return redirect(routes.UserController.userindex());
         }
     }
 
@@ -809,7 +840,7 @@ public class DestinationController extends Controller {
         if (user != null) {
             return ok(Json.toJson(user.getUserid()));
         } else {
-            return unauthorized("Oops, you are not logged in");
+            return redirect(routes.UserController.userindex());
         }
     }
 
@@ -841,7 +872,7 @@ public class DestinationController extends Controller {
                 return notFound();
             }
         } else {
-            return unauthorized("Oops, you are not logged in");
+            return redirect(routes.UserController.userindex());
         }
         return ok();
     }
@@ -873,7 +904,7 @@ public class DestinationController extends Controller {
 
             return ok(Json.toJson(allVisibleDestination));
         } else {
-            return unauthorized("Oops, you are not logged in");
+            return redirect(routes.UserController.userindex());
         }
     }
 
@@ -893,9 +924,10 @@ public class DestinationController extends Controller {
                 if (photo.getUser().getUserid() == user.getUserid()) {
                     //add checks for private destinations here once destinations have been merged in.
                     //You can only link a photo to a private destination if you own the private destination.
-                    if(!photo.getDestinations().contains(destination)) {
-                        photo.addDestination(destination);
-                        photo.update();
+                    if (!photo.getDestinations().contains(destination)) {
+                        LinkPhotoDestinationCommand cmd = new LinkPhotoDestinationCommand(photo, destination);
+                        user.getCommandManager().executeCommand(cmd);
+
                         return redirect(routes.DestinationController.indexDestination());
                     }
                     else{
@@ -908,7 +940,7 @@ public class DestinationController extends Controller {
                 return notFound();
             }
         } else {
-            return unauthorized("Oops, you are not logged in");
+            return redirect(routes.UserController.userindex());
         }
     }
 
@@ -930,7 +962,7 @@ public class DestinationController extends Controller {
                 return ok();
             }
         } else {
-            return unauthorized("Oops, you're not logged in.");
+            return redirect(routes.UserController.userindex());
         }
     }
 

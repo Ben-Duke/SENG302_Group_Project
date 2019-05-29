@@ -1,20 +1,24 @@
 package controllers;
 
+import accessors.UserAccessor;
 import factories.UserFactory;
 import formdata.NatFormData;
 import formdata.UpdateUserFormData;
+import io.ebean.DataIntegrityException;
+import io.ebean.DuplicateKeyException;
 import models.Nationality;
 import models.Passport;
 import models.User;
+import models.UserPhoto;
 import models.commands.Profile.EditProfileCommand;
 import play.data.DynamicForm;
 import play.data.Form;
 import play.data.FormFactory;
+import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
 import views.html.users.profile.*;
-
 import javax.inject.Inject;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -32,9 +36,24 @@ public class ProfileController extends Controller {
     /**
      * If the user is logged in, renders the update profile page.
      * If the user is not logged in, returns an error.
-     * @param request The HTTP request
      * @return update profile page or error page
      */
+
+    public Result deletePhoto(Integer photoId, Boolean userInput){
+        UserFactory factory = new UserFactory();
+        UserPhoto photo = UserPhoto.find.byId(photoId);
+        if (photo != null && photo.getIsProfile() && (!userInput)) {
+            return badRequest("Is profile picture ask user");
+        }
+
+        try {
+            factory.deletePhoto(photoId);
+        } catch (DataIntegrityException e){
+            return badRequest("Failed to delete image");
+        }
+        return ok();
+    }
+
     public Result updateProfile(Http.Request request){
         List<User> users = User.getCurrentUser(request, true);
         Boolean isAdmin = false;
@@ -53,10 +72,10 @@ public class ProfileController extends Controller {
             String[] gendersArray = {"Male", "Female", "Other"};
             List gendersList = Arrays.asList(gendersArray);
 
-            return ok(views.html.users.profile.updateProfile.render(updateUserForm, gendersList,user, isAdmin));
+            return ok(updateProfile.render(updateUserForm, gendersList,user, isAdmin));
         }
         else{
-            return unauthorized(notLoggedInErrorStr);
+            return redirect(routes.UserController.userindex());
         }
     }
 
@@ -91,10 +110,10 @@ public class ProfileController extends Controller {
                 //bad request, errors present
                 String[] gendersArray = {"Male", "Female", "Other"};
                 List gendersList = Arrays.asList(gendersArray);
-                return badRequest(views.html.users.profile.updateProfile.render(updateProfileForm, gendersList,user, isAdmin));
+                return badRequest(updateProfile.render(updateProfileForm, gendersList, user, isAdmin));
             }
         } else{
-            return unauthorized(notLoggedInErrorStr);
+            return redirect(routes.UserController.userindex());
         }
     }
 
@@ -154,7 +173,7 @@ public class ProfileController extends Controller {
 
             return ok(views.html.users.profile.showProfile.render(otherUser, user));
         }
-        return unauthorized(notLoggedInErrorStr);
+        return redirect(routes.UserController.userindex());
     }
 
 
@@ -180,7 +199,7 @@ public class ProfileController extends Controller {
             return ok(updateNatPass.render(userForm, nationalities, passports, user.getUserid(), User.getCurrentUser(request)));
         }
         else {
-            return unauthorized(notLoggedInErrorStr);
+            return redirect(routes.UserController.userindex());
         }
     }
 
@@ -202,7 +221,7 @@ public class ProfileController extends Controller {
 
         }
         else{
-            return unauthorized(notLoggedInErrorStr);
+            return redirect(routes.UserController.userindex());
         }
         return redirect(routes.ProfileController.updateNatPass());
     }
@@ -223,7 +242,7 @@ public class ProfileController extends Controller {
             UserFactory.addPassportToUser(user.getUserid(), passportID);
         }
         else{
-            return unauthorized(notLoggedInErrorStr);
+            return redirect(routes.UserController.userindex());
         }
         return redirect(routes.ProfileController.updateNatPass());
     }
@@ -240,13 +259,8 @@ public class ProfileController extends Controller {
         Form<NatFormData> userForm = formFactory.form(NatFormData.class).bindFromRequest(request);
 
         if (userForm.hasErrors()) {
-
-//            int user = UserFactory.getCurrentUserId(request);
-//            List<Nationality> nationalities = Nationality.find.all();
-//            List<Passport> passports = Passport.find.all();
             flash("error", "Need at least one nationality, " +
                     "please add another nationality before deleting the one you selected");
-            //return badRequest(updateNatPass.render(userForm, nationalities, passports, user));
 
         }else {
             String nationalityID = userForm.get().nationalitydelete;
@@ -254,7 +268,7 @@ public class ProfileController extends Controller {
             if (user != null) {
                 UserFactory.deleteNatsOnUser(user.getUserid(), nationalityID);
             } else {
-                return unauthorized("Oops, you are not logged in");
+                return redirect(routes.UserController.userindex());
 
             }
         }
@@ -278,9 +292,44 @@ public class ProfileController extends Controller {
             UserFactory.deletePassportOnUser(user.getUserid(), passportID);
         }
         else{
-            return unauthorized(notLoggedInErrorStr);
+            return redirect(routes.UserController.userindex());
         }
         return redirect(routes.ProfileController.updateNatPass());
+    }
+
+    /**
+     * AJAX endpoint to check if profile picture exists
+     * @param request the HTTP request
+     * @return a HTTP result with a body containing JSON
+     */
+    public Result isProfilePictureSet(Http.Request request) {
+        User user = User.getCurrentUser(request);
+
+
+        if(user != null) {
+            UserPhoto profilePicture = null;
+            try {
+                profilePicture =  UserAccessor.getProfilePhoto(user);
+
+            } catch (DuplicateKeyException e) {
+                System.out.println("ERROR: duplicate profile photos");
+            }
+
+            String resultFormat = "{\"isProfilePicSet\": %s}";
+            String body = null;
+
+            if (profilePicture == null) {
+                body = String.format(resultFormat, false);
+            } else {
+                body = String.format(resultFormat, true);
+            }
+
+
+            return ok(Json.parse(body));
+        } else {
+            return unauthorized("Oops! You are not logged in.");
+        }
+
     }
 
 }

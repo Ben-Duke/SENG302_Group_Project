@@ -2,7 +2,7 @@ package models.commands.Profile;
 
 import accessors.UserAccessor;
 import models.User;
-import models.commands.UndoableCommand;
+import models.commands.general.UndoableCommand;
 
 /** Command to edit a user profile */
 public class EditProfileCommand extends UndoableCommand {
@@ -22,7 +22,7 @@ public class EditProfileCommand extends UndoableCommand {
         actualUser = editedUser;
         this.editedUser.applyEditChanges(actualUser);
         this.uneditedUser =
-                UserAccessor.getUserById(editedUser.getUserid());
+                UserAccessor.getById(editedUser.getUserid());
     }
 
     /**
@@ -46,6 +46,14 @@ public class EditProfileCommand extends UndoableCommand {
      */
     public void redo() {
         execute();
+    }
+
+    /**
+     * Returns result from the undo/redo command as a string
+     * @return String result of command
+     */
+    public String toString() {
+        return this.actualUser.getfName() + this.actualUser.lName + " editing";
     }
 }
 

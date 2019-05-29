@@ -38,40 +38,9 @@ import static play.test.Helpers.*;
 
 public class DestinationControllerTest extends BaseTestWithApplicationAndDatabase {
 
-    /**
-     * The fake database
-     */
-    Database database;
-
     private final Logger logger = UtilityFunctions.getLogger();
 
     private int REDIRECT_HTTP_STATUS = SEE_OTHER;
-
-    /**
-     * Sets up the fake database before each test
-     */
-    @Before
-    public void setUpDatabase() {
-        database = Databases.inMemory();
-        Evolutions.applyEvolutions(database, Evolutions.forDefault(new Evolution(
-                1,
-                "create table test (id bigint not null, name varchar(255));",
-                "drop table test;"
-        )));
-        ApplicationManager.setUserPhotoPath("/test/resources/test_photos/user_");
-        ApplicationManager.setIsTest(true);
-        TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
-        testDatabaseManager.populateDatabase();
-    }
-
-    /**
-     * Clears the fake database after each test
-     */
-    @After
-    public void shutdownDatabase() {
-        Evolutions.cleanupEvolutions(database);
-        database.shutdown();
-    }
 
     /**
      * Test to render destination index with no login session
@@ -82,7 +51,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
                 .method(GET)
                 .uri("/users/destinations").session("connected", null);
         Result result = route(app, request);
-        assertEquals(UNAUTHORIZED, result.status());
+        assertEquals(SEE_OTHER, result.status());
     }
 
     /**
@@ -106,7 +75,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
                 .method(GET)
                 .uri("/users/destinations/1").session("connected", null);
         Result result = route(app, request);
-        assertEquals(UNAUTHORIZED, result.status());
+        assertEquals(SEE_OTHER, result.status());
     }
 
     /**
@@ -130,7 +99,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
                 .method(GET)
                 .uri("/users/destinations/create/").session("connected", null);
         Result result = route(app, request);
-        assertEquals(UNAUTHORIZED, result.status());
+        assertEquals(SEE_OTHER, result.status());
     }
 
     /**
@@ -159,7 +128,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
         formData.put("longitude", "-50.0");
         Http.RequestBuilder request = Helpers.fakeRequest().bodyForm(formData).method(POST).uri("/users/destinations/save").session("connected", null);
         Result result = route(app, request);
-        assertEquals(UNAUTHORIZED, result.status());
+        assertEquals(SEE_OTHER, result.status());
     }
 
     /**
@@ -219,6 +188,32 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
         assertEquals(BAD_REQUEST, result.status());
     }
 
+
+    /**
+     * Tests the unlinking of a photo and deleting it.
+     */
+    @Test
+    public void checkUnlinkFromDestinationAndDelete(){
+        DestinationController testDestinationController = new DestinationController();
+        Destination destination = new Destination("test","dest","1","test",0.00,0.00,User.find.byId(2),true);
+        destination.save();
+        UserPhoto photo = new UserPhoto("/test",true,false,User.find.byId(2));
+        photo.addDestination(destination);
+        photo.save();
+
+        int beforeDeletion = UserPhoto.find.all().size();
+
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(DELETE)
+                .uri("/users/unlinkAndDeletePicture/" + photo.getPhotoId())
+                .session("connected", "2");
+        CSRFTokenHelper.addCSRFToken(request);
+        route(app, request);
+
+        assertEquals(beforeDeletion - 1, UserPhoto.find.all().size());
+    }
+
+
     /**
      * Test to check if boundary longitude value is not picked up by the validation
      */
@@ -246,7 +241,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
                 .method(GET)
                 .uri("/users/destinations/edit/1").session("connected", null);
         Result result = route(app, request);
-        assertEquals(UNAUTHORIZED, result.status());
+        assertEquals(SEE_OTHER, result.status());
     }
 
     /**
@@ -300,7 +295,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
         formData.put("longitude", "-50.0");
         Http.RequestBuilder request = Helpers.fakeRequest().bodyForm(formData).method(POST).uri("/users/destinations/update/1").session("connected", null);
         Result result = route(app, request);
-        assertEquals(UNAUTHORIZED, result.status());
+        assertEquals(SEE_OTHER, result.status());
     }
 
     /**
@@ -375,7 +370,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
                 .method(GET)
                 .uri("/users/destinations/delete/1").session("connected", null);
         Result result = route(app, request);
-        assertEquals(UNAUTHORIZED, result.status());
+        assertEquals(SEE_OTHER, result.status());
     }
 
     /**
@@ -513,7 +508,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
                 .method(GET)
                 .uri("/users/destinations/public/1").session("connected", null);
         Result result = route(app, request);
-        assertEquals(UNAUTHORIZED, result.status());
+        assertEquals(SEE_OTHER, result.status());
     }
 
     /**
@@ -779,7 +774,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
                 .method(GET)
                 .uri("/users/destinations/getalljson").session("connected", null);
         Result result = route(app, request);
-        assertEquals(UNAUTHORIZED, result.status());
+        assertEquals(SEE_OTHER, result.status());
     }
 
     /** THIS TEST IS EXPECTED TO FAIL LOCALLY
@@ -1029,7 +1024,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
                 .uri("/users/destinations/1/1")
                 .session("connected", null);
         Result result = route(app, request);
-        assertEquals(UNAUTHORIZED, result.status());
+        assertEquals(SEE_OTHER, result.status());
 
         List<UserPhoto> destPhotos = Destination.find.byId(1).getUserPhotos();
         assertEquals(destPhotoSize, destPhotos.size());

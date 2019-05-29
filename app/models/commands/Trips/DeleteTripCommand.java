@@ -4,13 +4,16 @@ import accessors.TripAccessor;
 import accessors.VisitAccessor;
 import models.Trip;
 import models.Visit;
+import models.commands.Profile.HomePageCommand;
 import models.commands.general.UndoableCommand;
 
 import java.util.ArrayList;
 import java.util.List;
 
-/** Command to delete a user's trip */
-public class DeleteTripCommand extends UndoableCommand {
+/** Command to delete a user's trip
+ *  extends HomePageCommand as you undo it from the home page not the trip page
+ * */
+public class DeleteTripCommand extends HomePageCommand {
     private Trip trip;
     private Trip savedTrip;
 

@@ -6,7 +6,7 @@ import models.Destination;
 import models.UserPhoto;
 import models.commands.general.UndoableCommand;
 
-public class LinkPhotoDestinationCommand extends UndoableCommand {
+public class LinkPhotoDestinationCommand extends DestinationPageCommand  {
 
     private UserPhoto photo;
     private Destination destination;

@@ -9,6 +9,7 @@ import models.Destination;
 import models.Trip;
 import models.User;
 import models.Visit;
+import models.commands.Trips.TripPageCommand;
 import models.commands.visits.EditVisitCommand;
 import models.commands.Trips.DeleteTripCommand;
 import play.data.Form;
@@ -67,6 +68,8 @@ public class TripController extends Controller {
     public Result displaytrip(Http.Request request, Integer tripId){
         User user = User.getCurrentUser(request);
         if (user != null) {
+            user.getCommandManager().setAllowedType(TripPageCommand.class);
+
             Trip trip = Trip.find.byId(tripId);
             List<Visit> visits = trip.getVisits();
             visits.sort(Comparator.comparing(Visit::getVisitOrder));

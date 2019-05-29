@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** Command to delete a destination */
-public class DeleteDestinationCommand extends UndoableCommand {
+public class DeleteDestinationCommand extends DestinationPageCommand {
     private Destination destination;
     private Boolean deletedByAdmin;
 

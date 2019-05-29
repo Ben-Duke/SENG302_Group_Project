@@ -2,12 +2,13 @@ package models.commands.visits;
 
 import accessors.VisitAccessor;
 import models.Visit;
+import models.commands.Trips.TripPageCommand;
 import models.commands.general.UndoableCommand;
 
 /**
  * Command to edit a visit
  */
-public class EditVisitCommand extends UndoableCommand {
+public class EditVisitCommand extends TripPageCommand {
 
     private Visit uneditedVisit;
     private Visit editedVisit;

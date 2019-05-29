@@ -3,6 +3,7 @@ package models.commands.photos;
 import accessors.UserPhotoAccessor;
 import controllers.ApplicationManager;
 import models.UserPhoto;
+import models.commands.Profile.HomePageCommand;
 import models.commands.general.UndoableCommand;
 import play.libs.Files;
 
@@ -10,7 +11,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
 
-public class UploadPhotoCommand extends UndoableCommand {
+public class UploadPhotoCommand extends HomePageCommand {
 
     private UserPhoto userPhoto;
     private Files.TemporaryFile fileObject;

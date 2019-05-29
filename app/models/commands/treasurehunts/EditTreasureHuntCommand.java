@@ -5,7 +5,7 @@ import models.TreasureHunt;
 import models.commands.general.UndoableCommand;
 
 /** Command to delete a destination */
-public class EditTreasureHuntCommand extends UndoableCommand {
+public class EditTreasureHuntCommand extends TreasureHuntPageCommand {
     private TreasureHunt unEditedTreasureHunt;
     private TreasureHunt editedTreasureHunt;
     private TreasureHunt actualTreasureHunt;

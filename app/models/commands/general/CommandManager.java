@@ -46,14 +46,15 @@ public class CommandManager extends BaseModel {
 
     public void setAllowedType(Class allowedType) {
         this.allowedType = allowedType;
-        logger.debug("set type" + allowedType.toString());
-        for (UndoableCommand cmd : undoStack) {
-            logger.debug("cmd: " + cmd.toString());
+        filterStack(undoStack);
+        filterStack(redoStack);
+    }
 
-           if (!allowedType.isAssignableFrom(cmd.getClass())) {
-               logger.debug("in the if");
-                undoStack.remove(cmd);
-           }
+    private void filterStack(Deque<UndoableCommand> stack) {
+        for (UndoableCommand cmd : stack) {
+            if (!allowedType.isAssignableFrom(cmd.getClass())) {
+                stack.remove(cmd);
+            }
         }
     }
 
@@ -70,7 +71,6 @@ public class CommandManager extends BaseModel {
             try {
                 undoCommand.undo();
                 redoStack.push(undoCommand);
-                logger.debug("Undo: " + undoStack + "\nRed0: " + redoStack);
                 return undoCommand.toString();
             } catch(Exception exception){
                 user.setUndoRedoError(true);

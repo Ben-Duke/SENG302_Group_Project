@@ -60,6 +60,7 @@ public class CommandManager extends BaseModel {
     public String undo() {
         if (!undoStack.isEmpty()) {
             UndoableCommand undoCommand = undoStack.pop();
+            System.out.println(undoCommand.toString());
             try {
                 undoCommand.undo();
                 redoStack.push(undoCommand);
@@ -73,6 +74,7 @@ public class CommandManager extends BaseModel {
     }
 
     public String redo() {
+
         if (!redoStack.isEmpty()) {
             UndoableCommand redoCommand = redoStack.pop();
             try {
@@ -80,6 +82,8 @@ public class CommandManager extends BaseModel {
                 undoStack.push(redoCommand);
                 return redoCommand.toString();
             } catch(Exception exception){
+//                exception.printStackTrace();
+
                 user.setUndoRedoError(true);
                 UserAccessor.update(user);
             }

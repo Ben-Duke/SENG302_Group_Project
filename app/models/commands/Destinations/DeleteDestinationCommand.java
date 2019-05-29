@@ -33,6 +33,7 @@ public class DeleteDestinationCommand extends DestinationPageCommand {
      * Deletes the command's destination
      */
     public void execute() {
+
         // If admin, cascade deletion to visits and trips which use the destination
         if (deletedByAdmin) {
             List<Visit> visitsCopy = new ArrayList<>(destination.getVisits());

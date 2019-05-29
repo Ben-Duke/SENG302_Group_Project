@@ -13,7 +13,7 @@
     </head>
     <div class="container">
             <!-- The thumbnail in the else is being displayed to show the AC passing -->
-        <h1>@user.fName @user.lName
+        <h1>@user.getfName() @user.lName
             @if(UserFactory.getUserProfilePicture(user.getUserid()) != null){
                 <img id="thumbnailProfilePic" class="img-circle"  width = "50" height="50" src="@{routes.HomeController.serveProfilePicture(user.getUserid())}">
             } else {
@@ -227,7 +227,7 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal">&times;</button>
-                        <h4 class="modal-title" id="deleteTitle">Delete Destination</h4>
+                        <h4 class="modal-title" id="deleteTitle">About to delete profile picture</h4>
                     </div>
                     <div class="modal-body">
                         <p id="message">This image is your profile picture, do you want to delete it? This will also unlink it from any
@@ -249,7 +249,7 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal">&times;</button>
-                        <h4 class="modal-title" id="deleteTitle">Delete Destination</h4>
+                        <h4 class="modal-title" id="deleteTitle">Deleting a photo that is linked to 1 or more destinations</h4>
                     </div>
                     <div class="modal-body">
                         <p id="message">This image is linked to destination(s), do you want to

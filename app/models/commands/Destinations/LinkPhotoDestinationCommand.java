@@ -4,7 +4,7 @@ import accessors.DestinationAccessor;
 import accessors.UserPhotoAccessor;
 import models.Destination;
 import models.UserPhoto;
-import models.commands.general.UndoableCommand;
+import models.commands.UndoableCommand;
 
 public class LinkPhotoDestinationCommand extends UndoableCommand {
 

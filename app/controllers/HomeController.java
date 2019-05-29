@@ -1,11 +1,14 @@
 package controllers;
 
+import accessors.UserAccessor;
 import factories.UserFactory;
+import io.ebean.DuplicateKeyException;
 import models.User;
 import models.UserPhoto;
 import models.commands.UploadPhotoCommand;
 import play.data.FormFactory;
 import play.libs.Files;
+import play.libs.Json;
 import play.mvc.Http;
 import play.mvc.Result;
 import utilities.CountryUtils;

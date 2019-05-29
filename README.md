@@ -4,20 +4,22 @@ Basic Play project using sbt build and basic GitLab CI.
 ## URL's of live projects
 Navigate to these websites in your favourite web browser (such as Chrome or Edge).
 
-Sprint 3 Deliverable :
+##### Sprint 3 Deliverable :
 ```
 https://csse-s302g8.canterbury.ac.nz
 ```
 
-Most up-to-date running app from our Master branch:
+##### Most up-to-date running app from our Master branch:
 ```
 https://csse-s302g8.canterbury.ac.nz:8443
 ```
 
-Sonarqube Reports:
+##### SonarQube Reports:
 ```
-https://csse-s302g8.canterbury.ac.nz:8080
+http://csse-s302g8.canterbury.ac.nz:8080
 ```
+You must login to view reports, login information can be found here:
+<https://eng-git.canterbury.ac.nz/seng302-2019/team-800/wikis/code-quality-reports-(sonarqube)>
 
 ## Basic Project Structure
 * app/ Application source
@@ -63,6 +65,7 @@ And open <http://localhost:9000/>
         Password: test
         
 ## How to use
+A detailed guide exists here: <https://eng-git.canterbury.ac.nz/seng302-2019/team-800/wikis/user-guide>
 * Create/Login using the buttons on the main page.
 * To sign up for the first time you must complete all required fields
 * Once logged in successfully, you will be directed to your profile page.
@@ -72,6 +75,21 @@ And open <http://localhost:9000/>
 * An admin can accept or reject modification requests for public destinations.
 * To get back to the main page Logout from the navigation bar.
 * Note: Home/TravelEA buttons navigate to the profile page but only if you are logged in.
+* You can undo/redo many actions by pressing the undo/redo buttons on the top right
+  of the navigation bar. 
+* Alternatively to undo use the ctrl + z keyboard shortcut and ctrl + y for redo.
+
+## How to run tests
+Clone the repository as above
+```bash
+git clone https://eng-git.canterbury.ac.nz/seng302-2019/team-800
+```
+
+Navigate to the root of the cloned repository and execute the test command
+```bash
+sbt test
+```
+All tests will run and a summary will be displayed. This will take a few minutes
 
 ## Attribution
 

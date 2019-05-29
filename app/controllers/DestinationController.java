@@ -4,7 +4,9 @@ import accessors.DestinationAccessor;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import factories.DestinationFactory;
+import factories.UserFactory;
 import formdata.DestinationFormData;
+import io.ebean.DuplicateKeyException;
 import models.*;
 
 
@@ -14,10 +16,15 @@ import models.commands.Destinations.UnlinkPhotoDestinationCommand;
 import models.commands.Destinations.EditDestinationCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import play.api.http.MediaRange;
+import play.api.mvc.Request;
 import play.data.DynamicForm;
 import play.data.Form;
 import play.data.FormFactory;
+import play.i18n.Lang;
 import play.libs.Json;
+import play.libs.typedmap.TypedKey;
+import play.libs.typedmap.TypedMap;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
@@ -28,6 +35,7 @@ import views.html.users.destination.*;
 import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
+import java.security.cert.X509Certificate;
 import java.util.*;
 
 
@@ -682,6 +690,26 @@ public class DestinationController extends Controller {
         }
         return ok();
     }
+
+    /**
+     * Unlinks the UserPhoto from any destinations and then deletes it
+     * @param request
+     * @param photoId
+     * @return
+     */
+    public Result unlinkPhotoFromDestinationAndDelete(Http.Request request, int photoId) {
+        UserPhoto photo = UserPhoto.find.byId(photoId);
+            if (photo != null) {
+                for (Destination destination : photo.getDestinations()) {
+                    unlinkPhotoFromDestination(request, photoId, destination.getDestId());
+                }
+                UserPhoto.deletePhoto(photoId);
+            }
+
+        return ok();
+
+    }
+
 
     /**
      * Removes the given destination from the list of destinations in the photos

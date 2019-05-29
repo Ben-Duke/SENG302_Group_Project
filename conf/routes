@@ -55,6 +55,7 @@ GET  /users/admin/destination_modification_request/reject/:id    controllers.Des
 #Handles updating a destination then deleting a destination modification request on acceptance by admin
 GET  /users/admin/destination_modification_request/accept/:id    controllers.DestinationController.destinationModificationAccept(request: Request, id: Integer)
 
+
 #Handles updating profile
 POST    /users/profile/update       controllers.ProfileController.updateProfileRequest(request: Request)
 
@@ -130,6 +131,12 @@ GET     /users/home/serveDestPicture/:id               controllers.HomeControlle
 
 #Serve a file
 GET     /users/home/servePicture/:path                 controllers.HomeController.index(request: Request, path:String)
+
+#Unlinks the photo from destinations and deletes the UserPhoto with the photoID
+DELETE /users/unlinkAndDeletePicture/:photoId                  controllers.DestinationController.unlinkPhotoFromDestinationAndDelete(request: Request, photoId: Integer)
+
+#Deletes the UserPhoto with the photoId
+DELETE /users/home/deletePicture/                  controllers.ProfileController.deletePhoto(photoId: Integer, userInput : Boolean)
 
 #Serve the profile picture
 GET     /users/home/serveProfilePicture/:id              controllers.HomeController.serveProfilePicture(request: Request, id:Integer)
@@ -244,7 +251,7 @@ DELETE  /users/destinations/:photoId/:destId                   controllers.Desti
 #Handles creating a destination
 POST    /users/destinations/save        controllers.DestinationController.saveDestinationFromRequest(request : Request)
 
-#Handles deleting a destination //TODO needs to be changed from get request
+#Handles deleting a destination
 GET     /users/destinations/delete/:id   controllers.DestinationController.deleteDestination(request : Request, id : Integer)
 
 #Treasure Hunts

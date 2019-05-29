@@ -56,7 +56,6 @@ public class EditProfilePictureCommandTest extends BaseTestWithApplicationAndDat
     }
 
     @Test
-    @Ignore
     public void redoEditProfilePictureCommandCheckProfilePicture() {
         editProfilePictureRequest();
         undoEditProfilePictureRequest();

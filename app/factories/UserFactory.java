@@ -23,6 +23,7 @@ public class UserFactory {
 
     @Inject
     static FormFactory formFactory;
+    public static Logger logger = LoggerFactory.getLogger("application");
 
     public UserFactory(){//Just used to instanciate
     }
@@ -385,7 +386,7 @@ public class UserFactory {
         UserPhoto existingProfile = getUserProfilePicture(userId);
         if (existingProfile != null) {
             existingProfile.setProfile(false);
-            existingProfile.save();
+            existingProfile.update();
         }
     }
 
@@ -396,11 +397,9 @@ public class UserFactory {
      */
     public static void replaceProfilePictureLogic(int userId, UserPhoto newPhoto) {
         if (newPhoto != null) {
-            if (!newPhoto.equals(getUserProfilePicture(userId))) {
-                removeExistingProfilePicture(userId);
-                newPhoto.setProfile(true);
-                newPhoto.save();
-            }
+            removeExistingProfilePicture(userId);
+            newPhoto.setProfile(true);
+            newPhoto.update();
         } else {
             removeExistingProfilePicture(userId);
         }

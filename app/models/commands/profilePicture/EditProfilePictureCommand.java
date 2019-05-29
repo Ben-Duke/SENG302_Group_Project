@@ -3,12 +3,12 @@ package models.commands.profilePicture;
 import accessors.UserAccessor;
 import factories.UserFactory;
 import models.UserPhoto;
-import models.commands.General.UndoableCommand;
+import models.commands.Profile.HomePageCommand;
 
 /**
  * Command to edit a profile picture
  */
-public class EditProfilePictureCommand extends UndoableCommand {
+public class EditProfilePictureCommand extends HomePageCommand {
     private UserPhoto oldPhoto;
     private UserPhoto editedPhoto;
     private int userId;

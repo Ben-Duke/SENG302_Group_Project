@@ -195,8 +195,8 @@ public class TestDatabaseManager {
                 user.save();
             }catch(Exception err){
                 isInSuccessState = false;
-                System.out.printf("User1 failed");
-                System.out.println(err);
+                //System.out.printf("User1 failed");
+                err.printStackTrace();
             }
 
             user2.getTravellerTypes().add(travellerType2);
@@ -482,7 +482,6 @@ public class TestDatabaseManager {
         UserPhoto userPhoto1 = new UserPhoto("shrek.jpeg", true, true, User.find.byId(2));
         UserPhoto userPhoto2 = new UserPhoto("placeholder.png", false, false, User.find.byId(2));
         UserPhoto userPhoto3 = new UserPhoto("shrek.png", false, false, User.find.byId(3));
-
         try {
             userPhoto1.save();
         } catch (Exception e) {

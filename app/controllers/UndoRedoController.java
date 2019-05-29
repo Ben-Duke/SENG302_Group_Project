@@ -24,9 +24,9 @@ public class UndoRedoController extends Controller {
         }
 
         commandManager = user.getCommandManager();
-        commandManager.undo();
+        String result = commandManager.undo();
 
-        return ok();
+        return ok(result);
     }
 
     public Result redo(Http.Request request) {
@@ -36,8 +36,8 @@ public class UndoRedoController extends Controller {
         }
 
         commandManager = user.getCommandManager();
-        commandManager.redo();
+        String result = commandManager.redo();
 
-        return ok();
+        return ok(result);
     }
 }

@@ -106,10 +106,13 @@ public class HomeControllerTest extends BaseTestWithApplicationAndDatabase {
     @Test
     public void showHomeWithLoginSessionWithProfileWithTravellerTypeWithNationality() {
         createUser();
+
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(GET)
                 .uri("/users/home").session("connected", "4");
+
         Result result = route(app, request);
+
         assertEquals(OK, result.status());
     }
 

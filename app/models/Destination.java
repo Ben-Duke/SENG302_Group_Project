@@ -72,6 +72,19 @@ public class Destination extends Model {
         this.isPublic = isPublic;
     }
 
+
+    public Destination(Destination destination){
+        this.destName = destination.getDestName();
+        this.user = destination.getUser();
+        this.destType = destination.getDestType();
+        this.district = destination.getDistrict();
+        this.country = destination.getCountry();
+        this.isCountryValid = destination.getIsCountryValid();
+        this.latitude = destination.getLatitude();
+        this.longitude = destination.getLongitude();
+        this.isPublic = destination.getIsPublic();
+    }
+
     /**
      * Destination constructor without isPublic method (isPublic defaults to false)
      * @param destName

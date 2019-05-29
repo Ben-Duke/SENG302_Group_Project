@@ -9,6 +9,7 @@ import models.Nationality;
 import models.Passport;
 import models.User;
 import models.UserPhoto;
+import models.commands.Photos.DeletePhotoCommand;
 import models.commands.Profile.EditProfileCommand;
 import play.data.DynamicForm;
 import play.data.Form;
@@ -37,18 +38,21 @@ public class ProfileController extends Controller {
      * @return update profile page or error page
      */
 
-    public Result deletePhoto(Integer photoId, Boolean userInput){
+    public Result deletePhoto(Http.Request request, Integer photoId, Boolean userInput){
         UserFactory factory = new UserFactory();
         UserPhoto photo = UserPhoto.find.byId(photoId);
+        User user = User.getCurrentUser(request);
         if (photo != null && photo.getIsProfile() && (!userInput)) {
             return badRequest("Is profile picture ask user");
         }
 
-        try {
-            factory.deletePhoto(photoId);
-        } catch (DataIntegrityException e){
+        if (photo.getDestinations().size() > 0) {
             return badRequest("Failed to delete image");
         }
+
+        DeletePhotoCommand deletePhotoCommand = new DeletePhotoCommand(UserPhoto.find.byId(photoId));
+        user.getCommandManager().executeCommand(deletePhotoCommand);
+
         return ok();
     }
 

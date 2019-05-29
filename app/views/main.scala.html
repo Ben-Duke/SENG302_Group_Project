@@ -48,14 +48,14 @@
                     </ul>
                         <ul class="nav navbar-nav navbar-right"><!-- Use a button to open the snackbar -->
                             <div id="snackbar"></div>
-                            <li><a id="undoButton"><span class="glyphicon glyphicon-repeat" style="transform: scale(-1,1)"></span> Undo</a></li>
-                            <li><a id="redoButton"><span class="glyphicon glyphicon-repeat"></span> Redo</a></li>
+                            <li><a id="undoButton" class="@getUndoRedoButtonClass(true)"><span class="glyphicon glyphicon-repeat" style="transform: scale(-1,1)"></span> Undo</a></li>
+                            <li><a id="redoButton" class="@getUndoRedoButtonClass(false)"><span class="glyphicon glyphicon-repeat"></span> Redo</a></li>
                             <li class="dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                                     <span class="glyphicon glyphicon-user"></span> 
                                     <strong>@user.getfName()</strong>
                                     <span class="glyphicon glyphicon-chevron-down"></span>
-                                </a>
+                                </a>b
                                 <ul class="dropdown-menu">
                                     <li>
                                         <div class="navbar-login">
@@ -133,3 +133,14 @@
         </script>
     </body>
 </html>
+
+    <!-- 'return' the classname of the undo/redo buttons. True = undo button, false = redo button -->
+    @getUndoRedoButtonClass(undo : Boolean) = @{
+        if (undo && user.getCommandManager.isUndoStackEmpty) {
+            "disabled"
+        } else if (!undo && user.getCommandManager.isRedoStackEmpty) {
+            "disabled"
+        } else {
+            ""
+        }
+    }

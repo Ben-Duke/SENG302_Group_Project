@@ -75,7 +75,7 @@ public class CommandManager extends BaseModel {
                 undoStack.push(redoCommand);
                 return redoCommand.toString();
             } catch(Exception exception){
-                exception.printStackTrace();
+//                exception.printStackTrace();
 
                 user.setUndoRedoError(true);
                 UserAccessor.update(user);

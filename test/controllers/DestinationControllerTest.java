@@ -432,6 +432,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
     *  Admin user used to check that treasure hunts/visits are remade
     *  Covers normal user flow */
     public void deleteDestination_asAdmin_undo_checkDestinationExists() {
+
         int destinationSize = DestinationAccessor.getAllDestinations().size();
         int visitSize = VisitAccessor.getAll().size();
         int treasureHuntSize = TreasureHuntAccessor.getAll().size();

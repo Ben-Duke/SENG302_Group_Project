@@ -6,7 +6,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class CommandManagerAccessor {
+
     private static Map<String, CommandManager> commandManagers = new HashMap<>();
+
+    public static Map<String, CommandManager> getCommandManagers() {
+        return commandManagers;
+    }
 
     public static CommandManager getCommandManagerByEmail(String email) {
         if (commandManagers.containsKey(email)) {

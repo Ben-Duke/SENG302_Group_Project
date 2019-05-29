@@ -2,7 +2,7 @@ package models.commands.Profile;
 
 import accessors.UserAccessor;
 import models.User;
-import models.commands.general.UndoableCommand;
+import models.commands.General.UndoableCommand;
 
 /** Command to edit a user profile */
 public class EditProfileCommand extends UndoableCommand {

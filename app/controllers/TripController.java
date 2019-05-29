@@ -9,7 +9,7 @@ import models.Destination;
 import models.Trip;
 import models.User;
 import models.Visit;
-import models.commands.visits.EditVisitCommand;
+import models.commands.Visits.EditVisitCommand;
 import models.commands.Trips.DeleteTripCommand;
 import play.data.Form;
 import play.data.FormFactory;
@@ -68,16 +68,19 @@ public class TripController extends Controller {
         User user = User.getCurrentUser(request);
         if (user != null) {
             Trip trip = Trip.find.byId(tripId);
-            List<Visit> visits = trip.getVisits();
-            visits.sort(Comparator.comparing(Visit::getVisitOrder));
-
-            if(trip.isUserOwner(user.getUserid())) {
-                List<Destination> destinations = user.getDestinations();
-                List<Destination> allDestinations = Destination.find.all();
-                return ok(AddTripDestinationsTable.render(trip, destinations, allDestinations,user));
-            }
-            else{
-                return ok(displayTrip.render(trip, visits,user));
+            if (trip != null) {
+                List<Visit> visits = trip.getVisits();
+                visits.sort(Comparator.comparing(Visit::getVisitOrder));
+                if(trip.isUserOwner(user.getUserid())) {
+                    List<Destination> destinations = user.getDestinations();
+                    List<Destination> allDestinations = Destination.find.all();
+                    return ok(AddTripDestinationsTable.render(trip, destinations, allDestinations,user));
+                }
+                else{
+                    return ok(displayTrip.render(trip, visits,user));
+                }
+            } else {
+                return redirect(routes.HomeController.showhome());
             }
         }
         else{

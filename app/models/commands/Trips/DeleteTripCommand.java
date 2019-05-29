@@ -4,7 +4,7 @@ import accessors.TripAccessor;
 import accessors.VisitAccessor;
 import models.Trip;
 import models.Visit;
-import models.commands.general.UndoableCommand;
+import models.commands.General.UndoableCommand;
 
 import java.util.ArrayList;
 import java.util.List;

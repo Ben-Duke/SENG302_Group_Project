@@ -6,6 +6,7 @@ import io.ebean.Finder;
 import io.ebean.Model;
 
 import javax.persistence.*;
+import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.List;
 
@@ -73,6 +74,9 @@ public class UserPhoto extends Model {
         this.primaryPhotoDestinations = primaryPhotoDestinations;
     }
 
+    public boolean getIsProfile(){
+        return this.isProfile;
+    }
 
     /**
      * Gets an unused user photo url.
@@ -95,7 +99,15 @@ public class UserPhoto extends Model {
         return url;
     }
 
-
+    /**
+     * Calling this function will delete a user photo that has that photoId does nothing if the photoId doesn't
+     * match a photo in the database
+     * @param idOfPhoto
+     * @return
+     */
+    public static void deletePhoto(int idOfPhoto){
+        UserPhoto.find.query().where().eq("photoId",idOfPhoto).delete();
+    }
 
     /**
      * Method to return if the photo is the profile picture

@@ -20,9 +20,8 @@ public class UserFactory {
     @Inject
     static FormFactory formFactory;
 
-    public UserFactory(){//Just used to instanciate
+    public UserFactory(){//Just used to instantiate
     }
-
 
     /**Returns 1 if in the database and 0 if not in the database
      *
@@ -47,6 +46,9 @@ public class UserFactory {
 
     }
 
+    public void deletePhoto(int photoId){
+         UserPhoto.deletePhoto(photoId);
+    }
 
     public static void deleteNatsOnUser(int id, String nationalityId) {
         User user = User.find.query().where().eq("userid", id).findOne();
@@ -313,8 +315,6 @@ public class UserFactory {
     }
 
     public static List<Passport> getUserPassports(int id){
-        //System.out.println(Passport.find.all().size());
-        //System.out.println(Nationality.find.all().size());
         return User.find.query().where().eq("userid", id).findOne().passports;
     }
 

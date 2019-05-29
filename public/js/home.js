@@ -452,3 +452,156 @@ function toggleLinkButtonDisplays(destId, photoId) {
     toggleDisplay(linkButton);
     toggleDisplay(unlinkButton);
 }
+
+function deletePhotoFromUI(photoId) {
+    $("#"+"destination-carousel").modal('hide');
+    console.log("Success Deleted photo!");
+
+
+    $(".carousel").carousel("next");
+
+    document.getElementById("caro-"+photoId).remove();
+
+    var parent = document.getElementById("addPhotoLink"+photoId).parentElement;
+    parent.remove();
+
+    var activeIndex = $("#myslider").find('.active').index();
+
+    var dot = document.getElementById("item"+document.getElementById('slider').getAttribute("size"));
+    if(dot != null){
+        dot.remove();
+        document.getElementById('slider').setAttribute("size", document.getElementById('slider').getAttribute("size")-1)
+    }
+    else {
+        console.log("Dot was null");
+    }
+
+    }
+
+
+/**
+ * This function makes a request to the server to delete a photo with the passed id.
+ * @param url
+ * @param photoid
+ * @param imageId
+ */
+function deletePhotoRequest(url, photoId, imageId){
+    console.log("URL is : " + url);
+    var token =  $('input[name="csrfToken"]').attr('value');
+    $.ajaxSetup({
+        beforeSend: function(xhr) {
+            xhr.setRequestHeader('Csrf-Token', token);
+        }
+    });
+    $.ajax({
+        url: url,
+        method: "Delete",
+        data: JSON.stringify({
+            photoid: '"' + photoId + '"',
+            response: false
+        }),
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        success:function(res){
+            deletePhotoFromUI(photoId)
+
+
+            let profileImage = document.getElementById("profilePicture");
+            let thumbProfileImage = document.getElementById("thumbnailProfilePic");
+            let picturePicker = document.getElementById("change-profile-pic");
+            profileImage.src= "/assets/images/Generic.png";
+            thumbProfileImage.src= "/assets/images/Generic.png";
+            picturePicker.src = "/assets/images/Generic.png";
+
+
+        },
+        error: function( res){
+
+            if(res.responseText === "Is profile picture ask user"){
+                console.log("Need to ask the user for permission");
+                $(document.getElementById('destination-carousel')).modal('hide');
+                $(document.getElementById('confirmDeleteProfilePhotoModal')).modal('show');
+
+                document.getElementById('yesDeleteProfilePhoto').onclick =
+                    function(){
+                        console.log("calling unlink");
+                        $.ajax({
+                            //url: "/users/home/deletePicture/?photoId=" + photoId + "&userInput=true",
+                            url: '/users/unlinkAndDeletePicture/'+photoId,
+                            method: "Delete",
+                            success:function(res) {
+                                deletePhotoFromUI(photoId);
+
+
+                                let profileImage = document.getElementById("profilePicture");
+                                let thumbProfileImage = document.getElementById("thumbnailProfilePic");
+                                let picturePicker = document.getElementById("change-profile-pic");
+                                profileImage.src = "/assets/images/Generic.png";
+                                thumbProfileImage.src = "/assets/images/Generic.png";
+                                picturePicker.src = "/assets/images/Generic.png";
+                            },
+                            error:function(res){
+                                console.log(res.responseText);
+                            }
+
+
+                            });
+
+                        $(document.getElementById('destination-carousel')).modal('show')
+
+                        };
+                        document.getElementById('noCloseDeleteProfilePhotoButton').onclick =
+                    function(){
+                        $(document.getElementById('destination-carousel')).modal('show')
+                    };
+
+                $('#confirmDeletePhotoModal').on('hidden.bs.modal', function () {
+                    $(document.getElementById('destination-carousel')).modal('show');
+                })
+
+            }
+             else if(res.responseText === "Failed to delete image"){
+                 $(document.getElementById('destination-carousel')).modal('hide');
+                 $(document.getElementById('confirmDeletePhotoModal')).modal('show');
+
+                 document.getElementById('yesDeletePhoto').onclick =
+                     function(){
+                        console.log("calling unlink");
+                         $.ajax({
+                             url: '/users/unlinkAndDeletePicture/'+photoId,
+                             method: "Delete",
+                             success: function (res) {
+                                 console.log("unlinked and deleted photo");
+                                 deletePhotoFromUI(photoId);
+                             },
+                             error: function (res) {
+                                 console.log(JSON.stringify(res));
+                             }
+                         })
+
+                         $(document.getElementById('destination-carousel')).modal('show')
+
+                     };
+                 document.getElementById('noCloseDeletePhotoButton').onclick =
+                     function(){
+                         $(document.getElementById('destination-carousel')).modal('show')
+                         //$(document.getElementById('confirmDeletePhotoModal')).modal('hide')
+                 };
+
+                 $('#confirmDeletePhotoModal').on('hidden.bs.modal', function () {
+                     $(document.getElementById('destination-carousel')).modal('show');
+                 })
+
+             }
+        }
+
+    })
+}
+var currentSlideIndex = 0;
+$("#myslider").on('slide.bs.carousel', function(evt) {
+    console.log("slide transition started")
+    console.log('current slide = ', $(this).find('.active').index())
+    currentSlideIndex = $(this).find('.active').index();
+    console.log('next slide = ', $(evt.relatedTarget).index())
+})

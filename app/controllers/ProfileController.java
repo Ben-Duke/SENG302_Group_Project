@@ -151,7 +151,7 @@ public class ProfileController extends Controller {
         }
 
         EditProfileCommand editProfileCommand = new EditProfileCommand(user);
-        editProfileCommand.execute();
+        user.getCommandManager().executeCommand(editProfileCommand);
         // Show the user their home page
     }
 

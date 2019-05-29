@@ -1,13 +1,11 @@
 package controllers;
 
 import accessors.UserAccessor;
-import akka.http.javadsl.model.HttpRequest;
 import factories.UserFactory;
 import io.ebean.DuplicateKeyException;
-import models.Admin;
 import models.User;
 import models.UserPhoto;
-import models.commands.photos.UploadPhotoCommand;
+import models.commands.Photos.UploadPhotoCommand;
 import play.data.FormFactory;
 import play.libs.Files;
 import play.libs.Json;

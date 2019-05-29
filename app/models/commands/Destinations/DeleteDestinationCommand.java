@@ -6,7 +6,7 @@ import accessors.VisitAccessor;
 import models.Destination;
 import models.TreasureHunt;
 import models.Visit;
-import models.commands.general.UndoableCommand;
+import models.commands.General.UndoableCommand;
 import org.slf4j.Logger;
 import utilities.UtilityFunctions;
 

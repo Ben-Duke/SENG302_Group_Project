@@ -1,7 +1,7 @@
 package accessors;
 
 import models.User;
-import models.commands.general.CommandManager;
+import models.commands.General.CommandManager;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

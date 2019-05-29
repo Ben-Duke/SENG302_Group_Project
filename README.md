@@ -77,7 +77,7 @@ A detailed guide exists here: <https://eng-git.canterbury.ac.nz/seng302-2019/tea
 * Note: Home/TravelEA buttons navigate to the profile page but only if you are logged in.
 * You can undo/redo many actions by pressing the undo/redo buttons on the top right
   of the navigation bar. 
-* Alternatively to redo use the ctrl + z keyboard shortcut and ctrl + y for redo.
+* Alternatively to undo use the ctrl + z keyboard shortcut and ctrl + y for redo.
 
 ## How to run tests
 Clone the repository as above

@@ -71,6 +71,9 @@ public class TripController extends Controller {
             user.getCommandManager().setAllowedType(TripPageCommand.class);
 
             Trip trip = Trip.find.byId(tripId);
+            if (trip == null) {
+                return redirect(routes.HomeController.showhome());
+            }
             List<Visit> visits = trip.getVisits();
             visits.sort(Comparator.comparing(Visit::getVisitOrder));
 

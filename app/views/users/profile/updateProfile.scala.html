@@ -8,6 +8,13 @@
 
 @main(user, "Index") {
     <div class="container">
+        <div class = "well">
+            <form>
+                <button class="btn btn-default" formaction="@routes.TravellerTypeController.updateTravellerType()">Update traveller type</button>
+                <button class="btn btn-default" formaction="@routes.ProfileController.updateNatPass()">Update passports/nationalities</button>
+            </form>
+
+        </div>
         <div class="well">
         @form(helper.CSRF(routes.ProfileController.updateProfileRequest()) , 'class -> "form-horizontal") {
             @updateProfileFieldSet(updateUserForm, genders, isAdmin)

@@ -68,22 +68,21 @@ public class TripController extends Controller {
         User user = User.getCurrentUser(request);
         if (user != null) {
             Trip trip = Trip.find.byId(tripId);
-            if (trip != null) {
-                List<Visit> visits = trip.getVisits();
-                visits.sort(Comparator.comparing(Visit::getVisitOrder));
-                if(trip.isUserOwner(user.getUserid())) {
-                    List<Destination> destinations = user.getDestinations();
-                    List<Destination> allDestinations = Destination.find.all();
-                    return ok(AddTripDestinationsTable.render(trip, destinations, allDestinations,user));
-                }
-                else{
-                    return ok(displayTrip.render(trip, visits,user));
-                }
-            } else {
+            if (trip == null) {
                 return redirect(routes.HomeController.showhome());
             }
+            List<Visit> visits = trip.getVisits();
+            visits.sort(Comparator.comparing(Visit::getVisitOrder));
+
+            if (trip.isUserOwner(user.getUserid())) {
+                List<Destination> destinations = user.getDestinations();
+                List<Destination> allDestinations = Destination.find.all();
+                return ok(AddTripDestinationsTable.render(trip, destinations, allDestinations,user));
+            } else {
+                return ok(displayTrip.render(trip, visits,user));
+            }
         }
-        else{
+        else {
             return redirect(routes.UserController.userindex());
         }
     }

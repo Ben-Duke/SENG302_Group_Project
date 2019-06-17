@@ -77,9 +77,9 @@ public class UserPhoto extends Model implements Media {
 
 
     public UserPhoto(UserPhoto userPhoto) {
-        this.url = url;
-        this.isPublic = isPublic;
-        this.user = user;
+        this.url = userPhoto.getUrl();
+        this.isPublic = userPhoto.getIsPublic();
+        this.user = userPhoto.getUser();
         this.isProfile = userPhoto.getIsProfilePhoto();
         this.primaryPhotoDestinations = userPhoto.getPrimaryPhotoDestinations();
     }

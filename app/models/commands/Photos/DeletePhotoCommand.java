@@ -66,10 +66,11 @@ public class DeletePhotoCommand extends UndoableCommand {
      */
     public void undo() {
         UserPhoto userPhoto = new UserPhoto(this.userPhoto);
+
         for(Destination destination: refToDestinations){
             userPhoto.addDestination(destination);
         }
-        System.out.println("Userphoto is " + userPhoto.toString());
+//        System.out.println("Userphoto is " + userPhoto.toString());
 
         UserPhotoAccessor.insert(userPhoto);
         savedUserPhoto = UserPhotoAccessor.getUserPhotoById(userPhoto.getMediaId());
@@ -78,7 +79,6 @@ public class DeletePhotoCommand extends UndoableCommand {
             destination.setPrimaryPhoto(userPhoto);
             DestinationAccessor.update(destination);
         }
-
 
     }
 

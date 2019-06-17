@@ -17,7 +17,7 @@ public class UserPhotoTest extends BaseTestWithApplicationAndDatabase{
     public void checkDeletionOfUserPhoto (){
         UserPhoto photo = new UserPhoto("/test",false,false,null);
         photo.save();
-        int photoId = photo.getPhotoId();
+        int photoId = photo.getMediaId();
         int beforeDelete = photo.find.all().size();
         photo.deletePhoto(photoId);
 

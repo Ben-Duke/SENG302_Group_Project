@@ -123,7 +123,7 @@ public class TestDatabaseManager {
         }
 
         if (isInSuccessState) {
-            if(ApplicationManager.getUserPhotoPath().equalsIgnoreCase("/test/resources/test_photos/user_")){
+            if(ApplicationManager.getUserMediaPath().equalsIgnoreCase("/test/resources/test_photos/user_")){
                 this.addUserPhotos();
             }
         }

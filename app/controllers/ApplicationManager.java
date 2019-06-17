@@ -7,7 +7,7 @@ import java.nio.file.Paths;
  */
 public class ApplicationManager {
 
-    private static String userPhotoPath;
+    private static String userMediaPath;
 
     private static boolean isTest = false;
 
@@ -16,8 +16,8 @@ public class ApplicationManager {
      *
      * @return A String representing the user photo URL
      */
-    public static String getUserPhotoPath(){
-        return userPhotoPath;
+    public static String getUserMediaPath(){
+        return userMediaPath;
     }
 
     /**
@@ -38,7 +38,7 @@ public class ApplicationManager {
      * @param userPhotoPath A String representing the user photo URL
      */
     public static void setUserPhotoPath(String userPhotoPath) {
-        ApplicationManager.userPhotoPath = userPhotoPath;
+        ApplicationManager.userMediaPath = userPhotoPath;
     }
 
     public static boolean isIsTest() {

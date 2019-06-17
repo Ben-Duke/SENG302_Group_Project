@@ -362,7 +362,7 @@ public class HomeControllerTest extends BaseTestWithApplicationAndDatabase {
     @Test
     public void makePicturePublicWithValidPhotoWithValidUser(){
         UserPhoto userPhoto = UserPhoto.find.byId(2);
-        assertFalse(userPhoto.isPublic());
+        assertFalse(userPhoto.getIsPublic());
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(GET)
                 .uri(routes.HomeController.makePicturePublic(2,1).url()).session("connected", "2");
@@ -370,13 +370,13 @@ public class HomeControllerTest extends BaseTestWithApplicationAndDatabase {
         Result result = route(app, request);
         assertEquals(SEE_OTHER, result.status());
         userPhoto = UserPhoto.find.byId(2);
-        assertTrue(userPhoto.isPublic());
+        assertTrue(userPhoto.getIsPublic());
     }
 
     @Test
     public void makePicturePrivateWithValidPhotoWithValidUser(){
         UserPhoto userPhoto = UserPhoto.find.byId(1);
-        assertTrue(userPhoto.isPublic());
+        assertTrue(userPhoto.getIsPublic());
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(GET)
                 .uri(routes.HomeController.makePicturePublic(1,0).url()).session("connected", "2");
@@ -384,7 +384,7 @@ public class HomeControllerTest extends BaseTestWithApplicationAndDatabase {
         Result result = route(app, request);
         assertEquals(SEE_OTHER, result.status());
         userPhoto = UserPhoto.find.byId(1);
-        assertFalse(userPhoto.isPublic());
+        assertFalse(userPhoto.getIsPublic());
     }
 
     @Test
@@ -410,7 +410,7 @@ public class HomeControllerTest extends BaseTestWithApplicationAndDatabase {
     @Test
     public void makePicturePrivateWithValidPhotoWithInvalidUser(){
         UserPhoto userPhoto = UserPhoto.find.byId(1);
-        assertTrue(userPhoto.isPublic());
+        assertTrue(userPhoto.getIsPublic());
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(GET)
                 .uri(routes.HomeController.makePicturePublic(1,0).url()).session("connected", "3");
@@ -418,7 +418,7 @@ public class HomeControllerTest extends BaseTestWithApplicationAndDatabase {
         Result result = route(app, request);
         assertEquals(UNAUTHORIZED, result.status());
         userPhoto = UserPhoto.find.byId(1);
-        assertTrue(userPhoto.isPublic());
+        assertTrue(userPhoto.getIsPublic());
     }
 
 

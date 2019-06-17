@@ -205,7 +205,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
 
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(DELETE)
-                .uri("/users/unlinkAndDeletePicture/" + photo.getPhotoId())
+                .uri("/users/unlinkAndDeletePicture/" + photo.getMediaId())
                 .session("connected", "2");
         CSRFTokenHelper.addCSRFToken(request);
         route(app, request);
@@ -964,7 +964,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
 
         List<UserPhoto> destPhotos = Destination.find.byId(3).getUserPhotos();
         for (UserPhoto destPhoto : destPhotos) {
-            if (destPhoto.getPhotoId() == 1) {
+            if (destPhoto.getMediaId() == 1) {
                 destPhotoExists = true;
             }
         }
@@ -999,7 +999,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
 
         List<UserPhoto> destPhotos = Destination.find.byId(1).getUserPhotos();
         for (UserPhoto destPhoto : destPhotos) {
-            if (destPhoto.getPhotoId() == 1) {
+            if (destPhoto.getMediaId() == 1) {
                 destPhotoExists = true;
             }
         }

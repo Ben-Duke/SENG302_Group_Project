@@ -27,12 +27,12 @@ public class UploadPhotoCommand extends HomePageCommand {
         try {
             java.nio.file.Files.createDirectories(Paths.get(
                     Paths.get(".").toAbsolutePath().normalize().toString()
-                    + ApplicationManager.getUserPhotoPath() + userPhoto.getUser().getUserid() + "/"));
+                    + ApplicationManager.getUserMediaPath() + userPhoto.getUser().getUserid() + "/"));
         } catch (IOException e) {
 
         }
         String unusedAbsoluteFilePath = Paths.get(".").toAbsolutePath().normalize().toString()
-                + ApplicationManager.getUserPhotoPath() + userPhoto.getUser().getUserid() + "/" + userPhoto.getUrl();
+                + ApplicationManager.getUserMediaPath() + userPhoto.getUser().getUserid() + "/" + userPhoto.getUrl();
         fileObject.copyTo(Paths.get(unusedAbsoluteFilePath), true);
         UserPhotoAccessor.insert(userPhoto);
 
@@ -51,7 +51,7 @@ public class UploadPhotoCommand extends HomePageCommand {
      * Redo a photo upload
      */
     public void redo() {
-        userPhoto = new UserPhoto(userPhoto.getUrl(), userPhoto.isPublic(), userPhoto.isProfile(), userPhoto.getUser(),
+        userPhoto = new UserPhoto(userPhoto.getUrl(), userPhoto.getIsPublic(), userPhoto.isProfile(), userPhoto.getUser(),
                 userPhoto.getDestinations(), userPhoto.getPrimaryPhotoDestinations());
         execute();
 

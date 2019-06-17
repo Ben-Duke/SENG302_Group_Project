@@ -134,7 +134,7 @@
                         <th scope="row">
                                 <span id="primary@destination.destid">
                                 @if(destination.getPrimaryPhoto != null){
-                                    <img src="@routes.DestinationController.servePrimaryPicture(destination.getPrimaryPhoto.getPhotoId) " width="50" height="60">
+                                    <img src="@routes.DestinationController.servePrimaryPicture(destination.getPrimaryPhoto.getMediaId) " width="50" height="60">
                                     }
                                 </span>
 
@@ -266,18 +266,18 @@
                             <p id="para"> Currently, You do not have any photos on your profile. Upload photos to your profile first in order to add them to destinations.</p>
                         }
                         @for(photo <- user.getUserPhotos) {
-                        <a id="addPhotoLink" class="btn btn-light" href="" onclick="addPhotoToDestinationRequest(@photo.getPhotoId)" >
+                        <a id="addPhotoLink" class="btn btn-light" href="" onclick="addPhotoToDestinationRequest(@photo.getMediaId)" >
                             <div class="container" id="imagesContainer" >
                                 <div class="overlay">
                                     <i class="icon" title="User Profile">
-                                        @if(photo.isPublic()) {
+                                        @if(photo.getIsPublic()) {
                                         <i class="fa fa-eye"></i>
                                         } else {
                                         <i class="fa fa-eye-slash"></i>
                                         }
                                     </i>
                                 </div>
-                                <img class="img-thumbnail" id=@{photo.getUrl} width="60" src="@{routes.HomeController.index(photo.getUrlWithPath)}" alt="User Image">
+                                <img class="img-thumbnail" id=@{photo.getUrl()} width="60" src="@{routes.HomeController.index(photo.getUrlWithPath)}" alt="User Image">
                             </div>
                         </a>
                         }

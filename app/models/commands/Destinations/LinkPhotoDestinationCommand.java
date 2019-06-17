@@ -38,7 +38,7 @@ public class LinkPhotoDestinationCommand extends DestinationPageCommand  {
         photo.removeDestination(destination);
         UserPhotoAccessor.update(photo);
         if ((destination.getPrimaryPhoto() != null) &&
-                (photo.getPhotoId() == destination.getPrimaryPhoto().getPhotoId())) {
+                (photo.getMediaId() == destination.getPrimaryPhoto().getMediaId())) {
             destination.setPrimaryPhoto(null);
             DestinationAccessor.update(destination);
         }

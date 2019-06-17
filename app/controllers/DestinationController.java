@@ -811,7 +811,7 @@ public class DestinationController extends Controller {
         User user = User.getCurrentUser(request);
         if(user != null){
             UserPhoto photo = UserPhoto.find.byId(photoId);
-            if (photo.getUser().getUserid() == user.getUserid() || photo.isPublic() || user.userIsAdmin()) {
+            if (photo.getUser().getUserid() == user.getUserid() || photo.getIsPublic() || user.userIsAdmin()) {
                 return ok(Json.toJson(photo));
             } else {
                 return unauthorized("Oops, you do not have the rights to view this photo");

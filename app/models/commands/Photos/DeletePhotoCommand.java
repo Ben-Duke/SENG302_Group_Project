@@ -49,14 +49,14 @@ public class DeletePhotoCommand extends UndoableCommand {
             userPhoto.removeDestination(destination);
             UserPhotoAccessor.update(userPhoto);
             if ((destination.getPrimaryPhoto() != null) &&
-                    (userPhoto.getPhotoId() == destination.getPrimaryPhoto().getPhotoId())) {
+                    (userPhoto.getMediaId() == destination.getPrimaryPhoto().getMediaId())) {
                 destination.setPrimaryPhoto(null);
                 DestinationAccessor.update(destination);
             }
         }
 
         UserFactory factory = new UserFactory();
-        factory.deletePhoto(userPhoto.getPhotoId());
+        factory.deletePhoto(userPhoto.getMediaId());
 
 
     }
@@ -72,7 +72,7 @@ public class DeletePhotoCommand extends UndoableCommand {
         System.out.println("Userphoto is " + userPhoto.toString());
 
         UserPhotoAccessor.insert(userPhoto);
-        savedUserPhoto = UserPhotoAccessor.getUserPhotoById(userPhoto.getPhotoId());
+        savedUserPhoto = UserPhotoAccessor.getUserPhotoById(userPhoto.getMediaId());
 
         for (Destination destination : refToPrimaryPhotoDestinations) {
             destination.setPrimaryPhoto(userPhoto);
@@ -91,14 +91,14 @@ public class DeletePhotoCommand extends UndoableCommand {
             savedUserPhoto.removeDestination(destination);
             UserPhotoAccessor.update(savedUserPhoto);
             if ((destination.getPrimaryPhoto() != null) &&
-                    (savedUserPhoto.getPhotoId() == destination.getPrimaryPhoto().getPhotoId())) {
+                    (savedUserPhoto.getMediaId() == destination.getPrimaryPhoto().getMediaId())) {
                 destination.setPrimaryPhoto(null);
                 DestinationAccessor.update(destination);
             }
         }
 
         UserFactory factory = new UserFactory();
-        factory.deletePhoto(savedUserPhoto.getPhotoId());
+        factory.deletePhoto(savedUserPhoto.getMediaId());
     }
 
     public String toString() {

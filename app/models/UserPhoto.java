@@ -17,7 +17,7 @@ import java.util.List;
 public class UserPhoto extends Model implements Media {
 
     @Id
-    private Integer photoId;
+    public Integer photoId;
 
     /** A String representing the relative path to the photo resource. */
     @Column(name = "url")

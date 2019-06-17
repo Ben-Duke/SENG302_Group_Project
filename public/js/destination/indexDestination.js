@@ -175,19 +175,19 @@ function populateViewDestinationModal()
         }
     });
     $.ajax({
-       type: 'GET',
-       url: '/users/get',
+        type: 'GET',
+        url: '/users/get',
         contentType: 'application/json',
         success: function(userData){
-           user = userData;
+            user = userData;
         }
     });
     $.ajax({
-       type: 'GET',
-       url: '/users/photos',
+        type: 'GET',
+        url: '/users/photos',
         contentType: 'application/json',
         success: function(photosData){
-           userPhotos = photosData;
+            userPhotos = photosData;
         }
     });
     $.ajax({
@@ -241,6 +241,7 @@ function populateViewDestinationModal()
                 contentType: 'application/json',
                 success: function(data) {
                     photos = data;
+
                     if(photos.length > 0)
                     {
                         var outerDivNode = document.createElement("div");
@@ -260,10 +261,13 @@ function populateViewDestinationModal()
                             }
                             var imgNode = document.createElement("img");
                             imgNode.src="/users/home/serveDestPicture/" + element["photoId"];
+
                             imgNode.classList.add("destination-image");
                             imgNode.id = "photo" + "-" + element["photoId"];
                             itemNode.appendChild(imgNode);
                             outerDivNode.appendChild(itemNode);
+
+
                             if (destinationOwner !== user) {
                                 var found = userPhotos.find(function(elementId) {
                                     return elementId == element["photoId"];
@@ -278,7 +282,7 @@ function populateViewDestinationModal()
                             }
                         });
                         $('#destslider').html(outerDivNode);
-                        if(destinationOwner !== user){
+                        if(destinationOwner !== user) {
                             $('#primaryPhotoButton').hide();
                         }
                         else{
@@ -471,5 +475,3 @@ $('#removePhotoButton').click(function(e){
         }
     });
 });
-
-

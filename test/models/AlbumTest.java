@@ -14,10 +14,10 @@ public class AlbumTest extends BaseTestWithApplicationAndDatabase {
         Album album = new Album();
         album.save();
 
-//        album.addMedia(photo);
-//        album.update();
+        album.addMedia(photo);
+        album.update();
 //
-//        assert(album.getMedia().size() == 1);
+        assert(album.getMedia().size() == 1);
 
     }
 

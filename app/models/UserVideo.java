@@ -1,10 +1,15 @@
 package models;
 
-public class UserVideo extends Media {
+import io.ebean.Model;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
 
+@Entity
+public class UserVideo extends Model implements Media {
 
-    public UserVideo(String url, boolean isPublic, boolean isProfile, User user) {
-        super(url, isPublic, user);
-    }
+    @Id
+    private Integer videoId;
+
+    public Integer getMediaId() { return videoId; }
 }

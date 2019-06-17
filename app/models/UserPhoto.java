@@ -3,6 +3,7 @@ package models;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import controllers.ApplicationManager;
 import io.ebean.Finder;
+import io.ebean.Model;
 
 import javax.persistence.*;
 import java.nio.file.Paths;
@@ -12,8 +13,28 @@ import java.util.List;
  * A class to hold information a user photograph.
  */
 @Entity
+@Table(uniqueConstraints={@UniqueConstraint(columnNames={"url"})})
+public class UserPhoto extends Model implements Media {
 
-public class UserPhoto extends Media {
+    @Id
+    private Integer photoId;
+
+    /** A String representing the relative path to the photo resource. */
+    @Column(name = "url")
+    private String url;
+
+    private boolean isPublic;
+
+    /** The user who owns the photo */
+    @JsonIgnore
+    @ManyToOne
+    @JoinColumn(name = "user", referencedColumnName = "userid")
+    private User user;
+
+    /** The destinations the media is related to. */
+    @JsonIgnore
+    @ManyToMany
+    private List<Destination> destinations;
 
     public boolean isProfile;
 
@@ -31,7 +52,9 @@ public class UserPhoto extends Media {
      * @param user The User who owns this photograph.
      */
     public UserPhoto(String url, boolean isPublic, boolean isProfile, User user) {
-        super(url, isPublic, user);
+        this.url = url;
+        this.isPublic = isPublic;
+        this.user = user;
         this.isProfile = isProfile;
     }
 
@@ -45,16 +68,60 @@ public class UserPhoto extends Media {
      */
     public UserPhoto(String url, boolean isPublic, boolean isProfile, User user, List<Destination> destinations,
                      List<Destination> primaryPhotoDestinations) {
-        super(url, isPublic, user, destinations);
+        this.url = url;
+        this.isPublic = isPublic;
+        this.user = user;
         this.isProfile = isProfile;
         this.primaryPhotoDestinations = primaryPhotoDestinations;
     }
 
 
     public UserPhoto(UserPhoto userPhoto) {
-        super(userPhoto.getUrl(), userPhoto.getIsPublic(), userPhoto.getUser(), userPhoto.getDestinations());
+        this.url = url;
+        this.isPublic = isPublic;
+        this.user = user;
         this.isProfile = userPhoto.getIsProfilePhoto();
         this.primaryPhotoDestinations = userPhoto.getPrimaryPhotoDestinations();
+    }
+
+    public Integer getMediaId() { return photoId; }
+    public String getUrl() { return url; }
+    public boolean getIsPublic() { return isPublic; }
+    public User getUser() { return user; }
+    public List<Destination> getDestinations() { return destinations; }
+
+    /**
+     * Get the url for the media with its full path
+     * @return the full path string for the file
+     */
+    public String getUrlWithPath() {
+        return Paths.get(".").toAbsolutePath().normalize().toString()
+                + ApplicationManager.getUserMediaPath()
+                + user.getUserid()
+                + "/"
+                + url;
+    }
+
+
+    public void setUrl(String url) { this.url = url; }
+    public void setPublic(boolean isPublic) { this.isPublic = isPublic; }
+    public void addDestination(Destination destination) {
+        this.destinations.add(destination);
+    }
+
+    /**
+     * Unlink the media from the given destination
+     * @param destination the destination to unlink from
+     * @return true if the removal changed the list, else false
+     */
+    public boolean removeDestination(Destination destination) {
+        return this.destinations.remove(destination);
+    }
+
+
+    @Override
+    public String toString() {
+        return "url is " + this.getUrl() + " Id is " + this.getMediaId();
     }
 
     public boolean getIsProfile() {

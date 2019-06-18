@@ -8,4 +8,6 @@ public class AlbumAccessor {
         return Album.find.byId(id);
     }
 
+    public static void insert(Album album) { album.save(); }
+
 }

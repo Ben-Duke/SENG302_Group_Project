@@ -12,13 +12,7 @@ public class AlbumTest extends BaseTestWithApplicationAndDatabase {
         UserPhoto photo = new UserPhoto("/test",false,false,null);
         photo.save();
 
-//        Album album = new Album();
-//        album.save();
-//
-//        album.addMedia(photo);
-//        album.update();
-
-        Album album = new Album(photo);
+        Album album = new Album(photo, null);
         album.save();
 
 //        System.out.println(album.getMedia());

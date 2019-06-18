@@ -13,23 +13,8 @@ import java.util.List;
  * A class to hold information a user photograph.
  */
 @Entity
-@Table(uniqueConstraints={@UniqueConstraint(columnNames={"url"})})
-public class UserPhoto extends Model implements Media {
 
-    @Id
-    public Integer photoId;
-
-    /** A String representing the relative path to the photo resource. */
-    @Column(name = "url")
-    private String url;
-
-    private boolean isPublic;
-
-    /** The user who owns the photo */
-    @JsonIgnore
-    @ManyToOne
-    @JoinColumn(name = "user", referencedColumnName = "userid")
-    private User user;
+public class UserPhoto extends Media {
 
     /** The destinations the media is related to. */
     @JsonIgnore
@@ -52,9 +37,7 @@ public class UserPhoto extends Model implements Media {
      * @param user The User who owns this photograph.
      */
     public UserPhoto(String url, boolean isPublic, boolean isProfile, User user) {
-        this.url = url;
-        this.isPublic = isPublic;
-        this.user = user;
+        super(url, isPublic, user);
         this.isProfile = isProfile;
     }
 
@@ -68,43 +51,23 @@ public class UserPhoto extends Model implements Media {
      */
     public UserPhoto(String url, boolean isPublic, boolean isProfile, User user, List<Destination> destinations,
                      List<Destination> primaryPhotoDestinations) {
-        this.url = url;
-        this.isPublic = isPublic;
-        this.user = user;
+        super(url, isPublic, user);
         this.isProfile = isProfile;
         this.primaryPhotoDestinations = primaryPhotoDestinations;
     }
 
 
     public UserPhoto(UserPhoto userPhoto) {
-        this.url = userPhoto.getUrl();
-        this.isPublic = userPhoto.getIsPublic();
-        this.user = userPhoto.getUser();
+        super(userPhoto.getUrl(), userPhoto.getIsPublic(), userPhoto.getUser());
         this.isProfile = userPhoto.getIsProfilePhoto();
         this.primaryPhotoDestinations = userPhoto.getPrimaryPhotoDestinations();
     }
 
-    public Integer getMediaId() { return photoId; }
-    public String getUrl() { return url; }
-    public boolean getIsPublic() { return isPublic; }
-    public User getUser() { return user; }
+
     public List<Destination> getDestinations() { return destinations; }
 
-    /**
-     * Get the url for the media with its full path
-     * @return the full path string for the file
-     */
-    public String getUrlWithPath() {
-        return Paths.get(".").toAbsolutePath().normalize().toString()
-                + ApplicationManager.getUserMediaPath()
-                + user.getUserid()
-                + "/"
-                + url;
-    }
 
 
-    public void setUrl(String url) { this.url = url; }
-    public void setPublic(boolean isPublic) { this.isPublic = isPublic; }
     public void addDestination(Destination destination) {
         this.destinations.add(destination);
     }
@@ -151,16 +114,6 @@ public class UserPhoto extends Model implements Media {
         }
 
         return url;
-    }
-
-    /**
-     * Calling this function will delete a user photo that has that photoId does nothing if the photoId doesn't
-     * match a photo in the database
-     * @param idOfPhoto
-     * @return
-     */
-    public static void deletePhoto(int idOfPhoto){
-        UserPhoto.find.query().where().eq("photoId",idOfPhoto).delete();
     }
 
     /**

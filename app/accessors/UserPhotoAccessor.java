@@ -18,8 +18,11 @@ public class UserPhotoAccessor {
      * @param userPhoto the photo to delete
      */
     public static void delete(UserPhoto userPhoto) {
-        userPhoto.delete();
+        try {
+            userPhoto.delete();
+        } catch (Exception e) {}
     }
+    public static void deleteById(int id) { delete(UserPhoto.find.byId(id)); }
 
     public static void update(UserPhoto userPhoto) { userPhoto.update(); }
 

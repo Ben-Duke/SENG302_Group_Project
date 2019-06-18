@@ -1,5 +1,6 @@
 package models;
 
+import accessors.UserPhotoAccessor;
 import org.junit.Test;
 
 import testhelpers.BaseTestWithApplicationAndDatabase;
@@ -19,7 +20,7 @@ public class UserPhotoTest extends BaseTestWithApplicationAndDatabase{
         photo.save();
         int photoId = photo.getMediaId();
         int beforeDelete = photo.find.all().size();
-        photo.deletePhoto(photoId);
+        UserPhotoAccessor.deleteById(photoId);
 
         int afterDelete = photo.find.all().size();
         assertEquals(afterDelete,beforeDelete-1);
@@ -32,7 +33,7 @@ public class UserPhotoTest extends BaseTestWithApplicationAndDatabase{
     public void checkDeletionOfUserPhotoBadIndex (){
 
         int beforeDelete = UserPhoto.find.all().size();
-        UserPhoto.deletePhoto(1000000);
+        UserPhotoAccessor.deleteById(1000000);
 
         int afterDelete = UserPhoto.find.all().size();
         assertEquals(beforeDelete, afterDelete);

@@ -1,6 +1,7 @@
 package controllers;
 
 import accessors.DestinationAccessor;
+import accessors.UserPhotoAccessor;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import factories.DestinationFactory;
@@ -718,7 +719,7 @@ public class DestinationController extends Controller {
                 for (Destination destination : photo.getDestinations()) {
                     unlinkPhotoFromDestination(request, photoId, destination.getDestId());
                 }
-                UserPhoto.deletePhoto(photoId);
+                UserPhotoAccessor.delete(photo);
             }
 
         return ok();

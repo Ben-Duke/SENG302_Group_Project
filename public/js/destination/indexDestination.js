@@ -250,7 +250,7 @@ function populateViewDestinationModal()
                             var itemNode = document.createElement("div");
                             itemNode.classList.add("item");
                             if(destData["primaryPhoto"] != null) {
-                                if (element["photoId"] == destData["primaryPhoto"]["photoId"]) {
+                                if (element["mediaId"] == destData["primaryPhoto"]["mediaId"]) {
                                     itemNode.classList.add("active")
                                 }
                             }
@@ -260,17 +260,17 @@ function populateViewDestinationModal()
                                 }
                             }
                             var imgNode = document.createElement("img");
-                            imgNode.src="/users/home/serveDestPicture/" + element["photoId"];
+                            imgNode.src="/users/home/serveDestPicture/" + element["mediaId"];
 
                             imgNode.classList.add("destination-image");
-                            imgNode.id = "photo" + "-" + element["photoId"];
+                            imgNode.id = "photo" + "-" + element["mediaId"];
                             itemNode.appendChild(imgNode);
                             outerDivNode.appendChild(itemNode);
 
 
                             if (destinationOwner !== user) {
                                 var found = userPhotos.find(function(elementId) {
-                                    return elementId == element["photoId"];
+                                    return elementId == element["mediaId"];
                                 });
                                 if (!found) {
                                     $('#removePhotoButton').hide();
@@ -363,7 +363,7 @@ $('#primaryPhotoButton').click(function(e){
                     imgNode.width = 50;
                     imgNode.height = 60;
                     var primaryPhoto = destData["primaryPhoto"];
-                    var photoId = primaryPhoto["photoId"];
+                    var photoId = primaryPhoto["mediaId"];
                     imgNode.src="/users/home/serveDestPicture/" + photoId;
                     outerDivNode.appendChild(imgNode);
                     console.log("Log from Ajax success");
@@ -385,7 +385,7 @@ $('#destslider').bind('slid.bs.carousel', function(e){
     var photoid = photo.id;
     photoid = photoid.split("-")[1];
     if(destData["primaryPhoto"] != null) {
-        if (destData["primaryPhoto"]["photoId"] == photoid) {
+        if (destData["primaryPhoto"]["mediaId"] == photoid) {
             $('#primaryPhotoButton').attr('disabled', 'disabled');
         }
         else {

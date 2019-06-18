@@ -101,6 +101,10 @@ public class User extends Model implements Comparable<User> {
     @OneToMany(mappedBy = "user")
     public List<UserPhoto> userPhotos;
 
+    @JsonIgnore
+    @OneToMany(mappedBy = "user")
+    public List<Album> albums;
+
     public static Finder<Integer,User> find = new Finder<>(User.class);
 
     @Deprecated
@@ -396,13 +400,13 @@ public class User extends Model implements Comparable<User> {
         this.trips = trips;
     }
 
-    public List<Destination> getDestinations() {
-        return destinations;
-    }
+    public List<Destination> getDestinations() { return destinations; }
 
     public void setDestinations(List<Destination> destinations) {
         this.destinations = destinations;
     }
+
+    public List<Album> getAlbums() { return albums; }
 
     public CommandManager getCommandManager() {
         return CommandManagerAccessor.getCommandManagerByEmail(this.email);

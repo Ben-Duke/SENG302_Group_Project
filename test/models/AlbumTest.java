@@ -26,7 +26,7 @@ public class AlbumTest extends BaseTestWithApplicationAndDatabase {
         Album newAlbum = AlbumAccessor.getAlbumById(album.getAlbumId());
 //
 
-        System.out.println(newAlbum.getMedia());
+        System.out.println(newAlbum.getMedia().get(0));
 
         assert(album.getMedia().size() == 1);
 

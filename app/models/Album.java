@@ -48,6 +48,7 @@ public class Album extends Model {
     public Integer getAlbumId() { return albumId; }
     public List<Media> getMedia() { return media; }
     public User getUser() { return user; }
+    public String getTitle() { return title; }
 
     public void addMedia(Media media) {
         this.media.add(media);
@@ -55,6 +56,13 @@ public class Album extends Model {
 
     public boolean userIsOwner(User user) {
         return this.getUser().getUserid() == user.getUserid();
+    }
+
+    public boolean isPublic() {
+        // Loop through all media item testing for
+        // publicity. If all private then return false
+        // AC7
+        return true;
     }
 
     public static Finder<Integer, Album> find = new Finder<>(Album.class);

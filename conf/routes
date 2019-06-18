@@ -273,6 +273,21 @@ POST     /users/treasurehunts/edit/save/:id                    controllers.Treas
 #Delete treasure hunt
 GET     /users/treasurehunts/delete/:id                    controllers.TreasureHuntController.deleteTreasureHunt(request : Request, id : Integer)
 
+
+
+# ------ ALBUMS ------
+
+#Albums index page
+GET     /users/albums   controllers.AlbumController.indexAlbum(request : Request)
+
+#View one album
+GET     /users/albums/:id   controllers.AlbumController.viewAlbum(request : Request, id : Integer)
+
+#Create one album. With or without media
+POST    /users/albums/create    controllers.AlbumController.createAlbum(request : Request)
+
+
+
 # Undo
 +nocsrf
 PUT     /undo                                              controllers.UndoRedoController.undo(request: Request)

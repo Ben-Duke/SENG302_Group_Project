@@ -42,6 +42,7 @@
                             @UserAccessor.update(user);
                         }
                         <li><a href="@routes.TreasureHuntController.indexTreasureHunt()" >Treasure hunts</a></li>
+                        <li><a href="@routes.AlbumController.indexAlbum()">Albums</a></li>
                         @if(user.userIsAdmin) {
                             <li><a href="@routes.AdminController.indexAdmin()">Admin</a></li>
                         }

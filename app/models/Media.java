@@ -2,6 +2,7 @@ package models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import controllers.ApplicationManager;
+import io.ebean.Finder;
 import io.ebean.Model;
 
 import javax.persistence.*;
@@ -33,6 +34,7 @@ public abstract class Media extends Model {
         this.user = user;
     }
 
+    public static Finder<Integer,Media> find = new Finder<>(Media.class);
 
     public Integer getMediaId() { return mediaId; }
     public String getUrl() { return url; }

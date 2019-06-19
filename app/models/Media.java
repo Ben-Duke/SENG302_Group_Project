@@ -7,6 +7,7 @@ import io.ebean.Model;
 
 import javax.persistence.*;
 import java.nio.file.Paths;
+import java.util.List;
 
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)

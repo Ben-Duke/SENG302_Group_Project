@@ -17,7 +17,7 @@ public class Album extends Model {
     public Integer albumId;
 
     @ManyToMany
-    private List<Media> media;
+    public List<Media> media;
 
     /** The user who owns the photo */
     @JsonIgnore
@@ -50,9 +50,9 @@ public class Album extends Model {
     public User getUser() { return user; }
     public String getTitle() { return title; }
 
-    public void addMedia(Media media) {
-        this.media.add(media);
-    }
+    public void addMedia(Media media) { this.media.add(media); }
+    public void removeMedia(Media media) { this.media.remove(media); }
+    public void removeAllMedia() { this.media = new ArrayList<>(); }
 
     public boolean userIsOwner(User user) {
         return this.getUser().getUserid() == user.getUserid();

@@ -5,6 +5,7 @@ import accessors.MediaAccessor;
 import models.Album;
 import models.Media;
 import models.User;
+import models.commands.Albums.CreateAlbumCommand;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
@@ -26,15 +27,11 @@ public class AlbumController extends Controller {
 
     public Result viewAlbum(Http.Request request, Integer albumId) {
 
-        System.out.println("1.1");
-
         User user = User.getCurrentUser(request);
         if (user == null) { return redirect(routes.UserController.userindex()); }
 
         Album album = AlbumAccessor.getAlbumById(albumId);
         if (album == null) { return redirect(routes.HomeController.showhome()); }
-
-        System.out.println("1.3");
 
         return ok(viewAlbum.render(album, user));
     }
@@ -46,13 +43,12 @@ public class AlbumController extends Controller {
             return redirect(routes.UserController.userindex());
         }
 
-        Album album;
+        CreateAlbumCommand cmd;
 
         String title = request.body().asJson().get("title").textValue();
 
         if (request.body().asJson().get("mediaId").textValue() == null) {
-            album = new Album(user, title);
-            album.save();
+            cmd = new CreateAlbumCommand(title, user, null);
 
         } else {
 
@@ -61,18 +57,18 @@ public class AlbumController extends Controller {
             Media media = MediaAccessor.getMediaById(mediaId);
 
             if (media == null) { badRequest("Not such media"); }
+            if (media.getUser() != user) { unauthorized("Not your media"); }
 
-            album = new Album(media, user, title);
-            album.save();
+            cmd = new CreateAlbumCommand(title, user, media);
 
         }
 
-        System.out.println(album.getAlbumId());
+        user.getCommandManager().executeCommand(cmd);
 
-        return redirect(routes.AlbumController.viewAlbum(album.getAlbumId()));
+        Album album = cmd.getAlbum();
+
+        return ok(viewAlbum.render(album, user));
     }
-
-
 
 
 }

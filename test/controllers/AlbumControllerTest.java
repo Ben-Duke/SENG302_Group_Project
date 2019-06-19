@@ -125,4 +125,9 @@ public class AlbumControllerTest extends BaseTestWithApplicationAndDatabase {
         assert (afterSize == beforeSize);
 
     }
+
+    @Test
+    public void deleteAlbum() {
+        
+    }
 }

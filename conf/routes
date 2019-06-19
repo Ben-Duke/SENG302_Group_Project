@@ -286,6 +286,9 @@ GET     /users/albums/:id   controllers.AlbumController.viewAlbum(request : Requ
 #Create one album. With or without media
 POST    /users/albums/create    controllers.AlbumController.createAlbum(request : Request)
 
+#Delete one album
+DELETE  /users/albums/delete/:id    controllers.AlbumController.deleteAlbum(request : Request, id : Integer)
+
 
 
 # Undo

@@ -6,6 +6,7 @@ import models.Album;
 import models.Media;
 import models.User;
 import models.commands.Albums.CreateAlbumCommand;
+import models.commands.Albums.DeleteAlbumCommand;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
@@ -86,6 +87,15 @@ public class AlbumController extends Controller {
         return ok(viewAlbum.render(album, user));
     }
 
+    /**
+     * Process the request to delete an album.
+     * All media in album will be deleted, unless
+     * it is also apart of another album.
+     * Redirect to album index page on success.
+     * @param request
+     * @param albumId
+     * @return
+     */
     public Result deleteAlbum(Http.Request request, Integer albumId) {
         User user = User.getCurrentUser(request);
         if (user == null) { return redirect(routes.UserController.userindex()); }
@@ -95,11 +105,10 @@ public class AlbumController extends Controller {
 
         if (!album.userIsOwner(user)) { return unauthorized("Not your album"); }
 
+        DeleteAlbumCommand cmd = new DeleteAlbumCommand(album);
+        user.getCommandManager().executeCommand(cmd);
 
-
-
-        return ok();
-
+        return redirect(routes.AlbumController.indexAlbum());
     }
 
 

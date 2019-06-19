@@ -1,5 +1,6 @@
 
 function createAlbum(url, title, mediaId) {
+
     var token =  $('input[name="csrfToken"]').attr('value');
     $.ajaxSetup({
         beforeSend: function(xhr) {
@@ -8,15 +9,13 @@ function createAlbum(url, title, mediaId) {
     });
 
     $.ajax({
-        url: url,
+        url: "/users/albums/create",
         method: "POST",
         data: JSON.stringify({
             title: title,
             mediaId: mediaId
         }),
-        headers: {
-            'Content-Type': 'application/json'
-        },
+        contentType: 'application/json',
         success: function(res) {
             console.log("Success!");
         }

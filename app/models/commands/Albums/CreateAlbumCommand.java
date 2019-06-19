@@ -21,7 +21,6 @@ public class CreateAlbumCommand extends UndoableCommand {
     }
 
     public void execute() {
-
         if (media == null) {
             album = new Album(user, title);
         } else {

@@ -15,6 +15,11 @@ import java.util.List;
 
 public class AlbumController extends Controller {
 
+    /**
+     * Render the index page for albums. This displays all the users albums.
+     * @param request
+     * @return
+     */
     public Result indexAlbum(Http.Request request) {
         User user = User.getCurrentUser(request);
         if (user == null) { return redirect(routes.UserController.userindex()); }
@@ -24,7 +29,12 @@ public class AlbumController extends Controller {
         return ok(views.html.users.album.indexAlbum.render(albums, user));
     }
 
-
+    /**
+     * Render the page the displays the contents of one album
+     * @param request
+     * @param albumId the id of the album to display.
+     * @return
+     */
     public Result viewAlbum(Http.Request request, Integer albumId) {
 
         User user = User.getCurrentUser(request);
@@ -36,7 +46,14 @@ public class AlbumController extends Controller {
         return ok(viewAlbum.render(album, user));
     }
 
-
+    /**
+     * Process the ajax request to create album.
+     * Title and optionally a initial piece of media are given.
+     * Command is used to create album.
+     * The page displaying the created album is rendered.
+     * @param request
+     * @return
+     */
     public Result createAlbum(Http.Request request) {
         User user = User.getCurrentUser(request);
         if (user == null) {

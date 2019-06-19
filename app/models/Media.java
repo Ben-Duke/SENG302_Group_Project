@@ -27,6 +27,9 @@ public abstract class Media extends Model {
     @JoinColumn(name = "user", referencedColumnName = "userid")
     public User user;
 
+    @ManyToMany(mappedBy = "media")
+    public List<Album> albums;
+
     public boolean isMediaPublic;
 
     public Media(String url, boolean isPublic, User user) {
@@ -41,6 +44,7 @@ public abstract class Media extends Model {
     public String getUrl() { return url; }
     public boolean getIsPublic() { return isMediaPublic; }
     public User getUser() { return user; }
+    public List<Album> getAlbums() { return albums; }
 
     /**
      * Get the url for the media with its full path

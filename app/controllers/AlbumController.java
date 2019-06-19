@@ -13,6 +13,7 @@ import views.html.users.album.viewAlbum;
 
 import java.util.List;
 
+
 public class AlbumController extends Controller {
 
     /**
@@ -84,6 +85,25 @@ public class AlbumController extends Controller {
 
         return ok(viewAlbum.render(album, user));
     }
+
+    public Result deleteAlbum(Http.Request request, Integer albumId) {
+        User user = User.getCurrentUser(request);
+        if (user == null) { return redirect(routes.UserController.userindex()); }
+
+        Album album = AlbumAccessor.getAlbumById(albumId);
+        if (album == null) { return badRequest("Album does not exist"); }
+
+        if (!album.userIsOwner(user)) { return unauthorized("Not your album"); }
+
+
+
+
+        return ok();
+
+    }
+
+
+
 
 
 }

@@ -1,5 +1,6 @@
 package models.commands.Albums;
 
+import accessors.MediaAccessor;
 import accessors.UserAccessor;
 import models.Media;
 import models.User;

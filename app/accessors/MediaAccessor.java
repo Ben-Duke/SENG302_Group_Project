@@ -10,5 +10,8 @@ public class MediaAccessor {
 
     public static void insert(Media media) { media.save(); }
 
+    public static void delete(Media media) { media.delete(); }
+
+    public static void update(Media media) { media.update(); }
 
 }

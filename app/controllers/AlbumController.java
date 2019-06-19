@@ -48,7 +48,7 @@ public class AlbumController extends Controller {
 
     /**
      * Process the ajax request to create album.
-     * Title and optionally a initial piece of media are given.
+     * Title and optionally a initial piece of media (by id) are given.
      * Command is used to create album.
      * The page displaying the created album is rendered.
      * @param request
@@ -56,15 +56,13 @@ public class AlbumController extends Controller {
      */
     public Result createAlbum(Http.Request request) {
         User user = User.getCurrentUser(request);
-        if (user == null) {
-            return redirect(routes.UserController.userindex());
-        }
+        if (user == null) { return redirect(routes.UserController.userindex()); }
 
         CreateAlbumCommand cmd;
 
         String title = request.body().asJson().get("title").textValue();
 
-        if (request.body().asJson().get("mediaId").textValue() == null) {
+        if (request.body().asJson().get("mediaId").asText().equals("null")) {
             cmd = new CreateAlbumCommand(title, user, null);
 
         } else {
@@ -73,8 +71,8 @@ public class AlbumController extends Controller {
 
             Media media = MediaAccessor.getMediaById(mediaId);
 
-            if (media == null) { badRequest("Not such media"); }
-            if (media.getUser() != user) { unauthorized("Not your media"); }
+            if (media == null) { return badRequest("Not such media"); }
+            if (!media.userIsOwner(user)) { return unauthorized("Not your media"); }
 
             cmd = new CreateAlbumCommand(title, user, media);
 

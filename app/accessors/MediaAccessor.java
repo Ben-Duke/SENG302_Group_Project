@@ -8,5 +8,7 @@ public class MediaAccessor {
         return Media.find.byId(id);
     }
 
+    public static void insert(Media media) { media.save(); }
+
 
 }

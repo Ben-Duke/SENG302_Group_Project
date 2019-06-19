@@ -54,6 +54,10 @@ public abstract class Media extends Model {
                 + this.getUrl();
     }
 
+    public boolean userIsOwner(User user) {
+        return user.getUserid() == this.getUser().getUserid();
+    }
+
     public void setUrl(String url) {this.url = url; }
     public void setPublic(boolean isPublic) { this.isMediaPublic = isPublic; }
 

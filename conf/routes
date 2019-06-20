@@ -295,6 +295,9 @@ PUT     /users/albums/add_media/:id     controllers.AlbumController.addMediaToAl
 #Remove multiple media from one album
 PUT     /users/albums/remove_media/:id     controllers.AlbumController.removeMediaFromAlbum(request : Request, id : Integer)
 
+#Move multiple media to one album
+PUT     /users/albums/move_media/:id     controllers.AlbumController.moveMediaToAlbum(request : Request, id : Integer)
+
 
 
 # Undo

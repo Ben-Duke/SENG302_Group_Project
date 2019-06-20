@@ -22,16 +22,22 @@
 
 
         <button onclick="
-            addOrRemoveMediaToAlbum(
+            manipulateMediaInAlbum(
             '@routes.AlbumController.addMediaToAlbum(1)',
             [1, 2, 3])
         ">Add media to album</button>
 
         <button onclick="
-            addOrRemoveMediaToAlbum(
+            manipulateMediaInAlbum(
                     '@routes.AlbumController.removeMediaFromAlbum(1)',
                     [1, 2])
         ">Remove media from album</button>
+
+        <button onclick="
+            manipulateMediaInAlbum(
+                    '@routes.AlbumController.moveMediaToAlbum(1)',
+                    [1, 2])
+        ">Move media to album</button>
 
     </body>
 

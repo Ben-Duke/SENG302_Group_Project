@@ -5,10 +5,7 @@ import accessors.MediaAccessor;
 import models.Album;
 import models.Media;
 import models.User;
-import models.commands.Albums.AddMediaToAlbumCommand;
-import models.commands.Albums.CreateAlbumCommand;
-import models.commands.Albums.DeleteAlbumCommand;
-import models.commands.Albums.RemoveMediaFromAlbumCommand;
+import models.commands.Albums.*;
 import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Http;
@@ -154,8 +151,8 @@ public class AlbumController extends Controller {
     /**
      * Process the ajax request to remove multiple media
      * from an album. Takes a list of media ids, if the
-     * user owns them all, a command is used to add them
-     * to the album.
+     * user owns them all, a command is used to remove them
+     * from the album.
      * @param albumId The id of the album the media is being
      *                removed from.
      */
@@ -182,6 +179,41 @@ public class AlbumController extends Controller {
 
 
         RemoveMediaFromAlbumCommand cmd = new RemoveMediaFromAlbumCommand(album, medias);
+        user.getCommandManager().executeCommand(cmd);
+
+        return ok(viewAlbum.render(album, user));
+    }
+
+    /**
+     * Process the ajax request to move multiple media
+     * from their album to another. Takes a list of media ids, if the
+     * user owns them all, a command is used to move them
+     * from their current album to the given album.
+     * @param albumId The id of the album the media is being
+     *                moved to.
+     */
+    public Result moveMediaToAlbum(Http.Request request, Integer albumId) {
+        User user = User.getCurrentUser(request);
+        if (user == null) { return redirect(routes.UserController.userindex()); }
+
+        Album album = AlbumAccessor.getAlbumById(albumId);
+        if (album == null) { return badRequest("Album does not exist"); }
+
+        List<Integer> mediaIds = Json.fromJson(request.body().asJson().get("mediaIds"), List.class);
+        List<Media> medias = new ArrayList<>();
+
+        for (Integer mediaId : mediaIds) {
+            Media media = MediaAccessor.getMediaById(mediaId);
+            if (media == null) { return badRequest("Media does not exist"); }
+            if (!media.userIsOwner(user)) { return unauthorized("Not your media"); }
+
+            medias.add(media);
+        }
+
+        if (!album.userIsOwner(user)) { return unauthorized("Not your album"); }
+
+
+        MoveMediaToAlbumCommand cmd = new MoveMediaToAlbumCommand(album, medias);
         user.getCommandManager().executeCommand(cmd);
 
         return ok(viewAlbum.render(album, user));

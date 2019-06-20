@@ -41,7 +41,13 @@ function deleteAlbum(url) {
 
 }
 
-function addOrRemoveMediaToAlbum(url, mediaIds) {
+/**
+ * Given the url the method can handle adding media
+ * @param url the url for add, remove, or move media
+ * in albums.
+ * @param mediaIds a list of media ids
+ */
+function manipulateMediaInAlbum(url, mediaIds) {
 
     console.log(mediaIds);
 

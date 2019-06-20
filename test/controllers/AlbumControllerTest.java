@@ -1,9 +1,11 @@
 package controllers;
 
+import accessors.AlbumAccessor;
 import accessors.MediaAccessor;
 import accessors.UserAccessor;
 import accessors.UserPhotoAccessor;
 import com.fasterxml.jackson.databind.JsonNode;
+import models.Album;
 import models.Media;
 import models.User;
 import models.UserPhoto;
@@ -127,7 +129,70 @@ public class AlbumControllerTest extends BaseTestWithApplicationAndDatabase {
     }
 
     @Test
-    public void deleteAlbum() {
+    public void deleteAlbumTest() {
+
+        User user = UserAccessor.getById(1);
+
+        Album album = new Album(user, "testTitle");
+        AlbumAccessor.insert(album);
+
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(Helpers.DELETE)
+                .uri("/users/albums/delete/"+album.getAlbumId())
+                .session("connected", "1");
+
+
+        int beforeSize = user.getAlbums().size();
+
+        Result result = route(app, request);
+
+        user = UserAccessor.getById(1);
+
+        int afterSize = user.getAlbums().size();
+
+        assert (result.status() == SEE_OTHER);
+        assert (afterSize == beforeSize - 1);
 
     }
+
+    @Test
+    public void deleteAlbumThatDoesntExistTest() {
+
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(Helpers.DELETE)
+                .uri("/users/albums/delete/"+10000)
+                .session("connected", "1");
+
+
+        Result result = route(app, request);
+
+        assert (result.status() == BAD_REQUEST);
+    }
+
+    @Test
+    public void deleteAlbumNotOwnedTest() {
+
+        User user = UserAccessor.getById(1);
+
+        Album album = new Album(user, "testTitle");
+        AlbumAccessor.insert(album);
+
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(Helpers.DELETE)
+                .uri("/users/albums/delete/"+album.getAlbumId())
+                .session("connected", "2");
+
+
+        int beforeSize = user.getAlbums().size();
+
+        Result result = route(app, request);
+
+        user = UserAccessor.getById(1);
+
+        int afterSize = user.getAlbums().size();
+
+        assert (result.status() == UNAUTHORIZED);
+        assert (afterSize == beforeSize);
+    }
+
 }

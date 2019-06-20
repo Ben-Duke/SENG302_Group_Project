@@ -5,13 +5,17 @@ import accessors.MediaAccessor;
 import models.Album;
 import models.Media;
 import models.User;
+import models.commands.Albums.AddMediaToAlbumCommand;
 import models.commands.Albums.CreateAlbumCommand;
 import models.commands.Albums.DeleteAlbumCommand;
+import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
+import scala.Int;
 import views.html.users.album.viewAlbum;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -109,6 +113,41 @@ public class AlbumController extends Controller {
         user.getCommandManager().executeCommand(cmd);
 
         return redirect(routes.AlbumController.indexAlbum());
+    }
+
+    /**
+     * Process the ajax request to add multiple media
+     * to an album. Takes a list of media ids, if the
+     * user owns them all, a command is used to add them
+     * to the album.
+     * @param albumId The id of the album the media is being
+     *                added to.
+     */
+    public Result addMediaToAlbum(Http.Request request, Integer albumId) {
+        User user = User.getCurrentUser(request);
+        if (user == null) { return redirect(routes.UserController.userindex()); }
+
+        Album album = AlbumAccessor.getAlbumById(albumId);
+        if (album == null) { return badRequest("Album does not exist"); }
+
+        List<Integer> mediaIds = Json.fromJson(request.body().asJson().get("mediaIds"), List.class);
+        List<Media> medias = new ArrayList<>();
+
+        for (Integer mediaId : mediaIds) {
+            Media media = MediaAccessor.getMediaById(mediaId);
+            if (media == null) { return badRequest("Media does not exist"); }
+            if (!media.userIsOwner(user)) { return unauthorized("Not your media"); }
+
+            medias.add(media);
+        }
+
+        if (!album.userIsOwner(user)) { return unauthorized("Not your album"); }
+
+
+        AddMediaToAlbumCommand cmd = new AddMediaToAlbumCommand(album, medias);
+        user.getCommandManager().executeCommand(cmd);
+
+        return ok(viewAlbum.render(album, user));
     }
 
 

@@ -1,5 +1,6 @@
+function addMediaToAlbum(url, mediaIds) {
 
-function createAlbum(url, title, mediaId) {
+    console.log(mediaIds);
 
     var token =  $('input[name="csrfToken"]').attr('value');
     $.ajaxSetup({
@@ -10,10 +11,9 @@ function createAlbum(url, title, mediaId) {
 
     $.ajax({
         url: url,
-        method: "POST",
+        method: "PUT",
         data: JSON.stringify({
-            title: title,
-            mediaId: mediaId
+            mediaIds: mediaIds
         }),
         contentType: 'application/json',
         success: function(res) {

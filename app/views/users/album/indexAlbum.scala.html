@@ -20,9 +20,17 @@
                 null)
         ">Create</button>
 
+
+        <button onclick="
+            addMediaToAlbum(
+            '@routes.AlbumController.addMediaToAlbum(1)',
+            [1, 2, 3])
+        ">Add media to album</button>
+
     </body>
 
     <script src="@routes.Assets.at("js/album/createAlbum.js")" type="text/javascript"></script>
+    <script src="@routes.Assets.at("js/album/addMediaToAlbum.js")" type="text/javascript"></script>
 
 
 }

@@ -10,6 +10,8 @@ import java.util.List;
 
 public class UserAccessor {
 
+    public static void insert(User user) { user.save(); }
+
     public static User getDefaultAdmin(){
         throw new UnsupportedOperationException();
     }

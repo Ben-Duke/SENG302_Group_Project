@@ -195,4 +195,110 @@ public class AlbumControllerTest extends BaseTestWithApplicationAndDatabase {
         assert (afterSize == beforeSize);
     }
 
+    @Test
+    public void addMediaToAlbumTest() {
+
+        User user = new User("email");
+        UserAccessor.insert(user);
+
+        Album album = new Album(user, "testTitle");
+        AlbumAccessor.insert(album);
+
+        Media media1 = new UserPhoto("/test", false, false, user);
+        MediaAccessor.insert(media1);
+        Media media2 = new UserPhoto("/test2", false, false, user);
+        MediaAccessor.insert(media2);
+
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .bodyJson(Json.parse("{\"mediaIds\":["+media1.getMediaId()+","+media2.getMediaId()+"]}"))
+                .method(Helpers.PUT)
+                .uri("/users/albums/add_media/"+album.getAlbumId())
+                .session("connected", Integer.toString(user.getUserid()));
+
+
+        int beforeSize = album.getMedia().size();
+
+        Result result = route(app, request);
+
+        album = AlbumAccessor.getAlbumById(album.getAlbumId());
+
+
+        int afterSize = album.getMedia().size();
+
+        assert (result.status() == OK);
+        assert (afterSize == beforeSize + 2);
+
+    }
+
+    @Test
+    public void addUnownedMediaToAlbumTest() {
+
+        User user = new User("email");
+        UserAccessor.insert(user);
+
+        User otherUser = UserAccessor.getById(1);
+
+        Album album = new Album(user, "testTitle");
+        AlbumAccessor.insert(album);
+
+        Media media1 = new UserPhoto("/test", false, false, user);
+        MediaAccessor.insert(media1);
+        Media media2 = new UserPhoto("/test2", false, false, otherUser);
+        MediaAccessor.insert(media2);
+
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .bodyJson(Json.parse("{\"mediaIds\":["+media1.getMediaId()+","+media2.getMediaId()+"]}"))
+                .method(Helpers.PUT)
+                .uri("/users/albums/add_media/"+album.getAlbumId())
+                .session("connected", Integer.toString(user.getUserid()));
+
+
+        int beforeSize = album.getMedia().size();
+
+        Result result = route(app, request);
+
+        album = AlbumAccessor.getAlbumById(album.getAlbumId());
+
+
+        int afterSize = album.getMedia().size();
+
+        assert (result.status() == UNAUTHORIZED);
+        assert (afterSize == beforeSize);
+
+    }
+
+    @Test
+    public void addNonExistingMediaToAlbumTest() {
+
+        User user = new User("email");
+        UserAccessor.insert(user);
+
+        Album album = new Album(user, "testTitle");
+        AlbumAccessor.insert(album);
+
+        Media media1 = new UserPhoto("/test", false, false, user);
+        MediaAccessor.insert(media1);
+
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .bodyJson(Json.parse("{\"mediaIds\":["+media1.getMediaId()+","+10000+"]}"))
+                .method(Helpers.PUT)
+                .uri("/users/albums/add_media/"+album.getAlbumId())
+                .session("connected", Integer.toString(user.getUserid()));
+
+
+        int beforeSize = album.getMedia().size();
+
+        Result result = route(app, request);
+
+        album = AlbumAccessor.getAlbumById(album.getAlbumId());
+
+
+        int afterSize = album.getMedia().size();
+
+        assert (result.status() == BAD_REQUEST);
+        assert (afterSize == beforeSize);
+
+    }
+
+
 }

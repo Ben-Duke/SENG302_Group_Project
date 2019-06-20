@@ -65,4 +65,6 @@ public abstract class Media extends Model {
     public void setUrl(String url) {this.url = url; }
     public void setPublic(boolean isPublic) { this.isMediaPublic = isPublic; }
 
+//    public void addAlbum(Album album) { this.albums.add(album); }
+
 }

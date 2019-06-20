@@ -128,6 +128,6 @@ public class AlbumControllerTest extends BaseTestWithApplicationAndDatabase {
 
     @Test
     public void deleteAlbum() {
-        
+
     }
 }

@@ -65,6 +65,15 @@ public class Album extends Model {
         return true;
     }
 
+    public boolean containsMedia(Media testedMedia) {
+        for (Media media : this.getMedia()) {
+            if (media.getMediaId() == testedMedia.getMediaId()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public static Finder<Integer, Album> find = new Finder<>(Album.class);
 
 

@@ -292,6 +292,9 @@ DELETE  /users/albums/delete/:id    controllers.AlbumController.deleteAlbum(requ
 #Add multiple media to one album
 PUT     /users/albums/add_media/:id     controllers.AlbumController.addMediaToAlbum(request : Request, id : Integer)
 
+#Remove multiple media from one album
+PUT     /users/albums/remove_media/:id     controllers.AlbumController.removeMediaFromAlbum(request : Request, id : Integer)
+
 
 
 # Undo

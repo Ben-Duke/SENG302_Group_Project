@@ -300,5 +300,164 @@ public class AlbumControllerTest extends BaseTestWithApplicationAndDatabase {
 
     }
 
+    @Test
+    public void removeMediaFromAlbumTest() {
+
+        User user = new User("email");
+        UserAccessor.insert(user);
+
+        Album album = new Album(user, "testTitle");
+
+        Media media1 = new UserPhoto("/test", false, false, user);
+        MediaAccessor.insert(media1);
+        Media media2 = new UserPhoto("/test2", false, false, user);
+        MediaAccessor.insert(media2);
+
+        album.addMedia(media1);
+        album.addMedia(media2);
+
+        AlbumAccessor.insert(album);
+
+
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .bodyJson(Json.parse("{\"mediaIds\":["+media1.getMediaId()+","+media2.getMediaId()+"]}"))
+                .method(Helpers.PUT)
+                .uri("/users/albums/remove_media/"+album.getAlbumId())
+                .session("connected", Integer.toString(user.getUserid()));
+
+
+        int beforeSize = album.getMedia().size();
+
+        Result result = route(app, request);
+
+        album = AlbumAccessor.getAlbumById(album.getAlbumId());
+
+
+        int afterSize = album.getMedia().size();
+
+        assert (result.status() == OK);
+        assert (afterSize == beforeSize - 2);
+
+    }
+
+    @Test
+    public void removeUnownedMediaFromAlbumTest() {
+
+        User user = new User("email");
+        UserAccessor.insert(user);
+
+        User otherUser = UserAccessor.getById(1);
+
+        Album album = new Album(user, "testTitle");
+
+        Media media1 = new UserPhoto("/test", false, false, user);
+        MediaAccessor.insert(media1);
+        Media media2 = new UserPhoto("/test2", false, false, otherUser);
+        MediaAccessor.insert(media2);
+
+        album.addMedia(media1);
+        album.addMedia(media2);
+
+        AlbumAccessor.insert(album);
+
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .bodyJson(Json.parse("{\"mediaIds\":["+media1.getMediaId()+","+media2.getMediaId()+"]}"))
+                .method(Helpers.PUT)
+                .uri("/users/albums/remove_media/"+album.getAlbumId())
+                .session("connected", Integer.toString(user.getUserid()));
+
+
+        int beforeSize = album.getMedia().size();
+
+        Result result = route(app, request);
+
+        album = AlbumAccessor.getAlbumById(album.getAlbumId());
+
+
+        int afterSize = album.getMedia().size();
+
+        assert (result.status() == UNAUTHORIZED);
+        assert (afterSize == beforeSize);
+
+    }
+
+    @Test
+    public void removeNonExistingMediaFromAlbumTest() {
+
+        User user = new User("email");
+        UserAccessor.insert(user);
+
+        Album album = new Album(user, "testTitle");
+
+        Media media1 = new UserPhoto("/test", false, false, user);
+        MediaAccessor.insert(media1);
+
+        album.addMedia(media1);
+
+        AlbumAccessor.insert(album);
+
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .bodyJson(Json.parse("{\"mediaIds\":["+media1.getMediaId()+","+10000+"]}"))
+                .method(Helpers.PUT)
+                .uri("/users/albums/remove_media/"+album.getAlbumId())
+                .session("connected", Integer.toString(user.getUserid()));
+
+
+        int beforeSize = album.getMedia().size();
+
+        Result result = route(app, request);
+
+        album = AlbumAccessor.getAlbumById(album.getAlbumId());
+
+
+        int afterSize = album.getMedia().size();
+
+        assert (result.status() == BAD_REQUEST);
+        assert (afterSize == beforeSize);
+
+    }
+
+    @Test
+    public void removeMediaNotInAlbumTest() {
+
+        User user = new User("email");
+        UserAccessor.insert(user);
+
+        User otherUser = UserAccessor.getById(1);
+
+        Album album = new Album(user, "testTitle");
+
+        Media media1 = new UserPhoto("/test", false, false, user);
+        MediaAccessor.insert(media1);
+        Media media2 = new UserPhoto("/test2", false, false, otherUser);
+        MediaAccessor.insert(media2);
+
+        album.addMedia(media1);
+
+        AlbumAccessor.insert(album);
+
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .bodyJson(Json.parse("{\"mediaIds\":["+media1.getMediaId()+","+media2.getMediaId()+"]}"))
+                .method(Helpers.PUT)
+                .uri("/users/albums/remove_media/"+album.getAlbumId())
+                .session("connected", Integer.toString(user.getUserid()));
+
+
+        int beforeSize = album.getMedia().size();
+
+        Result result = route(app, request);
+
+        album = AlbumAccessor.getAlbumById(album.getAlbumId());
+
+
+        int afterSize = album.getMedia().size();
+
+        assert (result.status() == BAD_REQUEST);
+        assert (afterSize == beforeSize);
+
+    }
+
+
+
 
 }

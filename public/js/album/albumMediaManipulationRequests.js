@@ -41,6 +41,28 @@ function deleteAlbum(url) {
 
 }
 
+function updateAlbum(url, title) {
+
+    var token =  $('input[name="csrfToken"]').attr('value');
+    $.ajaxSetup({
+        beforeSend: function(xhr) {
+            xhr.setRequestHeader('Csrf-Token', token);
+        }
+    });
+
+    $.ajax({
+        url: url,
+        method: "PUT",
+        data: JSON.stringify({
+            title: title
+        }),
+        contentType: 'application/json',
+        success: function(res) {
+            console.log("Success!");
+        }
+    });
+}
+
 /**
  * Given the url the method can handle adding media
  * @param url the url for add, remove, or move media

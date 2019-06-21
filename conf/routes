@@ -289,6 +289,9 @@ POST    /users/albums/create    controllers.AlbumController.createAlbum(request 
 #Delete one album
 DELETE  /users/albums/delete/:id    controllers.AlbumController.deleteAlbum(request : Request, id : Integer)
 
+#Update one album
+PUT     /users/albums/update/:id    controllers.AlbumController.updateAlbum(request : Request, id : Integer)
+
 #Add multiple media to one album
 PUT     /users/albums/add_media/:id     controllers.AlbumController.addMediaToAlbum(request : Request, id : Integer)
 

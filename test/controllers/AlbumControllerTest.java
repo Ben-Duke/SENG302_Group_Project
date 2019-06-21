@@ -593,6 +593,77 @@ public class AlbumControllerTest extends BaseTestWithApplicationAndDatabase {
 
     }
 
+    @Test
+    public void updateAlbumTest() {
+
+        User user = new User("email12345");
+        UserAccessor.insert(user);
+
+        Album album = new Album(user, "testTitle");
+        AlbumAccessor.insert(album);
+
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .bodyJson(Json.parse("{\"title\":\"newTitle\"}"))
+                .method(Helpers.PUT)
+                .uri("/users/albums/update/"+album.getAlbumId())
+                .session("connected", Integer.toString(user.getUserid()));
+
+        Result result = route(app, request);
+
+        album = AlbumAccessor.getAlbumById(album.getAlbumId());
+
+        assert (result.status() == OK);
+        assert (album.getTitle().equals("newTitle"));
+
+    }
+
+    @Test
+    public void updateNonExistingAlbumTest() {
+
+        User user = new User("email12345");
+        UserAccessor.insert(user);
+
+
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .bodyJson(Json.parse("{\"title\":\"newTitle\"}"))
+                .method(Helpers.PUT)
+                .uri("/users/albums/update/"+100000)
+                .session("connected", Integer.toString(user.getUserid()));
+
+        Result result = route(app, request);
+
+        assert (result.status() == BAD_REQUEST);
+
+    }
+
+
+    @Test
+    public void updateUnownedAlbumTest() {
+
+        User user = new User("email12345");
+        UserAccessor.insert(user);
+
+        User otherUser = new User("email12");
+        UserAccessor.insert(otherUser);
+
+        Album album = new Album(user, "testTitle");
+        AlbumAccessor.insert(album);
+
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .bodyJson(Json.parse("{\"title\":\"newTitle\"}"))
+                .method(Helpers.PUT)
+                .uri("/users/albums/update/"+album.getAlbumId())
+                .session("connected", Integer.toString(otherUser.getUserid()));
+
+        Result result = route(app, request);
+
+        album = AlbumAccessor.getAlbumById(album.getAlbumId());
+
+        assert (result.status() == UNAUTHORIZED);
+        assert (album.getTitle().equals("testTitle"));
+
+    }
+
 
 
 

@@ -113,6 +113,23 @@ public class AlbumController extends Controller {
         return redirect(routes.AlbumController.indexAlbum());
     }
 
+    public Result updateAlbum(Http.Request request, Integer albumId) {
+        User user = User.getCurrentUser(request);
+        if (user == null) { return redirect(routes.UserController.userindex()); }
+
+        Album album = AlbumAccessor.getAlbumById(albumId);
+        if (album == null) { return badRequest("Album does not exist"); }
+
+        if (!album.userIsOwner(user)) { return unauthorized("Not your album"); }
+
+        String title = request.body().asJson().get("title").textValue();
+
+        UpdateAlbumCommand cmd = new UpdateAlbumCommand(album, title);
+        user.getCommandManager().executeCommand(cmd);
+
+        return ok(viewAlbum.render(album, user));
+    }
+
     /**
      * Process the ajax request to add multiple media
      * to an album. Takes a list of media ids, if the

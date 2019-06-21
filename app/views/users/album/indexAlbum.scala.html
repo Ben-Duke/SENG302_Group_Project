@@ -39,6 +39,12 @@
                     [1, 2])
         ">Move media to album</button>
 
+        <button onclick="
+            updateAlbum(
+                    '@routes.AlbumController.updateAlbum(1)',
+                    document.getElementById('albumTitleInput').value)
+        ">Update album title</button>
+
     </body>
 
     <script src="@routes.Assets.at("js/album/albumMediaManipulationRequests.js")" type="text/javascript"></script>

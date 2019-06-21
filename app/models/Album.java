@@ -19,7 +19,7 @@ public class Album extends Model {
     @ManyToMany
     public List<Media> media;
 
-    /** The user who owns the photo */
+    /** The user who owns the album */
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "user", referencedColumnName = "userid")
@@ -49,6 +49,8 @@ public class Album extends Model {
     public List<Media> getMedia() { return media; }
     public User getUser() { return user; }
     public String getTitle() { return title; }
+
+    public void setTitle(String title) { this.title = title; }
 
     public void addMedia(Media media) { this.media.add(media); }
     public void removeMedia(Media media) { this.media.remove(media); }

@@ -76,5 +76,12 @@ public class Album extends Model {
 
     public static Finder<Integer, Album> find = new Finder<>(Album.class);
 
+    public String toString() {
+        return "Album title: "+this.getTitle()+
+                " ID: "+this.getAlbumId()+
+                " Owner userId: "+this.getUser().getUserid()+
+                " Size: " +this.getMedia().size();
+    }
+
 
 }

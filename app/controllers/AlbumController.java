@@ -188,12 +188,14 @@ public class AlbumController extends Controller {
      * Process the ajax request to move multiple media
      * from their album to another. Takes a list of media ids, if the
      * user owns them all, a command is used to move them
-     * from their current album to the given album.
+     * from their current albums to the given album.
      * @param albumId The id of the album the media is being
      *                moved to.
      */
     public Result moveMediaToAlbum(Http.Request request, Integer albumId) {
+
         User user = User.getCurrentUser(request);
+
         if (user == null) { return redirect(routes.UserController.userindex()); }
 
         Album album = AlbumAccessor.getAlbumById(albumId);

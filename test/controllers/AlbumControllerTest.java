@@ -458,6 +458,142 @@ public class AlbumControllerTest extends BaseTestWithApplicationAndDatabase {
     }
 
 
+    @Test
+    public void moveMediaToAlbumTest() {
+
+        User user = new User("email");
+        UserAccessor.insert(user);
+
+        Album album = new Album(user, "testTitle");
+
+        Media media1 = new UserPhoto("/test", false, false, user);
+        MediaAccessor.insert(media1);
+        Media media2 = new UserPhoto("/test2", false, false, user);
+        MediaAccessor.insert(media2);
+
+        album.addMedia(media1);
+        album.addMedia(media2);
+
+        AlbumAccessor.insert(album);
+
+        Album targetAlbum = new Album(user, "testTitleTarget");
+        AlbumAccessor.insert(targetAlbum);
+
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .bodyJson(Json.parse("{\"mediaIds\":["+media1.getMediaId()+","+media2.getMediaId()+"]}"))
+                .method(Helpers.PUT)
+                .uri("/users/albums/move_media/"+targetAlbum.getAlbumId())
+                .session("connected", Integer.toString(user.getUserid()));
+
+
+        int albumBeforeSize = album.getMedia().size();
+        int targetAlbumBeforeSize = targetAlbum.getMedia().size();
+
+        Result result = route(app, request);
+
+        album = AlbumAccessor.getAlbumById(album.getAlbumId());
+        targetAlbum = AlbumAccessor.getAlbumById(targetAlbum.getAlbumId());
+
+        int albumAfterSize = album.getMedia().size();
+        int targetAlbumAfterSize = targetAlbum.getMedia().size();
+
+        assert (result.status() == OK);
+        assert (albumAfterSize == albumBeforeSize - 2);
+        assert (targetAlbumAfterSize == targetAlbumBeforeSize + 2);
+
+    }
+
+
+    @Test
+    public void moveNonExistingMediaToAlbumTest() {
+
+        User user = new User("email");
+        UserAccessor.insert(user);
+
+        Album album = new Album(user, "testTitle");
+
+        Media media1 = new UserPhoto("/test", false, false, user);
+        MediaAccessor.insert(media1);
+
+        album.addMedia(media1);
+
+        AlbumAccessor.insert(album);
+
+        Album targetAlbum = new Album(user, "testTitleTarget");
+        AlbumAccessor.insert(targetAlbum);
+
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .bodyJson(Json.parse("{\"mediaIds\":["+media1.getMediaId()+","+1000+"]}"))
+                .method(Helpers.PUT)
+                .uri("/users/albums/move_media/"+targetAlbum.getAlbumId())
+                .session("connected", Integer.toString(user.getUserid()));
+
+
+        int albumBeforeSize = album.getMedia().size();
+        int targetAlbumBeforeSize = targetAlbum.getMedia().size();
+
+        Result result = route(app, request);
+
+        album = AlbumAccessor.getAlbumById(album.getAlbumId());
+        targetAlbum = AlbumAccessor.getAlbumById(targetAlbum.getAlbumId());
+
+        int albumAfterSize = album.getMedia().size();
+        int targetAlbumAfterSize = targetAlbum.getMedia().size();
+
+        assert (result.status() == BAD_REQUEST);
+        assert (albumAfterSize == albumBeforeSize);
+        assert (targetAlbumAfterSize == targetAlbumBeforeSize);
+
+    }
+
+    @Test
+    public void moveUnownedMediaToAlbumTest() {
+
+        User user = new User("email");
+        UserAccessor.insert(user);
+
+        User otherUser = UserAccessor.getById(1);
+
+        Album album = new Album(user, "testTitle");
+
+        Media media1 = new UserPhoto("/test", false, false, user);
+        MediaAccessor.insert(media1);
+        Media media2 = new UserPhoto("/test2", false, false, otherUser);
+        MediaAccessor.insert(media2);
+
+        album.addMedia(media1);
+        album.addMedia(media2);
+
+        AlbumAccessor.insert(album);
+
+        Album targetAlbum = new Album(user, "testTitleTarget");
+        AlbumAccessor.insert(targetAlbum);
+
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .bodyJson(Json.parse("{\"mediaIds\":["+media1.getMediaId()+","+media2.getMediaId()+"]}"))
+                .method(Helpers.PUT)
+                .uri("/users/albums/move_media/"+targetAlbum.getAlbumId())
+                .session("connected", Integer.toString(user.getUserid()));
+
+
+        int albumBeforeSize = album.getMedia().size();
+        int targetAlbumBeforeSize = targetAlbum.getMedia().size();
+
+        Result result = route(app, request);
+
+        album = AlbumAccessor.getAlbumById(album.getAlbumId());
+        targetAlbum = AlbumAccessor.getAlbumById(targetAlbum.getAlbumId());
+
+        int albumAfterSize = album.getMedia().size();
+        int targetAlbumAfterSize = targetAlbum.getMedia().size();
+
+        assert (result.status() == UNAUTHORIZED);
+        assert (albumAfterSize == albumBeforeSize);
+        assert (targetAlbumAfterSize == targetAlbumBeforeSize);
+
+    }
+
+
 
 
 }

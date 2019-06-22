@@ -6,32 +6,28 @@ function initMap() {
         zoom: 5
     });
 
-    document.getElementById('placesSearch').addEventListener('input', function() {
-
-        var inputText = document.getElementById('placesSearch').value;
-
-        $.ajaxSetup({
-            beforeSend: function(xhr) {
-                xhr.setRequestHeader('Csrf-Token', token);
-            }
-        });
 
 
-        $.ajax({
-            url: "https://maps.googleapis.com/maps/api/place/autocomplete/json?input="+inputText+"?key=AIzaSyDCyC_ON0GgSmJIfPlL7oke5PZgbR8TLbg",
-            contentType: 'application/json',
-            success: function(res) {
-                console.log("Success!");
-            }
-        });
-
-
-
-    });
+    // document.getElementById('placesSearch').addEventListener('input', function() {
+    //
+    //     var inputText = document.getElementById('placesSearch').value;
+    //
+    //
+    //     $.ajax({
+    //         url: "https://maps.googleapis.com/maps/api/place/autocomplete/json?input="+inputText+"?key=AIzaSyAiQ3OZFd4Y_eamBVoPBuUWojD-N-3_w9c",
+    //         contentType: 'application/json',
+    //         success: function(res) {
+    //             console.log("Success!");
+    //         }
+    //     });
+    //
+    //
+    //
+    // });
 
 }
 
-
+var ac = new google.maps.places.Autocomplete(document.getElementById('placesSearch'));
 
 
 

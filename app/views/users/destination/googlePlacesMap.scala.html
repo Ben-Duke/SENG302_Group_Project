@@ -1,0 +1,18 @@
+
+@(user : User)
+
+@main(user, "Places") {
+    <div id="map" style="height: 500px;"></div>
+
+    <input id="placesSearch">
+
+    <script src="@routes.Assets.at("js/googlePlaces.js")"></script>
+
+
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDCyC_ON0GgSmJIfPlL7oke5PZgbR8TLbg&callback=initMap&libraries=places"></script>
+    @*<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDCyC_ON0GgSmJIfPlL7oke5PZgbR8TLbg&callback=initIndexDestinationMap&libraries=places"*@
+    @*async defer>*@
+    @*</script>*@
+}
+
+

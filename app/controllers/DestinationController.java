@@ -1001,4 +1001,11 @@ public class DestinationController extends Controller {
         });
     }
 
+
+    public Result renderMap(Http.Request request) {
+        User user = User.getCurrentUser(request);
+        return ok(googlePlacesMap.render(user));
+    }
+
+
 }

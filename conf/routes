@@ -273,6 +273,10 @@ POST     /users/treasurehunts/edit/save/:id                    controllers.Treas
 #Delete treasure hunt
 GET     /users/treasurehunts/delete/:id                    controllers.TreasureHuntController.deleteTreasureHunt(request : Request, id : Integer)
 
+
+GET /googlemap  controllers.DestinationController.renderMap(request : Request)
+
+
 # Undo
 +nocsrf
 PUT     /undo                                              controllers.UndoRedoController.undo(request: Request)

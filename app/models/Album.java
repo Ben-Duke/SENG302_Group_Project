@@ -28,7 +28,6 @@ public class Album extends Model {
 
     private String title;
 
-    private Boolean isPublic = false;
 
     public Album(User user, String title) {
         media = new ArrayList<>();
@@ -40,13 +39,11 @@ public class Album extends Model {
         this.media.add(media);
         this.user = user;
         this.title = title;
-        setVisibility();
     }
     public Album(List<Media> media, User user, String title) {
         this.media = media;
         this.user = user;
         this.title = title;
-        setVisibility();
     }
 
 
@@ -59,15 +56,12 @@ public class Album extends Model {
 
     public void addMedia(Media media) {
         this.media.add(media);
-        setVisibility();
     }
     public void removeMedia(Media media) {
         this.media.remove(media);
-        setVisibility();
     }
     public void removeAllMedia() {
         this.media = new ArrayList<>();
-        setVisibility();
     }
 
     public boolean userIsOwner(User user) {
@@ -75,10 +69,7 @@ public class Album extends Model {
     }
 
     public boolean isPublic() {
-        // Loop through all media item testing for
-        // publicity. If all private then return false
-        // AC7
-        return true;
+        return getVisibility();
     }
 
     public boolean containsMedia(Media testedMedia) {
@@ -120,9 +111,9 @@ public class Album extends Model {
     }
 
     /**
-     * Iterate over all media in the album checking the visibility, setting the album visibility accordingly
+     * Iterate over all media in the album checking the visibility, getting the album visibility accordingly
      */
-    public void setVisibility() {
+    private Boolean getVisibility() {
         Boolean containsPublicMedia = false;
         for(Media media: this.media) {
             if(media.isMediaPublic) {
@@ -130,9 +121,9 @@ public class Album extends Model {
             }
         }
         if (containsPublicMedia) {
-            this.isPublic = true;
+            return true;
         } else {
-            this.isPublic = false;
+            return false;
         }
     }
 

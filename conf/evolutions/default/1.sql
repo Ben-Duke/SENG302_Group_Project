@@ -15,7 +15,6 @@ create table album (
   album_id                      integer auto_increment not null,
   user                          integer,
   title                         varchar(255),
-  is_public                     boolean,
   constraint pk_album primary key (album_id)
 );
 

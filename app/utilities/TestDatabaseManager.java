@@ -127,7 +127,7 @@ public class TestDatabaseManager {
                 this.addUserPhotos();
             }
         }
-
+        CountryUtils.updateCountries();
         CountryUtils.validateUsedCountries();
 
     }

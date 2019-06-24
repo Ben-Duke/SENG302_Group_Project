@@ -325,35 +325,19 @@ public class User extends Model implements Comparable<User> {
         this.gender = gender;
     }
 
-    public String getfName() {
-        return fName;
-    }
-
-    /**
-     * Quality Bug fix by Jason and Gavin
-     * @return
-     */
     public String getFName() {
         return fName;
     }
 
-    public void setfName(String fName) {
+    public void setFName(String fName) {
         this.fName = fName;
     }
 
-    public String getlName() {
-        return lName;
-    }
-
-    /**
-     * Quality Bug fix by Jason and Gavin
-     * @return
-     */
     public String getLName() {
         return lName;
     }
 
-    public void setlName(String lName) {
+    public void setLName(String lName) {
         this.lName = lName;
     }
 
@@ -603,8 +587,8 @@ public class User extends Model implements Comparable<User> {
      *   profile editing form to be equal to those fields of the user
      *   passed in */
     public void applyEditChanges(User editedUser) {
-        this.fName = editedUser.getfName();
-        this.lName = editedUser.getlName();
+        this.fName = editedUser.getFName();
+        this.lName = editedUser.getLName();
         this.gender = editedUser.getGender();
         this.dateOfBirth = editedUser.getDateOfBirth();
         this.email = editedUser.getEmail();

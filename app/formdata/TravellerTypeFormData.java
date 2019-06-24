@@ -31,8 +31,8 @@
 //     * @param user The User whose data to enter into the form.
 //     */
 //    public UpdateUserFormData(User user) {
-//        this.firstName = user.getfName();
-//        this.lastName = user.getlName();
+//        this.firstName = user.getFName();
+//        this.lastName = user.getLName();
 //        this.gender = user.getGender();
 //        this.username = user.getEmail();
 //        this.existingUsername = user.getEmail();

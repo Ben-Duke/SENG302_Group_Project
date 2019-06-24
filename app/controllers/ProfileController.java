@@ -4,7 +4,6 @@ import accessors.UserAccessor;
 import factories.UserFactory;
 import formdata.NatFormData;
 import formdata.UpdateUserFormData;
-import io.ebean.DataIntegrityException;
 import io.ebean.DuplicateKeyException;
 import models.Nationality;
 import models.Passport;
@@ -139,8 +138,8 @@ public class ProfileController extends Controller {
         String username = updateProfileForm.get().username;
         String passwordPlainText = updateProfileForm.get().password;
 
-        user.setfName(firstName);
-        user.setlName(lastName);
+        user.setFName(firstName);
+        user.setLName(lastName);
         user.setGender(gender);
         user.setDateOfBirth(birthDate);
         user.setEmail(username);

@@ -2,13 +2,10 @@ package models.commands.Profile;
 
 import controllers.ApplicationManager;
 import factories.LoginFactory;
-import models.Destination;
 import models.User;
-import models.commands.Destinations.EditDestinationCommand;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import play.data.validation.ValidationError;
 import play.db.Database;
 import play.db.Databases;
 import play.db.evolutions.Evolution;
@@ -42,8 +39,8 @@ public class EditProfileCommandTest extends BaseTestWithApplicationAndDatabase {
         TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
         testDatabaseManager.populateDatabase();
         User user = User.find.byId(2);
-        user.setfName("Logan");
-        user.setlName("Paul");
+        user.setFName("Logan");
+        user.setLName("Paul");
         user.setGender("Female");
         user.setDateOfBirth(birthDate);
         user.setEmail("loganpaul@gmail.com");
@@ -63,8 +60,8 @@ public class EditProfileCommandTest extends BaseTestWithApplicationAndDatabase {
     public void testExecute(){
         editProfileCommand.execute();
         User updatedUser = User.find.byId(2);
-        assertEquals("Logan", updatedUser.getfName());
-        assertEquals("Paul", updatedUser.getlName());
+        assertEquals("Logan", updatedUser.getFName());
+        assertEquals("Paul", updatedUser.getLName());
         assertEquals("Female", updatedUser.getGender());
         assertEquals(birthDate, updatedUser.getDateOfBirth());
         assertEquals("loganpaul@gmail.com", updatedUser.getEmail());
@@ -77,8 +74,8 @@ public class EditProfileCommandTest extends BaseTestWithApplicationAndDatabase {
         testExecute();
         editProfileCommand.undo();
         User undoUser = User.find.byId(2);
-        assertEquals("Gavin", undoUser.getfName());
-        assertEquals("Ong", undoUser.getlName());
+        assertEquals("Gavin", undoUser.getFName());
+        assertEquals("Ong", undoUser.getLName());
         assertEquals("Male", undoUser.getGender());
         LocalDate expectedBirthdate = LocalDate.parse("1998-08-23", formatter);
         assertEquals(expectedBirthdate, undoUser.getDateOfBirth());
@@ -93,8 +90,8 @@ public class EditProfileCommandTest extends BaseTestWithApplicationAndDatabase {
         editProfileCommand.undo();
         editProfileCommand.redo();
         User updatedUser = User.find.byId(2);
-        assertEquals("Logan", updatedUser.getfName());
-        assertEquals("Paul", updatedUser.getlName());
+        assertEquals("Logan", updatedUser.getFName());
+        assertEquals("Paul", updatedUser.getLName());
         assertEquals("Female", updatedUser.getGender());
         assertEquals(birthDate, updatedUser.getDateOfBirth());
         assertEquals("loganpaul@gmail.com", updatedUser.getEmail());

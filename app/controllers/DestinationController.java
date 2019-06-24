@@ -874,8 +874,9 @@ public class DestinationController extends Controller {
             photoid = photoid.replace("\"", "");
             UserPhoto photo = UserPhoto.find.byId(Integer.parseInt(photoid));
             Destination destination = Destination.find.byId(destId);
-            if (destination != null || photo != null) {
-                if ((destination.getUser().getUserid() == user.getUserid() && destination.getUserPhotos().contains(photo)) || user.userIsAdmin()) {
+            if (destination != null && photo != null) {
+                if ((destination.getUser().getUserid() == user.getUserid() && destination.getUserPhotos().contains(photo))
+                        || user.userIsAdmin()) {
                     //add checks for private destinations here once destinations have been merged in.
                     //You can only link a photo to a private destination if you own the private destination.
                     destination.setPrimaryPhoto(photo);

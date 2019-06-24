@@ -315,24 +315,18 @@ public class HomeController {
      *      200: successfully set the profile photo to a normal photo.
      */
     public Result setProfilePhotoToNormalPhoto(Http.Request request) {
-        System.out.println(request);
-        System.out.println("check");
         User user = User.getCurrentUser(request);
 
         if(user != null) {
-            UserPhoto profilePicture = null;
-            boolean hasDuplicateProfilephotos = false;
+            UserPhoto profilePicture;
 
             try {
                 profilePicture =  UserAccessor.getProfilePhoto(user);
             } catch (DuplicateKeyException e) {
-                System.out.println("ERROR: duplicate profile photos");
-                hasDuplicateProfilephotos = true;
+                return internalServerError("help");
             }
 
-            if (hasDuplicateProfilephotos) {
-                return internalServerError("help");
-            } else if (profilePicture == null) {
+            if (profilePicture == null) {
                 return badRequest("help");
             } else {
                 profilePicture.setProfile(false);

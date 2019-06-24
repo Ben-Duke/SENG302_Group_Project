@@ -98,14 +98,9 @@ public class UpdateUserFormData implements Constraints.Validatable<List<Validati
 
         if (username == null || username.length() == 0) {
             errors.add(new ValidationError("username", "No username was given"));
-        } else {
-            if (! UtilityFunctions.isEmailValid(username)) {
-                errors.add(new ValidationError("username", "Not an email address"));
-            }
-        }
-
-
-        if (!username.equals(existingUsername) && UserFactory.checkEmail(username) == 1) {
+        } else if (! UtilityFunctions.isEmailValid(username)) {
+            errors.add(new ValidationError("username", "Not an email address"));
+        } else if (!username.equals(existingUsername) && UserFactory.checkEmail(username) == 1) {
             errors.add(new ValidationError("username", "Username is taken"));
         }
 
@@ -113,9 +108,7 @@ public class UpdateUserFormData implements Constraints.Validatable<List<Validati
         String[] gendersArray = {"Male", "Female", "Other"};
         List gendersList = Arrays.asList(gendersArray);
         String genderErrorStr = "Please select a gender.";
-        if (gender == null) {
-            errors.add(new ValidationError("gender", genderErrorStr));
-        } else if (! gendersList.contains(gender)) {
+        if (gender == null || ! gendersList.contains(gender)) {
             errors.add(new ValidationError("gender", genderErrorStr));
         }
 

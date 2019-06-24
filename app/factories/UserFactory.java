@@ -34,10 +34,9 @@ public class UserFactory {
 
         int present = 0;
         String userEmail;
-        for (int i = 0; i < users.size(); i++) {
-
-            userEmail = users.get(i).getEmail();
-            if(userEmail.equalsIgnoreCase(email)){
+        for (User user : users) {
+            userEmail = user.getEmail();
+            if (userEmail.equalsIgnoreCase(email)) {
                 present = 1;
             }
         }
@@ -433,7 +432,7 @@ public class UserFactory {
      */
     public static void makePicturePublic(int userId, UserPhoto newPhoto, boolean setPublic) {
         User user = User.find.byId(userId);
-        if (!user.equals(null)) {
+        if (user != null) {
             newPhoto.setPublic(setPublic);
             newPhoto.save();
         }

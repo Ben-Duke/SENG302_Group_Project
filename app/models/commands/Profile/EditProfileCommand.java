@@ -2,7 +2,6 @@ package models.commands.Profile;
 
 import accessors.UserAccessor;
 import models.User;
-import models.commands.General.UndoableCommand;
 
 /** Command to edit a user profile */
 public class EditProfileCommand extends HomePageCommand {
@@ -53,7 +52,7 @@ public class EditProfileCommand extends HomePageCommand {
      * @return String result of command
      */
     public String toString() {
-        return this.actualUser.getfName() + " " + this.actualUser.lName + " editing";
+        return this.actualUser.getFName() + " " + this.actualUser.lName + " editing";
     }
 }
 

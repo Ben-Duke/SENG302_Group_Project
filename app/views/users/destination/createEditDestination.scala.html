@@ -24,6 +24,8 @@
         }
     }
 
+    <h1>Google places search</h1>
+    <input id="placesAutocomplete" type="text" class="searchDestinations" placeholder="Search places"/>
 
     <div id="legend"><h3>Legend</h3></div>
     <div id="map"></div>
@@ -51,7 +53,7 @@
 
     <script src="@routes.Assets.at("js/destination/indexDestination.js")" type="text/javascript"></script>
     <script src="@routes.Assets.at("js/destination/destinationMap.js")"></script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDCyC_ON0GgSmJIfPlL7oke5PZgbR8TLbg&callback=initCreateDestinationMap&libraries=drawing"
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDCyC_ON0GgSmJIfPlL7oke5PZgbR8TLbg&callback=initCreateDestinationMap&libraries=drawing,places"
     async defer></script>
 
 }

@@ -7,7 +7,9 @@ import io.ebean.Model;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 @Table(
         uniqueConstraints=
@@ -64,6 +66,16 @@ public class TravellerType extends Model implements Comparable<TravellerType> {
     }
 
     public static Finder<Integer,TravellerType> find = new Finder<>(TravellerType.class);
+
+    public static Map<String, Boolean> getTravellerTypeMap() {
+        List<TravellerType> travellerTypes = TravellerType.find.all();
+        Map<String, Boolean> travellerTypesMap = new TreeMap<>();
+        for (TravellerType travellerType : travellerTypes) {
+            travellerTypesMap.put(travellerType.getTravellerTypeName(), false);
+        }
+        return travellerTypesMap;
+    }
+
 
     @Override
     public boolean equals(Object obj) {

@@ -139,14 +139,100 @@ public class DestinationController extends Controller {
      */
     public Result viewDestination(Http.Request request, Integer destId) {
         User user = User.getCurrentUser(request);
+        if (user == null) { return redirect(routes.UserController.userindex()); }
 
-        if (user != null) {
+        Destination destination = DestinationAccessor.getDestinationById(destId);
+        if (destination == null) { return notFound("Destination does not exist"); }
 
-            Destination destination = Destination.find.byId(destId);
-            return ok(viewDestination.render(destination));
+        if (!destination.isUserOwner(user) && !user.userIsAdmin()) {
+            if (!destination.getIsPublic()) {
+                return unauthorized("Not your destination");
+            }
         }
-        return redirect(routes.UserController.userindex());
+
+        boolean inEditMode = false;
+
+        return ok(viewDestination.render(user, destination, inEditMode,
+                null, null, null, null));
     }
+
+    /**
+     * Takes in the id of a given destination, retrieves that destination from the database.
+     * A page is rendered with the information of the destination loaded ready for editing.
+     *
+     * @param request the http request
+     * @param destId  the id of the given destination
+     * @return renders the edit destination page, or an unauthorized message is no user is logged in, or
+     * a not found error, or an unauthorized message if the destination does not belong to the user.
+     */
+    public Result editDestination(Http.Request request, Integer destId) {
+        User user = User.getCurrentUser(request);
+        if (user == null) { return redirect(routes.UserController.userindex()); }
+
+        Destination destination = DestinationAccessor.getDestinationById(destId);
+        if (destination == null) { return notFound("Destination does not exist"); }
+
+
+        if (!destination.isUserOwner(user) && !user.userIsAdmin()) {
+            if (!destination.getIsPublic()) {
+                return unauthorized("Not your destination");
+            }
+        }
+
+        boolean inEditMode = true;
+
+        DestinationFormData formData = destFactory.makeDestinationFormData(destination);
+
+        Form<DestinationFormData> destForm = formFactory.form(
+                DestinationFormData.class).fill(formData);
+
+        Map<String, Boolean> countries = CountryUtils.getCountriesMap();
+        countries.replace(destination.getCountry(), true);
+
+        Map<String, Boolean> types = Destination.getTypeList();
+        types.replace(destination.getDestType(), true);
+
+        Map<String, Boolean> travellerTypes = TravellerType.getTravellerTypeMap();
+        for (TravellerType travellerType : destination.getTravellerTypes()) {
+            String travellerTypeName = travellerType.getTravellerTypeName();
+            if (travellerTypes.containsKey(travellerTypeName)) {
+                travellerTypes.replace(travellerTypeName, true);
+            }
+        }
+
+        return ok(viewDestination.render(user, destination, inEditMode,
+                destForm, countries, types, travellerTypes));
+    }
+
+    /** Render the destination form */
+    private Result renderDestinationForm(User user, Destination destination, Integer destId) {
+        DestinationFormData formData = destFactory.makeDestinationFormData(destination);
+
+        Form<DestinationFormData> destForm = formFactory.form(
+                DestinationFormData.class).fill(formData);
+
+        // Select the dropdown values which were selected at form submission
+        Map<String, Boolean> typeList = Destination.getTypeList();
+        typeList.replace(destination.getDestType(), true);
+
+
+        Map<String, Boolean> countryList = CountryUtils.getCountriesMap();
+        countryList.replace(destination.getCountry(), true);
+
+
+        if (!destination.getIsCountryValid()) {
+            flash("countryInvalid",
+                    "This Destination has an invalid country!");
+            if (countryList != null) {
+                countryList.put(destination.getCountry(), true);
+            }
+        }
+        return ok(createEditDestination.render(destForm, destId, countryList, typeList, user));
+    }
+
+
+
+
 
     /**
      * This method renders a page where a user can create a destination.
@@ -200,57 +286,7 @@ public class DestinationController extends Controller {
         }
     }
 
-    /**
-     * Takes in the id of a given destination, retrieves that destination from the database.
-     * A page is rendered with the information of the destination loaded ready for editing.
-     *
-     * @param request the http request
-     * @param destId  the id of the given destination
-     * @return renders the edit destination page, or an unauthorized message is no user is logged in, or
-     * a not found error, or an unauthorized message if the destination does not belong to the user.
-     */
-    public Result editDestination(Http.Request request, Integer destId) {
-        Result unauthorised = UtilityFunctions.checkLoggedIn(request);
-        if (unauthorised != null) {
-            return unauthorised;
-        }
 
-        User user = User.getCurrentUser(request);
-        Destination destination = DestinationAccessor.getDestinationById(destId);
-        if (destination == null) {
-            return notFound("Destination does not exist");
-        } else if (!(user != null && (destination.isUserOwner(user.getUserid()) || user.userIsAdmin()))) {
-            return unauthorized("Not your destination. You can't edit.");
-        }
-
-        return renderDestinationForm(user, destination, destId);
-    }
-
-    /** Render the destination form */
-    private Result renderDestinationForm(User user, Destination destination, Integer destId) {
-        DestinationFormData formData = destFactory.makeDestinationFormData(destination);
-
-        Form<DestinationFormData> destForm = formFactory.form(
-                DestinationFormData.class).fill(formData);
-
-        // Select the dropdown values which were selected at form submission
-        Map<String, Boolean> typeList = Destination.getTypeList();
-        typeList.replace(destination.getDestType(), true);
-
-
-        Map<String, Boolean> countryList = CountryUtils.getCountriesMap();
-        countryList.replace(destination.getCountry(), true);
-
-
-        if (!destination.getIsCountryValid()) {
-            flash("countryInvalid",
-                    "This Destination has an invalid country!");
-            if (countryList != null) {
-                countryList.put(destination.getCountry(), true);
-            }
-        }
-        return ok(createEditDestination.render(destForm, destId, countryList, typeList, user));
-    }
 
     /**
      * Creates a new destination object from the edit page form, checks if inputs make a valid destination.

@@ -1,23 +1,111 @@
-@(destination: Destination)
+@import formdata.DestinationFormData
+@import views.html.bootstrap3._
 
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <title>Title</title>
-    </head>
-    <body>
-        <h1>Name: @destination.getDestName()</h1>
-        <p>
-            Type: @destination.getDestType()
-            Country: @destination.getCountry()
-            District: @destination.getDistrict()
-            Latitude: @destination.getLatitude()
-            Longitude: @destination.getLongitude()
-            <a href="@routes.DestinationController.editDestination(destination.getDestId())">Edit</a>
-            <a href="@routes.DestinationController.deleteDestination(destination.getDestId())">Delete</a>
-        </p>
-        <a href="@routes.DestinationController.indexDestination()">Done</a>
+@(user : User, destination: Destination, editMode: Boolean, destForm: Form[DestinationFormData], countryMap: Map[String, Boolean], typeMap: Map[String, Boolean], travellerTypeMap : java.util.Map[String, Boolean])
 
-    </body>
-</html>
+
+<style>
+    #map {
+        height: 550px;
+    }
+</style>
+
+@main(user, "Destination") {
+
+    <h2>Destination</h2>
+    <div class="row">
+        <div class="col-sm-5">
+            <div id="map"></div>
+        </div>
+        <div class="col-sm-7">
+
+        @if(editMode) {
+
+            <h2 style="margin-top: 0;">Edit mode</h2>
+
+            @if(destination.isUserOwner(user) || user.userIsAdmin()) {
+                @helper.form(action = helper.CSRF(routes.DestinationController.saveDestinationFromRequest())) {
+                    @formBody()
+                }
+
+                <input id="submit" type="submit" value="Submit" class="btn btn-primary"/>
+
+            } else {
+                @helper.form(action = helper.CSRF(routes.DestinationController.updatePublicDestination(destination.getDestId()))) {
+                    @formBody()
+                }
+
+                <input id="submit" type="submit" value="Submit Modification Request" class="btn btn-primary"/>
+            }
+
+            <a class="btn btn-danger" href="@routes.DestinationController.viewDestination(destination.getDestId())" role="button">
+                Cancel
+            </a>
+
+        } else {
+
+
+            <a class="btn btn-primary" href="@routes.DestinationController.editDestination(destination.getDestId())" role="button">
+                Edit
+            </a>
+        }
+
+        </div>
+    </div>
+
+    <h2>Destination Media</h2>
+    <div class="row">
+
+    </div>
+
+
+    <script src="@routes.Assets.at("js/destination/viewDestination.js")"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDCyC_ON0GgSmJIfPlL7oke5PZgbR8TLbg&callback=initMap&libraries=drawing"
+    async defer></script>
+
+}
+
+@formBody()= {
+    <fieldset>
+            <!-- Name -->
+        @text(destForm("destName"),
+            label = "Name",
+            placeholder = "destination name",
+            help = "Please enter the destination. (required)")
+
+        @views.html.bootstrap3.select(destForm("country"),
+            label = "Country",
+            optionMap = countryMap,
+            isMultiple = false,
+            help = "Select a country",
+        )
+
+        @text(destForm("district"),
+            label = "District",
+            placeholder = "district",
+        )
+
+        @text(destForm("latitude"),
+            label = "Latitude",
+            placeholder = "latitude (click on map)"
+        )
+
+        @text(destForm("longitude"),
+            label = "Longitude",
+            placeholder = "longitude (click on map)"
+        )
+
+        @views.html.bootstrap3.select(destForm("destType"),
+            label = "Type",
+            optionMap = typeMap,
+            isMultiple = false,
+            help = "Select a type")
+
+        @views.html.bootstrap3.select(destForm("travellerTypes"),
+            label = "Traveller Types",
+            optionMap = travellerTypeMap,
+            isMultiple = true,
+            help = "Select multiple Using ctrl or cmd."
+        )
+    </fieldset>
+}

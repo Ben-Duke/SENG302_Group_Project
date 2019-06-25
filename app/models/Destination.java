@@ -286,6 +286,7 @@ public class Destination extends Model {
     public boolean isUserOwner(Integer userid){
         return this.user.getUserid() == userid;
     }
+    public boolean isUserOwner(User user) { return this.user.getUserid() == user.getUserid(); }
 
     /** Modifies the fields of this Destination which are included in the
      *   destination editing form to be equal to those fields of the destination

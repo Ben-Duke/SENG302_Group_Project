@@ -157,6 +157,8 @@ public class Destination extends Model {
     }
     public boolean getIsCountryValid() { return isCountryValid; }
 
+    public boolean hasPrimaryPhoto() { return primaryPhoto != null; }
+
 
     public User getUser() { return user; }
 

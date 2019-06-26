@@ -6,8 +6,12 @@
 
 <style>
     #map {
-        height: 550px;
+        height: 610px;
     }
+    form {
+        margin-bottom: 0;
+    }
+
 </style>
 
 @main(user, "Destination") {
@@ -21,11 +25,18 @@
 
         @if(editMode) {
 
-            <h2 style="margin-top: 0;">Edit mode</h2>
+            <h3 style="margin-top: 0;">Edit mode</h3>
 
             @if(destination.isUserOwner(user) || user.userIsAdmin()) {
                 @helper.form(action = helper.CSRF(routes.DestinationController.saveDestinationFromRequest())) {
                     @formBody()
+                }
+
+                @if(!destination.getIsPublic) {
+                    <a class="btn" href="@routes.DestinationController.viewDestination(destination.getDestId())" role="button">
+                        Make public
+                    </a>
+                    <br>
                 }
 
                 <input id="submit" type="submit" value="Submit" class="btn btn-primary"/>
@@ -44,14 +55,76 @@
 
         } else {
 
+            <h3 style="margin-top: 0;">@destination.getDestName()</h3>
+
+            @if(destination.hasPrimaryPhoto()) {
+
+            <div class="row">
+                <img id=@{destination.getPrimaryPhoto.getUrl} height="250"
+                src="@{routes.HomeController.index(destination.getPrimaryPhoto.getUrlWithPath)}" alt="Primary Image">
+            </div>
+
+            }
+
+            <div class="row">
+                <label class="col-sm-3 control-label">Type</label>
+                <div class="col-sm-9">
+                    <span>@destination.getDestType()</span>
+                </div>
+            </div>
+
+            <div class="row">
+                <label class="col-sm-3 control-label">Traveller Types</label>
+                <div class="col-sm-9">
+                @for(travellerType <- destination.getTravellerTypes()) {
+                    <span>@travellerType     </span>
+                }
+                </div>
+            </div>
+
+            <div class="row">
+                <label class="col-sm-3 control-label">Country</label>
+                <div class="col-sm-9">
+                    <span>@destination.getCountry()</span>
+                    @if(!destination.getIsCountryValid()) {
+                        <span class="text-danger"> Invalid country</span>
+                    }
+                </div>
+            </div>
+
+            <div class="row">
+                <label class="col-sm-3 control-label">District</label>
+                <div class="col-sm-9">
+                    <span>@destination.getDistrict()</span>
+                </div>
+            </div>
+
+            <div class="row">
+                <label class="col-sm-3 control-label">Latitude</label>
+                <div class="col-sm-9">
+                    <span>@destination.getLatitude()</span>
+                </div>
+            </div>
+
+            <div class="row">
+                <label class="col-sm-3 control-label">Longitude</label>
+                <div class="col-sm-9">
+                    <span>@destination.getLongitude()</span>
+                </div>
+            </div>
+
+            <br>
 
             <a class="btn btn-primary" href="@routes.DestinationController.editDestination(destination.getDestId())" role="button">
                 Edit
             </a>
+
         }
 
         </div>
     </div>
+
+    <hr>
 
     <h2>Destination Media</h2>
     <div class="row">
@@ -60,8 +133,10 @@
 
 
     <script src="@routes.Assets.at("js/destination/viewDestination.js")"></script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDCyC_ON0GgSmJIfPlL7oke5PZgbR8TLbg&callback=initMap&libraries=drawing"
+    <script>setLatLng(@destination.getLatitude(), @destination.getLongitude());</script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDCyC_ON0GgSmJIfPlL7oke5PZgbR8TLbg&libraries=drawing&callback=initMap"
     async defer></script>
+
 
 }
 
@@ -72,6 +147,19 @@
             label = "Name",
             placeholder = "destination name",
             help = "Please enter the destination. (required)")
+
+        @views.html.bootstrap3.select(destForm("destType"),
+        label = "Type",
+        optionMap = typeMap,
+        isMultiple = false,
+        help = "Select a type")
+
+        @views.html.bootstrap3.select(destForm("travellerTypes"),
+        label = "Traveller Types",
+        optionMap = travellerTypeMap,
+        isMultiple = true,
+        help = "Select multiple Using ctrl or cmd."
+        )
 
         @views.html.bootstrap3.select(destForm("country"),
             label = "Country",
@@ -87,25 +175,15 @@
 
         @text(destForm("latitude"),
             label = "Latitude",
-            placeholder = "latitude (click on map)"
+            placeholder = "latitude",
+            help = "Click on map"
         )
 
         @text(destForm("longitude"),
             label = "Longitude",
-            placeholder = "longitude (click on map)"
+            placeholder = "longitude (click on map)",
+            help = "Click on map"
         )
 
-        @views.html.bootstrap3.select(destForm("destType"),
-            label = "Type",
-            optionMap = typeMap,
-            isMultiple = false,
-            help = "Select a type")
-
-        @views.html.bootstrap3.select(destForm("travellerTypes"),
-            label = "Traveller Types",
-            optionMap = travellerTypeMap,
-            isMultiple = true,
-            help = "Select multiple Using ctrl or cmd."
-        )
     </fieldset>
 }

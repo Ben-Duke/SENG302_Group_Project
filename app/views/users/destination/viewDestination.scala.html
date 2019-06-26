@@ -1,7 +1,8 @@
 @import formdata.DestinationFormData
 @import views.html.bootstrap3._
 
-@(user : User, destination: Destination, editMode: Boolean, destForm: Form[DestinationFormData], countryMap: Map[String, Boolean], typeMap: Map[String, Boolean], travellerTypeMap : java.util.Map[String, Boolean])
+@(user : User, destination: Destination, editMode: Boolean,
+        destForm: Form[DestinationFormData], countryMap: Map[String, Boolean], typeMap: Map[String, Boolean], travellerTypeMap : Map[String, Boolean])
 
 
 <style>
@@ -28,8 +29,10 @@
             <h3 style="margin-top: 0;">Edit mode</h3>
 
             @if(destination.isUserOwner(user) || user.userIsAdmin()) {
-                @helper.form(action = helper.CSRF(routes.DestinationController.saveDestinationFromRequest())) {
+                @helper.form(action = helper.CSRF(routes.DestinationController.updateDestination(destination.getDestId()))) {
                     @formBody()
+
+                    <input id="submit" type="submit" value="Submit" class="btn btn-primary"/>
                 }
 
                 @if(!destination.getIsPublic) {
@@ -39,14 +42,16 @@
                     <br>
                 }
 
-                <input id="submit" type="submit" value="Submit" class="btn btn-primary"/>
+
 
             } else {
                 @helper.form(action = helper.CSRF(routes.DestinationController.updatePublicDestination(destination.getDestId()))) {
                     @formBody()
+
+                    <input id="submit" type="submit" value="Submit Modification Request" class="btn btn-primary"/>
                 }
 
-                <input id="submit" type="submit" value="Submit Modification Request" class="btn btn-primary"/>
+
             }
 
             <a class="btn btn-danger" href="@routes.DestinationController.viewDestination(destination.getDestId())" role="button">
@@ -61,7 +66,7 @@
 
             <div class="row">
                 <img id=@{destination.getPrimaryPhoto.getUrl} height="250"
-                src="@{routes.HomeController.index(destination.getPrimaryPhoto.getUrlWithPath)}" alt="Primary Image">
+                src="@{routes.HomeController.index(destination.getPrimaryPhoto().getUrlWithPath())}" alt="Primary Image">
             </div>
 
             }
@@ -127,7 +132,16 @@
     <hr>
 
     <h2>Destination Media</h2>
-    <div class="row">
+    <div class="row" style="margin-bottom: 50px;">
+
+        @for(photo <- destination.getUserPhotos()) {
+
+
+
+            <img id=@{photo.getUrl} height="150"
+            src="@{routes.HomeController.index(photo.getUrlWithPath())}" alt="Primary Image">
+
+        }
 
     </div>
 

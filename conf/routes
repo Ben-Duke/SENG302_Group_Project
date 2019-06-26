@@ -192,6 +192,9 @@ GET     /users/destinations/view/:id         controllers.DestinationController.v
 #Renders page for editing destinations
 GET     /users/destinations/edit/:id    controllers.DestinationController.editDestination(request : Request, id : Integer)
 
+#Handles updating a destination
+POST    /users/destinations/update/:id  controllers.DestinationController.updateDestination(request : Request, id : Integer)
+
 #Handles AJAX request to get a given destination (maybe change ^ to /users/destinations/display/:id and this one to /users/destinations/:id
 GET     /users/destinations/get/:id         controllers.DestinationController.getDestination(request : Request, id : Integer)
 
@@ -222,14 +225,10 @@ GET     /users/destinations/public/:id         controllers.DestinationController
 
 GET     /users/destination/merge/:id           controllers.DestinationController.makeDestinationsMerge(request : Request, id : Integer)
 
-#Renders page for editing public destinations
-GET     /users/destinations/edit/public/:id     controllers.DestinationController.editPublicDestination(request : Request, id : Integer)
 
 #Gets the user id of the owner of the destination
 GET     /users/destinations/owner/:id         controllers.DestinationController.getDestinationOwner(request : Request, id : Integer)
 
-#Handles updating a destination
-POST    /users/destinations/update/:id  controllers.DestinationController.updateDestination(request : Request, id : Integer)
 
 #Handles sending modification request to admins for editing public destinations
 POST    /users/destinations/update/public/:id  controllers.DestinationController.updatePublicDestination(request : Request, id : Integer)

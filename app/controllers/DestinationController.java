@@ -204,30 +204,54 @@ public class DestinationController extends Controller {
                 destForm, countries, types, travellerTypes));
     }
 
-    /** Render the destination form */
-    private Result renderDestinationForm(User user, Destination destination, Integer destId) {
-        DestinationFormData formData = destFactory.makeDestinationFormData(destination);
+    /**
+     * Creates a new destination object from the edit page form, checks if inputs make a valid destination.
+     * then using the given destination, all the attributes of the old destination are updated with the new attributes.
+     * The old destination is then updated in the database.
+     *
+     * @param request http request
+     * @param destId the id of the destination that is being updated
+     * @return redirects to view the updated destination if successful, or
+     * a not found error, or an unauthorized message if the destination does not belong to the user.
+     */
+    public Result updateDestination(Http.Request request, Integer destId) {
+        User user = User.getCurrentUser(request);
+        if (user == null) { return redirect(routes.UserController.userindex()); }
 
-        Form<DestinationFormData> destForm = formFactory.form(
-                DestinationFormData.class).fill(formData);
-
-        // Select the dropdown values which were selected at form submission
-        Map<String, Boolean> typeList = Destination.getTypeList();
-        typeList.replace(destination.getDestType(), true);
-
-
-        Map<String, Boolean> countryList = CountryUtils.getCountriesMap();
-        countryList.replace(destination.getCountry(), true);
-
-
-        if (!destination.getIsCountryValid()) {
-            flash("countryInvalid",
-                    "This Destination has an invalid country!");
-            if (countryList != null) {
-                countryList.put(destination.getCountry(), true);
-            }
+        Destination oldDestination = DestinationAccessor.getDestinationById(destId);
+        if (oldDestination == null) {
+            return notFound("Destination not found");
         }
-        return ok(createEditDestination.render(destForm, destId, countryList, typeList, user));
+        if (!oldDestination.isUserOwner(user) && !user.userIsAdmin()) {
+            return unauthorized("Not your destination. You cant edit.");
+        }
+
+        // Validate form
+//        Result errorForm = validateEditCreateForm(request, user, destId);
+//        if (errorForm != null) {
+//            return errorForm;
+//        }
+        System.out.println(request);
+
+        System.out.println(formFactory.form().bindFromRequest(request));
+
+        Destination newDestination = formFactory.form(Destination.class).
+                bindFromRequest(request).get();
+
+        oldDestination.applyEditChanges(newDestination);
+
+        EditDestinationCommand editDestinationCommand =
+                new EditDestinationCommand(oldDestination);
+        user.getCommandManager().executeCommand(editDestinationCommand);
+
+
+
+        Destination destination = DestinationAccessor.getDestinationById(destId);
+        boolean inEditMode = false;
+
+        return ok(viewDestination.render(user, destination, inEditMode,
+                null, null, null, null));
+
     }
 
 
@@ -288,52 +312,7 @@ public class DestinationController extends Controller {
 
 
 
-    /**
-     * Creates a new destination object from the edit page form, checks if inputs make a valid destination.
-     * then using the given destination, all the attributes of the old destination are updated with the new attributes.
-     * The old destination is then updated in the database.
-     *
-     * @param request http request
-     * @param destId the id of the destination that is being updated
-     * @return redirects to view the updated destination if successful, or
-     * a not found error, or an unauthorized message if the destination does not belong to the user.
-     */
-    public Result updateDestination(Http.Request request, Integer destId) {
-        User user = User.getCurrentUser(request);
 
-        if (user != null) {
-
-            // Validate form
-            Result errorForm = validateEditCreateForm(request, user, destId);
-            if (errorForm != null) {
-                return errorForm;
-            }
-
-            // Save form
-            Destination newDestination = formFactory.form(Destination.class).
-                    bindFromRequest(request).get();
-            Destination oldDestination = DestinationAccessor.getDestinationById(destId);
-
-            if (oldDestination != null) {
-                if (oldDestination.isUserOwner(user.userid) || user.userIsAdmin()) {
-                    oldDestination.applyEditChanges(newDestination);
-                    EditDestinationCommand editDestinationCommand =
-                            new EditDestinationCommand(oldDestination);
-                    user.getCommandManager().executeCommand(editDestinationCommand);
-
-                    return redirect(routes.DestinationController.indexDestination());
-
-                } else {
-                    return unauthorized("Not your destination. You cant edit.");
-                }
-            } else {
-                return notFound("The destination you are trying to update no longer exists");
-            }
-
-        } else {
-            return redirect(routes.UserController.userindex());
-        }
-    }
 
     /** Perform form validation for the edit/create destination form
      *  Returns a request containing the form with errors if errors found,
@@ -386,49 +365,6 @@ public class DestinationController extends Controller {
         }
     }
 
-    /**
-     * Takes in the id of a given public destination, retrieves that destination from the database.
-     * A page is rendered with the information of the destination loaded ready for editing.
-     *
-     * @param request the http request
-     * @param destId the id of the destination that is to be edited
-     * @return renders the editPublicDestination page, or an unauthorized message is no user is logged in, or
-     * a not found error.
-     */
-    public Result editPublicDestination(Http.Request request, Integer destId) {
-        User user = User.getCurrentUser(request);
-
-        if (user != null) {
-            Destination destination = Destination.find.query().where().eq("destid", destId).findOne();
-
-            if (destination != null) {
-                Form<Destination> destForm = formFactory.form(Destination.class).fill(destination);
-
-                Map<String, Boolean> typeList = Destination.getTypeList();
-                typeList.replace(destination.getDestType(), true);
-
-                Map<String, Boolean> countryList = CountryUtils.getCountriesMap();
-                countryList.replace(destination.getCountry(), true);
-
-                List<TravellerType> travellerTypes = TravellerType.find.all();
-                Map<String, Boolean> travellerTypesMap = new TreeMap<>();
-                for (TravellerType travellerType : travellerTypes) {
-                    if (destination.getTravellerTypes().contains(travellerType)) {
-                        travellerTypesMap.put(travellerType.getTravellerTypeName(), true);
-                    } else {
-                        travellerTypesMap.put(travellerType.getTravellerTypeName(), false);
-                    }
-                }
-
-                return ok(editPublicDestination.render(destForm, destination, countryList, typeList, travellerTypesMap, user));
-
-            } else {
-                return notFound("Destination does not exist");
-            }
-        } else {
-            return redirect(routes.UserController.userindex());
-        }
-    }
 
     /**
      * Creates a new destination object from the edit page form, checks if inputs make a valid destination.

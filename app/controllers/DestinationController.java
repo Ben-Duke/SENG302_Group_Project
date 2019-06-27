@@ -4,6 +4,7 @@ import accessors.DestinationAccessor;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import factories.DestinationFactory;
+import factories.TravellerTypeFactory;
 import factories.UserFactory;
 import formdata.DestinationFormData;
 import io.ebean.DuplicateKeyException;
@@ -337,7 +338,8 @@ public class DestinationController extends Controller {
 
         Destination destination = formFactory.form(Destination.class).bind(map).get();
 
-        Set<TravellerType> travellerTypes = formNewTravellerTypes(destination.getTravellerTypes());
+        Set<TravellerType> travellerTypes = TravellerTypeFactory
+                .formNewTravellerTypes(destination.getTravellerTypes());
 
         destination.setTravellerTypes(travellerTypes);
 
@@ -363,30 +365,7 @@ public class DestinationController extends Controller {
         });
     }
 
-    /**
-     * A work-around due to a bug introduced working with Play. The bug was unexplained
-     * but essentially a String object was being jammed into the place of a Set and so
-     * this method unpacks the String and rebuilds the Set
-     * @param travellerTypes The possibly malformed Set produced by PlayFramework
-     * @return A well-formed Set of TravellerTypes
-     */
-    private Set<TravellerType> formNewTravellerTypes(Set<TravellerType> travellerTypes) {
 
-        Set<TravellerType> travellerTypesSet = new HashSet<>();
-
-        String typesString = travellerTypes.toString();
-        if (typesString.equals("[]") || typesString.equals("BeanSet size[0] set[]")) {
-            return travellerTypesSet;
-        }
-        typesString = typesString.replaceAll("\\[|]", ""); //Trim off the set square brackets
-        String[] types = typesString.split("\\s*,\\s"); // Split into array by the comma/whitespace delim
-        for (String type: types) {
-            TravellerType travellerType = TravellerType.find.query()
-                    .where().eq("travellerTypeName", type).findOne();
-            travellerTypesSet.add(travellerType);
-        }
-        return travellerTypesSet;
-    }
 
 
 

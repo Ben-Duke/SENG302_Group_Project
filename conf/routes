@@ -195,6 +195,9 @@ GET     /users/destinations/edit/:id    controllers.DestinationController.editDe
 #Handles updating a destination
 POST    /users/destinations/update/:id  controllers.DestinationController.updateDestination(request : Request, id : Integer)
 
+#Handles updating a public destination
+POST    /users/destinations/update/public/:id  controllers.DestinationController.updatePublicDestination(request : Request, id : Integer)
+
 #Handles AJAX request to get a given destination (maybe change ^ to /users/destinations/display/:id and this one to /users/destinations/:id
 GET     /users/destinations/get/:id         controllers.DestinationController.getDestination(request : Request, id : Integer)
 
@@ -229,9 +232,6 @@ GET     /users/destination/merge/:id           controllers.DestinationController
 #Gets the user id of the owner of the destination
 GET     /users/destinations/owner/:id         controllers.DestinationController.getDestinationOwner(request : Request, id : Integer)
 
-
-#Handles sending modification request to admins for editing public destinations
-POST    /users/destinations/update/public/:id  controllers.DestinationController.updatePublicDestination(request : Request, id : Integer)
 
 #Handles setting a photo to a primary photo (for some reason this route throws some csrf failed thing so i added a +nocsrf)... raise an issue in the future
 +nocsrf

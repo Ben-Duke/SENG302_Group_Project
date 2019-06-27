@@ -152,7 +152,7 @@ public class DestinationController extends Controller {
 
         boolean inEditMode = false;
 
-        return ok(viewDestination.render(user, destination, inEditMode,
+        return ok(destinationPage.render(user, destination, inEditMode,
                 null, null, null, null));
     }
 
@@ -179,12 +179,25 @@ public class DestinationController extends Controller {
             }
         }
 
-        boolean inEditMode = true;
-
         DestinationFormData formData = destFactory.makeDestinationFormData(destination);
 
         Form<DestinationFormData> destForm = formFactory.form(
                 DestinationFormData.class).fill(formData);
+
+        return renderEditDestination(user, destination, destForm);
+    }
+
+    /**
+     * Creates maps for country, type, traveller types present in the given
+     * destination. Renders the edit destination page.
+     * @param user
+     * @param destination
+     * @param destForm
+     * @return
+     */
+    private Result renderEditDestination(User user, Destination destination, Form<DestinationFormData> destForm) {
+
+        boolean inEditMode = true;
 
         Map<String, Boolean> countries = CountryUtils.getCountriesMap();
         countries.replace(destination.getCountry(), true);
@@ -200,7 +213,7 @@ public class DestinationController extends Controller {
             }
         }
 
-        return ok(viewDestination.render(user, destination, inEditMode,
+        return ok(destinationPage.render(user, destination, inEditMode,
                 destForm, countries, types, travellerTypes));
     }
 
@@ -227,32 +240,97 @@ public class DestinationController extends Controller {
         }
 
         // Validate form
-//        Result errorForm = validateEditCreateForm(request, user, destId);
-//        if (errorForm != null) {
-//            return errorForm;
-//        }
+        Result errorForm = validateDestinationEdit(request, user, destId);
+        if (errorForm != null) {
+            return errorForm;
+        }
 
         Destination newDestination = getDestinationFromRequest(request);
-
-        System.out.println(oldDestination);
-
         oldDestination.applyEditChanges(newDestination);
-
-        System.out.println(oldDestination.getTravellerTypes().size());
 
         EditDestinationCommand editDestinationCommand =
                 new EditDestinationCommand(oldDestination);
         user.getCommandManager().executeCommand(editDestinationCommand);
 
 
-
         Destination destination = DestinationAccessor.getDestinationById(destId);
         boolean inEditMode = false;
 
-        return ok(viewDestination.render(user, destination, inEditMode,
+        return ok(destinationPage.render(user, destination, inEditMode,
                 null, null, null, null));
     }
 
+    /**
+     * Creates a new destination object from the edit page form, checks if inputs make a valid destination.
+     * then using the given destination, checks if any changes have been made. If so, a request to the admins is
+     * sent with the info of the old and new destinations awaiting their acceptance of the modification.
+     *
+     * @param request http request
+     * @param destId the id of the destination that is being updated
+     * @return redirects to view the updated destination if successful, or
+     * a not found error.
+     */
+
+    public Result updatePublicDestination(Http.Request request, Integer destId) {
+        User user = User.getCurrentUser(request);
+        if (user == null) { return redirect(routes.UserController.userindex()); }
+
+        Destination destination = DestinationAccessor.getDestinationById(destId);
+        if (destination == null) {
+            return notFound("Destination not found");
+        }
+
+        if (!destination.getIsPublic()) {
+            return unauthorized("Not your destination. You cant edit.");
+        }
+
+        // Validate form
+        Result errorForm = validateDestinationEdit(request, user, destId);
+        if (errorForm != null) {
+            return errorForm;
+        }
+
+        Destination newDestination = getDestinationFromRequest(request);
+
+        if (newDestination.isSame(destination)) {
+            return badRequest("No changes suggested");
+        }
+
+        DestinationModificationRequest newModReq = new DestinationModificationRequest(destination, newDestination, user);
+        newModReq.save();
+
+        boolean inEditMode = false;
+
+        return ok(destinationPage.render(user, destination, inEditMode,
+                null, null, null, null));
+    }
+
+    /**
+     *
+     * @param request
+     * @param user
+     * @param destId
+     * @return
+     */
+    private Result validateDestinationEdit(Http.Request request, User user, Integer destId) {
+        Form<DestinationFormData> destForm;
+        destForm = formFactory.form(DestinationFormData.class).bindFromRequest(request);
+
+        if (destForm.hasErrors()) {
+
+            Destination destination = DestinationAccessor.getDestinationById(destId);
+
+            return renderEditDestination(user, destination, destForm);
+        }
+
+        return null;
+    }
+
+    /**
+     * Given an request creates a destination from the form.
+     * @param request
+     * @return
+     */
     private Destination getDestinationFromRequest(Http.Request request) {
         Map<String, String> map = new HashMap<>();
         fillDataWith(map, request.body().asFormUrlEncoded());
@@ -264,6 +342,25 @@ public class DestinationController extends Controller {
         destination.setTravellerTypes(travellerTypes);
 
         return destination;
+    }
+
+    /**
+     * Taken from Play framework
+     * Takes an empty Map to fill with data from http body, this method helps replace the default way
+     * of binding from request, which does not deal with sets, only lists
+     * @param data The data map to add data from the http body to. Contains info about 1 Object
+     * @param urlFormEncoded the data from the http request body, with details about the Object to bind
+     */
+    private void fillDataWith(Map<String, String> data, Map<String, String[]> urlFormEncoded) {
+        urlFormEncoded.forEach((key, values) -> {
+            if (key.endsWith("[]")) {
+                String k = key.substring(0, key.length() - 2);
+                Set<String> subData = new HashSet<>(Arrays.asList(values));
+                data.put(k, subData.toString());
+            } else if (values.length > 0) {
+                data.put(key, values[0]);
+            }
+        });
     }
 
     /**
@@ -290,6 +387,11 @@ public class DestinationController extends Controller {
         }
         return travellerTypesSet;
     }
+
+
+
+
+
 
 
 
@@ -329,19 +431,19 @@ public class DestinationController extends Controller {
         User user = User.getCurrentUser(request);
 
         if (user != null) { // checks if a user is logged in
-                Result errorForm = validateEditCreateForm(request, user, null);
-                if (errorForm != null) {
-                    return errorForm;
-                } else {
-                    Destination newDestination = formFactory.form(Destination.class)
-                            .bindFromRequest(request).get();
-                    newDestination.setUser(user);
-                    newDestination.setCountryValid(true);
-                    newDestination.save();
+            Result errorForm = validateEditCreateForm(request, user, null);
+            if (errorForm != null) {
+                return errorForm;
+            } else {
+                Destination newDestination = formFactory.form(Destination.class)
+                        .bindFromRequest(request).get();
+                newDestination.setUser(user);
+                newDestination.setCountryValid(true);
+                newDestination.save();
 
 
-                    return redirect(routes.DestinationController.indexDestination());
-                }
+                return redirect(routes.DestinationController.indexDestination());
+            }
         } else {
             return redirect(routes.UserController.userindex());
         }
@@ -357,6 +459,8 @@ public class DestinationController extends Controller {
     private Result validateEditCreateForm(Http.Request request, User user, Integer destId) {
         Form<DestinationFormData> destForm;
         destForm = formFactory.form(DestinationFormData.class).bindFromRequest(request);
+
+//        System.out.println(destForm);
 
         // check if private and public destinations already exist.
         // Cannon use .get() on form unless there are no errors
@@ -403,55 +507,6 @@ public class DestinationController extends Controller {
     }
 
 
-    /**
-     * Creates a new destination object from the edit page form, checks if inputs make a valid destination.
-     * then using the given destination, checks if any changes have been made. If so, a request to the admins is
-     * sent with the info of the old and new destinations awaiting their acceptance of the modification.
-     *
-     * @param request http request
-     * @param destId the id of the destination that is being updated
-     * @return redirects to view the updated destination if successful, or
-     * a not found error.
-     */
-    public Result updatePublicDestination(Http.Request request, Integer destId) {
-        User user = User.getCurrentUser(request);
-
-        if (user != null) {
-            DynamicForm destForm = formFactory.form().bindFromRequest();
-            Result validationResult = validateDestination(destForm);
-
-            if (validationResult != null) {
-                return validationResult;
-            }
-            //If program gets past this point then inputted destination is valid
-
-            //Takes the request body and forms a custom map for binding, gets past Play not liking sets
-            Map<String, String> map = new HashMap<>();
-            fillDataWith(map, request.body().asFormUrlEncoded());
-            Destination newDestination = formFactory.form(Destination.class).bind(map).get();
-            if (newDestination.getTravellerTypes().isEmpty()) {
-                newDestination.setTravellerTypes(new HashSet<>());
-            }
-
-            Destination oldDestination = Destination.find.query().where().eq("destid", destId).findOne();
-            if (oldDestination != null) {
-                if (newDestination.equals(oldDestination)) {
-
-                    return badRequest("No changes suggested");
-                } else {
-                    DestinationModificationRequest newModReq = new DestinationModificationRequest(oldDestination, newDestination, user);
-                    newModReq.save();
-
-                    return redirect(routes.DestinationController.indexDestination());
-                }
-
-            } else {
-                return notFound("The destination you are trying to update no longer exists");
-            }
-        } else {
-            return redirect(routes.UserController.userindex());
-        }
-    }
 
     /**
      * This method handles when an admin rejects a destination modification request
@@ -723,12 +778,12 @@ public class DestinationController extends Controller {
      */
     public Result unlinkPhotoFromDestinationAndDelete(Http.Request request, int photoId) {
         UserPhoto photo = UserPhoto.find.byId(photoId);
-            if (photo != null) {
-                for (Destination destination : photo.getDestinations()) {
-                    unlinkPhotoFromDestination(request, photoId, destination.getDestId());
-                }
-                UserPhoto.deletePhoto(photoId);
+        if (photo != null) {
+            for (Destination destination : photo.getDestinations()) {
+                unlinkPhotoFromDestination(request, photoId, destination.getDestId());
             }
+            UserPhoto.deletePhoto(photoId);
+        }
 
         return ok();
 
@@ -991,24 +1046,7 @@ public class DestinationController extends Controller {
     }
 
 
-    /**
-     * Taken from Play framework
-     * Takes an empty Map to fill with data from http body, this method helps replace the default way
-     * of binding from request, which does not deal with sets, only lists
-     * @param data The data map to add data from the http body to. Contains info about 1 Object
-     * @param urlFormEncoded the data from the http request body, with details about the Object to bind
-     */
-    private void fillDataWith(Map<String, String> data, Map<String, String[]> urlFormEncoded) {
-        urlFormEncoded.forEach((key, values) -> {
-            if (key.endsWith("[]")) {
-                String k = key.substring(0, key.length() - 2);
-                Set<String> subData = new HashSet<>(Arrays.asList(values));
-                data.put(k, subData.toString());
-            } else if (values.length > 0) {
-                data.put(key, values[0]);
-            }
-        });
-    }
+
 
 
     public Result renderMap(Http.Request request) {

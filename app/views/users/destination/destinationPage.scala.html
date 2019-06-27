@@ -32,31 +32,33 @@
                 @helper.form(action = helper.CSRF(routes.DestinationController.updateDestination(destination.getDestId()))) {
                     @formBody()
 
+                    @if(!destination.getIsPublic) {
+                        <a class="btn" href="@routes.DestinationController.viewDestination(destination.getDestId())" role="button">
+                            Make public
+                        </a>
+                        <br>
+                    }
+
                     <input id="submit" type="submit" value="Submit" class="btn btn-primary"/>
-                }
 
-                @if(!destination.getIsPublic) {
-                    <a class="btn" href="@routes.DestinationController.viewDestination(destination.getDestId())" role="button">
-                        Make public
+                    <a class="btn btn-danger" href="@routes.DestinationController.viewDestination(destination.getDestId())" role="button">
+                        Cancel
                     </a>
-                    <br>
                 }
-
-
 
             } else {
                 @helper.form(action = helper.CSRF(routes.DestinationController.updatePublicDestination(destination.getDestId()))) {
                     @formBody()
 
                     <input id="submit" type="submit" value="Submit Modification Request" class="btn btn-primary"/>
+
+                    <a class="btn btn-danger" href="@routes.DestinationController.viewDestination(destination.getDestId())" role="button">
+                        Cancel
+                    </a>
                 }
 
 
             }
-
-            <a class="btn btn-danger" href="@routes.DestinationController.viewDestination(destination.getDestId())" role="button">
-                Cancel
-            </a>
 
         } else {
 
@@ -82,7 +84,7 @@
                 <label class="col-sm-3 control-label">Traveller Types</label>
                 <div class="col-sm-9">
                 @for(travellerType <- destination.getTravellerTypes()) {
-                    <span>@travellerType     </span>
+                    <span style="margin-right: 6px;">@travellerType</span>
                 }
                 </div>
             </div>
@@ -159,8 +161,8 @@
             <!-- Name -->
         @text(destForm("destName"),
             label = "Name",
-            placeholder = "destination name",
-            help = "Please enter the destination. (required)")
+            placeholder = "destinationPage name",
+            help = "Please enter the destinationPage. (required)")
 
         @views.html.bootstrap3.select(destForm("destType"),
         label = "Type",

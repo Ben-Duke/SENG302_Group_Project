@@ -43,7 +43,7 @@ public class DestinationModificationRequest extends Model {
         this.newDestDistrict = newDestination.getDistrict();
         this.newDestLatitude = newDestination.getLatitude();
         this.newDestLongitude = newDestination.getLongitude();
-        this.newTravelerTypes = formNewTravellerTypes(newDestination.getTravellerTypes());
+        this.newTravelerTypes = newDestination.getTravellerTypes();
 
         this.requestAuthor = user;
     }

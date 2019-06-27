@@ -32,7 +32,7 @@
                 @helper.form(action = helper.CSRF(routes.DestinationController.updateDestination(destination.getDestId()))) {
                     @formBody()
 
-                    @if(!destination.getIsPublic) {
+                    @if(!destination.getIsPublic()) {
                         <a class="btn" href="@routes.DestinationController.viewDestination(destination.getDestId())" role="button">
                             Make public
                         </a>

@@ -33,7 +33,7 @@
                     @formBody()
 
                     @if(!destination.getIsPublic()) {
-                        <a class="btn" href="@routes.DestinationController.viewDestination(destination.getDestId())" role="button">
+                        <a class="btn" href="@routes.DestinationController.makeDestinationPublic(destination.getDestId())" role="button">
                             Make public
                         </a>
                         <br>

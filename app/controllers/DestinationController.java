@@ -368,6 +368,7 @@ public class DestinationController extends Controller {
 
     /**
      * Makes a private destination from the database public, given its id.
+     * Will merge other matching private destinations.
      *
      * @param request the http request
      * @param destId the id of the destination that is being made public
@@ -389,71 +390,28 @@ public class DestinationController extends Controller {
             return badRequest("Destination is already public");
         }
         if (!destination.getIsCountryValid()) {
-            return badRequest("The country for this destination is not valid. The destination can not be made public");
+            return badRequest("The country for this destination is not valid. " +
+                    "The destination can not be made public");
         }
 
 
         DestinationFactory destFactory = new DestinationFactory();
-        if (destFactory.doesPublicDestinationExist(destination)) {
 
+        List<Destination> matchingDestinations = destFactory
+                .getOtherUsersMatchingPrivateDestinations(user.getUserid(), destination);
 
+        if (matchingDestinations.size() == 0) {
+            destination.setIsPublic(true);
+            DestinationAccessor.update(destination);
 
         } else {
-
-            List<Destination> matchingDests = destFactory
-                    .getOtherUsersMatchingPrivateDestinations(user.getUserid(), destination);
-
+            destFactory.mergeDestinations(matchingDestinations, destination);
         }
-            // public matching destination already exists
-            // show error
-            destination.setIsPublic(true);
-            destination.update();
 
-            return ok();
+        return ok(destinationPage.render(user, destination, false,
+                null, null, null, null));
 
-
-//        if (user != null) {
-//            Destination destination = Destination.find.query().where().eq("destid", destId).findOne();
-//
-//            if (destination != null) {
-//                if (destination.isUserOwner(user.userid)) {
-//                    if (destination.getIsCountryValid()) {
-//
-//                        //-----------checking if a public destination equivalent
-//                        // ----------already exists
-//                        DestinationFactory destFactory = new DestinationFactory();
-//                        if (destFactory.doesPublicDestinationExist(destination)) {
-//                            // public matching destination already exists
-//                            // show error
-//                            destination.setIsPublic(true);
-//                            destination.update();
-//                            return redirect(routes.DestinationController.indexDestination());
-//                        } else {
-//                            //no matching pub destination exists, making public now
-//                            //sets the destination to public, sets the owner to the default admin and updates the destination
-//                            List<Destination> matchingDests = destFactory.getOtherUsersMatchingPrivateDestinations(user.userid, destination);
-//                            if (matchingDests.size() == 0) {
-//                                destination.setIsPublic(true);
-//                                destination.update();
-//                            }
-//                            return redirect(routes.DestinationController.indexDestination());
-//                        }
-//                    } else {
-//                        return badRequest("The country for this destination is not valid. The destination can not be made public");
-//                    }
-//                } else {
-//                    return unauthorized("HEY!, not yours. You cant make public. How you get access to that anyway?... FBI!!! OPEN UP!");
-//                }
-//            } else {
-//                return notFound("Destination does not exist");
-//            }
-//        } else {
-//            return redirect(routes.UserController.userindex());
-//        }
     }
-
-
-
 
 
 
@@ -706,26 +664,7 @@ public class DestinationController extends Controller {
 
 
 
-    public Result makeDestinationsMerge(Http.Request request, int destId) {
-        User user = User.getCurrentUser(request);
-        if (user != null) {
-            Destination destination = Destination.find.query().where().eq("destid", destId).findOne();
-            if (destination != null) {
-                DestinationFactory destFactory = new DestinationFactory();
-                List<Destination> matchingDests = destFactory.getOtherUsersMatchingPrivateDestinations(user.userid, destination);
-                if (destination.isUserOwner(user.userid) || user.userIsAdmin()) {
-                    destFactory.mergeDestinations(matchingDests, destination);
-                    return redirect(routes.DestinationController.indexDestination());
-                } else {
-                    return unauthorized("HEY!, not yours. You cant delete. How you get access to that anyway?... FBI!!! OPEN UP!");
-                }
-            } else {
-                return notFound("Destination does not exist");
-            }
-        } else {
-            return redirect(routes.UserController.userindex());
-        }
-    }
+
 
 
     /**

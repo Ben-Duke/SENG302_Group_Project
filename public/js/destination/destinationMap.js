@@ -118,10 +118,25 @@ function initPlacesAutocomplete() {
 
     autocomplete.addListener('place_changed', function() {
         const place = autocomplete.getPlace();
-        const location = place.geometry.location;
 
-        document.getElementById("latitude").value = location.lat();
-        document.getElementById("longitude").value = location.lng();
+        const coordinates = place.geometry.location;
+        const address = place.address_components;
+
+        document.getElementById("destName").value = place.name;
+
+        address.forEach((addressItem) => {
+            if (addressItem.types.includes("country")) {
+                document.getElementById("country").value = addressItem.long_name;
+
+            } else if (addressItem.types.includes("administrative_area_level_1")
+                || addressItem.types.includes("administrative_area_level_2")) {
+                document.getElementById("district").value = addressItem.long_name;
+            }
+        });
+
+
+        document.getElementById("latitude").value = coordinates.lat();
+        document.getElementById("longitude").value = coordinates.lng();
     });
 }
 

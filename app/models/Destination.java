@@ -300,5 +300,6 @@ public class Destination extends Model {
         this.longitude = newDestination.getLongitude();
         this.latitude = newDestination.getLatitude();
         this.destType = newDestination.getDestType();
+        this.travellerTypes = newDestination.getTravellerTypes();
     }
 }

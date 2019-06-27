@@ -231,14 +231,14 @@ public class DestinationController extends Controller {
 //        if (errorForm != null) {
 //            return errorForm;
 //        }
-        System.out.println(request);
 
-        System.out.println(formFactory.form().bindFromRequest(request));
+        Destination newDestination = getDestinationFromRequest(request);
 
-        Destination newDestination = formFactory.form(Destination.class).
-                bindFromRequest(request).get();
+        System.out.println(oldDestination);
 
         oldDestination.applyEditChanges(newDestination);
+
+        System.out.println(oldDestination.getTravellerTypes().size());
 
         EditDestinationCommand editDestinationCommand =
                 new EditDestinationCommand(oldDestination);
@@ -251,7 +251,44 @@ public class DestinationController extends Controller {
 
         return ok(viewDestination.render(user, destination, inEditMode,
                 null, null, null, null));
+    }
 
+    private Destination getDestinationFromRequest(Http.Request request) {
+        Map<String, String> map = new HashMap<>();
+        fillDataWith(map, request.body().asFormUrlEncoded());
+
+        Destination destination = formFactory.form(Destination.class).bind(map).get();
+
+        Set<TravellerType> travellerTypes = formNewTravellerTypes(destination.getTravellerTypes());
+
+        destination.setTravellerTypes(travellerTypes);
+
+        return destination;
+    }
+
+    /**
+     * A work-around due to a bug introduced working with Play. The bug was unexplained
+     * but essentially a String object was being jammed into the place of a Set and so
+     * this method unpacks the String and rebuilds the Set
+     * @param travellerTypes The possibly malformed Set produced by PlayFramework
+     * @return A well-formed Set of TravellerTypes
+     */
+    private Set<TravellerType> formNewTravellerTypes(Set<TravellerType> travellerTypes) {
+
+        Set<TravellerType> travellerTypesSet = new HashSet<>();
+
+        String typesString = travellerTypes.toString();
+        if (typesString.equals("[]") || typesString.equals("BeanSet size[0] set[]")) {
+            return travellerTypesSet;
+        }
+        typesString = typesString.replaceAll("\\[|]", ""); //Trim off the set square brackets
+        String[] types = typesString.split("\\s*,\\s"); // Split into array by the comma/whitespace delim
+        for (String type: types) {
+            TravellerType travellerType = TravellerType.find.query()
+                    .where().eq("travellerTypeName", type).findOne();
+            travellerTypesSet.add(travellerType);
+        }
+        return travellerTypesSet;
     }
 
 

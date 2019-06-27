@@ -118,9 +118,10 @@ function initPlacesAutocomplete() {
 
     autocomplete.addListener('place_changed', function() {
         const place = autocomplete.getPlace();
+        const location = place.geometry.location;
 
-        console.log(place);
-
+        document.getElementById("latitude").value = location.lat();
+        document.getElementById("longitude").value = location.lng();
     });
 }
 

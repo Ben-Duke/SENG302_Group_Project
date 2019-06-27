@@ -2,6 +2,8 @@ package factories;
 
 import formdata.DestinationFormData;
 import models.*;
+import org.slf4j.Logger;
+import utilities.UtilityFunctions;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,6 +12,8 @@ import java.util.List;
  * A class to handle interactions with  the database involving the Destination class.
  */
 public class DestinationFactory {
+
+    private final Logger logger = UtilityFunctions.getLogger();
 
     /**
      * Gets a List of all public destinations.
@@ -197,7 +201,7 @@ public class DestinationFactory {
             try {
                 visit.update();
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error(e.getMessage(), e);
             }
         }
     }
@@ -220,22 +224,19 @@ public class DestinationFactory {
                 try {
                     otherDestination.update();
                 } catch (Exception e) {
-                    System.out.println("merge destinations 1");
-                    e.printStackTrace();
+                    logger.error("merge destinations 1", e);
                 }
                 List<Visit> visits = Visit.find.query().where().eq("destination", otherDestination).findList();
                 movePhotosToAnotherDestination(otherDestination, destination);
                 try {
                     otherDestination.delete();
                 } catch (Exception e) {
-                    System.out.println("merge destinations 2");
-                    e.printStackTrace();
+                    logger.error("merge destinations 2", e);
                 }
                 try {
                     destination.update();
                 } catch (Exception e) {
-                    System.out.println("merge destinations 3");
-                    e.printStackTrace();
+                    logger.error("merge destinations 3", e);
                 }
             }
         }
@@ -244,8 +245,7 @@ public class DestinationFactory {
         try {
             destination.update();
         } catch (Exception e) {
-            System.out.println("merge destinations 4");
-            e.printStackTrace();
+            logger.error("merge destination 4", e);
         }
     }
 }

@@ -44,7 +44,7 @@ public class UserController {
             ApplicationManager.setUserPhotoPath("/../user_photos/user_");
             TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
             testDatabaseManager.populateDatabase(initCompleteLatch);
-            System.out.println("populating database");
+            logger.debug("populating database");
 
             CountryUtils.updateCountries();
 

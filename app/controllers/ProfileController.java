@@ -11,6 +11,7 @@ import models.User;
 import models.UserPhoto;
 import models.commands.Photos.DeletePhotoCommand;
 import models.commands.Profile.EditProfileCommand;
+import org.slf4j.Logger;
 import play.data.DynamicForm;
 import play.data.Form;
 import play.data.FormFactory;
@@ -18,6 +19,7 @@ import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
+import utilities.UtilityFunctions;
 import views.html.users.profile.*;
 import javax.inject.Inject;
 import java.time.LocalDate;
@@ -29,6 +31,8 @@ import java.util.List;
  * A Class to handle interactions from the client to the frontend.
  */
 public class ProfileController extends Controller {
+    private final Logger logger = UtilityFunctions.getLogger();
+
     @Inject
     FormFactory formFactory;
     private String notLoggedInErrorStr = "Oops, you are not logged in";
@@ -314,7 +318,7 @@ public class ProfileController extends Controller {
                 profilePicture =  UserAccessor.getProfilePhoto(user);
 
             } catch (DuplicateKeyException e) {
-                System.out.println("ERROR: duplicate profile photos");
+                logger.error("ERROR: duplicate profile photos", e);
             }
 
             String resultFormat = "{\"isProfilePicSet\": %s}";

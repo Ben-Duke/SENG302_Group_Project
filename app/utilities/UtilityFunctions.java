@@ -34,7 +34,7 @@ import static play.mvc.Results.unauthorized;
  */
 public class UtilityFunctions {
 
-    private static final Logger logger = UtilityFunctions.getLogger();
+    private static final Logger logger = getLogger();
 
     /** Get a default logger (application) */
     public static Logger getLogger() {
@@ -182,7 +182,7 @@ public class UtilityFunctions {
 
                 if (CountryUtils.getCountries() == null){
 
-                    System.out.println("Countries have not been loaded. " +
+                    logger.error("Countries have not been loaded. " +
                             "Nationalities will not be loaded. " +
                             "Restart Server?");
 
@@ -197,16 +197,16 @@ public class UtilityFunctions {
                             nationality.save();
                         } catch (Exception error) {
                             isInSuccessState = false;
-                            System.out.println("Failed to save nationality: " +
+                            logger.error("Failed to save nationality: " +
                                     nationality.getNationalityName() +
-                                    " uniqueness contraint failed");
+                                    " uniqueness contraint failed", error);
                         }
 
                     }
                 }
 
             } catch (Exception error) {
-                System.out.println(error);
+                logger.error("Unknown error", error);
             }
         } else {
             isInSuccessState = false;
@@ -227,7 +227,7 @@ public class UtilityFunctions {
         if (Passport.find.all().isEmpty()) {
             if (CountryUtils.getCountries() == null){
 
-                System.out.println("Countries have not been loaded. " +
+                logger.error("Countries have not been loaded. " +
                         "Passports will not be loaded. " +
                         "Restart Server?");
 
@@ -239,9 +239,9 @@ public class UtilityFunctions {
                         passport.save();
                     } catch (Exception error) {
                         isInSuccessState = false;
-                        System.out.println("Passport failed to save. name: " +
+                        logger.error("Passport failed to save. name: " +
                                 passport.getName() +
-                                " uniqueness constraint failed");
+                                " uniqueness constraint failed", error);
                     }
                 }
             }
@@ -274,7 +274,7 @@ public class UtilityFunctions {
                 } catch (Exception error) {
                     //Will remove after peer check
                     successfullyAddedAllTravvelers = false;
-                    System.out.println("Failed to add type: " + type + " Duplicate key");
+                    logger.error("Failed to add type: " + type + " Duplicate key", error);
                 }
             }
         } else {
@@ -300,7 +300,7 @@ public class UtilityFunctions {
             g.dispose();
             return resizedImage;
         } catch (IOException e) {
-            System.out.println(e);
+            logger.error("unknown error", e);
             return null;
         }
 

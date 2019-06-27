@@ -7,6 +7,7 @@ import models.User;
 import models.UserPhoto;
 import models.commands.Profile.HomePageCommand;
 import models.commands.Photos.UploadPhotoCommand;
+import org.slf4j.Logger;
 import play.data.FormFactory;
 import play.libs.Files;
 import play.libs.Json;
@@ -28,6 +29,7 @@ import java.util.Map;
 import static play.mvc.Results.*;
 
 public class HomeController {
+    private final Logger logger = UtilityFunctions.getLogger();
 
     @Inject
     FormFactory formFactory;
@@ -166,7 +168,7 @@ public class HomeController {
                         BufferedImage thumbnailImage = UtilityFunctions.resizeImage(unusedAbsoluteFilePath);
                         ImageIO.write(thumbnailImage, "png", new File(Paths.get(".").toAbsolutePath().normalize().toString() + ApplicationManager.getUserPhotoPath() + user.getUserid() + "/profilethumbnail.png"));
                     } catch (IOException e) {
-                        System.out.println(e);
+                        logger.error("Something went wrong", e);
                         return internalServerError("Oops, something went wrong.");
                     }
                     //DB saving

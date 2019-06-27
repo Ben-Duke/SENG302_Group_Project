@@ -2,6 +2,7 @@ package utilities;
 
 import controllers.ApplicationManager;
 import models.*;
+import org.slf4j.Logger;
 import play.db.Database;
 import play.db.Databases;
 import play.db.evolutions.Evolution;
@@ -19,6 +20,8 @@ import java.util.concurrent.CountDownLatch;
  * for information on the layout of the test database.
  */
 public class TestDatabaseManager {
+
+    private final Logger logger = UtilityFunctions.getLogger();
 
     public TestDatabaseManager(){
 
@@ -195,8 +198,7 @@ public class TestDatabaseManager {
                 user.save();
             }catch(Exception err){
                 isInSuccessState = false;
-                //System.out.printf("User1 failed");
-                err.printStackTrace();
+                logger.error(err.getMessage(), err);
             }
 
             user2.getTravellerTypes().add(travellerType2);
@@ -209,7 +211,7 @@ public class TestDatabaseManager {
                 user2.save();
             }catch(Exception err){
                 isInSuccessState = false;
-                System.out.printf("User2 failed");
+                logger.error("User2 failed", err);
             }
             user3.getTravellerTypes().add(travellerType1);
             user3.getTravellerTypes().add(travellerType2);
@@ -220,16 +222,13 @@ public class TestDatabaseManager {
                 user3.save();
             }catch(Exception err){
                 isInSuccessState = false;
-                System.out.printf("User1 failed");
+                logger.error("User1 failed", err);
             }
 
 
         } catch (Exception e) {
-
-            System.out.println(e);
-
             isInSuccessState = false;
-            System.out.println("Failed to create all users");
+            logger.error("Failed to create all users", e);
         }
 
         return isInSuccessState;
@@ -252,7 +251,7 @@ public class TestDatabaseManager {
             user.save();
         } catch (Exception e) {
             isInSuccessState = false;
-            System.out.println("Error making admin: User is already in db");
+            logger.error("Error making admin: User is already in db", e);
         }
 
         if (isInSuccessState) {
@@ -261,7 +260,7 @@ public class TestDatabaseManager {
                 admin.save();
             } catch (Exception e) {
                 isInSuccessState = false;
-                System.out.println("Error making admin: Admin is already in db");
+                logger.error("Error making admin: Admin is already in db", e);
             }
         }
 
@@ -357,9 +356,9 @@ public class TestDatabaseManager {
                 destination.save();
             } catch (Exception e) {
                 isInSuccessState = false;
-                System.out.println(String.format("Failed to save destination " +
+                logger.error(String.format("Failed to save destination " +
                                 "(%s) due to uniqueness constraint fail",
-                        destination.getDestName()));
+                        destination.getDestName()), e);
             }
         }
 
@@ -426,7 +425,7 @@ public class TestDatabaseManager {
                     String errorStr;
                     errorStr = String.format(visitSaveErrorFormat, visit.getVisitName());
 
-                    System.out.println(errorStr);
+                    logger.error(errorStr, e);
                 }
             }
         } else {
@@ -469,9 +468,9 @@ public class TestDatabaseManager {
                 trip.save();
             } catch (Exception e) {
                 isInSuccessState = false;
-                System.out.println("Failed to save trip for user: " +
+                logger.error("Failed to save trip for user: " +
                         trip.getUser().getEmail() + " with trip name: " +
-                        trip.getTripName() + " due to uniqueness constraint fail");
+                        trip.getTripName() + " due to uniqueness constraint fail", e);
             }
         }
 
@@ -488,13 +487,13 @@ public class TestDatabaseManager {
         try {
             userPhoto1.save();
         } catch (Exception e) {
-            System.out.println("Failed to add user1 photos");
+            logger.error("Failed to add user1 photos", e);
         }
 
         try {
             userPhoto2.save();
         } catch (Exception e) {
-            System.out.println("Failed to add user2 photos");
+            logger.error("Failed to add user2 photos", e);
         }
     }
 

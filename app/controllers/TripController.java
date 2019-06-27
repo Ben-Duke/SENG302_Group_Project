@@ -12,12 +12,14 @@ import models.Visit;
 import models.commands.Trips.TripPageCommand;
 import models.commands.Visits.EditVisitCommand;
 import models.commands.Trips.DeleteTripCommand;
+import org.slf4j.Logger;
 import play.data.Form;
 import play.data.FormFactory;
 import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
+import utilities.UtilityFunctions;
 import views.html.users.trip.*;
 
 import javax.inject.Inject;
@@ -28,6 +30,7 @@ import java.util.List;
 
 public class TripController extends Controller {
 
+    private final Logger logger = UtilityFunctions.getLogger();
 
     @Inject
     FormFactory formFactory;
@@ -217,7 +220,7 @@ public class TripController extends Controller {
                     List<Destination> destinations = user.getDestinations();
                     List<Destination> allDestinations = Destination.find.all();
                     //return ok(addTripDestinations.render(incomingForm, trip, user.getMappedDestinations(), visits, today.toString()));
-                    System.out.println(request.flash().getOptional("error").orElse("test"));
+                    request.flash().getOptional("error").orElse("test");
                     return ok(AddTripDestinationsTable.render(trip, destinations, allDestinations,user)).flashing("error", request.flash().getOptional("error").orElse("test"));
 
                 } else {

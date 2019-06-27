@@ -69,7 +69,6 @@ public class DeletePhotoCommand extends UndoableCommand {
         for(Destination destination: refToDestinations){
             userPhoto.addDestination(destination);
         }
-        System.out.println("Userphoto is " + userPhoto.toString());
 
         UserPhotoAccessor.insert(userPhoto);
         savedUserPhoto = UserPhotoAccessor.getUserPhotoById(userPhoto.getPhotoId());

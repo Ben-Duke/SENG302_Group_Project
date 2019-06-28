@@ -532,44 +532,39 @@ public class DestinationController extends Controller {
      */
     public Result deleteDestination(Http.Request request, Integer destId) {
         User user = User.getCurrentUser(request);
+        Destination destination = Destination.find.query().where().eq("destid", destId).findOne();
 
-        if (user != null) {
-            Destination destination = Destination.find.query().where().eq("destid", destId).findOne();
-
-            if (destination != null) {
-                if(user.userIsAdmin()){
-
-                    DeleteDestinationCommand cmd = new DeleteDestinationCommand(
-                            destination, true);
-                    user.getCommandManager().executeCommand(cmd);
-
-                    return redirect(routes.DestinationController.indexDestination());
-                }
-                else if (destination.isUserOwner(user.userid)) {
-                    if(destination.visits.isEmpty()) {
-                        List<TreasureHunt> treasureHunts = TreasureHunt.find.query().where().eq("destination", destination).findList();
-                        if (treasureHunts.isEmpty()) {
-
-                            DeleteDestinationCommand cmd = new DeleteDestinationCommand(
-                                    destination, false);
-                            user.getCommandManager().executeCommand(cmd);
-
-                            return redirect(routes.DestinationController.indexDestination());
-                        } else {
-                            return preconditionRequired("You cannot delete destinations while they are being used by the treasure hunts.");
-                        }
-                    }
-                    else{
-                        return preconditionRequired("You cannot delete destinations while you're using them for your trips. Delete them from your trip first!");
-                    }
-                } else {
-                    return unauthorized("HEY!, not yours. You cant delete. How you get access to that anyway?... FBI!!! OPEN UP!");
-                }
-            } else {
-                return notFound("Destination does not exist");
-            }
-        } else {
+        if (user == null) {
             return redirect(routes.UserController.userindex());
+        }
+        if (destination == null) {
+            return notFound("Destination does not exist");
+        }
+
+        if(user.userIsAdmin()){
+
+            DeleteDestinationCommand cmd = new DeleteDestinationCommand(
+                    destination, true);
+            user.getCommandManager().executeCommand(cmd);
+
+            return redirect(routes.DestinationController.indexDestination());
+        }
+        else if (destination.isUserOwner(user.userid)) {
+            if(!destination.visits.isEmpty()) {
+                return preconditionRequired("You cannot delete destinations while you're using them for your trips. Delete them from your trip first!");
+            }
+            List<TreasureHunt> treasureHunts = TreasureHunt.find.query().where().eq("destination", destination).findList();
+            if(!treasureHunts.isEmpty()) {
+                return preconditionRequired("You cannot delete destinations while they are being used by the treasure hunts.");
+            }
+
+            DeleteDestinationCommand cmd = new DeleteDestinationCommand(
+                    destination, false);
+            user.getCommandManager().executeCommand(cmd);
+
+            return redirect(routes.DestinationController.indexDestination());
+        } else {
+            return unauthorized("HEY!, not yours. You cant delete. How you get access to that anyway?... FBI!!! OPEN UP!");
         }
 
     }

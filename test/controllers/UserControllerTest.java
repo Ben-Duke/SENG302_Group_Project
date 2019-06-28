@@ -8,6 +8,9 @@ import play.test.Helpers;
 import testhelpers.BaseTestWithApplicationAndDatabase;
 
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static org.junit.Assert.assertEquals;
 import static play.mvc.Http.Status.NOT_FOUND;
 import static play.mvc.Http.Status.OK;
@@ -111,6 +114,24 @@ public class UserControllerTest extends BaseTestWithApplicationAndDatabase {
                 .uri("/users/photos/2/caption")
                 .session("connected", "2");
         return route(app, request);
+    }
+
+    private Result editCaptionMessageHelper() {
+        Map<String, String> formData = new HashMap<>();
+        formData.put("caption", "Ogres have layers");
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .bodyForm(formData)
+                .method(PUT)
+                .uri("/users/photos/1/caption")
+                .session("connected", "2");
+        return route(app, request);
+    }
+
+    @Test
+    public void editPhotoCaption() {
+        Result result = editCaptionMessageHelper();
+        System.out.println(contentAsString(result));
+        assertEquals(OK, result.status());
     }
 
 }

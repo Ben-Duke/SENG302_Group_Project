@@ -217,7 +217,7 @@ GET     /users/photos/:id                   controllers.DestinationController.ge
 GET     /users/photos/:photoId/caption          controllers.UserController.getPhotoCaption(request : Request, photoId : Integer)
 
 #Handles request for inserting or updating a photo caption
-#PUT     /users/photos/:photoId/caption           controllers.UserController.changePhotoCaption(request : Request, photoId : Integer)
+PUT     /users/photos/:photoId/caption           controllers.UserController.editPhotoCaption(request : Request, photoId : Integer)
 
 #Renders request for destination traveller types
 POST    /users/destinations/ttypes/:id    controllers.TravellerTypeController.submitUpdateDestinationTravellerType(request : Request, id : Integer)

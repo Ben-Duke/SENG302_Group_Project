@@ -1,6 +1,7 @@
 package controllers;
 
 import accessors.UserPhotoAccessor;
+import factories.UserFactory;
 import models.Admin;
 import models.User;
 import models.UserPhoto;
@@ -112,6 +113,20 @@ public class UserController {
         } else {
             return unauthorized();
         }
+    }
+
+    public Result editPhotoCaption(Http.Request request, int photoId) {
+        System.out.println(request.body().asFormUrlEncoded().get("caption")[0]);
+        User user = User.getCurrentUser(request);
+        if (user != null) {
+            try {
+                UserFactory.editPictureCaption(user.getUserid(), photoId, "yeet");
+                return ok();
+            } catch (IllegalArgumentException e) {
+                System.out.println(e.getMessage());
+            }
+        }
+        return unauthorized();
     }
 
 }

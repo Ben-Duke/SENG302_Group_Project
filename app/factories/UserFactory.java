@@ -1,5 +1,7 @@
 package factories;
 
+import accessors.UserAccessor;
+import accessors.UserPhotoAccessor;
 import controllers.ApplicationManager;
 import formdata.UpdateUserFormData;
 import formdata.UserFormData;
@@ -436,6 +438,20 @@ public class UserFactory {
         if (!user.equals(null)) {
             newPhoto.setPublic(setPublic);
             newPhoto.save();
+        }
+    }
+
+    public static void editPictureCaption(int userId, int photoId, String caption) {
+        User user = UserAccessor.getById(userId);
+        UserPhoto photo = UserPhotoAccessor.getUserPhotoById(photoId);
+        if (user != null && photo != null) {
+            if (!user.equals(photo.getUser())) {
+                throw new IllegalArgumentException("Forbidden");
+            } else {
+                photo.setCaption(caption);
+            }
+        } else {
+            throw new IllegalArgumentException("Not found");
         }
     }
 }

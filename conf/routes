@@ -198,6 +198,9 @@ POST    /users/destinations/update/:id  controllers.DestinationController.update
 #Handles updating a public destination
 POST    /users/destinations/update/public/:id  controllers.DestinationController.updatePublicDestination(request : Request, id : Integer)
 
+#Handles making a destination public
+GET     /users/destinations/update/make_public/:id         controllers.DestinationController.makeDestinationPublic(request : Request, id : Integer)
+
 #Handles AJAX request to get a given destination (maybe change ^ to /users/destinations/display/:id and this one to /users/destinations/:id
 GET     /users/destinations/get/:id         controllers.DestinationController.getDestination(request : Request, id : Integer)
 
@@ -223,8 +226,7 @@ GET     /users/photos/:id                   controllers.DestinationController.ge
 #Renders request for destination traveller types
 POST    /users/destinations/ttypes/:id    controllers.TravellerTypeController.submitUpdateDestinationTravellerType(request : Request, id : Integer)
 
-#Handles making a destination public
-GET     /users/destinations/public/:id         controllers.DestinationController.makeDestinationPublic(request : Request, id : Integer)
+
 
 
 #Gets the user id of the owner of the destination

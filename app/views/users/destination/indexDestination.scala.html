@@ -96,9 +96,9 @@
 
                         }
                         <td>
-                            <button onclick="viewDestination(@destination.getDestId)" class="btn btn-success">
+                            <a href="@routes.DestinationController.viewDestination(destination.getDestId)" class="btn btn-success">
                                 View destination
-                            </button>
+                            </a>
                         </td>
                     </tr>
 
@@ -167,8 +167,11 @@
                             <td><a data-toggle="modal" data-target="#confirmDeleteDestinationModal" class="btn btn-danger">
                                 Delete</a></td>
                         }
-                        <td><button onclick="destination(@destination.getDestId)" class="btn btn-success">
-                            View destination</button></td>
+                        <td>
+                            <a href="@routes.DestinationController.viewDestination(destination.getDestId)" class="btn btn-success">
+                                View destination
+                            </a>
+                        </td>
                     </tr>
                     <br>
                     }

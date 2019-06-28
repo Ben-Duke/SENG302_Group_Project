@@ -1,6 +1,7 @@
 package controllers;
 
 import accessors.DestinationAccessor;
+import accessors.TreasureHuntAccessor;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import factories.DestinationFactory;
@@ -233,9 +234,8 @@ public class DestinationController extends Controller {
         if (user == null) { return redirect(routes.UserController.userindex()); }
 
         Destination oldDestination = DestinationAccessor.getDestinationById(destId);
-        if (oldDestination == null) {
-            return notFound("Destination not found");
-        }
+        if (oldDestination == null) { return notFound("Destination not found"); }
+
         if (!oldDestination.isUserOwner(user) && !user.userIsAdmin()) {
             return unauthorized("Not your destination. You cant edit.");
         }
@@ -277,9 +277,7 @@ public class DestinationController extends Controller {
         if (user == null) { return redirect(routes.UserController.userindex()); }
 
         Destination destination = DestinationAccessor.getDestinationById(destId);
-        if (destination == null) {
-            return notFound("Destination not found");
-        }
+        if (destination == null) { return notFound("Destination not found"); }
 
         if (!destination.getIsPublic()) {
             return unauthorized("Not your destination. You cant edit.");
@@ -363,6 +361,55 @@ public class DestinationController extends Controller {
                 data.put(key, values[0]);
             }
         });
+    }
+
+
+    /**
+     * Deletes a destination from the database given its id.
+     *
+     * @param request the http request
+     * @param destId the id of the destination that is being deleted
+     * @return redirects to the index page if successful, or a not found error,
+     * or an unauthorized message if the destination does not belong to the user.
+     */
+    public Result deleteDestination(Http.Request request, Integer destId) {
+        User user = User.getCurrentUser(request);
+        if (user == null) { return redirect(routes.UserController.userindex()); }
+
+        Destination destination = DestinationAccessor.getDestinationById(destId);
+        if (destination == null) { return notFound("Destination not found"); }
+
+        if (!destination.isUserOwner(user) && !user.userIsAdmin()) {
+            return unauthorized("Not your destination. You cant Delete.");
+        }
+
+        if (user.userIsAdmin()) {
+
+            DeleteDestinationCommand cmd = new DeleteDestinationCommand(
+                    destination, true);
+            user.getCommandManager().executeCommand(cmd);
+
+        } else {
+
+            if (!destination.getVisits().isEmpty()) {
+                return preconditionRequired("You cannot delete destinations " +
+                        "while you're using them for your trips. Delete them from" +
+                        " your trip first!");
+            }
+
+            if (!TreasureHuntAccessor.getAllByDestination(destination).isEmpty()) {
+                return preconditionRequired("You cannot delete destinations" +
+                        " while they are being used by the treasure hunts.");
+            }
+
+            DeleteDestinationCommand cmd = new DeleteDestinationCommand(
+                    destination, false);
+            user.getCommandManager().executeCommand(cmd);
+
+        }
+
+        return redirect(routes.DestinationController.indexDestination());
+
     }
 
 
@@ -610,57 +657,7 @@ public class DestinationController extends Controller {
         }
     }
 
-    /**
-     * Deletes a destination from the database given its id.
-     *
-     * @param request the http request
-     * @param destId the id of the destination that is being deleted
-     * @return redirects to the index page if successful, or a not found error,
-     * or an unauthorized message if the destination does not belong to the user.
-     */
-    public Result deleteDestination(Http.Request request, Integer destId) {
-        User user = User.getCurrentUser(request);
 
-        if (user != null) {
-            Destination destination = Destination.find.query().where().eq("destid", destId).findOne();
-
-            if (destination != null) {
-                if(user.userIsAdmin()){
-
-                    DeleteDestinationCommand cmd = new DeleteDestinationCommand(
-                            destination, true);
-                    user.getCommandManager().executeCommand(cmd);
-
-                    return redirect(routes.DestinationController.indexDestination());
-                }
-                else if (destination.isUserOwner(user.userid)) {
-                    if(destination.visits.isEmpty()) {
-                        List<TreasureHunt> treasureHunts = TreasureHunt.find.query().where().eq("destination", destination).findList();
-                        if (treasureHunts.isEmpty()) {
-
-                            DeleteDestinationCommand cmd = new DeleteDestinationCommand(
-                                    destination, false);
-                            user.getCommandManager().executeCommand(cmd);
-
-                            return redirect(routes.DestinationController.indexDestination());
-                        } else {
-                            return preconditionRequired("You cannot delete destinations while they are being used by the treasure hunts.");
-                        }
-                    }
-                    else{
-                        return preconditionRequired("You cannot delete destinations while you're using them for your trips. Delete them from your trip first!");
-                    }
-                } else {
-                    return unauthorized("HEY!, not yours. You cant delete. How you get access to that anyway?... FBI!!! OPEN UP!");
-                }
-            } else {
-                return notFound("Destination does not exist");
-            }
-        } else {
-            return redirect(routes.UserController.userindex());
-        }
-
-    }
 
 
 

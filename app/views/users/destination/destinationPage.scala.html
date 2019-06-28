@@ -44,6 +44,10 @@
                     <a class="btn btn-danger" href="@routes.DestinationController.viewDestination(destination.getDestId())" role="button">
                         Cancel
                     </a>
+
+                    <a href="@routes.DestinationController.deleteDestination(destination.getDestId)" class="btn btn-danger" style="position: absolute; right: 30px;">
+                        Delete Destination
+                    </a>
                 }
 
             } else {

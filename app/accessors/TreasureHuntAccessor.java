@@ -16,6 +16,10 @@ public class TreasureHuntAccessor {
         return TreasureHunt.find.all();
     }
 
+    public static List<TreasureHunt> getAllByDestination(Destination destination) {
+        return TreasureHunt.find.query().where().eq("destination", destination).findList();
+    }
+
     /** Insert the TreasureHunt  */
     public static void insert(TreasureHunt treasureHunt) {
         treasureHunt.thuntid = null;

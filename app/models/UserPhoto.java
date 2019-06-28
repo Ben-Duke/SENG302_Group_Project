@@ -25,6 +25,8 @@ public class UserPhoto extends Model {
     public boolean isPublic;
     public boolean isProfile;
 
+    private String caption;
+
     // Creating  the relation to User
     @JsonIgnore
     @ManyToOne
@@ -132,6 +134,14 @@ public class UserPhoto extends Model {
      */
     public boolean isProfile() {
         return isProfile;
+    }
+
+    public String getCaption() {
+        return caption;
+    }
+
+    public void setCaption(String caption) {
+        this.caption = caption;
     }
 
     public List<Destination> getDestinations() {

@@ -1,5 +1,6 @@
 package controllers;
 
+import accessors.UserPhotoAccessor;
 import models.Admin;
 import models.User;
 import models.UserPhoto;
@@ -15,8 +16,7 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static play.mvc.Results.notFound;
-import static play.mvc.Results.ok;
+import static play.mvc.Results.*;
 
 public class UserController {
     // A thread safe boolean
@@ -89,6 +89,28 @@ public class UserController {
         }
         else{
             return notFound();
+        }
+    }
+
+    public Result getPhotoCaption(Http.Request request, int photoId) {
+        User user = User.getCurrentUser(request);
+        if (user != null) {
+            UserPhoto userPhoto = UserPhotoAccessor.getUserPhotoById(photoId);
+            if (userPhoto == null) {
+                return notFound();
+
+            } else if (userPhoto.isPublic() || userPhoto.getUser().equals(user) || user.userIsAdmin()) {
+                String caption = userPhoto.getCaption();
+                if (caption == null) {
+                    return ok("");
+                }
+                return ok(caption);
+
+            } else {
+                return forbidden();
+            }
+        } else {
+            return unauthorized();
         }
     }
 

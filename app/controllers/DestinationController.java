@@ -152,6 +152,8 @@ public class DestinationController extends Controller {
             }
         }
 
+        user.getCommandManager().setAllowedType(DestinationPageCommand.class);
+
         boolean inEditMode = false;
 
         return ok(destinationPage.render(user, destination, inEditMode,
@@ -254,11 +256,7 @@ public class DestinationController extends Controller {
         user.getCommandManager().executeCommand(editDestinationCommand);
 
 
-        Destination destination = DestinationAccessor.getDestinationById(destId);
-        boolean inEditMode = false;
-
-        return ok(destinationPage.render(user, destination, inEditMode,
-                null, null, null, null));
+        return redirect(routes.DestinationController.viewDestination(destId));
     }
 
     /**

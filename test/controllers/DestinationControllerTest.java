@@ -354,7 +354,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
         formData.put("longitude", "-50.0");
         Http.RequestBuilder request = Helpers.fakeRequest().bodyForm(formData).method(POST).uri("/users/destinations/update/1").session("connected", "2");
         Result result = route(app, request);
-        assertEquals(OK, result.status());
+        assertEquals(REDIRECT_HTTP_STATUS, result.status());
         assertEquals("Summoner's Rift", User.find.byId(2).getDestinations().get(0).getDestName());
         assertEquals("Yes", User.find.byId(2).getDestinations().get(0).getDestType());
         assertEquals("Demacia", User.find.byId(2).getDestinations().get(0).getDistrict());
@@ -584,7 +584,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
         formData.put("longitude", "-50.0");
         Http.RequestBuilder request2 = Helpers.fakeRequest().bodyForm(formData).method(POST).uri("/users/destinations/update/2").session("connected", "2");
         Result result2 = route(app, request2);
-        assertEquals(OK, result2.status());
+        assertEquals(REDIRECT_HTTP_STATUS, result2.status());
     }
 
     /**
@@ -657,7 +657,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
                 method(POST).uri("/users/destinations/update/3").session("connected", "2");
         Result result2 = route(app, request2);
 
-        assertEquals(OK, result2.status());
+        assertEquals(REDIRECT_HTTP_STATUS, result2.status());
     }
 
     /*

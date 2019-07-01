@@ -36,8 +36,7 @@ public class LinkingPhotosToDestinationsCommandTest extends BaseTestWithApplicat
                 "create table test (id bigint not null, name varchar(255));",
                 "drop table test;"
         )));
-        TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
-        testDatabaseManager.populateDatabase();
+        TestDatabaseManager.populateDatabase();
 
         user = User.find.byId(1);
 

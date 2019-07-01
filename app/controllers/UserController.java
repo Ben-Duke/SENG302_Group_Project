@@ -42,8 +42,7 @@ public class UserController {
     public Result userindex(Http.Request request){
         if (!wasRun.getAndSet(true)) {
             ApplicationManager.setUserPhotoPath("/../user_photos/user_");
-            TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
-            testDatabaseManager.populateDatabase(initCompleteLatch);
+            TestDatabaseManager.populateDatabase(initCompleteLatch);
             logger.debug("populating database");
 
             CountryUtils.updateCountries();

@@ -36,8 +36,7 @@ public class EditProfileCommandTest extends BaseTestWithApplicationAndDatabase {
                 "create table test (id bigint not null, name varchar(255));",
                 "drop table test;"
         )));
-        TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
-        testDatabaseManager.populateDatabase();
+        TestDatabaseManager.populateDatabase();
         User user = User.find.byId(2);
         user.setFName("Logan");
         user.setLName("Paul");

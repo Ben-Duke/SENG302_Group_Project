@@ -5,6 +5,11 @@ import models.UserPhoto;
 
 public class UserPhotoAccessor {
 
+    // Private constructor to hide the implicit public one
+    private UserPhotoAccessor() {
+        throw new IllegalStateException("Utility class");
+    }
+
     /**
      * Insert the photo
      * @param userPhoto the photo to add

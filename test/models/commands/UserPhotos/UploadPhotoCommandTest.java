@@ -42,13 +42,11 @@ public class UploadPhotoCommandTest extends BaseTestWithApplicationAndDatabase {
                 "create table test (id bigint not null, name varchar(255));",
                 "drop table test;"
         )));
-        TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
-        testDatabaseManager.populateDatabase();
+        TestDatabaseManager.populateDatabase();
         user = User.find.byId(1);
         userPhoto =  new UserPhoto("imagetest.png", false, false, user);
         String unusedPhotoUrl = userPhoto.getUnusedUserPhotoFileName();
         userPhoto.setUrl(unusedPhotoUrl);
-        File file = getFile(Paths.get(".").toAbsolutePath().normalize().toString() + "/test/resources/imagetest.png");
         Files.TemporaryFileCreator creator = Files.singletonTemporaryFileCreator();
         temporaryFile = creator.create(Paths.get(Paths.get(".").toAbsolutePath().normalize().toString() + "/test/resources/imagetest.png"));
         uploadPhotoCommand = new UploadPhotoCommand(userPhoto, temporaryFile);

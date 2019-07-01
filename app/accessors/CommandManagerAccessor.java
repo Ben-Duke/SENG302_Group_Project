@@ -7,6 +7,11 @@ import java.util.Map;
 
 public class CommandManagerAccessor {
 
+    // Private constructor to hide the implicit public one
+    private CommandManagerAccessor() {
+        throw new IllegalStateException("Utility class");
+    }
+
     private static Map<String, CommandManager> commandManagers = new HashMap<>();
 
     public static Map<String, CommandManager> getCommandManagers() {

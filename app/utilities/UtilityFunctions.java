@@ -38,7 +38,7 @@ public class UtilityFunctions {
 
     /** Get a default logger (application) */
     public static Logger getLogger() {
-        return UtilityFunctions.getLogger("application");
+        return getLogger("application");
     }
 
     /** Get a new logger */
@@ -46,6 +46,10 @@ public class UtilityFunctions {
         return LoggerFactory.getLogger(loggerName);
     }
 
+    // Private constructor to hide the implicit public one
+    private UtilityFunctions() {
+        throw new IllegalStateException("Utility class");
+    }
 
 
     /**

@@ -11,20 +11,13 @@ import factories.UserFactory;
 
 @Constraints.Validate
 public class NatFormData implements Constraints.Validatable<List<ValidationError>>{
-    public static UserFactory userFactory;
+
     public static Logger logger = LoggerFactory.getLogger("application");
     public int userId = -1;
     public int natcount;
     public int nationality;
     public String nationalitydelete;
 
-    public static UserFactory getUserFactory() {
-        return userFactory;
-    }
-
-    public static void setUserFactory(UserFactory userFactory) {
-        NatFormData.userFactory = userFactory;
-    }
 
     public static Logger getLogger() {
         return logger;
@@ -84,7 +77,7 @@ public class NatFormData implements Constraints.Validatable<List<ValidationError
     public List<ValidationError> validate() {
         List<ValidationError> errors = new ArrayList<>();
         if(userId != -1) {
-            natcount = userFactory.getNatsForUserbyId(userId);
+            natcount = UserFactory.getNatsForUserbyId(userId);
         }
         if (natcount < 2) {
             errors.add(

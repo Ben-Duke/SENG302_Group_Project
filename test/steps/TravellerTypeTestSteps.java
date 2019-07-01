@@ -34,7 +34,6 @@ import static play.test.Helpers.route;
 
 public class TravellerTypeTestSteps extends BaseTestWithApplicationAndDatabase {
 
-    private TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
 
     @Inject
     private Application application;
@@ -57,7 +56,7 @@ public class TravellerTypeTestSteps extends BaseTestWithApplicationAndDatabase {
         Guice.createInjector(builder.applicationModule()).injectMembers(this);
         Helpers.start(application);
         ApplicationManager.setUserPhotoPath("/test/resources/test_photos/user_");
-        testDatabaseManager.populateDatabase();
+        TestDatabaseManager.populateDatabase();
     }
 
     @After

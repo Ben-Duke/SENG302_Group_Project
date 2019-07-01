@@ -21,10 +21,11 @@ import java.util.concurrent.CountDownLatch;
  */
 public class TestDatabaseManager {
 
-    private final Logger logger = UtilityFunctions.getLogger();
+    private static final Logger logger = UtilityFunctions.getLogger();
 
-    public TestDatabaseManager(){
-
+    // Private constructor to hide the implicit public one
+    private TestDatabaseManager() {
+        throw new IllegalStateException("Utility class");
     }
 
     public static Database getTestDatabase() {
@@ -50,7 +51,7 @@ public class TestDatabaseManager {
      * @param initCompleteLatch A CountDownLatch to call back and unlock when the
      *                          database has been populated.
      */
-    public void populateDatabase(CountDownLatch initCompleteLatch) {
+    public static void populateDatabase(CountDownLatch initCompleteLatch) {
 
         populateDatabase();
         initCompleteLatch.countDown();
@@ -59,15 +60,12 @@ public class TestDatabaseManager {
     /**
      * Populates the database. Call this method at the before section of each unit test.
      */
-    public void populateDatabase() {
+    public static void populateDatabase() {
 
         boolean isInSuccessState = true;
 
-        UtilityFunctions util = new UtilityFunctions();
-
-
         if(TravellerType.find.all().isEmpty()) {
-            boolean successFullyAddedTravellerTypes = util.addTravellerTypes();
+            boolean successFullyAddedTravellerTypes = UtilityFunctions.addTravellerTypes();
 
             if (! successFullyAddedTravellerTypes) {
                 isInSuccessState = false;
@@ -76,7 +74,7 @@ public class TestDatabaseManager {
 
         if (isInSuccessState && Nationality.find.all().isEmpty()) {
 
-            boolean successfullyAddedAllNationalities = util.addAllNationalities();
+            boolean successfullyAddedAllNationalities = UtilityFunctions.addAllNationalities();
 
             if (!successfullyAddedAllNationalities) {
 
@@ -86,35 +84,35 @@ public class TestDatabaseManager {
 
 
         if (isInSuccessState && Passport.find.all().isEmpty()) {
-            boolean successfullyAddedAllPassorts =  util.addAllPassports();
-            if (! successfullyAddedAllPassorts) {
+            boolean successfullyAddedAllPassports =  UtilityFunctions.addAllPassports();
+            if (! successfullyAddedAllPassports) {
                 isInSuccessState = false;
             }
         }
 
         if (isInSuccessState) {
-            boolean successfullyAddedAdmin = this.createDefaultAdmin();
+            boolean successfullyAddedAdmin = createDefaultAdmin();
             if (! successfullyAddedAdmin) {
                 isInSuccessState = false;
             }
         }
 
         if (isInSuccessState) {
-            boolean successfullyAddedAllUsers = this.populateNormalUsers();
+            boolean successfullyAddedAllUsers = populateNormalUsers();
             if (! successfullyAddedAllUsers) {
                 isInSuccessState = false;
             }
         }
 
         if (isInSuccessState) {
-            boolean successfullyAddedAllTrips =  this.addTrips();
+            boolean successfullyAddedAllTrips =  addTrips();
             if (! successfullyAddedAllTrips) {
                 isInSuccessState = false;
             }
         }
 
         if (isInSuccessState) {
-            boolean successfullyAddedDestTrips = this.addDestinationsAndVisits();
+            boolean successfullyAddedDestTrips = addDestinationsAndVisits();
             if (! successfullyAddedDestTrips) {
                 isInSuccessState = false;
             }
@@ -122,12 +120,12 @@ public class TestDatabaseManager {
         }
 
         if (isInSuccessState) {
-            this.addTreasureHunts();
+            addTreasureHunts();
         }
 
         if ((isInSuccessState)
             && (ApplicationManager.getUserPhotoPath().equalsIgnoreCase("/test/resources/test_photos/user_"))) {
-            this.addUserPhotos();
+            addUserPhotos();
         }
         CountryUtils.updateCountries();
         CountryUtils.validateUsedCountries();
@@ -139,7 +137,7 @@ public class TestDatabaseManager {
      *
      * @return A boolean, true if successfully added all normal users, else false
      */
-    public boolean populateNormalUsers(){
+    private static boolean populateNormalUsers(){
 
         boolean isInSuccessState = true;
         try {
@@ -233,7 +231,7 @@ public class TestDatabaseManager {
      *
      * @return A boolean, true if successfully created the admin, false otherwise
      */
-    public boolean createDefaultAdmin(){
+    private static boolean createDefaultAdmin(){
         boolean isInSuccessState = true;
 
         User user = new User("admin@admin.com", "admin", "admin", "admin", LocalDate.now(), "male");
@@ -268,7 +266,7 @@ public class TestDatabaseManager {
      *
      * @return A boolean, true if successfully added all destinations and visits.
      */
-    public boolean addDestinationsAndVisits() {
+    private static boolean addDestinationsAndVisits() {
         boolean isInSuccessState = true;
 
         // Adds destinations for user2
@@ -434,7 +432,7 @@ public class TestDatabaseManager {
      *
      * @return A boolean, true if successfully added all trips, false otherwise.
      */
-    public boolean addTrips(){
+    private static boolean addTrips(){
         boolean isInSuccessState = true;
 
         //Add trips for user2
@@ -471,7 +469,7 @@ public class TestDatabaseManager {
         return isInSuccessState;
     }
 
-    public void addUserPhotos(){
+    private static void addUserPhotos(){
         UserPhoto userPhoto1 = new UserPhoto("shrek.jpeg", true, true, User.find.byId(2));
         UserPhoto userPhoto2 = new UserPhoto("placeholder.png", false, false, User.find.byId(2));
 
@@ -488,7 +486,7 @@ public class TestDatabaseManager {
         }
     }
 
-    public void addTreasureHunts(){
+    private static void addTreasureHunts(){
         TreasureHunt treasureHunt1 = new TreasureHunt("Surprise", "The garden city", Destination.find.byId(1), "2019-04-17", "2019-12-25", User.find.byId(2));
         treasureHunt1.save();
         TreasureHunt treasureHunt2 = new TreasureHunt("Surprise2", "Prime example of inflation", Destination.find.byId(3), "2019-04-17", "2019-12-25", User.find.byId(3));

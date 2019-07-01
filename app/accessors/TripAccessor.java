@@ -6,6 +6,11 @@ import java.util.List;
 
 public class TripAccessor {
 
+    // Private constructor to hide the implicit public one
+    private TripAccessor() {
+        throw new IllegalStateException("Utility class");
+    }
+
     /** Return the trip matching the id passed */
     public static Trip getTripById(int id) {
         return Trip.find.byId(id);

@@ -10,6 +10,11 @@ import java.util.List;
 
 public class UserAccessor {
 
+    // Private constructor to hide the implicit public one
+    private UserAccessor() {
+        throw new IllegalStateException("Utility class");
+    }
+
     public static User getDefaultAdmin(){
         throw new UnsupportedOperationException();
     }

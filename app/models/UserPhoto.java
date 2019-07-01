@@ -25,7 +25,7 @@ public class UserPhoto extends Model {
     public boolean isPublic;
     public boolean isProfile;
 
-    private String caption;
+    private String caption = "";
 
     // Creating  the relation to User
     @JsonIgnore

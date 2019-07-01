@@ -80,3 +80,27 @@ function showMessage(message, action) {
     }, 3000);
 };
 
+function getPhotoCaption(photoId) {
+
+}
+
+function editCaption(photoId) {
+    const captionInput = document.getElementById("captionInput");
+    captionInput.innerText = getPhotoCaption(photoId);
+    const saveButton = document.getElementById("cancelCaptionButton");
+    const cancelButton = document.getElementById("saveCaptionButton");
+    const editButton = document.getElementById("editCaptionButton");
+
+    toggleDisplay(captionInput);
+    toggleDisplay(saveButton);
+    toggleDisplay(cancelButton);
+    toggleDisplay(editButton);
+}
+
+function cancelEditCaption() {
+
+}
+
+function submitEditCaption() {
+
+}

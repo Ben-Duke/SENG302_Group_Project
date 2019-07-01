@@ -54,13 +54,9 @@ public class UserFactory {
 
     public static void deleteNatsOnUser(int id, String nationalityId) {
         User user = User.find.query().where().eq("userid", id).findOne();
-        try {
-            Nationality nationality = Nationality.find.byId(Integer.parseInt(nationalityId));
-            user.deleteNationality(nationality);
-            user.update();
-        } catch (NumberFormatException e) {
-
-        }
+        Nationality nationality = Nationality.find.byId(Integer.parseInt(nationalityId));
+        user.deleteNationality(nationality);
+        user.update();
     }
     /** Returns a User object from a userId int.
      *
@@ -143,7 +139,7 @@ public class UserFactory {
                     user.addPassport(passport);
                     user.update();
                 } catch (io.ebean.DuplicateKeyException e) {
-
+                    logger.error("Duplicate key error on passport", e);
                 }
             }
         }
@@ -163,7 +159,7 @@ public class UserFactory {
                     user.addNationality(nationality);
                     user.update();
                 } catch (io.ebean.DuplicateKeyException e) {
-
+                    logger.error("Duplicate key exception on nationality", e);
                 }
             }
         }
@@ -184,7 +180,7 @@ public class UserFactory {
                     user.addTravellerType(travellerType);
                     user.update();
                 } catch (io.ebean.DuplicateKeyException e) {
-
+                    logger.error("Duplicate key exception on traveller type", e);
                 }
             }
         }
@@ -357,7 +353,7 @@ public class UserFactory {
             user.addNationality(nationality);
             user.update();
         } catch (io.ebean.DuplicateKeyException e) {
-            logger.error("unknown duplicate key error", e);
+            logger.error("unknown duplicate key error on nationality", e);
         }
     }
 

@@ -42,7 +42,6 @@ public class ProfileController extends Controller {
      * If the user is not logged in, returns an error.
      * @return update profile page or error page
      */
-
     public Result deletePhoto(Http.Request request, Integer photoId, Boolean userInput){
         UserPhoto photo = UserPhoto.find.byId(photoId);
         User user = User.getCurrentUser(request);

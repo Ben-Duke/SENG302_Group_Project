@@ -155,9 +155,6 @@ public class TestDatabaseManager {
             //Gap year
             travellerType3 = TravellerType.find.query().where().eq("travellerTypeName","Gap Year").findOne();
 
-            String natPassName1 = "New Zealand";
-            String natPassName2 = "Singapore";
-            String natPassName3 = "Australia";
             String invalidNatPassName1 = "Czechoslovakia";
 
             // Insert invalid nationality since normal insertions only include valid ones

@@ -115,7 +115,7 @@ public class UtilityFunctions {
      */
     public static boolean isStringADouble(String inputString) {
         try {
-            double doubleFromInput = Double.parseDouble(inputString);
+            Double.parseDouble(inputString);
             return true;
         } catch (NumberFormatException exception) {
             return false;
@@ -130,7 +130,7 @@ public class UtilityFunctions {
      */
     static boolean isStringAnInt(String inputString) {
         try {
-            int intFromInput = Integer.parseInt(inputString);
+            Integer.parseInt(inputString);
             return true;
         } catch (NumberFormatException exception) {
             return false;

@@ -106,8 +106,7 @@ public class HomeController {
      * @return A Result from trying to save the photo.
      */
     private Result getResultFromSaveUserPhoto(User user, boolean isPublic, Http.MultipartFormData.FilePart<Files.TemporaryFile> picture) {
-        String origionalFilePath = picture.getFilename();
-        long fileSize = picture.getFileSize();
+        String originalFilePath = picture.getFilename();
         String contentType = picture.getContentType();
         Files.TemporaryFile fileObject = picture.getRef();
 
@@ -116,7 +115,7 @@ public class HomeController {
             //Add the path to the filename given by the uploaded picture
 
             // finding unused photo url
-            UserPhoto newPhoto = new UserPhoto(origionalFilePath, isPublic, false, user);
+            UserPhoto newPhoto = new UserPhoto(originalFilePath, isPublic, false, user);
             String unusedPhotoUrl = newPhoto.getUnusedUserPhotoFileName();
             newPhoto.setUrl(unusedPhotoUrl);
             UploadPhotoCommand uploadPhotoCommand = new UploadPhotoCommand(newPhoto, fileObject);
@@ -140,7 +139,6 @@ public class HomeController {
     public Result uploadProfilePicture(Http.Request request) {
         User user = User.getCurrentUser(request);
         if(user != null) {
-            Map<String, String[]> datapart = request.body().asMultipartFormData().asFormUrlEncoded();
             boolean isPublic = true;
 
             //Get the photo data from the multipart form data encoding
@@ -148,7 +146,6 @@ public class HomeController {
             Http.MultipartFormData.FilePart<Files.TemporaryFile> picture = body.getFile("picture");
              if (picture != null) {
                 String originalFilePath = picture.getFilename();
-                long fileSize = picture.getFileSize();
                 String contentType = picture.getContentType();
                 Files.TemporaryFile file = picture.getRef();
                 if (contentType.contains("image")) {

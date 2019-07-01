@@ -21,10 +21,8 @@ public class DestinationFactory {
      * @return a List<Destination> of all public Destinations.
      */
     public List<Destination> getPublicDestinations() {
-        List<Destination> allPublicDestinations = Destination.find.query()
+        return Destination.find.query()
                 .where().eq("isPublic", true).findList();
-
-        return allPublicDestinations;
     }
 
     /**
@@ -226,7 +224,6 @@ public class DestinationFactory {
                 } catch (Exception e) {
                     logger.error("merge destinations 1", e);
                 }
-                List<Visit> visits = Visit.find.query().where().eq("destination", otherDestination).findList();
                 movePhotosToAnotherDestination(otherDestination, destination);
                 try {
                     otherDestination.delete();

@@ -213,7 +213,6 @@ public class TripController extends Controller {
         if (user != null) {
             if (trip != null) {
                 if (trip.isUserOwner(user.getUserid())) {
-                    Form<VisitFormData> incomingForm = formFactory.form(VisitFormData.class);
                     List<Visit> visits = trip.getVisits();
                     visits.sort(Comparator.comparing(Visit::getVisitOrder));
                     List<Destination> destinations = user.getDestinations();

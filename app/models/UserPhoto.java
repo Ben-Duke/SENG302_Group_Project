@@ -110,7 +110,7 @@ public class UserPhoto extends Model {
         while(userPhoto != null) {
             count += 1;
             unusedUrl = count + "_" + this.url;
-            userPhoto = UserPhoto.find.query().where().eq("url", url).findOne();
+            userPhoto = UserPhoto.find.query().where().eq("url", unusedUrl).findOne();
         }
 
         return unusedUrl;

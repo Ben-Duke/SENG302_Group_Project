@@ -136,12 +136,7 @@ public class Trip extends Model {
     }
 
     public boolean hasVisit(){
-        if (visits != null) {
-            if (! visits.isEmpty()) {
-                return true;
-            }
-        }
-        return false;
+        return (visits != null) && (!visits.isEmpty());
     }
 
 

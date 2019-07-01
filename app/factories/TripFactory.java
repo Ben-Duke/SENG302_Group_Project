@@ -63,24 +63,20 @@ public class TripFactory {
     }
 
     public boolean hasRepeatDest(List<Visit> visits, Visit visit, String operation) {
-        if (operation.equalsIgnoreCase("DELETE")) {
-            if (visits.size() > 2) {
-                visits.sort(Comparator.comparing(Visit::getVisitOrder));
-                Integer index = visits.indexOf(visit);
-                if (index != 0 && (index + 1 != visits.size())) {
-                    if (visits.get(index - 1).getVisitName().equalsIgnoreCase(visits.get(index + 1).getVisitName())) {
-                        return true;
-                    }
-                }
+        if ((operation.equalsIgnoreCase("DELETE")) && (visits.size() > 2)) {
+            visits.sort(Comparator.comparing(Visit::getVisitOrder));
+            Integer index = visits.indexOf(visit);
+            if ((index != 0)
+                && (index + 1 != visits.size())
+                && (visits.get(index - 1).getVisitName().equalsIgnoreCase(visits.get(index + 1).getVisitName()))) {
+                return true;
             }
         }
-        if (operation.equalsIgnoreCase("ADD")) {
-            if (!visits.isEmpty()) {
-                visits.sort(Comparator.comparing(Visit::getVisitOrder));
-                if (visits.get(visits.size() - 1).visitName.equalsIgnoreCase(visit.getVisitName())) {
-                    //probably the wrong status header
-                    return true;
-                }
+        if (operation.equalsIgnoreCase("ADD") && (!visits.isEmpty())) {
+            visits.sort(Comparator.comparing(Visit::getVisitOrder));
+            if (visits.get(visits.size() - 1).visitName.equalsIgnoreCase(visit.getVisitName())) {
+                //probably the wrong status header
+                return true;
             }
         }
         if (operation.equalsIgnoreCase("SWAP")) {
@@ -88,18 +84,12 @@ public class TripFactory {
             Integer index = visits.indexOf(visit);
             if (index != 0) {
                 if (!(visits.get(index - 1).getVisitName().equalsIgnoreCase(visit.getVisitName()))) {
-                    if (visits.size() != index + 1) {
-                        if (visits.get(index + 1).getVisitName().equalsIgnoreCase(visit.getVisitName())) {
-                            return true;
-                        }
-                    }
+                    return (visits.size() != index + 1) && (visits.get(index + 1).getVisitName().equalsIgnoreCase(visit.getVisitName()));
                 } else {
                     return true;
                 }
             } else {
-                if (visits.get(index + 1).getVisitName().equalsIgnoreCase(visit.getVisitName())) {
-                    return true;
-                }
+                return visits.get(index + 1).getVisitName().equalsIgnoreCase(visit.getVisitName());
             }
         }
         return false;

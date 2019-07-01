@@ -125,10 +125,9 @@ public class TestDatabaseManager {
             this.addTreasureHunts();
         }
 
-        if (isInSuccessState) {
-            if(ApplicationManager.getUserPhotoPath().equalsIgnoreCase("/test/resources/test_photos/user_")){
-                this.addUserPhotos();
-            }
+        if ((isInSuccessState)
+            && (ApplicationManager.getUserPhotoPath().equalsIgnoreCase("/test/resources/test_photos/user_"))) {
+            this.addUserPhotos();
         }
         CountryUtils.updateCountries();
         CountryUtils.validateUsedCountries();

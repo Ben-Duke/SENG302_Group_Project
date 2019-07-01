@@ -745,10 +745,9 @@ public class DestinationController extends Controller {
         if (destination == null) return notFound("No destination found with that id");
         // This block checks if the user is the owner of either the photo or the destination.
         // If not the owner then returns an unauthorized error else proceeds as usual.
-        if (destination.getUser().getUserid() != user.getUserid()) {
-            if (photo.getUser().getUserid() != user.getUserid()) {
-                return unauthorized("You cannot unlink this photo from this destination as neither of those belong to you.");
-            }
+        if (destination.getUser().getUserid() != user.getUserid()
+                && photo.getUser().getUserid() != user.getUserid()) {
+            return unauthorized("You cannot unlink this photo from this destination as neither of those belong to you.");
         }
         if (!photo.getDestinations().contains(destination))
             return badRequest("The destination was not linked to this photo");

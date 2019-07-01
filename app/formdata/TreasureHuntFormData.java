@@ -94,10 +94,9 @@ public class TreasureHuntFormData implements Constraints.Validatable<List<Valida
             } else {
                 try {
                     userEndDate = LocalDate.parse(endDate, formatter);
-                    if(userStartDate != null) {
-                        if (userEndDate.compareTo(userStartDate) < 0) {
-                            errors.add(new ValidationError("endDate", "Please select a date which is after the start date."));
-                        }
+                    if ((userStartDate != null) && (userEndDate.compareTo(userStartDate) < 0)) {
+                        errors.add(new ValidationError("endDate", "Please select a date which is after the start date."));
+
                     }
                 }catch(Exception error){
                     errors.add(new ValidationError("endDate", "Please enter a date in the form d/m/yyyy"));

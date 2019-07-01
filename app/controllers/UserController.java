@@ -93,6 +93,12 @@ public class UserController {
         }
     }
 
+    /**
+     * Handles requests to get a photo's caption
+     * @param request The http request from a logged in user
+     * @param photoId the id of the photo that has the caption
+     * @return if successful, a 200 code with the caption.
+     */
     public Result getPhotoCaption(Http.Request request, int photoId) {
         User user = User.getCurrentUser(request);
         if (user != null) {
@@ -115,15 +121,25 @@ public class UserController {
         }
     }
 
+    /**
+     * Handles requests to change a caption of a photo
+     * @param request Request with information about the caption and the logged in user
+     * @param photoId the id of the photo to change
+     * @return An http response with the response code.
+     */
     public Result editPhotoCaption(Http.Request request, int photoId) {
-        System.out.println(request.body().asFormUrlEncoded().get("caption")[0]);
+        String caption = request.body().asFormUrlEncoded().get("caption")[0];
         User user = User.getCurrentUser(request);
         if (user != null) {
             try {
-                UserFactory.editPictureCaption(user.getUserid(), photoId, "yeet");
+                UserFactory.editPictureCaption(user.getUserid(), photoId, caption);
                 return ok();
             } catch (IllegalArgumentException e) {
-                System.out.println(e.getMessage());
+                if (e.getMessage().equals("Forbidden")) {
+                    return forbidden();
+                } else if (e.getMessage().equals("Not Found")) {
+                    return notFound();
+                }
             }
         }
         return unauthorized();

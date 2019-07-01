@@ -441,17 +441,24 @@ public class UserFactory {
         }
     }
 
+    /**
+     * Changes a photos caption to the caption provided
+     * @param userId The id of the user that is trying to change the photo
+     * @param photoId The id of the photo with a caption to be changed
+     * @param caption the caption that is going ot be the new caption
+     */
     public static void editPictureCaption(int userId, int photoId, String caption) {
         User user = UserAccessor.getById(userId);
         UserPhoto photo = UserPhotoAccessor.getUserPhotoById(photoId);
         if (user != null && photo != null) {
-            if (!user.equals(photo.getUser())) {
-                throw new IllegalArgumentException("Forbidden");
-            } else {
+            if (user.equals(photo.getUser()) || user.userIsAdmin()) {
                 photo.setCaption(caption);
+                photo.update();
+            } else {
+                throw new IllegalArgumentException("Forbidden");
             }
         } else {
-            throw new IllegalArgumentException("Not found");
+            throw new IllegalArgumentException("Not Found");
         }
     }
 }

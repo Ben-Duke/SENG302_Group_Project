@@ -106,14 +106,14 @@ public class UserPhoto extends Model {
     public String getUnusedUserPhotoFileName(){
         int count = 0;
         UserPhoto userPhoto = this;
-        String url = "";
+        String unusedUrl = "";
         while(userPhoto != null) {
             count += 1;
-            url = count + "_" + this.url;
+            unusedUrl = count + "_" + this.url;
             userPhoto = UserPhoto.find.query().where().eq("url", url).findOne();
         }
 
-        return url;
+        return unusedUrl;
     }
 
     /**

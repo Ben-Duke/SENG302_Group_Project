@@ -99,9 +99,9 @@ public class Trip extends Model {
     }
 
     public List<Visit> getOrderedVisits(){
-        List<Visit> visits = this.getVisits();
-        visits.sort(Comparator.comparing(Visit::getVisitOrder));
-        return visits;
+        List<Visit> tempVisits = visits;
+        tempVisits.sort(Comparator.comparing(Visit::getVisitOrder));
+        return tempVisits;
     }
 
     public void deleteVisit(Visit visit){

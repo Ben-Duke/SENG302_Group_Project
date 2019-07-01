@@ -111,7 +111,6 @@ public class DestinationController extends Controller {
      */
     public Result indexDestination(Http.Request request) {
         User user = User.getCurrentUser(request);
-        DestinationFactory destFactory = new DestinationFactory();
 
         if (user != null) {
             user.getCommandManager().setAllowedType(DestinationPageCommand.class);
@@ -594,7 +593,6 @@ public class DestinationController extends Controller {
 
                         //-----------checking if a public destination equivalent
                         // ----------already exists
-                        DestinationFactory destFactory = new DestinationFactory();
                         if (destFactory.doesPublicDestinationExist(destination)) {
                             // public matching destination already exists
                             // show error
@@ -630,7 +628,6 @@ public class DestinationController extends Controller {
         if (user != null) {
             Destination destination = Destination.find.query().where().eq("destid", destId).findOne();
             if (destination != null) {
-                DestinationFactory destFactory = new DestinationFactory();
                 List<Destination> matchingDests = destFactory.getOtherUsersMatchingPrivateDestinations(user.userid, destination);
                 if (destination.isUserOwner(user.userid) || user.userIsAdmin()) {
                     destFactory.mergeDestinations(matchingDests, destination);

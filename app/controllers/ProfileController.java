@@ -35,7 +35,6 @@ public class ProfileController extends Controller {
 
     @Inject
     FormFactory formFactory;
-    private String notLoggedInErrorStr = "Oops, you are not logged in";
 
     /**
      * If the user is logged in, renders the update profile page.

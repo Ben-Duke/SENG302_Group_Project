@@ -35,7 +35,6 @@ public class UpdateUserFormData implements Constraints.Validatable<List<Validati
     public String existingUsername;
     public String existingPassword;
 
-    private String existingPasswordToCheck;
 
     public Boolean isAdmin;
 
@@ -61,7 +60,6 @@ public class UpdateUserFormData implements Constraints.Validatable<List<Validati
         this.username = user.getEmail();
         this.existingUsername = user.getEmail();
         this.password = "";
-        this.existingPasswordToCheck = user.getPasswordHash();
         this.isAdmin = isAdmin;
         if (user.getDateOfBirth() == null) {
             this.dateOfBirth = "null";

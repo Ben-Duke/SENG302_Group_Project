@@ -121,7 +121,6 @@ public class TripController extends Controller {
         else{
             return redirect(routes.UserController.userindex());
         }
-        //return redirect(routes.UserController.userindex());
     }
 
     /**
@@ -219,7 +218,6 @@ public class TripController extends Controller {
                     visits.sort(Comparator.comparing(Visit::getVisitOrder));
                     List<Destination> destinations = user.getDestinations();
                     List<Destination> allDestinations = Destination.find.all();
-                    //return ok(addTripDestinations.render(incomingForm, trip, user.getMappedDestinations(), visits, today.toString()));
                     request.flash().getOptional("error").orElse("test");
                     return ok(AddTripDestinationsTable.render(trip, destinations, allDestinations,user)).flashing("error", request.flash().getOptional("error").orElse("test"));
 
@@ -296,7 +294,6 @@ public class TripController extends Controller {
                     if(destination.isPublic || destination.getUser().getUserid() == user.getUserid() || user.userIsAdmin()) {
                         Visit visit = visitfactory.createVisitTable(trip, destination, visitOrder);
                         if (tripFactory.hasRepeatDest(visits, visit, "ADD")) {
-                            //flash("danger", "You cannot have repeat destinations!");
                             return redirect(routes.TripController.addTripDestinations(tripid)).flashing("error", "You cannot have repeat destinations!");
                         }
                         //if the destination is public but the owner of the destination is not an admin, set the owner of the destination to the default admin
@@ -333,8 +330,6 @@ public class TripController extends Controller {
      * @return edit trip page or error page
      */
     public Result deletevisit(Http.Request request, Integer visitid){
-        //Form<VisitFormData> incomingForm = formFactory.form(VisitFormData.class).bindFromRequest(request);
-        //VisitFormData created = incomingForm.get();
         Visit visit = Visit.find.byId(visitid);
         User user = User.getCurrentUser(request);
         //change later
@@ -343,7 +338,6 @@ public class TripController extends Controller {
             if(trip.isUserOwner(user.getUserid())) {
                 List<Visit> visits = trip.getVisits();
                 if(tripFactory.hasRepeatDest(visits, visit, "DELETE")){
-                    //flash("danger", "You cannot visit the same destination twice in a row!");
                     return badRequest();
                 }
                 visit.delete();
@@ -355,15 +349,12 @@ public class TripController extends Controller {
                 trip.update();
             }
             else{
-                //flash("danger", "You are not the owner of this trip.");
                 return unauthorized();
             }
         }
         else{
-            //flash("danger", "You are not logged in.");
             return redirect(routes.UserController.userindex());
         }
-        //flash("success", "Destination deleted.");
         return ok();
     }
 
@@ -377,7 +368,6 @@ public class TripController extends Controller {
      * @return edit trip page or error page
      */
     public Result swapvisits(Http.Request request, Integer tripId){
-        //System.out.println(request.body().asJson());
         ArrayList<String> list = new ObjectMapper().convertValue(request.body().asJson(), ArrayList.class);
         User user = User.getCurrentUser(request);
         Trip trip = Trip.find.byId(tripId);
@@ -420,37 +410,3 @@ public class TripController extends Controller {
 
 
 }
-
-//SWAP VISITS WITHOUT THE TABLE (don't delete might come in handy in the future)
-        /*
-        Form<VisitFormData> incomingForm = formFactory.form(VisitFormData.class).bindFromRequest(request);
-        VisitFormData created = incomingForm.get();
-        String visitID1 = created.visitName;
-        String visitID2 = created.visitName;
-        User user = User.getCurrentUser(request);
-        if (user != null) {
-            Visit visit1 = Visit.find.byId(Integer.parseInt(visitID1));
-            Visit visit2 = Visit.find.byId(Integer.parseInt(visitID2));
-            if(visit1.isTripOwner(tripid) && visit2.isTripOwner(tripid)) {
-                //check for back to back trips to be added here?
-                Trip trip = Trip.find.query().where().eq("tripid", tripid).findOne();
-                List<Visit> visits = trip.getVisits();
-                if(hasRepeatDestSwap(visits, visit1, visit2)){
-                    return badRequest("You cannot visit the same destination twice in a row!");
-                }
-                Integer visit1OrderNumber = visit1.getVisitOrder();
-                Integer visit2OrderNumber = visit2.getVisitOrder();
-                visit1.setVisitorder(visit2OrderNumber);
-                visit2.setVisitorder(visit1OrderNumber);
-                visit1.update();
-                visit2.update();
-            }
-            else{
-                return unauthorized("Oops, this is not your trip");
-            }
-        }
-        else{
-            return redirect(routes.UserController.userindex());
-        }
-        //return redirect(routes.UserController.userindex());
-        */

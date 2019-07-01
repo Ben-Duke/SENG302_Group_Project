@@ -4,8 +4,10 @@ import controllers.ApplicationManager;
 import formdata.UpdateUserFormData;
 import formdata.UserFormData;
 import models.*;
+import org.slf4j.Logger;
 import play.data.FormFactory;
 import play.mvc.Http;
+import utilities.UtilityFunctions;
 
 import javax.inject.Inject;
 import java.time.LocalDate;
@@ -16,6 +18,7 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 public class UserFactory {
+    private static final Logger logger = UtilityFunctions.getLogger();
 
     @Inject
     static FormFactory formFactory;
@@ -330,7 +333,7 @@ public class UserFactory {
             user.addPassport(passport);
             user.update();
         } catch (io.ebean.DuplicateKeyException e) {
-            //return unauthorized("Oops, you have already have this passport");
+            logger.error("Duplicate Key Exception on passport", e);
         }
     }
 
@@ -343,7 +346,7 @@ public class UserFactory {
             user.deletePassport(passport);
             user.update();
         } catch (NumberFormatException e) {
-            //return  unauthorized("Oops, you do not have any passports to delete");
+            logger.error("You do not have any passports to delete", e);
         }
     }
 
@@ -354,6 +357,7 @@ public class UserFactory {
             user.addNationality(nationality);
             user.update();
         } catch (io.ebean.DuplicateKeyException e) {
+            logger.error("unknown duplicate key error", e);
         }
     }
 

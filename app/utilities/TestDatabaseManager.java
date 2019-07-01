@@ -184,12 +184,10 @@ public class TestDatabaseManager {
             user.addTravellerType(travellerType3);
 
 
-//            user.setNationality(Nationality.find.all().subList(0, 2));
             List<Nationality> nats = new ArrayList<>();
             nats.add(invalidNationality);
             user.setNationality(nats);
 
-//            user.setPassport(Passport.find.all().subList(0, 2));
             List<Passport> pass = new ArrayList<>();
             pass.add(invalidPassport);
             user.setPassport(pass);
@@ -480,10 +478,7 @@ public class TestDatabaseManager {
     public void addUserPhotos(){
         UserPhoto userPhoto1 = new UserPhoto("shrek.jpeg", true, true, User.find.byId(2));
         UserPhoto userPhoto2 = new UserPhoto("placeholder.png", false, false, User.find.byId(2));
-//        Destination christchurch = Destination.find.byId(1);
-//        Destination wellington = Destination.find.byId(2);
-//        userPhoto1.addDestination(christchurch);
-//        userPhoto1.addDestination(wellington);
+
         try {
             userPhoto1.save();
         } catch (Exception e) {

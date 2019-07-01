@@ -123,11 +123,3 @@ public class TripFactory {
         return false;
     }
 }
-
-//var prevPagesOrder = [];
-//start: function(event, ui) {
-//prevPagesOrder = $(this).sortable('toArray');
-//},
-// var currentOrder = $(this).sortable('toArray');
-// var first = ui.item[0].id;
-// var second = currentOrder[prevPagesOrder.indexOf(first)];

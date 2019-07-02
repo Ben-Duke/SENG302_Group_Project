@@ -39,7 +39,7 @@ public class UserPhoto extends Model {
     @OneToMany(mappedBy = "primaryPhoto")
     public List<Destination> primaryPhotoDestinations;
 
-    private SortedSet<Tag> photoTags = new TreeSet<Tag>();
+    private SortedSet<Tag> photoTags = new TreeSet<>();
 
     public static Finder<Integer,UserPhoto> find = new Finder<>(UserPhoto.class);
 

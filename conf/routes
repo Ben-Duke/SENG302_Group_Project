@@ -273,6 +273,12 @@ POST     /users/treasurehunts/edit/save/:id                    controllers.Treas
 #Delete treasure hunt
 GET     /users/treasurehunts/delete/:id                    controllers.TreasureHuntController.deleteTreasureHunt(request : Request, id : Integer)
 
+#Get photo tag
+GET    /photos/:photoId/tags                                    controllers.TagController.getPhotoTag(request : Request, photoId : Integer)
+
+# Add photo tag
+PUT   /photos/:photoId/tags                                 controllers.TagController.addPhotoTag(request : Request, photoId : Integer)
+
 # Undo
 +nocsrf
 PUT     /undo                                              controllers.UndoRedoController.undo(request: Request)

@@ -89,11 +89,11 @@ public class UserPhoto extends Model {
     }
 
     /**
-     * Returns a unmodifiable collection of the photo tags
-     * @return a unmodifiable version of the photo's tags
+     * Returns the photo tags
+     * @return a SortedSet of the photo tags
      */
     public SortedSet<Tag> getPhotoTags() {
-        return Collections.unmodifiableSortedSet(this.photoTags);
+        return this.photoTags;
     }
 
     /**

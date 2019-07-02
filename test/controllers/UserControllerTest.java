@@ -49,12 +49,6 @@ public class UserControllerTest extends BaseTestWithApplicationAndDatabase {
         assertEquals(3, Integer.parseInt(contentAsString(result)));
     }
 
-    @Test(expected = UnsupportedOperationException.class)
-    public void checkGetPhotoTagsIsUnModifiable(){
-        UserPhoto userPhoto = new UserPhoto
-                ("",true,true, new User());
-        userPhoto.getPhotoTags().add(new Tag("Test"));
-    }
 
     @Test
     public void checkAddTag(){

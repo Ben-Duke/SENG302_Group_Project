@@ -1,6 +1,6 @@
 package models;
 
-public class Tag {
+public class Tag implements Comparable{
 
     String name;
 
@@ -22,5 +22,15 @@ public class Tag {
      */
     public void setName(String name) {
         this.name = name;
+    }
+
+    @Override
+    public int compareTo(Object o) {
+        Tag tagOther = (Tag)o;
+        return name.compareTo(tagOther.getName());
+    }
+
+    public String toString(){
+        return this.name;
     }
 }

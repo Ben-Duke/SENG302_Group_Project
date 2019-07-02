@@ -6,7 +6,6 @@ import io.ebean.Finder;
 import io.ebean.Model;
 
 import javax.persistence.*;
-import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.*;
 
@@ -40,7 +39,7 @@ public class UserPhoto extends Model {
     @OneToMany(mappedBy = "primaryPhoto")
     public List<Destination> primaryPhotoDestinations;
 
-    public SortedSet<Tag> photoTags = new TreeSet<Tag>();
+    private SortedSet<Tag> photoTags = new TreeSet<Tag>();
 
     public static Finder<Integer,UserPhoto> find = new Finder<>(UserPhoto.class);
 

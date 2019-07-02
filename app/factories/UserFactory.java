@@ -6,6 +6,8 @@ import controllers.ApplicationManager;
 import formdata.UpdateUserFormData;
 import formdata.UserFormData;
 import models.*;
+import models.commands.General.UndoableCommand;
+import models.commands.Photos.EditPhotoCaptionCommand;
 import play.data.FormFactory;
 import play.mvc.Http;
 
@@ -453,7 +455,8 @@ public class UserFactory {
         if (user != null && photo != null) {
             if (user.equals(photo.getUser()) || user.userIsAdmin()) {
                 photo.setCaption(caption);
-                photo.update();
+                UndoableCommand editCaptionCommand = new EditPhotoCaptionCommand(photo);
+                user.getCommandManager().executeCommand(editCaptionCommand);
             } else {
                 throw new IllegalArgumentException("Forbidden");
             }

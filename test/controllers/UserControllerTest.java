@@ -139,8 +139,6 @@ public class UserControllerTest extends BaseTestWithApplicationAndDatabase {
         return route(app, request);
     }
 
-
-
     @Test
     public void editPhotoCaptionCheckResponse() {
         Result result = editCaptionMessageHelper();
@@ -228,6 +226,39 @@ public class UserControllerTest extends BaseTestWithApplicationAndDatabase {
                 .uri("/users/photos/1/caption");
         Result result = route(app, request);
         assertEquals(UNAUTHORIZED,result.status());
+    }
+
+    private void undoRequestHelper() {
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(PUT)
+                .uri("/undo")
+                .session("connected", "2");
+        route(app, request);
+    }
+
+    private void redoRequestHelper() {
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(PUT)
+                .uri("/redo")
+                .session("connected", "2");
+        route(app, request);
+    }
+
+    @Test
+    public void undoEditPhotoCaption() {
+        editCaptionMessageHelper();
+        undoRequestHelper();
+        Result result = getCaptionMessageHelper();
+        assertEquals("Get out of my swamp", contentAsString(result));
+    }
+
+    @Test
+    public void redoEditPhotoCaption() {
+        editCaptionMessageHelper();
+        undoRequestHelper();
+        redoRequestHelper();
+        Result result = getCaptionMessageHelper();
+        assertEquals("Ogres have layers", contentAsString(result));
     }
 
 }

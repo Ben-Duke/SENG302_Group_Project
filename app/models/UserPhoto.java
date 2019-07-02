@@ -45,6 +45,11 @@ public class UserPhoto extends Model {
     public static Finder<Integer,UserPhoto> find = new Finder<>(UserPhoto.class);
 
     /**
+     * Default constructor for caption edit commands
+     */
+    public UserPhoto() {}
+
+    /**
      * Constructor method for UserPhoto.
      *
      * @param url A String representing the relative path to the photo resource.
@@ -240,5 +245,20 @@ public class UserPhoto extends Model {
     @Override
     public String toString() {
         return "url is " + this.url + " Id is " + this.getPhotoId();
+    }
+
+    /**
+     * Modifies the fields of this UserPhoto which are included in the
+     * UserPhoto editing form to be equal to those fields of the UserPhoto
+     * passed in
+     * */
+    public void applyEditChanges(UserPhoto editedPhoto) {
+        this.url = editedPhoto.getUrl();
+        this.isPublic = editedPhoto.getIsPhotoPublic();
+        this.isProfile = editedPhoto.getIsProfile();
+        this.caption = editedPhoto.getCaption();
+        this.user = editedPhoto.getUser();
+        this.destinations = editedPhoto.getDestinations();
+        this.primaryPhotoDestinations = editedPhoto.getPrimaryPhotoDestinations();
     }
 }

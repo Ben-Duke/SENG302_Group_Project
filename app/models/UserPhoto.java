@@ -6,9 +6,8 @@ import io.ebean.Finder;
 import io.ebean.Model;
 
 import javax.persistence.*;
-import java.io.IOException;
 import java.nio.file.Paths;
-import java.util.List;
+import java.util.*;
 
 /**
  * A class to hold information a user photograph.
@@ -39,6 +38,8 @@ public class UserPhoto extends Model {
     @JsonIgnore
     @OneToMany(mappedBy = "primaryPhoto")
     public List<Destination> primaryPhotoDestinations;
+
+    private SortedSet<Tag> photoTags = new TreeSet<Tag>();
 
     public static Finder<Integer,UserPhoto> find = new Finder<>(UserPhoto.class);
 
@@ -77,6 +78,7 @@ public class UserPhoto extends Model {
     public boolean getIsProfile(){
         return this.isProfile;
     }
+
     public UserPhoto(UserPhoto userPhoto){
         this.url = userPhoto.getUrl();
         this.isPublic = userPhoto.getIsPhotoPublic();
@@ -84,6 +86,34 @@ public class UserPhoto extends Model {
         this.isProfile = userPhoto.getIsProfilePhoto();
         this.destinations = userPhoto.getDestinations();
         this.primaryPhotoDestinations = userPhoto.getPrimaryPhotoDestinations();
+    }
+
+    /**
+     * Returns the photo tags
+     * @return a SortedSet of the photo tags
+     */
+    public SortedSet<Tag> getPhotoTags() {
+        return this.photoTags;
+    }
+
+    /**
+     * Adds a tag to the photo based on the name passed.
+     * Returns true if not already in the in the set.
+     * @param name
+     * @return
+     */
+    public Boolean addTag(String name){
+        return photoTags.add(new Tag(name));
+    }
+
+    /**
+     * Removes a tag from the photos tags.
+     * Returns true if the tag exists and was removed and false otherwise.
+     * @param name
+     * @return
+     */
+    public Boolean removeTag(String name){
+        return photoTags.remove(new Tag(name));
     }
 
 

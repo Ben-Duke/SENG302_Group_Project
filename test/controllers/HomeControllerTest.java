@@ -488,6 +488,7 @@ public class HomeControllerTest extends BaseTestWithApplicationAndDatabase {
     public void setProfilePhotoToNormalPhoto_withExistingProfilePhoto_checkStatus200() {
         UserPhoto profilePic = new UserPhoto("/test/url", true,
                                             true, User.find.byId(1));
+
         profilePic.save();
 
         Http.RequestBuilder request = Helpers.fakeRequest()

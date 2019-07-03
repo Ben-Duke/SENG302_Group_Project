@@ -1,5 +1,8 @@
 package controllers;
 
+import models.Tag;
+import models.User;
+import models.UserPhoto;
 import org.junit.Test;
 
 import play.mvc.Http;
@@ -7,6 +10,9 @@ import play.mvc.Result;
 import play.test.Helpers;
 import testhelpers.BaseTestWithApplicationAndDatabase;
 
+import java.rmi.server.ExportException;
+import java.util.Collection;
+import java.util.Collections;
 
 import static org.junit.Assert.assertEquals;
 import static play.mvc.Http.Status.NOT_FOUND;
@@ -41,5 +47,46 @@ public class UserControllerTest extends BaseTestWithApplicationAndDatabase {
         Result result = route(app, request);
         assertEquals(OK, result.status());
         assertEquals(3, Integer.parseInt(contentAsString(result)));
+    }
+
+
+    @Test
+    public void checkAddTag(){
+        UserPhoto userPhoto = new UserPhoto
+                ("",true,true, new User());
+        userPhoto.addTag("Test");
+        assertEquals(1, userPhoto.getPhotoTags().size());
+    }
+
+    @Test
+    public void checkAddingSameTag(){
+        UserPhoto userPhoto = new UserPhoto
+                ("",true,true, new User());
+        userPhoto.addTag("Test");
+        userPhoto.addTag("Test");
+        assertEquals(1, userPhoto.getPhotoTags().size());
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void checkAddingNullTag(){
+        UserPhoto userPhoto = new UserPhoto
+                ("",true,true, new User());
+        userPhoto.addTag(null);
+    }
+
+    @Test
+    public void checkRemoveTag(){
+        UserPhoto userPhoto = new UserPhoto
+                ("",true,true, new User());
+        userPhoto.addTag("Test");
+        userPhoto.removeTag("Test");
+        assertEquals(0, userPhoto.getPhotoTags().size());
+    }
+
+    @Test
+    public void checkRemoveTagOnEmptySet(){
+        UserPhoto userPhoto = new UserPhoto
+                ("",true,true, new User());
+        assertEquals(false, userPhoto.removeTag("Test"));
     }
 }

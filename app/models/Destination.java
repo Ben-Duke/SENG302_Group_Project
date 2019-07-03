@@ -162,9 +162,7 @@ public class Destination extends Model {
      * Returns the destination tags
      * @return a SortedSet of the photo tags
      */
-    public SortedSet<Tag> getTags() {
-        return this.destinationTags;
-    }
+    public SortedSet<Tag> getTags() { return this.destinationTags; }
 
 
     public User getUser() { return user; }

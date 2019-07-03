@@ -8,9 +8,7 @@ import io.ebean.Finder;
 import io.ebean.Model;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 @Entity
 public class Trip extends Model {
@@ -110,6 +108,34 @@ public class Trip extends Model {
 
     public void addVisit(Visit visit){
         this.visits.add(visit);
+    }
+
+    private SortedSet<Tag> tripTags = new TreeSet<Tag>();
+
+    /**
+     * Returns the trip tags
+     * @return a SortedSet of the photo tags
+     */
+    public SortedSet<Tag> getTags() { return this.tripTags; }
+
+    /**
+     * Adds a tag to the trip based on the name passed.
+     * Returns true if not already in the in the set.
+     * @param name
+     * @return
+     */
+    public Boolean addTag(String name){
+        return tripTags.add(new Tag(name));
+    }
+
+    /**
+     * Removes a tag from the trip tags.
+     * Returns true if the tag exists and was removed and false otherwise.
+     * @param name
+     * @return
+     */
+    public Boolean removeTag(String name){
+        return tripTags.remove(new Tag(name));
     }
 
     public String getTripStart(){

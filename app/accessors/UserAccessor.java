@@ -8,6 +8,9 @@ import models.UserPhoto;
 
 import java.util.List;
 
+/**
+ * A class to handle accessing Users from the database
+ */
 public class UserAccessor {
 
     // Private constructor to hide the implicit public one
@@ -23,10 +26,16 @@ public class UserAccessor {
         return Passport.find.query().where().eq("passid", id).findOne();
     }
 
+    /** Return a list of all passports
+     * @return List of passports
+     */
     public static List<Passport> getAllPassports() {
         return Passport.find.all();
     }
 
+    /** Return a list of all nationalities
+     * @return List of nationalities
+     */
     public static List<Nationality> getAllNationalities() {
         return Nationality.find.all();
     }
@@ -48,11 +57,17 @@ public class UserAccessor {
     /**
      * Return the User matching the id passed
      * @param id the id of the user
+     * @return User
      */
     public static User getById(int id) {
         return User.find.byId(id);
     }
 
+    /**
+     * Return the User matching the email passed
+     * @param email the email of the user
+     * @return User
+     */
     public static User getUserByEmail(String email) {
         List<User> users = getUsersFromEmail(email);
         if (!users.isEmpty()) {
@@ -61,7 +76,9 @@ public class UserAccessor {
         return null;
     }
 
-    /** Update the user */
+    /** Update the user
+     * @param user User to update in the database
+     */
     public static void update(User user) { user.update(); }
 
     /**

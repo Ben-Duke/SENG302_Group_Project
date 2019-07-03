@@ -13,6 +13,9 @@ import views.html.users.profile.*;
 import javax.inject.Inject;
 import java.util.List;
 
+/**
+ * A controller class for handing admin users actions.
+ */
 public class AdminController extends Controller {
 
     @Inject
@@ -90,6 +93,14 @@ public class AdminController extends Controller {
         return redirect(routes.UserController.userindex());
     }
 
+    /**
+     *  The method to view a destination modification request as an admin and render the view destModReq page.
+     *
+     * @param request The http request
+     * @param destModReqId The destination modification request id of the destination being changed
+     * @return the destModReq page for the given destination modification request.
+     * or an unauthorized message is "Oops, you are not authorised.".
+     */
     public Result viewDestinationModificationRequest(Http.Request request, Integer destModReqId) {
         User currentUser = User.getCurrentUser(request);
         if (currentUser != null) {

@@ -39,7 +39,9 @@ import java.util.*;
 
 import utilities.UtilityFunctions;
 
-
+/**
+ * A controller class for handing destination actions..
+ */
 public class DestinationController extends Controller {
 
     @Inject
@@ -225,7 +227,12 @@ public class DestinationController extends Controller {
         return renderDestinationForm(user, destination, destId);
     }
 
-    /** Render the destination form */
+    /** Render the destination form
+     * @param destId the id of the given destination
+     * @param destination the destination object
+     * @param user the id of the user
+     * @return renders the destination form page from a given destination
+     */
     private Result renderDestinationForm(User user, Destination destination, Integer destId) {
         DestinationFormData formData = destFactory.makeDestinationFormData(destination);
 
@@ -300,7 +307,13 @@ public class DestinationController extends Controller {
 
     /** Perform form validation for the edit/create destination form
      *  Returns a request containing the form with errors if errors found,
-     *  null if no errors found */
+     *  null if no errors found
+     * @param destId the id of the given destination
+     * @param user the id of the user
+     * @param request the http request
+     * @return validates the destination form and checks for errors and if there are matching destinations,
+     * flashes messages if any are found.
+     */
     private Result validateEditCreateForm(Http.Request request, User user, Integer destId) {
         Form<DestinationFormData> destForm;
         destForm = formFactory.form(DestinationFormData.class).bindFromRequest(request);
@@ -448,7 +461,7 @@ public class DestinationController extends Controller {
      * the modification request is deleted and the admin is redirected to the index
      * admin page.
      *
-     * @param request
+     * @param request the http request
      * @param destModReqId the id of the destination modification request under review
      * @return given proper authorisation redirect to index admin page
      */
@@ -479,7 +492,7 @@ public class DestinationController extends Controller {
      * are used to update the destination, then the modification request is
      * is deleted and the admin is redirected to the index admin page.
      *
-     * @param request
+     * @param request the http request
      * @param destModReqId the id of the destination modification request under review
      * @return given proper authorisation redirect to index admin page
      */
@@ -623,6 +636,15 @@ public class DestinationController extends Controller {
         }
     }
 
+    /**
+     * Merges private destinations to form a single public destination,
+     * given its id, if the private destination are matching.
+     *
+     * @param request the http request
+     * @param destId the id of the destination that is being made public
+     * @return redirects to the index page if successful, or a not found error,
+     * or an unauthorized message if the destination does not belong to the user.
+     */
     public Result makeDestinationsMerge(Http.Request request, int destId) {
         User user = User.getCurrentUser(request);
         if (user != null) {
@@ -683,7 +705,6 @@ public class DestinationController extends Controller {
         }
         return ok();
     }
-
 
     public Result unlinkAndDelete(Http.Request request, int photoId){
         UserPhoto photo = UserPhoto.find.byId(photoId);
@@ -801,6 +822,7 @@ public class DestinationController extends Controller {
      * Returns a photo file based on a photo with a given photo id
      *
      * @param request the HTTP request
+     * @param photoId the id for a given photo
      * @return the photo file
      */
     public Result getPhoto(Http.Request request, Integer photoId) {
@@ -960,8 +982,8 @@ public class DestinationController extends Controller {
     /**
      * Returns an image file to the requester, accepts the UserPhoto id to send back the correct image.
      * @param request the photo
-     * @param destId
-     * @return
+     * @param destId the id of the destination tht is having it's primary photo set
+     * @return success if setting primary photo was successful, not found if destination or photo not found, unauthorized otherwise.
      */
     public Result servePrimaryPicture(Http.Request request, Integer destId) {
         if (destId != null) {

@@ -983,10 +983,6 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
         userPhoto1.addDestination(christchurch);
         userPhoto1.addDestination(wellington);
         userPhoto1.save();
-
-
-
-
         addPhotoToDestination();
         boolean destPhotoExists = false;
         int destPhotoSize = Destination.find.byId(1).getUserPhotos().size();
@@ -1359,5 +1355,54 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
         Destination destinationAfterDelete = Destination.find.byId(4);
 
         assertEquals(destPhotosSize-1, destinationAfterDelete.getUserPhotos().size());
+    }
+
+    @Test
+    public void checkAddTag(){
+        Destination destination;
+        destination = new Destination
+                ("Ben's Happy place", "Attraction","Unknown", "The Void", 25.00, 71.00,null,true);
+        destination.addTag("Places to see");
+        assertEquals(1, destination.getTags().size());
+    }
+
+    @Test
+    public void checkAddingSameTag(){
+        Destination destination;
+        destination = new Destination
+                ("Ben's Happy place", "Attraction","Unknown", "The Void", 25.00, 71.00,null,true);
+
+        destination.addTag("Clone");
+        destination.addTag("Clone");
+        assertEquals(1, destination.getTags().size());
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void checkAddingNullTag(){
+        Destination destination;
+        destination = new Destination
+                ("Ben's Happy place", "Attraction","Unknown", "The Void", 25.00, 71.00,null,true);
+
+        destination.addTag(null);
+    }
+
+    @Test
+    public void checkRemoveTag(){
+        Destination destination;
+        destination = new Destination
+                ("Ben's Happy place", "Attraction","Unknown", "The Void", 25.00, 71.00,null,true);
+
+        destination.addTag("Test");
+        destination.removeTag("Test");
+        assertEquals(0, destination.getTags().size());
+    }
+
+    @Test
+    public void checkRemoveTagOnEmptySet(){
+        Destination destination;
+        destination = new Destination
+                ("Ben's Happy place", "Attraction","Unknown", "The Void", 25.00, 71.00,null,true);
+
+        assertEquals(false, destination.removeTag("Test"));
     }
 }

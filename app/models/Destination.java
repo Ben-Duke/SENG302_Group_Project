@@ -48,6 +48,7 @@ public class Destination extends Model {
 
     public static Finder<String,Destination> findString = new Finder<>(Destination.class);
     public static Finder<Integer,Destination> find = new Finder<>(Destination.class);
+    private SortedSet<Tag> destinationTags = new TreeSet<Tag>();
 
     /**
      * Destination constructor with isPublic method
@@ -157,6 +158,14 @@ public class Destination extends Model {
     }
     public boolean getIsCountryValid() { return isCountryValid; }
 
+    /**
+     * Returns the destination tags
+     * @return a SortedSet of the photo tags
+     */
+    public SortedSet<Tag> getTags() {
+        return this.destinationTags;
+    }
+
 
     public User getUser() { return user; }
 
@@ -201,6 +210,26 @@ public class Destination extends Model {
 
     public void addVisit(Visit visit) { this.visits.add(visit);}
     public void removeVisit(Visit visit) { this.visits.remove(visit);}
+
+    /**
+     * Adds a tag to the destination based on the name passed.
+     * Returns true if not already in the in the set.
+     * @param name
+     * @return
+     */
+    public Boolean addTag(String name){
+        return destinationTags.add(new Tag(name));
+    }
+
+    /**
+     * Removes a tag from the destination tags.
+     * Returns true if the tag exists and was removed and false otherwise.
+     * @param name
+     * @return
+     */
+    public Boolean removeTag(String name){
+        return destinationTags.remove(new Tag(name));
+    }
 
     @Override
     public String toString() {

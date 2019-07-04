@@ -446,15 +446,25 @@ public class TestDatabaseManager {
 
         //Add trips for user2
         Trip trip1 = new Trip("Trip to New Zealand", true, User.find.byId(2));
+        trip1.addTag("Nature");
+        trip1.addTag("Middle Earth");
         Trip trip2 = new Trip("Christchurch to Wellington, to The Wok and back", false, User.find.byId(2));
-
+        trip2.addTag("Wok");
+        trip2.addTag("CHCH");
         // Add trips to user 3
         Trip trip3 = new Trip("World Tour", true, User.find.byId(3));
+        trip1.addTag("Round the world");
+        trip1.addTag("Globe Trotter");
         Trip trip4 = new Trip("Pyramid to Race and back again", false, User.find.byId(3));
-
+        trip1.addTag("Egypt fun");
+        trip1.addTag("Sand and stuff");
         //Add trips to user 4
         Trip trip5 = new Trip("See the pope, the president and come back", true, User.find.byId(4));
+        trip1.addTag("Holy");
+        trip1.addTag("Religious");
         Trip trip6 = new Trip("Waterfall walk and see the president", false, User.find.byId(4));
+        trip1.addTag("Holy");
+        trip1.addTag("Religious");
 
         List<Trip> trips = new ArrayList<Trip>();
         trips.add(trip1);

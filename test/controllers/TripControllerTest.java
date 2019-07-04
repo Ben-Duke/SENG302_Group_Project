@@ -714,4 +714,41 @@ public class TripControllerTest extends BaseTestWithApplicationAndDatabase {
         Result result = route(app, request);
         assertEquals(NOT_FOUND, result.status());
     }
+
+
+    @Test
+    public void checkAddTag(){
+        Trip trip = new Trip("Underworld Ventures", true, null);
+        trip.addTag("Best trip ever");
+        assertEquals(1, trip.getTags().size());
+    }
+
+    @Test
+    public void checkAddingSameTag(){
+        Trip trip = new Trip("Underworld Ventures", true, null);
+        trip.addTag("Clone");
+        trip.addTag("Clone");
+        assertEquals(1, trip.getTags().size());
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void checkAddingNullTag(){
+        Trip trip = new Trip("Underworld Ventures", true, null);
+        trip.addTag(null);
+    }
+
+    @Test
+    public void checkRemoveTag(){
+        Trip trip = new Trip("Underworld Ventures", true, null);
+        trip.addTag("Test");
+        trip.removeTag("Test");
+        assertEquals(0, trip.getTags().size());
+    }
+
+    @Test
+    public void checkRemoveTagOnEmptySet(){
+        Trip trip = new Trip("Underworld Ventures", true, null);
+        assertEquals(false, trip.removeTag("Test"));
+    }
+
 }

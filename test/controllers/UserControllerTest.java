@@ -49,7 +49,6 @@ public class UserControllerTest extends BaseTestWithApplicationAndDatabase {
         assertEquals(3, Integer.parseInt(contentAsString(result)));
     }
 
-
     @Test
     public void checkAddTag(){
         UserPhoto userPhoto = new UserPhoto

@@ -48,6 +48,9 @@ public class Destination extends Model {
 
     public static Finder<String,Destination> findString = new Finder<>(Destination.class);
     public static Finder<Integer,Destination> find = new Finder<>(Destination.class);
+
+    @JsonIgnore
+    @ManyToMany (mappedBy = "destinations")
     private SortedSet<Tag> destinationTags = new TreeSet<Tag>();
 
     /**
@@ -212,11 +215,11 @@ public class Destination extends Model {
     /**
      * Adds a tag to the destination based on the name passed.
      * Returns true if not already in the in the set.
-     * @param name
+     * @param tag
      * @return
      */
-    public Boolean addTag(String name){
-        return destinationTags.add(new Tag(name));
+    public Boolean addTag(Tag tag){
+        return destinationTags.add(tag);
     }
 
     /**
@@ -245,6 +248,7 @@ public class Destination extends Model {
                 ", visits=" + visits +
                 ", userPhotos=" + userPhotos +
                 ", travellerTypes=" + travellerTypes +
+                ", tags=" + destinationTags +
                 '}';
     }
 

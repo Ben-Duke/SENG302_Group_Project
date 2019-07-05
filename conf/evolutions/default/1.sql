@@ -68,6 +68,18 @@ create table passport (
   constraint pk_passport primary key (passid)
 );
 
+create table tag (
+  tag_id                        integer auto_increment not null,
+  name                          varchar(255),
+  constraint pk_tag primary key (tag_id)
+);
+
+create table tag_destination (
+  tag_tag_id                    integer not null,
+  destination_destid            integer not null,
+  constraint pk_tag_destination primary key (tag_tag_id,destination_destid)
+);
+
 create table traveller_type (
   ttypeid                       integer auto_increment not null,
   traveller_type_name           varchar(255),
@@ -185,6 +197,12 @@ alter table destination_modification_request_traveller_type add constraint fk_de
 create index ix_destination_modification_request_traveller_type_travel_2 on destination_modification_request_traveller_type (traveller_type_ttypeid);
 alter table destination_modification_request_traveller_type add constraint fk_destination_modification_request_traveller_type_travel_2 foreign key (traveller_type_ttypeid) references traveller_type (ttypeid) on delete restrict on update restrict;
 
+create index ix_tag_destination_tag on tag_destination (tag_tag_id);
+alter table tag_destination add constraint fk_tag_destination_tag foreign key (tag_tag_id) references tag (tag_id) on delete restrict on update restrict;
+
+create index ix_tag_destination_destination on tag_destination (destination_destid);
+alter table tag_destination add constraint fk_tag_destination_destination foreign key (destination_destid) references destination (destid) on delete restrict on update restrict;
+
 create index ix_treasure_hunt_destination_destid on treasure_hunt (destination_destid);
 alter table treasure_hunt add constraint fk_treasure_hunt_destination_destid foreign key (destination_destid) references destination (destid) on delete restrict on update restrict;
 
@@ -260,6 +278,12 @@ drop index if exists ix_destination_modification_request_traveller_type_destin_1
 alter table destination_modification_request_traveller_type drop constraint if exists fk_destination_modification_request_traveller_type_travel_2;
 drop index if exists ix_destination_modification_request_traveller_type_travel_2;
 
+alter table tag_destination drop constraint if exists fk_tag_destination_tag;
+drop index if exists ix_tag_destination_tag;
+
+alter table tag_destination drop constraint if exists fk_tag_destination_destination;
+drop index if exists ix_tag_destination_destination;
+
 alter table treasure_hunt drop constraint if exists fk_treasure_hunt_destination_destid;
 drop index if exists ix_treasure_hunt_destination_destid;
 
@@ -321,6 +345,10 @@ drop table if exists destination_modification_request_traveller_type;
 drop table if exists nationality;
 
 drop table if exists passport;
+
+drop table if exists tag;
+
+drop table if exists tag_destination;
 
 drop table if exists traveller_type;
 

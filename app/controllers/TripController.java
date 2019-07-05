@@ -455,8 +455,8 @@ public class TripController extends Controller {
             if(!user.userIsAdmin() && user.getUserid() != trip.getUser().getUserid()){
                 return forbidden();
             }
-
-            if(trip.addTag(newTag)){
+            Tag tag = new Tag(newTag);
+            if(trip.addTag(tag)){
                 return ok("Added new tag " + newTag);
             }else{
                 return ok("The tag " + newTag + " appears to already be on this trip");

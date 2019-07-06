@@ -128,7 +128,7 @@ public class UserController {
      * @return An http response with the response code.
      */
     public Result editPhotoCaption(Http.Request request, int photoId) {
-        String caption = request.body().asFormUrlEncoded().get("caption")[0];
+        String caption = request.body().asJson().get("caption").asText();
         User user = User.getCurrentUser(request);
         if (user != null) {
             try {

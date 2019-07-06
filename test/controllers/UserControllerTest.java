@@ -2,6 +2,7 @@ package controllers;
 
 import org.junit.Test;
 
+import play.libs.Json;
 import play.mvc.Http;
 import play.mvc.Result;
 import play.test.Helpers;
@@ -132,7 +133,7 @@ public class UserControllerTest extends BaseTestWithApplicationAndDatabase {
         Map<String, String> formData = new HashMap<>();
         formData.put("caption", "Ogres have layers");
         Http.RequestBuilder request = Helpers.fakeRequest()
-                .bodyForm(formData)
+                .bodyJson(Json.toJson(formData))
                 .method(PUT)
                 .uri("/users/photos/1/caption")
                 .session("connected", "2");
@@ -157,7 +158,7 @@ public class UserControllerTest extends BaseTestWithApplicationAndDatabase {
         Map<String, String> form = new HashMap<>();
         form.put("caption", "Ogres have admins");
         Http.RequestBuilder request = Helpers.fakeRequest()
-                .bodyForm(form)
+                .bodyJson(Json.toJson(form))
                 .method(PUT)
                 .uri("/users/photos/1/caption")
                 .session("connected", "1");
@@ -170,7 +171,7 @@ public class UserControllerTest extends BaseTestWithApplicationAndDatabase {
         Map<String, String> form = new HashMap<>();
         form.put("caption", "");
         Http.RequestBuilder request = Helpers.fakeRequest()
-                .bodyForm(form)
+                .bodyJson(Json.toJson(form))
                 .method(PUT)
                 .uri("/users/photos/1/caption")
                 .session("connected", "2");
@@ -183,7 +184,7 @@ public class UserControllerTest extends BaseTestWithApplicationAndDatabase {
         Map<String, String> form = new HashMap<>();
         form.put("caption", "Ogre's must be the right user or admin");
         Http.RequestBuilder request = Helpers.fakeRequest()
-                .bodyForm(form)
+                .bodyJson(Json.toJson(form))
                 .method(PUT)
                 .uri("/users/photos/1/caption")
                 .session("connected", "3");
@@ -208,7 +209,7 @@ public class UserControllerTest extends BaseTestWithApplicationAndDatabase {
         Map<String, String> form = new HashMap<>();
         form.put("caption", "Donkey!!!");
         Http.RequestBuilder request = Helpers.fakeRequest()
-                .bodyForm(form)
+                .bodyJson(Json.toJson(form))
                 .method(PUT)
                 .uri("/users/photos/99999/caption")
                 .session("connected", "2");
@@ -221,7 +222,7 @@ public class UserControllerTest extends BaseTestWithApplicationAndDatabase {
         Map<String, String> form = new HashMap<>();
         form.put("caption", "Donkey!!!");
         Http.RequestBuilder request = Helpers.fakeRequest()
-                .bodyForm(form)
+                .bodyJson(Json.toJson(form))
                 .method(PUT)
                 .uri("/users/photos/1/caption");
         Result result = route(app, request);

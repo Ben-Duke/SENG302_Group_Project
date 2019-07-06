@@ -477,16 +477,17 @@
 
 
 
-                                <h2 id="caption">@photo.getCaption</h2>
-                                <input type="text" id="captionInput" name="caption" title="caption" placeholder="yeeticus" style="display: none">
-                                <btn class="btn btn-danger" id="cancelCaptionButton" style="display: none">Cancel</btn>
-                                <btn class="btn btn-success" id="saveCaptionButton" style="display: none">Save caption</btn>
+                                <h2 id="caption-@photo.getPhotoId">@photo.getCaption</h2>
+                                <div>
+                                    <input type="text" id="captionInput-@photo.getPhotoId" name="caption" title="caption" placeholder="No Caption" style="display: none">
+                                    <btn class="btn btn-danger" id="cancelCaptionButton-@photo.getPhotoId" onclick="cancelEditCaption(@photo.getPhotoId)" style="display: none">Cancel</btn>
+                                    <btn class="btn btn-success" id="saveCaptionButton-@photo.getPhotoId" onclick="submitEditCaption(@photo.getPhotoId)" style="display: none">Save caption</btn>
 
-                                @if(user.userid.eq(photo.user.userid) || user.userIsAdmin){
-                                    <a class="btn btn-primary" id="editCaptionButton" style="padding-left: 100px" onclick="editCaption(@photo.photoId)">Edit Caption</a>
-                                    <br/>
-                                }
+                                    @if(user.userid.eq(photo.user.userid) || user.userIsAdmin){
+                                        <a class="btn btn-primary" id="editCaptionButton-@photo.getPhotoId" style="padding-left: 100px" onclick="editCaption(@photo.photoId)">Edit Caption</a>
 
+                                    }
+                                </div>
 
                                 <a class="btn btn-primary" id="linkButton" href="#" data-toggle="modal" data-target="#@photo.getPhotoId">Destinations</a>
                                 <a class="btn btn-primary" id="setProfilePicture"

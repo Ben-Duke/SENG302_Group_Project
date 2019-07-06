@@ -68,6 +68,12 @@ create table passport (
   constraint pk_passport primary key (passid)
 );
 
+create table tag (
+  tag_id                        integer auto_increment not null,
+  name                          varchar(255),
+  constraint pk_tag primary key (tag_id)
+);
+
 create table traveller_type (
   ttypeid                       integer auto_increment not null,
   traveller_type_name           varchar(255),
@@ -321,6 +327,8 @@ drop table if exists destination_modification_request_traveller_type;
 drop table if exists nationality;
 
 drop table if exists passport;
+
+drop table if exists tag;
 
 drop table if exists traveller_type;
 

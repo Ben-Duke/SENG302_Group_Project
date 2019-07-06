@@ -39,6 +39,8 @@ public class UserPhoto extends Model {
     @OneToMany(mappedBy = "primaryPhoto")
     public List<Destination> primaryPhotoDestinations;
 
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(name = "photo_tags")
     private SortedSet<Tag> photoTags = new TreeSet<>();
 
     public static Finder<Integer,UserPhoto> find = new Finder<>(UserPhoto.class);
@@ -103,7 +105,12 @@ public class UserPhoto extends Model {
      * @return
      */
     public Boolean addTag(String name){
-        return photoTags.add(new Tag(name));
+        Tag tag = new Tag(name);
+        tag.save();
+        boolean added = photoTags.add(tag);
+        tag.update();
+        this.save();
+        return added;
     }
 
     /**

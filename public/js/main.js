@@ -28,6 +28,44 @@ $('#redoButton').click( function(e) {
     undoRedoRequest("redo")
 });
 
+addCaptionInputListeners();
+
+/**
+ * Adds listeners to each caption input such that when they lose focus the caption is saved
+ */
+function addCaptionInputListeners() {
+    const captionInputs = document.getElementsByClassName("captionInput");
+    for (let i=0; i < captionInputs.length; i++) {
+        const input = captionInputs.item(i);
+        input.addEventListener('blur', function() {
+            const photoId = input.id.split("-")[1];
+            const caption = input.value;
+            submitEditCaption(caption, photoId)
+        });
+    }
+
+}
+
+hideEditButtons();
+
+/**
+ * Hides the add caption buttons tha should not be displayed on load page.
+ * The buttons are only shown if the caption is empty
+ */
+function hideEditButtons() {
+    const editButtons = document.getElementsByClassName("captionButton");
+    for (let i=0; i < editButtons.length; i++) {
+        const button = editButtons.item(i);
+        const photoId = button.id.split("-")[1];
+        getPhotoCaption(photoId);
+        const caption = document.getElementById("caption-" + photoId).innerText;
+        if(caption){
+            button.style.display = "none";
+        }
+    }
+}
+
+
 /**
  * Sends request to UndoRedoController which completes the given undo/redo request
  * @param url Either Undo or Redo
@@ -80,13 +118,16 @@ function showMessage(message, action) {
     }, 3000);
 };
 
+/**
+ * Requests the photo caption and sets the captionInput to match that if it exists.
+ * @param photoId the id of the photo to get the caption from
+ */
 function getPhotoCaption(photoId) {
     $.ajax({
         type: 'GET',
         url: '/users/photos/'+ photoId +'/caption',
         success:function(res){
             const captionInput = document.getElementById("captionInput-" + photoId);
-
             captionInput.value = res;
         },
         error: function(xhr, textStatus, errorThrown){
@@ -97,6 +138,26 @@ function getPhotoCaption(photoId) {
 }
 
 /**
+ * Toggles the visibility of elements relating to captions.
+ * Hides the edit caption button only if the caotion exists
+ * @param photoId the id of the photo to toggle displays of
+ */
+function toggleCaptionDisplays(photoId) {
+    const caption = document.getElementById("caption-" + photoId);
+    const captionInput = document.getElementById("captionInput-" + photoId);
+    const editCaptionBtn = document.getElementById("editCaptionButton-" + photoId);
+
+    if (captionInput.value) {
+        editCaptionBtn.style.display = 'none'
+    } else {
+        editCaptionBtn.style.display = 'block'
+    }
+
+    toggleDisplay(caption);
+    toggleDisplay(captionInput);
+}
+
+/**
  * Used to edit a caption, shows all button required to edit a caption,
  * calls getPhotoCaption to get the caption for the photo so the user
  * can edit it.
@@ -104,55 +165,32 @@ function getPhotoCaption(photoId) {
  */
 function editCaption(photoId) {
     getPhotoCaption(photoId);
-    const captionInput = document.getElementById("captionInput-" + photoId);
-    const saveButton = document.getElementById("cancelCaptionButton-" + photoId);
-    const cancelButton = document.getElementById("saveCaptionButton-" + photoId);
-    const editButton = document.getElementById("editCaptionButton-" + photoId);
-
-    toggleDisplay(captionInput);
-    toggleDisplay(saveButton);
-    toggleDisplay(cancelButton);
-    toggleDisplay(editButton);
+    toggleCaptionDisplays(photoId);
+    document.getElementById("captionInput-" + photoId).focus();
+    document.getElementById("editCaptionButton-" + photoId).style.display = 'none';
 }
 
 /**
- * Hides the caption edit inputs and brings the edit caption button back
- * @param photoId
+ * Sends a request to change the photo caption and toggles appropriate displays
+ * @param caption the new caption
+ * @param photoId the id of the photo to change the caption of
  */
-function cancelEditCaption(photoId) {
-    const captionInput = document.getElementById("captionInput-" + photoId);
-    const saveButton = document.getElementById("cancelCaptionButton-" + photoId);
-    const cancelButton = document.getElementById("saveCaptionButton-" + photoId);
-    const editButton = document.getElementById("editCaptionButton-" + photoId);
-
-    toggleDisplay(captionInput);
-    toggleDisplay(saveButton);
-    toggleDisplay(cancelButton);
-    toggleDisplay(editButton);
-}
-
-function submitEditCaption(photoId) {
-    const captionInput = document.getElementById("captionInput-" + photoId);
-    const captionInputText = captionInput.value;
-
+function submitEditCaption(caption, photoId) {
     $.ajax({
         type: 'PUT',
         url: '/users/photos/'+ photoId +'/caption',
         data: JSON.stringify({
-            caption: captionInputText
+            caption: caption
         }),
         headers: {
             'Content-Type': 'application/json'
         },
         success:function(){
-            document.getElementById("caption-" + photoId).innerText = captionInputText;
-            cancelEditCaption(photoId);
+            document.getElementById("caption-" + photoId).innerText = caption;
+            toggleCaptionDisplays(photoId);
         },
         error: function(xhr, textStatus, errorThrown){
             console.log(xhr.status + " " + textStatus + " " + errorThrown);
         }
-    })
-
-
-
+    });
 }

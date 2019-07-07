@@ -476,16 +476,14 @@
                                 <img class="center" id="carouselImage@photo.getPhotoId()" src="@{routes.HomeController.index(photo.getUrlWithPath)}">
 
 
-
-                                <h2 id="caption-@photo.getPhotoId">@photo.getCaption</h2>
+                                <h2 id="caption-@photo.getPhotoId" onclick="editCaption(@photo.getPhotoId)">@photo.getCaption</h2>
                                 <div>
-                                    <input type="text" id="captionInput-@photo.getPhotoId" name="caption" title="caption" placeholder="No Caption" style="display: none">
-                                    <btn class="btn btn-danger" id="cancelCaptionButton-@photo.getPhotoId" onclick="cancelEditCaption(@photo.getPhotoId)" style="display: none">Cancel</btn>
-                                    <btn class="btn btn-success" id="saveCaptionButton-@photo.getPhotoId" onclick="submitEditCaption(@photo.getPhotoId)" style="display: none">Save caption</btn>
+                                    <input type="text" class="captionInput" id="captionInput-@photo.getPhotoId" name="caption" title="caption" placeholder="No Caption" style="display: none">
 
-                                    @if(user.userid.eq(photo.user.userid) || user.userIsAdmin){
-                                        <a class="btn btn-primary" id="editCaptionButton-@photo.getPhotoId" style="padding-left: 100px" onclick="editCaption(@photo.photoId)">Edit Caption</a>
-
+                                    @if(user.userid.eq(photo.user.userid) || user.userIsAdmin) {
+                                        <button class="btn btn-primary captionButton" id="editCaptionButton-@photo.getPhotoId" style="padding-left: 100px" onclick="editCaption(@photo.photoId)">
+                                            Add Caption
+                                        </button>
                                     }
                                 </div>
 

@@ -476,14 +476,17 @@
                                 <img class="center" id="carouselImage@photo.getPhotoId()" src="@{routes.HomeController.index(photo.getUrlWithPath)}">
 
 
-                                <h2 id="caption-@photo.getPhotoId" onclick="editCaption(@photo.getPhotoId)">@photo.getCaption</h2>
+                                <h2 class=caption id="caption-@photo.getPhotoId" onclick="editCaption(@photo.getPhotoId)">@photo.getCaption</h2>
+                                <br/>
                                 <div>
-                                    <input type="text" class="captionInput" id="captionInput-@photo.getPhotoId" name="caption" title="caption" placeholder="No Caption" style="display: none">
+                                    <input type="text" class="captionInput center" id="captionInput-@photo.getPhotoId" name="caption" title="caption" placeholder="No Caption" style="display: none">
+                                    <br/>
 
                                     @if(user.userid.eq(photo.user.userid) || user.userIsAdmin) {
-                                        <button class="btn btn-primary captionButton" id="editCaptionButton-@photo.getPhotoId" style="padding-left: 100px" onclick="editCaption(@photo.photoId)">
+                                        <button class="btn btn-primary captionButton center" id="editCaptionButton-@photo.getPhotoId" style="padding-left: 100px" onclick="editCaption(@photo.photoId)">
                                             Add Caption
                                         </button>
+                                        <br/>
                                     }
                                 </div>
 

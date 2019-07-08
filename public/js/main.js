@@ -42,8 +42,12 @@ function addCaptionInputListeners() {
             const caption = input.value;
             submitEditCaption(caption, photoId)
         });
+        input.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') {
+                input.blur();
+            }
+        });
     }
-
 }
 
 hideEditButtons();

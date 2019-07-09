@@ -1,6 +1,7 @@
 package controllers;
 
 import accessors.DestinationAccessor;
+import accessors.TagAccessor;
 import accessors.TreasureHuntAccessor;
 import accessors.VisitAccessor;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -1365,15 +1366,14 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
         Destination destination;
         destination = new Destination
                 ("Ben's Happy place", "Attraction","Unknown", "The Void", 25.00, 71.00,null,true);
-        destination.save();
-        destination = Destination.find.query().where().eq("destId", destination.destid).findOne();
+        DestinationAccessor.insert(destination);
         Tag tag = new Tag("Places to see");
-        tag.save();
+        TagAccessor.insert(tag);
         tag.addDestinationById(destination.destid);
         destination.addTag(tag);
-        destination.update();
-        tag.update();
-        Destination clone = Destination.find.query().where().eq("destId", destination.destid).findOne();
+        DestinationAccessor.update(destination);
+        TagAccessor.update(tag);
+        Destination clone = DestinationAccessor.getDestinationById(destination.destid);
         assertEquals(1, clone.getTags().size());
     }
 
@@ -1383,8 +1383,20 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
         destination = new Destination
                 ("Ben's Happy place", "Attraction","Unknown", "The Void", 25.00, 71.00,null,true);
 
-//        destination.addTag("Clone");
-//        destination.addTag("Clone");
+        Tag tag = new Tag("Clone");
+        TagAccessor.insert(tag);
+        Tag tagClone = new Tag("Clone");
+        TagAccessor.insert(tagClone);
+        DestinationAccessor.insert(destination);
+        tag.addDestinationById(destination.destid);
+        destination.addTag(tag);
+        destination.update();
+        TagAccessor.update(tag);
+        destination.addTag(tagClone);
+        destination.update();
+        TagAccessor.update(tagClone);
+        System.out.println(destination.getTags());
+
         assertEquals(1, destination.getTags().size());
     }
 

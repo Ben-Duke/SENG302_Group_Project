@@ -23,7 +23,7 @@ public class Tag extends Model implements Comparable{
     @Id
     public Integer tagId;
 
-    @Column(name="name")
+    @Column(name="name", unique=true)
     public String name;
 
     public Tag(String name){

@@ -219,7 +219,13 @@ public class Destination extends Model {
      * @return
      */
     public Boolean addTag(Tag tag){
-        return destinationTags.add(tag);
+        if(!destinationTags.contains(tag)) {
+            destinationTags.add(tag);
+            return true;
+        }
+
+        return false;
+
     }
 
     /**

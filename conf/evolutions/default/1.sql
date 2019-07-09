@@ -71,6 +71,7 @@ create table passport (
 create table tag (
   tag_id                        integer auto_increment not null,
   name                          varchar(255),
+  constraint uq_tag_name unique (name),
   constraint pk_tag primary key (tag_id)
 );
 

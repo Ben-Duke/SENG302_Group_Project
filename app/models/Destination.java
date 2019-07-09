@@ -51,7 +51,7 @@ public class Destination extends Model {
 
     @JsonIgnore
     @ManyToMany (mappedBy = "destinations")
-    private SortedSet<Tag> destinationTags = new TreeSet<Tag>();
+    public Set<Tag> destinationTags;
 
     /**
      * Destination constructor with isPublic method
@@ -165,7 +165,7 @@ public class Destination extends Model {
      * Returns the destination tags
      * @return a SortedSet of the photo tags
      */
-    public SortedSet<Tag> getTags() { return this.destinationTags; }
+    public Set<Tag> getTags() { return this.destinationTags; }
 
 
     public User getUser() { return user; }

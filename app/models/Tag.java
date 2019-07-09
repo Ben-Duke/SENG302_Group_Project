@@ -24,7 +24,7 @@ public class Tag extends Model implements Comparable{
     public Integer tagId;
 
     @Column(name="name")
-    String name;
+    public String name;
 
     public Tag(String name){
         this.name = name;
@@ -48,6 +48,11 @@ public class Tag extends Model implements Comparable{
 
     public void addDestination(Destination destination) {
         this.destinations.add(destination);
+    }
+
+    public void addDestinationById(Integer destId) {
+        Destination destination = Destination.find.byId(destId);
+        addDestination(destination);
     }
     public boolean removeDestination(Destination destination) {
         return this.destinations.remove(destination);

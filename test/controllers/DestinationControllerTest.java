@@ -1357,26 +1357,23 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
         assertEquals(destPhotosSize-1, destinationAfterDelete.getUserPhotos().size());
     }
 
+    /**
+     *
+     */
     @Test
     public void checkAddTag(){
         Destination destination;
         destination = new Destination
                 ("Ben's Happy place", "Attraction","Unknown", "The Void", 25.00, 71.00,null,true);
         destination.save();
+        destination = Destination.find.query().where().eq("destId", destination.destid).findOne();
         Tag tag = new Tag("Places to see");
-        tag.addDestination(destination);
-
-
-        destination.addTag(tag);
-
         tag.save();
+        tag.addDestinationById(destination.destid);
+        destination.addTag(tag);
         destination.update();
-        System.out.println(tag.destinations);
-        System.out.println("Tags from ebeans: " + Tag.find.all());
-        Destination clone = Destination.find.byId(destination.destid);
-        System.out.println(clone);
-        System.out.println("Tags from clone: " + clone.getTags());
-
+        tag.update();
+        Destination clone = Destination.find.query().where().eq("destId", destination.destid).findOne();
         assertEquals(1, clone.getTags().size());
     }
 

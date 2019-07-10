@@ -1,29 +1,38 @@
 package models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.ebean.Finder;
 import io.ebean.Model;
+import play.data.validation.Constraints;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import java.util.List;
 
 @Entity
 public class Tag extends Model implements Comparable{
 
+    public static Finder<Integer,Tag> find = new Finder<>(Tag.class);
+    @JsonIgnore
+    @ManyToMany
+    public List<Destination> destinations;
+    /**
+     * The ID of the Tag. This is the primary key.
+     */
     @Id
-    private Integer tagId;
+    public int tagId;
 
-    private String name;
+    @Constraints.Required
+    @Column(name="name", unique=true)
+    public String name;
 
     public Tag(String name){
+        if (name == null){
+            throw new IllegalArgumentException("Name cannot be null");
+        }
         this.name = name;
-    }
-
-    public Integer getTagId() {
-        return tagId;
-    }
-
-    public void setTagId(Integer tagId) {
-        this.tagId = tagId;
     }
 
     /**
@@ -34,11 +43,33 @@ public class Tag extends Model implements Comparable{
         return name;
     }
 
+    public Integer getTagId() {
+        return tagId;
+    }
+
+    public void setTagId(Integer tagId) {
+        this.tagId = tagId;
+    }
+
+    public void addDestination(Destination destination) {
+        this.destinations.add(destination);
+    }
+
+    public void addDestinationById(Integer destId) {
+        Destination destination = Destination.find.byId(destId);
+        addDestination(destination);
+    }
+    public boolean removeDestination(Destination destination) {
+        return this.destinations.remove(destination);
+    }
     /**
      * Sets the name of a tag based on the passed string.
      * @param name
      */
     public void setName(String name) {
+        if (name == null){
+            throw new IllegalArgumentException("Name cannot be null");
+        }
         this.name = name;
     }
 
@@ -50,21 +81,13 @@ public class Tag extends Model implements Comparable{
 
     @Override
     public int hashCode() {
-        return name.hashCode();
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (obj instanceof Tag) {
-            Tag other = (Tag) obj;
-            return this.name.equals(other.name);
-        }
-        return false;
+        int hash = 7;
+        hash = 31 * hash + tagId;
+        hash = 31 * hash + (name == null ? 0 : name.hashCode());
+        return  hash;
     }
 
     public String toString(){
         return this.name;
     }
-
-    public static final Finder<Integer,Tag> find = new Finder<>(Tag.class);
 }

@@ -1,10 +1,9 @@
 package models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.ebean.Finder;
 import io.ebean.Model;
-import utilities.UtilityFunctions;
+
 
 import javax.persistence.*;
 import java.util.*;
@@ -48,7 +47,10 @@ public class Destination extends Model {
 
     public static Finder<String,Destination> findString = new Finder<>(Destination.class);
     public static Finder<Integer,Destination> find = new Finder<>(Destination.class);
-    private SortedSet<Tag> destinationTags = new TreeSet<Tag>();
+
+    @JsonIgnore
+    @ManyToMany (mappedBy = "destinations")
+    public Set<Tag> destinationTags;
 
     /**
      * Destination constructor with isPublic method
@@ -162,7 +164,7 @@ public class Destination extends Model {
      * Returns the destination tags
      * @return a SortedSet of the photo tags
      */
-    public SortedSet<Tag> getTags() { return this.destinationTags; }
+    public Set<Tag> getTags() { return this.destinationTags; }
 
 
     public User getUser() { return user; }
@@ -212,21 +214,30 @@ public class Destination extends Model {
     /**
      * Adds a tag to the destination based on the name passed.
      * Returns true if not already in the in the set.
-     * @param name
+     * @param tag
      * @return
      */
-    public Boolean addTag(String name){
-        return destinationTags.add(new Tag(name));
+    public Boolean addTag(Tag tag){
+        if (tag == null) {
+            throw new NullPointerException("Added Tag cannot be null");
+        }
+        if(!destinationTags.contains(tag)) {
+            destinationTags.add(tag);
+            return true;
+        }
+
+        return false;
+
     }
 
     /**
      * Removes a tag from the destination tags.
      * Returns true if the tag exists and was removed and false otherwise.
-     * @param name
+     * @param tag - tag to be removed
      * @return
      */
-    public Boolean removeTag(String name){
-        return destinationTags.remove(new Tag(name));
+    public Boolean removeTag(Tag tag){
+        return destinationTags.remove(tag);
     }
 
     @Override
@@ -245,6 +256,7 @@ public class Destination extends Model {
                 ", visits=" + visits +
                 ", userPhotos=" + userPhotos +
                 ", travellerTypes=" + travellerTypes +
+                ", tags=" + destinationTags +
                 '}';
     }
 

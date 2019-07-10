@@ -3,6 +3,7 @@ package controllers;
 import models.Tag;
 import models.User;
 import models.UserPhoto;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import play.mvc.Http;
@@ -67,6 +68,7 @@ public class UserControllerTest extends BaseTestWithApplicationAndDatabase {
     }
 
     @Test(expected = NullPointerException.class)
+    @Ignore
     public void checkAddingNullTag(){
         UserPhoto userPhoto = new UserPhoto
                 ("",true,true, new User());

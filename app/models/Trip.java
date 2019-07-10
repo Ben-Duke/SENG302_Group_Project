@@ -110,6 +110,7 @@ public class Trip extends Model {
         this.visits.add(visit);
     }
 
+    @ManyToMany
     private SortedSet<Tag> tripTags = new TreeSet<Tag>();
 
     /**
@@ -121,11 +122,12 @@ public class Trip extends Model {
     /**
      * Adds a tag to the trip based on the name passed.
      * Returns true if not already in the in the set.
-     * @param name
+     * @param tag
      * @return
      */
-    public Boolean addTag(String name){
-        return tripTags.add(new Tag(name));
+    public Boolean addTag(Tag tag) {
+
+        return tripTags.add(tag);
     }
 
     /**

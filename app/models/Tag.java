@@ -3,6 +3,7 @@ package models;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.ebean.Finder;
 import io.ebean.Model;
+import play.data.validation.Constraints;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -21,12 +22,16 @@ public class Tag extends Model implements Comparable{
      * The ID of the Tag. This is the primary key.
      */
     @Id
-    public Integer tagId;
+    public int tagId;
 
+    @Constraints.Required
     @Column(name="name", unique=true)
     public String name;
 
     public Tag(String name){
+        if (name == null){
+            throw new IllegalArgumentException("Name cannot be null");
+        }
         this.name = name;
     }
 
@@ -62,6 +67,9 @@ public class Tag extends Model implements Comparable{
      * @param name
      */
     public void setName(String name) {
+        if (name == null){
+            throw new IllegalArgumentException("Name cannot be null");
+        }
         this.name = name;
     }
 

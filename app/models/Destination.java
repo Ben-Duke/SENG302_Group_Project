@@ -1,10 +1,9 @@
 package models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.ebean.Finder;
 import io.ebean.Model;
-import utilities.UtilityFunctions;
+
 
 import javax.persistence.*;
 import java.util.*;
@@ -219,6 +218,9 @@ public class Destination extends Model {
      * @return
      */
     public Boolean addTag(Tag tag){
+        if (tag == null) {
+            throw new NullPointerException("Added Tag cannot be null");
+        }
         if(!destinationTags.contains(tag)) {
             destinationTags.add(tag);
             return true;
@@ -231,11 +233,11 @@ public class Destination extends Model {
     /**
      * Removes a tag from the destination tags.
      * Returns true if the tag exists and was removed and false otherwise.
-     * @param name
+     * @param tag - tag to be removed
      * @return
      */
-    public Boolean removeTag(String name){
-        return destinationTags.remove(new Tag(name));
+    public Boolean removeTag(Tag tag){
+        return destinationTags.remove(tag);
     }
 
     @Override

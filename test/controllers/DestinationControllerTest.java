@@ -5,25 +5,16 @@ import accessors.TagAccessor;
 import accessors.TreasureHuntAccessor;
 import accessors.VisitAccessor;
 import com.fasterxml.jackson.databind.JsonNode;
+import io.ebean.DuplicateKeyException;
 import models.*;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
-import play.Application;
 import play.api.test.CSRFTokenHelper;
-import play.db.Database;
-import play.db.Databases;
-import play.db.evolutions.Evolution;
-import play.db.evolutions.Evolutions;
-import play.inject.guice.GuiceApplicationBuilder;
 import play.libs.Json;
 import play.mvc.Http;
 import play.mvc.Result;
 import play.test.Helpers;
-import play.test.WithApplication;
 import testhelpers.BaseTestWithApplicationAndDatabase;
-import utilities.TestDatabaseManager;
 import utilities.UtilityFunctions;
 
 import java.util.*;
@@ -1377,36 +1368,22 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
         assertEquals(1, clone.getTags().size());
     }
 
-    @Test
+    @Test(expected = DuplicateKeyException.class)
     public void checkAddingSameTag(){
-        Destination destination;
-        destination = new Destination
-                ("Ben's Happy place", "Attraction","Unknown", "The Void", 25.00, 71.00,null,true);
 
         Tag tag = new Tag("Clone");
         TagAccessor.insert(tag);
         Tag tagClone = new Tag("Clone");
         TagAccessor.insert(tagClone);
-        DestinationAccessor.insert(destination);
-        tag.addDestinationById(destination.destid);
-        destination.addTag(tag);
-        destination.update();
-        TagAccessor.update(tag);
-        destination.addTag(tagClone);
-        destination.update();
-        TagAccessor.update(tagClone);
-        System.out.println(destination.getTags());
-
-        assertEquals(1, destination.getTags().size());
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void checkAddingNullTag(){
         Destination destination;
         destination = new Destination
                 ("Ben's Happy place", "Attraction","Unknown", "The Void", 25.00, 71.00,null,true);
-
-        destination.addTag(null);
+        DestinationAccessor.insert(destination);
+        new Tag(null); //This will throw an exception
     }
 
     @Test
@@ -1414,18 +1391,28 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
         Destination destination;
         destination = new Destination
                 ("Ben's Happy place", "Attraction","Unknown", "The Void", 25.00, 71.00,null,true);
+        DestinationAccessor.insert(destination);
+        Tag tag = new Tag("Delete me");
+        TagAccessor.insert(tag);
+        tag.addDestination(destination);
+        TagAccessor.update(tag);
 
-        //destination.addTag("Test");
-        destination.removeTag("Test");
-        assertEquals(0, destination.getTags().size());
+        destination.addTag(tag);
+        DestinationAccessor.update(destination);
+
+        destination.removeTag(tag);
+        DestinationAccessor.update(destination);
+
+        assertEquals(0, DestinationAccessor.getDestinationById(destination.getDestId()).getTags().size());
     }
 
     @Test
     public void checkRemoveTagOnEmptySet(){
-        Destination destination;
-        destination = new Destination
+        Destination destination = new Destination
                 ("Ben's Happy place", "Attraction","Unknown", "The Void", 25.00, 71.00,null,true);
 
-        assertEquals(false, destination.removeTag("Test"));
+        Tag tag = new Tag("Test");
+
+        assertEquals(false, destination.removeTag(tag));
     }
 }

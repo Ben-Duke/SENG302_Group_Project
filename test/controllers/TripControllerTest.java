@@ -11,6 +11,7 @@ import models.User;
 import models.Visit;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import play.Application;
 import play.api.test.CSRFTokenHelper;
@@ -717,6 +718,7 @@ public class TripControllerTest extends BaseTestWithApplicationAndDatabase {
 
 
     @Test
+    @Ignore
     public void checkAddTag(){
         Trip trip = new Trip("Underworld Ventures", true, null);
         //trip.addTag("Best trip ever");
@@ -724,6 +726,7 @@ public class TripControllerTest extends BaseTestWithApplicationAndDatabase {
     }
 
     @Test
+    @Ignore
     public void checkAddingSameTag(){
         Trip trip = new Trip("Underworld Ventures", true, null);
         //trip.addTag("Clone");

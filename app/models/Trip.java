@@ -111,13 +111,13 @@ public class Trip extends Model {
     }
 
     @ManyToMany
-    private SortedSet<Tag> tripTags = new TreeSet<Tag>();
+    private Set<Tag> tripTags = new TreeSet<Tag>();
 
     /**
      * Returns the trip tags
-     * @return a SortedSet of the photo tags
+     * @return a Set of the photo tags
      */
-    public SortedSet<Tag> getTags() { return this.tripTags; }
+    public Set<Tag> getTags() { return this.tripTags; }
 
     /**
      * Adds a tag to the trip based on the name passed.

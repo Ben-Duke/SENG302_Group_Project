@@ -3,6 +3,7 @@ package utilities;
 import accessors.UserPhotoAccessor;
 import controllers.ApplicationManager;
 import models.*;
+import org.slf4j.Logger;
 import play.db.Database;
 import play.db.Databases;
 import play.db.evolutions.Evolution;
@@ -20,6 +21,8 @@ import java.util.concurrent.CountDownLatch;
  * for information on the layout of the test database.
  */
 public class TestDatabaseManager {
+
+    Logger logger = UtilityFunctions.getLogger();
 
     public TestDatabaseManager(){
 
@@ -491,7 +494,13 @@ public class TestDatabaseManager {
 
     public void addUserPhotos(){
         UserPhoto userPhoto1 = new UserPhoto("shrek.jpeg", true, true, User.find.byId(2));
-        userPhoto1.addTag("Shrek");
+        Tag tag = new Tag("Shrek");
+        try {
+            tag.save();
+        } catch (Exception e) {
+            logger.error("Failed to add Shrek tag", e);
+        }
+        userPhoto1.addTag(tag);
         UserPhoto userPhoto2 = new UserPhoto("placeholder.png", false, false, User.find.byId(2));
 //        Destination christchurch = Destination.find.byId(1);
 //        Destination wellington = Destination.find.byId(2);

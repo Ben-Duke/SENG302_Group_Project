@@ -162,7 +162,7 @@ public class Destination extends Model {
 
     /**
      * Returns the destination tags
-     * @return a SortedSet of the photo tags
+     * @return a Set of the photo tags
      */
     public Set<Tag> getTags() { return this.destinationTags; }
 

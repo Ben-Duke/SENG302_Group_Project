@@ -41,7 +41,7 @@ public class UserPhoto extends Model {
 
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "photo_tags")
-    private SortedSet<Tag> photoTags = new TreeSet<>();
+    private Set<Tag> photoTags = new TreeSet<>();
 
     public static Finder<Integer,UserPhoto> find = new Finder<>(UserPhoto.class);
 
@@ -92,25 +92,20 @@ public class UserPhoto extends Model {
 
     /**
      * Returns the photo tags
-     * @return a SortedSet of the photo tags
+     * @return a Set of the photo tags
      */
-    public SortedSet<Tag> getPhotoTags() {
+    public Set<Tag> getPhotoTags() {
         return this.photoTags;
     }
 
     /**
-     * Adds a tag to the photo based on the name passed.
+     * Adds a tag to the photo.
      * Returns true if not already in the in the set.
-     * @param name
+     * @param tag the tag to be added to the photo
      * @return
      */
-    public Boolean addTag(String name){
-        Tag tag = new Tag(name);
-        tag.save();
-        boolean added = photoTags.add(tag);
-        tag.update();
-        this.save();
-        return added;
+    public Boolean addTag(Tag tag){
+        return photoTags.add(tag);
     }
 
     /**

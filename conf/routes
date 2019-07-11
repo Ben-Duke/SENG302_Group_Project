@@ -279,6 +279,9 @@ GET    /photos/:photoId/tags                                    controllers.TagC
 # Add photo tag
 PUT   /photos/:photoId/tags                                 controllers.TagController.addPhotoTag(request : Request, photoId : Integer)
 
+# Delete photo tag
+DELETE /photos/:photoId/tags                                    controllers.TagController.removePhotoTag(request : Request, photoId : Integer)
+
 # Undo
 +nocsrf
 PUT     /undo                                              controllers.UndoRedoController.undo(request: Request)

@@ -91,6 +91,32 @@ public class TagController {
         else return created();
     }
 
-//    public Result removePhotoTag(Http.Request request, int photoId) {
-//    }
+    /**
+     * Removes a tag from a photo by tag name
+     * @param request a request containing a json like {tag: "tagName"}
+     * @param photoId the id of the photo to remove the tag from
+     * @return an http response detailing whether the removal was successful or not
+     */
+    public Result removePhotoTag(Http.Request request, int photoId) {
+        User user = User.getCurrentUser(request);
+        if (user == null) {
+            return unauthorized();
+        }
+        UserPhoto photo = UserPhotoAccessor.getUserPhotoById(photoId);
+        if (photo == null) {
+            return notFound("Photo not found");
+        }
+        if (!photo.isPublic() && !photo.getUser().equals(user) && !user.userIsAdmin()) {
+            return forbidden();
+        }
+        String tagName = request.body().asJson().get("tag").asText();
+        Tag tag = TagAccessor.getTagByName(tagName);
+        if (tag == null) {
+            return notFound("Tag " + tagName + " does not exist");
+        }
+        photo.removeTag(tag);
+        photo.update();
+        tag.update();
+        return ok();
+    }
 }

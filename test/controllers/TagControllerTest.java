@@ -231,4 +231,95 @@ public class TagControllerTest extends BaseTestWithApplicationAndDatabase {
         assertEquals(CREATED, result.status());
     }
 
+    @Test
+    public void removePhotoTag() {
+        Map<String, String> tagData = new HashMap<>();
+        tagData.put("tag", "Shrek");
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(DELETE)
+                .bodyJson(Json.toJson(tagData))
+                .uri("/photos/1/tags")
+                .session("connected", "2");
+        Result result = route(app, request);
+        assertEquals(OK, result.status());
+    }
+
+    @Test
+    public void removePhotoTagTagNotLinked() {
+        Map<String, String> tagData = new HashMap<>();
+        tagData.put("tag", "Shrek");
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(DELETE)
+                .bodyJson(Json.toJson(tagData))
+                .uri("/photos/2/tags")
+                .session("connected", "2");
+        Result result = route(app, request);
+        assertEquals(OK, result.status());
+    }
+
+    @Test
+    public void removePhotoTagTagNotExists() {
+        Map<String, String> tagData = new HashMap<>();
+        tagData.put("tag", "Finland");
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(DELETE)
+                .bodyJson(Json.toJson(tagData))
+                .uri("/photos/1/tags")
+                .session("connected", "2");
+        Result result = route(app, request);
+        assertEquals(NOT_FOUND, result.status());
+
+    }
+
+    @Test
+    public void removePhotoTagAsAdmin() {
+        Map<String, String> tagData = new HashMap<>();
+        tagData.put("tag", "Shrek");
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(DELETE)
+                .bodyJson(Json.toJson(tagData))
+                .uri("/photos/1/tags")
+                .session("connected", "1");
+        Result result = route(app, request);
+        assertEquals(OK, result.status());
+    }
+
+    @Test
+    public void removePhotoTagNoSuchPhoto() {
+        Map<String, String> tagData = new HashMap<>();
+        tagData.put("tag", "Shrek");
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(DELETE)
+                .bodyJson(Json.toJson(tagData))
+                .uri("/photos/900/tags")
+                .session("connected", "2");
+        Result result = route(app, request);
+        assertEquals(NOT_FOUND, result.status());
+    }
+
+    @Test
+    public void removePhotoTagWrongUser() {
+        Map<String, String> tagData = new HashMap<>();
+        tagData.put("tag", "Shrek");
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(DELETE)
+                .bodyJson(Json.toJson(tagData))
+                .uri("/photos/2/tags")
+                .session("connected", "3");
+        Result result = route(app, request);
+        assertEquals(FORBIDDEN, result.status());
+    }
+
+    @Test
+    public void removePhotoTagNotLoggedIn() {
+        Map<String, String> tagData = new HashMap<>();
+        tagData.put("tag", "Shrek");
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(DELETE)
+                .bodyJson(Json.toJson(tagData))
+                .uri("/photos/1/tags");
+        Result result = route(app, request);
+        assertEquals(UNAUTHORIZED, result.status());
+    }
+
 }

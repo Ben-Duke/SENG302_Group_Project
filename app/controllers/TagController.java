@@ -122,6 +122,13 @@ public class TagController {
         return ok();
     }
 
+    public Result getDestTags(Http.Request request, int destId) {return null;}
+
+    public Result addDestTag(Http.Request request, int destId) {return null;}
+
+    public Result removeDestTag(Http.Request request, int destId) {return null;}
+
+
 
     /**
      * This Function will get all tags on a trip.

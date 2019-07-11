@@ -19,6 +19,18 @@ import static play.test.Helpers.*;
 public class TagControllerTest extends BaseTestWithApplicationAndDatabase {
 
     @Test
+    public void searchDatabaseForOneItemCheckResponse() {
+        Result result = searchTagsHelper("e", 2);
+        assertEquals(OK, result.status());
+    }
+
+    @Test
+    public void searchDatabaseForOneItemCheckData() {
+        Result result = searchTagsHelper("Shrek", 2);
+        assertEquals("[{\"tagId\":2,\"name\":\"Shrek\"}]", contentAsString(result));
+    }
+
+    @Test
     public void getPhotoTagSuccessCheckResponse() {
         Result result = getPhotoTagHelper(1, 2);
         assertEquals(OK, result.status());
@@ -329,6 +341,19 @@ public class TagControllerTest extends BaseTestWithApplicationAndDatabase {
     public void removeDestTagNotLoggedIn() {
         Result result = addRemoveDestTagHelper(DELETE, "Shrek", 1, null);
         assertEquals(UNAUTHORIZED, result.status());
+    }
+
+    private Result searchTagsHelper(String searchQuery, Integer userId) {
+        Map<String, String> bodyForm = new HashMap<>();
+        bodyForm.put("search", searchQuery);
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(PUT)
+                .bodyJson(Json.toJson(bodyForm))
+                .uri("/tags/search");
+        if (userId != null) {
+            request.session("connected", userId.toString());
+        }
+        return route(app, request);
     }
 
     private Result addRemovePhotoTagHelper(String method, String tagName, Integer photoId, Integer userId) {

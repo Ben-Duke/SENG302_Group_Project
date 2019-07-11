@@ -289,6 +289,13 @@ public class TestDatabaseManager {
                 User.find.byId(2));
         destination1.setIsPublic(true);
         destination1.addTravellerType(TravellerType.find.byId(1));
+        Tag tag = new Tag("Vacation spot");
+        try {
+            tag.save();
+        } catch (Exception e) {
+            logger.error("Failed to add vacation spot tag", e);
+        }
+        destination1.addTag(tag);
 
         Destination destination2 = new Destination(
                 "Wellington", "Town", "Wellington",

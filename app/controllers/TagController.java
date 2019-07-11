@@ -1,7 +1,9 @@
 package controllers;
 
+import accessors.DestinationAccessor;
 import accessors.TagAccessor;
 import accessors.UserPhotoAccessor;
+import models.Destination;
 import models.Tag;
 import models.User;
 import models.UserPhoto;
@@ -120,10 +122,79 @@ public class TagController {
         return ok();
     }
 
-    public Result getDestTags(Http.Request request, int destId) {return null;}
+    public Result getDestTags(Http.Request request, int destId) {
+        User user = User.getCurrentUser(request);
+        if (user == null) {
+            return unauthorized();
+        }
+        Destination destination = DestinationAccessor.getDestinationById(destId);
+        if (destination == null) {
+            return notFound();
+        }
+        if (!destination.getIsPublic()
+                && !user.userIsAdmin()
+                && user.getUserid() != destination.getUser().getUserid()) {
+            return forbidden();
+        }
+        Set<Tag> tags = destination.getTags();
+        return ok(Json.toJson(tags));
+    }
 
-    public Result addDestTag(Http.Request request, int destId) {return null;}
+    public Result addDestTag(Http.Request request, int destId) {
+        User user = User.getCurrentUser(request);
+        if (user == null) {
+            return unauthorized();
+        }
+        Destination destination = DestinationAccessor.getDestinationById(destId);
+        if (destination == null) {
+            return notFound();
+        }
+        if (!destination.getIsPublic() && !destination.getUser().equals(user) && !user.userIsAdmin()) {
+            return forbidden();
+        }
+        String tagName = request.body().asJson().get("tag").asText();
+        if (tagName.isEmpty()) {
+            return badRequest();
+        }
+        Tag tag = TagAccessor.getTagByName(tagName);
+        boolean exists = tag != null;
+        if (!exists) {
+            tag = new Tag(tagName);
+            TagAccessor.insert(tag);
+        }
+        if (!destination.addTag(tag)) {
+            // Tag is already linked to this destination
+            return ok();
+        }
+        TagAccessor.update(tag);
+        DestinationAccessor.update(destination);
+        if (exists) {
+            return ok();
+        }
+        return created();
+    }
 
-    public Result removeDestTag(Http.Request request, int destId) {return null;}
+    public Result removeDestTag(Http.Request request, int destId) {
+        User user = User.getCurrentUser(request);
+        if (user == null) {
+            return unauthorized();
+        }
+        Destination destination = DestinationAccessor.getDestinationById(destId);
+        if (destination == null) {
+            return notFound("Photo not found");
+        }
+        if (!destination.getIsPublic() && !destination.getUser().equals(user) && !user.userIsAdmin()) {
+            return forbidden();
+        }
+        String tagName = request.body().asJson().get("tag").asText();
+        Tag tag = TagAccessor.getTagByName(tagName);
+        if (tag == null) {
+            return notFound("Tag " + tagName + " does not exist");
+        }
+        destination.removeTag(tag);
+        destination.update();
+        tag.update();
+        return ok();
+    }
 
 }

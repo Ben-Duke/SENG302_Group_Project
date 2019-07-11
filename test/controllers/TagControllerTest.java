@@ -27,7 +27,7 @@ public class TagControllerTest extends BaseTestWithApplicationAndDatabase {
     @Test
     public void getPhotoTagSuccessCheckData() {
         Result result = getPhotoTagHelper(1, 2);
-        assertEquals("[{\"tagId\":1,\"name\":\"Shrek\"}]", contentAsString(result));
+        assertEquals("[{\"tagId\":2,\"name\":\"Shrek\"}]", contentAsString(result));
     }
 
     @Test
@@ -48,7 +48,7 @@ public class TagControllerTest extends BaseTestWithApplicationAndDatabase {
 
         Result result = getPhotoTagHelper(2, 2);
         assertEquals(
-            "[{\"tagId\":2,\"name\":\"UC\"},{\"tagId\":3,\"name\":\"Second Tag\"}]",
+            "[{\"tagId\":3,\"name\":\"UC\"},{\"tagId\":4,\"name\":\"Second Tag\"}]",
                 contentAsString(result));
     }
 
@@ -184,7 +184,7 @@ public class TagControllerTest extends BaseTestWithApplicationAndDatabase {
     @Test
     public void getDestTagSuccessCheckData() {
         Result result = getDestTagHelper(1, 2);
-        assertEquals("[{\"tagId\":1,\"name\":\"Shrek\"}]", contentAsString(result));
+        assertEquals("[{\"tagId\":1,\"name\":\"Vacation spot\"}]", contentAsString(result));
     }
 
     @Test
@@ -199,13 +199,13 @@ public class TagControllerTest extends BaseTestWithApplicationAndDatabase {
 
     @Test
     public void getDestTagMultipleCheckData() {
-        addRemoveDestTagHelper(PUT, "UC", 2,2 );
+        addRemoveDestTagHelper(PUT, "Cool spot", 2,2 );
         //Add a second tag
-        addRemoveDestTagHelper(PUT, "Second Tag", 2, 2);
+        addRemoveDestTagHelper(PUT, "Dream spot", 2, 2);
 
         Result result = getDestTagHelper(2, 2);
         assertEquals(
-                "[{\"tagId\":2,\"name\":\"UC\"},{\"tagId\":3,\"name\":\"Second Tag\"}]",
+                "[{\"tagId\":3,\"name\":\"Cool spot\"},{\"tagId\":4,\"name\":\"Dream spot\"}]",
                 contentAsString(result));
     }
 

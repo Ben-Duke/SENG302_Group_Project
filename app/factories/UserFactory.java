@@ -1,5 +1,6 @@
 package factories;
 
+import accessors.UserPhotoAccessor;
 import controllers.ApplicationManager;
 import formdata.UpdateUserFormData;
 import formdata.UserFormData;
@@ -47,7 +48,9 @@ public class UserFactory {
     }
 
     public void deletePhoto(int photoId){
-         UserPhoto.deletePhoto(photoId);
+        UserPhoto photo = UserPhotoAccessor.getUserPhotoById(photoId);
+        UserPhotoAccessor.unlinkAllTags(photo);
+        photo.delete();
     }
 
     public static void deleteNatsOnUser(int id, String nationalityId) {

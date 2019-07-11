@@ -26,4 +26,9 @@ public class UserPhotoAccessor {
     public static UserPhoto getUserPhotoById(int id) {
         return UserPhoto.find.byId(id);
     }
+
+    public static void unlinkAllTags(UserPhoto photo) {
+        photo.getTags().clear();
+        photo.update();
+    }
 }

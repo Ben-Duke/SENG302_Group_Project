@@ -5,10 +5,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import factories.TripFactory;
 import factories.VisitFactory;
 import formdata.VisitFormData;
-import models.Destination;
-import models.Trip;
-import models.User;
-import models.Visit;
+import models.*;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -718,23 +715,21 @@ public class TripControllerTest extends BaseTestWithApplicationAndDatabase {
 
 
     @Test
-    @Ignore
     public void checkAddTag(){
         Trip trip = new Trip("Underworld Ventures", true, null);
-        //trip.addTag("Best trip ever");
+        trip.addTag(new Tag("Best trip ever"));
         assertEquals(1, trip.getTags().size());
     }
 
     @Test
-    @Ignore
     public void checkAddingSameTag(){
         Trip trip = new Trip("Underworld Ventures", true, null);
-        //trip.addTag("Clone");
-        //trip.addTag("Clone");
+        trip.addTag(new Tag("Clone"));
+        trip.addTag(new Tag("Clone"));
         assertEquals(1, trip.getTags().size());
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void checkAddingNullTag(){
         Trip trip = new Trip("Underworld Ventures", true, null);
         trip.addTag(null);
@@ -743,15 +738,15 @@ public class TripControllerTest extends BaseTestWithApplicationAndDatabase {
     @Test
     public void checkRemoveTag(){
         Trip trip = new Trip("Underworld Ventures", true, null);
-        //trip.addTag("Test");
-        trip.removeTag("Test");
+        trip.addTag(new Tag("Test"));
+        trip.removeTag(new Tag("Test"));
         assertEquals(0, trip.getTags().size());
     }
 
     @Test
     public void checkRemoveTagOnEmptySet(){
         Trip trip = new Trip("Underworld Ventures", true, null);
-        assertEquals(false, trip.removeTag("Test"));
+        assertEquals(false, trip.removeTag(new Tag("Test")));
     }
 
 }

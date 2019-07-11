@@ -15,7 +15,7 @@ import java.util.*;
 @Entity
 
 @Table(uniqueConstraints={@UniqueConstraint(columnNames={"url"})})
-public class UserPhoto extends Model {
+public class UserPhoto extends TaggableModel {
     @Id //The photos primary key
     public int photoId;
 
@@ -39,9 +39,6 @@ public class UserPhoto extends Model {
     @OneToMany(mappedBy = "primaryPhoto")
     public List<Destination> primaryPhotoDestinations;
 
-    @ManyToMany(cascade = CascadeType.ALL)
-    @JoinTable(name = "photo_tags")
-    private Set<Tag> photoTags = new TreeSet<>();
 
     public static Finder<Integer,UserPhoto> find = new Finder<>(UserPhoto.class);
 
@@ -90,33 +87,7 @@ public class UserPhoto extends Model {
         this.primaryPhotoDestinations = userPhoto.getPrimaryPhotoDestinations();
     }
 
-    /**
-     * Returns the photo tags
-     * @return a Set of the photo tags
-     */
-    public Set<Tag> getPhotoTags() {
-        return this.photoTags;
-    }
 
-    /**
-     * Adds a tag to the photo.
-     * Returns true if not already in the in the set.
-     * @param tag the tag to be added to the photo
-     * @return
-     */
-    public Boolean addTag(Tag tag) {
-        return photoTags.add(tag);
-    }
-
-    /**
-     * Removes a tag from the photos tags.
-     * Returns true if the tag exists and was removed and false otherwise.
-     * @param name
-     * @return
-     */
-    public Boolean removeTag(String name){
-        return photoTags.remove(new Tag(name));
-    }
 
 
     public boolean getIsPhotoPublic(){

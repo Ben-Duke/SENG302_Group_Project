@@ -55,8 +55,8 @@ public class UserControllerTest extends BaseTestWithApplicationAndDatabase {
     public void checkAddTag(){
         UserPhoto userPhoto = new UserPhoto
                 ("",true,true, new User());
-//        userPhoto.addTag("Test");
-        assertEquals(1, userPhoto.getPhotoTags().size());
+        userPhoto.addTag(new Tag("Test"));
+        assertEquals(1, userPhoto.getTags().size());
     }
 
     @Test
@@ -64,13 +64,12 @@ public class UserControllerTest extends BaseTestWithApplicationAndDatabase {
     public void checkAddingSameTag(){
         UserPhoto userPhoto = new UserPhoto
                 ("",true,true, new User());
-//        userPhoto.addTag("Test");
-//        userPhoto.addTag("Test");
-        assertEquals(1, userPhoto.getPhotoTags().size());
+        userPhoto.addTag(new Tag("Test"));
+        userPhoto.addTag(new Tag("Test"));
+        assertEquals(1, userPhoto.getTags().size());
     }
 
-    @Test(expected = NullPointerException.class)
-    @Ignore
+    @Test(expected = IllegalArgumentException.class)
     public void checkAddingNullTag(){
         UserPhoto userPhoto = new UserPhoto
                 ("",true,true, new User());
@@ -78,19 +77,18 @@ public class UserControllerTest extends BaseTestWithApplicationAndDatabase {
     }
 
     @Test
-    @Ignore
     public void checkRemoveTag(){
         UserPhoto userPhoto = new UserPhoto
                 ("",true,true, new User());
-//        userPhoto.addTag("Test");
-        userPhoto.removeTag("Test");
-        assertEquals(0, userPhoto.getPhotoTags().size());
+        userPhoto.addTag(new Tag("Test"));
+        userPhoto.removeTag(new Tag("Test"));
+        assertEquals(0, userPhoto.getTags().size());
     }
 
     @Test
     public void checkRemoveTagOnEmptySet(){
         UserPhoto userPhoto = new UserPhoto
                 ("",true,true, new User());
-        assertEquals(false, userPhoto.removeTag("Test"));
+        assertEquals(false, userPhoto.removeTag(new Tag("Test")));
     }
 }

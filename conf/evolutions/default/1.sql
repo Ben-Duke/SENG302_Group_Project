@@ -26,6 +26,12 @@ create table destination (
   constraint pk_destination primary key (destid)
 );
 
+create table destination_tag (
+  destination_destid            integer not null,
+  tag_tag_id                    integer not null,
+  constraint pk_destination_tag primary key (destination_destid,tag_tag_id)
+);
+
 create table destination_traveller_type (
   destination_destid            integer not null,
   traveller_type_ttypeid        integer not null,
@@ -163,16 +169,16 @@ create table user_photo (
   constraint pk_user_photo primary key (photo_id)
 );
 
+create table user_photo_tag (
+  user_photo_photo_id           integer not null,
+  tag_tag_id                    integer not null,
+  constraint pk_user_photo_tag primary key (user_photo_photo_id,tag_tag_id)
+);
+
 create table user_photo_destination (
   user_photo_photo_id           integer not null,
   destination_destid            integer not null,
   constraint pk_user_photo_destination primary key (user_photo_photo_id,destination_destid)
-);
-
-create table photo_tags (
-  user_photo_photo_id           integer not null,
-  tag_tag_id                    integer not null,
-  constraint pk_photo_tags primary key (user_photo_photo_id,tag_tag_id)
 );
 
 create table visit (
@@ -191,6 +197,12 @@ alter table destination add constraint fk_destination_primary_photo_photo_id for
 
 create index ix_destination_user on destination (user);
 alter table destination add constraint fk_destination_user foreign key (user) references user (userid) on delete restrict on update restrict;
+
+create index ix_destination_tag_destination on destination_tag (destination_destid);
+alter table destination_tag add constraint fk_destination_tag_destination foreign key (destination_destid) references destination (destid) on delete restrict on update restrict;
+
+create index ix_destination_tag_tag on destination_tag (tag_tag_id);
+alter table destination_tag add constraint fk_destination_tag_tag foreign key (tag_tag_id) references tag (tag_id) on delete restrict on update restrict;
 
 create index ix_destination_traveller_type_destination on destination_traveller_type (destination_destid);
 alter table destination_traveller_type add constraint fk_destination_traveller_type_destination foreign key (destination_destid) references destination (destid) on delete restrict on update restrict;
@@ -258,17 +270,17 @@ alter table user_treasure_hunt add constraint fk_user_treasure_hunt_treasure_hun
 create index ix_user_photo_user on user_photo (user);
 alter table user_photo add constraint fk_user_photo_user foreign key (user) references user (userid) on delete restrict on update restrict;
 
+create index ix_user_photo_tag_user_photo on user_photo_tag (user_photo_photo_id);
+alter table user_photo_tag add constraint fk_user_photo_tag_user_photo foreign key (user_photo_photo_id) references user_photo (photo_id) on delete restrict on update restrict;
+
+create index ix_user_photo_tag_tag on user_photo_tag (tag_tag_id);
+alter table user_photo_tag add constraint fk_user_photo_tag_tag foreign key (tag_tag_id) references tag (tag_id) on delete restrict on update restrict;
+
 create index ix_user_photo_destination_user_photo on user_photo_destination (user_photo_photo_id);
 alter table user_photo_destination add constraint fk_user_photo_destination_user_photo foreign key (user_photo_photo_id) references user_photo (photo_id) on delete restrict on update restrict;
 
 create index ix_user_photo_destination_destination on user_photo_destination (destination_destid);
 alter table user_photo_destination add constraint fk_user_photo_destination_destination foreign key (destination_destid) references destination (destid) on delete restrict on update restrict;
-
-create index ix_photo_tags_user_photo on photo_tags (user_photo_photo_id);
-alter table photo_tags add constraint fk_photo_tags_user_photo foreign key (user_photo_photo_id) references user_photo (photo_id) on delete restrict on update restrict;
-
-create index ix_photo_tags_tag on photo_tags (tag_tag_id);
-alter table photo_tags add constraint fk_photo_tags_tag foreign key (tag_tag_id) references tag (tag_id) on delete restrict on update restrict;
 
 create index ix_visit_destination on visit (destination);
 alter table visit add constraint fk_visit_destination foreign key (destination) references destination (destid) on delete restrict on update restrict;
@@ -284,6 +296,12 @@ drop index if exists ix_destination_primary_photo_photo_id;
 
 alter table destination drop constraint if exists fk_destination_user;
 drop index if exists ix_destination_user;
+
+alter table destination_tag drop constraint if exists fk_destination_tag_destination;
+drop index if exists ix_destination_tag_destination;
+
+alter table destination_tag drop constraint if exists fk_destination_tag_tag;
+drop index if exists ix_destination_tag_tag;
 
 alter table destination_traveller_type drop constraint if exists fk_destination_traveller_type_destination;
 drop index if exists ix_destination_traveller_type_destination;
@@ -351,17 +369,17 @@ drop index if exists ix_user_treasure_hunt_treasure_hunt;
 alter table user_photo drop constraint if exists fk_user_photo_user;
 drop index if exists ix_user_photo_user;
 
+alter table user_photo_tag drop constraint if exists fk_user_photo_tag_user_photo;
+drop index if exists ix_user_photo_tag_user_photo;
+
+alter table user_photo_tag drop constraint if exists fk_user_photo_tag_tag;
+drop index if exists ix_user_photo_tag_tag;
+
 alter table user_photo_destination drop constraint if exists fk_user_photo_destination_user_photo;
 drop index if exists ix_user_photo_destination_user_photo;
 
 alter table user_photo_destination drop constraint if exists fk_user_photo_destination_destination;
 drop index if exists ix_user_photo_destination_destination;
-
-alter table photo_tags drop constraint if exists fk_photo_tags_user_photo;
-drop index if exists ix_photo_tags_user_photo;
-
-alter table photo_tags drop constraint if exists fk_photo_tags_tag;
-drop index if exists ix_photo_tags_tag;
 
 alter table visit drop constraint if exists fk_visit_destination;
 drop index if exists ix_visit_destination;
@@ -372,6 +390,8 @@ drop index if exists ix_visit_trip;
 drop table if exists admin;
 
 drop table if exists destination;
+
+drop table if exists destination_tag;
 
 drop table if exists destination_traveller_type;
 
@@ -407,9 +427,9 @@ drop table if exists user_treasure_hunt;
 
 drop table if exists user_photo;
 
-drop table if exists user_photo_destination;
+drop table if exists user_photo_tag;
 
-drop table if exists photo_tags;
+drop table if exists user_photo_destination;
 
 drop table if exists visit;
 

@@ -11,7 +11,7 @@ import javax.persistence.*;
 import java.util.*;
 
 @Entity
-public class Trip extends Model {
+public class Trip extends TaggableModel {
 
     public Trip(Trip trip, List<Visit> visits) {
         this.tripName = trip.getTripName();
@@ -110,35 +110,7 @@ public class Trip extends Model {
         this.visits.add(visit);
     }
 
-    @ManyToMany
-    private Set<Tag> tripTags = new TreeSet<Tag>();
 
-    /**
-     * Returns the trip tags
-     * @return a Set of the photo tags
-     */
-    public Set<Tag> getTags() { return this.tripTags; }
-
-    /**
-     * Adds a tag to the trip based on the name passed.
-     * Returns true if not already in the in the set.
-     * @param tag
-     * @return
-     */
-    public Boolean addTag(Tag tag) {
-
-        return tripTags.add(tag);
-    }
-
-    /**
-     * Removes a tag from the trip tags.
-     * Returns true if the tag exists and was removed and false otherwise.
-     * @param name
-     * @return
-     */
-    public Boolean removeTag(String name){
-        return tripTags.remove(new Tag(name));
-    }
 
     public String getTripStart(){
         if(this.visits.isEmpty()){

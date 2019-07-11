@@ -2,14 +2,11 @@ package models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.ebean.Finder;
-import io.ebean.Model;
-
-
 import javax.persistence.*;
 import java.util.*;
 
 @Entity
-public class Destination extends Model {
+public class Destination extends TaggableModel {
 
     @Id
     public Integer destid;
@@ -47,10 +44,6 @@ public class Destination extends Model {
 
     public static Finder<String,Destination> findString = new Finder<>(Destination.class);
     public static Finder<Integer,Destination> find = new Finder<>(Destination.class);
-
-    @JsonIgnore
-    @ManyToMany (mappedBy = "destinations")
-    public Set<Tag> destinationTags;
 
     /**
      * Destination constructor with isPublic method
@@ -160,11 +153,6 @@ public class Destination extends Model {
     }
     public boolean getIsCountryValid() { return isCountryValid; }
 
-    /**
-     * Returns the destination tags
-     * @return a Set of the photo tags
-     */
-    public Set<Tag> getTags() { return this.destinationTags; }
 
 
     public User getUser() { return user; }
@@ -211,34 +199,6 @@ public class Destination extends Model {
     public void addVisit(Visit visit) { this.visits.add(visit);}
     public void removeVisit(Visit visit) { this.visits.remove(visit);}
 
-    /**
-     * Adds a tag to the destination based on the name passed.
-     * Returns true if not already in the in the set.
-     * @param tag
-     * @return
-     */
-    public Boolean addTag(Tag tag){
-        if (tag == null) {
-            throw new NullPointerException("Added Tag cannot be null");
-        }
-        if(!destinationTags.contains(tag)) {
-            destinationTags.add(tag);
-            return true;
-        }
-
-        return false;
-
-    }
-
-    /**
-     * Removes a tag from the destination tags.
-     * Returns true if the tag exists and was removed and false otherwise.
-     * @param tag - tag to be removed
-     * @return
-     */
-    public Boolean removeTag(Tag tag){
-        return destinationTags.remove(tag);
-    }
 
     @Override
     public String toString() {
@@ -256,7 +216,7 @@ public class Destination extends Model {
                 ", visits=" + visits +
                 ", userPhotos=" + userPhotos +
                 ", travellerTypes=" + travellerTypes +
-                ", tags=" + destinationTags +
+                ", tags=" + tags +
                 '}';
     }
 

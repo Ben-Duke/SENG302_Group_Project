@@ -33,7 +33,7 @@ public class TagController {
                     && user.getUserid() != photo.getUser().getUserid()) {
                 return forbidden();
             }
-            Set<Tag> tags = photo.getPhotoTags();
+            Set<Tag> tags = photo.getTags();
             return ok(Json.toJson(tags));
         } else {
             return unauthorized();

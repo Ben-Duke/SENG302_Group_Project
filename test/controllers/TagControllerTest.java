@@ -52,13 +52,9 @@ public class TagControllerTest extends BaseTestWithApplicationAndDatabase {
                 contentAsString(result));
     }
 
-    private Result getMultipleTagHelper() {
-
-    }
-
     @Test
     public void getPhotoTagNoTagsCheckResponse() {
-        Result result = getPhotoTagHelper(2, 2)
+        Result result = getPhotoTagHelper(2, 2);
         assertEquals(OK, result.status());
     }
 

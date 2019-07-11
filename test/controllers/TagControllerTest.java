@@ -175,6 +175,162 @@ public class TagControllerTest extends BaseTestWithApplicationAndDatabase {
         assertEquals(UNAUTHORIZED, result.status());
     }
 
+    @Test
+    public void getDestTagSuccessCheckResponse() {
+        Result result = getDestTagHelper(1, 2);
+        assertEquals(OK, result.status());
+    }
+
+    @Test
+    public void getDestTagSuccessCheckData() {
+        Result result = getDestTagHelper(1, 2);
+        assertEquals("[{\"tagId\":1,\"name\":\"Shrek\"}]", contentAsString(result));
+    }
+
+    @Test
+    public void getDestTagMultipleCheckResponse() {
+        addRemoveDestTagHelper(PUT, "UC", 2,2 );
+        //Add a second tag
+        addRemoveDestTagHelper(PUT, "Second Tag", 2, 2);
+
+        Result result = getDestTagHelper(2, 2);
+        assertEquals(OK, result.status());
+    }
+
+    @Test
+    public void getDestTagMultipleCheckData() {
+        addRemoveDestTagHelper(PUT, "UC", 2,2 );
+        //Add a second tag
+        addRemoveDestTagHelper(PUT, "Second Tag", 2, 2);
+
+        Result result = getDestTagHelper(2, 2);
+        assertEquals(
+                "[{\"tagId\":2,\"name\":\"UC\"},{\"tagId\":3,\"name\":\"Second Tag\"}]",
+                contentAsString(result));
+    }
+
+    @Test
+    public void getDestTagNoTagsCheckResponse() {
+        Result result = getDestTagHelper(2, 2);
+        assertEquals(OK, result.status());
+    }
+
+    @Test
+    public void getDestTagNoTagsCheckData(){
+        Result result = getDestTagHelper(2, 2);
+        assertEquals("[]", contentAsString(result));
+    }
+
+    @Test
+    public void getDestTagNotLoggedIn() {
+        Result result = getDestTagHelper(2, null);
+        assertEquals(UNAUTHORIZED, result.status());
+    }
+
+    @Test
+    public void getDestTagLoggedInAsWrongUser() {
+        Result result = getDestTagHelper(2, 3);
+        assertEquals(FORBIDDEN, result.status());
+    }
+
+    @Test
+    public void getDestLoggedInAsAdmin() {
+        Result result = getDestTagHelper(2, 1);
+        assertEquals(OK, result.status());
+    }
+
+    @Test
+    public void addDestTagNoTagExisting() {
+        Result result = addRemoveDestTagHelper(PUT, "UC", 2,2 );
+        assertEquals(CREATED, result.status());
+    }
+
+    @Test
+    public void addDestTagTagExisting() {
+        addRemoveDestTagHelper(PUT, "UC", 2,2 );
+        Result result = addRemoveDestTagHelper(PUT, "UC", 1, 2);
+        assertEquals(OK, result.status());
+    }
+
+    @Test
+    public void addDestTagTagAlreadyLinked() {
+        addRemoveDestTagHelper(PUT, "UC", 2, 2);
+        Result result = addRemoveDestTagHelper(PUT, "UC", 2, 2);
+        assertEquals(OK, result.status());
+    }
+
+    @Test
+    public void addDestTagEmptyTag() {
+        Result result = addRemoveDestTagHelper(PUT, "", 1, 2);
+        assertEquals(BAD_REQUEST, result.status());
+    }
+
+    @Test
+    public void addDestTagNoDest() {
+        Result result = addRemoveDestTagHelper(PUT, "Unknown destination", 90, 2);
+        assertEquals(NOT_FOUND, result.status());
+    }
+
+    @Test
+    public void addDestTagNotLoggedIn() {
+        Result result = addRemoveDestTagHelper(PUT, "NZ", 1, null);
+        assertEquals(UNAUTHORIZED, result.status());
+    }
+
+    @Test
+    public void addDestTagWrongUser() {
+        Result result = addRemoveDestTagHelper(PUT, "Self Portrait", 2, 3);
+        assertEquals(FORBIDDEN, result.status());
+    }
+
+    @Test
+    public void addDestTagAdmin() {
+        Result result = addRemoveDestTagHelper(PUT, "New Destination", 1, 1);
+        assertEquals(CREATED, result.status());
+    }
+
+    @Test
+    public void removeDestTag() {
+        Result result = addRemoveDestTagHelper(DELETE, "Shrek", 1, 2);
+        assertEquals(OK, result.status());
+    }
+
+    @Test
+    public void removeDestTagTagNotLinked() {
+        Result result = addRemoveDestTagHelper(DELETE, "Shrek", 2, 2);
+        assertEquals(OK, result.status());
+    }
+
+    @Test
+    public void removeDestTagTagNotExists() {
+        Result result = addRemoveDestTagHelper(DELETE, "Finland", 1, 2);
+        assertEquals(NOT_FOUND, result.status());
+    }
+
+    @Test
+    public void removeDestTagAsAdmin() {
+        Result result = addRemoveDestTagHelper(DELETE, "Shrek", 1, 1);
+        assertEquals(OK, result.status());
+    }
+
+    @Test
+    public void removeDestTagNoSuchDest() {
+        Result result = addRemoveDestTagHelper(DELETE, "Shrek", 900, 2);
+        assertEquals(NOT_FOUND, result.status());
+    }
+
+    @Test
+    public void removeDestTagWrongUser() {
+        Result result = addRemoveDestTagHelper(DELETE,"Shrek", 2, 3);
+        assertEquals(FORBIDDEN, result.status());
+    }
+
+    @Test
+    public void removeDestTagNotLoggedIn() {
+        Result result = addRemoveDestTagHelper(DELETE, "Shrek", 1, null);
+        assertEquals(UNAUTHORIZED, result.status());
+    }
+
     private Result addRemovePhotoTagHelper(String method, String tagName, Integer photoId, Integer userId) {
         Map<String, String> tagData = new HashMap<>();
         tagData.put("tag", tagName);
@@ -192,6 +348,29 @@ public class TagControllerTest extends BaseTestWithApplicationAndDatabase {
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(GET)
                 .uri("/photos/" + photoId + "/tags");
+        if (userId != null) {
+            request.session("connected", userId.toString());
+        }
+        return route(app, request);
+    }
+
+    private Result addRemoveDestTagHelper(String method, String tagName, Integer destId, Integer userId) {
+        Map<String, String> tagData = new HashMap<>();
+        tagData.put("tag", tagName);
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(method)
+                .bodyJson(Json.toJson(tagData))
+                .uri("/destinations/" + destId + "/tags");
+        if (userId != null) {
+            request.session("connected", userId.toString());
+        }
+        return route(app, request);
+    }
+
+    private Result getDestTagHelper(Integer destId, Integer userId) {
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/destinations/" + destId + "/tags");
         if (userId != null) {
             request.session("connected", userId.toString());
         }

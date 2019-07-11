@@ -1,5 +1,8 @@
 package controllers;
 
+import accessors.TagAccessor;
+import accessors.TripAccessor;
+import accessors.UserAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import factories.TripFactory;
@@ -713,13 +716,19 @@ public class TripControllerTest extends BaseTestWithApplicationAndDatabase {
         assertEquals(NOT_FOUND, result.status());
     }
 
-
     @Test
     public void checkAddTag(){
         Trip trip = new Trip("Underworld Ventures", true, null);
-        trip.addTag(new Tag("Best trip ever"));
+        TripAccessor.insert(trip);
+        Tag tag = new Tag("Best trip ever");
+        TagAccessor.insert(tag);
+        trip.addTag(tag);
         assertEquals(1, trip.getTags().size());
     }
+
+
+
+
 
     @Test
     public void checkAddingSameTag(){

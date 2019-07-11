@@ -1,5 +1,11 @@
 package controllers;
 
+import accessors.TagAccessor;
+import accessors.TripAccessor;
+import accessors.UserAccessor;
+import models.Tag;
+import models.Trip;
+import models.User;
 import org.junit.Test;
 import play.libs.Json;
 import play.mvc.Http;
@@ -320,6 +326,39 @@ public class TagControllerTest extends BaseTestWithApplicationAndDatabase {
                 .uri("/photos/1/tags");
         Result result = route(app, request);
         assertEquals(UNAUTHORIZED, result.status());
+    }
+
+    @Test
+    public void getTagsForTrip(){
+
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/trips/1/tags").session("connected", "2");
+        Result result = route(app, request);
+
+        assertEquals("[{\"tagId\":1,\"name\":\"Best trip ever\"}]", contentAsString(result));
+    }
+
+    @Test
+    public void getTagsForTripNoUserAuthenticated(){
+
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/trips/1/tags");
+        Result result = route(app, request);
+
+        assertEquals(UNAUTHORIZED, result.status());
+    }
+
+    @Test
+    public void getTagsForTripNotFound(){
+
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/trips/99999/tags").session("connected", "2");
+        Result result = route(app, request);
+
+        assertEquals(NOT_FOUND, result.status());
     }
 
 }

@@ -1,5 +1,6 @@
 package controllers;
 
+import accessors.TagAccessor;
 import accessors.UserPhotoAccessor;
 import models.Tag;
 import models.User;
@@ -52,14 +53,42 @@ public class TagController {
             if (photo == null) {
                 return notFound();
             }
-            String tagName = request.body().toString();
-            Tag tag = new Tag(tagName);
-            photo.addTag(tag);
-            UserPhotoAccessor.update(photo);
-            return ok();
+            if (!photo.isPublic() && !photo.getUser().equals(user) && !user.userIsAdmin()) {
+                return forbidden();
+            } else {
+                String tagName = request.body().asJson().get("tag").asText();
+                if (tagName.isEmpty()) {
+                    return badRequest();
+                }
+                return successfulAddPhotoTag(tagName, photo);
+            }
         } else {
             return unauthorized();
         }
+    }
+
+    /**
+     * Executed only when a photo tag adding is going to be successful.
+     * Adds a tag to the photo
+     * @param tagName The name of the tag to create or retrieve
+     * @param photo the photo to add the tag to
+     * @return ok if the tag already exists and created if the tag is new
+     */
+    private Result successfulAddPhotoTag(String tagName, UserPhoto photo) {
+        Tag tag = TagAccessor.getTagByName(tagName);
+        boolean exists = tag != null;
+        if (!exists) {
+            tag = new Tag(tagName);
+            TagAccessor.insert(tag);
+        }
+        if (!photo.addTag(tag)) {
+            // Tag is already linked to this photo
+            return ok();
+        }
+        TagAccessor.update(tag);
+        UserPhotoAccessor.update(photo);
+        if (exists) return ok();
+        else return created();
     }
 
 //    public Result removePhotoTag(Http.Request request, int photoId) {

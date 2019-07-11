@@ -87,6 +87,15 @@ public class Tag extends Model implements Comparable{
         return  hash;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof Tag)) {
+            return false;
+        }
+        Tag other = (Tag) obj;
+        return this.name.equalsIgnoreCase(other.name);
+    }
+
     public String toString(){
         return this.name;
     }

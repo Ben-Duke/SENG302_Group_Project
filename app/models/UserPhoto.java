@@ -104,7 +104,7 @@ public class UserPhoto extends Model {
      * @param tag the tag to be added to the photo
      * @return
      */
-    public Boolean addTag(Tag tag){
+    public Boolean addTag(Tag tag) {
         return photoTags.add(tag);
     }
 

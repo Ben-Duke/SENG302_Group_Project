@@ -282,6 +282,15 @@ PUT   /photos/:photoId/tags                                 controllers.TagContr
 # Delete photo tag
 DELETE /photos/:photoId/tags                                    controllers.TagController.removePhotoTag(request : Request, photoId : Integer)
 
+# Get destination tags
+GET /destinations/:destId/tags                                 controllers.TagController.getDestTags(request : Request, destId : Integer)
+
+# Add destination tag
+PUT /destinations/:destId/tags                                 controllers.TagController.addDestTag(request : Request, destId : Integer)
+
+# Delete photo tag
+DELETE /destinations/:destId/tags                               controllers.TagController.removeDestTag(request : Request, destId : Integer)
+
 # Undo
 +nocsrf
 PUT     /undo                                              controllers.UndoRedoController.undo(request: Request)

@@ -119,4 +119,11 @@ public class TagController {
         tag.update();
         return ok();
     }
+
+    public Result getDestTags(Http.Request request, int destId) {return null;}
+
+    public Result addDestTag(Http.Request request, int destId) {return null;}
+
+    public Result removeDestTag(Http.Request request, int destId) {return null;}
+
 }

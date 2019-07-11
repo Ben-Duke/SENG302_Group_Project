@@ -19,15 +19,47 @@ import static play.test.Helpers.*;
 public class TagControllerTest extends BaseTestWithApplicationAndDatabase {
 
     @Test
-    public void searchDatabaseForOneItemCheckResponse() {
+    public void searchTagsForOneItemCheckResponse() {
         Result result = searchTagsHelper("e", 2);
         assertEquals(OK, result.status());
     }
 
     @Test
-    public void searchDatabaseForOneItemCheckData() {
+    public void searchTagsForOneItemCheckData() {
         Result result = searchTagsHelper("Shrek", 2);
         assertEquals("[{\"tagId\":2,\"name\":\"Shrek\"}]", contentAsString(result));
+    }
+
+    @Test
+    public void searchTagsCaseInsensitiveCheckData() {
+        Result result = searchTagsHelper("shReK", 2);
+        assertEquals("[{\"tagId\":2,\"name\":\"Shrek\"}]", contentAsString(result));
+    }
+
+    @Test
+    public void searchTagsMultipleTagsCheckData() {
+        Result result = searchTagsHelper("S", 2);
+        assertEquals("[{\"tagId\":1,\"name\":\"Vacation spot\"},{\"tagId\":2,\"name\":\"Shrek\"}]", contentAsString(result));
+    }
+
+    @Test
+    public void searchTagsEmptySearchCheckData() {
+        Result result = searchTagsHelper("", 2);
+        assertEquals("[{\"tagId\":1,\"name\":\"Vacation spot\"},{\"tagId\":2,\"name\":\"Shrek\"}]", contentAsString(result));
+    }
+
+    @Test
+    public void searchTagsOnNonExistentTag() {
+        Result result = searchTagsHelper(
+                "According to all known laws of aviation, there is no way a bee should be able to fly.",
+                2);
+        assertEquals(NOT_FOUND, result.status());
+    }
+
+    @Test
+    public void searchTagsNotLoggedIn() {
+        Result result = searchTagsHelper("Shrek", null);
+        assertEquals(UNAUTHORIZED, result.status());
     }
 
     @Test

@@ -280,7 +280,7 @@ public class TripController extends Controller {
             return redirect(routes.UserController.userindex());
         }
         Trip trip = Trip.find.byId(tripid);
-        if (!trip.isUserOwner(user.getUserid()) || user.userIsAdmin()) {
+        if (!(trip.isUserOwner(user.getUserid()) || user.userIsAdmin())) {
             return unauthorized("Oops, this is not your trip.");
         }
         Integer visitSize = 0;

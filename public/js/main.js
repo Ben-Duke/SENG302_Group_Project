@@ -3,23 +3,27 @@ var user;
 addTagSearchTagListeners();
 
 function addTagSearchTagListeners() {
-    const searchBar = document.getElementById("tag-search");
-    const dropdown = document.getElementById('dropdown');
-    searchBar.addEventListener('focus', () => {
-        dropdown.style.display = 'block';
-    });
-    searchBar.addEventListener('blur', () => {
-       dropdown.style.display = 'none';
-    });
-    searchBar.addEventListener('input', () => {
-        while (dropdown.firstChild) {
-            dropdown.removeChild(dropdown.firstChild);
-        }
-        const query = searchBar.value;
-        if (query) {
-            searchTags(query);
-        }
-    });
+    try {
+        const searchBar = document.getElementById("tag-search");
+        const dropdown = document.getElementById('dropdown');
+        searchBar.addEventListener('focus', () => {
+            dropdown.style.display = 'block';
+        });
+        searchBar.addEventListener('blur', () => {
+            dropdown.style.display = 'none';
+        });
+        searchBar.addEventListener('input', () => {
+            while (dropdown.firstChild) {
+                dropdown.removeChild(dropdown.firstChild);
+            }
+            const query = searchBar.value;
+            if (query) {
+                searchTags(query);
+            }
+        });
+    } catch (err) {
+        //do nothing. Just to avoid errors if the correct page is not loaded
+    }
 }
 
 function searchTags(query) {

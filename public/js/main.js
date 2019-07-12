@@ -39,10 +39,8 @@ function searchTags(query) {
 }
 
 function addTagsToDropdown(result) {
-    console.log(result);
     const list = document.createElement("UL");
     for (let tag of result) {
-        console.log(tag.name);
         const li = document.createElement("LI");
         li.appendChild(document.createTextNode(tag.name));
         list.appendChild(li);

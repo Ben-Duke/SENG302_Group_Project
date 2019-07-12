@@ -212,6 +212,10 @@
     to {bottom: 0; opacity: 0;}
 }
 
+#tag-search {
+    margin-top: 7.5%
+}
+
 #undoButton {
     cursor: pointer;
 }

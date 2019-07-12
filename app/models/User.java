@@ -445,25 +445,22 @@ public class User extends Model implements Comparable<User> {
             User requestUser = User.find.query().where()
                     .eq("userid", userId)
                     .findOne();
-
-            if (requestUser != null) {
-                if (requestUser.userIsAdmin()) {
-                    List<Admin> adminList = Admin.find.query().where()
-                            .eq("userId", userId).findList();
-                    if (adminList.size() == 1) {
-                        Admin admin = adminList.get(0);
-                        if (admin.getUserIdToActAs() != null) {
-                            User userToEdit = User.find.byId(admin.getUserIdToActAs());
-                            return userToEdit;
-                        } else {
-                            return requestUser;
-                        }
+            if (requestUser != null && requestUser.userIsAdmin()) {
+                List<Admin> adminList = Admin.find.query().where()
+                        .eq("userId", userId).findList();
+                if (adminList.size() == 1) {
+                    Admin admin = adminList.get(0);
+                    if (admin.getUserIdToActAs() != null) {
+                        User userToEdit = User.find.byId(admin.getUserIdToActAs());
+                        return userToEdit;
                     } else {
-                        return null;
+                        return requestUser;
                     }
+                } else {
+                    return null;
                 }
-                return requestUser;
             }
+            return requestUser;
         }
         return null;
     }
@@ -492,29 +489,27 @@ public class User extends Model implements Comparable<User> {
                     .findOne();
             users.add(requestUser);
 
-            if (requestUser != null) {
-                if (requestUser.userIsAdmin()) {
-                    List<Admin> adminList = Admin.find.query().where()
-                            .eq("userId", userId).findList();
-                    if (adminList.size() == 1) {
-                        Admin admin = adminList.get(0);
-                        if (admin.getUserIdToActAs() != null) {
-                            User userToEdit = User.find.byId(admin.getUserIdToActAs());
-                            users.add(0, userToEdit);
-                            return users;
-                        } else {
-                            users.add(requestUser);
-                            return users;
-                        }
+            if (requestUser != null && requestUser.userIsAdmin()) {
+                List<Admin> adminList = Admin.find.query().where()
+                        .eq("userId", userId).findList();
+                if (adminList.size() == 1) {
+                    Admin admin = adminList.get(0);
+                    if (admin.getUserIdToActAs() != null) {
+                        User userToEdit = User.find.byId(admin.getUserIdToActAs());
+                        users.add(0, userToEdit);
+                        return users;
                     } else {
-                        //this should never happen
+                        users.add(requestUser);
                         return users;
                     }
                 } else {
-                    users.add(requestUser);
+                    //this should never happen
+                    return users;
                 }
-                return users;
+            } else {
+                users.add(requestUser);
             }
+            return users;
         }
         return users;
     }

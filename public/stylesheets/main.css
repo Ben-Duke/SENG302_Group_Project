@@ -216,6 +216,10 @@
     margin-top: 7.5%
 }
 
+#dropdown {
+    background: #FFFFFF;
+}
+
 #undoButton {
     cursor: pointer;
 }

@@ -275,50 +275,48 @@ public class TripController extends Controller {
      */
     public Result addVisitFromTable(Http.Request request, Integer tripid, Integer destid){
         User user = User.getCurrentUser(request);
-        if(user != null) {
-            Trip trip = Trip.find.byId(tripid);
-            if (trip.isUserOwner(user.getUserid()) || user.userIsAdmin()) {
-                Integer visitSize = 0;
-                if (trip.getVisits() != null) {
-                    visitSize = trip.getVisits().size();
-                }
-                Integer removedVisits = 0;
-                if(trip.getRemovedVisits() != null) {
-                    removedVisits = trip.getRemovedVisits();
-                }
-                Integer visitOrder = visitSize + 1 + removedVisits;
-                List<Visit> visits = trip.getVisits();
-                Destination destination = Destination.find.byId(destid);
-                if(destination != null) {
-                    if(destination.isPublic || destination.getUser().getUserid() == user.getUserid() || user.userIsAdmin()) {
-                        Visit visit = visitfactory.createVisitTable(trip, destination, visitOrder);
-                        if (tripFactory.hasRepeatDest(visits, visit, "ADD")) {
-                            //flash("danger", "You cannot have repeat destinations!");
-                            return redirect(routes.TripController.addTripDestinations(tripid)).flashing("error", "You cannot have repeat destinations!");
-                        }
-                        //if the destination is public but the owner of the destination is not an admin, set the owner of the destination to the default admin
-                        if (!(destination.getUser().isAdmin()) && destination.getIsPublic() && (destination.getUser().getUserid() != user.getUserid())) {
-                            User admin = User.find.byId(1);
-                            destination.setUser(admin);
-                            destination.update();
-                        }
-                        visit.save();
-                        return redirect(routes.TripController.addTripDestinations(tripid));
-                    }
-                    else{
-                        return unauthorized("This private destination is owned by someone else. You may not use it.");
-                    }
-                }
-                else{
-                    return notFound("Destination not found");
-                }
-            } else {
-                return unauthorized("Oops, this is not your trip.");
-            }
-        }
-        else{
+
+        if(user == null) {
             return redirect(routes.UserController.userindex());
         }
+        Trip trip = Trip.find.byId(tripid);
+        if (!trip.isUserOwner(user.getUserid()) || user.userIsAdmin()) {
+            return unauthorized("Oops, this is not your trip.");
+        }
+        Integer visitSize = 0;
+        if (trip.getVisits() != null) {
+            visitSize = trip.getVisits().size();
+        }
+        Integer removedVisits = 0;
+        if(trip.getRemovedVisits() != null) {
+            removedVisits = trip.getRemovedVisits();
+        }
+        Integer visitOrder = visitSize + 1 + removedVisits;
+        List<Visit> visits = trip.getVisits();
+        Destination destination = Destination.find.byId(destid);
+        if(destination == null) {
+            return notFound("Destination not found");
+        }
+        if(!(destination.isPublic || destination.getUser().getUserid() == user.getUserid() || user.userIsAdmin())) {
+            return unauthorized("This private destination is owned by someone else. You may not use it.");
+        }
+        Visit visit = visitfactory.createVisitTable(trip, destination, visitOrder);
+        if (tripFactory.hasRepeatDest(visits, visit, "ADD")) {
+            //flash("danger", "You cannot have repeat destinations!");
+            return redirect(routes.TripController.addTripDestinations(tripid)).flashing("error", "You cannot have repeat destinations!");
+        }
+        //if the destination is public but the owner of the destination is not an admin, set the owner of the destination to the default admin
+        if (!(destination.getUser().isAdmin()) && destination.getIsPublic() && (destination.getUser().getUserid() != user.getUserid())) {
+            User admin = User.find.byId(1);
+            destination.setUser(admin);
+            destination.update();
+        }
+        visit.save();
+        return redirect(routes.TripController.addTripDestinations(tripid));
+
+
+
+
     }
 
     /**

@@ -716,46 +716,6 @@ public class TripControllerTest extends BaseTestWithApplicationAndDatabase {
         assertEquals(NOT_FOUND, result.status());
     }
 
-    @Test
-    public void checkAddTag(){
-        Trip trip = new Trip("Underworld Ventures", true, null);
-        TripAccessor.insert(trip);
-        Tag tag = new Tag("Best trip ever");
-        TagAccessor.insert(tag);
-        trip.addTag(tag);
-        assertEquals(1, trip.getTags().size());
-    }
 
-
-
-
-
-    @Test
-    public void checkAddingSameTag(){
-        Trip trip = new Trip("Underworld Ventures", true, null);
-        trip.addTag(new Tag("Clone"));
-        trip.addTag(new Tag("Clone"));
-        assertEquals(1, trip.getTags().size());
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void checkAddingNullTag(){
-        Trip trip = new Trip("Underworld Ventures", true, null);
-        trip.addTag(null);
-    }
-
-    @Test
-    public void checkRemoveTag(){
-        Trip trip = new Trip("Underworld Ventures", true, null);
-        trip.addTag(new Tag("Test"));
-        trip.removeTag(new Tag("Test"));
-        assertEquals(0, trip.getTags().size());
-    }
-
-    @Test
-    public void checkRemoveTagOnEmptySet(){
-        Trip trip = new Trip("Underworld Ventures", true, null);
-        assertEquals(false, trip.removeTag(new Tag("Test")));
-    }
 
 }

@@ -204,6 +204,7 @@ public class TagControllerTest extends BaseTestWithApplicationAndDatabase {
         return route(app, request);
     }
 
+    ///Trips
     @Test
     public void getTagsForTrip(){
 
@@ -235,6 +236,27 @@ public class TagControllerTest extends BaseTestWithApplicationAndDatabase {
         Result result = route(app, request);
 
         assertEquals(NOT_FOUND, result.status());
+    }
+
+
+    @Test
+    public void checkAddTag(){
+        Trip trip = new Trip("Underworld Ventures", true, null);
+        TripAccessor.insert(trip);
+        Tag tag = new Tag("Best trip ever");
+        TagAccessor.insert(tag);
+        trip.addTag(tag);
+        assertEquals(1, trip.getTags().size());
+    }
+
+    @Test
+    public void checkRemoveTagFromTrip(){
+        Trip trip = new Trip("GOAT trip", true, null);
+        TripAccessor.insert(trip);
+        Tag tag = new Tag("Best trip ever");
+        TagAccessor.insert(tag);
+        trip.addTag(tag);
+        assertEquals(1, trip.getTags().size());
     }
 
 }

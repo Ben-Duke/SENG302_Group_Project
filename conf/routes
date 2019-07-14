@@ -240,7 +240,7 @@ PUT     /users/destinations/primary/:id     controllers.DestinationController.se
 #Handles linking a photo to a destination
 PUT     /users/destinations/:id         controllers.DestinationController.linkPhotoToDestination(request : Request, id : Integer)
 
-
+#Handles linking a photo to a destination
 GET /users/destinations/:destId/add_photo/:photoId     controllers.DestinationController.addPhotoToDestination(request : Request, photoId : Integer, destId : Integer)
 
 

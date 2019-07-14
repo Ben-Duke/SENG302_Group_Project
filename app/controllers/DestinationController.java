@@ -956,10 +956,6 @@ public class DestinationController extends Controller {
         Destination destination = DestinationAccessor.getDestinationById(destId);
         if (destination == null) { return notFound("Destination not found"); }
 
-        if (!destination.isUserOwner(user)) {
-            return unauthorized("Not your destination.");
-        }
-
         if (photo.getUser().getUserid() != user.getUserid()) {
             return unauthorized("Not your photo.");
         }

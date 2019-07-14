@@ -953,8 +953,8 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
         boolean destPhotoExists = false;
         int destPhotoSize = Destination.find.byId(3).getUserPhotos().size();
         Http.RequestBuilder request = Helpers.fakeRequest()
-                .method(POST)
-                .uri("/users/destinations/3/1")
+                .method(GET)
+                .uri("/users/destinations/3/add_photo/1")
                 .session("connected", "2");
         Result result = route(app, request);
         assertEquals(SEE_OTHER, result.status());
@@ -988,8 +988,8 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
         boolean destPhotoExists = false;
         int destPhotoSize = Destination.find.byId(1).getUserPhotos().size();
         Http.RequestBuilder request = Helpers.fakeRequest()
-                .method(POST)
-                .uri("/users/destinations/1/1")
+                .method(GET)
+                .uri("/users/destinations/1/add_photo/1")
                 .session("connected", "2");
         Result result = route(app, request);
         assertEquals(BAD_REQUEST, result.status());
@@ -1011,8 +1011,8 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
     public void addPhotoToDestinationInvalidUser() {
         int destPhotoSize = Destination.find.byId(1).getUserPhotos().size();
         Http.RequestBuilder request = Helpers.fakeRequest()
-                .method(POST)
-                .uri("/users/destinations/1/1")
+                .method(GET)
+                .uri("/users/destinations/1/add_photo/1")
                 .session("connected", "1");
         Result result = route(app, request);
         assertEquals(UNAUTHORIZED, result.status());
@@ -1028,8 +1028,8 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
     public void addPhotoToDestinationInvalidLoginSession() {
         int destPhotoSize = Destination.find.byId(1).getUserPhotos().size();
         Http.RequestBuilder request = Helpers.fakeRequest()
-                .method(POST)
-                .uri("/users/destinations/1/1")
+                .method(GET)
+                .uri("/users/destinations/1/add_photo/1")
                 .session("connected", null);
         Result result = route(app, request);
         assertEquals(SEE_OTHER, result.status());
@@ -1076,8 +1076,8 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
     public void unlinkPhotoFromDestinationValidCheckResponseOk() {
         // Send request to link a photo to a destination
         Http.RequestBuilder linkRequest = Helpers.fakeRequest()
-                .method(POST)
-                .uri("/users/destinations/1/1")
+                .method(GET)
+                .uri("/users/destinations/1/add_photo/1")
                 .session("connected", "2");
         route(app, linkRequest);
 
@@ -1096,8 +1096,8 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
     public void unlinkPhotoFromDestinationCheckPhotoRemoved() {
         // Send request to link a photo to a destination
         Http.RequestBuilder linkRequest = Helpers.fakeRequest()
-                .method(POST)
-                .uri("/users/destinations/1/1")
+                .method(GET)
+                .uri("/users/destinations/1/add_photo/1")
                 .session("connected", "2");
         route(app, linkRequest);
 
@@ -1272,8 +1272,8 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
     public void unlinkPhotoFromDestinationUserOwnerOfDestinationNotPhotoCheckResponse() {
         // Send request to link a photo to a destination
         Http.RequestBuilder linkRequest = Helpers.fakeRequest()
-                .method(POST)
-                .uri("/users/destinations/4/1")
+                .method(GET)
+                .uri("/users/destinations/4/add_photo/1")
                 .session("connected", "2");
         route(app, linkRequest);
 
@@ -1293,8 +1293,8 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
     public void unlinkPhotoFromDestinationUserOwnerOfDestinationNotPhotoCheckPhotoRemoved() {
         // Send request to link a photo to a destination
         Http.RequestBuilder linkRequest = Helpers.fakeRequest()
-                .method(POST)
-                .uri("/users/destinations/4/1")
+                .method(GET)
+                .uri("/users/destinations/4/add_photo/1")
                 .session("connected", "2");
         route(app, linkRequest);
 
@@ -1319,8 +1319,8 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
     public void unlinkPhotoFromDestinationUserOwnerOfPhotoNotDestinationCheckResponse() {
         // Send request to link a photo to a destination
         Http.RequestBuilder linkRequest = Helpers.fakeRequest()
-                .method(POST)
-                .uri("/users/destinations/4/1")
+                .method(GET)
+                .uri("/users/destinations/4/add_photo/1")
                 .session("connected", "2");
         route(app, linkRequest);
 
@@ -1340,8 +1340,8 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
     public void unlinkPhotoFromDestinationUserOwnerOfPhotoNotDestinationCheckPhotoRemoved() {
         // Send request to link a photo to a destination
         Http.RequestBuilder linkRequest = Helpers.fakeRequest()
-                .method(POST)
-                .uri("/users/destinations/4/1")
+                .method(GET)
+                .uri("/users/destinations/4/add_photo/1")
                 .session("connected", "2");
         route(app, linkRequest);
 

@@ -180,6 +180,16 @@ function editCaption(photoId) {
  * @param photoId the id of the photo to change the caption of
  */
 function submitEditCaption(caption, photoId) {
+    const errorMessage = document.getElementById(`lengthErrorMessage-${photoId}`);
+
+    if (caption.length > 255) {
+        errorMessage.style.display = 'block';
+        return;
+    }
+
+    // Remove error message
+    errorMessage.style.display = 'none';
+
     $.ajax({
         type: 'PUT',
         url: '/users/photos/'+ photoId +'/caption',

@@ -1,5 +1,57 @@
 var user;
 
+addTagSearchTagListeners();
+
+function addTagSearchTagListeners() {
+    try {
+        const searchBar = document.getElementById("tag-search");
+        const dropdown = document.getElementById('dropdown');
+        searchBar.addEventListener('focus', () => {
+            dropdown.style.display = 'block';
+        });
+        searchBar.addEventListener('blur', () => {
+            dropdown.style.display = 'none';
+        });
+        searchBar.addEventListener('input', () => {
+            while (dropdown.firstChild) {
+                dropdown.removeChild(dropdown.firstChild);
+            }
+            const query = searchBar.value;
+            if (query) {
+                searchTags(query);
+            }
+        });
+    } catch (err) {
+        //do nothing. Just to avoid errors if the correct page is not loaded
+    }
+}
+
+function searchTags(query) {
+    $.ajax({
+        type: 'PUT',
+        url: '/tags/search',
+        data: JSON.stringify({
+            search: query
+        }),
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    }).done((result) => addTagsToDropdown(result)
+    ).fail((xhr, textStatus, errorThrown) => {
+        console.log(xhr.status + " " + textStatus + " " + errorThrown);
+    });
+}
+
+function addTagsToDropdown(result) {
+    const list = document.createElement("UL");
+    for (let tag of result) {
+        const li = document.createElement("LI");
+        li.appendChild(document.createTextNode(tag.name));
+        list.appendChild(li);
+    }
+    document.getElementById('dropdown').appendChild(list);
+}
+
 /**
  * Sets the global keyboard shortcuts for undo and redo
  * Completes given undo or redo request
@@ -79,4 +131,5 @@ function showMessage(message, action) {
         x.className = x.className.replace("show", "");
     }, 3000);
 };
+
 

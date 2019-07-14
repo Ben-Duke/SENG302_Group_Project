@@ -1,8 +1,10 @@
 package controllers;
 
+import accessors.DestinationAccessor;
 import accessors.TagAccessor;
 import accessors.TripAccessor;
 import accessors.UserPhotoAccessor;
+import models.Destination;
 import models.Tag;
 import models.Trip;
 import models.User;
@@ -11,11 +13,30 @@ import play.libs.Json;
 import play.mvc.Http;
 import play.mvc.Result;
 
+import java.util.List;
 import java.util.Set;
 
 import static play.mvc.Results.*;
 
 public class TagController {
+
+    /**
+     * Searches through the database and finds tags which names contain the search query.
+     * @param request The http request with a logged in user and a json containing the search
+     * @return a Json list of tags that match the search query
+     */
+    public Result searchTags(Http.Request request) {
+        User user = User.getCurrentUser(request);
+        if (user == null) {
+            return unauthorized();
+        }
+        String searchQuery = request.body().asJson().get("search").asText();
+        Set<Tag> tags = TagAccessor.searchTags(searchQuery);
+        if (tags.isEmpty()) {
+            return notFound();
+        }
+        return ok(Json.toJson(tags));
+    }
 
     /**
      * Gets all current tags of a given photo
@@ -122,11 +143,80 @@ public class TagController {
         return ok();
     }
 
-    public Result getDestTags(Http.Request request, int destId) {return null;}
+    public Result getDestTags(Http.Request request, int destId) {
+        User user = User.getCurrentUser(request);
+        if (user == null) {
+            return unauthorized();
+        }
+        Destination destination = DestinationAccessor.getDestinationById(destId);
+        if (destination == null) {
+            return notFound();
+        }
+        if (!destination.getIsPublic()
+                && !user.userIsAdmin()
+                && user.getUserid() != destination.getUser().getUserid()) {
+            return forbidden();
+        }
+        Set<Tag> tags = destination.getTags();
+        return ok(Json.toJson(tags));
+    }
 
-    public Result addDestTag(Http.Request request, int destId) {return null;}
+    public Result addDestTag(Http.Request request, int destId) {
+        User user = User.getCurrentUser(request);
+        if (user == null) {
+            return unauthorized();
+        }
+        Destination destination = DestinationAccessor.getDestinationById(destId);
+        if (destination == null) {
+            return notFound();
+        }
+        if (!destination.getIsPublic() && !destination.getUser().equals(user) && !user.userIsAdmin()) {
+            return forbidden();
+        }
+        String tagName = request.body().asJson().get("tag").asText();
+        if (tagName.isEmpty()) {
+            return badRequest();
+        }
+        Tag tag = TagAccessor.getTagByName(tagName);
+        boolean exists = tag != null;
+        if (!exists) {
+            tag = new Tag(tagName);
+            TagAccessor.insert(tag);
+        }
+        if (!destination.addTag(tag)) {
+            // Tag is already linked to this destination
+            return ok();
+        }
+        TagAccessor.update(tag);
+        DestinationAccessor.update(destination);
+        if (exists) {
+            return ok();
+        }
+        return created();
+    }
 
-    public Result removeDestTag(Http.Request request, int destId) {return null;}
+    public Result removeDestTag(Http.Request request, int destId) {
+        User user = User.getCurrentUser(request);
+        if (user == null) {
+            return unauthorized();
+        }
+        Destination destination = DestinationAccessor.getDestinationById(destId);
+        if (destination == null) {
+            return notFound("Photo not found");
+        }
+        if (!destination.getIsPublic() && !destination.getUser().equals(user) && !user.userIsAdmin()) {
+            return forbidden();
+        }
+        String tagName = request.body().asJson().get("tag").asText();
+        Tag tag = TagAccessor.getTagByName(tagName);
+        if (tag == null) {
+            return notFound("Tag " + tagName + " does not exist");
+        }
+        destination.removeTag(tag);
+        destination.update();
+        tag.update();
+        return ok();
+    }
 
 
 

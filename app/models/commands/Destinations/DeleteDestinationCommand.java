@@ -56,6 +56,8 @@ public class DeleteDestinationCommand extends DestinationPageCommand {
             userPhoto.removeDestination(destination);
             userPhoto.update();
         }
+        destination.getTags().clear();
+        destination.update();
         DestinationAccessor.delete(destination);
     }
 

@@ -2,6 +2,7 @@ package accessors;
 
 import models.Tag;
 
+import java.util.Set;
 
 
 public class TagAccessor {
@@ -56,6 +57,15 @@ public class TagAccessor {
             tag.update();
         }
 
+    }
+
+    /**
+     * Searches through the database and finds the set of tags that have a substring matching the query
+     * @param searchQuery the substring to search for
+     * @return the Set of tags with names matching the substring
+     */
+    public static Set<Tag> searchTags(String searchQuery) {
+        return Tag.find.query().where().ilike("name", "%" + searchQuery + "%").findSet();
     }
 
 }

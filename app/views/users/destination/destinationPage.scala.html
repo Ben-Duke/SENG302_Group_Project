@@ -12,6 +12,19 @@
     form {
         margin-bottom: 0;
     }
+    #imagesContainer {
+        position: relative;
+        max-width: 120px;
+        height: 100%;
+        width: 100%;
+        left: -25px;
+        top: -5px;
+    }
+    #addPhotoLink {
+        display: inline-block;
+        max-width: 120px;
+        max-height: 120px;
+    }
 
 </style>
 
@@ -138,6 +151,11 @@
     <hr>
 
     <h2>Destination Media</h2>
+
+    <button id="addPhotoButton" class="btn btn-primary" data-toggle="modal" data-target="#myModal">
+        Add photo
+    </button>
+
     <div class="row" style="margin-bottom: 50px;">
 
         @for(photo <- destination.getUserPhotos()) {
@@ -150,6 +168,52 @@
         }
 
     </div>
+
+    <div id="myModal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Select Your Photo</h4>
+                </div>
+
+                <div class="modal-body">
+                    @if(user.getUserPhotos.isEmpty) {
+                        <p id="para">No photos to add to destination. Upload some!.</p>
+                    }
+
+                    @for(photo <- user.getUserPhotos()) {
+                        @if(!photo.getDestinations().contains(destination)) {
+                            <a id="addPhotoLink" class="btn btn-light" href="@routes.DestinationController.addPhotoToDestination(photo.getPhotoId(), destination.getDestId())">
+                                <div class="container" id="imagesContainer">
+                                    <div class="overlay">
+                                        <i class="icon" title="User Profile">
+                                            @if(photo.isPublic()) {
+                                                <i class="fa fa-eye"></i>
+                                            } else {
+                                                <i class="fa fa-eye-slash"></i>
+                                            }
+                                        </i>
+                                    </div>
+                                    <img class="img-thumbnail" id=@{photo.getUrl()} width="60" src="@{routes.HomeController.index(photo.getUrlWithPath())}" alt="User Image">
+                                </div>
+                            </a>
+                        }
+                    }
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+
 
 
     <script src="@routes.Assets.at("js/destination/viewDestination.js")"></script>

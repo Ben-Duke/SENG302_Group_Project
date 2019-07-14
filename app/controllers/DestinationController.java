@@ -2,6 +2,7 @@ package controllers;
 
 import accessors.DestinationAccessor;
 import accessors.TreasureHuntAccessor;
+import accessors.UserPhotoAccessor;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import factories.DestinationFactory;
@@ -945,34 +946,35 @@ public class DestinationController extends Controller {
      * @param destId the destination that the photo should be linked to
      * @return success if the linking was successful, not found if destination or photo not found, unauthorized otherwise.
      */
-    public Result addPhotoToDestination(Http.Request request, Integer photoId, Integer destId){
+    public Result addPhotoToDestination(Http.Request request, Integer photoId, Integer destId) {
         User user = User.getCurrentUser(request);
-        if(user != null) {
-            UserPhoto photo = UserPhoto.find.byId(photoId);
-            Destination destination = Destination.find.byId(destId);
-            if(destination != null && photo != null) {
-                if (photo.getUser().getUserid() == user.getUserid()) {
-                    //add checks for private destinations here once destinations have been merged in.
-                    //You can only link a photo to a private destination if you own the private destination.
-                    if (!photo.getDestinations().contains(destination)) {
-                        LinkPhotoDestinationCommand cmd = new LinkPhotoDestinationCommand(photo, destination);
-                        user.getCommandManager().executeCommand(cmd);
+        if (user == null) { return redirect(routes.UserController.userindex()); }
 
-                        return redirect(routes.DestinationController.indexDestination());
-                    }
-                    else{
-                        return badRequest("You have already linked the photo to this destination.");
-                    }
-                } else {
-                    return unauthorized("Oops, this is not your photo!");
-                }
-            } else {
-                return notFound();
-            }
-        } else {
-            return redirect(routes.UserController.userindex());
+        UserPhoto photo = UserPhotoAccessor.getUserPhotoById(photoId);
+        if (photo == null) { return notFound("Photo not found"); }
+
+        Destination destination = DestinationAccessor.getDestinationById(destId);
+        if (destination == null) { return notFound("Destination not found"); }
+
+        if (!destination.isUserOwner(user)) {
+            return unauthorized("Not your destination.");
         }
+
+        if (photo.getUser().getUserid() != user.getUserid()) {
+            return unauthorized("Not your photo.");
+        }
+
+        if (photo.getDestinations().contains(destination)) {
+            return badRequest("You have already linked the photo to this destination.");
+        }
+
+        LinkPhotoDestinationCommand cmd = new LinkPhotoDestinationCommand(photo, destination);
+        user.getCommandManager().executeCommand(cmd);
+
+        return redirect(routes.DestinationController.viewDestination(destId));
     }
+
+
 
 
     /**

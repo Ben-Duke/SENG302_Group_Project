@@ -33,25 +33,25 @@ public class TagControllerTest extends BaseTestWithApplicationAndDatabase {
     @Test
     public void searchTagsForOneItemCheckData() {
         Result result = searchTagsHelper("Shrek", 2);
-        assertEquals("[{\"tagId\":2,\"name\":\"Shrek\"}]", contentAsString(result));
+        assertEquals("[{\"tagId\":3,\"name\":\"Shrek\"}]", contentAsString(result));
     }
 
     @Test
     public void searchTagsCaseInsensitiveCheckData() {
         Result result = searchTagsHelper("shReK", 2);
-        assertEquals("[{\"tagId\":2,\"name\":\"Shrek\"}]", contentAsString(result));
+        assertEquals("[{\"tagId\":3,\"name\":\"Shrek\"}]", contentAsString(result));
     }
 
     @Test
     public void searchTagsMultipleTagsCheckData() {
         Result result = searchTagsHelper("S", 2);
-        assertEquals("[{\"tagId\":1,\"name\":\"Vacation spot\"},{\"tagId\":2,\"name\":\"Shrek\"}]", contentAsString(result));
+        assertEquals("[{\"tagId\":1,\"name\":\"Vacation spot\"},{\"tagId\":2,\"name\":\"Best trip ever\"},{\"tagId\":3,\"name\":\"Shrek\"}]", contentAsString(result));
     }
 
     @Test
     public void searchTagsEmptySearchCheckData() {
         Result result = searchTagsHelper("", 2);
-        assertEquals("[{\"tagId\":1,\"name\":\"Vacation spot\"},{\"tagId\":2,\"name\":\"Shrek\"}]", contentAsString(result));
+        assertEquals("[{\"tagId\":1,\"name\":\"Vacation spot\"},{\"tagId\":2,\"name\":\"Best trip ever\"},{\"tagId\":3,\"name\":\"Shrek\"}]", contentAsString(result));
     }
 
     @Test
@@ -77,7 +77,7 @@ public class TagControllerTest extends BaseTestWithApplicationAndDatabase {
     @Test
     public void getPhotoTagSuccessCheckData() {
         Result result = getPhotoTagHelper(1, 2);
-        assertEquals("[{\"tagId\":2,\"name\":\"Shrek\"}]", contentAsString(result));
+        assertEquals("[{\"tagId\":3,\"name\":\"Shrek\"}]", contentAsString(result));
     }
 
     @Test
@@ -98,7 +98,7 @@ public class TagControllerTest extends BaseTestWithApplicationAndDatabase {
 
         Result result = getPhotoTagHelper(2, 2);
         assertEquals(
-            "[{\"tagId\":3,\"name\":\"UC\"},{\"tagId\":4,\"name\":\"Second Tag\"}]",
+            "[{\"tagId\":4,\"name\":\"UC\"},{\"tagId\":5,\"name\":\"Second Tag\"}]",
                 contentAsString(result));
     }
 
@@ -255,7 +255,7 @@ public class TagControllerTest extends BaseTestWithApplicationAndDatabase {
 
         Result result = getDestTagHelper(2, 2);
         assertEquals(
-                "[{\"tagId\":3,\"name\":\"Cool spot\"},{\"tagId\":4,\"name\":\"Dream spot\"}]",
+                "[{\"tagId\":4,\"name\":\"Cool spot\"},{\"tagId\":5,\"name\":\"Dream spot\"}]",
                 contentAsString(result));
     }
 
@@ -449,7 +449,7 @@ public class TagControllerTest extends BaseTestWithApplicationAndDatabase {
                 .uri("/trips/1/tags").session("connected", "2");
         Result result = route(app, request);
 
-        assertEquals("[{\"tagId\":1,\"name\":\"Best trip ever\"}]", contentAsString(result));
+        assertEquals("[{\"tagId\":2,\"name\":\"Best trip ever\"}]", contentAsString(result));
     }
 
     @Test
@@ -479,7 +479,7 @@ public class TagControllerTest extends BaseTestWithApplicationAndDatabase {
     public void checkAddTag(){
         Trip trip = new Trip("Underworld Ventures", true, null);
         TripAccessor.insert(trip);
-        Tag tag = new Tag("Best trip ever");
+        Tag tag = new Tag("Nice spot");
         TagAccessor.insert(tag);
         trip.addTag(tag);
         assertEquals(1, trip.getTags().size());
@@ -489,10 +489,15 @@ public class TagControllerTest extends BaseTestWithApplicationAndDatabase {
     public void checkRemoveTagFromTrip(){
         Trip trip = new Trip("GOAT trip", true, null);
         TripAccessor.insert(trip);
-        Tag tag = new Tag("Best trip ever");
+        Tag tag = new Tag("remove tag");
         TagAccessor.insert(tag);
         trip.addTag(tag);
-        assertEquals(1, trip.getTags().size());
+
+        trip.removeTag(tag);
+        TagAccessor.update(tag);
+        TripAccessor.update(trip);
+
+        assertEquals(0, trip.getTags().size());
     }
 
 }

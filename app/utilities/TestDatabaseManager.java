@@ -385,11 +385,11 @@ public class TestDatabaseManager {
             Trip trip5 = Trip.find.query().where().eq("tripName", "See the pope, the president and come back").findList().get(0);
             Trip trip6 = Trip.find.query().where().eq("tripName", "Waterfall walk and see the president").findList().get(0);
 
-            Tag tag = new Tag("Best trip ever");
-            TagAccessor.insert(tag);
-            trip1.addTag(tag);
+            Tag tag2 = new Tag("Best trip ever");
+            TagAccessor.insert(tag2);
+            trip1.addTag(tag2);
             TripAccessor.update(trip1);
-            TagAccessor.update(tag);
+            TagAccessor.update(tag2);
 
             // creating all the visits
             Visit visit1 =  new Visit("2018-05-04", "2018-05-06", trip1, destination1,1);

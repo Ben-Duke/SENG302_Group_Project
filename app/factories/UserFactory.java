@@ -2,16 +2,13 @@ package factories;
 
 import accessors.UserAccessor;
 import accessors.UserPhotoAccessor;
-import controllers.ApplicationManager;
 import formdata.UpdateUserFormData;
 import formdata.UserFormData;
 import models.*;
 import models.commands.General.UndoableCommand;
 import models.commands.Photos.EditPhotoCaptionCommand;
-import play.data.FormFactory;
 import play.mvc.Http;
 
-import javax.inject.Inject;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -20,9 +17,6 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 public class UserFactory {
-
-    @Inject
-    static FormFactory formFactory;
 
     public UserFactory(){//Just used to instantiate
     }
@@ -54,7 +48,7 @@ public class UserFactory {
     }
 
     public static void deleteNatsOnUser(int id, String nationalityId) {
-        User user = User.find.query().where().eq("userid", id).findOne();
+        User user = UserAccessor.getById(id);
         if (user == null) {
             return;
         }
@@ -73,7 +67,7 @@ public class UserFactory {
      * @return A User object with the userId, or null  if doesn't exist.
      */
     static User getUserFromId(int userId) {
-        return User.find.query().where().eq("userid", userId).findOne();
+        return UserAccessor.getById(userId);
     }
 
     /**Get a list of all passports.
@@ -312,7 +306,7 @@ public class UserFactory {
 
     public static int getNatsForUserbyId(int userId){
         int count = 0;
-        User user = User.find.query().where().eq("userid", userId).findOne();
+        User user = UserAccessor.getById(userId);
         if (user != null) {
             count = user.nationality.size();
         }
@@ -320,11 +314,11 @@ public class UserFactory {
     }
 
     public static List<Passport> getUserPassports(int id){
-        return User.find.query().where().eq("userid", id).findOne().passports;
+        return UserAccessor.getById(id).passports;
     }
 
     public static List<Nationality> getUserNats(int id){
-        return User.find.query().where().eq("userid", id).findOne().nationality;
+        return UserAccessor.getById(id).nationality;
     }
 
     public static void addPassportToUser(int id, String passportId){
@@ -332,7 +326,7 @@ public class UserFactory {
         Passport passport = Passport.find.byId(Integer.parseInt(passportId));
 
         try {
-            User user = User.find.query().where().eq("userid", id).findOne();
+            User user = UserAccessor.getById(id);
             if (user == null) {
                 return;
             }
@@ -347,7 +341,7 @@ public class UserFactory {
     public static void deletePassportOnUser(int id, String passportId){
         try {
             Passport passport = Passport.find.byId(Integer.parseInt(passportId));
-            User user = User.find.query().where().eq("userid", id).findOne();
+            User user = UserAccessor.getById(id);
             if (user == null) {
                 return;
             }
@@ -359,7 +353,7 @@ public class UserFactory {
     }
 
     public static void addNatsOnUser(int id, String nationalityId){
-        User user = User.find.query().where().eq("userid", id).findOne();
+        User user = UserAccessor.getById(id);
         if (user == null) {
             return;
         }
@@ -381,7 +375,7 @@ public class UserFactory {
      * @return the UserPhoto that is the profile picture if it exists, otherwise null
      */
     public static UserPhoto getUserProfilePicture(int userId) {
-        User user = User.find.query().where().eq("userid", userId).findOne();
+        User user = UserAccessor.getById(userId);
         UserPhoto userPhoto = UserPhoto.find.query().where().eq("user", user).and().eq("isProfile", true).findOne();
         if(userPhoto != null) {
             return  userPhoto;
@@ -414,16 +408,6 @@ public class UserFactory {
             newPhoto.save();
         }
     }
-
-    /**
-     * Get the path to the User's profile picture
-     * @param user the user whose profile picture path is to be retrieved
-     * @return the path to the photo
-     */
-    public static String getProfilePhotoPath(User user) {
-        return java.nio.file.Paths.get(".").toAbsolutePath().normalize().toString() + ApplicationManager.getUserPhotoPath() + user.getUserid() + "/profilethumbnail.png";
-    }
-
 
     public static UpdateUserFormData getUpdateUserFormDataForm(Http.Request request) {
         List<User> users = User.getCurrentUser(request, true);

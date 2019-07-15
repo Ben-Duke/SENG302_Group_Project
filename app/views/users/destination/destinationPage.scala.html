@@ -180,7 +180,7 @@
 
                 <div class="modal-body">
                     @if(user.getUserPhotos.isEmpty) {
-                        <p id="para">No photos to add to destination. Upload some!.</p>
+                        <p id="para">No photos to add to destination. Upload some!</p>
                     }
 
                     @for(photo <- user.getUserPhotos()) {
@@ -223,7 +223,7 @@
                     }
 
                 </ol>
-                <div id="carousel-inner" class="carousel-inner">
+                <div id="carousel-inner" class="carousel-inner" style="text-align: center;">
                     @for(photo <- destination.getUserPhotos()) {
                             <!-- Sets the first image to be the first image displayed. To be changed to the image clicked-->
                         @if(photo == user.getUserPhotos().get(0)){
@@ -232,14 +232,16 @@
                             <div id="caro-@photo.getPhotoId" class="item">
                             }
 
-                        <img class="center" id="carouselImage@photo.getPhotoId()" src="@{routes.HomeController.index(photo.getUrlWithPath)}">
+                        <img class="center" id="carouselImage@photo.getPhotoId()" src="@{routes.HomeController.index(photo.getUrlWithPath)}" style="height: 75%; margin: auto;">
 
-                        <a class="btn btn-primary" id="setProfilePicture"
-                        onclick="setProfilePictureRequest(
-                                @photo.getPhotoId())">Set as Profile Picture</a>
+                        @if(photo != destination.getPrimaryPhoto()) {
+                            <a class="btn btn-primary" id="setPrimaryPicture" href="@routes.DestinationController.setPrimaryPhoto(photo.getPhotoId(), destination.getDestId())">
+                            Set as primary</a>
+                        }
 
                         <button class="btn btn-danger" onclick="deletePhotoRequest(
-                                '@routes.ProfileController.deletePhoto(photo.getPhotoId(),false)', @photo.getPhotoId(), '@photo.getUrl(), false')">Delete Photo</button></td>
+                                '@routes.ProfileController.deletePhoto(photo.getPhotoId(),false)', @photo.getPhotoId(), '@photo.getUrl(), false')">
+                            Remove Photo</button></td>
                     </div>
                     }
                 </div>

@@ -882,30 +882,28 @@ public class DestinationController extends Controller {
      * @param destId the id of the destination to be updated
      * @return success if it worked, error otherwise
      */
-    public Result setPrimaryPhoto(Http.Request request, Integer destId) {
+    public Result setPrimaryPhoto(Http.Request request, Integer photoId, Integer destId) {
         User user = User.getCurrentUser(request);
-        if (user != null) {
-            JsonNode node = request.body().asJson().get("photoid");
-            String photoid = node.textValue();
-            photoid = photoid.replace("\"", "");
-            UserPhoto photo = UserPhoto.find.byId(Integer.parseInt(photoid));
-            Destination destination = Destination.find.byId(destId);
-            if (destination != null || photo != null) {
-                if ((destination.getUser().getUserid() == user.getUserid() && destination.getUserPhotos().contains(photo)) || user.userIsAdmin()) {
-                    //add checks for private destinations here once destinations have been merged in.
-                    //You can only link a photo to a private destination if you own the private destination.
-                    destination.setPrimaryPhoto(photo);
-                    destination.update();
-                } else {
-                    return unauthorized("Oops, this is not your photo!");
-                }
-            } else {
-                return notFound();
-            }
-        } else {
-            return redirect(routes.UserController.userindex());
+        if (user == null) { return redirect(routes.UserController.userindex()); }
+
+        Destination destination = DestinationAccessor.getDestinationById(destId);
+        if (destination == null) { return notFound("Destination not found"); }
+
+        UserPhoto photo = UserPhotoAccessor.getUserPhotoById(photoId);
+        if (photo == null) { return notFound("Photo not found"); }
+
+        if (!destination.getUserPhotos().contains(photo)) {
+            return badRequest("Photo not linked to destination");
         }
-        return ok();
+
+        if (!destination.isUserOwner(user) && !user.userIsAdmin()) {
+            return unauthorized("Not your destination");
+        }
+
+        destination.setPrimaryPhoto(photo);
+        DestinationAccessor.update(destination);
+
+        return redirect(routes.DestinationController.viewDestination(destId));
     }
 
     /**

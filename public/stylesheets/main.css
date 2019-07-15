@@ -219,6 +219,7 @@
 #dropdown {
     background: #FFFFFF;
 }
+#dropdown:hover{ display: block}
 
 #undoButton {
     cursor: pointer;

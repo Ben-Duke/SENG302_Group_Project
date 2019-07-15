@@ -10,7 +10,9 @@ function addTagSearchTagListeners() {
             dropdown.style.display = 'block';
         });
         searchBar.addEventListener('blur', () => {
-            dropdown.style.display = 'none';
+            setTimeout(() => {
+                dropdown.style.display = 'none';
+            }, 100); // Short 100 ms delay to allow links to load before the link disappear
         });
         searchBar.addEventListener('input', () => {
             while (dropdown.firstChild) {
@@ -36,8 +38,9 @@ function searchTags(query) {
         headers: {
             'Content-Type': 'application/json'
         }
-    }).done((result) => addTagsToDropdown(result)
-    ).fail((xhr, textStatus, errorThrown) => {
+    }).done((result) => {
+        addTagsToDropdown(result)
+    }).fail((xhr, textStatus, errorThrown) => {
         console.log(xhr.status + " " + textStatus + " " + errorThrown);
     });
 }
@@ -45,9 +48,10 @@ function searchTags(query) {
 function addTagsToDropdown(result) {
     const list = document.createElement("UL");
     for (let tag of result) {
-        const li = document.createElement("LI");
-        li.appendChild(document.createTextNode(tag.name));
-        list.appendChild(li);
+        const link = document.createElement("A");
+        link.href = "/tags/" + tag.tagId;
+        link.appendChild(document.createTextNode(tag.name));
+        list.appendChild(link);
     }
     document.getElementById('dropdown').appendChild(list);
 }

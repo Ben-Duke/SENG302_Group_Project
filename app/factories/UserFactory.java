@@ -53,13 +53,9 @@ public class UserFactory {
             return;
         }
 
-        try {
-            Nationality nationality = Nationality.find.byId(Integer.parseInt(nationalityId));
-            user.deleteNationality(nationality);
-            user.update();
-        } catch (NumberFormatException e) {
-            // Not sure why we're catching this
-        }
+        Nationality nationality = Nationality.find.byId(Integer.parseInt(nationalityId));
+        user.deleteNationality(nationality);
+        user.update();
     }
     /** Returns a User object from a userId int.
      *
@@ -339,17 +335,13 @@ public class UserFactory {
     }
 
     public static void deletePassportOnUser(int id, String passportId){
-        try {
-            Passport passport = Passport.find.byId(Integer.parseInt(passportId));
-            User user = UserAccessor.getById(id);
-            if (user == null) {
-                return;
-            }
-            user.deletePassport(passport);
-            user.update();
-        } catch (NumberFormatException e) {
-            // Not sure why we are catching this
+        Passport passport = Passport.find.byId(Integer.parseInt(passportId));
+        User user = UserAccessor.getById(id);
+        if (user == null) {
+            return;
         }
+        user.deletePassport(passport);
+        user.update();
     }
 
     public static void addNatsOnUser(int id, String nationalityId){

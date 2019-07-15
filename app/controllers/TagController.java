@@ -277,4 +277,7 @@ public class TagController {
         return unauthorized();
     }
 
+    public Result removeTripTag(Http.Request request, int tripId, String newTag) {
+        return ok();
+    }
 }

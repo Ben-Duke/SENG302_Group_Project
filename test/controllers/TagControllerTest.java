@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import static play.mvc.Http.Status.FORBIDDEN;
 import static play.mvc.Http.Status.OK;
 import static play.mvc.Http.Status.UNAUTHORIZED;
@@ -475,6 +476,33 @@ public class TagControllerTest extends BaseTestWithApplicationAndDatabase {
     }
 
 
+
+    @Test
+    public void checkAddTripTag(){
+        Map<String, String> tagData = new HashMap<>();
+        tagData.put("tag", "Best trip ever");
+
+        Trip trip = new Trip("Test Trip",true,null);
+        trip.save();
+
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(PUT)
+                .uri("/trips/1/tags").session("connected", "2");
+        Result result = route(app, request);
+        // Trip tripEbeans = TripAccessor.getTripById(1);
+        System.out.println(trip.getTripName());
+        assertEquals(1, trip.getTags().size());
+
+    }
+
+    @Test
+    public void checkRemoveTripTag() {
+        fail();
+    }
+
+    /**
+     * This test is more a sanity check that ebeans is working with the ebeans objects properly
+     */
     @Test
     public void checkAddTag(){
         Trip trip = new Trip("Underworld Ventures", true, null);
@@ -485,6 +513,9 @@ public class TagControllerTest extends BaseTestWithApplicationAndDatabase {
         assertEquals(1, trip.getTags().size());
     }
 
+    /**
+     * This test is more a sanity check that ebeans is working with the ebeans objects properly
+     */
     @Test
     public void checkRemoveTagFromTrip(){
         Trip trip = new Trip("GOAT trip", true, null);

@@ -285,6 +285,13 @@ DELETE   /photos/:photoId/tags                                    controllers.Ta
 # Get trip tags
 GET   /trips/:tripId/tags                                         controllers.TagController.getTags(request : Request, tripId : Integer)
 
+#Add a new tag to a destination
+PUT /trips/:tripId/tags                                             controllers.TagController.addTripTag(request: Request, tripId :Integer, tag : String)
+
+#Remove a tag from a trip
+DELETE /trips/:tripId/tags                                          controllers.TagController.removeTripTag(request: Request, tripId :Integer, tag : String)
+
+
 # Get destination tags
 GET /destinations/:destId/tags                                 controllers.TagController.getDestTags(request : Request, destId : Integer)
 

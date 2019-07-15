@@ -10,13 +10,17 @@ import models.UserPhoto;
 import play.libs.Json;
 import play.mvc.Http;
 import play.mvc.Result;
-
-import java.util.List;
+import views.html.users.tag.displayTag;
 import java.util.Set;
 
 import static play.mvc.Results.*;
 
 public class TagController {
+
+    public Result displayTags(Http.Request request, int tagId) {
+        User user = User.getCurrentUser(request);
+        return ok(displayTag.render(TagAccessor.getTagById(tagId), user));
+    }
 
     /**
      * Searches through the database and finds tags which names contain the search query.

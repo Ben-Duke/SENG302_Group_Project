@@ -1,0 +1,12 @@
+@import helper._
+
+@(tag: Tag, user : User)
+
+@main(user, "Tags") {
+    <div class="container">
+        <div class="row">
+            <h2>Items with tag @tag.getName</h2>
+        </div>
+    </div>
+}
+

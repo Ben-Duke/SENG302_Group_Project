@@ -294,6 +294,9 @@ DELETE /destinations/:destId/tags                               controllers.TagC
 # Search for tag
 PUT /tags/search                                            controllers.TagController.searchTags(request : Request)
 
+# Tag page
+GET /tags/:tagId                                            controllers.TagController.displayTags(request: Request, tagId: Integer)
+
 # Undo
 +nocsrf
 PUT     /undo                                              controllers.UndoRedoController.undo(request: Request)

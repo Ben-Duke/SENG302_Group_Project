@@ -5,11 +5,13 @@ import factories.UserFactory;
 import models.Admin;
 import models.User;
 import models.UserPhoto;
+import org.slf4j.Logger;
 import play.libs.Json;
 import play.mvc.Http;
 import play.mvc.Result;
 import utilities.CountryUtils;
 import utilities.TestDatabaseManager;
+import utilities.UtilityFunctions;
 import views.html.users.userIndex;
 
 import java.util.ArrayList;
@@ -20,10 +22,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import static play.mvc.Results.*;
 
 public class UserController {
+
+    private Logger logger = UtilityFunctions.getLogger();
+
     // A thread safe boolean
-    AtomicBoolean wasRun = new AtomicBoolean(false);
+    private AtomicBoolean wasRun = new AtomicBoolean(false);
     // A countdownlatch which frees when the database has been populated.
-    CountDownLatch initCompleteLatch = new CountDownLatch(1);
+    private CountDownLatch initCompleteLatch = new CountDownLatch(1);
 
     /**
      * Renders the index page and populates the in memory database
@@ -42,7 +47,7 @@ public class UserController {
             ApplicationManager.setUserPhotoPath("/../user_photos/user_");
             TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
             testDatabaseManager.populateDatabase(initCompleteLatch);
-            System.out.println("populating database");
+            logger.info("populating database");
 
             CountryUtils.updateCountries();
 

@@ -252,10 +252,10 @@ public class TagController {
      * This function is used to do a request to add tag to a destination
      * @param request
      * @param tripId
-     * @param newTag
+
      * @return
      */
-    public Result addTripTag(Http.Request request, int tripId, String newTag){
+    public Result addTripTag(Http.Request request, int tripId){
         User user = User.getCurrentUser(request);
         if(user != null) {
             Trip trip = TripAccessor.getTripById(tripId);
@@ -265,12 +265,27 @@ public class TagController {
             if(!user.userIsAdmin() && user.getUserid() != trip.getUser().getUserid()){
                 return forbidden();
             }
-            Tag tag = new Tag(newTag);
-            if(trip.addTag(tag)){
-                return ok("Added new tag " + newTag);
-            }else{
-                return ok("The tag " + newTag + " appears to already be on this trip");
+            String tagName = request.body().asJson().get("tag").asText();
+
+            if(tagName.isEmpty()){
+                return badRequest("Tag name cannot be empty");
             }
+            Tag tagEbeans = TagAccessor.getTagByName(tagName);
+
+            if(tagEbeans != null) {
+                trip.addTag(tagEbeans);
+                TripAccessor.update(trip);
+                TagAccessor.update(tagEbeans);
+                return ok("The tag " + tagName + " appears to already be on this trip");
+            }
+
+            Tag tag = new Tag(tagName);
+            TagAccessor.insert(tag);
+            trip.addTag(tag);
+            TripAccessor.update(trip);
+            TagAccessor.update(tag);
+            return ok("Added new tag " + tagName);
+
 
         }
 

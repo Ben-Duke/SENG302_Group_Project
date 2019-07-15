@@ -6,7 +6,6 @@ import io.ebean.Finder;
 import io.ebean.Model;
 
 import javax.persistence.*;
-import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.List;
 
@@ -22,8 +21,9 @@ public class UserPhoto extends Model {
 
     @Column(name = "url")
     public String url;
-    public boolean isPublic;
-    public boolean isProfile;
+    
+    private boolean isPublic;
+    private boolean isProfile;
 
     private String caption = "";
 
@@ -40,9 +40,9 @@ public class UserPhoto extends Model {
 
     @JsonIgnore
     @OneToMany(mappedBy = "primaryPhoto")
-    public List<Destination> primaryPhotoDestinations;
+    private List<Destination> primaryPhotoDestinations;
 
-    public static Finder<Integer,UserPhoto> find = new Finder<>(UserPhoto.class);
+    public static final Finder<Integer,UserPhoto> find = new Finder<>(UserPhoto.class);
 
     /**
      * Default constructor for caption edit commands
@@ -84,6 +84,7 @@ public class UserPhoto extends Model {
     public boolean getIsProfile(){
         return this.isProfile;
     }
+
     public UserPhoto(UserPhoto userPhoto){
         this.url = userPhoto.getUrl();
         this.isPublic = userPhoto.getIsPhotoPublic();
@@ -126,8 +127,6 @@ public class UserPhoto extends Model {
     /**
      * Calling this function will delete a user photo that has that photoId does nothing if the photoId doesn't
      * match a photo in the database
-     * @param idOfPhoto
-     * @return
      */
     public static void deletePhoto(int idOfPhoto){
         UserPhoto.find.query().where().eq("photoId",idOfPhoto).delete();

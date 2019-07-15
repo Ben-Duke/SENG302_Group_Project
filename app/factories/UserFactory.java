@@ -359,8 +359,6 @@ public class UserFactory {
         }
     }
 
-
-
     /**
      * Get the user's profile picture if it exists
      * @param userId the user id of the user whose profile picture is to be retrieved

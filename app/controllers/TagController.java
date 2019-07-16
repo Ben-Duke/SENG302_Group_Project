@@ -234,15 +234,15 @@ public class TagController {
      */
     public Result getTags(Http.Request request, int tripId){
         User user = User.getCurrentUser(request);
-        if(user != null){
+        if (user != null) {
             Trip trip = TripAccessor.getTripById(tripId);
-            if(trip == null){
+            if (trip == null) {
                 return notFound("No trip with that id exists");
             }
 
             Set<Tag> tags = trip.getTags();
 
-            if(tags == null){
+            if (tags == null) {
                 return ok("");
             }
             return ok(Json.toJson(tags));
@@ -253,50 +253,82 @@ public class TagController {
     }
 
     /**
-     * This function is used to do a request to add tag to a destination
+     * This function is used to do a request to add a tag to a destination
      * @param request
      * @param tripId
 
      * @return
      */
-    public Result addTripTag(Http.Request request, int tripId){
+    public Result addTripTag(Http.Request request, int tripId) {
         User user = User.getCurrentUser(request);
-        if(user != null) {
+        if (user != null) {
             Trip trip = TripAccessor.getTripById(tripId);
-            if(trip == null){
+            if (trip == null) {
                 return notFound();
             }
-            if(!user.userIsAdmin() && user.getUserid() != trip.getUser().getUserid()){
+            if (!user.userIsAdmin() && user.getUserid() != trip.getUser().getUserid()){
                 return forbidden();
             }
             String tagName = request.body().asJson().get("tag").asText();
 
-            if(tagName.isEmpty()){
+            if (tagName.isEmpty()) {
                 return badRequest("Tag name cannot be empty");
             }
             Tag tagEbeans = TagAccessor.getTagByName(tagName);
 
-            if(tagEbeans != null) {
+            if (tagEbeans != null) {
                 trip.addTag(tagEbeans);
                 TripAccessor.update(trip);
                 TagAccessor.update(tagEbeans);
                 return ok("The tag " + tagName + " appears to already be on this trip");
             }
-
             Tag tag = new Tag(tagName);
             TagAccessor.insert(tag);
             trip.addTag(tag);
             TripAccessor.update(trip);
             TagAccessor.update(tag);
             return ok("Added new tag " + tagName);
-
-
         }
 
         return unauthorized();
     }
 
-    public Result removeTripTag(Http.Request request, int tripId, String newTag) {
-        return ok();
+    /**
+     * This function is used to do a request to remove a tag to a destination
+     * @param request
+     * @param tripId
+     * @return
+     */
+    public Result removeTripTag(Http.Request request, int tripId) {
+        User user = User.getCurrentUser(request);
+        if (user != null) {
+            Trip trip = TripAccessor.getTripById(tripId);
+            if (trip == null) {
+                return notFound();
+            }
+            if (!user.userIsAdmin() && user.getUserid() != trip.getUser().getUserid()) {
+                return forbidden();
+            }
+            String tagName = request.body().asJson().get("tag").asText();
+
+            if (tagName.isEmpty()) {
+                return badRequest("Tag name cannot be empty");
+            }
+            Tag tagEbeans = TagAccessor.getTagByName(tagName);
+            if (tagEbeans == null) {
+                return notFound("That tag does not exist");
+            }
+            if (trip.getTags().contains(tagEbeans)) {
+                trip.removeTag(tagEbeans);
+                TripAccessor.update(trip);
+                TagAccessor.update(tagEbeans);
+                return ok("Tag removed from trip");
+            }
+            else{
+                return notFound("Tag was not on this trip");
+            }
+
+        }
+        return unauthorized("Need to be logged in to perform that action");
     }
 }

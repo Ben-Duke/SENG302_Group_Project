@@ -548,11 +548,56 @@ public class TagControllerTest extends BaseTestWithApplicationAndDatabase {
         assertEquals(2, trip.getTags().size());
     }
 
-
-
     @Test
     public void checkRemoveTripTag() {
-        fail();
+        Map<String, String> tagData = new HashMap<>();
+        tagData.put("tag", "Best trip ever");
+        tripTagHelper("DELETE", tagData,  1 , 2);
+        assertEquals(0, TripAccessor.getTripById(1).getTags().size());
+    }
+
+    @Test
+    public void checkRemoveTripTagTripDoesNotExist() {
+        Map<String, String> tagData = new HashMap<>();
+        tagData.put("tag", "Best trip ever");
+        Result result = tripTagHelper("DELETE", tagData,  100000 , 2);
+        assertEquals(NOT_FOUND, result.status());
+    }
+
+    @Test
+    public void checkRemoveTripTagWithNoSignedInUser() {
+        Map<String, String> tagData = new HashMap<>();
+        tagData.put("tag", "Best trip ever");
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(DELETE)
+                .bodyJson(Json.toJson(tagData))
+                .uri("/trips/1/tags");
+        Result result = route(app, request);
+        assertEquals(UNAUTHORIZED, result.status());
+    }
+
+    @Test
+    public void checkRemoveTripTagUserIsNotTheOwnerOrAdmin() {
+        Map<String, String> tagData = new HashMap<>();
+        tagData.put("tag", "Best trip ever");
+        Result result = tripTagHelper("DELETE", tagData,  1 , 4);
+        assertEquals(FORBIDDEN, result.status());
+    }
+
+    @Test
+    public void checkRemoveTripTagWhenTagNameIsEmpty() {
+        Map<String, String> tagData = new HashMap<>();
+        tagData.put("tag", "");
+        Result result = tripTagHelper("DELETE", tagData,  1 , 2);
+        assertEquals(BAD_REQUEST, result.status());
+    }
+
+    @Test
+    public void checkRemoveTripTagWhenTagNameIsNotInDatabase() {
+        Map<String, String> tagData = new HashMap<>();
+        tagData.put("tag", "Not in database");
+        Result result = tripTagHelper("DELETE", tagData,  1 , 2);
+        assertEquals(NOT_FOUND, result.status());
     }
 
     /**

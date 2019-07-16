@@ -289,7 +289,7 @@ GET   /trips/:tripId/tags                                         controllers.Ta
 PUT /trips/:tripId/tags                                             controllers.TagController.addTripTag(request: Request, tripId :Integer)
 
 #Remove a tag from a trip
-DELETE /trips/:tripId/tags                                          controllers.TagController.removeTripTag(request: Request, tripId :Integer, tag : String)
+DELETE /trips/:tripId/tags                                          controllers.TagController.removeTripTag(request: Request, tripId :Integer)
 
 
 # Get destination tags

@@ -17,8 +17,17 @@ import static play.mvc.Results.*;
 
 public class TagController {
 
+    /**
+     * Displays the tag page for a particular tag
+     * @param request The http request, with a logged in user
+     * @param tagId the id of the tag to display
+     * @return Ok if the user is logged in, otherwise unauthorized
+     */
     public Result displayTags(Http.Request request, int tagId) {
         User user = User.getCurrentUser(request);
+        if (user == null) {
+            return unauthorized();
+        }
         return ok(displayTag.render(TagAccessor.getTagById(tagId), user));
     }
 

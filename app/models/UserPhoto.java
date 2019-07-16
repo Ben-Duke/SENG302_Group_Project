@@ -17,7 +17,7 @@ import java.util.List;
 @Table(uniqueConstraints={@UniqueConstraint(columnNames={"url"})})
 public class UserPhoto extends Model {
     @Id //The photos primary key
-    public int photoId;
+    public transient int photoId;
 
     @Column(name = "url")
     public String url;
@@ -92,6 +92,7 @@ public class UserPhoto extends Model {
         this.isProfile = userPhoto.getIsProfilePhoto();
         this.destinations = userPhoto.getDestinations();
         this.primaryPhotoDestinations = userPhoto.getPrimaryPhotoDestinations();
+        this.caption = userPhoto.getCaption();
     }
 
 
@@ -104,24 +105,24 @@ public class UserPhoto extends Model {
     }
 
     /**
-     * Gets an unused user photo url.
+     * Gets an unused user photo filename.
      *
      * Checks for duplicate photo file names and increments the file name index until a non duplicate file name
      * is found.
      *
-     * @return A String representing the unused url of the photo
+     * @return A String representing the unused filename of the photo
      */
     public String getUnusedUserPhotoFileName(){
         int count = 0;
         UserPhoto userPhoto = this;
-        String url = "";
+        String filename = "";
         while(userPhoto != null) {
             count += 1;
-            url = count + "_" + this.url;
-            userPhoto = UserPhoto.find.query().where().eq("url", url).findOne();
+            filename = count + "_" + this.url;
+            userPhoto = UserPhoto.find.query().where().eq("url", filename).findOne();
         }
 
-        return url;
+        return filename;
     }
 
     /**

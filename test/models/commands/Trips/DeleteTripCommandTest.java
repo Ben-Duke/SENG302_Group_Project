@@ -33,6 +33,7 @@ public class DeleteTripCommandTest extends BaseTestWithApplicationAndDatabase {
                 "Trip to New Zealand").findOne();
         assertNotNull(restoredTrip);
         assertEquals(2, restoredTrip.getVisits().size());
+        assertEquals(1, restoredTrip.getTags().size());
     }
 
     @Test

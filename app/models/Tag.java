@@ -55,6 +55,7 @@ public class Tag extends Model implements Comparable{
         this.destinations.add(destination);
     }
 
+
     public void addDestinationById(Integer destId) {
         Destination destination = Destination.find.byId(destId);
         addDestination(destination);

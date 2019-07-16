@@ -8,6 +8,7 @@ import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.Http;
 import play.mvc.Result;
+import utilities.UtilityFunctions;
 import views.html.users.profile.*;
 import factories.UserFactory;
 
@@ -22,7 +23,7 @@ import static play.mvc.Results.*;
  * A Controller class for the user registration page.
  */
 public class RegisterController {
-    public static final Logger logger = LoggerFactory.getLogger("application");
+    public static final Logger logger = UtilityFunctions.getLogger();
 
     @Inject
     FormFactory formFactory;

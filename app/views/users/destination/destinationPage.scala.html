@@ -239,9 +239,8 @@
                             Set as primary</a>
                         }
 
-                        <button class="btn btn-danger" onclick="deletePhotoRequest(
-                                '@routes.ProfileController.deletePhoto(photo.getPhotoId(),false)', @photo.getPhotoId(), '@photo.getUrl(), false')">
-                            Remove Photo</button></td>
+                        <a class="btn btn-danger" href="@routes.DestinationController.unlinkPhotoFromDestination(photo.getPhotoId(), destination.getDestId())">
+                        Remove Photo</a>
                     </div>
                     }
                 </div>
@@ -254,7 +253,6 @@
                 </div>
             </div>
         </div>
-    </div>
     </div>
 
 

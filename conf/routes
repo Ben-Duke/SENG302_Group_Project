@@ -242,8 +242,9 @@ PUT     /users/destinations/:id         controllers.DestinationController.linkPh
 #Handles linking a photo to a destination
 GET /users/destinations/:destId/add_photo/:photoId     controllers.DestinationController.addPhotoToDestination(request : Request, photoId : Integer, destId : Integer)
 
-
 #Handles unlinking a destination from a photo
+GET /users/destinations/:destId/remove_photo/:photoId   controllers.DestinationController.unlinkPhotoFromDestination(request : Request, photoId : Integer, destId : Integer)
+
 +nocsrf
 DELETE  /users/destinations/:photoId/:destId                   controllers.DestinationController.unlinkPhotoFromDestination(request : Request, photoId : Integer, destId: Integer)
 

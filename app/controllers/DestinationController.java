@@ -752,6 +752,7 @@ public class DestinationController extends Controller {
      *         badRequest if the destination and photo were not linked     *
      */
     public Result unlinkPhotoFromDestination(Http.Request request, int photoId, int destId) {
+
         User user = User.getCurrentUser(request);
         UserPhoto photo = UserPhoto.find.byId(photoId);
         Destination destination = Destination.find.byId(destId);
@@ -772,7 +773,7 @@ public class DestinationController extends Controller {
         UnlinkPhotoDestinationCommand cmd = new UnlinkPhotoDestinationCommand(photo, destination);
         user.getCommandManager().executeCommand(cmd);
 
-        return ok();
+        return redirect(routes.DestinationController.viewDestination(destId));
     }
 
     /**

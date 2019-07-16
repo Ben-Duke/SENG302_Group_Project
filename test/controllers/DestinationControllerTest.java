@@ -1086,7 +1086,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
                 .uri("/users/destinations/1/1")
                 .session("connected", "2");
         Result result = route(app, unlinkRequest);
-        assertEquals(OK, result.status());
+        assertEquals(SEE_OTHER, result.status());
     }
 
     /**
@@ -1282,7 +1282,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
                 .uri("/users/destinations/1/4")
                 .session("connected", "3");
         Result result = route(app, unlinkRequest);
-        assertEquals(OK, result.status());
+        assertEquals(SEE_OTHER, result.status());
     }
 
     /**
@@ -1329,7 +1329,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
                 .uri("/users/destinations/1/4")
                 .session("connected", "2");
         Result result = route(app, unlinkRequest);
-        assertEquals(OK, result.status());
+        assertEquals(SEE_OTHER, result.status());
     }
 
     /**

@@ -9,14 +9,14 @@ $(document).keydown('undo_redo', function(e) {
         undoRedoRequest("undo")
     } else if (e.ctrlKey && e.keyCode === 89) {
         undoRedoRequest("redo")
-    };
+    }
 });
 
 /**
  * Sets the onclick method for navigation bar undo button
  * Completes given undo request
  */
-$('#undoButton').click( function(e) {
+$('#undoButton').click( function() {
     undoRedoRequest("undo")
 });
 
@@ -24,7 +24,7 @@ $('#undoButton').click( function(e) {
  * Sets the onclick method for navigation bar redo button
  * Completes given redo request
  */
-$('#redoButton').click( function(e) {
+$('#redoButton').click( function() {
     undoRedoRequest("redo")
 });
 
@@ -111,7 +111,7 @@ $(function () {
  * @param message Either Undo or Redo
  */
 function showMessage(message, action) {
-    var x = document.getElementById("snackbar");
+    const x = document.getElementById("snackbar");
 
     // Add the "show" class to DIV
     x.className = "show";
@@ -120,7 +120,7 @@ function showMessage(message, action) {
     setTimeout(function(){
         x.className = x.className.replace("show", "");
     }, 3000);
-};
+}
 
 /**
  * Requests the photo caption and sets the captionInput to match that if it exists.

@@ -21,7 +21,7 @@ public class UserPhoto extends Model {
 
     @Column(name = "url")
     public String url;
-    
+
     private boolean isPublic;
     private boolean isProfile;
 
@@ -85,7 +85,7 @@ public class UserPhoto extends Model {
         return this.isProfile;
     }
 
-    public UserPhoto(UserPhoto userPhoto){
+    public UserPhoto(UserPhoto userPhoto) {
         this.url = userPhoto.getUrl();
         this.isPublic = userPhoto.getIsPhotoPublic();
         this.user = userPhoto.getUser();

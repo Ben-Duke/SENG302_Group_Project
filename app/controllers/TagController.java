@@ -20,15 +20,16 @@ public class TagController {
     /**
      * Displays the tag page for a particular tag
      * @param request The http request, with a logged in user
-     * @param tagId the id of the tag to display
+     * @param tagName the name of the tag to display
      * @return Ok if the user is logged in, otherwise unauthorized
      */
-    public Result displayTags(Http.Request request, int tagId) {
+    public Result displayTags(Http.Request request, String tagName) {
+        System.out.println(tagName);
         User user = User.getCurrentUser(request);
         if (user == null) {
             return unauthorized();
         }
-        return ok(displayTag.render(TagAccessor.getTagById(tagId), user));
+        return ok(displayTag.render(TagAccessor.getTagByName(tagName), user));
     }
 
     /**

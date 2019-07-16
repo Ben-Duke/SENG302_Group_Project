@@ -5,24 +5,21 @@ addTagSearchTagListeners();
 function addTagSearchTagListeners() {
     try {
         const searchBar = document.getElementById("tag-search");
-        const dropdown = document.getElementById('dropdown');
-        searchBar.addEventListener('focus', () => {
-            dropdown.style.display = 'block';
-        });
-        searchBar.addEventListener('blur', () => {
-            setTimeout(() => {
-                dropdown.style.display = 'none';
-            }, 100); // Short 100 ms delay to allow links to load before the link disappear
-        });
+        const datalist = document.getElementById("tag-results");
         searchBar.addEventListener('input', () => {
-            while (dropdown.firstChild) {
-                dropdown.removeChild(dropdown.firstChild);
+            while (datalist.firstChild) {
+                datalist.removeChild(datalist.firstChild);
             }
             const query = searchBar.value;
             if (query) {
                 searchTags(query);
             }
         });
+        searchBar.addEventListener('keydown', e => {
+            if (e.key === 'Enter') {
+                window.location.href = "/tags/" + searchBar.value
+            }
+        })
     } catch (err) {
         //do nothing. Just to avoid errors if the correct page is not loaded
     }
@@ -39,21 +36,30 @@ function searchTags(query) {
             'Content-Type': 'application/json'
         }
     }).done((result) => {
-        addTagsToDropdown(result)
+        addTagsToDataList(result)
     }).fail((xhr, textStatus, errorThrown) => {
         console.log(xhr.status + " " + textStatus + " " + errorThrown);
     });
 }
 
-function addTagsToDropdown(result) {
-    const list = document.createElement("UL");
+function addTagsToDataList(result) {
+    const list = document.getElementById('tag-results');
+    list.addEventListener('click', () => {
+        console.log("yeet")
+    })
     for (let tag of result) {
-        const link = document.createElement("A");
-        link.href = "/tags/" + tag.tagId;
-        link.appendChild(document.createTextNode(tag.name));
-        list.appendChild(link);
+        const tagSelection = document.createElement('OPTION');
+        tagSelection.value = tag.name;
+        tagSelection.addEventListener('click', () => {
+            console.log('haha yeet');
+            console.log(tag)
+        });
+        list.appendChild(tagSelection);
+        // const link = document.createElement("A");
+        // link.href = "/tags/" + tag.tagId;
+        // link.appendChild(document.createTextNode(tag.name));
+        // list.appendChild(link);
     }
-    document.getElementById('dropdown').appendChild(list);
 }
 
 /**

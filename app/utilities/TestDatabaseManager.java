@@ -247,7 +247,7 @@ public class TestDatabaseManager {
         }
 
         if (isInSuccessState) {
-            Admin admin = new Admin(user.userid, true);
+            Admin admin = new Admin(user.getUserid(), true);
             try {
                 admin.save();
             } catch (Exception e) {

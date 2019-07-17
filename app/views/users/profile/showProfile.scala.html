@@ -11,7 +11,7 @@
     </head>
 
     <div class="container">
-        <h1>@user.fName @user.lName
+        <h1>@user.getFName @user.getLName
             @if(UserFactory.getUserProfilePicture(user.getUserid()) != null){
                 <img class="img-circle"  width = "50" height="50" src="@{routes.HomeController.serveProfilePicture(user.getUserid())}">
             } else {
@@ -40,15 +40,15 @@
         <div class="row">
             <div class="col-md-4">
                 <h2>Profile</h2>
-                <p>Gender: @user.gender</p>
-                <p>Date of Birth: @user.dateOfBirth</p>
-                @for(nationality <- user.nationality) {
+                <p>Gender: @user.getGender</p>
+                <p>Date of Birth: @user.getDateOfBirth</p>
+                @for(nationality <- user.getNationality) {
                     <p>Nationality: @nationality.nationalityName
                     </p>
                 }
-                <p>Creation date: @user.creationDate</p>
+                <p>Creation date: @user.getCreationDate</p>
                 <ul class="list-group">
-                @for(travellerType <- user.travellerTypes) {
+                @for(travellerType <- user.getTravellerTypes) {
                     <li class="list-group-item" style = "width: 300px;">
                     @travellerType.travellerTypeName </li>
                 }

@@ -26,19 +26,19 @@ import java.util.*;
 public class User extends Model implements Comparable<User> {
 
     @Column(name="email")
-    public String email; // The email of the User
+    private String email; // The email of the User
 
 
     @Id
-    public Integer userid; // The ID of the user. This is the primary key.
+    private Integer userid; // The ID of the user. This is the primary key.
 
-    public String passwordHash; // hashed password
+    private String passwordHash; // hashed password
 
     @Temporal(TemporalType.TIMESTAMP)
     @Formats.DateTime(pattern="yyyy-MM-dd HH:mm:ss")
     //date was protected not public/private for some reason
     @CreatedTimestamp
-    public Date creationDate;
+    private Date creationDate;
 
     /**
      * The nationality of the user.
@@ -46,24 +46,24 @@ public class User extends Model implements Comparable<User> {
      */
     @JsonIgnore
     @ManyToMany
-    public List<Nationality> nationality;
+    private List<Nationality> nationality;
 
     /**
      * The date of birth of the user
      */
-    public LocalDate dateOfBirth;
+    private LocalDate dateOfBirth;
     /**
      * The gender of the user.
      */
-    public String gender;
+    private String gender;
     /**
      * The first name of the user.
      */
-    public String fName;
+    private String fName;
     /**
      * The last name of the user
      */
-    public String lName;
+    private String lName;
 
     /**
      * True if there was an error undoing or redoing the stack, false otherwise.
@@ -75,36 +75,36 @@ public class User extends Model implements Comparable<User> {
      */
     @JsonIgnore
     @ManyToMany
-    public List<Passport> passports;
+    private List<Passport> passports;
 
     @JsonIgnore
     @OneToMany(mappedBy = "user")
-    public List<Trip> trips;
+    private List<Trip> trips;
 
     @JsonIgnore
     @OneToMany(mappedBy = "user")
-    public List<TreasureHunt> treasureHunts;
+    private List<TreasureHunt> treasureHunts;
 
     @JsonIgnore
     @OneToMany(mappedBy = "user")
-    public List<Destination> destinations;
+    private List<Destination> destinations;
 
     @JsonIgnore
     @ManyToMany
-    public List<TravellerType> travellerTypes;
+    private List<TravellerType> travellerTypes;
 
     @JsonIgnore
     @ManyToMany
-    public List<TreasureHunt> guessedTHunts;
+    private List<TreasureHunt> guessedTHunts;
 
     @JsonIgnore
     @OneToMany(mappedBy = "user")
-    public List<UserPhoto> userPhotos;
+    private List<UserPhoto> userPhotos;
 
     public static Finder<Integer,User> find = new Finder<>(User.class);
 
     @Deprecated
-    public Boolean isAdmin = false;
+    private Boolean isAdmin = false;
 
 
     // ^^^^^ Class attributes ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

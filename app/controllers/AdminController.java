@@ -31,7 +31,7 @@ public class AdminController extends Controller {
         if (!userList.isEmpty()) {
             User currentUser = userList.get(0);
             if (currentUser != null) {
-                Admin currentAdmin = Admin.find.query().where().eq("userId", currentUser.userid).findOne();
+                Admin currentAdmin = Admin.find.query().where().eq("userId", currentUser.getUserid()).findOne();
                 if (currentAdmin != null) {
                     List<User> users = User.find.all();
                     List<DestinationModificationRequest> allReqs = DestinationModificationRequest.find.all();
@@ -55,7 +55,7 @@ public class AdminController extends Controller {
     public Result adminToUser(Http.Request request, Integer requestedUserId) {
         User currentUser = User.getCurrentUser(request);
         if (currentUser != null) {
-            Admin currentAdmin = Admin.find.query().where().eq("userId", currentUser.userid).findOne();
+            Admin currentAdmin = Admin.find.query().where().eq("userId", currentUser.getUserid()).findOne();
             if (currentAdmin != null && !currentAdmin.userId.equals(requestedUserId)) {
                 Admin admin1 = Admin.find.query().where().eq("userId", requestedUserId).findOne();
                 if (admin1 != null && !admin1.isDefault()) {
@@ -80,7 +80,7 @@ public class AdminController extends Controller {
     public Result userToAdmin(Http.Request request, Integer requestedUserId) {
         User currentUser = User.getCurrentUser(request);
         if (currentUser != null) {
-            Admin currentAdmin = Admin.find.query().where().eq("userId", currentUser.userid).findOne();
+            Admin currentAdmin = Admin.find.query().where().eq("userId", currentUser.getUserid()).findOne();
             if (currentAdmin != null && !currentAdmin.userId.equals(requestedUserId)) {
                 Admin admin = new Admin(requestedUserId, false);
                 admin.insert();
@@ -93,7 +93,7 @@ public class AdminController extends Controller {
     public Result viewDestinationModificationRequest(Http.Request request, Integer destModReqId) {
         User currentUser = User.getCurrentUser(request);
         if (currentUser != null) {
-            Admin currentAdmin = Admin.find.query().where().eq("userId", currentUser.userid).findOne();
+            Admin currentAdmin = Admin.find.query().where().eq("userId", currentUser.getUserid()).findOne();
             if (currentAdmin != null) {
                 DestinationModificationRequest modReq = DestinationModificationRequest.find.query().where().eq("id", destModReqId).findOne();
                 if (modReq != null) {

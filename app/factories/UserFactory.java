@@ -308,16 +308,16 @@ public class UserFactory {
     public static int getNatsForUserbyId(int userId){
         int count = 0;
         User user = User.find.query().where().eq("userid", userId).findOne();
-        count = user.nationality.size();
+        count = user.getNationality().size();
         return count;
     }
 
     public static List<Passport> getUserPassports(int id){
-        return User.find.query().where().eq("userid", id).findOne().passports;
+        return User.find.query().where().eq("userid", id).findOne().getPassports();
     }
 
     public static List<Nationality> getUserNats(int id){
-        return User.find.query().where().eq("userid", id).findOne().nationality;
+        return User.find.query().where().eq("userid", id).findOne().getNationality();
     }
 
     public static void addPassportToUser(int id, String passportId){

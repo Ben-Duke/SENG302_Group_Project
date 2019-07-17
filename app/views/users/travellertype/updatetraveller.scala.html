@@ -10,7 +10,7 @@
 
 
             <div class ="row">
-            @for(travellerType <- user.travellerTypes) {
+            @for(travellerType <- user.getTravellerTypes) {
                 <div class="container">
                 @form(action = helper.CSRF(routes.TravellerTypeController.deleteUpdateTravellerType(travellerType.getTtypeid))) {
                     <ul class="list-group">

@@ -13,7 +13,7 @@
     </head>
     <div class="container">
             <!-- The thumbnail in the else is being displayed to show the AC passing -->
-        <h1>@user.getFName() @user.lName
+        <h1>@user.getFName() @user.getLName
             @if(UserFactory.getUserProfilePicture(user.getUserid()) != null){
                 <img id="thumbnailProfilePic" class="img-circle"  width = "50" height="50" src="@{routes.HomeController.serveProfilePicture(user.getUserid())}">
             } else {
@@ -23,7 +23,7 @@
                 <img class="img"  width = "60" height="50" src="../assets/images/key_2_small.png">
             }
             @if(adminUser.userIsAdmin && user.getUserid != adminUser.getUserid) {
-                <a class="btn btn-default" href="@routes.AdminController.setUserBackToAdmin(adminUser.userid)">
+                <a class="btn btn-default" href="@routes.AdminController.setUserBackToAdmin(adminUser.getUserid)">
                     Back to your profile
                 </a>
             }
@@ -61,12 +61,12 @@
         <div class="col-md-4">
             <h2>Profile</h2>
             <p>Email: @user.getEmail()</p>
-            <p>Gender: @user.gender</p>
-            <p>Date of Birth: @user.dateOfBirth</p>
+            <p>Gender: @user.getGender</p>
+            <p>Date of Birth: @user.getDateOfBirth</p>
             <p>Passport(s):
             <div class="col-sm-offset-4">
                 <ul class="list-group" >
-                    @for(passport <- user.passports) {
+                    @for(passport <- user.getPassports) {
                     <li class="list-group-item">
                         @passport.passportName
                         @countryErrorMessage(passport)
@@ -77,7 +77,7 @@
             </p>
             <p>Nationality(s):
             <ul class="list-group col-sm-offset-4" >
-                @for(nationality <- user.nationality) {
+                @for(nationality <- user.getNationality) {
                 <li class="list-group-item">
                     @nationality.nationalityName
                     @countryErrorMessage(nationality)
@@ -88,13 +88,13 @@
             <p>Traveller type(s):
             <div class="col-sm-offset-4">
                 <ul class="list-group" >
-                    @for(travellerType <- user.travellerTypes) {
+                    @for(travellerType <- user.getTravellerTypes) {
                     <li class="list-group-item">@travellerType.travellerTypeName</li>
                     }
                 </ul>
             </div>
             </p>
-            <p>Creation date: @user.creationDate</p>
+            <p>Creation date: @user.getCreationDate</p>
 
         </div>
         <div class="col-md-4">

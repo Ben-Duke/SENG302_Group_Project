@@ -278,7 +278,7 @@ public class DestinationController extends Controller {
             Destination oldDestination = DestinationAccessor.getDestinationById(destId);
 
             if (oldDestination != null) {
-                if (oldDestination.isUserOwner(user.userid) || user.userIsAdmin()) {
+                if (oldDestination.isUserOwner(user.getUserid()) || user.userIsAdmin()) {
                     oldDestination.applyEditChanges(newDestination);
                     EditDestinationCommand editDestinationCommand =
                             new EditDestinationCommand(oldDestination);
@@ -455,7 +455,7 @@ public class DestinationController extends Controller {
     public Result destinationModificationReject(Http.Request request, Integer destModReqId) {
         User currentUser = User.getCurrentUser(request);
         if (currentUser != null) {
-            Admin currentAdmin = Admin.find.query().where().eq("userId", currentUser.userid).findOne();
+            Admin currentAdmin = Admin.find.query().where().eq("userId", currentUser.getUserid()).findOne();
             if (currentAdmin != null) {
                 DestinationModificationRequest modReq = DestinationModificationRequest.find.query().where().eq("id", destModReqId).findOne();
                 if (modReq != null) {
@@ -486,7 +486,7 @@ public class DestinationController extends Controller {
     public Result destinationModificationAccept(Http.Request request, Integer destModReqId) {
         User currentUser = User.getCurrentUser(request);
         if (currentUser != null) {
-            Admin currentAdmin = Admin.find.query().where().eq("userId", currentUser.userid).findOne();
+            Admin currentAdmin = Admin.find.query().where().eq("userId", currentUser.getUserid()).findOne();
             if (currentAdmin != null) {
                 DestinationModificationRequest modReq = DestinationModificationRequest.find.query().where().eq("id", destModReqId).findOne();
                 if (modReq != null) {
@@ -544,7 +544,7 @@ public class DestinationController extends Controller {
 
                     return redirect(routes.DestinationController.indexDestination());
                 }
-                else if (destination.isUserOwner(user.userid)) {
+                else if (destination.isUserOwner(user.getUserid())) {
                     if(destination.visits.isEmpty()) {
                         List<TreasureHunt> treasureHunts = TreasureHunt.find.query().where().eq("destination", destination).findList();
                         if (treasureHunts.isEmpty()) {
@@ -588,7 +588,7 @@ public class DestinationController extends Controller {
             Destination destination = Destination.find.query().where().eq("destid", destId).findOne();
 
             if (destination != null) {
-                if (destination.isUserOwner(user.userid)) {
+                if (destination.isUserOwner(user.getUserid())) {
                     if (destination.getIsCountryValid()) {
 
                         //-----------checking if a public destination equivalent
@@ -602,7 +602,7 @@ public class DestinationController extends Controller {
                         } else {
                             //no matching pub destination exists, making public now
                             //sets the destination to public, sets the owner to the default admin and updates the destination
-                            List<Destination> matchingDests = destFactory.getOtherUsersMatchingPrivateDestinations(user.userid, destination);
+                            List<Destination> matchingDests = destFactory.getOtherUsersMatchingPrivateDestinations(user.getUserid(), destination);
                             if (matchingDests.size() == 0) {
                                 destination.setIsPublic(true);
                                 destination.update();
@@ -628,8 +628,8 @@ public class DestinationController extends Controller {
         if (user != null) {
             Destination destination = Destination.find.query().where().eq("destid", destId).findOne();
             if (destination != null) {
-                List<Destination> matchingDests = destFactory.getOtherUsersMatchingPrivateDestinations(user.userid, destination);
-                if (destination.isUserOwner(user.userid) || user.userIsAdmin()) {
+                List<Destination> matchingDests = destFactory.getOtherUsersMatchingPrivateDestinations(user.getUserid(), destination);
+                if (destination.isUserOwner(user.getUserid()) || user.userIsAdmin()) {
                     destFactory.mergeDestinations(matchingDests, destination);
                     return redirect(routes.DestinationController.indexDestination());
                 } else {

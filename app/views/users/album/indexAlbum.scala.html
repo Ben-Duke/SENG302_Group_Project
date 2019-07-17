@@ -48,7 +48,7 @@
 
             <button onclick="
             manipulateMediaInAlbum(
-            '@routes.AlbumController.addMediaToAlbum(1)',
+            '@routes.AlbumController.addMediaToAlbum(2)',
             [1,2])
         ">Add media to album</button>
 
@@ -78,63 +78,56 @@
         <br>
 
 
-        <div id="userImageArray" class="container">
-            <div class="row" width="750px">
-                @if(albums.isEmpty()) {
-                <div class="well" style="width: 250px; height: 50px"><p>You don't have any photos yet.</p></div>
-                } else {
-                @for(album <- albums) {
-                <div class="column-sm-3">
-                    <div id="Album@album.getAlbumId"  class="container">
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                <h3 class="panel-title">@album.getTitle() ID:@album.getAlbumId Size:@album.viewAllMedia(true).size()</h3>
+        <br>
+
+<div class="container">
+    <div class="row">
+        @for(album <- albums) {
+        <div class="col-sm-3">
+            <a href="@routes.AlbumController.viewAlbum(album.getAlbumId)">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">@album.getTitle()</h3>
+                </div>
+                <div class="panel-body" style="min-height: 150px; max-height: 150px; height: 150px;">
+                    <div id="Carousel@album.getAlbumId" class="carousel slide" data-ride="carousel">
+
+                        <!-- Wrapper for slides -->
+                        <div class="carousel-inner">
+                            @if(0 < album.viewAllMedia(true).size()) {
+                            <div class="item active">
+                                <img class="center" id=@{album.viewAllMedia(true).get(0).getUrl()} style="width:140px;height:125px;" src="@{routes.HomeController.index(album.viewAllMedia(true).get(0).getUrlWithPath)}" alt="User Image">
                             </div>
-                            <div class="panel-body" style="min-height: 100; max-height: 100;">
-                                <div id="Carousel@album.getAlbumId" class="carousel slide" data-ride="carousel">
-                                    <!-- Indicators -->
-                                    <ol class="carousel-indicators hidden">
-                                        @if(0 < album.viewAllMedia(true).size()) {
-                                        <li data-target="#Carousel@album.getAlbumId" data-slide-to="0" class="active"></li>
-                                        }
-                                        @for(i <- 1 to 2) {
-                                        @if(i < album.viewAllMedia(true).size()) {
-                                        <li data-target="#Carousel@album.getAlbumId" data-slide-to="@i"></li>
-                                        }
-                                        }
-                                    </ol>
-
-                                    <!-- Wrapper for slides -->
-                                    <div class="carousel-inner">
-                                        @if(0 < album.viewAllMedia(true).size()) {
-                                        <div class="item active">
-                                            <img class="center" id=@{album.viewAllMedia(true).get(0).getUrl()} width="auto" height="100" max-width="100" src="@{routes.HomeController.index(album.viewAllMedia(true).get(0).getUrlWithPath)}" alt="User Image">
-                                        </div>
-                                        } else {
-                                        <div class="item active">
-                                            <img class="center" width="auto" height="100" max-width="100" src="/assets/images/destinationPlaceHolder.png">
-                                        </div>
-                                        }
-
-
-                                        @for(i <- 1 to 2) {
-                                        @if(i < album.viewAllMedia(true).size()){
-                                        <div class="item">
-                                            <img class="center" id=@{album.viewAllMedia(true).get(i).getUrl()} width="auto" height="100" max-width="100" src="@{routes.HomeController.index(album.viewAllMedia(true).get(i).getUrlWithPath)}" alt="User Image">
-                                        </div>
-                                        }
-                                        }
-                                    </div>
-
-                                </div>
+                            } else {
+                            <div class="item active">
+                                <img class="center"  style="width:140px;height:125px;"src="/assets/images/destinationPlaceHolder.png">
                             </div>
+                            }
+
+
+                            @for(i <- 1 to 2) {
+                            @if(i < album.viewAllMedia(true).size()){
+                            <div class="item">
+                                <img class="center" id=@{album.viewAllMedia(true).get(i).getUrl()} style="width:140px;height:125px;" src="@{routes.HomeController.index(album.viewAllMedia(true).get(i).getUrlWithPath)}" alt="User Image">
+                            </div>
+                            }
+                            }
                         </div>
+
                     </div>
                 </div>
-            }
-            }
             </div>
+            </a>
         </div>
+        }
+    </div>
+</div>
+</div>
+
+</div>
+
+
+
 
 
 

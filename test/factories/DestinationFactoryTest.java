@@ -243,7 +243,7 @@ public class DestinationFactoryTest extends BaseTestWithApplicationAndDatabase {
     public void testMergingTwoPrivateDestinations() {
         User adminUser = new User("test@testytest.test", "hunter22");
         adminUser.save();
-        Admin admin = new Admin(adminUser.userid, true);
+        Admin admin = new Admin(adminUser.getUserid(), true);
         admin.save();
         Destination testPrivateDestination = new Destination("Rotherham",
                 "Town", "North Canterbury", "New Zealand",
@@ -274,7 +274,7 @@ public class DestinationFactoryTest extends BaseTestWithApplicationAndDatabase {
     public void testMergingTwoPrivateDestinations2() {
         User adminUser = new User("test@testytest.test", "hunter22");
         adminUser.save();
-        Admin admin = new Admin(adminUser.userid, true);
+        Admin admin = new Admin(adminUser.getUserid(), true);
         admin.save();
         Destination testPrivateDestination = new Destination("Rotherham",
                 "Town", "North Canterbury", "New Zealand",

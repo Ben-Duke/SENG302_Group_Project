@@ -41,7 +41,7 @@ public class UserAccessor {
      * @return A List of User objects with a matching email address.
      */
     public static List<User> getUsersFromEmail(String email) {
-        return  User.find.query()
+        return  User.find().query()
                     .where().eq("email", email.toLowerCase()).findList();
     }
 
@@ -50,7 +50,7 @@ public class UserAccessor {
      * @param id the id of the user
      */
     public static User getById(int id) {
-        return User.find.byId(id);
+        return User.find().byId(id);
     }
 
     public static User getUserByEmail(String email) {

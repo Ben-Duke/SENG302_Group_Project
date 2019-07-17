@@ -273,19 +273,19 @@ public class TestDatabaseManager {
         Destination destination1 = new Destination(
                 "Christchurch", "Town", "Canterbury",
                 "New Zealand", -43.5321, 172.6362,
-                User.find.byId(2));
+                User.find().byId(2));
         destination1.setIsPublic(true);
         destination1.addTravellerType(TravellerType.find.byId(1));
 
         Destination destination2 = new Destination(
                 "Wellington", "Town", "Wellington",
                 "New Zealand", -41.2866, 174.7756,
-                User.find.byId(2));
+                User.find().byId(2));
 
         Destination destination3 = new Destination(
                 "The Wok", "Cafe/Restaurant",
                 "Canterbury", "New Zealand", -43.523593,
-                172.582971, User.find.byId(2));
+                172.582971, User.find().byId(2));
         destination3.setIsPublic(true);
         destination3.addTravellerType(TravellerType.find.byId(1));
         destination3.addTravellerType(TravellerType.find.byId(3));
@@ -295,7 +295,7 @@ public class TestDatabaseManager {
         Destination destination4 = new Destination(
                 "Hanmer Springs Thermal Pools", "Attraction",
                 "North Canterbury", "New Zealand", -42.522791,
-                172.828944, User.find.byId(3));
+                172.828944, User.find().byId(3));
         destination4.setIsPublic(true);
         destination4.addTravellerType(TravellerType.find.byId(5));
         destination4.addTravellerType(TravellerType.find.byId(7));
@@ -303,11 +303,11 @@ public class TestDatabaseManager {
         Destination destination5 = new Destination(
                 "Le Mans 24 hour race", "Event",
                 "Le Mans", "France", 47.956221,
-                0.207828, User.find.byId(3));
+                0.207828, User.find().byId(3));
         Destination destination6 = new Destination(
                 "Great Pyramid of Giza", "Attraction",
                 "Giza", "Egypt", 29.979481,
-                31.134159, User.find.byId(3));
+                31.134159, User.find().byId(3));
         destination6.setIsPublic(true);
         destination6.addTravellerType(TravellerType.find.byId(7));
 
@@ -315,16 +315,16 @@ public class TestDatabaseManager {
         Destination destination7 = new Destination(
                 "Niagara Falls", "Natural Spot",
                 "New York", "United States", 29.979481,
-                31.134159, User.find.byId(4));
+                31.134159, User.find().byId(4));
         destination7.addTravellerType(TravellerType.find.byId(2));
         Destination destination8 = new Destination(
                 "Vatican City", "Country", "Rome",
                 "Vatican City", 41.903133, 12.454341,
-                User.find.byId(4));
+                User.find().byId(4));
         Destination destination9 = new Destination(
                 "Lincoln Memorial", "Monument",
                 "Washington DC", "United States", 38.889406,
-                -77.050155, User.find.byId(4));
+                -77.050155, User.find().byId(4));
         destination9.setIsPublic(true);
         destination9.addTravellerType(TravellerType.find.byId(1));
         destination9.addTravellerType(TravellerType.find.byId(4));
@@ -436,16 +436,16 @@ public class TestDatabaseManager {
         boolean isInSuccessState = true;
 
         //Add trips for user2
-        Trip trip1 = new Trip("Trip to New Zealand", true, User.find.byId(2));
-        Trip trip2 = new Trip("Christchurch to Wellington, to The Wok and back", false, User.find.byId(2));
+        Trip trip1 = new Trip("Trip to New Zealand", true, User.find().byId(2));
+        Trip trip2 = new Trip("Christchurch to Wellington, to The Wok and back", false, User.find().byId(2));
 
         // Add trips to user 3
-        Trip trip3 = new Trip("World Tour", true, User.find.byId(3));
-        Trip trip4 = new Trip("Pyramid to Race and back again", false, User.find.byId(3));
+        Trip trip3 = new Trip("World Tour", true, User.find().byId(3));
+        Trip trip4 = new Trip("Pyramid to Race and back again", false, User.find().byId(3));
 
         //Add trips to user 4
-        Trip trip5 = new Trip("See the pope, the president and come back", true, User.find.byId(4));
-        Trip trip6 = new Trip("Waterfall walk and see the president", false, User.find.byId(4));
+        Trip trip5 = new Trip("See the pope, the president and come back", true, User.find().byId(4));
+        Trip trip6 = new Trip("Waterfall walk and see the president", false, User.find().byId(4));
 
         List<Trip> trips = new ArrayList<Trip>();
         trips.add(trip1);
@@ -470,8 +470,8 @@ public class TestDatabaseManager {
     }
 
     private static void addUserPhotos(){
-        UserPhoto userPhoto1 = new UserPhoto("shrek.jpeg", true, true, User.find.byId(2));
-        UserPhoto userPhoto2 = new UserPhoto("placeholder.png", false, false, User.find.byId(2));
+        UserPhoto userPhoto1 = new UserPhoto("shrek.jpeg", true, true, User.find().byId(2));
+        UserPhoto userPhoto2 = new UserPhoto("placeholder.png", false, false, User.find().byId(2));
 
         try {
             userPhoto1.save();
@@ -487,11 +487,11 @@ public class TestDatabaseManager {
     }
 
     private static void addTreasureHunts(){
-        TreasureHunt treasureHunt1 = new TreasureHunt("Surprise", "The garden city", Destination.find.byId(1), "2019-04-17", "2019-12-25", User.find.byId(2));
+        TreasureHunt treasureHunt1 = new TreasureHunt("Surprise", "The garden city", Destination.find.byId(1), "2019-04-17", "2019-12-25", User.find().byId(2));
         treasureHunt1.save();
-        TreasureHunt treasureHunt2 = new TreasureHunt("Surprise2", "Prime example of inflation", Destination.find.byId(3), "2019-04-17", "2019-12-25", User.find.byId(3));
+        TreasureHunt treasureHunt2 = new TreasureHunt("Surprise2", "Prime example of inflation", Destination.find.byId(3), "2019-04-17", "2019-12-25", User.find().byId(3));
         treasureHunt2.save();
-        TreasureHunt treasureHunt3 = new TreasureHunt("Closed Treasure Hunt", "You should not be able to view this", Destination.find.byId(4), "2019-04-17", "2019-04-25", User.find.byId(4));
+        TreasureHunt treasureHunt3 = new TreasureHunt("Closed Treasure Hunt", "You should not be able to view this", Destination.find.byId(4), "2019-04-17", "2019-04-25", User.find().byId(4));
         treasureHunt3.save();
     }
 

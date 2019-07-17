@@ -101,7 +101,7 @@ public class User extends Model implements Comparable<User> {
     @OneToMany(mappedBy = "user")
     private List<UserPhoto> userPhotos;
 
-    public static Finder<Integer,User> find = new Finder<>(User.class);
+    private static Finder<Integer,User> find = new Finder<>(User.class);
 
     @Deprecated
     private Boolean isAdmin = false;
@@ -158,6 +158,15 @@ public class User extends Model implements Comparable<User> {
      */
     public User(){
 
+    }
+
+    /**
+     * Method to get EBeans finder object for queries.
+     *
+     * @return a Finder<Integer, User> object.
+     */
+    public static Finder<Integer, User> find() {
+        return find;
     }
 
     @Override
@@ -225,7 +234,7 @@ public class User extends Model implements Comparable<User> {
     }
 
     public static int checkUser(String email){
-        ExpressionList<User> usersExpressionList = User.find.query().where().eq("email", email.toLowerCase());
+        ExpressionList<User> usersExpressionList = User.find().query().where().eq("email", email.toLowerCase());
         int userPresent = 0;
         if (usersExpressionList.findCount() > 0) {
             userPresent = 1;
@@ -313,7 +322,7 @@ public class User extends Model implements Comparable<User> {
     }
 
     public List<User> getUsers() {
-        List<User> users= User.find.all();
+        List<User> users= User.find().all();
         return  users;
     }
 
@@ -426,7 +435,7 @@ public class User extends Model implements Comparable<User> {
                 .getOptional("connected")
                 .orElse(null);
         if (userId != null) {
-            User requestUser = User.find.query().where()
+            User requestUser = User.find().query().where()
                     .eq("userid", userId)
                     .findOne();
 
@@ -437,7 +446,7 @@ public class User extends Model implements Comparable<User> {
                     if (adminList.size() == 1) {
                         Admin admin = adminList.get(0);
                         if (admin.getUserIdToActAs() != null) {
-                            User userToEdit = User.find.byId(admin.getUserIdToActAs());
+                            User userToEdit = User.find().byId(admin.getUserIdToActAs());
                             return userToEdit;
                         } else {
                             return requestUser;
@@ -471,7 +480,7 @@ public class User extends Model implements Comparable<User> {
                 .getOptional("connected")
                 .orElse(null);
         if (userId != null) {
-            User requestUser = User.find.query().where()
+            User requestUser = User.find().query().where()
                     .eq("userid", userId)
                     .findOne();
             users.add(requestUser);
@@ -483,7 +492,7 @@ public class User extends Model implements Comparable<User> {
                     if (adminList.size() == 1) {
                         Admin admin = adminList.get(0);
                         if (admin.getUserIdToActAs() != null) {
-                            User userToEdit = User.find.byId(admin.getUserIdToActAs());
+                            User userToEdit = User.find().byId(admin.getUserIdToActAs());
                             users.add(0, userToEdit);
                             return users;
                         } else {

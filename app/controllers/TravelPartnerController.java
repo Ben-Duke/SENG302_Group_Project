@@ -142,7 +142,7 @@ public class TravelPartnerController {
         for (String gender: genderSelections) {
             if (gender != null) {
 
-                List<User> query = User.find.query().where().eq("gender", gender).findList();
+                List<User> query = User.find().query().where().eq("gender", gender).findList();
                 results.addAll(query);
             }
         }
@@ -182,7 +182,7 @@ public class TravelPartnerController {
         }
 
         if(date1 != null && date2 != null){
-            return User.find.query().where().gt("dateOfBirth", date1).lt("dateOfBirth", date2).findSet();
+            return User.find().query().where().gt("dateOfBirth", date1).lt("dateOfBirth", date2).findSet();
         }
         return new HashSet<>();
     }

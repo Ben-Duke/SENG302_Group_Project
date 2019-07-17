@@ -169,7 +169,7 @@ public class ProfileController extends Controller {
 
         if (user != null) {
 
-            User otherUser = User.find.byId(userId);
+            User otherUser = User.find().byId(userId);
 
             if (otherUser == null) {
                 return notFound("User does not exist");

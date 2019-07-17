@@ -38,7 +38,7 @@ public class EditVisitCommandTest extends BaseTestWithApplicationAndDatabase {
         )));
         TestDatabaseManager.populateDatabase();
         visit = Visit.find.byId(1);
-        user = User.find.byId(1);
+        user = User.find().byId(1);
 
 
     }

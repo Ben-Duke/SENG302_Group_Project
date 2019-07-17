@@ -65,7 +65,7 @@ public class TripControllerTest extends BaseTestWithApplicationAndDatabase {
     @Test
     public void saveTrip() {
         //User with id 2 should have two trips
-        assertEquals(2, User.find.byId(2).getTrips().size());
+        assertEquals(2, User.find().byId(2).getTrips().size());
         Map<String, String> formData = new HashMap<>();
         //Assuming the user fills in the trip name form as "triptest123"
         formData.put("tripName", "triptest123");
@@ -74,9 +74,9 @@ public class TripControllerTest extends BaseTestWithApplicationAndDatabase {
         //User should be redirected to the create profile page
         assertEquals(SEE_OTHER, result.status());
         //User with id 2 should have three trips
-        assertEquals(3, User.find.byId(2).getTrips().size());
+        assertEquals(3, User.find().byId(2).getTrips().size());
         //Trip with name "triptest123" should be the user's third trip
-        assertEquals("triptest123", User.find.byId(2).getTrips().get(2).getTripName());
+        assertEquals("triptest123", User.find().byId(2).getTrips().get(2).getTripName());
     }
 
     /**
@@ -85,7 +85,7 @@ public class TripControllerTest extends BaseTestWithApplicationAndDatabase {
     @Test
     public void saveTripWithDuplicateName() {
         //User with id 2 should have two trips
-        assertEquals(2, User.find.byId(2).getTrips().size());
+        assertEquals(2, User.find().byId(2).getTrips().size());
         Map<String, String> formData = new HashMap<>();
         //Assuming the user fills in the trip name form as "Trip to New Zealand", which already exists
         formData.put("tripName", "Trip to New Zealand");
@@ -93,13 +93,13 @@ public class TripControllerTest extends BaseTestWithApplicationAndDatabase {
         CSRFTokenHelper.addCSRFToken(fakeRequest);
         Result result = Helpers.route(app, fakeRequest);
         //User with id 2 should still have two trips
-        assertEquals(2, User.find.byId(2).getTrips().size());
+        assertEquals(2, User.find().byId(2).getTrips().size());
     }
 
     @Test
     public void saveTripWithEmptyName() {
         //User with id 2 should have two trips
-        assertEquals(2, User.find.byId(2).getTrips().size());
+        assertEquals(2, User.find().byId(2).getTrips().size());
         Map<String, String> formData = new HashMap<>();
         //Assuming the user fills in the trip name form as "Trip to New Zealand", which already exists
         formData.put("tripName", "");
@@ -108,7 +108,7 @@ public class TripControllerTest extends BaseTestWithApplicationAndDatabase {
         Result result = Helpers.route(app, fakeRequest);
         assertEquals(BAD_REQUEST, result.status());
         //User with id 2 should still have two trips
-        assertEquals(2, User.find.byId(2).getTrips().size());
+        assertEquals(2, User.find().byId(2).getTrips().size());
     }
 
     /**
@@ -266,9 +266,9 @@ public class TripControllerTest extends BaseTestWithApplicationAndDatabase {
 //        assertEquals(SEE_OTHER, result.status());
 //        //User should be redirected to the edit trip page
 //        //"Newly created Visit with name "Christchurch" should be the third index in the trip
-//        assertEquals("Christchurch", User.find.byId(2).getTrips().get(0).getVisits().get(2).getVisitName());
-//        assertEquals("2019-04-20", User.find.byId(2).getTrips().get(0).getVisits().get(2).getArrival());
-//        assertEquals("2019-06-09", User.find.byId(2).getTrips().get(0).getVisits().get(2).getDeparture());
+//        assertEquals("Christchurch", User.find().byId(2).getTrips().get(0).getVisits().get(2).getVisitName());
+//        assertEquals("2019-04-20", User.find().byId(2).getTrips().get(0).getVisits().get(2).getArrival());
+//        assertEquals("2019-06-09", User.find().byId(2).getTrips().get(0).getVisits().get(2).getDeparture());
 //    }
 
     /**
@@ -309,16 +309,16 @@ public class TripControllerTest extends BaseTestWithApplicationAndDatabase {
      */
     @Test
     public void deleteVisitFromNewTrip() {
-        Trip trip = new Trip("test", true, User.find.byId(1));
+        Trip trip = new Trip("test", true, User.find().byId(1));
         trip.save();
         String arrival = "2019-04-20";
         String departure = "2019-06-09";
         //University of Canterbury, testTrip, visitOrder = 1
         VisitFormData visitformdata = new VisitFormData(arrival, departure);
-        Visit visit = visitfactory.createVisit(visitformdata, Destination.find.byId(1), User.find.byId(1).getTrips().get(0), 1 );
+        Visit visit = visitfactory.createVisit(visitformdata, Destination.find.byId(1), User.find().byId(1).getTrips().get(0), 1 );
         visit.save();
         //There should be 1 row in trips, which is the visit that was put in.
-        assertEquals(1, User.find.byId(1).getTrips().get(0).getVisits().size());
+        assertEquals(1, User.find().byId(1).getTrips().get(0).getVisits().size());
         Map<String, String> formData = new HashMap<>();
         //visitID of the visit that was just put in should be 18 and trip id should be 7
         //formData.put("visitid", "18");
@@ -328,7 +328,7 @@ public class TripControllerTest extends BaseTestWithApplicationAndDatabase {
         assertEquals(OK, result.status());
         //User should be redirected to the edit profile page
         //Newly created visited should have been deleted, so the size of the trip's visits should be 0.
-        assertEquals(0, User.find.byId(1).getTrips().get(0).getVisits().size());
+        assertEquals(0, User.find().byId(1).getTrips().get(0).getVisits().size());
     }
 
     @Test

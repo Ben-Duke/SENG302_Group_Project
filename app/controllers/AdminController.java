@@ -33,7 +33,7 @@ public class AdminController extends Controller {
             if (currentUser != null) {
                 Admin currentAdmin = Admin.find.query().where().eq("userId", currentUser.getUserid()).findOne();
                 if (currentAdmin != null) {
-                    List<User> users = User.find.all();
+                    List<User> users = User.find().all();
                     List<DestinationModificationRequest> allReqs = DestinationModificationRequest.find.all();
                     return ok(indexAdmin.render(currentUser, userList.get(1), users,allReqs));
                 }
@@ -97,7 +97,7 @@ public class AdminController extends Controller {
             if (currentAdmin != null) {
                 DestinationModificationRequest modReq = DestinationModificationRequest.find.query().where().eq("id", destModReqId).findOne();
                 if (modReq != null) {
-                    User user = User.find.byId(currentAdmin.getUserId());
+                    User user = User.find().byId(currentAdmin.getUserId());
                     return ok(viewDestinationModificationRequest.render(modReq, user));
                 } else {
                     return notFound("Destination Modification Request does not exist");
@@ -120,7 +120,7 @@ public class AdminController extends Controller {
     public Result setUserToActAs(Http.Request request, Integer userId) {
         User currentUser = User.getCurrentUser(request);
         if (currentUser != null && currentUser.userIsAdmin()) {
-            User userToEdit = User.find.byId(userId);
+            User userToEdit = User.find().byId(userId);
             List<Admin> adminList = Admin.find.query().where()
                     .eq("userId", currentUser.getUserid()).findList();
             if(adminList.size() == 1) {
@@ -150,7 +150,7 @@ public class AdminController extends Controller {
         User currentUser = users.get(1);
 
         if (currentUser != null && currentUser.userIsAdmin() && currentUser.getUserid() == adminsUserId) {
-            User adminUser = User.find.byId(adminsUserId);
+            User adminUser = User.find().byId(adminsUserId);
             List<Admin> adminList = Admin.find.query().where()
                     .eq("userId", adminUser.getUserid()).findList();
             if(adminList.size() == 1) {

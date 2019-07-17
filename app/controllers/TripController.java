@@ -297,7 +297,7 @@ public class TripController extends Controller {
                         }
                         //if the destination is public but the owner of the destination is not an admin, set the owner of the destination to the default admin
                         if (!(destination.getUser().isAdmin()) && destination.getIsPublic() && (destination.getUser().getUserid() != user.getUserid())) {
-                            User admin = User.find.byId(1);
+                            User admin = User.find().byId(1);
                             destination.setUser(admin);
                             destination.update();
                         }

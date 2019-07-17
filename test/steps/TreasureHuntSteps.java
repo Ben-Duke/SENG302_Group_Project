@@ -98,7 +98,7 @@ public class TreasureHuntSteps extends BaseTestWithApplicationAndDatabase {
     public void thereShouldBeATreasureHuntInTheDatabaseWithTitleDestinationRiddleStartDateAndEndDate(String string, String string2, String string3, String string4, String string5) {
         TreasureHunt treasureHunt = TreasureHunt.find.query().where().eq("title", string).findOne();
         Assert.assertNotNull(treasureHunt);
-        assertEquals(2, User.find.byId(2).getTreasureHunts().size());
+        assertEquals(2, User.find().byId(2).getTreasureHunts().size());
         assertEquals(string2, treasureHunt.getDestination().getDestName());
         assertEquals(string3, treasureHunt.getRiddle());
         assertEquals(string4, treasureHunt.getStartDate());
@@ -109,7 +109,7 @@ public class TreasureHuntSteps extends BaseTestWithApplicationAndDatabase {
     @Given("There is a treasure hunt with the title {string}")
     public void thereIsATreasureHuntWithTheTitle(String string) {
         TreasureHunt existingTreasureHunt = new TreasureHunt(string, "asd",
-                Destination.find.byId(1), "2018-12-05", "2019-12-05", User.find.byId(2));
+                Destination.find.byId(1), "2018-12-05", "2019-12-05", User.find().byId(2));
         existingTreasureHunt.save();
         TreasureHunt treasureHunt = TreasureHunt.find.query().where().eq("title", string).findOne();
         assertNotNull(treasureHunt);
@@ -134,7 +134,7 @@ public class TreasureHuntSteps extends BaseTestWithApplicationAndDatabase {
     public void thereShouldBeNoTreasureHuntsInTheDatabaseWithTitle(String string) {
         List<TreasureHunt> treasureHunts = TreasureHunt.find.query().where().eq("title", string).findList();
         assertEquals(1, treasureHunts.size());
-        assertEquals(2, User.find.byId(2).getTreasureHunts().size());
+        assertEquals(2, User.find().byId(2).getTreasureHunts().size());
     }
 
     @When("I edit a treasure hunt with the title {string} by changing the destination to {string}, riddle to {string}, start date {string} and end date {string}")
@@ -157,12 +157,12 @@ public class TreasureHuntSteps extends BaseTestWithApplicationAndDatabase {
     public void theTreasureHuntWithTheTitleInTheDatabaseShouldHaveTheDestinationAsRiddleToStartDateAndEndDate(String string, String string2, String string3, String string4, String string5) {
         iEditATreasureHuntWithTheTitleByChangingTheDestinationToRiddleToStartDateAndEndDate(string, string2, string3, string4, string5);
         //User with id 2 should still have only one treasure hunt
-        assertEquals(1, User.find.byId(2).getTreasureHunts().size());
-        assertEquals(string, User.find.byId(2).getTreasureHunts().get(0).getTitle());
-        assertEquals(string2, User.find.byId(2).getTreasureHunts().get(0).getDestination().getDestName());
-        assertEquals(string3, User.find.byId(2).getTreasureHunts().get(0).getRiddle());
-        assertEquals(string4, User.find.byId(2).getTreasureHunts().get(0).getStartDate());
-        assertEquals(string5, User.find.byId(2).getTreasureHunts().get(0).getEndDate());
+        assertEquals(1, User.find().byId(2).getTreasureHunts().size());
+        assertEquals(string, User.find().byId(2).getTreasureHunts().get(0).getTitle());
+        assertEquals(string2, User.find().byId(2).getTreasureHunts().get(0).getDestination().getDestName());
+        assertEquals(string3, User.find().byId(2).getTreasureHunts().get(0).getRiddle());
+        assertEquals(string4, User.find().byId(2).getTreasureHunts().get(0).getStartDate());
+        assertEquals(string5, User.find().byId(2).getTreasureHunts().get(0).getEndDate());
     }
 
     @When("I edit a treasure hunt with the title {string} by changing the title to an already existing {string}")

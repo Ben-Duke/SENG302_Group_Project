@@ -66,7 +66,7 @@ public class TravellerTypeControllerTest extends BaseTestWithApplicationAndDatab
         //User should be redirected to the update traveller type page
         assertEquals(SEE_OTHER, result.status());
         //"TravellerType with name "Thrillseeker" should be the first index in the user's traveller types
-        assertEquals("Thrillseeker", User.find.byId(1).getTravellerTypes().get(0).getTravellerTypeName());
+        assertEquals("Thrillseeker", User.find().byId(1).getTravellerTypes().get(0).getTravellerTypeName());
     }
 
     /**
@@ -92,7 +92,7 @@ public class TravellerTypeControllerTest extends BaseTestWithApplicationAndDatab
      */
     @Test
     public void deleteUpdateTravellerType() {
-        User user = User.find.byId(1);
+        User user = User.find().byId(1);
         assert user != null;
         int initialTypes = user.getTravellerTypes().size();
 
@@ -101,7 +101,7 @@ public class TravellerTypeControllerTest extends BaseTestWithApplicationAndDatab
         user.update();
 
         // Check it was added
-        assertEquals(initialTypes + 1, User.find.byId(1).getTravellerTypes().size());
+        assertEquals(initialTypes + 1, User.find().byId(1).getTravellerTypes().size());
 
         Map<String, String> formData = new HashMap<>();
         formData.put("travellertypes", "2");
@@ -112,7 +112,7 @@ public class TravellerTypeControllerTest extends BaseTestWithApplicationAndDatab
         assertEquals(303, result.status());
 
         // There should be one traveller type since can't remove from 1
-        assertEquals(initialTypes, User.find.byId(1).getTravellerTypes().size());
+        assertEquals(initialTypes, User.find().byId(1).getTravellerTypes().size());
     }
 
     /**

@@ -33,7 +33,7 @@ public class UserFactory {
      */
     public static int checkEmail(String email) {
 
-        List<User> users = User.find.all();
+        List<User> users = User.find().all();
 
         int present = 0;
         String userEmail;
@@ -53,7 +53,7 @@ public class UserFactory {
     }
 
     public static void deleteNatsOnUser(int id, String nationalityId) {
-        User user = User.find.query().where().eq("userid", id).findOne();
+        User user = User.find().query().where().eq("userid", id).findOne();
         Nationality nationality = Nationality.find.byId(Integer.parseInt(nationalityId));
         user.deleteNationality(nationality);
         user.update();
@@ -64,7 +64,7 @@ public class UserFactory {
      * @return A User object with the userId, or null  if doesn't exist.
      */
     public static User getUserFromId(int userId) {
-        User user = User.find.query().where().eq("userid", userId).findOne();
+        User user = User.find().query().where().eq("userid", userId).findOne();
         return user;
     }
 
@@ -307,17 +307,17 @@ public class UserFactory {
 
     public static int getNatsForUserbyId(int userId){
         int count = 0;
-        User user = User.find.query().where().eq("userid", userId).findOne();
+        User user = User.find().query().where().eq("userid", userId).findOne();
         count = user.getNationality().size();
         return count;
     }
 
     public static List<Passport> getUserPassports(int id){
-        return User.find.query().where().eq("userid", id).findOne().getPassports();
+        return User.find().query().where().eq("userid", id).findOne().getPassports();
     }
 
     public static List<Nationality> getUserNats(int id){
-        return User.find.query().where().eq("userid", id).findOne().getNationality();
+        return User.find().query().where().eq("userid", id).findOne().getNationality();
     }
 
     public static void addPassportToUser(int id, String passportId){
@@ -325,7 +325,7 @@ public class UserFactory {
         Passport passport = Passport.find.byId(Integer.parseInt(passportId));
 
         try {
-            User user = User.find.query().where().eq("userid", id).findOne();
+            User user = User.find().query().where().eq("userid", id).findOne();
             user.addPassport(passport);
             user.update();
         } catch (io.ebean.DuplicateKeyException e) {
@@ -338,7 +338,7 @@ public class UserFactory {
 
         try {
             Passport passport = Passport.find.byId(Integer.parseInt(passportId));
-            User user = User.find.query().where().eq("userid", id).findOne();
+            User user = User.find().query().where().eq("userid", id).findOne();
             user.deletePassport(passport);
             user.update();
         } catch (NumberFormatException e) {
@@ -347,7 +347,7 @@ public class UserFactory {
     }
 
     public static void addNatsOnUser(int id, String nationalityId){
-        User user = User.find.query().where().eq("userid", id).findOne();
+        User user = User.find().query().where().eq("userid", id).findOne();
         try {
             Nationality nationality = Nationality.find.byId(Integer.parseInt(nationalityId));
             user.addNationality(nationality);
@@ -365,7 +365,7 @@ public class UserFactory {
      * @return the UserPhoto that is the profile picture if it exists, otherwise null
      */
     public static UserPhoto getUserProfilePicture(int userId) {
-        User user = User.find.query().where().eq("userid", userId).findOne();
+        User user = User.find().query().where().eq("userid", userId).findOne();
         UserPhoto userPhoto = UserPhoto.find.query().where().eq("user", user).and().eq("isProfile", true).findOne();
         if(userPhoto != null) {
             return  userPhoto;
@@ -431,7 +431,7 @@ public class UserFactory {
      * @param setPublic true to make public, false to make private
      */
     public static void makePicturePublic(int userId, UserPhoto newPhoto, boolean setPublic) {
-        User user = User.find.byId(userId);
+        User user = User.find().byId(userId);
         if (user != null) {
             newPhoto.setPublic(setPublic);
             newPhoto.save();

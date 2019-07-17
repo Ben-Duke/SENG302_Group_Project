@@ -136,7 +136,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
      */
     @Test
     public void saveDestinationWithLoginSession() {
-        assertEquals(3, User.find.byId(2).getDestinations().size());
+        assertEquals(3, User.find().byId(2).getDestinations().size());
         Map<String, String> formData = new HashMap<>();
         formData.put("destName", "Summoner's Rift");
         formData.put("destType", "Yes");
@@ -147,7 +147,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
         Http.RequestBuilder request = Helpers.fakeRequest().bodyForm(formData).method(POST).uri("/users/destinations/save").session("connected", "2");
         Result result = route(app, request);
         assertEquals(SEE_OTHER, result.status());
-        assertEquals(4, User.find.byId(2).getDestinations().size());
+        assertEquals(4, User.find().byId(2).getDestinations().size());
     }
 
     /**
@@ -195,9 +195,9 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
     @Test
     public void checkUnlinkFromDestinationAndDelete(){
         DestinationController testDestinationController = new DestinationController();
-        Destination destination = new Destination("test","dest","1","test",0.00,0.00,User.find.byId(2),true);
+        Destination destination = new Destination("test","dest","1","test",0.00,0.00,User.find().byId(2),true);
         destination.save();
-        UserPhoto photo = new UserPhoto("/test",true,false,User.find.byId(2));
+        UserPhoto photo = new UserPhoto("/test",true,false,User.find().byId(2));
         photo.addDestination(destination);
         photo.save();
 
@@ -337,12 +337,12 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
      */
     @Test
     public void updateDestinationWithLoginSessionAndValidDestinationAndValidOwner() {
-        assertEquals("Christchurch", User.find.byId(2).getDestinations().get(0).getDestName());
-        assertEquals("Town", User.find.byId(2).getDestinations().get(0).getDestType());
-        assertEquals("Canterbury", User.find.byId(2).getDestinations().get(0).getDistrict());
-        assertEquals("New Zealand", User.find.byId(2).getDestinations().get(0).getCountry());
-        assertEquals(-43.5321, User.find.byId(2).getDestinations().get(0).getLatitude(), 0.01);
-        assertEquals(172.6362, User.find.byId(2).getDestinations().get(0).getLongitude(), 0.01);
+        assertEquals("Christchurch", User.find().byId(2).getDestinations().get(0).getDestName());
+        assertEquals("Town", User.find().byId(2).getDestinations().get(0).getDestType());
+        assertEquals("Canterbury", User.find().byId(2).getDestinations().get(0).getDistrict());
+        assertEquals("New Zealand", User.find().byId(2).getDestinations().get(0).getCountry());
+        assertEquals(-43.5321, User.find().byId(2).getDestinations().get(0).getLatitude(), 0.01);
+        assertEquals(172.6362, User.find().byId(2).getDestinations().get(0).getLongitude(), 0.01);
         Map<String, String> formData = new HashMap<>();
         formData.put("destName", "Summoner's Rift");
         formData.put("destType", "Yes");
@@ -353,12 +353,12 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
         Http.RequestBuilder request = Helpers.fakeRequest().bodyForm(formData).method(POST).uri("/users/destinations/update/1").session("connected", "2");
         Result result = route(app, request);
         assertEquals(REDIRECT_HTTP_STATUS, result.status());
-        assertEquals("Summoner's Rift", User.find.byId(2).getDestinations().get(0).getDestName());
-        assertEquals("Yes", User.find.byId(2).getDestinations().get(0).getDestType());
-        assertEquals("Demacia", User.find.byId(2).getDestinations().get(0).getDistrict());
-        assertEquals("Angola", User.find.byId(2).getDestinations().get(0).getCountry());
-        assertEquals(50.0, User.find.byId(2).getDestinations().get(0).getLatitude(), 0.01);
-        assertEquals(-50.0, User.find.byId(2).getDestinations().get(0).getLongitude(), 0.01);
+        assertEquals("Summoner's Rift", User.find().byId(2).getDestinations().get(0).getDestName());
+        assertEquals("Yes", User.find().byId(2).getDestinations().get(0).getDestType());
+        assertEquals("Demacia", User.find().byId(2).getDestinations().get(0).getDistrict());
+        assertEquals("Angola", User.find().byId(2).getDestinations().get(0).getCountry());
+        assertEquals(50.0, User.find().byId(2).getDestinations().get(0).getLatitude(), 0.01);
+        assertEquals(-50.0, User.find().byId(2).getDestinations().get(0).getLongitude(), 0.01);
     }
 
     /**
@@ -403,13 +403,13 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
      */
     @Test
     public void deleteDestinationWithLoginSessionAndValidDestinationAndValidOwnerWithDestinationInTrips() {
-        assertEquals(3, User.find.byId(2).getDestinations().size());
+        assertEquals(3, User.find().byId(2).getDestinations().size());
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(GET)
                 .uri("/users/destinations/delete/3").session("connected", "2");
         Result result = route(app, request);
         assertEquals(PRECONDITION_REQUIRED, result.status());
-        assertEquals(3, User.find.byId(2).getDestinations().size());
+        assertEquals(3, User.find().byId(2).getDestinations().size());
     }
 
 
@@ -485,7 +485,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
      */
 //    @Test
 //    public void deleteDestinationWithLoginSessionAndValidDestinationAndValidOwnerWithDestinationNotInTripsButInTreasureHunt() {
-//        assertEquals(3, User.find.byId(2).getDestinations().size());
+//        assertEquals(3, User.find().byId(2).getDestinations().size());
 //        Destination destination = Destination.find.byId(3);
 //        for(Visit visit : destination.getVisits()){
 //            visit.delete();
@@ -497,7 +497,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
 //                .uri("/users/destinations/delete/3").session("connected", "2");
 //        Result result = route(app, request);
 //        assertEquals(PRECONDITION_REQUIRED, result.status());
-//        assertEquals(3, User.find.byId(2).getDestinations().size());
+//        assertEquals(3, User.find().byId(2).getDestinations().size());
 //    }
 
     /**
@@ -601,7 +601,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
         Result result = route(app, request);
         assertEquals(REDIRECT_HTTP_STATUS, result.status());
         //A different user of user id 3 uses the destination in their trip
-        Trip trip = new Trip("testTrip", true, User.find.byId(3));
+        Trip trip = new Trip("testTrip", true, User.find().byId(3));
         trip.save();
         request = Helpers.fakeRequest()
                 .method(GET)
@@ -632,7 +632,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
         Result result = route(app, request);
         assertEquals(REDIRECT_HTTP_STATUS, result.status());
 
-        Trip trip = new Trip("testTrip", true, User.find.byId(2));
+        Trip trip = new Trip("testTrip", true, User.find().byId(2));
         trip.save();
         request = Helpers.fakeRequest()
                 .method(GET)
@@ -797,7 +797,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
 
     @Test
     public void destinationModificationRequestReject() {
-        User user = User.find.all().get(0);
+        User user = User.find().all().get(0);
         Destination newDestination = new Destination("Test Dest", "Town", "Test District", "Test Country", 100, 100, user, true);
         newDestination.save();
         Integer destId = newDestination.getDestId();
@@ -831,7 +831,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
 
     @Test
     public void destinationModificationRequestAcceptWithoutTravellerTypes() {
-        User user = User.find.all().get(0);
+        User user = User.find().all().get(0);
         Destination newDestination = new Destination("Test Dest", "Town", "Test District", "Test Country", 100, 100, user, true);
         newDestination.save();
         Integer destId = newDestination.getDestId();
@@ -870,7 +870,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
 
     @Test
     public void destinationModificationRequestAcceptWithTravellerTypes() {
-        User user = User.find.all().get(0);
+        User user = User.find().all().get(0);
         Destination newDestination = new Destination("Test Dest", "Town", "Test District", "Test Country", 100, 100, user, true);
         newDestination.save();
         Integer destId = newDestination.getDestId();

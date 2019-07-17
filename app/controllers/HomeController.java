@@ -220,7 +220,7 @@ public class HomeController {
         User user = User.getCurrentUser(httpRequest);
         if(user != null) {
 
-            User otherUser = User.find.byId(userId);
+            User otherUser = User.find().byId(userId);
             if (otherUser != null) {
                 UserPhoto profilePicture = UserFactory.getUserProfilePicture(userId);
                 if (profilePicture != null) {

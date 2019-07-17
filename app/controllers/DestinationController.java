@@ -847,7 +847,7 @@ public class DestinationController extends Controller {
      */
     public Result getDestinationOwner(Http.Request request, Integer destId) {
         Destination destination = Destination.find.byId(destId);
-        User user = User.find.query().where().eq("userid", destination.getUser().getUserid()).findOne();
+        User user = User.find().query().where().eq("userid", destination.getUser().getUserid()).findOne();
         if (user != null) {
             return ok(Json.toJson(user.getUserid()));
         } else {

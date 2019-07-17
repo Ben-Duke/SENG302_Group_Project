@@ -68,7 +68,7 @@ public class DestinationTestSteps extends BaseTestWithApplicationAndDatabase {
     @Given("There is a prepopulated database")
     public void thereIsAPrepopulatedDatabase()
     {
-        //Assert.assertEquals(4, User.find.all().size());
+        //Assert.assertEquals(4, User.find().all().size());
         //Assert.assertTrue(true);
         throw new cucumber.api.PendingException();
     }
@@ -79,7 +79,7 @@ public class DestinationTestSteps extends BaseTestWithApplicationAndDatabase {
     @Given("I am logged in with user id {string}")
     public void iAmLoggedInWithUserId(String string) {
         // Write code here that turns the phrase above into concrete actions
-        //Assert.assertEquals(true, User.find.byId(Integer.parseInt(string)) != null);
+        //Assert.assertEquals(true, User.find().byId(Integer.parseInt(string)) != null);
         throw new cucumber.api.PendingException();
     }
 
@@ -87,7 +87,7 @@ public class DestinationTestSteps extends BaseTestWithApplicationAndDatabase {
     public void iCreateADestinationWithNameOfTypeAtDistrictAtCountryAtLatitudeAndLongitude(String string, String string2, String string3, String string4, String string5, String string6) {
         // Write code here that turns the phrase above into concrete actions
         /*
-        assertEquals(3, User.find.byId(2).getDestinations().size());
+        assertEquals(3, User.find().byId(2).getDestinations().size());
         Map<String, String> formData = new HashMap<>();
         formData.put("destName", string);
         formData.put("destType", string2);
@@ -98,7 +98,7 @@ public class DestinationTestSteps extends BaseTestWithApplicationAndDatabase {
         Http.RequestBuilder request = Helpers.fakeRequest().bodyForm(formData).method(POST).uri("/users/destinations/save").session("connected", "2");
         Result result = route(application, request);
         assertEquals(SEE_OTHER, result.status());
-        assertEquals(4, User.find.byId(2).getDestinations().size());
+        assertEquals(4, User.find().byId(2).getDestinations().size());
         */
         throw new cucumber.api.PendingException();
     }
@@ -109,7 +109,7 @@ public class DestinationTestSteps extends BaseTestWithApplicationAndDatabase {
         // Write code here that turns the phrase above into concrete actions
 //        throw new cucumber.api.PendingException();
         /*
-        List<Destination> destinationList = User.find.byId(2).getDestinations();
+        List<Destination> destinationList = User.find().byId(2).getDestinations();
         assertTrue(destinationList != null);
         */
         throw new cucumber.api.PendingException();
@@ -120,7 +120,7 @@ public class DestinationTestSteps extends BaseTestWithApplicationAndDatabase {
         // Write code here that turns the phrase above into concrete actions
         //throw new cucumber.api.PendingException();
         /*
-        List<Destination> destinationList = User.find.byId(2).getDestinations();
+        List<Destination> destinationList = User.find().byId(2).getDestinations();
         boolean isDestinationFound = false;
         for (Destination destination : destinationList){
             if(destination.getDestName().equals(string)){
@@ -160,7 +160,7 @@ public class DestinationTestSteps extends BaseTestWithApplicationAndDatabase {
         formData.put("country", string4);
         formData.put("latitude", string5);
         formData.put("longitude", string6);
-        Destination destination = User.find.byId(2).getDestinations().get(3);
+        Destination destination = User.find().byId(2).getDestinations().get(3);
         Http.RequestBuilder request = Helpers.fakeRequest().bodyForm(formData).method(POST).uri("/users/destinations/update/" + destination.getDestId()).session("connected", "2");
         Result result = route(application, request);
         assertEquals(SEE_OTHER, result.status());
@@ -169,7 +169,7 @@ public class DestinationTestSteps extends BaseTestWithApplicationAndDatabase {
     @Then("the destination will be updated to the respective attributes of name {string}, type {string}, district {string}, country {string}, latitude {string} and longitude {string}")
     public void theDestinationWillBeUpdatedToTheRespectiveAttributesOfNameTypeDistrictCountryLatitudeAndLongitude(String string, String string2, String string3, String string4, String string5, String string6) {
         // Write code here that turns the phrase above into concrete actions
-        Destination destination = User.find.byId(2).getDestinations().get(3);
+        Destination destination = User.find().byId(2).getDestinations().get(3);
         assertEquals(string, destination.getDestName());
         assertEquals(string2, destination.getDestType());
         assertEquals(string3, destination.getDistrict());
@@ -215,7 +215,7 @@ public class DestinationTestSteps extends BaseTestWithApplicationAndDatabase {
     @Then("{string} should not be within my list of private destinations")
     public void shouldNotBeWithinMyListOfPrivateDestinations(String string) {
         // Write code here that turns the phrase above into concrete actions
-        List<Destination> destinationList = User.find.byId(2).getDestinations();
+        List<Destination> destinationList = User.find().byId(2).getDestinations();
         boolean isDestinationFound = false;
         for (Destination destination : destinationList){
             if(!destination.getIsPublic()) {
@@ -230,7 +230,7 @@ public class DestinationTestSteps extends BaseTestWithApplicationAndDatabase {
     @Then("{string} should be within my list of public destinations")
     public void shouldBeWithinMyListOfPublicDestinations(String string) {
         // Write code here that turns the phrase above into concrete actions
-        List<Destination> destinationList = User.find.byId(2).getDestinations();
+        List<Destination> destinationList = User.find().byId(2).getDestinations();
         boolean isDestinationFound = false;
         for (Destination destination : destinationList){
             if(destination.getIsPublic()) {

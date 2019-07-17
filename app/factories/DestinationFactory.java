@@ -213,7 +213,7 @@ public class DestinationFactory {
      */
     public void mergeDestinations(List<Destination> destinationList, Destination destination) {
         Admin defaultAdmin = Admin.find.query().where().eq("isDefault", true).findOne();
-        User defaultAdminUser = User.find.query().where().eq("userid", defaultAdmin.getUserId()).findOne();
+        User defaultAdminUser = User.find().query().where().eq("userid", defaultAdmin.getUserId()).findOne();
         destinationList.add(destination);
         for (Destination otherDestination : destinationList) {
             if(otherDestination.getUser() != destination.getUser()) {

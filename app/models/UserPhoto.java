@@ -17,7 +17,7 @@ import java.util.List;
 @Table(uniqueConstraints={@UniqueConstraint(columnNames={"url"})})
 public class UserPhoto extends Model {
     @Id //The photos primary key
-    public transient int photoId;
+    public int photoId;
 
     @Column(name = "url")
     public String url;

@@ -13,41 +13,38 @@ import java.util.*;
 public class Destination extends Model {
 
     @Id
-    public Integer destid;
+    private Integer destid;
 
-    public String destName;
-    public String destType;
-    public String district;
-    public String country;
-    public boolean isCountryValid;
-    public double latitude;
-    public double longitude;
-    public boolean isPublic;
-
-
+    private String destName;
+    private String destType;
+    private String district;
+    private String country;
+    private boolean isCountryValid;
+    private double latitude;
+    private double longitude;
+    private boolean isPublic;
 
     @ManyToOne
-    public UserPhoto primaryPhoto;
+    private UserPhoto primaryPhoto;
 
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "user", referencedColumnName = "userid")
-    public User user;
+    private User user;
 
     @JsonIgnore
     @OneToMany(mappedBy = "destination")
-    public List<Visit> visits;
+    private List<Visit> visits;
 
     @JsonIgnore
     @ManyToMany(mappedBy = "destinations")
-    public List<UserPhoto> userPhotos;
+    private List<UserPhoto> userPhotos;
 
     @JsonIgnore
     @ManyToMany(cascade = CascadeType.ALL)
-    public Set<TravellerType> travellerTypes;
+    private Set<TravellerType> travellerTypes;
 
-    public static Finder<String,Destination> findString = new Finder<>(Destination.class);
-    public static Finder<Integer,Destination> find = new Finder<>(Destination.class);
+    private static Finder<Integer,Destination> find = new Finder<>(Destination.class);
 
     /**
      * Destination constructor with isPublic method
@@ -111,6 +108,10 @@ public class Destination extends Model {
      * Destination constructor
      */
     public Destination(){}
+
+    public static Finder<Integer,Destination> find() {
+        return find;
+    }
 
     /**
      * A function that is called when creating a destination to the the types

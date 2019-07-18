@@ -12,10 +12,10 @@ import factories.UserFactory;
 @Constraints.Validate
 public class NatFormData implements Constraints.Validatable<List<ValidationError>>{
 
-    public static Logger logger = LoggerFactory.getLogger("application");
+    private static Logger logger = LoggerFactory.getLogger("application");
     public int userId = -1;
-    public int natcount;
-    public int nationality;
+    private int natcount;
+    private int nationality;
     public String nationalitydelete;
 
 

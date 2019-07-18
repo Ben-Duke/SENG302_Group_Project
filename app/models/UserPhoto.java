@@ -16,11 +16,12 @@ import java.util.List;
 
 @Table(uniqueConstraints={@UniqueConstraint(columnNames={"url"})})
 public class UserPhoto extends Model {
+
     @Id //The photos primary key
-    public int photoId;
+    private int photoId;
 
     @Column(name = "url")
-    public String url;
+    private String url;
 
     private boolean isPublic;
     private boolean isProfile;
@@ -31,18 +32,18 @@ public class UserPhoto extends Model {
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "user", referencedColumnName = "userid")
-    public User user;
+    private User user;
 
     // Creating  the relation to Destination
     @JsonIgnore
     @ManyToMany
-    public List<Destination> destinations;
+    private List<Destination> destinations;
 
     @JsonIgnore
     @OneToMany(mappedBy = "primaryPhoto")
     private List<Destination> primaryPhotoDestinations;
 
-    public static final Finder<Integer,UserPhoto> find = new Finder<>(UserPhoto.class);
+    private static final Finder<Integer,UserPhoto> find = new Finder<>(UserPhoto.class);
 
     /**
      * Default constructor for caption edit commands
@@ -95,6 +96,15 @@ public class UserPhoto extends Model {
         this.caption = userPhoto.getCaption();
     }
 
+    /**
+     * Gets a finder object for UserPhoto.
+     *
+     * @return A Finder<Integer,UserPhoto> object
+     */
+    public static Finder<Integer,UserPhoto> find() {
+        return find;
+    }
+
 
     public boolean getIsPhotoPublic(){
         return this.isPublic;
@@ -119,7 +129,7 @@ public class UserPhoto extends Model {
         while(userPhoto != null) {
             count += 1;
             filename = count + "_" + this.url;
-            userPhoto = UserPhoto.find.query().where().eq("url", filename).findOne();
+            userPhoto = UserPhoto.find().query().where().eq("url", filename).findOne();
         }
 
         return filename;

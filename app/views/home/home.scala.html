@@ -13,7 +13,7 @@
     </head>
     <div class="container">
             <!-- The thumbnail in the else is being displayed to show the AC passing -->
-        <h1>@user.getFName() @user.lName
+        <h1>@user.getFName() @user.getLName
             @if(UserFactory.getUserProfilePicture(user.getUserid()) != null){
                 <img id="thumbnailProfilePic" class="img-circle"  width = "50" height="50" src="@{routes.HomeController.serveProfilePicture(user.getUserid())}">
             } else {
@@ -23,7 +23,7 @@
                 <img class="img"  width = "60" height="50" src="../assets/images/key_2_small.png">
             }
             @if(adminUser.userIsAdmin && user.getUserid != adminUser.getUserid) {
-                <a class="btn btn-default" href="@routes.AdminController.setUserBackToAdmin(adminUser.userid)">
+                <a class="btn btn-default" href="@routes.AdminController.setUserBackToAdmin(adminUser.getUserid)">
                     Back to your profile
                 </a>
             }
@@ -61,14 +61,14 @@
         <div class="col-md-4">
             <h2>Profile</h2>
             <p>Email: @user.getEmail()</p>
-            <p>Gender: @user.gender</p>
-            <p>Date of Birth: @user.dateOfBirth</p>
+            <p>Gender: @user.getGender</p>
+            <p>Date of Birth: @user.getDateOfBirth</p>
             <p>Passport(s):
             <div class="col-sm-offset-4">
                 <ul class="list-group" >
-                    @for(passport <- user.passports) {
+                    @for(passport <- user.getPassports) {
                     <li class="list-group-item">
-                        @passport.passportName
+                        @passport.getName
                         @countryErrorMessage(passport)
                     </li>
                     }
@@ -77,9 +77,9 @@
             </p>
             <p>Nationality(s):
             <ul class="list-group col-sm-offset-4" >
-                @for(nationality <- user.nationality) {
+                @for(nationality <- user.getNationality) {
                 <li class="list-group-item">
-                    @nationality.nationalityName
+                    @nationality.getNationalityName
                     @countryErrorMessage(nationality)
                 </li>
                 }
@@ -88,13 +88,13 @@
             <p>Traveller type(s):
             <div class="col-sm-offset-4">
                 <ul class="list-group" >
-                    @for(travellerType <- user.travellerTypes) {
-                    <li class="list-group-item">@travellerType.travellerTypeName</li>
+                    @for(travellerType <- user.getTravellerTypes) {
+                    <li class="list-group-item">@travellerType.getTravellerTypeName</li>
                     }
                 </ul>
             </div>
             </p>
-            <p>Creation date: @user.creationDate</p>
+            <p>Creation date: @user.getCreationDate</p>
 
         </div>
         <div class="col-md-4">
@@ -106,11 +106,11 @@
                 }
                 <div class="list-group">
                     @for(trip <- user.getTripsSorted) {
-                    <a href="@routes.TripController.displaytrip(trip.tripid)" class="list-group-item list-group-item-action">
+                    <a href="@routes.TripController.displaytrip(trip.getTripid)" class="list-group-item list-group-item-action">
                         @if(trip.getTripStart() != null){
-                        @trip.tripName | Arrival date: @trip.getTripStart()
+                        @trip.getTripName | Arrival date: @trip.getTripStart()
                         } else{
-                        @trip.tripName | No arrival dates
+                        @trip.getTripName | No arrival dates
                         }
                     </a>
                     }
@@ -482,8 +482,8 @@
                                     <input type="text" class="captionInput center" id="captionInput-@photo.getPhotoId" name="caption" title="caption" placeholder="No Caption" style="display: none">
                                     <span id="lengthErrorMessage-@photo.getPhotoId" class="center" style="color: red; display: none">This caption is too long</span>
 
-                                    @if(user.userid.eq(photo.user.userid) || user.userIsAdmin) {
-                                        <button class="btn btn-primary captionButton center" id="editCaptionButton-@photo.getPhotoId" style="padding-left: 100px" onclick="editCaption(@photo.photoId)">
+                                    @if(user.getUserid == photo.getUser.getUserid || user.userIsAdmin) {
+                                        <button class="btn btn-primary captionButton center" id="editCaptionButton-@photo.getPhotoId" style="padding-left: 100px" onclick="editCaption(@photo.getPhotoId)">
                                             Add Caption
                                         </button>
                                     }

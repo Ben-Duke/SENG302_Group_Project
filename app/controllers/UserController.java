@@ -58,8 +58,8 @@ public class UserController {
                 Thread.currentThread().interrupt();
             }
         }
-        List<User> users = User.find.all();
-        List<Admin> admins = Admin.find.all();
+        List<User> users = User.find().all();
+        List<Admin> admins = Admin.find().all();
         return ok(userIndex.render(users, admins,User.getCurrentUser(request)));
     }
 
@@ -88,7 +88,7 @@ public class UserController {
             List<Integer> photoIds = new ArrayList<>();
             if (userPhotos != null) {
                 for (UserPhoto photo: userPhotos) {
-                    photoIds.add(photo.photoId);
+                    photoIds.add(photo.getPhotoId());
                 }
             }
             return ok(Json.toJson(photoIds));

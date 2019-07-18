@@ -42,7 +42,7 @@ public class ProfileController extends Controller {
      * @return update profile page or error page
      */
     public Result deletePhoto(Http.Request request, Integer photoId, Boolean userInput){
-        UserPhoto photo = UserPhoto.find.byId(photoId);
+        UserPhoto photo = UserPhoto.find().byId(photoId);
         User user = User.getCurrentUser(request);
         if (photo != null && photo.getIsProfile() && (!userInput)) {
             return badRequest("Is profile picture ask user");
@@ -169,7 +169,7 @@ public class ProfileController extends Controller {
 
         if (user != null) {
 
-            User otherUser = User.find.byId(userId);
+            User otherUser = User.find().byId(userId);
 
             if (otherUser == null) {
                 return notFound("User does not exist");
@@ -198,8 +198,8 @@ public class ProfileController extends Controller {
             formData.userId = user.getUserid();
             Form<NatFormData> userForm = formFactory.form(NatFormData.class).fill(formData);
 
-            List<Nationality> nationalities = Nationality.find.all();
-            List<Passport> passports = Passport.find.all();
+            List<Nationality> nationalities = Nationality.find().all();
+            List<Passport> passports = Passport.find().all();
             return ok(updateNatPass.render(userForm, nationalities, passports, user.getUserid(), User.getCurrentUser(request)));
         }
         else {

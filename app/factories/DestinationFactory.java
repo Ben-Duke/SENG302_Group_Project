@@ -21,7 +21,7 @@ public class DestinationFactory {
      * @return a List<Destination> of all public Destinations.
      */
     public List<Destination> getPublicDestinations() {
-        return Destination.find.query()
+        return Destination.find().query()
                 .where().eq("isPublic", true).findList();
     }
 
@@ -31,7 +31,7 @@ public class DestinationFactory {
      * @return the primary photo
      */
     public static UserPhoto getPrimaryPicture(int destID) {
-        Destination destination = Destination.find.byId(destID);
+        Destination destination = Destination.find().byId(destID);
         if (destination != null) {
             return destination.getPrimaryPhoto();
         }
@@ -49,7 +49,7 @@ public class DestinationFactory {
     public List<Destination> getUsersPrivateDestinations(int userId) {
         User user = UserFactory.getUserFromId(userId);
 
-        List<Destination> privateDestinations = Destination.find.query()
+        List<Destination> privateDestinations = Destination.find().query()
                 .where().eq("user", user).and().eq("isPublic", false)
                 .findList();
 
@@ -118,7 +118,7 @@ public class DestinationFactory {
     public List<Destination> getOtherUsersMatchingPrivateDestinations(int userId, Destination destination) {
         User user = UserFactory.getUserFromId(userId);
         // Get all destinations that are private and belong to another user
-        List<Destination> allDestinations = Destination.find.query()
+        List<Destination> allDestinations = Destination.find().query()
                 .where().eq("isPublic", false).and()
                 .not().eq("user", user).findList();
 
@@ -157,7 +157,7 @@ public class DestinationFactory {
     public List<Destination> getAllVisibleDestinations(int userId) {
         User user = UserFactory.getUserFromId(userId);
         if (user.userIsAdmin()) {
-            return Destination.find.all();
+            return Destination.find().all();
         }
 
         List<Destination> visibleDestinations = new ArrayList<>();
@@ -190,7 +190,7 @@ public class DestinationFactory {
      * @param destinationTwo the new destination which will hold new visits
      */
     private void moveVisitsToAnotherDestination(Destination destinationOne, Destination destinationTwo){
-        List<Visit> visitsFrom = Visit.find.query().where().eq("destination", destinationOne).findList();
+        List<Visit> visitsFrom = Visit.find().query().where().eq("destination", destinationOne).findList();
         for(Visit visit : visitsFrom) {
             visit.delete();
             //Note: Update this if new attributes are ever added to visit
@@ -212,8 +212,8 @@ public class DestinationFactory {
      * @return check to see if destinations are used in trips
      */
     public void mergeDestinations(List<Destination> destinationList, Destination destination) {
-        Admin defaultAdmin = Admin.find.query().where().eq("isDefault", true).findOne();
-        User defaultAdminUser = User.find.query().where().eq("userid", defaultAdmin.getUserId()).findOne();
+        Admin defaultAdmin = Admin.find().query().where().eq("isDefault", true).findOne();
+        User defaultAdminUser = User.find().query().where().eq("userid", defaultAdmin.getUserId()).findOne();
         destinationList.add(destination);
         for (Destination otherDestination : destinationList) {
             if(otherDestination.getUser() != destination.getUser()) {

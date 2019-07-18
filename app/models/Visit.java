@@ -14,29 +14,29 @@ import javax.persistence.ManyToOne;
 @Entity
 public class Visit extends Model {
 
-    public Integer visitorder;
+    private Integer visitorder;
 
     /**
      * The ID of the visit. This is the primary key.
      */
     @Id
-    public Integer visitid;
+    private Integer visitid;
 
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "destination", referencedColumnName = "destid")
-    public Destination destination;
+    private Destination destination;
 
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "trip", referencedColumnName = "tripid")
-    public Trip trip;
+    private Trip trip;
+    private String arrival;
+    private String departure;
+    private String visitName;
+    private static Finder<Integer,Visit> find = new Finder<>(Visit.class);
 
-    public String arrival;
 
-    public String departure;
-
-    public String visitName;
 
     public Visit(String arrival, String departure, Trip trip, Destination destination, Integer visitOrder) {
         this.arrival = arrival;
@@ -65,8 +65,14 @@ public class Visit extends Model {
         );
     }
 
-
-    public static Finder<Integer,Visit> find = new Finder<>(Visit.class);
+    /**
+     * Gets an EBeans finder object for Visit
+     *
+     * @return A Finder<Integer,Visit> object.
+     */
+    public static Finder<Integer,Visit> find() {
+        return find;
+    }
 
     public Integer getVisitid() {
         return visitid;

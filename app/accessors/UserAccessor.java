@@ -19,15 +19,15 @@ public class UserAccessor {
     }
 
     public static Passport getPassport(int id) {
-        return Passport.find.query().where().eq("passid", id).findOne();
+        return Passport.find().query().where().eq("passid", id).findOne();
     }
 
     public static List<Passport> getAllPassports() {
-        return Passport.find.all();
+        return Passport.find().all();
     }
 
     public static List<Nationality> getAllNationalities() {
-        return Nationality.find.all();
+        return Nationality.find().all();
     }
 
     /**
@@ -40,7 +40,7 @@ public class UserAccessor {
      * @return A List of User objects with a matching email address.
      */
     public static List<User> getUsersFromEmail(String email) {
-        return  User.find.query()
+        return  User.find().query()
                     .where().eq("email", email.toLowerCase()).findList();
     }
 
@@ -49,10 +49,10 @@ public class UserAccessor {
      * @param id the id of the user
      */
     public static User getById(int id) {
-        return User.find.byId(id);
+        return User.find().byId(id);
     }
 
-    static User getUserByEmail(String email) {
+    public static User getUserByEmail(String email) {
         List<User> users = getUsersFromEmail(email);
         if (!users.isEmpty()) {
             return users.get(0);
@@ -73,7 +73,7 @@ public class UserAccessor {
      *          profile picture (should never happen).
      */
     public static UserPhoto getProfilePhoto(User user) {
-        List<UserPhoto> userProfilePhotoList = UserPhoto.find.query()
+        List<UserPhoto> userProfilePhotoList = UserPhoto.find().query()
                 .where().eq("user", user)
                 .and().eq("isProfile", true)
                 .findList();

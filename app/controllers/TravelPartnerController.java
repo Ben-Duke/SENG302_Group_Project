@@ -39,18 +39,18 @@ public class TravelPartnerController {
 
         DynamicForm dynamicForm = formFactory.form();
 
-        List<TravellerType> travellerTypes = TravellerType.find.all();
+        List<TravellerType> travellerTypes = TravellerType.find().all();
         List<String> convertedTravellerTypes = new ArrayList<>();
         convertedTravellerTypes.add("");
         for (TravellerType traveller : travellerTypes) {
-            convertedTravellerTypes.add(traveller.travellerTypeName);
+            convertedTravellerTypes.add(traveller.getTravellerTypeName());
         }
 
-        List<Nationality> nationalities = Nationality.find.all();
+        List<Nationality> nationalities = Nationality.find().all();
         List<String> convertedNationalities = new ArrayList<>();
         convertedNationalities.add("");
         for (Nationality nationality : nationalities) {
-            convertedNationalities.add(nationality.nationalityName);
+            convertedNationalities.add(nationality.getNationalityName());
         }
 
         Map<String, Boolean> genderMap = new TreeMap<>();
@@ -93,9 +93,9 @@ public class TravelPartnerController {
                 return new HashSet<>();
 
             } else {
-                List<TravellerType> travellerTypes = TravellerType.find.query().where().eq("travellerTypeName", travellerType).findList();
+                List<TravellerType> travellerTypes = TravellerType.find().query().where().eq("travellerTypeName", travellerType).findList();
                 if (!travellerTypes.isEmpty()) {
-                    return TravellerType.find.byId(travellerTypes.get(0).ttypeid).getUsers();
+                    return TravellerType.find().byId(travellerTypes.get(0).getTtypeid()).getUsers();
                 }
 
             }
@@ -116,9 +116,9 @@ public class TravelPartnerController {
                 return new HashSet<>();
 
             } else {
-                List<Nationality> nationalities = Nationality.find.query().where().eq("nationalityName", nationality).findList();
+                List<Nationality> nationalities = Nationality.find().query().where().eq("nationalityName", nationality).findList();
                 if (nationalities.size() > 0) {
-                    return Nationality.find.byId(nationalities.get(0).natid).getUsers();
+                    return Nationality.find().byId(nationalities.get(0).getNatId()).getUsers();
                 }
             }
         }
@@ -142,7 +142,7 @@ public class TravelPartnerController {
         for (String gender: genderSelections) {
             if (gender != null) {
 
-                List<User> query = User.find.query().where().eq("gender", gender).findList();
+                List<User> query = User.find().query().where().eq("gender", gender).findList();
                 results.addAll(query);
             }
         }
@@ -179,7 +179,7 @@ public class TravelPartnerController {
         }
 
         if(date1 != null && date2 != null){
-            return User.find.query().where().gt("dateOfBirth", date1).lt("dateOfBirth", date2).findSet();
+            return User.find().query().where().gt("dateOfBirth", date1).lt("dateOfBirth", date2).findSet();
         }
         return new HashSet<>();
     }

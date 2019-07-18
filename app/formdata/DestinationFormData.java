@@ -11,12 +11,12 @@ import java.util.TreeMap;
 @Constraints.Validate
 public class DestinationFormData implements Constraints.Validatable<List<ValidationError>> {
 
-    public String destName;
-    public String destType;
-    public String district;
-    public String country;
-    public String latitude;
-    public String longitude;
+    private String destName;
+    private String destType;
+    private String district;
+    private String country;
+    private String latitude;
+    private String longitude;
 
 
     /** Required for form instantiation. */

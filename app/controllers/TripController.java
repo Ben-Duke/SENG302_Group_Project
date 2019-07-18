@@ -73,7 +73,7 @@ public class TripController extends Controller {
         if (user != null) {
             user.getCommandManager().setAllowedPage(CommandPage.TRIP);
 
-            Trip trip = Trip.find.byId(tripId);
+            Trip trip = Trip.find().byId(tripId);
             if (trip == null) {
                 return redirect(routes.HomeController.showhome());
             }
@@ -82,7 +82,7 @@ public class TripController extends Controller {
 
             if (trip.isUserOwner(user.getUserid())) {
                 List<Destination> destinations = user.getDestinations();
-                List<Destination> allDestinations = Destination.find.all();
+                List<Destination> allDestinations = Destination.find().all();
                 return ok(AddTripDestinationsTable.render(trip, destinations, allDestinations,user));
             } else {
                 return ok(displayTrip.render(trip, visits,user));
@@ -132,7 +132,7 @@ public class TripController extends Controller {
     public Result editvisit(Http.Request request, Integer visitid){
         User user = User.getCurrentUser(request);
         if (user != null) {
-            Visit visit = Visit.find.byId(visitid);
+            Visit visit = Visit.find().byId(visitid);
 
 
             VisitFormData visitFormData = new VisitFormData(visit.getArrival(), visit.getDeparture());
@@ -159,7 +159,7 @@ public class TripController extends Controller {
      * @return OK or Bad request
      */
     public Result updateVisit(Http.Request request, Integer visitid){
-        Visit visit = Visit.find.byId(visitid);
+        Visit visit = Visit.find().byId(visitid);
         List<Destination> destinations = new ArrayList<>();
         destinations.add(visit.getDestination());
         Form<VisitFormData> visitForm;
@@ -174,10 +174,10 @@ public class TripController extends Controller {
             String arrival = visitForm.get().arrival;
             String departure = visitForm.get().departure;
 
-            visit = Visit.find.byId(visitid);
+            visit = Visit.find().byId(visitid);
             Trip trip = visit.getTrip();
             if(trip.isUserOwner(user.getUserid())) {
-                Destination dest = Destination.find.byId(destID);
+                Destination dest = Destination.find().byId(destID);
                 visit.setDestination(dest);
                 //Arrivaldate and departure date TBD
                 visit.setArrival(arrival);
@@ -206,7 +206,7 @@ public class TripController extends Controller {
      * @return
      */
     public Result addTripDestinations(Http.Request request, Integer tripid) {
-        Trip trip = Trip.find.byId(tripid);
+        Trip trip = Trip.find().byId(tripid);
         User user = User.getCurrentUser(request);
         Date today = new Date();
         today.setTime(today.getTime());
@@ -216,7 +216,7 @@ public class TripController extends Controller {
                     List<Visit> visits = trip.getVisits();
                     visits.sort(Comparator.comparing(Visit::getVisitOrder));
                     List<Destination> destinations = user.getDestinations();
-                    List<Destination> allDestinations = Destination.find.all();
+                    List<Destination> allDestinations = Destination.find().all();
                     request.flash().getOptional("error").orElse("test");
                     return ok(AddTripDestinationsTable.render(trip, destinations, allDestinations,user)).flashing("error", request.flash().getOptional("error").orElse("test"));
 
@@ -241,7 +241,7 @@ public class TripController extends Controller {
      * @return
      */
     public Result deleteTrip(Http.Request request, Integer tripid) {
-        Trip trip = Trip.find.byId(tripid);
+        Trip trip = Trip.find().byId(tripid);
         User user = User.getCurrentUser(request);
         if (user != null) {
             if(trip != null) {
@@ -279,7 +279,7 @@ public class TripController extends Controller {
         if(user == null) {
             return redirect(routes.UserController.userindex());
         }
-        Trip trip = Trip.find.byId(tripid);
+        Trip trip = Trip.find().byId(tripid);
         if (!(trip.isUserOwner(user.getUserid()) || user.userIsAdmin())) {
             return unauthorized("Oops, this is not your trip.");
         }
@@ -293,11 +293,11 @@ public class TripController extends Controller {
         }
         Integer visitOrder = visitSize + 1 + removedVisits;
         List<Visit> visits = trip.getVisits();
-        Destination destination = Destination.find.byId(destid);
+        Destination destination = Destination.find().byId(destid);
         if(destination == null) {
             return notFound("Destination not found");
         }
-        if(!(destination.isPublic || destination.getUser().getUserid() == user.getUserid() || user.userIsAdmin())) {
+        if(!(destination.getIsPublic() || destination.getUser().getUserid() == user.getUserid() || user.userIsAdmin())) {
             return unauthorized("This private destination is owned by someone else. You may not use it.");
         }
         Visit visit = visitfactory.createVisitTable(trip, destination, visitOrder);
@@ -307,7 +307,7 @@ public class TripController extends Controller {
         }
         //if the destination is public but the owner of the destination is not an admin, set the owner of the destination to the default admin
         if (!(destination.getUser().isAdmin()) && destination.getIsPublic() && (destination.getUser().getUserid() != user.getUserid())) {
-            User admin = User.find.byId(1);
+            User admin = User.find().byId(1);
             destination.setUser(admin);
             destination.update();
         }
@@ -328,7 +328,7 @@ public class TripController extends Controller {
      * @return edit trip page or error page
      */
     public Result deletevisit(Http.Request request, Integer visitid){
-        Visit visit = Visit.find.byId(visitid);
+        Visit visit = Visit.find().byId(visitid);
         User user = User.getCurrentUser(request);
         //change later
         if (user != null && visit != null) {
@@ -368,7 +368,7 @@ public class TripController extends Controller {
     public Result swapvisits(Http.Request request, Integer tripId){
         ArrayList<String> list = new ObjectMapper().convertValue(request.body().asJson(), ArrayList.class);
         User user = User.getCurrentUser(request);
-        Trip trip = Trip.find.byId(tripId);
+        Trip trip = Trip.find().byId(tripId);
         if (user != null) {
             if(trip.isUserOwner(user.getUserid()) || user.userIsAdmin()) {
                 if (tripFactory.swapVisitsList(list, user.getUserid())) {
@@ -395,7 +395,7 @@ public class TripController extends Controller {
     public Result getTrip(Http.Request request, Integer tripId){
         User user = User.getCurrentUser(request);
         if (user != null) {
-            Trip trip = Trip.find.byId(tripId);
+            Trip trip = Trip.find().byId(tripId);
             if (trip.getUser().getUserid() == user.getUserid() || user.userIsAdmin()) {
                 return ok(Json.toJson(trip));
             } else {

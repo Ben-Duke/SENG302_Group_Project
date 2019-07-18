@@ -33,7 +33,7 @@ public class TravellerTypeController {
         User user = User.getCurrentUser(request);
         if (user != null) {
             Form<User> userForm = formFactory.form(User.class).fill(user);
-            List<TravellerType> travellerTypes = TravellerType.find.all();
+            List<TravellerType> travellerTypes = TravellerType.find().all();
             travellerTypes.removeAll(user.getTravellerTypes());
 
             return ok(updatetraveller.render(userForm, travellerTypes, user));
@@ -54,11 +54,11 @@ public class TravellerTypeController {
     public Result updateDestinationTravellerType(Http.Request request, Integer destid){
         User user = User.getCurrentUser(request);
         if (user != null) {
-            Destination destination = Destination.find.byId(destid);
+            Destination destination = Destination.find().byId(destid);
             if(destination != null) {
                 if(destination.getUser().getUserid() == user.getUserid() || user.userIsAdmin()) {
                     Form<Destination> destForm = formFactory.form(Destination.class).fill(destination);
-                    List<TravellerType> travellerTypes = TravellerType.find.all();
+                    List<TravellerType> travellerTypes = TravellerType.find().all();
                     travellerTypes.removeAll(destination.getTravellerTypes());
                     return ok(updateDestinationTraveller.render(destForm, travellerTypes, destination,user));
                 }
@@ -87,7 +87,7 @@ public class TravellerTypeController {
         String travellerID = userForm.get("travellertypes");
         User user = User.getCurrentUser(request);
         if (user != null) {
-            TravellerType travellerType = TravellerType.find.byId(Integer.parseInt(travellerID));
+            TravellerType travellerType = TravellerType.find().byId(Integer.parseInt(travellerID));
             try {
                 user.addTravellerType(travellerType);
                 user.update();
@@ -113,9 +113,9 @@ public class TravellerTypeController {
         DynamicForm destForm = formFactory.form().bindFromRequest(request);
         String travellerID = destForm.get("travellertypes");
         User user = User.getCurrentUser(request);
-        Destination destination = Destination.find.byId(destid);
+        Destination destination = Destination.find().byId(destid);
         if (user != null) {
-            TravellerType travellerType = TravellerType.find.byId(Integer.parseInt(travellerID));
+            TravellerType travellerType = TravellerType.find().byId(Integer.parseInt(travellerID));
             try {
                 if(destination != null) {
                     if(destination.getUser().getUserid() == user.getUserid() || user.userIsAdmin()) {
@@ -155,7 +155,7 @@ public class TravellerTypeController {
                     "please add another traveller type before deleting the one you selected");
         } else {
             try {
-                TravellerType travellerType = TravellerType.find.byId(typeId);
+                TravellerType travellerType = TravellerType.find().byId(typeId);
                 user.deleteTravellerType(travellerType);
                 user.update();
 
@@ -177,12 +177,12 @@ public class TravellerTypeController {
      */
     public Result deleteUpdateDestinationTravellerType(Http.Request request, Integer destId, Integer typeId){
         User user = User.getCurrentUser(request);
-        Destination destination = Destination.find.byId(destId);
+        Destination destination = Destination.find().byId(destId);
         if (user == null) {
             return redirect(routes.UserController.userindex());
         }  else {
             try {
-                TravellerType travellerType = TravellerType.find.byId(typeId);
+                TravellerType travellerType = TravellerType.find().byId(typeId);
                 if(destination.getUser().getUserid() == user.getUserid() || user.userIsAdmin()) {
                     destination.deleteTravellerType(travellerType);
                     destination.update();

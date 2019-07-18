@@ -38,7 +38,7 @@ public class LinkingPhotosToDestinationsCommandTest extends BaseTestWithApplicat
         )));
         TestDatabaseManager.populateDatabase();
 
-        user = User.find.byId(1);
+        user = User.find().byId(1);
 
         photo =  new UserPhoto("imagetest.png", false, false, user);
         String unusedPhotoUrl = photo.getUnusedUserPhotoFileName();

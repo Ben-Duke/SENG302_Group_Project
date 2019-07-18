@@ -347,7 +347,7 @@ public class DestinationTestSteps extends BaseTestWithApplicationAndDatabase {
         result = route(application, request);
         assertEquals(SEE_OTHER, result.status());
         boolean tripContainsDestination = false;
-        for(Visit visit : Trip.find.byId(3).getVisits()){
+        for(Visit visit : Trip.find().byId(3).getVisits()){
             if(visit.getDestination().getDestId() == destination.getDestId()){
                 tripContainsDestination = true;
             }

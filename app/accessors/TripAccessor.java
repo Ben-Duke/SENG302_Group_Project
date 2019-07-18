@@ -13,11 +13,11 @@ public class TripAccessor {
 
     /** Return the trip matching the id passed */
     public static Trip getTripById(int id) {
-        return Trip.find.byId(id);
+        return Trip.find().byId(id);
     }
 
     public static List<Trip> getAllTrips() {
-        return Trip.find.all();
+        return Trip.find().all();
     }
 
     /** Insert the trip */

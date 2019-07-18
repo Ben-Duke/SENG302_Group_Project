@@ -73,7 +73,7 @@ public class TripController extends Controller {
         if (user != null) {
             user.getCommandManager().setAllowedType(TripPageCommand.class);
 
-            Trip trip = Trip.find.byId(tripId);
+            Trip trip = Trip.find().byId(tripId);
             if (trip == null) {
                 return redirect(routes.HomeController.showhome());
             }
@@ -206,7 +206,7 @@ public class TripController extends Controller {
      * @return
      */
     public Result addTripDestinations(Http.Request request, Integer tripid) {
-        Trip trip = Trip.find.byId(tripid);
+        Trip trip = Trip.find().byId(tripid);
         User user = User.getCurrentUser(request);
         Date today = new Date();
         today.setTime(today.getTime());
@@ -241,7 +241,7 @@ public class TripController extends Controller {
      * @return
      */
     public Result deleteTrip(Http.Request request, Integer tripid) {
-        Trip trip = Trip.find.byId(tripid);
+        Trip trip = Trip.find().byId(tripid);
         User user = User.getCurrentUser(request);
         if (user != null) {
             if(trip != null) {
@@ -276,7 +276,7 @@ public class TripController extends Controller {
     public Result addVisitFromTable(Http.Request request, Integer tripid, Integer destid){
         User user = User.getCurrentUser(request);
         if(user != null) {
-            Trip trip = Trip.find.byId(tripid);
+            Trip trip = Trip.find().byId(tripid);
             if (trip.isUserOwner(user.getUserid()) || user.userIsAdmin()) {
                 Integer visitSize = 0;
                 if (trip.getVisits() != null) {
@@ -369,7 +369,7 @@ public class TripController extends Controller {
     public Result swapvisits(Http.Request request, Integer tripId){
         ArrayList<String> list = new ObjectMapper().convertValue(request.body().asJson(), ArrayList.class);
         User user = User.getCurrentUser(request);
-        Trip trip = Trip.find.byId(tripId);
+        Trip trip = Trip.find().byId(tripId);
         if (user != null) {
             if(trip.isUserOwner(user.getUserid()) || user.userIsAdmin()) {
                 if (tripFactory.swapVisitsList(list, user.getUserid())) {
@@ -396,7 +396,7 @@ public class TripController extends Controller {
     public Result getTrip(Http.Request request, Integer tripId){
         User user = User.getCurrentUser(request);
         if (user != null) {
-            Trip trip = Trip.find.byId(tripId);
+            Trip trip = Trip.find().byId(tripId);
             if (trip.getUser().getUserid() == user.getUserid() || user.userIsAdmin()) {
                 return ok(Json.toJson(trip));
             } else {

@@ -356,12 +356,12 @@ public class TestDatabaseManager {
 
         if (isInSuccessState) {
             // Gets the first trip with that name. This may have bad side effects.
-            Trip trip1 = Trip.find.query().where().eq("tripName", "Trip to New Zealand").findList().get(0);
-            Trip trip2 = Trip.find.query().where().eq("tripName", "Christchurch to Wellington, to The Wok and back").findList().get(0);
-            Trip trip3 = Trip.find.query().where().eq("tripName", "World Tour").findList().get(0);
-            Trip trip4 = Trip.find.query().where().eq("tripName", "Pyramid to Race and back again").findList().get(0);
-            Trip trip5 = Trip.find.query().where().eq("tripName", "See the pope, the president and come back").findList().get(0);
-            Trip trip6 = Trip.find.query().where().eq("tripName", "Waterfall walk and see the president").findList().get(0);
+            Trip trip1 = Trip.find().query().where().eq("tripName", "Trip to New Zealand").findList().get(0);
+            Trip trip2 = Trip.find().query().where().eq("tripName", "Christchurch to Wellington, to The Wok and back").findList().get(0);
+            Trip trip3 = Trip.find().query().where().eq("tripName", "World Tour").findList().get(0);
+            Trip trip4 = Trip.find().query().where().eq("tripName", "Pyramid to Race and back again").findList().get(0);
+            Trip trip5 = Trip.find().query().where().eq("tripName", "See the pope, the president and come back").findList().get(0);
+            Trip trip6 = Trip.find().query().where().eq("tripName", "Waterfall walk and see the president").findList().get(0);
 
             // creating all the visits
             Visit visit1 =  new Visit("2018-05-04", "2018-05-06", trip1, destination1,1);

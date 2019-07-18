@@ -50,10 +50,10 @@
                                 <td><a href=@routes.TripController.editvisit(visit.visitid) class="btn btn-primary">Edit</a></td>
                                 <td><button class="btn btn-danger" onclick="sendDeleteVisitRequest(
                                         '@routes.TripController.deletevisit(visit.getVisitid())',
-                                        '@routes.TripController.displaytrip(trip.tripid)',
-                                        '@routes.TripController.displaytrip(trip.tripid)',
-                                        '@routes.TripController.displaytrip(trip.tripid)',
-                                        '@routes.TripController.displaytrip(trip.tripid)')">Delete</button></td>
+                                        '@routes.TripController.displaytrip(trip.getTripid)',
+                                        '@routes.TripController.displaytrip(trip.getTripid)',
+                                        '@routes.TripController.displaytrip(trip.getTripid)',
+                                        '@routes.TripController.displaytrip(trip.getTripid)')">Delete</button></td>
                             </tr>
                             <br>
                             }
@@ -143,7 +143,7 @@
                             </td>                        <td>@destination.getDistrict</td>
                             <td>@destination.getLatitude</td>
                             <td>@destination.getLongitude</td>
-                            @if(destination.getUser().getUserid() == trip.user.getUserid() || trip.getUser().isAdmin()) {
+                            @if(destination.getUser().getUserid() == trip.getUser.getUserid() || trip.getUser().isAdmin()) {
                                 <td><a href="@routes.DestinationController.editDestination(destination.getDestId())" class="btn btn-primary">
                                     Edit</a></td>
                                 <td><a href="@routes.DestinationController.deleteDestination(destination.getDestId())" class="btn btn-danger">
@@ -178,7 +178,7 @@
                         var data = jQuery('#myTable tr').map(function(){
                             return jQuery (this).attr("id");
                         }).get();
-                        var url = '/users/trips/edit/' + @trip.tripid;
+                        var url = '/users/trips/edit/' + @trip.getTripid;
                         // POST to server using $.post or $.ajax
                         $.ajax({
                             data : JSON.stringify(data),

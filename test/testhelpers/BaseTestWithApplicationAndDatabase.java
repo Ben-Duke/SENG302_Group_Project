@@ -33,7 +33,7 @@ public class BaseTestWithApplicationAndDatabase extends WithApplication {
     @Override
     protected Application provideApplication() {
         return new GuiceApplicationBuilder()
-//                .in(Mode.TEST)
+                .in(Mode.TEST)
                 .build();
     }
 
@@ -46,14 +46,18 @@ public class BaseTestWithApplicationAndDatabase extends WithApplication {
         ApplicationManager.setIsTest(true);
         CommandManagerAccessor.resetCommandManagers();
         database = Databases.inMemory();
-        Evolutions.applyEvolutions(database, Evolutions.forDefault(new Evolution(
-                1,
-                "create table test (id bigint not null, name varchar(255));",
-                "drop table test;"
-        )));
 
+//        Evolutions.applyEvolutions(database);
+//        Evolutions.applyEvolutions(database, Evolutions.forDefault(new Evolution(
+//                1,
+//                "create table test (id bigint not null, name varchar(255));",
+//                "drop table test;"
+//        )));
+//
         TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
         testDatabaseManager.populateDatabase();
+
+
     }
 
     /**
@@ -61,7 +65,7 @@ public class BaseTestWithApplicationAndDatabase extends WithApplication {
      */
     @After
     public void shutdownDatabase() {
-        Evolutions.cleanupEvolutions(database);
+//        Evolutions.cleanupEvolutions(database);
         database.shutdown();
     }
 }

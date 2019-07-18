@@ -230,6 +230,7 @@ alter table visit add constraint fk_visit_destination foreign key (destination) 
 create index ix_visit_trip on visit (trip);
 alter table visit add constraint fk_visit_trip foreign key (trip) references trip (tripid) on delete restrict on update restrict;
 
+
 # !Downs
 
 alter table destination drop foreign key fk_destination_primary_photo_photo_id;

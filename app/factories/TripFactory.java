@@ -33,11 +33,11 @@ public class TripFactory {
             int size = list.size();
             for (int i = 0; i < size; i++) {
                 Integer currentVisitId = Integer.parseInt(list.get(i));
-                Visit visit = Visit.find.byId(currentVisitId);
+                Visit visit = Visit.find().byId(currentVisitId);
                 if (visit.getTrip().getUser().getUserid() != userid) {
                     return false;
                 } else if (i < size - 1) {
-                    Visit visit2 = Visit.find.byId(Integer.parseInt(list.get(i + 1)));
+                    Visit visit2 = Visit.find().byId(Integer.parseInt(list.get(i + 1)));
                     if (visit.getVisitName().equalsIgnoreCase(visit2.getVisitName())) {
                         return false;
                     }
@@ -74,7 +74,7 @@ public class TripFactory {
         }
         if (operation.equalsIgnoreCase("ADD") && (!visits.isEmpty())) {
             visits.sort(Comparator.comparing(Visit::getVisitOrder));
-            if (visits.get(visits.size() - 1).visitName.equalsIgnoreCase(visit.getVisitName())) {
+            if (visits.get(visits.size() - 1).getVisitName().equalsIgnoreCase(visit.getVisitName())) {
                 //probably the wrong status header
                 return true;
             }

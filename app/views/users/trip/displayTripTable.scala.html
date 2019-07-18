@@ -35,7 +35,7 @@
                                 </td>
                                 <td>@visit.getArrival()</td>
                                 <td>@visit.getDeparture()</td>
-                                <td><a href=@routes.TripController.editvisit(visit.visitid) class="btn btn-primary">Edit</a></td>
+                                <td><a href=@routes.TripController.editvisit(visit.getVisitid) class="btn btn-primary">Edit</a></td>
                                 <td><button class="btn btn-danger" onclick="sendDeleteVisitRequest(
                                     '@routes.TripController.deletevisit(visit.getVisitid())',
                                     '@routes.TripController.displaytrip(trip.getTripid)',

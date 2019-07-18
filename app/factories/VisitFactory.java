@@ -10,12 +10,12 @@ public class VisitFactory {
 
     public Visit createVisit(VisitFormData visitformdata, Destination destination, Trip trip, Integer visitorder) {
         Visit visit = new Visit();
-        visit.trip = trip;
-        visit.destination = destination;
-        visit.visitorder = visitorder;
+        visit.setTrip(trip);
+        visit.setDestination(destination);
+        visit.setVisitorder(visitorder);
         visit.setArrival(visitformdata.arrival);
         visit.setDeparture(visitformdata.departure);
-        visit.visitName = destination.getDestName();
+        visit.setVisitName(destination.getDestName());
         return visit;
     }
 

@@ -179,7 +179,7 @@ public class TripControllerTest extends BaseTestWithApplicationAndDatabase {
 
     @Test
     public void updateVisitWithValidLoginSessionWithValidOwner(){
-        Visit visit = Visit.find.byId(1);
+        Visit visit = Visit.find().byId(1);
         assertEquals("Trip to New Zealand", visit.getTrip().getTripName());
         assertEquals("Christchurch", visit.getDestination().getDestName());
         assertEquals("2018-05-04", visit.getArrival());
@@ -191,7 +191,7 @@ public class TripControllerTest extends BaseTestWithApplicationAndDatabase {
         Http.RequestBuilder request = Helpers.fakeRequest().bodyForm(formData).method(Helpers.POST).uri("/users/trips/visit/edit/1").session("connected", "2");
         CSRFTokenHelper.addCSRFToken(request);
         Result result = route(app, request);
-        visit = Visit.find.byId(1);
+        visit = Visit.find().byId(1);
         assertEquals(SEE_OTHER, result.status());
         assertEquals("Trip to New Zealand", visit.getTrip().getTripName());
         assertEquals("Christchurch", visit.getDestination().getDestName());
@@ -201,7 +201,7 @@ public class TripControllerTest extends BaseTestWithApplicationAndDatabase {
 
     @Test
     public void updateVisitWithValidLoginSessionWithValidOwnerWithNoArrivalOrDepartureDate(){
-        Visit visit = Visit.find.byId(1);
+        Visit visit = Visit.find().byId(1);
         assertEquals("Trip to New Zealand", visit.getTrip().getTripName());
         assertEquals("Christchurch", visit.getDestination().getDestName());
         assertEquals("2018-05-04", visit.getArrival());
@@ -213,7 +213,7 @@ public class TripControllerTest extends BaseTestWithApplicationAndDatabase {
         Http.RequestBuilder request = Helpers.fakeRequest().bodyForm(formData).method(Helpers.POST).uri("/users/trips/visit/edit/1").session("connected", "2");
         CSRFTokenHelper.addCSRFToken(request);
         Result result = route(app, request);
-        visit = Visit.find.byId(1);
+        visit = Visit.find().byId(1);
         assertEquals(SEE_OTHER, result.status());
         assertEquals("Trip to New Zealand", visit.getTrip().getTripName());
         assertEquals("Christchurch", visit.getDestination().getDestName());
@@ -223,7 +223,7 @@ public class TripControllerTest extends BaseTestWithApplicationAndDatabase {
 
     @Test
     public void updateVisitWithValidLoginSessionWithValidOwnerThatResultsInRepeatDestination(){
-        Visit visit = Visit.find.byId(1);
+        Visit visit = Visit.find().byId(1);
         assertEquals("Trip to New Zealand", visit.getTrip().getTripName());
         assertEquals("Christchurch", visit.getDestination().getDestName());
         assertEquals("2018-05-04", visit.getArrival());
@@ -235,7 +235,7 @@ public class TripControllerTest extends BaseTestWithApplicationAndDatabase {
         Http.RequestBuilder request = Helpers.fakeRequest().bodyForm(formData).method(Helpers.POST).uri("/users/trips/visit/edit/1").session("connected", "2");
         CSRFTokenHelper.addCSRFToken(request);
         Result result = route(app, request);
-        visit = Visit.find.byId(1);
+        visit = Visit.find().byId(1);
         assertEquals("Trip to New Zealand", visit.getTrip().getTripName());
         assertEquals("Christchurch", visit.getDestination().getDestName());
         assertEquals("2019-04-20", visit.getArrival());

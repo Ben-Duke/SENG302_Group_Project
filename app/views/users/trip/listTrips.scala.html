@@ -20,8 +20,8 @@
                             <p>Trip name: @trip.getTripName</p>
                             <p>Destinations:</p>
                             @for(visit <- trip.getVisits){
-                                <p>@visit.visitName | Arrival time: @visit.arrival | Departure time: @visit.departure</p>
-                            <a href=@routes.TripController.editvisit(visit.visitid) class="btn btn-primary">Edit destination</a>
+                                <p>@visit.getVisitName | Arrival time: @visit.getArrival | Departure time: @visit.getDeparture</p>
+                            <a href=@routes.TripController.editvisit(visit.getVisitid) class="btn btn-primary">Edit destination</a>
                             }
                         </div>
                     </div>

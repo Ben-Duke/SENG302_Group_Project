@@ -190,7 +190,7 @@ public class DestinationFactory {
      * @param destinationTwo the new destination which will hold new visits
      */
     private void moveVisitsToAnotherDestination(Destination destinationOne, Destination destinationTwo){
-        List<Visit> visitsFrom = Visit.find.query().where().eq("destination", destinationOne).findList();
+        List<Visit> visitsFrom = Visit.find().query().where().eq("destination", destinationOne).findList();
         for(Visit visit : visitsFrom) {
             visit.delete();
             //Note: Update this if new attributes are ever added to visit

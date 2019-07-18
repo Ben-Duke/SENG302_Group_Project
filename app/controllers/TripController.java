@@ -132,7 +132,7 @@ public class TripController extends Controller {
     public Result editvisit(Http.Request request, Integer visitid){
         User user = User.getCurrentUser(request);
         if (user != null) {
-            Visit visit = Visit.find.byId(visitid);
+            Visit visit = Visit.find().byId(visitid);
 
 
             VisitFormData visitFormData = new VisitFormData(visit.getArrival(), visit.getDeparture());
@@ -159,7 +159,7 @@ public class TripController extends Controller {
      * @return OK or Bad request
      */
     public Result updateVisit(Http.Request request, Integer visitid){
-        Visit visit = Visit.find.byId(visitid);
+        Visit visit = Visit.find().byId(visitid);
         List<Destination> destinations = new ArrayList<>();
         destinations.add(visit.getDestination());
         Form<VisitFormData> visitForm;
@@ -174,7 +174,7 @@ public class TripController extends Controller {
             String arrival = visitForm.get().arrival;
             String departure = visitForm.get().departure;
 
-            visit = Visit.find.byId(visitid);
+            visit = Visit.find().byId(visitid);
             Trip trip = visit.getTrip();
             if(trip.isUserOwner(user.getUserid())) {
                 Destination dest = Destination.find().byId(destID);
@@ -329,7 +329,7 @@ public class TripController extends Controller {
      * @return edit trip page or error page
      */
     public Result deletevisit(Http.Request request, Integer visitid){
-        Visit visit = Visit.find.byId(visitid);
+        Visit visit = Visit.find().byId(visitid);
         User user = User.getCurrentUser(request);
         //change later
         if (user != null && visit != null) {

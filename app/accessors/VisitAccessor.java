@@ -14,11 +14,11 @@ public class VisitAccessor {
 
     /** Return the destination matching the id passed */
     public static Visit getById(int id) {
-        return Visit.find.query().where().eq("visitid", id).findOne();
+        return Visit.find().query().where().eq("visitid", id).findOne();
     }
 
     public static List<Visit> getAll() {
-        return Visit.find.all();
+        return Visit.find().all();
     }
 
     /** Insert the destination */

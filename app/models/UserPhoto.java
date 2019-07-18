@@ -6,7 +6,6 @@ import io.ebean.Finder;
 import io.ebean.Model;
 
 import javax.persistence.*;
-import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.List;
 
@@ -23,8 +22,11 @@ public class UserPhoto extends Model {
 
     @Column(name = "url")
     private String url;
+
     private boolean isPublic;
     private boolean isProfile;
+
+    private String caption = "";
 
     // Creating  the relation to User
     @JsonIgnore
@@ -41,7 +43,12 @@ public class UserPhoto extends Model {
     @OneToMany(mappedBy = "primaryPhoto")
     private List<Destination> primaryPhotoDestinations;
 
-    private static Finder<Integer,UserPhoto> find = new Finder<>(UserPhoto.class);
+    private static final Finder<Integer,UserPhoto> find = new Finder<>(UserPhoto.class);
+
+    /**
+     * Default constructor for caption edit commands
+     */
+    public UserPhoto() {}
 
     /**
      * Constructor method for UserPhoto.
@@ -79,13 +86,14 @@ public class UserPhoto extends Model {
         return this.isProfile;
     }
 
-    public UserPhoto(UserPhoto userPhoto){
+    public UserPhoto(UserPhoto userPhoto) {
         this.url = userPhoto.getUrl();
         this.isPublic = userPhoto.getIsPhotoPublic();
         this.user = userPhoto.getUser();
         this.isProfile = userPhoto.getIsProfilePhoto();
         this.destinations = userPhoto.getDestinations();
         this.primaryPhotoDestinations = userPhoto.getPrimaryPhotoDestinations();
+        this.caption = userPhoto.getCaption();
     }
 
     /**
@@ -107,31 +115,29 @@ public class UserPhoto extends Model {
     }
 
     /**
-     * Gets an unused user photo url.
+     * Gets an unused user photo filename.
      *
      * Checks for duplicate photo file names and increments the file name index until a non duplicate file name
      * is found.
      *
-     * @return A String representing the unused url of the photo
+     * @return A String representing the unused filename of the photo
      */
     public String getUnusedUserPhotoFileName(){
         int count = 0;
         UserPhoto userPhoto = this;
-        String unusedUrl = "";
+        String filename = "";
         while(userPhoto != null) {
             count += 1;
-            unusedUrl = count + "_" + this.url;
-            userPhoto = UserPhoto.find.query().where().eq("url", unusedUrl).findOne();
+            filename = count + "_" + this.url;
+            userPhoto = UserPhoto.find().query().where().eq("url", filename).findOne();
         }
 
-        return unusedUrl;
+        return filename;
     }
 
     /**
      * Calling this function will delete a user photo that has that photoId does nothing if the photoId doesn't
      * match a photo in the database
-     * @param idOfPhoto
-     * @return
      */
     public static void deletePhoto(int idOfPhoto){
         UserPhoto.find.query().where().eq("photoId",idOfPhoto).delete();
@@ -143,6 +149,14 @@ public class UserPhoto extends Model {
      */
     public boolean isProfile() {
         return isProfile;
+    }
+
+    public String getCaption() {
+        return caption;
+    }
+
+    public void setCaption(String caption) {
+        this.caption = caption;
     }
 
     public List<Destination> getDestinations() {
@@ -241,5 +255,20 @@ public class UserPhoto extends Model {
     @Override
     public String toString() {
         return "url is " + this.url + " Id is " + this.getPhotoId();
+    }
+
+    /**
+     * Modifies the fields of this UserPhoto which are included in the
+     * UserPhoto editing form to be equal to those fields of the UserPhoto
+     * passed in
+     * */
+    public void applyEditChanges(UserPhoto editedPhoto) {
+        this.url = editedPhoto.getUrl();
+        this.isPublic = editedPhoto.getIsPhotoPublic();
+        this.isProfile = editedPhoto.getIsProfile();
+        this.caption = editedPhoto.getCaption();
+        this.user = editedPhoto.getUser();
+        this.destinations = editedPhoto.getDestinations();
+        this.primaryPhotoDestinations = editedPhoto.getPrimaryPhotoDestinations();
     }
 }

@@ -4,25 +4,19 @@ import accessors.DestinationAccessor;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import factories.DestinationFactory;
-import factories.UserFactory;
 import formdata.DestinationFormData;
-import io.ebean.DuplicateKeyException;
 import models.*;
 
 
 import models.commands.Destinations.*;
+import models.commands.General.CommandPage;
 import models.commands.Photos.DeletePhotoCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import play.api.http.MediaRange;
-import play.api.mvc.Request;
 import play.data.DynamicForm;
 import play.data.Form;
 import play.data.FormFactory;
-import play.i18n.Lang;
 import play.libs.Json;
-import play.libs.typedmap.TypedKey;
-import play.libs.typedmap.TypedMap;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
@@ -32,8 +26,6 @@ import views.html.users.destination.*;
 
 import javax.inject.Inject;
 import java.io.File;
-import java.io.IOException;
-import java.security.cert.X509Certificate;
 import java.util.*;
 
 
@@ -113,7 +105,7 @@ public class DestinationController extends Controller {
         User user = User.getCurrentUser(request);
 
         if (user != null) {
-            user.getCommandManager().setAllowedType(DestinationPageCommand.class);
+            user.getCommandManager().setAllowedPage(CommandPage.DESTINATION);
 
             CountryUtils.updateCountries();
 
@@ -531,44 +523,39 @@ public class DestinationController extends Controller {
      */
     public Result deleteDestination(Http.Request request, Integer destId) {
         User user = User.getCurrentUser(request);
+        Destination destination = Destination.find().query().where().eq("destid", destId).findOne();
 
-        if (user != null) {
-            Destination destination = Destination.find().query().where().eq("destid", destId).findOne();
-
-            if (destination != null) {
-                if(user.userIsAdmin()){
-
-                    DeleteDestinationCommand cmd = new DeleteDestinationCommand(
-                            destination, true);
-                    user.getCommandManager().executeCommand(cmd);
-
-                    return redirect(routes.DestinationController.indexDestination());
-                }
-                else if (destination.isUserOwner(user.getUserid())) {
-                    if(destination.getVisits().isEmpty()) {
-                        List<TreasureHunt> treasureHunts = TreasureHunt.find().query().where().eq("destination", destination).findList();
-                        if (treasureHunts.isEmpty()) {
-
-                            DeleteDestinationCommand cmd = new DeleteDestinationCommand(
-                                    destination, false);
-                            user.getCommandManager().executeCommand(cmd);
-
-                            return redirect(routes.DestinationController.indexDestination());
-                        } else {
-                            return preconditionRequired("You cannot delete destinations while they are being used by the treasure hunts.");
-                        }
-                    }
-                    else{
-                        return preconditionRequired("You cannot delete destinations while you're using them for your trips. Delete them from your trip first!");
-                    }
-                } else {
-                    return unauthorized("HEY!, not yours. You cant delete. How you get access to that anyway?... FBI!!! OPEN UP!");
-                }
-            } else {
-                return notFound("Destination does not exist");
-            }
-        } else {
+        if (user == null) {
             return redirect(routes.UserController.userindex());
+        }
+        if (destination == null) {
+            return notFound("Destination does not exist");
+        }
+
+        if(user.userIsAdmin()){
+
+            DeleteDestinationCommand cmd = new DeleteDestinationCommand(
+                    destination, true);
+            user.getCommandManager().executeCommand(cmd);
+
+            return redirect(routes.DestinationController.indexDestination());
+        }
+        else if (destination.isUserOwner(user.getUserid())) {
+            if(!destination.getVisits().isEmpty()) {
+                return preconditionRequired("You cannot delete destinations while you're using them for your trips. Delete them from your trip first!");
+            }
+            List<TreasureHunt> treasureHunts = TreasureHunt.find().query().where().eq("destination", destination).findList();
+            if(!treasureHunts.isEmpty()) {
+                return preconditionRequired("You cannot delete destinations while they are being used by the treasure hunts.");
+            }
+
+            DeleteDestinationCommand cmd = new DeleteDestinationCommand(
+                    destination, false);
+            user.getCommandManager().executeCommand(cmd);
+
+            return redirect(routes.DestinationController.indexDestination());
+        } else {
+            return unauthorized("HEY!, not yours. You cant delete. How you get access to that anyway?... FBI!!! OPEN UP!");
         }
 
     }
@@ -584,42 +571,37 @@ public class DestinationController extends Controller {
     public Result makeDestinationPublic(Http.Request request, Integer destId) {
         User user = User.getCurrentUser(request);
 
-        if (user != null) {
-            Destination destination = Destination.find().query().where().eq("destid", destId).findOne();
-
-            if (destination != null) {
-                if (destination.isUserOwner(user.getUserid())) {
-                    if (destination.getIsCountryValid()) {
-
-                        //-----------checking if a public destination equivalent
-                        // ----------already exists
-                        if (destFactory.doesPublicDestinationExist(destination)) {
-                            // public matching destination already exists
-                            // show error
-                            destination.setIsPublic(true);
-                            destination.update();
-                            return redirect(routes.DestinationController.indexDestination());
-                        } else {
-                            //no matching pub destination exists, making public now
-                            //sets the destination to public, sets the owner to the default admin and updates the destination
-                            List<Destination> matchingDests = destFactory.getOtherUsersMatchingPrivateDestinations(user.getUserid(), destination);
-                            if (matchingDests.size() == 0) {
-                                destination.setIsPublic(true);
-                                destination.update();
-                            }
-                            return redirect(routes.DestinationController.indexDestination());
-                        }
-                    } else {
-                        return badRequest("The country for this destination is not valid. The destination can not be made public");
-                    }
-                } else {
-                    return unauthorized("HEY!, not yours. You cant make public. How you get access to that anyway?... FBI!!! OPEN UP!");
-                }
-            } else {
-                return notFound("Destination does not exist");
-            }
-        } else {
+        if (user == null) {
             return redirect(routes.UserController.userindex());
+        }
+        Destination destination = Destination.find().query().where().eq("destid", destId).findOne();
+        if (destination == null) {
+            return notFound("Destination does not exist");
+        }
+        if (!destination.isUserOwner(user.getUserid())) {
+            return unauthorized("HEY!, not yours. You cant make public. How you get access to that anyway?... FBI!!! OPEN UP!");
+        }
+        if (!destination.getIsCountryValid()) {
+            return badRequest("The country for this destination is not valid. The destination can not be made public");
+        }
+        //-----------checking if a public destination equivalent
+        // ----------already exists
+        DestinationFactory destFactory = new DestinationFactory();
+        if (destFactory.doesPublicDestinationExist(destination)) {
+            // public matching destination already exists
+            // show error
+            destination.setIsPublic(true);
+            destination.update();
+            return redirect(routes.DestinationController.indexDestination());
+        } else {
+            //no matching pub destination exists, making public now
+            //sets the destination to public, sets the owner to the default admin and updates the destination
+            List<Destination> matchingDests = destFactory.getOtherUsersMatchingPrivateDestinations(user.getUserid(), destination);
+            if (matchingDests.size() == 0) {
+                destination.setIsPublic(true);
+                destination.update();
+            }
+            return redirect(routes.DestinationController.indexDestination());
         }
     }
 

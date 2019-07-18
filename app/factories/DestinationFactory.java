@@ -140,7 +140,7 @@ public class DestinationFactory {
      * @param viewerId the user Id of the person viewing the photos
      */
     public void removePrivatePhotos(List<UserPhoto> userPhotos, Integer viewerId) {
-        ArrayList<UserPhoto> photosToRemove = new ArrayList<UserPhoto>();
+        ArrayList<UserPhoto> photosToRemove = new ArrayList<>();
         for (UserPhoto photo : userPhotos) {
             if(!photo.isPublic() && photo.getUser().getUserid() != viewerId) {
                 photosToRemove.add(photo);

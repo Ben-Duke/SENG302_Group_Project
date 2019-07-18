@@ -5,7 +5,7 @@ import factories.UserFactory;
 import io.ebean.DuplicateKeyException;
 import models.User;
 import models.UserPhoto;
-import models.commands.Profile.HomePageCommand;
+import models.commands.General.CommandPage;
 import models.commands.Photos.UploadPhotoCommand;
 import org.slf4j.Logger;
 import play.data.FormFactory;
@@ -57,7 +57,7 @@ public class HomeController {
                 return redirect(routes.ProfileController.updateNatPass());
             } else {
                 // Clear command stack
-                user.getCommandManager().setAllowedType(HomePageCommand.class);
+                user.getCommandManager().setAllowedPage(CommandPage.HOME);
 
                 // Load countries from api and update validity of pass/nat/destinations
                 CountryUtils.updateCountries();

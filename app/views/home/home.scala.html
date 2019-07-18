@@ -473,18 +473,28 @@
                             } else{
                             <div id="caro-@photo.getPhotoId" class="item">
                                 }
-                                @*<a href="#" data-toggle="modal" data-target=#@photo.getPhotoId()>*@
-                                @*<img id="carouselImage" src="@{routes.HomeController.index(photo.getUrlWithPath)}" width="1280">*@
                                 <img class="center" id="carouselImage@photo.getPhotoId()" src="@{routes.HomeController.index(photo.getUrlWithPath)}">
-                                @*</a>*@
-                                @*                                    <div class="carousel-caption">
-                                <h2>insert caption here</h2>
-                            </div>*@
+
+
+                                <h2 class=caption id="caption-@photo.getPhotoId" onclick="editCaption(@photo.getPhotoId)">@photo.getCaption</h2>
+                                <br/>
+                                <div>
+                                    <input type="text" class="captionInput center" id="captionInput-@photo.getPhotoId" name="caption" title="caption" placeholder="No Caption" style="display: none">
+                                    <span id="lengthErrorMessage-@photo.getPhotoId" class="center" style="color: red; display: none">This caption is too long</span>
+
+                                    @if(user.userid.eq(photo.user.userid) || user.userIsAdmin) {
+                                        <button class="btn btn-primary captionButton center" id="editCaptionButton-@photo.getPhotoId" style="padding-left: 100px" onclick="editCaption(@photo.photoId)">
+                                            Add Caption
+                                        </button>
+                                    }
+                                    <br/>
+
+                                </div>
+
                                 <a class="btn btn-primary" id="linkButton" href="#" data-toggle="modal" data-target="#@photo.getPhotoId">Destinations</a>
                                 <a class="btn btn-primary" id="setProfilePicture"
                                    onclick="setProfilePictureRequest(
                                                 @photo.getPhotoId())">Set as Profile Picture</a>
-
                                 <button class="btn btn-danger" onclick="deletePhotoRequest(
                                             '@routes.ProfileController.deletePhoto(photo.getPhotoId(),false)', @photo.getPhotoId(), '@photo.getUrl(), false')">Delete Photo</button></td>
                                 @if(photo.isPublic()) {

@@ -4,9 +4,10 @@ import accessors.DestinationAccessor;
 import accessors.UserPhotoAccessor;
 import models.Destination;
 import models.UserPhoto;
+import models.commands.General.CommandPage;
 import models.commands.General.UndoableCommand;
 
-public class UnlinkPhotoDestinationCommand extends DestinationPageCommand  {
+public class UnlinkPhotoDestinationCommand extends UndoableCommand {
 
     private UserPhoto photo;
     private Destination destination;
@@ -17,6 +18,7 @@ public class UnlinkPhotoDestinationCommand extends DestinationPageCommand  {
      * @param destination
      */
     public UnlinkPhotoDestinationCommand(UserPhoto photo, Destination destination) {
+        super(CommandPage.DESTINATION);
         this.photo = photo;
         this.destination = destination;
     }

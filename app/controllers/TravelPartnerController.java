@@ -162,23 +162,20 @@ public class TravelPartnerController {
         String agerange2 = filterForm.get("agerange2");
         Date date1 = null;
         Date date2 = null;
-
-        if ((agerange1 != null && agerange2 != null)
-            && (agerange1.equals("") || agerange2.equals(""))) {
-            try {
-                if (agerange1.equals("") && !agerange2.equals("")) {
-                    date1 = new Date(Long.MIN_VALUE);
-                    date2 = new SimpleDateFormat("yyyy-MM-dd").parse(agerange2);
-                } else if (agerange2.equals("") && !agerange1.equals("")) {
-                    date1 = new SimpleDateFormat("yyyy-MM-dd").parse(agerange1);
-                    date2 = new Date();
-                } else if (!agerange1.equals("") && !agerange2.equals("")) {
-                    date1 = new SimpleDateFormat("yyyy-MM-dd").parse(agerange1);
-                    date2 = new SimpleDateFormat("yyyy-MM-dd").parse(agerange2);
-                }
-            } catch (ParseException e) {
-                //Do Nothing
+        Boolean parseDate = (agerange1 != null && agerange2 != null) && (agerange1.equals("") || agerange2.equals(""));
+        try {
+            if (parseDate && agerange1.equals("") && !agerange2.equals("")) {
+                date1 = new Date(Long.MIN_VALUE);
+                date2 = new SimpleDateFormat("yyyy-MM-dd").parse(agerange2);
+            } else if (parseDate && agerange2.equals("") && !agerange1.equals("")) {
+                date1 = new SimpleDateFormat("yyyy-MM-dd").parse(agerange1);
+                date2 = new Date();
+            } else if (parseDate && !agerange1.equals("") && !agerange2.equals("")) {
+                date1 = new SimpleDateFormat("yyyy-MM-dd").parse(agerange1);
+                date2 = new SimpleDateFormat("yyyy-MM-dd").parse(agerange2);
             }
+        } catch (ParseException e) {
+            //Do Nothing
         }
 
         if(date1 != null && date2 != null){

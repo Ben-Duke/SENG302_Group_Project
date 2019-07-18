@@ -86,15 +86,10 @@ public class DestinationFormData implements Constraints.Validatable<List<Validat
 
 
         try {
-            if (latitude == null || latitude.length()==0) {
+            Double latitudeDouble = Double.parseDouble(latitude);
+            if (latitude == null || latitude.length()==0 || !(-90.0 <= latitudeDouble && latitudeDouble <= 90.0)) {
                 errors.add(new ValidationError("latitude",
                             "Latitude must be a number between -90 and 90"));
-            } else {
-                Double latitudeDouble = Double.parseDouble(latitude);
-                if (! (-90.0 <= latitudeDouble && latitudeDouble <= 90.0)) {
-                    errors.add(new ValidationError("latitude",
-                            "Latitude must be between -90 and 90"));
-                }
             }
         } catch (NumberFormatException e) {
             errors.add(new ValidationError("latitude",
@@ -102,15 +97,10 @@ public class DestinationFormData implements Constraints.Validatable<List<Validat
         }
 
         try {
-            if (longitude == null || longitude.length()==0) {
+            Double longitudeDouble = Double.parseDouble(longitude);
+            if (longitude == null || longitude.length()==0 || !(-180.0 <= longitudeDouble && longitudeDouble <= 180.0) ) {
                 errors.add(new ValidationError("longitude",
                                     "Longitude must be between -180 and 180"));
-            } else {
-                Double longitudeDouble = Double.parseDouble(longitude);
-                if (! (-180.0 <= longitudeDouble && longitudeDouble <= 180.0)) {
-                    errors.add(new ValidationError("longitude",
-                            "Longitude must be between -180 and 180"));
-                }
             }
         } catch (NumberFormatException e) {
             errors.add(new ValidationError("longitude",

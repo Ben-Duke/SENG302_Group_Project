@@ -213,6 +213,12 @@ GET     /users/destinations/photos/:id    controllers.DestinationController.getP
 #Handles request for a photo
 GET     /users/photos/:id                   controllers.DestinationController.getPhoto(request : Request, id : Integer)
 
+#Handles request for retrieving a photo caption
+GET     /users/photos/:photoId/caption          controllers.UserController.getPhotoCaption(request : Request, photoId : Integer)
+
+#Handles request for inserting or updating a photo caption
+PUT     /users/photos/:photoId/caption           controllers.UserController.editPhotoCaption(request : Request, photoId : Integer)
+
 #Renders request for destination traveller types
 POST    /users/destinations/ttypes/:id    controllers.TravellerTypeController.submitUpdateDestinationTravellerType(request : Request, id : Integer)
 
@@ -314,3 +320,4 @@ PUT     /undo                                              controllers.UndoRedoC
 # Redo
 +nocsrf
 PUT     /redo                                              controllers.UndoRedoController.redo(request: Request)
+

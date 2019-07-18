@@ -164,6 +164,7 @@ create table user_photo (
   url                           varchar(255),
   is_public                     boolean default false not null,
   is_profile                    boolean default false not null,
+  caption                       varchar(255),
   user                          integer,
   constraint uq_user_photo_url unique (url),
   constraint pk_user_photo primary key (photo_id)

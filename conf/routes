@@ -273,14 +273,24 @@ POST     /users/treasurehunts/edit/save/:id                    controllers.Treas
 #Delete treasure hunt
 GET     /users/treasurehunts/delete/:id                    controllers.TreasureHuntController.deleteTreasureHunt(request : Request, id : Integer)
 
-#Get photo tag
+#Get photo tags
 GET    /photos/:photoId/tags                                    controllers.TagController.getPhotoTags(request : Request, photoId : Integer)
 
 # Add photo tag
 PUT   /photos/:photoId/tags                                 controllers.TagController.addPhotoTag(request : Request, photoId : Integer)
 
 # Delete photo tag
-DELETE /photos/:photoId/tags                                    controllers.TagController.removePhotoTag(request : Request, photoId : Integer)
+DELETE   /photos/:photoId/tags                                    controllers.TagController.removePhotoTag(request : Request, photoId : Integer)
+
+# Get trip tags
+GET   /trips/:tripId/tags                                         controllers.TagController.getTags(request : Request, tripId : Integer)
+
+#Add a new tag to a destination
+PUT /trips/:tripId/tags                                             controllers.TagController.addTripTag(request: Request, tripId :Integer)
+
+#Remove a tag from a trip
+DELETE /trips/:tripId/tags                                          controllers.TagController.removeTripTag(request: Request, tripId :Integer)
+
 
 # Get destination tags
 GET /destinations/:destId/tags                                 controllers.TagController.getDestTags(request : Request, destId : Integer)

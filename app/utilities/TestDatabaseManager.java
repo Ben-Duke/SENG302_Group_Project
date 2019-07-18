@@ -1,5 +1,7 @@
 package utilities;
 
+import accessors.TagAccessor;
+import accessors.TripAccessor;
 import accessors.UserPhotoAccessor;
 import controllers.ApplicationManager;
 import models.*;
@@ -382,6 +384,12 @@ public class TestDatabaseManager {
             Trip trip4 = Trip.find.query().where().eq("tripName", "Pyramid to Race and back again").findList().get(0);
             Trip trip5 = Trip.find.query().where().eq("tripName", "See the pope, the president and come back").findList().get(0);
             Trip trip6 = Trip.find.query().where().eq("tripName", "Waterfall walk and see the president").findList().get(0);
+
+            Tag tag2 = new Tag("Best trip ever");
+            TagAccessor.insert(tag2);
+            trip1.addTag(tag2);
+            TripAccessor.update(trip1);
+            TagAccessor.update(tag2);
 
             // creating all the visits
             Visit visit1 =  new Visit("2018-05-04", "2018-05-06", trip1, destination1,1);

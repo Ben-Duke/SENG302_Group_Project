@@ -1,5 +1,11 @@
 package controllers;
 
+import accessors.TagAccessor;
+import accessors.TripAccessor;
+import accessors.UserAccessor;
+import models.Tag;
+import models.Trip;
+import models.User;
 import org.junit.Test;
 import play.libs.Json;
 import play.mvc.Http;
@@ -11,6 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import static play.mvc.Http.Status.FORBIDDEN;
 import static play.mvc.Http.Status.OK;
 import static play.mvc.Http.Status.UNAUTHORIZED;
@@ -27,25 +34,25 @@ public class TagControllerTest extends BaseTestWithApplicationAndDatabase {
     @Test
     public void searchTagsForOneItemCheckData() {
         Result result = searchTagsHelper("Shrek", 2);
-        assertEquals("[{\"tagId\":2,\"name\":\"Shrek\"}]", contentAsString(result));
+        assertEquals("[{\"tagId\":3,\"name\":\"Shrek\"}]", contentAsString(result));
     }
 
     @Test
     public void searchTagsCaseInsensitiveCheckData() {
         Result result = searchTagsHelper("shReK", 2);
-        assertEquals("[{\"tagId\":2,\"name\":\"Shrek\"}]", contentAsString(result));
+        assertEquals("[{\"tagId\":3,\"name\":\"Shrek\"}]", contentAsString(result));
     }
 
     @Test
     public void searchTagsMultipleTagsCheckData() {
         Result result = searchTagsHelper("S", 2);
-        assertEquals("[{\"tagId\":1,\"name\":\"Vacation spot\"},{\"tagId\":2,\"name\":\"Shrek\"}]", contentAsString(result));
+        assertEquals("[{\"tagId\":1,\"name\":\"Vacation spot\"},{\"tagId\":2,\"name\":\"Best trip ever\"},{\"tagId\":3,\"name\":\"Shrek\"}]", contentAsString(result));
     }
 
     @Test
     public void searchTagsEmptySearchCheckData() {
         Result result = searchTagsHelper("", 2);
-        assertEquals("[{\"tagId\":1,\"name\":\"Vacation spot\"},{\"tagId\":2,\"name\":\"Shrek\"}]", contentAsString(result));
+        assertEquals("[{\"tagId\":1,\"name\":\"Vacation spot\"},{\"tagId\":2,\"name\":\"Best trip ever\"},{\"tagId\":3,\"name\":\"Shrek\"}]", contentAsString(result));
     }
 
     @Test
@@ -71,7 +78,7 @@ public class TagControllerTest extends BaseTestWithApplicationAndDatabase {
     @Test
     public void getPhotoTagSuccessCheckData() {
         Result result = getPhotoTagHelper(1, 2);
-        assertEquals("[{\"tagId\":2,\"name\":\"Shrek\"}]", contentAsString(result));
+        assertEquals("[{\"tagId\":3,\"name\":\"Shrek\"}]", contentAsString(result));
     }
 
     @Test
@@ -92,7 +99,7 @@ public class TagControllerTest extends BaseTestWithApplicationAndDatabase {
 
         Result result = getPhotoTagHelper(2, 2);
         assertEquals(
-            "[{\"tagId\":3,\"name\":\"UC\"},{\"tagId\":4,\"name\":\"Second Tag\"}]",
+                "[{\"tagId\":4,\"name\":\"UC\"},{\"tagId\":5,\"name\":\"Second Tag\"}]",
                 contentAsString(result));
     }
 
@@ -249,7 +256,7 @@ public class TagControllerTest extends BaseTestWithApplicationAndDatabase {
 
         Result result = getDestTagHelper(2, 2);
         assertEquals(
-                "[{\"tagId\":3,\"name\":\"Cool spot\"},{\"tagId\":4,\"name\":\"Dream spot\"}]",
+                "[{\"tagId\":4,\"name\":\"Cool spot\"},{\"tagId\":5,\"name\":\"Dream spot\"}]",
                 contentAsString(result));
     }
 
@@ -432,6 +439,196 @@ public class TagControllerTest extends BaseTestWithApplicationAndDatabase {
             request.session("connected", userId.toString());
         }
         return route(app, request);
+    }
+
+    ///Trips
+    @Test
+    public void getTagsForTrip() {
+
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/trips/1/tags").session("connected", "2");
+        Result result = route(app, request);
+
+        assertEquals("[{\"tagId\":2,\"name\":\"Best trip ever\"}]", contentAsString(result));
+    }
+
+    @Test
+    public void getTagsForTripNoUserAuthenticated() {
+
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/trips/1/tags");
+        Result result = route(app, request);
+
+        assertEquals(UNAUTHORIZED, result.status());
+    }
+
+    @Test
+    public void getTagsForTripNotFound() {
+
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/trips/99999/tags").session("connected", "2");
+        Result result = route(app, request);
+
+        assertEquals(NOT_FOUND, result.status());
+    }
+
+
+    private Result tripTagHelper(String method,  Map<String,String> tagData, int tripId, int userId) {
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(method)
+                .bodyJson(Json.toJson(tagData))
+                .uri("/trips/" + tripId + "/tags").session("connected", ""+ userId);
+        return route(app, request);
+    }
+
+
+    @Test
+    public void checkAddTripTag() {
+        Map<String, String> tagData = new HashMap<>();
+        tagData.put("tag", "Best trip ever 2");
+        tripTagHelper("PUT", tagData,  1 , 2);
+        Trip trip = TripAccessor.getTripById(1);
+        assertEquals(2, trip.getTags().size());
+    }
+
+    @Test
+    public void checkAddTripTagWithNonexistentTrip() {
+        Map<String, String> tagData = new HashMap<>();
+        tagData.put("tag", "Best trip ever 2");
+        Result result = tripTagHelper("PUT", tagData,  9999999 , 2);
+        assertEquals(NOT_FOUND, result.status());
+    }
+
+    @Test
+    public void checkAddTripTagWithNonAuthorisedUser() {
+        Map<String, String> tagData = new HashMap<>();
+        tagData.put("tag", "Not my trip tag");
+        Result result = tripTagHelper("PUT", tagData,  1 , 4);
+        assertEquals(FORBIDDEN, result.status());
+    }
+
+    @Test
+    public void checkAddTripWithNoUserSignedIn() {
+        Map<String, String> tagData = new HashMap<>();
+        tagData.put("tag", "No user tag");
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(PUT)
+                .bodyJson(Json.toJson(tagData))
+                .uri("/trips/1/tags");
+        Result result = route(app, request);
+        assertEquals(UNAUTHORIZED, result.status());
+    }
+
+    @Test
+    public void checkAddTagThatAlreadyExists() {
+        Map<String, String> tagData = new HashMap<>();
+        tagData.put("tag", "Best trip ever");
+        Result result = tripTagHelper("PUT", tagData,  1 , 2);
+        assertEquals("The tag Best trip ever appears to already be on this trip", contentAsString(result));
+    }
+
+
+    @Test
+    public void checkAddTagEmptyString() {
+        Map<String, String> tagData = new HashMap<>();
+        tagData.put("tag", "");
+        Result result = tripTagHelper("PUT", tagData,  1 , 2);
+        assertEquals(BAD_REQUEST, result.status());
+    }
+
+    @Test
+    public void checkAddTagAsAdmin() {
+        Map<String, String> tagData = new HashMap<>();
+        tagData.put("tag", "Admin Tag TEST");
+        tripTagHelper("PUT", tagData,  1 , 1);
+        Trip trip = TripAccessor.getTripById(1);
+        assertEquals(2, trip.getTags().size());
+    }
+
+    @Test
+    public void checkRemoveTripTag() {
+        Map<String, String> tagData = new HashMap<>();
+        tagData.put("tag", "Best trip ever");
+        tripTagHelper("DELETE", tagData,  1 , 2);
+        assertEquals(0, TripAccessor.getTripById(1).getTags().size());
+    }
+
+    @Test
+    public void checkRemoveTripTagTripDoesNotExist() {
+        Map<String, String> tagData = new HashMap<>();
+        tagData.put("tag", "Best trip ever");
+        Result result = tripTagHelper("DELETE", tagData,  100000 , 2);
+        assertEquals(NOT_FOUND, result.status());
+    }
+
+    @Test
+    public void checkRemoveTripTagWithNoSignedInUser() {
+        Map<String, String> tagData = new HashMap<>();
+        tagData.put("tag", "Best trip ever");
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(DELETE)
+                .bodyJson(Json.toJson(tagData))
+                .uri("/trips/1/tags");
+        Result result = route(app, request);
+        assertEquals(UNAUTHORIZED, result.status());
+    }
+
+    @Test
+    public void checkRemoveTripTagUserIsNotTheOwnerOrAdmin() {
+        Map<String, String> tagData = new HashMap<>();
+        tagData.put("tag", "Best trip ever");
+        Result result = tripTagHelper("DELETE", tagData,  1 , 4);
+        assertEquals(FORBIDDEN, result.status());
+    }
+
+    @Test
+    public void checkRemoveTripTagWhenTagNameIsEmpty() {
+        Map<String, String> tagData = new HashMap<>();
+        tagData.put("tag", "");
+        Result result = tripTagHelper("DELETE", tagData,  1 , 2);
+        assertEquals(BAD_REQUEST, result.status());
+    }
+
+    @Test
+    public void checkRemoveTripTagWhenTagNameIsNotInDatabase() {
+        Map<String, String> tagData = new HashMap<>();
+        tagData.put("tag", "Not in database");
+        Result result = tripTagHelper("DELETE", tagData,  1 , 2);
+        assertEquals(NOT_FOUND, result.status());
+    }
+
+    /**
+     * This test is more a sanity check that ebeans is working with the ebeans objects properly
+     */
+    @Test
+    public void checkAddTag(){
+        Trip trip = new Trip("Underworld Ventures", true, null);
+        TripAccessor.insert(trip);
+        Tag tag = new Tag("Nice spot");
+        TagAccessor.insert(tag);
+        trip.addTag(tag);
+        assertEquals(1, trip.getTags().size());
+    }
+
+    /**
+     * This test is more a sanity check that ebeans is working with the ebeans objects properly
+     */
+    @Test
+    public void checkRemoveTagFromTrip(){
+        Trip trip = new Trip("GOAT trip", true, null);
+        TripAccessor.insert(trip);
+        Tag tag = new Tag("remove tag");
+        TagAccessor.insert(tag);
+        trip.addTag(tag);
+
+        trip.removeTag(tag);
+        TagAccessor.update(tag);
+        TripAccessor.update(trip);
+
+        assertEquals(0, trip.getTags().size());
     }
 
 }

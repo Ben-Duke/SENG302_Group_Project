@@ -410,62 +410,7 @@ public class TripController extends Controller {
         }
     }
 
-    /**
-     * This Function will get all tags on a trip.
-     * If the user is logged in then will return the tags that are on a destination,
-     * will return not found if a trip with the requested id does not exist.
-     * @param request
-     * @param tripId
-     * @return
-     */
-    public Result getTripTags(Http.Request request, int tripId){
-        User user = User.getCurrentUser(request);
-        if(user != null){
-            Trip trip = TripAccessor.getTripById(tripId);
-            if(trip == null){
-                return notFound();
-            }
 
-            Set<Tag> tags = trip.getTags();
-
-            if(tags == null){
-                return ok("");
-            }
-            return ok(Json.toJson(tags));
-        }
-
-        return unauthorized();
-
-    }
-
-    /**
-     * This function is used to do a request to add tag to a destination
-     * @param request
-     * @param tripId
-     * @param newTag
-     * @return
-     */
-    public Result setTripTag(Http.Request request, int tripId, String newTag){
-        User user = User.getCurrentUser(request);
-        if(user != null) {
-            Trip trip = TripAccessor.getTripById(tripId);
-            if(trip == null){
-                return notFound();
-            }
-            if(!user.userIsAdmin() && user.getUserid() != trip.getUser().getUserid()){
-                return forbidden();
-            }
-            Tag tag = new Tag(newTag);
-            if(trip.addTag(tag)){
-                return ok("Added new tag " + newTag);
-            }else{
-                return ok("The tag " + newTag + " appears to already be on this trip");
-            }
-
-        }
-
-        return unauthorized();
-    }
 
 }
 

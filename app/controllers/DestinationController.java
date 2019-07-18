@@ -546,7 +546,7 @@ public class DestinationController extends Controller {
                 }
                 else if (destination.isUserOwner(user.getUserid())) {
                     if(destination.getVisits().isEmpty()) {
-                        List<TreasureHunt> treasureHunts = TreasureHunt.find.query().where().eq("destination", destination).findList();
+                        List<TreasureHunt> treasureHunts = TreasureHunt.find().query().where().eq("destination", destination).findList();
                         if (treasureHunts.isEmpty()) {
 
                             DeleteDestinationCommand cmd = new DeleteDestinationCommand(

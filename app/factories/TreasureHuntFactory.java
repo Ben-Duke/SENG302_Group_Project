@@ -37,7 +37,7 @@ public class TreasureHuntFactory {
      * @param treasureHuntFormData TreasureHuntFormData
      */
     public void editTreasureHunt(User user, Integer treasureHuntId, TreasureHuntFormData treasureHuntFormData) {
-        TreasureHunt treasureHunt = TreasureHunt.find.byId(treasureHuntId);
+        TreasureHunt treasureHunt = TreasureHunt.find().byId(treasureHuntId);
         if (treasureHunt != null) {
             treasureHunt.setTitle(treasureHuntFormData.title);
             treasureHunt.setRiddle(treasureHuntFormData.riddle);

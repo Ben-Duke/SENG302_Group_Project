@@ -79,7 +79,7 @@ public class TreasureHuntController extends Controller {
      * @return list of open treasure hunts
      */
     public List<TreasureHunt> getOpenTreasureHunts(){
-        List<TreasureHunt> treasureHunts = TreasureHunt.find.all();
+        List<TreasureHunt> treasureHunts = TreasureHunt.find().all();
         List<TreasureHunt> openTreasureHunts = new ArrayList<>();
         for(TreasureHunt treasureHunt : treasureHunts){
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -130,7 +130,7 @@ public class TreasureHuntController extends Controller {
                 }
                 return badRequest(createTreasureHunt.render(incomingForm, user, destinationMap));
             }
-            for (TreasureHunt tHunt: TreasureHunt.find.all()) {
+            for (TreasureHunt tHunt: TreasureHunt.find().all()) {
                 if (incomingForm.get().getTitle().equals(tHunt.getTitle())) {
                     return badRequest(createTreasureHunt.render(incomingForm.withError("title", "Another Treasure Hunt with the same title exists in the system."), user, destinationMap));
                 }
@@ -153,7 +153,7 @@ public class TreasureHuntController extends Controller {
     public Result editTreasureHunt(Http.Request request, Integer treasureHuntId){
         User user = User.getCurrentUser(request);
         if (user != null) {
-            TreasureHunt treasureHunt = TreasureHunt.find.byId(treasureHuntId);
+            TreasureHunt treasureHunt = TreasureHunt.find().byId(treasureHuntId);
             if (treasureHunt != null) {
                 if (treasureHunt.getUser().getUserid() == (user.getUserid())) {
                     TreasureHuntFormData treasureHuntFormData = new TreasureHuntFormData(treasureHunt.getTitle(),
@@ -182,7 +182,7 @@ public class TreasureHuntController extends Controller {
     public Result editAndSaveTreasureHunt(Http.Request request, Integer treasureHuntId){
         User user = User.getCurrentUser(request);
         if (user != null) {
-            TreasureHunt treasureHunt = TreasureHunt.find.byId(treasureHuntId);
+            TreasureHunt treasureHunt = TreasureHunt.find().byId(treasureHuntId);
             if (treasureHunt != null) {
                 if (treasureHunt.getUser().getUserid() == (user.getUserid())) {
                     Form<TreasureHuntFormData> incomingForm = formFactory.form(TreasureHuntFormData.class).bindFromRequest(request);
@@ -195,7 +195,7 @@ public class TreasureHuntController extends Controller {
                         }
                         return badRequest(editTreasureHunt.render(incomingForm, treasureHunt, user, destinationMap));
                     }
-                    for (TreasureHunt userTreasureHunt: TreasureHunt.find.all()) {
+                    for (TreasureHunt userTreasureHunt: TreasureHunt.find().all()) {
                         if (incomingForm.get().getTitle().equals(userTreasureHunt.getTitle())
                                 && !incomingForm.get().getTitle().equals(treasureHunt.getTitle())) {
                             return badRequest(editTreasureHunt.render(incomingForm.withError("title", "Another Treasure Hunt with the same title exists in the system."), treasureHunt, user, destinationMap));

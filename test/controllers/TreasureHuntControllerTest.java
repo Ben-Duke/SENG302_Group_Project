@@ -68,7 +68,7 @@ public class TreasureHuntControllerTest extends BaseTestWithApplicationAndDataba
      */
     @Test
     public void getOpenTreasureHunts() {
-        List<TreasureHunt> treasureHunts = TreasureHunt.find.all();
+        List<TreasureHunt> treasureHunts = TreasureHunt.find().all();
         List<TreasureHunt> openTreasureHunts = treasureHuntController.getOpenTreasureHunts();
         assertEquals(treasureHunts.size()-1, openTreasureHunts.size());
     }
@@ -493,7 +493,7 @@ public class TreasureHuntControllerTest extends BaseTestWithApplicationAndDataba
         Http.RequestBuilder fakeRequest = Helpers.fakeRequest()
                 .bodyForm(formData)
                 .method(Helpers.POST)
-                .uri("/users/treasurehunts/edit/save/" + treasureHunt.thuntid)
+                .uri("/users/treasurehunts/edit/save/" + treasureHunt.getThuntid())
                 .session("connected", "2");
         fakeRequest = CSRFTokenHelper.addCSRFToken(fakeRequest);
         Helpers.route(app, fakeRequest);
@@ -511,7 +511,7 @@ public class TreasureHuntControllerTest extends BaseTestWithApplicationAndDataba
     @Test
     public void redoEditTreasureHunt() {
         User user = UserAccessor.getById(2);
-        int tHuntId = user.getTreasureHunts().get(0).thuntid;
+        int tHuntId = user.getTreasureHunts().get(0).getThuntid();
         Map<String, String> formData = new HashMap<>();
         formData.put("title", "test123");
         formData.put("riddle", "The garden city");
@@ -559,7 +559,7 @@ public class TreasureHuntControllerTest extends BaseTestWithApplicationAndDataba
     public void undoDeleteTreasureHunt() {
         User user = UserAccessor.getById(2);
         int nTreasureHunts = user.getTreasureHunts().size();
-        Integer tHuntId = user.getTreasureHunts().get(0).thuntid;
+        Integer tHuntId = user.getTreasureHunts().get(0).getThuntid();
 
         // Delete
         Http.RequestBuilder fakeRequest = Helpers.fakeRequest().method(Helpers.GET).uri("/users/treasurehunts/delete/" + tHuntId).session("connected", "2");
@@ -577,7 +577,7 @@ public class TreasureHuntControllerTest extends BaseTestWithApplicationAndDataba
     public void redoDeleteTreasureHuntCommand() {
         User user = UserAccessor.getById(2);
         int nTreasureHunts = user.getTreasureHunts().size();
-        Integer tHuntId = user.getTreasureHunts().get(0).thuntid;
+        Integer tHuntId = user.getTreasureHunts().get(0).getThuntid();
 
         // Delete
         Http.RequestBuilder fakeRequest = Helpers.fakeRequest().method(Helpers.GET).uri("/users/treasurehunts/delete/" + tHuntId).session("connected", "2");

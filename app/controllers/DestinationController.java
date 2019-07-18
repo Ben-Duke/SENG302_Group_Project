@@ -4,25 +4,19 @@ import accessors.DestinationAccessor;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import factories.DestinationFactory;
-import factories.UserFactory;
 import formdata.DestinationFormData;
-import io.ebean.DuplicateKeyException;
 import models.*;
 
 
 import models.commands.Destinations.*;
+import models.commands.General.CommandPage;
 import models.commands.Photos.DeletePhotoCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import play.api.http.MediaRange;
-import play.api.mvc.Request;
 import play.data.DynamicForm;
 import play.data.Form;
 import play.data.FormFactory;
-import play.i18n.Lang;
 import play.libs.Json;
-import play.libs.typedmap.TypedKey;
-import play.libs.typedmap.TypedMap;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
@@ -32,8 +26,6 @@ import views.html.users.destination.*;
 
 import javax.inject.Inject;
 import java.io.File;
-import java.io.IOException;
-import java.security.cert.X509Certificate;
 import java.util.*;
 
 
@@ -113,7 +105,7 @@ public class DestinationController extends Controller {
         User user = User.getCurrentUser(request);
 
         if (user != null) {
-            user.getCommandManager().setAllowedType(DestinationPageCommand.class);
+            user.getCommandManager().setAllowedPage(CommandPage.DESTINATION);
 
             CountryUtils.updateCountries();
 

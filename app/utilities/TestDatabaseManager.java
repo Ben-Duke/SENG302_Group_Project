@@ -124,7 +124,7 @@ public class TestDatabaseManager {
         }
 
         if (isInSuccessState && ApplicationManager.getUserPhotoPath().equalsIgnoreCase("/test/resources/test_photos/user_")) {
-            this.addUserPhotos();
+            addUserPhotos();
         }
         CountryUtils.updateCountries();
         CountryUtils.validateUsedCountries();

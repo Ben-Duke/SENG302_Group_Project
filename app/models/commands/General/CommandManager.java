@@ -3,7 +3,6 @@ package models.commands.General;
 import accessors.UserAccessor;
 import models.BaseModel;
 import models.User;
-import models.commands.Destinations.DestinationPageCommand;
 import org.slf4j.Logger;
 import utilities.UtilityFunctions;
 
@@ -22,7 +21,7 @@ public class CommandManager extends BaseModel {
 
     private Deque<UndoableCommand> redoStack = new ArrayDeque<>();
 
-    private Class allowedType;
+    private CommandPage allowedPage;
 
     private final Logger logger = UtilityFunctions.getLogger();
 
@@ -36,15 +35,15 @@ public class CommandManager extends BaseModel {
         this.user = user;
     }
 
-    public void setAllowedType(Class allowedType) {
-        this.allowedType = allowedType;
+    public void setAllowedPage(CommandPage allowedPage) {
+        this.allowedPage = allowedPage;
         filterStack(undoStack);
         filterStack(redoStack);
     }
 
     private void filterStack(Deque<UndoableCommand> stack) {
         for (UndoableCommand cmd : stack) {
-            if (!allowedType.isAssignableFrom(cmd.getClass())) {
+            if (!allowedPage.equals(cmd.getCommandPage())) {
                 stack.remove(cmd);
             }
         }

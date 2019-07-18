@@ -9,6 +9,7 @@ import models.Destination;
 import models.UserPhoto;
 import models.Visit;
 import models.commands.Destinations.UnlinkPhotoDestinationCommand;
+import models.commands.General.CommandPage;
 import models.commands.General.UndoableCommand;
 
 import java.util.ArrayList;
@@ -27,15 +28,12 @@ public class DeletePhotoCommand extends UndoableCommand {
      * @param userPhoto the UserPhoto to delete
      */
     public DeletePhotoCommand(UserPhoto userPhoto) {
+        super(CommandPage.HOME);
 
         this.userPhoto = userPhoto;
 
-        for (Destination destination : userPhoto.getDestinations()) {
-            refToDestinations.add(destination);
-        }
-        for (Destination destination : userPhoto.getPrimaryPhotoDestinations()) {
-            refToPrimaryPhotoDestinations.add(destination);
-        }
+        refToDestinations.addAll(userPhoto.getDestinations());
+        refToPrimaryPhotoDestinations.addAll(userPhoto.getPrimaryPhotoDestinations());
 
     }
 

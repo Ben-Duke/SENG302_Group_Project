@@ -9,7 +9,7 @@ import models.Destination;
 import models.Trip;
 import models.User;
 import models.Visit;
-import models.commands.Trips.TripPageCommand;
+import models.commands.General.CommandPage;
 import models.commands.Visits.EditVisitCommand;
 import models.commands.Trips.DeleteTripCommand;
 import org.slf4j.Logger;
@@ -71,7 +71,7 @@ public class TripController extends Controller {
     public Result displaytrip(Http.Request request, Integer tripId){
         User user = User.getCurrentUser(request);
         if (user != null) {
-            user.getCommandManager().setAllowedType(TripPageCommand.class);
+            user.getCommandManager().setAllowedPage(CommandPage.TRIP);
 
             Trip trip = Trip.find.byId(tripId);
             if (trip == null) {

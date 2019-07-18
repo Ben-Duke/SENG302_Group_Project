@@ -6,6 +6,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.slf4j.Logger;
 import play.Application;
+import play.Mode;
 import play.db.Database;
 import play.db.Databases;
 import play.db.evolutions.Evolution;
@@ -31,7 +32,9 @@ public class BaseTestWithApplicationAndDatabase extends WithApplication {
      */
     @Override
     protected Application provideApplication() {
-        return new GuiceApplicationBuilder().build();
+        return new GuiceApplicationBuilder()
+//                .in(Mode.TEST)
+                .build();
     }
 
     /**

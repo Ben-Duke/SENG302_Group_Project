@@ -1,8 +1,32 @@
 @(tripForm : Form[formdata.TripFormData], user : User)
 @import helper._
 @import views.html.bootstrap3._
+<style>
+        #map {
+            height: 100%;
+            position: relative;
+            z-index: 0;
 
+        }
+        #control {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            height: 80%;
+            width: 425px;
+            right: 7%;
+            z-index: 2;
 
+            text-align: center;
+            border-radius: 10px;
+            background-color: white;
+        }
+</style>
+<div id="map"></div>
+<div id="control">
+    <h2>Hello</h2>
+    <div id="controlContent"></div>
+</div>
 @main(user, "Trips") {
     @helper.form(action = helper.CSRF(routes.TripController.savetrip())) {
         <fieldset>
@@ -25,7 +49,16 @@
                 <a href= "@routes.HomeController.showhome()" id="cancel" name="cancel" class="btn btn-default">Cancel</a>
             </div>
         </div>
+
     }
+
+    <script async defer src="@routes.Assets.at("js/map/map.js")"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDCyC_ON0GgSmJIfPlL7oke5PZgbR8TLbg&callback=initMap&libraries=drawing,places"
+    ></script>
+
+
+
+
 }
 
 

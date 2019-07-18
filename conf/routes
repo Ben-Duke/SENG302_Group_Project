@@ -83,6 +83,10 @@ POST    /users/profile/search       controllers.TravelPartnerController.searchBy
 GET     /users/profilepicture/isSet     controllers.ProfileController.isProfilePictureSet(request: Request)
 
 
+#Add route for adding a trip with AJAX
+
+#Add destination to a trip using AJAX
+
 #Renders page for creating trips
 GET     /users/trips/create         controllers.TripController.createtrip(request: Request)
 

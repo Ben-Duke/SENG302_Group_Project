@@ -56,6 +56,6 @@ public class UnlinkPhotoDestinationCommand extends DestinationPageCommand  {
      * @return String result of command
      */
     public String toString() {
-        return "Photo" + this.photo.getUrl() + " unlinked to" + this.destination.destName;
+        return "Photo" + this.photo.getUrl() + " unlinked to" + this.destination.getDestName();
     }
 }

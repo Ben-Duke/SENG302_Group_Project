@@ -109,7 +109,7 @@ public class TreasureHuntSteps extends BaseTestWithApplicationAndDatabase {
     @Given("There is a treasure hunt with the title {string}")
     public void thereIsATreasureHuntWithTheTitle(String string) {
         TreasureHunt existingTreasureHunt = new TreasureHunt(string, "asd",
-                Destination.find.byId(1), "2018-12-05", "2019-12-05", User.find().byId(2));
+                Destination.find().byId(1), "2018-12-05", "2019-12-05", User.find().byId(2));
         existingTreasureHunt.save();
         TreasureHunt treasureHunt = TreasureHunt.find.query().where().eq("title", string).findOne();
         assertNotNull(treasureHunt);

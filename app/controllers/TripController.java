@@ -82,7 +82,7 @@ public class TripController extends Controller {
 
             if (trip.isUserOwner(user.getUserid())) {
                 List<Destination> destinations = user.getDestinations();
-                List<Destination> allDestinations = Destination.find.all();
+                List<Destination> allDestinations = Destination.find().all();
                 return ok(AddTripDestinationsTable.render(trip, destinations, allDestinations,user));
             } else {
                 return ok(displayTrip.render(trip, visits,user));
@@ -177,7 +177,7 @@ public class TripController extends Controller {
             visit = Visit.find.byId(visitid);
             Trip trip = visit.getTrip();
             if(trip.isUserOwner(user.getUserid())) {
-                Destination dest = Destination.find.byId(destID);
+                Destination dest = Destination.find().byId(destID);
                 visit.setDestination(dest);
                 //Arrivaldate and departure date TBD
                 visit.setArrival(arrival);
@@ -216,7 +216,7 @@ public class TripController extends Controller {
                     List<Visit> visits = trip.getVisits();
                     visits.sort(Comparator.comparing(Visit::getVisitOrder));
                     List<Destination> destinations = user.getDestinations();
-                    List<Destination> allDestinations = Destination.find.all();
+                    List<Destination> allDestinations = Destination.find().all();
                     request.flash().getOptional("error").orElse("test");
                     return ok(AddTripDestinationsTable.render(trip, destinations, allDestinations,user)).flashing("error", request.flash().getOptional("error").orElse("test"));
 
@@ -288,9 +288,9 @@ public class TripController extends Controller {
                 }
                 Integer visitOrder = visitSize + 1 + removedVisits;
                 List<Visit> visits = trip.getVisits();
-                Destination destination = Destination.find.byId(destid);
+                Destination destination = Destination.find().byId(destid);
                 if(destination != null) {
-                    if(destination.isPublic || destination.getUser().getUserid() == user.getUserid() || user.userIsAdmin()) {
+                    if(destination.getIsPublic() || destination.getUser().getUserid() == user.getUserid() || user.userIsAdmin()) {
                         Visit visit = visitfactory.createVisitTable(trip, destination, visitOrder);
                         if (tripFactory.hasRepeatDest(visits, visit, "ADD")) {
                             return redirect(routes.TripController.addTripDestinations(tripid)).flashing("error", "You cannot have repeat destinations!");

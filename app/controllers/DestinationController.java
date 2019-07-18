@@ -119,7 +119,7 @@ public class DestinationController extends Controller {
 
             List<Destination> destinations = user.getDestinations();
 
-            List<Destination> allDestinations = Destination.find.all();
+            List<Destination> allDestinations = Destination.find().all();
 
             return ok(indexDestination.render(destinations, allDestinations, destFactory, user));
 
@@ -141,7 +141,7 @@ public class DestinationController extends Controller {
 
         if (user != null) {
 
-            Destination destination = Destination.find.byId(destId);
+            Destination destination = Destination.find().byId(destId);
             return ok(viewDestination.render(destination));
         }
         return redirect(routes.UserController.userindex());
@@ -362,7 +362,7 @@ public class DestinationController extends Controller {
         User user = User.getCurrentUser(request);
 
         if (user != null) {
-            Destination destination = Destination.find.query().where().eq("destid", destId).findOne();
+            Destination destination = Destination.find().query().where().eq("destid", destId).findOne();
 
             if (destination != null) {
                 Form<Destination> destForm = formFactory.form(Destination.class).fill(destination);
@@ -423,7 +423,7 @@ public class DestinationController extends Controller {
                 newDestination.setTravellerTypes(new HashSet<>());
             }
 
-            Destination oldDestination = Destination.find.query().where().eq("destid", destId).findOne();
+            Destination oldDestination = Destination.find().query().where().eq("destid", destId).findOne();
             if (oldDestination != null) {
                 if (newDestination.equals(oldDestination)) {
 
@@ -533,7 +533,7 @@ public class DestinationController extends Controller {
         User user = User.getCurrentUser(request);
 
         if (user != null) {
-            Destination destination = Destination.find.query().where().eq("destid", destId).findOne();
+            Destination destination = Destination.find().query().where().eq("destid", destId).findOne();
 
             if (destination != null) {
                 if(user.userIsAdmin()){
@@ -545,7 +545,7 @@ public class DestinationController extends Controller {
                     return redirect(routes.DestinationController.indexDestination());
                 }
                 else if (destination.isUserOwner(user.getUserid())) {
-                    if(destination.visits.isEmpty()) {
+                    if(destination.getVisits().isEmpty()) {
                         List<TreasureHunt> treasureHunts = TreasureHunt.find.query().where().eq("destination", destination).findList();
                         if (treasureHunts.isEmpty()) {
 
@@ -585,7 +585,7 @@ public class DestinationController extends Controller {
         User user = User.getCurrentUser(request);
 
         if (user != null) {
-            Destination destination = Destination.find.query().where().eq("destid", destId).findOne();
+            Destination destination = Destination.find().query().where().eq("destid", destId).findOne();
 
             if (destination != null) {
                 if (destination.isUserOwner(user.getUserid())) {
@@ -626,7 +626,7 @@ public class DestinationController extends Controller {
     public Result makeDestinationsMerge(Http.Request request, int destId) {
         User user = User.getCurrentUser(request);
         if (user != null) {
-            Destination destination = Destination.find.query().where().eq("destid", destId).findOne();
+            Destination destination = Destination.find().query().where().eq("destid", destId).findOne();
             if (destination != null) {
                 List<Destination> matchingDests = destFactory.getOtherUsersMatchingPrivateDestinations(user.getUserid(), destination);
                 if (destination.isUserOwner(user.getUserid()) || user.userIsAdmin()) {
@@ -658,7 +658,7 @@ public class DestinationController extends Controller {
             String photoid = node.textValue();
             photoid = photoid.replace("\"", "");
             UserPhoto photo = UserPhoto.find.byId(Integer.parseInt(photoid));
-            Destination destination = Destination.find.byId(destId);
+            Destination destination = Destination.find().byId(destId);
             if (destination != null || photo != null) {
                 if (photo.getUser().getUserid() == user.getUserid()) {
                     //add checks for private destinations here once destinations have been merged in.
@@ -735,7 +735,7 @@ public class DestinationController extends Controller {
     public Result unlinkPhotoFromDestination(Http.Request request, int photoId, int destId) {
         User user = User.getCurrentUser(request);
         UserPhoto photo = UserPhoto.find.byId(photoId);
-        Destination destination = Destination.find.byId(destId);
+        Destination destination = Destination.find().byId(destId);
 
         if (user == null) return redirect(routes.UserController.userindex());
         if (photo == null) return notFound("No photo found with that id");
@@ -765,7 +765,7 @@ public class DestinationController extends Controller {
     public Result getTravellerTypes(Http.Request request, Integer destId) {
         User user = User.getCurrentUser(request);
         if (user != null) {
-            return ok(Json.toJson(Destination.find.byId(destId).travellerTypes));
+            return ok(Json.toJson(Destination.find().byId(destId).getTravellerTypes()));
         } else {
             return redirect(routes.UserController.userindex());
         }
@@ -781,14 +781,14 @@ public class DestinationController extends Controller {
     public Result getPhotos(Http.Request request, Integer destId) {
         User user = User.getCurrentUser(request);
         if(user != null){
-            Destination destination = Destination.find.byId(destId);
+            Destination destination = Destination.find().byId(destId);
             List<UserPhoto> photos;
             if(destination.getIsPublic() && !user.userIsAdmin()) {
-                photos = Destination.find.byId(destId).getUserPhotos();
+                photos = Destination.find().byId(destId).getUserPhotos();
                 DestinationFactory destinationFactory = new DestinationFactory();
                 destinationFactory.removePrivatePhotos(photos, user.getUserid());
             } else {
-                photos = Destination.find.byId(destId).getUserPhotos();
+                photos = Destination.find().byId(destId).getUserPhotos();
             }
 
             return ok(Json.toJson(photos));
@@ -827,7 +827,7 @@ public class DestinationController extends Controller {
     public Result getDestination(Http.Request request, Integer destId){
         User user = User.getCurrentUser(request);
         if (user != null) {
-            Destination destination = Destination.find.byId(destId);
+            Destination destination = Destination.find().byId(destId);
             if (destination.getIsPublic() || destination.getUser().getUserid() == user.getUserid() || user.userIsAdmin()) {
                 return ok(Json.toJson(destination));
             } else {
@@ -846,7 +846,7 @@ public class DestinationController extends Controller {
      * @return the destination as a json
      */
     public Result getDestinationOwner(Http.Request request, Integer destId) {
-        Destination destination = Destination.find.byId(destId);
+        Destination destination = Destination.find().byId(destId);
         User user = User.find().query().where().eq("userid", destination.getUser().getUserid()).findOne();
         if (user != null) {
             return ok(Json.toJson(user.getUserid()));
@@ -869,7 +869,7 @@ public class DestinationController extends Controller {
             String photoid = node.textValue();
             photoid = photoid.replace("\"", "");
             UserPhoto photo = UserPhoto.find.byId(Integer.parseInt(photoid));
-            Destination destination = Destination.find.byId(destId);
+            Destination destination = Destination.find().byId(destId);
             if (destination != null && photo != null) {
                 if ((destination.getUser().getUserid() == user.getUserid() && destination.getUserPhotos().contains(photo))
                         || user.userIsAdmin()) {
@@ -931,7 +931,7 @@ public class DestinationController extends Controller {
         User user = User.getCurrentUser(request);
         if(user != null) {
             UserPhoto photo = UserPhoto.find.byId(photoId);
-            Destination destination = Destination.find.byId(destId);
+            Destination destination = Destination.find().byId(destId);
             if(destination != null && photo != null) {
                 if (photo.getUser().getUserid() == user.getUserid()) {
                     //add checks for private destinations here once destinations have been merged in.

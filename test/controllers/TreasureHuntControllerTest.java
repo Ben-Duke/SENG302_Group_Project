@@ -78,7 +78,7 @@ public class TreasureHuntControllerTest extends BaseTestWithApplicationAndDataba
      */
     @Test
     public void createPublicDestinationsMap() {
-        List<Destination> allDestinations = Destination.find.query().where().eq("is_public", true).findList();
+        List<Destination> allDestinations = Destination.find().query().where().eq("is_public", true).findList();
         treasureHuntController.createPublicDestinationsMap();
         assertEquals(treasureHuntController.destinationMap.size(), allDestinations.size());
     }

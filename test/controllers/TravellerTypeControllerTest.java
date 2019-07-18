@@ -82,7 +82,7 @@ public class TravellerTypeControllerTest extends BaseTestWithApplicationAndDatab
         //User should be redirected to the update traveller type page
         assertEquals(SEE_OTHER, result.status());
         //"TravellerType with name "Thrillseeker" should be the second index in the user's traveller types, first being groupie
-        for (TravellerType travellerType : Destination.find.byId(2).getTravellerTypes()) {
+        for (TravellerType travellerType : Destination.find().byId(2).getTravellerTypes()) {
             assertEquals("Thrillseeker", travellerType.getTravellerTypeName());
         }
     }
@@ -121,18 +121,18 @@ public class TravellerTypeControllerTest extends BaseTestWithApplicationAndDatab
     @Test
     public void deleteUpdateDestinationTravellerType() {
         //There should be 1 traveller type
-        assertEquals(1, Destination.find.byId(1).getTravellerTypes().size());
+        assertEquals(1, Destination.find().byId(1).getTravellerTypes().size());
         //add a "Thrillseeker" traveller type to the destination with id 1
-        Destination destination = Destination.find.byId(1);
+        Destination destination = Destination.find().byId(1);
         destination.addTravellerType(TravellerType.find.byId(2));
         destination.update();
         //There should be 2 traveller types
-        assertEquals(2, Destination.find.byId(1).getTravellerTypes().size());
+        assertEquals(2, Destination.find().byId(1).getTravellerTypes().size());
         Http.RequestBuilder fakeRequest = Helpers.fakeRequest().method(Helpers.GET).uri("/users/destinations/ttypes/1/2").session("connected", "2");
         Result result = Helpers.route(app, fakeRequest);
         //User should be redirected to the update traveller type page
         assertEquals(SEE_OTHER, result.status());
-        assertEquals(1, Destination.find.byId(1).getTravellerTypes().size());
+        assertEquals(1, Destination.find().byId(1).getTravellerTypes().size());
     }
 }
 

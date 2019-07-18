@@ -15,7 +15,7 @@ public class VisitFactory {
         visit.visitorder = visitorder;
         visit.setArrival(visitformdata.arrival);
         visit.setDeparture(visitformdata.departure);
-        visit.visitName = destination.destName;
+        visit.visitName = destination.getDestName();
         return visit;
     }
 

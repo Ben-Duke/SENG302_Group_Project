@@ -54,7 +54,7 @@ public class TravellerTypeController {
     public Result updateDestinationTravellerType(Http.Request request, Integer destid){
         User user = User.getCurrentUser(request);
         if (user != null) {
-            Destination destination = Destination.find.byId(destid);
+            Destination destination = Destination.find().byId(destid);
             if(destination != null) {
                 if(destination.getUser().getUserid() == user.getUserid() || user.userIsAdmin()) {
                     Form<Destination> destForm = formFactory.form(Destination.class).fill(destination);
@@ -113,7 +113,7 @@ public class TravellerTypeController {
         DynamicForm destForm = formFactory.form().bindFromRequest(request);
         String travellerID = destForm.get("travellertypes");
         User user = User.getCurrentUser(request);
-        Destination destination = Destination.find.byId(destid);
+        Destination destination = Destination.find().byId(destid);
         if (user != null) {
             TravellerType travellerType = TravellerType.find.byId(Integer.parseInt(travellerID));
             try {
@@ -177,7 +177,7 @@ public class TravellerTypeController {
      */
     public Result deleteUpdateDestinationTravellerType(Http.Request request, Integer destId, Integer typeId){
         User user = User.getCurrentUser(request);
-        Destination destination = Destination.find.byId(destId);
+        Destination destination = Destination.find().byId(destId);
         if (user == null) {
             return redirect(routes.UserController.userindex());
         }  else {

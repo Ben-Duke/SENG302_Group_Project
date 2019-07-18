@@ -26,8 +26,8 @@ public class DeletePhotoCommandTest  extends BaseTestWithApplicationAndDatabase 
     public void undo() {
 
         UserPhoto userPhoto1 = UserPhoto.find.byId(1);
-        Destination christchurch = Destination.find.byId(1);
-        Destination wellington = Destination.find.byId(2);
+        Destination christchurch = Destination.find().byId(1);
+        Destination wellington = Destination.find().byId(2);
         userPhoto1.addDestination(christchurch);
         userPhoto1.addDestination(wellington);
         userPhoto1.save();

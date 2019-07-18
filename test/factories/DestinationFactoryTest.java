@@ -265,7 +265,7 @@ public class DestinationFactoryTest extends BaseTestWithApplicationAndDatabase {
                 .getOtherUsersMatchingPrivateDestinations(privateUser.getUserid(), testPrivateDestination1);
 
         destinationFactory.mergeDestinations(matchingDests, testPrivateDestination1);
-        List<Destination> destinationsWithSameName = Destination.find.query().where()
+        List<Destination> destinationsWithSameName = Destination.find().query().where()
                 .eq("destName", "Rotherham").findList();
         assertEquals(1, destinationsWithSameName.size());
     }
@@ -303,7 +303,7 @@ public class DestinationFactoryTest extends BaseTestWithApplicationAndDatabase {
         List<Destination> matchingDests = destinationFactory
                 .getOtherUsersMatchingPrivateDestinations(privateUser2.getUserid(), testPrivateDestination2);
         destinationFactory.mergeDestinations(matchingDests, testPrivateDestination2);
-        List<Destination> destinationsWithSameName = Destination.find.query().where()
+        List<Destination> destinationsWithSameName = Destination.find().query().where()
                 .eq("destName", "Rotherham").findList();
         assertEquals(1, destinationsWithSameName.size());
     }

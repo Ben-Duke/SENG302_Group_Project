@@ -181,7 +181,7 @@ public class DestinationTestSteps extends BaseTestWithApplicationAndDatabase {
     @When("I delete my destination with name {string}")
     public void iDeleteMyDestinationWithName(String string) {
         // Write code here that turns the phrase above into concrete actions
-        Destination destination = Destination.find.query().where().eq("destName", string).findOne();
+        Destination destination = Destination.find().query().where().eq("destName", string).findOne();
         assertTrue(destination != null);
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(GET)
@@ -193,7 +193,7 @@ public class DestinationTestSteps extends BaseTestWithApplicationAndDatabase {
     @Then("the destination with name {string} will be deleted.")
     public void theDestinationWithNameWillBeDeleted(String string) {
         // Write code here that turns the phrase above into concrete actions
-        Destination destination = Destination.find.query().where().eq("destName", string).findOne();
+        Destination destination = Destination.find().query().where().eq("destName", string).findOne();
         assertTrue(destination == null);
     }
 
@@ -202,13 +202,13 @@ public class DestinationTestSteps extends BaseTestWithApplicationAndDatabase {
     public void iMarkAsPublicAndTheSamePublicDestinationDoesNotAlreadyExist(String string) {
         // Write code here that turns the phrase above into concrete actions
         //throw new cucumber.api.PendingException();
-        Destination destination = Destination.find.query().where().eq("destName", string).findOne();
+        Destination destination = Destination.find().query().where().eq("destName", string).findOne();
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(GET)
                 .uri("/users/destinations/public/" + destination.getDestId()).session("connected", "2");
         Result result = route(application, request);
         assertEquals(SEE_OTHER, result.status());
-        destination = Destination.find.query().where().eq("destName", string).findOne();
+        destination = Destination.find().query().where().eq("destName", string).findOne();
         assertTrue(destination.getIsPublic());
     }
 
@@ -287,20 +287,20 @@ public class DestinationTestSteps extends BaseTestWithApplicationAndDatabase {
     @Given("I mark {string} as public and nobody uses the destination")
     public void iMarkAsPublicAndNobodyUsesTheDestination(String string) {
         // Write code here that turns the phrase above into concrete actions
-        Destination destination = Destination.find.query().where().eq("destName", string).findOne();
+        Destination destination = Destination.find().query().where().eq("destName", string).findOne();
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(GET)
                 .uri("/users/destinations/public/" + destination.getDestId()).session("connected", "2");
         Result result = route(application, request);
         assertEquals(SEE_OTHER, result.status());
-        destination = Destination.find.query().where().eq("destName", string).findOne();
+        destination = Destination.find().query().where().eq("destName", string).findOne();
         assertTrue(destination.getIsPublic());
     }
 
     @When("I validly update the destination {string} with name {string}, type {string}, district {string}, country {string}, latitude {string}, longitude {string}")
     public void iValidlyUpdateTheDestinationWithNameTypeDistrictCountryLatitudeLongitude(String string, String string2, String string3, String string4, String string5, String string6, String string7) {
         // Write code here that turns the phrase above into concrete actions
-        Destination destination = Destination.find.query().where().eq("destName", string).findOne();
+        Destination destination = Destination.find().query().where().eq("destName", string).findOne();
         Map<String, String> formData = new HashMap<>();
         formData.put("destName", string2);
         formData.put("destType", string3);
@@ -316,10 +316,10 @@ public class DestinationTestSteps extends BaseTestWithApplicationAndDatabase {
     @Then("the destination {string} should be updated to name {string}, type {string}, district {string}, country {string}, latitude {string}, longitude {string}")
     public void theDestinationShouldBeUpdatedToNameTypeDistrictCountryLatitudeLongitude(String string, String string2, String string3, String string4, String string5, String string6, String string7) {
         // Write code here that turns the phrase above into concrete actions
-        Destination destination = Destination.find.query().where().eq("destName", string).findOne();
+        Destination destination = Destination.find().query().where().eq("destName", string).findOne();
         //the original name should no longer exist
         assertNull(destination);
-        destination = Destination.find.query().where().eq("destName", string2).findOne();
+        destination = Destination.find().query().where().eq("destName", string2).findOne();
         assertNotNull(destination);
         assertEquals(string2, destination.getDestName());
         assertEquals(string3, destination.getDestType());
@@ -332,13 +332,13 @@ public class DestinationTestSteps extends BaseTestWithApplicationAndDatabase {
     @Given("I mark {string} as public and a user with user id {string} uses the destination")
     public void iMarkAsPublicAndAUserWithUserIdUsesTheDestination(String string, String string2) {
         // Write code here that turns the phrase above into concrete actions
-        Destination destination = Destination.find.query().where().eq("destName", string).findOne();
+        Destination destination = Destination.find().query().where().eq("destName", string).findOne();
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(GET)
                 .uri("/users/destinations/public/" + destination.getDestId()).session("connected", "2");
         Result result = route(application, request);
         assertEquals(SEE_OTHER, result.status());
-        destination = Destination.find.query().where().eq("destName", string).findOne();
+        destination = Destination.find().query().where().eq("destName", string).findOne();
         assertTrue(destination.getIsPublic());
         //add Wellington to Christchurch to Wellington, to The Wok and back
         request = Helpers.fakeRequest()
@@ -358,7 +358,7 @@ public class DestinationTestSteps extends BaseTestWithApplicationAndDatabase {
     @When("I invalidly update the destination {string}")
     public void iInvalidlyUpdateTheDestination(String string) {
         // Write code here that turns the phrase above into concrete actions
-        Destination destination = Destination.find.query().where().eq("destName", string).findOne();
+        Destination destination = Destination.find().query().where().eq("destName", string).findOne();
         Map<String, String> formData = new HashMap<>();
         formData.put("destName", "Summoner's Rift");
         formData.put("destType", "Yes");
@@ -374,7 +374,7 @@ public class DestinationTestSteps extends BaseTestWithApplicationAndDatabase {
     @Then("the destination {string} should not be updated")
     public void theDestinationShouldNotBeUpdated(String string) {
         // Write code here that turns the phrase above into concrete actions
-        Destination destination = Destination.find.query().where().eq("destName", string).findOne();
+        Destination destination = Destination.find().query().where().eq("destName", string).findOne();
         assertFalse(destination.getDestName().equals("Summoner's Rift"));
         assertFalse(destination.getDestType().equals("Yes"));
         assertFalse(destination.getDistrict().equals("Demacia"));

@@ -21,7 +21,7 @@ public class DestinationFactory {
      * @return a List<Destination> of all public Destinations.
      */
     public List<Destination> getPublicDestinations() {
-        return Destination.find.query()
+        return Destination.find().query()
                 .where().eq("isPublic", true).findList();
     }
 
@@ -31,7 +31,7 @@ public class DestinationFactory {
      * @return the primary photo
      */
     public static UserPhoto getPrimaryPicture(int destID) {
-        Destination destination = Destination.find.byId(destID);
+        Destination destination = Destination.find().byId(destID);
         if (destination != null) {
             return destination.getPrimaryPhoto();
         }
@@ -49,7 +49,7 @@ public class DestinationFactory {
     public List<Destination> getUsersPrivateDestinations(int userId) {
         User user = UserFactory.getUserFromId(userId);
 
-        List<Destination> privateDestinations = Destination.find.query()
+        List<Destination> privateDestinations = Destination.find().query()
                 .where().eq("user", user).and().eq("isPublic", false)
                 .findList();
 
@@ -118,7 +118,7 @@ public class DestinationFactory {
     public List<Destination> getOtherUsersMatchingPrivateDestinations(int userId, Destination destination) {
         User user = UserFactory.getUserFromId(userId);
         // Get all destinations that are private and belong to another user
-        List<Destination> allDestinations = Destination.find.query()
+        List<Destination> allDestinations = Destination.find().query()
                 .where().eq("isPublic", false).and()
                 .not().eq("user", user).findList();
 
@@ -157,7 +157,7 @@ public class DestinationFactory {
     public List<Destination> getAllVisibleDestinations(int userId) {
         User user = UserFactory.getUserFromId(userId);
         if (user.userIsAdmin()) {
-            return Destination.find.all();
+            return Destination.find().all();
         }
 
         List<Destination> visibleDestinations = new ArrayList<>();

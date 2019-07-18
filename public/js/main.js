@@ -2,11 +2,26 @@ var user;
 
 addTagSearchTagListeners();
 
+/**
+ * Adds listeners to the search bar to search the database and redirect to tags page if needed
+ */
 function addTagSearchTagListeners() {
+    function redirectToTagPage(tag, datalist) {
+        for (let dataTag of datalist.options) {
+            if (dataTag.value.toUpperCase() === tag.toUpperCase()) {
+                window.location.href = "/tags/" + tag.toLowerCase();
+            }
+        }
+    }
+
     try {
         const searchBar = document.getElementById("tag-search");
         const datalist = document.getElementById("tag-results");
-        searchBar.addEventListener('input', () => {
+        searchBar.addEventListener('input', (e) => {
+            if (e.constructor.name !== 'InputEvent') {
+                // then this is a selection, not user input
+                redirectToTagPage(searchBar.value, datalist)
+            }
             while (datalist.firstChild) {
                 datalist.removeChild(datalist.firstChild);
             }
@@ -15,9 +30,9 @@ function addTagSearchTagListeners() {
                 searchTags(query);
             }
         });
-        searchBar.addEventListener('keydown', e => {
+        searchBar.addEventListener('keyup', e => {
             if (e.key === 'Enter') {
-                window.location.href = "/tags/" + searchBar.value
+                redirectToTagPage(searchBar.value, datalist);
             }
         })
     } catch (err) {
@@ -25,6 +40,10 @@ function addTagSearchTagListeners() {
     }
 }
 
+/**
+ * Search the database for the tag and if it succeeds adds these tags to the datalist on the search bar
+ * @param query the tag to search for
+ */
 function searchTags(query) {
     $.ajax({
         type: 'PUT',
@@ -42,23 +61,17 @@ function searchTags(query) {
     });
 }
 
+/**
+ * Adds a list of tags as the datalist for the search bar
+ * @param result the result of the http request to find tags
+ */
 function addTagsToDataList(result) {
     const list = document.getElementById('tag-results');
-    list.addEventListener('click', () => {
-        console.log("yeet")
-    })
     for (let tag of result) {
         const tagSelection = document.createElement('OPTION');
-        tagSelection.value = tag.name;
-        tagSelection.addEventListener('click', () => {
-            console.log('haha yeet');
-            console.log(tag)
-        });
+        tagSelection.text = tag.name;
+
         list.appendChild(tagSelection);
-        // const link = document.createElement("A");
-        // link.href = "/tags/" + tag.tagId;
-        // link.appendChild(document.createTextNode(tag.name));
-        // list.appendChild(link);
     }
 }
 

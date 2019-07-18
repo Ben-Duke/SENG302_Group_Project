@@ -441,7 +441,7 @@ public class User extends Model implements Comparable<User> {
 
             if (requestUser != null) {
                 if (requestUser.userIsAdmin()) {
-                    List<Admin> adminList = Admin.find.query().where()
+                    List<Admin> adminList = Admin.find().query().where()
                             .eq("userId", userId).findList();
                     if (adminList.size() == 1) {
                         Admin admin = adminList.get(0);
@@ -487,7 +487,7 @@ public class User extends Model implements Comparable<User> {
 
             if (requestUser != null) {
                 if (requestUser.userIsAdmin()) {
-                    List<Admin> adminList = Admin.find.query().where()
+                    List<Admin> adminList = Admin.find().query().where()
                             .eq("userId", userId).findList();
                     if (adminList.size() == 1) {
                         Admin admin = adminList.get(0);
@@ -579,7 +579,7 @@ public class User extends Model implements Comparable<User> {
     }
 
     public boolean userIsAdmin() {
-        List<Admin> admins = Admin.find.all();
+        List<Admin> admins = Admin.find().all();
         for (Admin admin : admins) {
             if (admin.getUserId().equals(userid)) {
                 return true;

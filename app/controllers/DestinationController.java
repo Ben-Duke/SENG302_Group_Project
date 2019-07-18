@@ -455,7 +455,7 @@ public class DestinationController extends Controller {
     public Result destinationModificationReject(Http.Request request, Integer destModReqId) {
         User currentUser = User.getCurrentUser(request);
         if (currentUser != null) {
-            Admin currentAdmin = Admin.find.query().where().eq("userId", currentUser.getUserid()).findOne();
+            Admin currentAdmin = Admin.find().query().where().eq("userId", currentUser.getUserid()).findOne();
             if (currentAdmin != null) {
                 DestinationModificationRequest modReq = DestinationModificationRequest.find().query().where().eq("id", destModReqId).findOne();
                 if (modReq != null) {
@@ -486,7 +486,7 @@ public class DestinationController extends Controller {
     public Result destinationModificationAccept(Http.Request request, Integer destModReqId) {
         User currentUser = User.getCurrentUser(request);
         if (currentUser != null) {
-            Admin currentAdmin = Admin.find.query().where().eq("userId", currentUser.getUserid()).findOne();
+            Admin currentAdmin = Admin.find().query().where().eq("userId", currentUser.getUserid()).findOne();
             if (currentAdmin != null) {
                 DestinationModificationRequest modReq = DestinationModificationRequest.find().query().where().eq("id", destModReqId).findOne();
                 if (modReq != null) {

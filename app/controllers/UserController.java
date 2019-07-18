@@ -56,7 +56,7 @@ public class UserController {
             }
         }
         List<User> users = User.find().all();
-        List<Admin> admins = Admin.find.all();
+        List<Admin> admins = Admin.find().all();
         return ok(userIndex.render(users, admins,User.getCurrentUser(request)));
     }
 

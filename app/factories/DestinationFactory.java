@@ -212,7 +212,7 @@ public class DestinationFactory {
      * @return check to see if destinations are used in trips
      */
     public void mergeDestinations(List<Destination> destinationList, Destination destination) {
-        Admin defaultAdmin = Admin.find.query().where().eq("isDefault", true).findOne();
+        Admin defaultAdmin = Admin.find().query().where().eq("isDefault", true).findOne();
         User defaultAdminUser = User.find().query().where().eq("userid", defaultAdmin.getUserId()).findOne();
         destinationList.add(destination);
         for (Destination otherDestination : destinationList) {

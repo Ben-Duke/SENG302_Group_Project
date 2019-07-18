@@ -811,7 +811,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
 
         Integer modReqId = modReq.getId();
 
-        Admin admin = Admin.find.all().get(0);
+        Admin admin = Admin.find().all().get(0);
         Integer adminUserId = admin.getUserId();
 
         Http.RequestBuilder request = Helpers.fakeRequest()
@@ -843,7 +843,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
 
         Integer modReqId = modReq.getId();
 
-        Admin admin = Admin.find.all().get(0);
+        Admin admin = Admin.find().all().get(0);
         Integer adminUserId = admin.getUserId();
 
         Http.RequestBuilder request = Helpers.fakeRequest()
@@ -886,7 +886,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
 
         Integer modReqId = modReq.getId();
 
-        Admin admin = Admin.find.all().get(0);
+        Admin admin = Admin.find().all().get(0);
         Integer adminUserId = admin.getUserId();
 
         Http.RequestBuilder request = Helpers.fakeRequest()

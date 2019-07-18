@@ -52,7 +52,7 @@ public class UserFactory {
             return;
         }
 
-        Nationality nationality = Nationality.find.byId(Integer.parseInt(nationalityId));
+        Nationality nationality = Nationality.find().byId(Integer.parseInt(nationalityId));
         user.deleteNationality(nationality);
         user.update();
     }

@@ -271,7 +271,7 @@ public class UtilityFunctions {
         types.add("Business Traveller");
         types.add("Backpacker");
         boolean successfullyAddedAllTravvelers = true;
-        if (TravellerType.find.all().isEmpty()) {
+        if (TravellerType.find().all().isEmpty()) {
             for (String type : types) {
                 try {
                     (new TravellerType(type)).save();

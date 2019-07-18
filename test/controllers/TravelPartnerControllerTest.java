@@ -45,9 +45,9 @@ public class TravelPartnerControllerTest extends BaseTestWithApplicationAndDatab
         UtilityFunctions.addAllNationalities();
         UtilityFunctions.addAllPassports();
         UtilityFunctions.addTravellerTypes();
-        TravellerType travellerType1 = TravellerType.find.byId(1);
-        TravellerType travellerType2 = TravellerType.find.byId(2);
-        TravellerType travellerType3 = TravellerType.find.byId(3);
+        TravellerType travellerType1 = TravellerType.find().byId(1);
+        TravellerType travellerType2 = TravellerType.find().byId(2);
+        TravellerType travellerType3 = TravellerType.find().byId(3);
         Nationality nationality1 = Nationality.find().byId(1);
         Nationality nationality2 = Nationality.find().byId(2);
         Nationality nationality3 = Nationality.find().byId(3);

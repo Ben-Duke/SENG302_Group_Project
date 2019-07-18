@@ -77,7 +77,7 @@ public class DestinationModificationRequest extends Model {
         typesString = typesString.replaceAll("\\[|]", ""); //Trim off the set square brackets
         String[] types = typesString.split("\\s*,\\s"); // Split into array by the comma/whitespace delim
         for (String type: types) {
-            TravellerType travellerType = TravellerType.find.query()
+            TravellerType travellerType = TravellerType.find().query()
                     .where().eq("travellerTypeName", type).findOne();
             travellerTypesSet.add(travellerType);
         }

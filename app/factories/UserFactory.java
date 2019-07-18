@@ -92,7 +92,7 @@ public class UserFactory {
      * @return a list of a Traveller Types from the backend in a Map<String, Boolean> format
      */
     public static Map<String, Boolean> getTTypesList() {
-        List<TravellerType> tTypes = TravellerType.find.all();
+        List<TravellerType> tTypes = TravellerType.find().all();
 
 
         SortedMap<String, Boolean> tTypesList = new TreeMap<>();
@@ -173,7 +173,7 @@ public class UserFactory {
      */
     public void updateTravellerType(User user, int travellerId){
         if (user != null) {
-            TravellerType travellerType = TravellerType.find.byId(travellerId);
+            TravellerType travellerType = TravellerType.find().byId(travellerId);
 
             if( travellerId != -1){
                 try {
@@ -236,7 +236,7 @@ public class UserFactory {
      * @return Traveller Type id with the name passed in.
      */
     public static int getTTypeId(String name){
-        List<TravellerType> tTypes = TravellerType.find.all();
+        List<TravellerType> tTypes = TravellerType.find().all();
 
         int id = -1;
         String tName;

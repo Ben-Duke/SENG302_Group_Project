@@ -97,7 +97,7 @@ public class TravellerTypeControllerTest extends BaseTestWithApplicationAndDatab
         int initialTypes = user.getTravellerTypes().size();
 
         //add a "Thrillseeker" traveller type to user
-        user.addTravellerType(TravellerType.find.byId(2));
+        user.addTravellerType(TravellerType.find().byId(2));
         user.update();
 
         // Check it was added
@@ -124,7 +124,7 @@ public class TravellerTypeControllerTest extends BaseTestWithApplicationAndDatab
         assertEquals(1, Destination.find().byId(1).getTravellerTypes().size());
         //add a "Thrillseeker" traveller type to the destination with id 1
         Destination destination = Destination.find().byId(1);
-        destination.addTravellerType(TravellerType.find.byId(2));
+        destination.addTravellerType(TravellerType.find().byId(2));
         destination.update();
         //There should be 2 traveller types
         assertEquals(2, Destination.find().byId(1).getTravellerTypes().size());

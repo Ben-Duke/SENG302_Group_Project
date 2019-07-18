@@ -426,8 +426,8 @@ public class HomeControllerTest extends BaseTestWithApplicationAndDatabase {
         UtilityFunctions.addAllNationalities();
         UtilityFunctions.addAllPassports();
         UtilityFunctions.addTravellerTypes();
-        TravellerType travellerType1 = TravellerType.find.byId(1);
-        TravellerType travellerType2 = TravellerType.find.byId(2);
+        TravellerType travellerType1 = TravellerType.find().byId(1);
+        TravellerType travellerType2 = TravellerType.find().byId(2);
         Nationality nationality1 = Nationality.find().byId(1);
         Nationality nationality2 = Nationality.find().byId(2);
         Passport passport1 = Passport.find().byId(1);

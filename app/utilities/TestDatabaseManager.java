@@ -64,7 +64,7 @@ public class TestDatabaseManager {
 
         boolean isInSuccessState = true;
 
-        if(TravellerType.find.all().isEmpty()) {
+        if(TravellerType.find().all().isEmpty()) {
             boolean successFullyAddedTravellerTypes = UtilityFunctions.addTravellerTypes();
 
             if (! successFullyAddedTravellerTypes) {
@@ -146,11 +146,11 @@ public class TestDatabaseManager {
             TravellerType travellerType2 = null;
             TravellerType travellerType3 = null;
 
-            travellerType1 = TravellerType.find.query().where().eq("travellerTypeName","Groupie").findOne();
+            travellerType1 = TravellerType.find().query().where().eq("travellerTypeName","Groupie").findOne();
             //Thrillseeker
-            travellerType2 = TravellerType.find.query().where().eq("travellerTypeName","Thrillseeker").findOne();
+            travellerType2 = TravellerType.find().query().where().eq("travellerTypeName","Thrillseeker").findOne();
             //Gap year
-            travellerType3 = TravellerType.find.query().where().eq("travellerTypeName","Gap Year").findOne();
+            travellerType3 = TravellerType.find().query().where().eq("travellerTypeName","Gap Year").findOne();
 
             String invalidNatPassName1 = "Czechoslovakia";
 
@@ -236,7 +236,7 @@ public class TestDatabaseManager {
 
         User user = new User("admin@admin.com", "admin", "admin", "admin", LocalDate.now(), "male");
         user.setDateOfBirth(LocalDate.of(2019, 2, 18));
-        user.setTravellerTypes(TravellerType.find.all().subList(5, 6)); // Business Traveller
+        user.setTravellerTypes(TravellerType.find().all().subList(5, 6)); // Business Traveller
         user.setNationality(Nationality.find().all().subList(0, 2)); // First two countries alphabetically
 
         try {
@@ -275,7 +275,7 @@ public class TestDatabaseManager {
                 "New Zealand", -43.5321, 172.6362,
                 User.find().byId(2));
         destination1.setIsPublic(true);
-        destination1.addTravellerType(TravellerType.find.byId(1));
+        destination1.addTravellerType(TravellerType.find().byId(1));
 
         Destination destination2 = new Destination(
                 "Wellington", "Town", "Wellington",
@@ -287,8 +287,8 @@ public class TestDatabaseManager {
                 "Canterbury", "New Zealand", -43.523593,
                 172.582971, User.find().byId(2));
         destination3.setIsPublic(true);
-        destination3.addTravellerType(TravellerType.find.byId(1));
-        destination3.addTravellerType(TravellerType.find.byId(3));
+        destination3.addTravellerType(TravellerType.find().byId(1));
+        destination3.addTravellerType(TravellerType.find().byId(3));
 
 
         // Adds destinations for user3
@@ -297,8 +297,8 @@ public class TestDatabaseManager {
                 "North Canterbury", "New Zealand", -42.522791,
                 172.828944, User.find().byId(3));
         destination4.setIsPublic(true);
-        destination4.addTravellerType(TravellerType.find.byId(5));
-        destination4.addTravellerType(TravellerType.find.byId(7));
+        destination4.addTravellerType(TravellerType.find().byId(5));
+        destination4.addTravellerType(TravellerType.find().byId(7));
 
         Destination destination5 = new Destination(
                 "Le Mans 24 hour race", "Event",
@@ -309,14 +309,14 @@ public class TestDatabaseManager {
                 "Giza", "Egypt", 29.979481,
                 31.134159, User.find().byId(3));
         destination6.setIsPublic(true);
-        destination6.addTravellerType(TravellerType.find.byId(7));
+        destination6.addTravellerType(TravellerType.find().byId(7));
 
         //Adds destinations for user4
         Destination destination7 = new Destination(
                 "Niagara Falls", "Natural Spot",
                 "New York", "United States", 29.979481,
                 31.134159, User.find().byId(4));
-        destination7.addTravellerType(TravellerType.find.byId(2));
+        destination7.addTravellerType(TravellerType.find().byId(2));
         Destination destination8 = new Destination(
                 "Vatican City", "Country", "Rome",
                 "Vatican City", 41.903133, 12.454341,
@@ -326,9 +326,9 @@ public class TestDatabaseManager {
                 "Washington DC", "United States", 38.889406,
                 -77.050155, User.find().byId(4));
         destination9.setIsPublic(true);
-        destination9.addTravellerType(TravellerType.find.byId(1));
-        destination9.addTravellerType(TravellerType.find.byId(4));
-        destination9.addTravellerType(TravellerType.find.byId(6));
+        destination9.addTravellerType(TravellerType.find().byId(1));
+        destination9.addTravellerType(TravellerType.find().byId(4));
+        destination9.addTravellerType(TravellerType.find().byId(6));
 
 
         // saving the destinations

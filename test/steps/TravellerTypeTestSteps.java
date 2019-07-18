@@ -121,7 +121,7 @@ public class TravellerTypeTestSteps extends BaseTestWithApplicationAndDatabase {
     public void theUserRemovesTheTravellerType(String id, String string) {
         User newUser =  User.find().all().get(Integer.parseInt(id));
         id = Integer.toString(Integer.parseInt(id) + 1);
-        TravellerType travellerType = TravellerType.find.query().where().eq("travellerTypeName", string).findOne();
+        TravellerType travellerType = TravellerType.find().query().where().eq("travellerTypeName", string).findOne();
         Map<String, String> formData = new HashMap<>();
         System.out.println(newUser.getUserid() + ": " + travellerType.getTravellerTypeName());
         System.out.println(travellerType.getTtypeid().toString());
@@ -137,7 +137,7 @@ public class TravellerTypeTestSteps extends BaseTestWithApplicationAndDatabase {
     public void theUserWithIdRemovesTheOnlyRemainingTravellerType(String id, String string) {
         User newUser =  User.find().all().get(Integer.parseInt(id));
         id = Integer.toString(Integer.parseInt(id) + 1);
-        TravellerType travellerType = TravellerType.find.query().where().eq("travellerTypeName", string).findOne();
+        TravellerType travellerType = TravellerType.find().query().where().eq("travellerTypeName", string).findOne();
         Map<String, String> formData = new HashMap<>();
         formData.put("typeId", travellerType.getTtypeid().toString());
         Http.RequestBuilder fakeRequest = Helpers.fakeRequest().bodyForm(formData).method(Helpers.POST).uri("/users/profile/delete/" + travellerType.getTtypeid()).session("connected", id);

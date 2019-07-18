@@ -39,11 +39,11 @@ public class TravelPartnerController {
 
         DynamicForm dynamicForm = formFactory.form();
 
-        List<TravellerType> travellerTypes = TravellerType.find.all();
+        List<TravellerType> travellerTypes = TravellerType.find().all();
         List<String> convertedTravellerTypes = new ArrayList<>();
         convertedTravellerTypes.add("");
         for (TravellerType traveller : travellerTypes) {
-            convertedTravellerTypes.add(traveller.travellerTypeName);
+            convertedTravellerTypes.add(traveller.getTravellerTypeName());
         }
 
         List<Nationality> nationalities = Nationality.find().all();
@@ -93,9 +93,9 @@ public class TravelPartnerController {
                 return new HashSet<>();
 
             } else {
-                List<TravellerType> travellerTypes = TravellerType.find.query().where().eq("travellerTypeName", travellerType).findList();
+                List<TravellerType> travellerTypes = TravellerType.find().query().where().eq("travellerTypeName", travellerType).findList();
                 if (!travellerTypes.isEmpty()) {
-                    return TravellerType.find.byId(travellerTypes.get(0).ttypeid).getUsers();
+                    return TravellerType.find().byId(travellerTypes.get(0).getTtypeid()).getUsers();
                 }
 
             }

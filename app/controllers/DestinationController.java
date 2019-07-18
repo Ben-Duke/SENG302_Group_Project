@@ -373,7 +373,7 @@ public class DestinationController extends Controller {
                 Map<String, Boolean> countryList = CountryUtils.getCountriesMap();
                 countryList.replace(destination.getCountry(), true);
 
-                List<TravellerType> travellerTypes = TravellerType.find.all();
+                List<TravellerType> travellerTypes = TravellerType.find().all();
                 Map<String, Boolean> travellerTypesMap = new TreeMap<>();
                 for (TravellerType travellerType : travellerTypes) {
                     if (destination.getTravellerTypes().contains(travellerType)) {

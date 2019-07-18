@@ -61,7 +61,7 @@
                     <ul class="list-group" >
                         @for(nationality <- UserFactory.getUserNats(id)) {
                             <li class="list-group-item">
-                                @nationality.nationalityName
+                                @nationality.getNationalityName
                                 @countryErrorMessage(nationality)
                             </li>
                         }
@@ -75,7 +75,7 @@
                     @form(action = helper.CSRF(routes.ProfileController.submitUpdateNationality)) {
                         @select(
                             field = userForm("nationality"),
-                            options = nationalities.map(nationality => nationality.natid.toString -> nationality.nationalityName),
+                            options = nationalities.map(nationality => nationality.getNatId.toString -> nationality.getNationalityName),
                             '_label -> "Select nationality to add:"
                         )
                         <input type="submit" value="Add nationality">
@@ -88,7 +88,7 @@
 
                         @select(
                             field = userForm("nationalitydelete"),
-                            options = UserFactory.getUserNats(id).map(nationality => nationality.natid.toString -> nationality.nationalityName),
+                            options = UserFactory.getUserNats(id).map(nationality => nationality.getNatId.toString -> nationality.getNationalityName),
                             '_label -> "Select nationality to delete:",
                         )
                         <input type="submit" value="Remove nationality">

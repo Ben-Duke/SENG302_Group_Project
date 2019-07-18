@@ -46,11 +46,11 @@ public class TravelPartnerController {
             convertedTravellerTypes.add(traveller.travellerTypeName);
         }
 
-        List<Nationality> nationalities = Nationality.find.all();
+        List<Nationality> nationalities = Nationality.find().all();
         List<String> convertedNationalities = new ArrayList<>();
         convertedNationalities.add("");
         for (Nationality nationality : nationalities) {
-            convertedNationalities.add(nationality.nationalityName);
+            convertedNationalities.add(nationality.getNationalityName());
         }
 
         Map<String, Boolean> genderMap = new TreeMap<>();
@@ -116,9 +116,9 @@ public class TravelPartnerController {
                 return new HashSet<>();
 
             } else {
-                List<Nationality> nationalities = Nationality.find.query().where().eq("nationalityName", nationality).findList();
+                List<Nationality> nationalities = Nationality.find().query().where().eq("nationalityName", nationality).findList();
                 if (nationalities.size() > 0) {
-                    return Nationality.find.byId(nationalities.get(0).natid).getUsers();
+                    return Nationality.find().byId(nationalities.get(0).getNatId()).getUsers();
                 }
             }
         }

@@ -54,7 +54,7 @@ public class UserFactory {
 
     public static void deleteNatsOnUser(int id, String nationalityId) {
         User user = User.find().query().where().eq("userid", id).findOne();
-        Nationality nationality = Nationality.find.byId(Integer.parseInt(nationalityId));
+        Nationality nationality = Nationality.find().byId(Integer.parseInt(nationalityId));
         user.deleteNationality(nationality);
         user.update();
     }
@@ -111,7 +111,7 @@ public class UserFactory {
      * @return a list of a Nationalities from the backend in a Map<String, Boolean> format
      */
     public static Map<String, Boolean> getNatList() {
-        List<Nationality> nationalityList = Nationality.find.all();
+        List<Nationality> nationalityList = Nationality.find().all();
 
 
         SortedMap<String, Boolean> nationalities = new TreeMap<>();
@@ -153,7 +153,7 @@ public class UserFactory {
      */
     public void updateNationality(User user, int natId){
         if (user != null) {
-            Nationality nationality = Nationality.find.byId(natId);
+            Nationality nationality = Nationality.find().byId(natId);
             if(natId != -1){
                 try {
                     user.addNationality(nationality);
@@ -214,16 +214,16 @@ public class UserFactory {
      * @return Nationality id with the name passed in.
      */
     public static int getNatId(String name){
-        List<Nationality> nationalities = Nationality.find.all();
+        List<Nationality> nationalities = Nationality.find().all();
 
         int id = -1;
         String natName;
         for (int i = 0; i < nationalities.size(); i++) {
 
-            natName = nationalities.get(i).nationalityName;
+            natName = nationalities.get(i).getNationalityName();
 
             if(natName.equals( name)){
-                id = nationalities.get(i).natid;
+                id = nationalities.get(i).getNatId();
             }
         }
 
@@ -349,7 +349,7 @@ public class UserFactory {
     public static void addNatsOnUser(int id, String nationalityId){
         User user = User.find().query().where().eq("userid", id).findOne();
         try {
-            Nationality nationality = Nationality.find.byId(Integer.parseInt(nationalityId));
+            Nationality nationality = Nationality.find().byId(Integer.parseInt(nationalityId));
             user.addNationality(nationality);
             user.update();
         } catch (io.ebean.DuplicateKeyException e) {

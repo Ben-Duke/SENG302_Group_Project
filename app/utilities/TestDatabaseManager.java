@@ -72,7 +72,7 @@ public class TestDatabaseManager {
             }
         }
 
-        if (isInSuccessState && Nationality.find.all().isEmpty()) {
+        if (isInSuccessState && Nationality.find().all().isEmpty()) {
 
             boolean successfullyAddedAllNationalities = UtilityFunctions.addAllNationalities();
 
@@ -195,7 +195,7 @@ public class TestDatabaseManager {
 
             user2.getTravellerTypes().add(travellerType2);
 
-            user2.setNationality(Nationality.find.all().subList(70, 72));
+            user2.setNationality(Nationality.find().all().subList(70, 72));
 
             user2.setPassport(Passport.find.all().subList(70, 72));
 
@@ -208,7 +208,7 @@ public class TestDatabaseManager {
             user3.getTravellerTypes().add(travellerType1);
             user3.getTravellerTypes().add(travellerType2);
 
-            user3.setNationality(Nationality.find.all().subList(50, 51));
+            user3.setNationality(Nationality.find().all().subList(50, 51));
 
             try{
                 user3.save();
@@ -237,7 +237,7 @@ public class TestDatabaseManager {
         User user = new User("admin@admin.com", "admin", "admin", "admin", LocalDate.now(), "male");
         user.setDateOfBirth(LocalDate.of(2019, 2, 18));
         user.setTravellerTypes(TravellerType.find.all().subList(5, 6)); // Business Traveller
-        user.setNationality(Nationality.find.all().subList(0, 2)); // First two countries alphabetically
+        user.setNationality(Nationality.find().all().subList(0, 2)); // First two countries alphabetically
 
         try {
             user.save();

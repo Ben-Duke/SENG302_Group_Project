@@ -48,9 +48,9 @@ public class TravelPartnerControllerTest extends BaseTestWithApplicationAndDatab
         TravellerType travellerType1 = TravellerType.find.byId(1);
         TravellerType travellerType2 = TravellerType.find.byId(2);
         TravellerType travellerType3 = TravellerType.find.byId(3);
-        Nationality nationality1 = Nationality.find.byId(1);
-        Nationality nationality2 = Nationality.find.byId(2);
-        Nationality nationality3 = Nationality.find.byId(3);
+        Nationality nationality1 = Nationality.find().byId(1);
+        Nationality nationality2 = Nationality.find().byId(2);
+        Nationality nationality3 = Nationality.find().byId(3);
         Passport passport1 = Passport.find.byId(1);
         Passport passport2 = Passport.find.byId(2);
         Passport passport3 = Passport.find.byId(3);

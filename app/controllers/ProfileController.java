@@ -198,7 +198,7 @@ public class ProfileController extends Controller {
             formData.userId = user.getUserid();
             Form<NatFormData> userForm = formFactory.form(NatFormData.class).fill(formData);
 
-            List<Nationality> nationalities = Nationality.find.all();
+            List<Nationality> nationalities = Nationality.find().all();
             List<Passport> passports = Passport.find.all();
             return ok(updateNatPass.render(userForm, nationalities, passports, user.getUserid(), User.getCurrentUser(request)));
         }

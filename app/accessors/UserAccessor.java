@@ -28,7 +28,7 @@ public class UserAccessor {
     }
 
     public static List<Nationality> getAllNationalities() {
-        return Nationality.find.all();
+        return Nationality.find().all();
     }
 
     /**

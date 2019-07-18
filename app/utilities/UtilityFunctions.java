@@ -181,7 +181,7 @@ public class UtilityFunctions {
 
         CountryUtils.updateCountries();
 
-        if (Nationality.find.all().isEmpty()) {
+        if (Nationality.find().all().isEmpty()) {
             try {
 
                 if (CountryUtils.getCountries() == null){

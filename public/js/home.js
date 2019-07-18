@@ -9,6 +9,7 @@ var isExistingPhoto = false;
 var photoIdToEdit;
 
 
+
 /**
  * This function is called when an image file is chosen and uploaded by the user.
  * Creates a crop canvas using cropperjs where the user can crop their image, which is stored into a croppedCanvas variable.
@@ -56,6 +57,44 @@ var loadFile = function (event) {
         })
     }
 };
+
+addAlbumSearchTagListeners();
+
+function addAlbumSearchTagListeners() {
+    function redirectToAlbumPage(album, datalist) {
+        for (let dataAlbum of datalist.options) {
+            if (dataAlbum.value.toUpperCase() === album.toUpperCase()) {
+                window.location.href = "/albums/" + album.toLowerCase();
+            }
+        }
+    }
+
+    try {
+        const searchBar = document.getElementById("album-search");
+        const datalist = document.getElementById("album-results");
+        searchBar.addEventListener('input', (e) => {
+            if (e.constructor.name !== 'InputEvent') {
+                // then this is a selection, not user input
+                redirectToAlbumPage(searchBar.value, datalist)
+            }
+            const query = searchBar.value;
+            for (let album of datalist.options) {
+                if (album === query) {
+
+                }
+            }
+        });
+        searchBar.addEventListener('keyup', e => {
+            if (e.key === 'Enter') {
+                redirectToAlbumPage(searchBar.value, datalist);
+            }
+        })
+    } catch (err) {
+        //do nothing. Just to avoid errors if the correct page is not loaded
+    }
+}
+
+
 
 /**
  * This function is called when the user clicks the upload button to upload the cropped canvas image to the database.

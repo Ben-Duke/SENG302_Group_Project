@@ -138,6 +138,12 @@ public class Trip extends Model {
         this.removedVisits = removedVisits;
     }
 
+    public void removeAllVisits() {
+        visits = new ArrayList<>();
+    }
+
+
+
     public boolean hasVisit(){
         if (visits != null) {
             if (! visits.isEmpty()) {

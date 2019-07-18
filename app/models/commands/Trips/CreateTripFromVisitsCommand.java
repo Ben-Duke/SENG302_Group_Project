@@ -41,7 +41,7 @@ public class CreateTripFromVisitsCommand extends UndoableCommand {
 
     public void undo() {
 
-        
+        trip.
 
 
     }

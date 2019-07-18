@@ -825,7 +825,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
         assert(destination.getDestName().equals("Test Dest"));
         assert(destination.getDestType().equals("Town"));
         assert(destination.getLatitude() == 100);
-        assertEquals(null, DestinationModificationRequest.find.query().where().eq("id", modReqId).findOne());
+        assertEquals(null, DestinationModificationRequest.find().query().where().eq("id", modReqId).findOne());
 
     }
 
@@ -863,7 +863,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
         assert(destination.getCountry().equals("Test Country2"));
         assert(destination.getLatitude() == 101);
         assert(destination.getLatitude() == 101);
-        assertEquals(null, DestinationModificationRequest.find.query().where().eq("id", modReqId).findOne());
+        assertEquals(null, DestinationModificationRequest.find().query().where().eq("id", modReqId).findOne());
 
     }
 
@@ -912,7 +912,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
         }
         assertEquals(2, destination.getTravellerTypes().size());
 
-        assertEquals(null, DestinationModificationRequest.find.query().where().eq("id", modReqId).findOne());
+        assertEquals(null, DestinationModificationRequest.find().query().where().eq("id", modReqId).findOne());
 
     }
 

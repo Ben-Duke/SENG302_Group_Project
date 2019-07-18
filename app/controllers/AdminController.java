@@ -34,7 +34,7 @@ public class AdminController extends Controller {
                 Admin currentAdmin = Admin.find.query().where().eq("userId", currentUser.getUserid()).findOne();
                 if (currentAdmin != null) {
                     List<User> users = User.find().all();
-                    List<DestinationModificationRequest> allReqs = DestinationModificationRequest.find.all();
+                    List<DestinationModificationRequest> allReqs = DestinationModificationRequest.find().all();
                     return ok(indexAdmin.render(currentUser, userList.get(1), users,allReqs));
                 }
             } else {
@@ -95,7 +95,7 @@ public class AdminController extends Controller {
         if (currentUser != null) {
             Admin currentAdmin = Admin.find.query().where().eq("userId", currentUser.getUserid()).findOne();
             if (currentAdmin != null) {
-                DestinationModificationRequest modReq = DestinationModificationRequest.find.query().where().eq("id", destModReqId).findOne();
+                DestinationModificationRequest modReq = DestinationModificationRequest.find().query().where().eq("id", destModReqId).findOne();
                 if (modReq != null) {
                     User user = User.find().byId(currentAdmin.getUserId());
                     return ok(viewDestinationModificationRequest.render(modReq, user));

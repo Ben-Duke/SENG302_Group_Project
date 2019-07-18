@@ -457,7 +457,7 @@ public class DestinationController extends Controller {
         if (currentUser != null) {
             Admin currentAdmin = Admin.find.query().where().eq("userId", currentUser.getUserid()).findOne();
             if (currentAdmin != null) {
-                DestinationModificationRequest modReq = DestinationModificationRequest.find.query().where().eq("id", destModReqId).findOne();
+                DestinationModificationRequest modReq = DestinationModificationRequest.find().query().where().eq("id", destModReqId).findOne();
                 if (modReq != null) {
 
                     modReq.delete();
@@ -488,7 +488,7 @@ public class DestinationController extends Controller {
         if (currentUser != null) {
             Admin currentAdmin = Admin.find.query().where().eq("userId", currentUser.getUserid()).findOne();
             if (currentAdmin != null) {
-                DestinationModificationRequest modReq = DestinationModificationRequest.find.query().where().eq("id", destModReqId).findOne();
+                DestinationModificationRequest modReq = DestinationModificationRequest.find().query().where().eq("id", destModReqId).findOne();
                 if (modReq != null) {
 
                     Destination oldDestination = modReq.getOldDestination();

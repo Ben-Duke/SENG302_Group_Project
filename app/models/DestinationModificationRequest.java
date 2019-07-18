@@ -12,28 +12,30 @@ import java.util.*;
 public class DestinationModificationRequest extends Model {
 
     @Id
-    public Integer id;
+    private Integer id;
 
     @ManyToOne
-    public Destination oldDestination;
+    private Destination oldDestination;
 
-    public String newDestName;
-    public String newDestType;
-    public String newDestCountry;
-    public String newDestDistrict;
-    public double newDestLatitude;
-    public double newDestLongitude;
+    private String newDestName;
+    private String newDestType;
+    private String newDestCountry;
+    private String newDestDistrict;
+    private double newDestLatitude;
+    private double newDestLongitude;
 
     @ManyToMany(cascade = CascadeType.ALL)
-    public Set<TravellerType> newTravelerTypes;
+    private Set<TravellerType> newTravelerTypes;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Formats.DateTime(pattern="yyyy-MM-dd HH:mm:ss")
     @CreatedTimestamp
-    public Date creationDate;
+    private Date creationDate;
 
     @ManyToOne
-    public User requestAuthor;
+    private User requestAuthor;
+    private static Finder<Integer, DestinationModificationRequest> find = new Finder<>(DestinationModificationRequest.class);
+
 
     public DestinationModificationRequest(Destination oldDestination, Destination newDestination, User user) {
         this.oldDestination = oldDestination;
@@ -46,6 +48,15 @@ public class DestinationModificationRequest extends Model {
         this.newTravelerTypes = formNewTravellerTypes(newDestination.getTravellerTypes());
 
         this.requestAuthor = user;
+    }
+
+    /**
+     * Method to get the find object for Ebeans queries.
+     *
+     * @return a Finder<Integer, DestinationModificationRequest> object
+     */
+    public static Finder<Integer, DestinationModificationRequest> find() {
+        return find;
     }
 
     /**
@@ -72,8 +83,6 @@ public class DestinationModificationRequest extends Model {
         }
         return travellerTypesSet;
     }
-
-    public static Finder<Integer, DestinationModificationRequest> find = new Finder<>(DestinationModificationRequest.class);
 
     public Integer getId() { return id; }
     public Destination getOldDestination() { return oldDestination; }

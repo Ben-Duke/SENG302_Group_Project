@@ -5,11 +5,9 @@ import accessors.UserPhotoAccessor;
 import formdata.UpdateUserFormData;
 import formdata.UserFormData;
 import models.*;
-import org.slf4j.Logger;
 import models.commands.General.UndoableCommand;
 import models.commands.Photos.EditPhotoCaptionCommand;
 import play.mvc.Http;
-import utilities.UtilityFunctions;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;

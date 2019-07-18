@@ -108,6 +108,11 @@
     height: 180px;
 }
 
+.caption {
+    text-align: center;
+    color: #ccc
+}
+
 /* Add Animation */
 .modal-content, #caption {
     -webkit-animation-name: zoom;

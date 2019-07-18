@@ -1,6 +1,5 @@
 package accessors;
 
-import io.ebean.Ebean;
 import models.Nationality;
 import models.Passport;
 import models.User;
@@ -53,7 +52,7 @@ public class UserAccessor {
         return User.find.byId(id);
     }
 
-    public static User getUserByEmail(String email) {
+    static User getUserByEmail(String email) {
         List<User> users = getUsersFromEmail(email);
         if (!users.isEmpty()) {
             return users.get(0);
@@ -73,13 +72,13 @@ public class UserAccessor {
      * @throws io.ebean.DuplicateKeyException If the user has more than 1
      *          profile picture (should never happen).
      */
-    public static UserPhoto getProfilePhoto(User user) throws io.ebean.DuplicateKeyException {
+    public static UserPhoto getProfilePhoto(User user) {
         List<UserPhoto> userProfilePhotoList = UserPhoto.find.query()
                 .where().eq("user", user)
                 .and().eq("isProfile", true)
                 .findList();
 
-        if (0 == userProfilePhotoList.size()) {
+        if (userProfilePhotoList.isEmpty()) {
             return null;
         } else if (1 == userProfilePhotoList.size()) {
             return userProfilePhotoList.get(0);

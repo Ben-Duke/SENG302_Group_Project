@@ -1,5 +1,7 @@
 package controllers;
 
+import accessors.UserPhotoAccessor;
+import factories.UserFactory;
 import models.Admin;
 import models.User;
 import models.UserPhoto;
@@ -17,15 +19,16 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static play.mvc.Results.notFound;
-import static play.mvc.Results.ok;
+import static play.mvc.Results.*;
 
 public class UserController {
+
     private final Logger logger = UtilityFunctions.getLogger();
+
     // A thread safe boolean
-    AtomicBoolean wasRun = new AtomicBoolean(false);
+    private AtomicBoolean wasRun = new AtomicBoolean(false);
     // A countdownlatch which frees when the database has been populated.
-    CountDownLatch initCompleteLatch = new CountDownLatch(1);
+    private CountDownLatch initCompleteLatch = new CountDownLatch(1);
 
     /**
      * Renders the index page and populates the in memory database
@@ -43,7 +46,7 @@ public class UserController {
         if (!wasRun.getAndSet(true)) {
             ApplicationManager.setUserPhotoPath("/../user_photos/user_");
             TestDatabaseManager.populateDatabase(initCompleteLatch);
-            logger.debug("populating database");
+            logger.info("populating database");
 
             CountryUtils.updateCountries();
 
@@ -93,6 +96,59 @@ public class UserController {
         else{
             return notFound();
         }
+    }
+
+    /**
+     * Handles requests to get a photo's caption
+     * @param request The http request from a logged in user
+     * @param photoId the id of the photo that has the caption
+     * @return if successful, a 200 code with the caption.
+     */
+    public Result getPhotoCaption(Http.Request request, int photoId) {
+        User user = User.getCurrentUser(request);
+        if (user == null) {
+            return unauthorized();
+        }
+        UserPhoto userPhoto = UserPhotoAccessor.getUserPhotoById(photoId);
+        if (userPhoto == null) {
+            return notFound();
+
+        }
+        if (!userPhoto.isPublic() && !userPhoto.getUser().equals(user) && !user.userIsAdmin()) {
+            return forbidden();
+        }
+        String caption = userPhoto.getCaption();
+        if (caption == null) {
+            return ok("");
+        }
+        return ok(caption);
+
+    }
+
+    /**
+     * Handles requests to change a caption of a photo
+     * @param request Request with information about the caption and the logged in user
+     * @param photoId the id of the photo to change
+     * @return An http response with the response code.
+     */
+    public Result editPhotoCaption(Http.Request request, int photoId) {
+        String caption = request.body().asJson().get("caption").asText();
+        User user = User.getCurrentUser(request);
+        if (user == null) {
+            return unauthorized();
+        }
+        try {
+            // throws IllegalArgumentException if user forbidden or photo not found
+            UserFactory.editPictureCaption(user.getUserid(), photoId, caption);
+            return ok();
+        } catch (IllegalArgumentException e) {
+            if (e.getMessage().equals("Forbidden")) {
+                return forbidden();
+            } else if (e.getMessage().equals("Not Found")) {
+                return notFound();
+            }
+        }
+        return internalServerError();
     }
 
 }

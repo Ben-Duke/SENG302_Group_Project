@@ -106,24 +106,23 @@ public class UserController {
      */
     public Result getPhotoCaption(Http.Request request, int photoId) {
         User user = User.getCurrentUser(request);
-        if (user != null) {
-            UserPhoto userPhoto = UserPhotoAccessor.getUserPhotoById(photoId);
-            if (userPhoto == null) {
-                return notFound();
-
-            } else if (userPhoto.isPublic() || userPhoto.getUser().equals(user) || user.userIsAdmin()) {
-                String caption = userPhoto.getCaption();
-                if (caption == null) {
-                    return ok("");
-                }
-                return ok(caption);
-
-            } else {
-                return forbidden();
-            }
-        } else {
+        if (user == null) {
             return unauthorized();
         }
+        UserPhoto userPhoto = UserPhotoAccessor.getUserPhotoById(photoId);
+        if (userPhoto == null) {
+            return notFound();
+
+        }
+        if (!userPhoto.isPublic() && !userPhoto.getUser().equals(user) && !user.userIsAdmin()) {
+            return forbidden();
+        }
+        String caption = userPhoto.getCaption();
+        if (caption == null) {
+            return ok("");
+        }
+        return ok(caption);
+
     }
 
     /**
@@ -135,19 +134,21 @@ public class UserController {
     public Result editPhotoCaption(Http.Request request, int photoId) {
         String caption = request.body().asJson().get("caption").asText();
         User user = User.getCurrentUser(request);
-        if (user != null) {
-            try {
-                UserFactory.editPictureCaption(user.getUserid(), photoId, caption);
-                return ok();
-            } catch (IllegalArgumentException e) {
-                if (e.getMessage().equals("Forbidden")) {
-                    return forbidden();
-                } else if (e.getMessage().equals("Not Found")) {
-                    return notFound();
-                }
+        if (user == null) {
+            return unauthorized();
+        }
+        try {
+            // throws IllegalArgumentException if user forbidden or photo not found
+            UserFactory.editPictureCaption(user.getUserid(), photoId, caption);
+            return ok();
+        } catch (IllegalArgumentException e) {
+            if (e.getMessage().equals("Forbidden")) {
+                return forbidden();
+            } else if (e.getMessage().equals("Not Found")) {
+                return notFound();
             }
         }
-        return unauthorized();
+        return internalServerError();
     }
 
 }

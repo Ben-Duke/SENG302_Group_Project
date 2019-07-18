@@ -60,6 +60,9 @@ public class Trip extends Model {
         this.user = user;
         this.visits = new ArrayList<>();
     }
+
+
+
     public Trip(){
     }
 

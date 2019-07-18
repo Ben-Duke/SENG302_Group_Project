@@ -9,6 +9,7 @@ import models.Destination;
 import models.Trip;
 import models.User;
 import models.Visit;
+import models.commands.Trips.CreateTripFromVisitsCommand;
 import models.commands.Trips.TripPageCommand;
 import models.commands.Visits.EditVisitCommand;
 import models.commands.Trips.DeleteTripCommand;
@@ -56,6 +57,17 @@ public class TripController extends Controller {
             return redirect(routes.UserController.userindex());
         }
     }
+
+
+    public void createTripFromVisits(List<Visit> visits, String name, User user) {
+
+        CreateTripFromVisitsCommand command = new CreateTripFromVisitsCommand(visits, name, user);
+        command.execute();
+
+//            Form<TripFormData> incomingForm = formFactory.form(TripFormData.class);
+//            return ok(createTrip.render(incomingForm, user));
+    }
+
 
     /**
      * Renders the page to display visits of a trip given by the trip id.

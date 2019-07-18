@@ -17,30 +17,31 @@ import java.util.List;
 
 @Table(uniqueConstraints={@UniqueConstraint(columnNames={"url"})})
 public class UserPhoto extends Model {
+
     @Id //The photos primary key
-    public int photoId;
+    private int photoId;
 
     @Column(name = "url")
-    public String url;
-    public boolean isPublic;
-    public boolean isProfile;
+    private String url;
+    private boolean isPublic;
+    private boolean isProfile;
 
     // Creating  the relation to User
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "user", referencedColumnName = "userid")
-    public User user;
+    private User user;
 
     // Creating  the relation to Destination
     @JsonIgnore
     @ManyToMany
-    public List<Destination> destinations;
+    private List<Destination> destinations;
 
     @JsonIgnore
     @OneToMany(mappedBy = "primaryPhoto")
-    public List<Destination> primaryPhotoDestinations;
+    private List<Destination> primaryPhotoDestinations;
 
-    public static Finder<Integer,UserPhoto> find = new Finder<>(UserPhoto.class);
+    private static Finder<Integer,UserPhoto> find = new Finder<>(UserPhoto.class);
 
     /**
      * Constructor method for UserPhoto.
@@ -77,6 +78,7 @@ public class UserPhoto extends Model {
     public boolean getIsProfile(){
         return this.isProfile;
     }
+
     public UserPhoto(UserPhoto userPhoto){
         this.url = userPhoto.getUrl();
         this.isPublic = userPhoto.getIsPhotoPublic();
@@ -84,6 +86,15 @@ public class UserPhoto extends Model {
         this.isProfile = userPhoto.getIsProfilePhoto();
         this.destinations = userPhoto.getDestinations();
         this.primaryPhotoDestinations = userPhoto.getPrimaryPhotoDestinations();
+    }
+
+    /**
+     * Gets a finder object for UserPhoto.
+     *
+     * @return A Finder<Integer,UserPhoto> object
+     */
+    public static Finder<Integer,UserPhoto> find() {
+        return find;
     }
 
 

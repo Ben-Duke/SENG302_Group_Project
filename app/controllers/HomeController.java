@@ -188,7 +188,7 @@ public class HomeController {
     {
         User user = User.getCurrentUser(request);
         if(user != null) {
-            UserPhoto photo = UserPhoto.find.byId(photoId);
+            UserPhoto photo = UserPhoto.find().byId(photoId);
             if(!photo.isPublic() && user.getUserid() != photo.getUser().getUserid() && !user.userIsAdmin()){
                 return unauthorized("Oops, this is a private photo.");
             }
@@ -250,7 +250,7 @@ public class HomeController {
      */
     public Result setProfilePicture(Http.Request request, Integer photoId) {
         User user = User.getCurrentUser(request);
-        UserPhoto profilePhoto = UserPhoto.find.byId(photoId);
+        UserPhoto profilePhoto = UserPhoto.find().byId(photoId);
         if(user != null) {
             if (profilePhoto != null) {
                 if(user.getUserid() == profilePhoto.getUser().getUserid() || user.userIsAdmin()) {
@@ -277,7 +277,7 @@ public class HomeController {
      */
     public Result makePicturePublic(Http.Request request, Integer photoId, Integer setPublic) {
         User user = User.getCurrentUser(request);
-        UserPhoto photo = UserPhoto.find.byId(photoId);
+        UserPhoto photo = UserPhoto.find().byId(photoId);
         if(user != null) {
             if (photo != null) {
                 if(user.getUserid() == photo.getUser().getUserid() || user.userIsAdmin()) {

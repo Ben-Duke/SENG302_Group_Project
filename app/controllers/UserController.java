@@ -85,7 +85,7 @@ public class UserController {
             List<Integer> photoIds = new ArrayList<>();
             if (userPhotos != null) {
                 for (UserPhoto photo: userPhotos) {
-                    photoIds.add(photo.photoId);
+                    photoIds.add(photo.getPhotoId());
                 }
             }
             return ok(Json.toJson(photoIds));

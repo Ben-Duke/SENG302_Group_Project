@@ -366,7 +366,7 @@ public class UserFactory {
      */
     public static UserPhoto getUserProfilePicture(int userId) {
         User user = User.find().query().where().eq("userid", userId).findOne();
-        UserPhoto userPhoto = UserPhoto.find.query().where().eq("user", user).and().eq("isProfile", true).findOne();
+        UserPhoto userPhoto = UserPhoto.find().query().where().eq("user", user).and().eq("isProfile", true).findOne();
         if(userPhoto != null) {
             return  userPhoto;
         } else {

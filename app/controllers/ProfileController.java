@@ -42,7 +42,7 @@ public class ProfileController extends Controller {
      * @return update profile page or error page
      */
     public Result deletePhoto(Http.Request request, Integer photoId, Boolean userInput){
-        UserPhoto photo = UserPhoto.find.byId(photoId);
+        UserPhoto photo = UserPhoto.find().byId(photoId);
         User user = User.getCurrentUser(request);
         if (photo != null && photo.getIsProfile() && (!userInput)) {
             return badRequest("Is profile picture ask user");

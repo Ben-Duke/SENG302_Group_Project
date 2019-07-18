@@ -74,7 +74,7 @@ public class UserAccessor {
      *          profile picture (should never happen).
      */
     public static UserPhoto getProfilePhoto(User user) throws io.ebean.DuplicateKeyException {
-        List<UserPhoto> userProfilePhotoList = UserPhoto.find.query()
+        List<UserPhoto> userProfilePhotoList = UserPhoto.find().query()
                 .where().eq("user", user)
                 .and().eq("isProfile", true)
                 .findList();

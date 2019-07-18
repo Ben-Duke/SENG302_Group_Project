@@ -657,7 +657,7 @@ public class DestinationController extends Controller {
             JsonNode node = request.body().asJson().get("photoid");
             String photoid = node.textValue();
             photoid = photoid.replace("\"", "");
-            UserPhoto photo = UserPhoto.find.byId(Integer.parseInt(photoid));
+            UserPhoto photo = UserPhoto.find().byId(Integer.parseInt(photoid));
             Destination destination = Destination.find().byId(destId);
             if (destination != null || photo != null) {
                 if (photo.getUser().getUserid() == user.getUserid()) {
@@ -686,7 +686,7 @@ public class DestinationController extends Controller {
 
 
     public Result unlinkAndDelete(Http.Request request, int photoId){
-        UserPhoto photo = UserPhoto.find.byId(photoId);
+        UserPhoto photo = UserPhoto.find().byId(photoId);
         DeletePhotoCommand deletePhotoCommand = new DeletePhotoCommand(photo);
         User user = User.getCurrentUser(request);
         if(user != null){
@@ -710,7 +710,7 @@ public class DestinationController extends Controller {
      * @return
      */
     public Result unlinkPhotoFromDestinationAndDelete(Http.Request request, int photoId) {
-        UserPhoto photo = UserPhoto.find.byId(photoId);
+        UserPhoto photo = UserPhoto.find().byId(photoId);
             if (photo != null) {
                 for (Destination destination : photo.getDestinations()) {
                     unlinkPhotoFromDestination(request, photoId, destination.getDestId());
@@ -734,7 +734,7 @@ public class DestinationController extends Controller {
      */
     public Result unlinkPhotoFromDestination(Http.Request request, int photoId, int destId) {
         User user = User.getCurrentUser(request);
-        UserPhoto photo = UserPhoto.find.byId(photoId);
+        UserPhoto photo = UserPhoto.find().byId(photoId);
         Destination destination = Destination.find().byId(destId);
 
         if (user == null) return redirect(routes.UserController.userindex());
@@ -806,7 +806,7 @@ public class DestinationController extends Controller {
     public Result getPhoto(Http.Request request, Integer photoId) {
         User user = User.getCurrentUser(request);
         if(user != null){
-            UserPhoto photo = UserPhoto.find.byId(photoId);
+            UserPhoto photo = UserPhoto.find().byId(photoId);
             if (photo.getUser().getUserid() == user.getUserid() || photo.isPublic() || user.userIsAdmin()) {
                 return ok(Json.toJson(photo));
             } else {
@@ -868,7 +868,7 @@ public class DestinationController extends Controller {
             JsonNode node = request.body().asJson().get("photoid");
             String photoid = node.textValue();
             photoid = photoid.replace("\"", "");
-            UserPhoto photo = UserPhoto.find.byId(Integer.parseInt(photoid));
+            UserPhoto photo = UserPhoto.find().byId(Integer.parseInt(photoid));
             Destination destination = Destination.find().byId(destId);
             if (destination != null && photo != null) {
                 if ((destination.getUser().getUserid() == user.getUserid() && destination.getUserPhotos().contains(photo))
@@ -930,7 +930,7 @@ public class DestinationController extends Controller {
     public Result addPhotoToDestination(Http.Request request, Integer photoId, Integer destId){
         User user = User.getCurrentUser(request);
         if(user != null) {
-            UserPhoto photo = UserPhoto.find.byId(photoId);
+            UserPhoto photo = UserPhoto.find().byId(photoId);
             Destination destination = Destination.find().byId(destId);
             if(destination != null && photo != null) {
                 if (photo.getUser().getUserid() == user.getUserid()) {

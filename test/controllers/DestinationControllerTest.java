@@ -201,7 +201,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
         photo.addDestination(destination);
         photo.save();
 
-        int beforeDeletion = UserPhoto.find.all().size();
+        int beforeDeletion = UserPhoto.find().all().size();
 
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(DELETE)
@@ -210,7 +210,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
         CSRFTokenHelper.addCSRFToken(request);
         route(app, request);
 
-        assertEquals(beforeDeletion - 1, UserPhoto.find.all().size());
+        assertEquals(beforeDeletion - 1, UserPhoto.find().all().size());
     }
 
 
@@ -977,7 +977,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
      */
     @Test
     public void addDuplicatePhotoToDestination() {
-        UserPhoto userPhoto1 = UserPhoto.find.byId(1);
+        UserPhoto userPhoto1 = UserPhoto.find().byId(1);
         Destination christchurch = Destination.find().byId(1);
         Destination wellington = Destination.find().byId(2);
         userPhoto1.addDestination(christchurch);
@@ -1104,7 +1104,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
                 .session("connected", "2");
         route(app, linkRequest);
 
-        UserPhoto photo = UserPhoto.find.byId(1);
+        UserPhoto photo = UserPhoto.find().byId(1);
         assert photo != null;
         int nDestinations = photo.getDestinations().size();
 
@@ -1114,7 +1114,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
                 .session("connected", "2");
         route(app, unlinkRequest);
 
-        photo = UserPhoto.find.byId(1);
+        photo = UserPhoto.find().byId(1);
         assert photo != null;
         assertEquals(nDestinations - 1, photo.getDestinations().size());
     }
@@ -1137,7 +1137,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
      */
     @Test
     public void unlinkPhotoFromDestinationNotLinkedCheckDataNotChanged() {
-        UserPhoto photo = UserPhoto.find.byId(1);
+        UserPhoto photo = UserPhoto.find().byId(1);
         assert photo != null;
         int nDestinations = photo.getDestinations().size();
 
@@ -1147,7 +1147,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
                 .session("connected", "2");
         route(app, request);
 
-        photo = UserPhoto.find.byId(1);
+        photo = UserPhoto.find().byId(1);
         assert photo != null;
         assertEquals(nDestinations, photo.getDestinations().size());
     }
@@ -1170,7 +1170,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
      */
     @Test
     public void unlinkPhotoFromDestinationNoDestinationCheckDataNotChanged() {
-        UserPhoto photo = UserPhoto.find.byId(1);
+        UserPhoto photo = UserPhoto.find().byId(1);
         assert photo != null;
         int nDestinations = photo.getDestinations().size();
 
@@ -1179,7 +1179,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
                 .uri("/users/destinations/1/" + destId)
                 .session("connected", "2");
         route(app, request);
-        photo = UserPhoto.find.byId(1);
+        photo = UserPhoto.find().byId(1);
         assert photo != null;
 
         assertEquals(nDestinations, photo.getDestinations().size());
@@ -1190,7 +1190,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
      */
     @Test
     public void unlinkPhotoFromDestinationNoPhotoCheckNotFound() {
-        int photoId = UserPhoto.find.all().size() + 10; // give it a few extra to be safe
+        int photoId = UserPhoto.find().all().size() + 10; // give it a few extra to be safe
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .uri("/users/destinations/" + photoId + "/1")
                 .session("connected", "2");
@@ -1203,17 +1203,17 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
      */
     @Test
     public void unlinkPhotoFromDestinationNoPhotoCheckDataNotChanged() {
-        UserPhoto photo = UserPhoto.find.byId(1);
+        UserPhoto photo = UserPhoto.find().byId(1);
         assert photo != null;
         int nDestinations = photo.getDestinations().size();
 
-        int photoId = UserPhoto.find.all().size() + 10; // give it a few extra to be safe
+        int photoId = UserPhoto.find().all().size() + 10; // give it a few extra to be safe
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .uri("/users/destinations/" + photoId + "/1")
                 .session("connected", "2");
         route(app, request);
 
-        photo = UserPhoto.find.byId(1);
+        photo = UserPhoto.find().byId(1);
         assert photo != null;
 
         assertEquals(nDestinations, photo.getDestinations().size());

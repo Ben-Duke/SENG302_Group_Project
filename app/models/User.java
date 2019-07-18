@@ -581,7 +581,7 @@ public class User extends Model implements Comparable<User> {
     public boolean userIsAdmin() {
         List<Admin> admins = Admin.find.all();
         for (Admin admin : admins) {
-            if (admin.userId.equals(userid)) {
+            if (admin.getUserId().equals(userid)) {
                 return true;
             }
         }

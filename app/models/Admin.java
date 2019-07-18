@@ -18,13 +18,13 @@ public class Admin extends BaseModel {
      */
     @Unique
     @OneToOne(mappedBy = "userid")
-    public Integer userId;
+    private Integer userId;
 
 
     /**
      * The user the admin wants to edit as.
      */
-    public Integer userIdToEdit;
+    private Integer userIdToEdit;
 
     /**
      * True if admin is a Default admin.

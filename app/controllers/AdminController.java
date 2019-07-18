@@ -56,7 +56,7 @@ public class AdminController extends Controller {
         User currentUser = User.getCurrentUser(request);
         if (currentUser != null) {
             Admin currentAdmin = Admin.find.query().where().eq("userId", currentUser.getUserid()).findOne();
-            if (currentAdmin != null && !currentAdmin.userId.equals(requestedUserId)) {
+            if (currentAdmin != null && !currentAdmin.getUserId().equals(requestedUserId)) {
                 Admin admin1 = Admin.find.query().where().eq("userId", requestedUserId).findOne();
                 if (admin1 != null && !admin1.isDefault()) {
                     admin1.delete();
@@ -81,7 +81,7 @@ public class AdminController extends Controller {
         User currentUser = User.getCurrentUser(request);
         if (currentUser != null) {
             Admin currentAdmin = Admin.find.query().where().eq("userId", currentUser.getUserid()).findOne();
-            if (currentAdmin != null && !currentAdmin.userId.equals(requestedUserId)) {
+            if (currentAdmin != null && !currentAdmin.getUserId().equals(requestedUserId)) {
                 Admin admin = new Admin(requestedUserId, false);
                 admin.insert();
                 return redirect(routes.AdminController.indexAdmin());

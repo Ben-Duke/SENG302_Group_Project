@@ -65,7 +65,7 @@ public class TagController {
             if (photo == null) {
                 return notFound();
             }
-            if (!photo.isPublic
+            if (!photo.isPublic()
                     && !user.userIsAdmin()
                     && user.getUserid() != photo.getUser().getUserid()) {
                 return forbidden();

@@ -100,4 +100,26 @@ public class CreateTripFromVisitsCommandTest extends BaseTestWithApplicationAndD
         assertEquals(3, user.getTrips().get(0).getVisits().size());
         assertEquals(afterRedoSize, afterUndoSize + 3);
     }
+
+
+    @Test
+    public void redoThenUndo() {
+        User user = User.find.byId(1);
+        CreateTripFromVisitsCommand command = new CreateTripFromVisitsCommand(visits, "testTrip", user);
+        command.execute();
+        command.undo();
+        command.redo();
+
+        int beforeSize = Visit.find.all().size();
+
+        command.undo();
+
+        int afterSize = Visit.find.all().size();
+
+
+        user = User.find.byId(1);
+        assertEquals(0, user.getTrips().size());
+        assertEquals(beforeSize, afterSize + 3);
+    }
+
 }

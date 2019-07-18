@@ -59,13 +59,19 @@ public class TripController extends Controller {
     }
 
 
-    public void createTripFromVisits(List<Visit> visits, String name, User user) {
+    /**
+     * Create trips from a list of visits. To be used for the save trip button for the map trips story.
+     * @param visits a list of visits which are not linked a trip
+     * @param name the name of the trip
+     * @param user the user that's creating the trip
+     * @return created status code
+     */
+    public Result createTripFromVisits(List<Visit> visits, String name, User user) {
 
         CreateTripFromVisitsCommand command = new CreateTripFromVisitsCommand(visits, name, user);
-        command.execute();
+        user.getCommandManager().executeCommand(command);
+        return created();
 
-//            Form<TripFormData> incomingForm = formFactory.form(TripFormData.class);
-//            return ok(createTrip.render(incomingForm, user));
     }
 
 

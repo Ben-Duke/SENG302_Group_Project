@@ -141,9 +141,9 @@ public class Trip extends Model {
 
     public void removeAllVisits() {
 
-        for (Visit visit : visits) {
-            VisitAccessor.delete(visit);
-        }
+//        for (Visit visit : visits) {
+//            VisitAccessor.delete(visit);
+//        }
         visits = new ArrayList<>();
     }
 

@@ -29,14 +29,10 @@ public class VisitFormData implements Constraints.Validatable<List<ValidationErr
         List<ValidationError> errors = new ArrayList<>();
 
         if ((!arrival.isEmpty()) && (!departure.isEmpty())) {
-            LocalDate now = LocalDate.now();
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             LocalDate arrivalDate = LocalDate.parse(arrival, formatter);
             LocalDate departureDate = LocalDate.parse(departure, formatter);
-            System.out.println(arrivalDate);
-            System.out.println(departureDate);
             if ((arrivalDate.compareTo(departureDate)) > 0) {
-                System.out.println("error date");
                 errors.add(new ValidationError("arrival", "Please provide an arrival date after the departure date"));
                 errors.add(new ValidationError("departure", "Please provide an arrival date after the departure date"));
             }

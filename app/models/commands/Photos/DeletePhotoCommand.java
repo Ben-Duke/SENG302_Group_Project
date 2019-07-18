@@ -65,17 +65,16 @@ public class DeletePhotoCommand extends UndoableCommand {
      * Undoes the deletion of the UserPhoto and relinks the photo to destinations
      */
     public void undo() {
-        UserPhoto userPhoto = new UserPhoto(this.userPhoto);
+        UserPhoto photo = new UserPhoto(this.userPhoto);
         for(Destination destination: refToDestinations){
-            userPhoto.addDestination(destination);
+            photo.addDestination(destination);
         }
-        System.out.println("Userphoto is " + userPhoto.toString());
 
-        UserPhotoAccessor.insert(userPhoto);
-        savedUserPhoto = UserPhotoAccessor.getUserPhotoById(userPhoto.getPhotoId());
+        UserPhotoAccessor.insert(photo);
+        savedUserPhoto = UserPhotoAccessor.getUserPhotoById(photo.getPhotoId());
 
         for (Destination destination : refToPrimaryPhotoDestinations) {
-            destination.setPrimaryPhoto(userPhoto);
+            destination.setPrimaryPhoto(photo);
             DestinationAccessor.update(destination);
         }
 

@@ -7,6 +7,11 @@ import java.nio.file.Paths;
  */
 public class ApplicationManager {
 
+    // Private constructor to hide the implicit public one
+    private ApplicationManager() {
+        throw new IllegalStateException("Utility class");
+    }
+
     private static String userPhotoPath;
 
     private static boolean isTest = false;

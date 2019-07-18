@@ -4,7 +4,6 @@ import accessors.UserAccessor;
 import factories.UserFactory;
 import formdata.NatFormData;
 import formdata.UpdateUserFormData;
-import io.ebean.DataIntegrityException;
 import io.ebean.DuplicateKeyException;
 import models.Nationality;
 import models.Passport;
@@ -12,6 +11,7 @@ import models.User;
 import models.UserPhoto;
 import models.commands.Photos.DeletePhotoCommand;
 import models.commands.Profile.EditProfileCommand;
+import org.slf4j.Logger;
 import play.data.DynamicForm;
 import play.data.Form;
 import play.data.FormFactory;
@@ -19,6 +19,7 @@ import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
+import utilities.UtilityFunctions;
 import views.html.users.profile.*;
 import javax.inject.Inject;
 import java.time.LocalDate;
@@ -30,29 +31,28 @@ import java.util.List;
  * A Class to handle interactions from the client to the frontend.
  */
 public class ProfileController extends Controller {
+    private final Logger logger = UtilityFunctions.getLogger();
+
     @Inject
     FormFactory formFactory;
-    private String notLoggedInErrorStr = "Oops, you are not logged in";
 
     /**
      * If the user is logged in, renders the update profile page.
      * If the user is not logged in, returns an error.
      * @return update profile page or error page
      */
-
     public Result deletePhoto(Http.Request request, Integer photoId, Boolean userInput){
-        UserFactory factory = new UserFactory();
         UserPhoto photo = UserPhoto.find.byId(photoId);
         User user = User.getCurrentUser(request);
         if (photo != null && photo.getIsProfile() && (!userInput)) {
             return badRequest("Is profile picture ask user");
         }
 
-        if (photo.getDestinations().size() > 0) {
+        if (photo == null || photo.getDestinations().isEmpty()) {
             return badRequest("Failed to delete image");
         }
 
-        DeletePhotoCommand deletePhotoCommand = new DeletePhotoCommand(UserPhoto.find.byId(photoId));
+        DeletePhotoCommand deletePhotoCommand = new DeletePhotoCommand(photo);
         user.getCommandManager().executeCommand(deletePhotoCommand);
 
         return ok();
@@ -140,8 +140,8 @@ public class ProfileController extends Controller {
         String username = updateProfileForm.get().username;
         String passwordPlainText = updateProfileForm.get().password;
 
-        user.setfName(firstName);
-        user.setlName(lastName);
+        user.setFName(firstName);
+        user.setLName(lastName);
         user.setGender(gender);
         user.setDateOfBirth(birthDate);
         user.setEmail(username);
@@ -316,7 +316,7 @@ public class ProfileController extends Controller {
                 profilePicture =  UserAccessor.getProfilePhoto(user);
 
             } catch (DuplicateKeyException e) {
-                System.out.println("ERROR: duplicate profile photos");
+                logger.error("ERROR: duplicate profile photos", e);
             }
 
             String resultFormat = "{\"isProfilePicSet\": %s}";

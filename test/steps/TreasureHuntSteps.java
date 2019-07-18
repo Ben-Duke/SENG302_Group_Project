@@ -40,7 +40,6 @@ import static play.mvc.Http.Status.*;
 
 public class TreasureHuntSteps extends BaseTestWithApplicationAndDatabase {
 
-    private TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
 
     @Inject
     private Application application;
@@ -64,7 +63,7 @@ public class TreasureHuntSteps extends BaseTestWithApplicationAndDatabase {
         Helpers.start(application);
         ApplicationManager.setIsTest(true);
         ApplicationManager.setUserPhotoPath("/test/resources/test_photos/user_");
-        testDatabaseManager.populateDatabase();
+        TestDatabaseManager.populateDatabase();
     }
 
     @After

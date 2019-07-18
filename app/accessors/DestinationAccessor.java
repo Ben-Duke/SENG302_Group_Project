@@ -6,6 +6,12 @@ import java.util.List;
 
 public class DestinationAccessor {
 
+    // Private constructor to hide the implicit public one
+    private DestinationAccessor() {
+        throw new IllegalStateException("Utility class");
+    }
+
+
     /** Return the destination matching the id passed */
     public static Destination getDestinationById(int id) {
         return Destination.find.query().where().eq("destid", id).findOne();

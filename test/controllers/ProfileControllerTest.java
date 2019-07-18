@@ -90,8 +90,8 @@ public class ProfileControllerTest extends WithApplication {
 //        User user = User.find.byId(1);
 //        user.setAdmin(true);
 //        user.update();
-//        assertEquals("Gavin", user.getfName());
-//        assertEquals("Ong", user.getlName());
+//        assertEquals("Gavin", user.getFName());
+//        assertEquals("Ong", user.getLName());
 //        assertEquals("Male", user.getGender());
 //        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 //        LocalDate expectedBirthDate = LocalDate.parse("1998-08-23", formatter);
@@ -107,8 +107,8 @@ public class ProfileControllerTest extends WithApplication {
 //        Result result = route(app, request);
 //        assertEquals(SEE_OTHER, result.status());
 //        user = User.find.byId(1);
-//        assertEquals("John", user.getfName());
-//        assertEquals("Cena", user.getlName());
+//        assertEquals("John", user.getFName());
+//        assertEquals("Cena", user.getLName());
 //        assertEquals("Female", user.getGender());
 //        LocalDate expectedBirthDate2 = LocalDate.parse("1969-04-20", formatter);
 //        assertEquals(expectedBirthDate2, user.getDateOfBirth());

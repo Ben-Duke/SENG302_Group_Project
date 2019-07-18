@@ -4,7 +4,9 @@ import accessors.UserPhotoAccessor;
 import controllers.ApplicationManager;
 import models.UserPhoto;
 import models.commands.Profile.HomePageCommand;
+import org.slf4j.Logger;
 import play.libs.Files;
+import utilities.UtilityFunctions;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,6 +16,7 @@ public class UploadPhotoCommand extends HomePageCommand {
 
     private UserPhoto userPhoto;
     private Files.TemporaryFile fileObject;
+    private final Logger logger = UtilityFunctions.getLogger();
 
     public UploadPhotoCommand(UserPhoto photo, Files.TemporaryFile fileObject) {
         this.userPhoto = photo;
@@ -29,7 +32,7 @@ public class UploadPhotoCommand extends HomePageCommand {
                     Paths.get(".").toAbsolutePath().normalize().toString()
                     + ApplicationManager.getUserPhotoPath() + userPhoto.getUser().getUserid() + "/"));
         } catch (IOException e) {
-
+            logger.error("IOException on creating directory for photo", e);
         }
         String unusedAbsoluteFilePath = Paths.get(".").toAbsolutePath().normalize().toString()
                 + ApplicationManager.getUserPhotoPath() + userPhoto.getUser().getUserid() + "/" + userPhoto.getUrl();

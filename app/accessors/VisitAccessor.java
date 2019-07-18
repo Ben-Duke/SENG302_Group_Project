@@ -7,6 +7,11 @@ import java.util.List;
 
 public class VisitAccessor {
 
+    // Private constructor to hide the implicit public one
+    private VisitAccessor() {
+        throw new IllegalStateException("Utility class");
+    }
+
     /** Return the destination matching the id passed */
     public static Visit getById(int id) {
         return Visit.find.query().where().eq("visitid", id).findOne();

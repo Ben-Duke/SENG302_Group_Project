@@ -46,11 +46,11 @@ public class DeleteTripCommand extends HomePageCommand {
      * Undoes the deletion of the trip
      */
     public void undo() {
-        Trip trip = new Trip(this.trip, deletedVisits);
-        trip.save();
-        savedTrip = trip;
+        Trip undoTrip = new Trip(this.trip, deletedVisits);
+        undoTrip.save();
+        savedTrip = undoTrip;
         for (Visit visit : deletedVisits) {
-            visit.setTrip(trip);
+            visit.setTrip(undoTrip);
             VisitAccessor.insert(visit);
         }
     }

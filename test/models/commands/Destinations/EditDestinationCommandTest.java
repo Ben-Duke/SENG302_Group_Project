@@ -29,8 +29,7 @@ public class EditDestinationCommandTest extends BaseTestWithApplicationAndDataba
                 "create table test (id bigint not null, name varchar(255));",
                 "drop table test;"
         )));
-        TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
-        testDatabaseManager.populateDatabase();
+        TestDatabaseManager.populateDatabase();
         Destination christchurch = Destination.find.byId(1);
         christchurch.setDestName("Auckland");
         christchurch.setDistrict("District 12");

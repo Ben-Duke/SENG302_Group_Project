@@ -88,20 +88,19 @@ public class TravelPartnerController {
     private Set<User> travelerTypeResults(DynamicForm filterForm) {
         String travellerType = filterForm.get("travellertype");
 
-        if (travellerType != null){
+        if (travellerType != null) {
             if (travellerType.equals("")) {
-                return null;
+                return new HashSet<>();
 
             } else {
                 List<TravellerType> travellerTypes = TravellerType.find.query().where().eq("travellerTypeName", travellerType).findList();
                 if (!travellerTypes.isEmpty()) {
-                    Set<User> results = TravellerType.find.byId(travellerTypes.get(0).ttypeid).getUsers();
-                    return results;
+                    return TravellerType.find.byId(travellerTypes.get(0).ttypeid).getUsers();
                 }
 
             }
         }
-        return null;
+        return new HashSet<>();
     }
 
     /**
@@ -114,17 +113,16 @@ public class TravelPartnerController {
         String nationality = filterForm.get("nationality");
         if (nationality != null) {
             if (nationality.equals("")) {
-                return null;
+                return new HashSet<>();
 
             } else {
                 List<Nationality> nationalities = Nationality.find.query().where().eq("nationalityName", nationality).findList();
                 if (nationalities.size() > 0) {
-                    Set<User> results = Nationality.find.byId(nationalities.get(0).natid).getUsers();
-                    return results;
+                    return Nationality.find.byId(nationalities.get(0).natid).getUsers();
                 }
             }
         }
-        return null;
+        return new HashSet<>();
     }
 
     /**
@@ -181,10 +179,9 @@ public class TravelPartnerController {
         }
 
         if(date1 != null && date2 != null){
-            Set<User> results = User.find.query().where().gt("dateOfBirth", date1).lt("dateOfBirth", date2).findSet();
-            return results;
+            return User.find.query().where().gt("dateOfBirth", date1).lt("dateOfBirth", date2).findSet();
         }
-        return null;
+        return new HashSet<>();
     }
 
 
@@ -206,19 +203,19 @@ public class TravelPartnerController {
             List<Set<User>> userLists = new ArrayList<>();
 
             Set<User> travelerTypeMatches = travelerTypeResults(filterForm);
-            if (travelerTypeMatches != null) {
+            if (!travelerTypeMatches.isEmpty()) {
                 userLists.add(travelerTypeMatches);
             }
 
             Set<User> nationalityMatches = nationalityResults(filterForm);
-            if (nationalityMatches != null) {
+            if (!nationalityMatches.isEmpty()) {
                 userLists.add(nationalityMatches);
             }
 
             userLists.add(genderResults(filterForm));
 
             Set<User> ageRangeMatches = ageRangeResults(filterForm);
-            if (ageRangeMatches != null) {
+            if (!ageRangeMatches.isEmpty()) {
                 userLists.add(ageRangeMatches);
             }
 

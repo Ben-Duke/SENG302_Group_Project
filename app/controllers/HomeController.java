@@ -7,6 +7,7 @@ import models.User;
 import models.UserPhoto;
 import models.commands.Profile.HomePageCommand;
 import models.commands.Photos.UploadPhotoCommand;
+import org.slf4j.Logger;
 import play.data.FormFactory;
 import play.libs.Files;
 import play.libs.Json;
@@ -28,6 +29,7 @@ import java.util.Map;
 import static play.mvc.Results.*;
 
 public class HomeController {
+    private final Logger logger = UtilityFunctions.getLogger();
 
     @Inject
     FormFactory formFactory;
@@ -104,8 +106,7 @@ public class HomeController {
      * @return A Result from trying to save the photo.
      */
     private Result getResultFromSaveUserPhoto(User user, boolean isPublic, Http.MultipartFormData.FilePart<Files.TemporaryFile> picture) {
-        String origionalFilePath = picture.getFilename();
-        long fileSize = picture.getFileSize();
+        String originalFilePath = picture.getFilename();
         String contentType = picture.getContentType();
         Files.TemporaryFile fileObject = picture.getRef();
 
@@ -114,7 +115,7 @@ public class HomeController {
             //Add the path to the filename given by the uploaded picture
 
             // finding unused photo url
-            UserPhoto newPhoto = new UserPhoto(origionalFilePath, isPublic, false, user);
+            UserPhoto newPhoto = new UserPhoto(originalFilePath, isPublic, false, user);
             String unusedPhotoUrl = newPhoto.getUnusedUserPhotoFileName();
             newPhoto.setUrl(unusedPhotoUrl);
             UploadPhotoCommand uploadPhotoCommand = new UploadPhotoCommand(newPhoto, fileObject);
@@ -138,16 +139,13 @@ public class HomeController {
     public Result uploadProfilePicture(Http.Request request) {
         User user = User.getCurrentUser(request);
         if(user != null) {
-            Map<String, String[]> datapart = request.body().asMultipartFormData().asFormUrlEncoded();
             boolean isPublic = true;
 
             //Get the photo data from the multipart form data encoding
             Http.MultipartFormData<Files.TemporaryFile> body = request.body().asMultipartFormData();
             Http.MultipartFormData.FilePart<Files.TemporaryFile> picture = body.getFile("picture");
-            if (picture != null) {
+             if (picture != null) {
                 String originalFilePath = picture.getFilename();
-                //String fileName = datapart.get("filename")[0];
-                long fileSize = picture.getFileSize();
                 String contentType = picture.getContentType();
                 Files.TemporaryFile file = picture.getRef();
                 if (contentType.contains("image")) {
@@ -166,7 +164,7 @@ public class HomeController {
                         BufferedImage thumbnailImage = UtilityFunctions.resizeImage(unusedAbsoluteFilePath);
                         ImageIO.write(thumbnailImage, "png", new File(Paths.get(".").toAbsolutePath().normalize().toString() + ApplicationManager.getUserPhotoPath() + user.getUserid() + "/profilethumbnail.png"));
                     } catch (IOException e) {
-                        System.out.println(e);
+                        logger.error("Something went wrong", e);
                         return internalServerError("Oops, something went wrong.");
                     }
                     //DB saving
@@ -315,24 +313,18 @@ public class HomeController {
      *      200: successfully set the profile photo to a normal photo.
      */
     public Result setProfilePhotoToNormalPhoto(Http.Request request) {
-        System.out.println(request);
-        System.out.println("check");
         User user = User.getCurrentUser(request);
 
         if(user != null) {
-            UserPhoto profilePicture = null;
-            boolean hasDuplicateProfilephotos = false;
+            UserPhoto profilePicture;
 
             try {
                 profilePicture =  UserAccessor.getProfilePhoto(user);
             } catch (DuplicateKeyException e) {
-                System.out.println("ERROR: duplicate profile photos");
-                hasDuplicateProfilephotos = true;
+                return internalServerError("help");
             }
 
-            if (hasDuplicateProfilephotos) {
-                return internalServerError("help");
-            } else if (profilePicture == null) {
+            if (profilePicture == null) {
                 return badRequest("help");
             } else {
                 profilePicture.setProfile(false);

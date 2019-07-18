@@ -3,11 +3,13 @@ package controllers;
 import models.Admin;
 import models.User;
 import models.UserPhoto;
+import org.slf4j.Logger;
 import play.libs.Json;
 import play.mvc.Http;
 import play.mvc.Result;
 import utilities.CountryUtils;
 import utilities.TestDatabaseManager;
+import utilities.UtilityFunctions;
 import views.html.users.userIndex;
 
 import java.util.ArrayList;
@@ -19,6 +21,7 @@ import static play.mvc.Results.notFound;
 import static play.mvc.Results.ok;
 
 public class UserController {
+    private final Logger logger = UtilityFunctions.getLogger();
     // A thread safe boolean
     AtomicBoolean wasRun = new AtomicBoolean(false);
     // A countdownlatch which frees when the database has been populated.
@@ -39,9 +42,8 @@ public class UserController {
     public Result userindex(Http.Request request){
         if (!wasRun.getAndSet(true)) {
             ApplicationManager.setUserPhotoPath("/../user_photos/user_");
-            TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
-            testDatabaseManager.populateDatabase(initCompleteLatch);
-            System.out.println("populating database");
+            TestDatabaseManager.populateDatabase(initCompleteLatch);
+            logger.debug("populating database");
 
             CountryUtils.updateCountries();
 
@@ -49,7 +51,8 @@ public class UserController {
             try {
                 initCompleteLatch.await();
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                logger.error("initCompleteLatch interrupted", e);
+                Thread.currentThread().interrupt();
             }
         }
         List<User> users = User.find.all();

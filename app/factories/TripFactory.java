@@ -83,18 +83,12 @@ public class TripFactory {
             Integer index = visits.indexOf(visit);
             if (index != 0) {
                 if (!(visits.get(index - 1).getVisitName().equalsIgnoreCase(visit.getVisitName()))) {
-                    if (visits.size() != index + 1) {
-                        if (visits.get(index + 1).getVisitName().equalsIgnoreCase(visit.getVisitName())) {
-                            return true;
-                        }
-                    }
+                    return (visits.size() != index + 1) && (visits.get(index + 1).getVisitName().equalsIgnoreCase(visit.getVisitName()));
                 } else {
                     return true;
                 }
             } else {
-                if (visits.get(index + 1).getVisitName().equalsIgnoreCase(visit.getVisitName())) {
-                    return true;
-                }
+                return visits.get(index + 1).getVisitName().equalsIgnoreCase(visit.getVisitName());
             }
         }
         return false;
@@ -118,11 +112,3 @@ public class TripFactory {
         return false;
     }
 }
-
-//var prevPagesOrder = [];
-//start: function(event, ui) {
-//prevPagesOrder = $(this).sortable('toArray');
-//},
-// var currentOrder = $(this).sortable('toArray');
-// var first = ui.item[0].id;
-// var second = currentOrder[prevPagesOrder.indexOf(first)];

@@ -35,7 +35,6 @@ public class UpdateUserFormData implements Constraints.Validatable<List<Validati
     public String existingUsername;
     public String existingPassword;
 
-    private String existingPasswordToCheck;
 
     public Boolean isAdmin;
 
@@ -55,13 +54,12 @@ public class UpdateUserFormData implements Constraints.Validatable<List<Validati
      * @param user The User whose data to enter into the form.
      */
     public UpdateUserFormData(User user, Boolean isAdmin) {
-        this.firstName = user.getfName();
-        this.lastName = user.getlName();
+        this.firstName = user.getFName();
+        this.lastName = user.getLName();
         this.gender = user.getGender();
         this.username = user.getEmail();
         this.existingUsername = user.getEmail();
         this.password = "";
-        this.existingPasswordToCheck = user.getPasswordHash();
         this.isAdmin = isAdmin;
         if (user.getDateOfBirth() == null) {
             this.dateOfBirth = "null";
@@ -111,9 +109,7 @@ public class UpdateUserFormData implements Constraints.Validatable<List<Validati
         String[] gendersArray = {"Male", "Female", "Other"};
         List gendersList = Arrays.asList(gendersArray);
         String genderErrorStr = "Please select a gender.";
-        if (gender == null) {
-            errors.add(new ValidationError("gender", genderErrorStr));
-        } else if (! gendersList.contains(gender)) {
+        if (gender == null || ! gendersList.contains(gender)) {
             errors.add(new ValidationError("gender", genderErrorStr));
         }
 

@@ -19,6 +19,10 @@ public class CountryUtils {
     private static Date lastUpdated;
     private static List<String> countries;
 
+    // Private constructor to hide the implicit public one
+    private CountryUtils() {
+        throw new IllegalStateException("Utility class");
+    }
 
     static List<String> getCountries() {
         updateCountries();

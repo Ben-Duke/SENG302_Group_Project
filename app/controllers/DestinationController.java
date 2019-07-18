@@ -111,7 +111,6 @@ public class DestinationController extends Controller {
      */
     public Result indexDestination(Http.Request request) {
         User user = User.getCurrentUser(request);
-        DestinationFactory destFactory = new DestinationFactory();
 
         if (user != null) {
             user.getCommandManager().setAllowedType(DestinationPageCommand.class);
@@ -619,7 +618,6 @@ public class DestinationController extends Controller {
         if (user != null) {
             Destination destination = Destination.find.query().where().eq("destid", destId).findOne();
             if (destination != null) {
-                DestinationFactory destFactory = new DestinationFactory();
                 List<Destination> matchingDests = destFactory.getOtherUsersMatchingPrivateDestinations(user.userid, destination);
                 if (destination.isUserOwner(user.userid) || user.userIsAdmin()) {
                     destFactory.mergeDestinations(matchingDests, destination);
@@ -734,10 +732,9 @@ public class DestinationController extends Controller {
         if (destination == null) return notFound("No destination found with that id");
         // This block checks if the user is the owner of either the photo or the destination.
         // If not the owner then returns an unauthorized error else proceeds as usual.
-        if (destination.getUser().getUserid() != user.getUserid()) {
-            if (photo.getUser().getUserid() != user.getUserid()) {
-                return unauthorized("You cannot unlink this photo from this destination as neither of those belong to you.");
-            }
+        if (destination.getUser().getUserid() != user.getUserid()
+                && photo.getUser().getUserid() != user.getUserid()) {
+            return unauthorized("You cannot unlink this photo from this destination as neither of those belong to you.");
         }
         if (!photo.getDestinations().contains(destination))
             return badRequest("The destination was not linked to this photo");
@@ -863,8 +860,9 @@ public class DestinationController extends Controller {
             photoid = photoid.replace("\"", "");
             UserPhoto photo = UserPhoto.find.byId(Integer.parseInt(photoid));
             Destination destination = Destination.find.byId(destId);
-            if (destination != null || photo != null) {
-                if ((destination.getUser().getUserid() == user.getUserid() && destination.getUserPhotos().contains(photo)) || user.userIsAdmin()) {
+            if (destination != null && photo != null) {
+                if ((destination.getUser().getUserid() == user.getUserid() && destination.getUserPhotos().contains(photo))
+                        || user.userIsAdmin()) {
                     //add checks for private destinations here once destinations have been merged in.
                     //You can only link a photo to a private destination if you own the private destination.
                     destination.setPrimaryPhoto(photo);
@@ -959,7 +957,7 @@ public class DestinationController extends Controller {
         if (destId != null) {
             UserPhoto primaryPicture = DestinationFactory.getPrimaryPicture(destId);
             if (primaryPicture != null) {
-                System.out.println("Sending image back");
+                logger.debug("Sending image back");
                 return ok(new File(primaryPicture.getUrlWithPath()));
             } else {
                 //should be 404 but then console logs an error

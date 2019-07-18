@@ -20,7 +20,7 @@
                         <ul class="list-group" >
                             @for(passport <- UserFactory.getUserPassports(id)) {
                                 <li class="list-group-item">
-                                    @passport.passportName
+                                    @passport.getName
                                     @countryErrorMessage(passport)
                                 </li>
                             }
@@ -34,7 +34,7 @@
                     @form(action = helper.CSRF(routes.ProfileController.submitUpdatePassport)) {
                         @select(
                             field = userForm("passport"),
-                            options = passports.map(passport => passport.passid.toString -> passport.passportName),
+                            options = passports.map(passport => passport.getPassportId.toString -> passport.getName),
                             '_label -> "Select passports to add:"
                         )
                         <input type="submit" value="Add passport">
@@ -44,7 +44,7 @@
                     @form(action = helper.CSRF(routes.ProfileController.deletePassport)) {
                         @select(
                             field = userForm("passportdelete"),
-                            options = UserFactory.getUserPassports(id).map(passport => passport.passid.toString -> passport.passportName),
+                            options = UserFactory.getUserPassports(id).map(passport => passport.getPassportId.toString -> passport.getName),
                             '_label -> "Select passports to delete:"
                         )
                         <input type="submit" value="Remove passport">

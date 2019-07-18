@@ -73,13 +73,13 @@ public class UserFactory {
      * @return a list of a Passports from the backend in a Map<String, Boolean> format
      */
     public static  Map<String, Boolean> getPassports(){
-        List<Passport> passports = Passport.find.all();
+        List<Passport> passports = Passport.find().all();
 
         SortedMap<String, Boolean> passportList = new TreeMap<>();
         for (int i = 0; i < passports.size(); i++) {
 
             String localeName;
-            localeName = passports.get(i).passportName;
+            localeName = passports.get(i).getName();
             passportList.put(localeName, false);
         }
         passportList.remove("");
@@ -133,7 +133,7 @@ public class UserFactory {
      */
     public void updatePassport(User user, int passportId){
         if (user != null) {
-            Passport passport = Passport.find.byId(passportId);
+            Passport passport = Passport.find().byId(passportId);
             if(passportId != -1){
                 try {
                     user.addPassport(passport);
@@ -192,13 +192,13 @@ public class UserFactory {
      * @return Passport id with the name passed in.
      */
     public static int getPassportId(String name){
-        List<Passport> passports = Passport.find.all();
+        List<Passport> passports = Passport.find().all();
 
         int id = -1;
         String passportName;
         for (int i = 0; i < passports.size(); i++) {
 
-            passportName = passports.get(i).passportName;
+            passportName = passports.get(i).getName();
 
             if(passportName.equals( name)){
                 id = passports.get(i).getPassportId();
@@ -322,7 +322,7 @@ public class UserFactory {
 
     public static void addPassportToUser(int id, String passportId){
 
-        Passport passport = Passport.find.byId(Integer.parseInt(passportId));
+        Passport passport = Passport.find().byId(Integer.parseInt(passportId));
 
         try {
             User user = User.find().query().where().eq("userid", id).findOne();
@@ -337,7 +337,7 @@ public class UserFactory {
 
 
         try {
-            Passport passport = Passport.find.byId(Integer.parseInt(passportId));
+            Passport passport = Passport.find().byId(Integer.parseInt(passportId));
             User user = User.find().query().where().eq("userid", id).findOne();
             user.deletePassport(passport);
             user.update();

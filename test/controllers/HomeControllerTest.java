@@ -430,8 +430,8 @@ public class HomeControllerTest extends BaseTestWithApplicationAndDatabase {
         TravellerType travellerType2 = TravellerType.find.byId(2);
         Nationality nationality1 = Nationality.find().byId(1);
         Nationality nationality2 = Nationality.find().byId(2);
-        Passport passport1 = Passport.find.byId(1);
-        Passport passport2 = Passport.find.byId(2);
+        Passport passport1 = Passport.find().byId(1);
+        Passport passport2 = Passport.find().byId(2);
         //Initialises a test user with name "testUser" and saves it to the database.
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         //convert String to LocalDate

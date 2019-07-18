@@ -83,7 +83,7 @@ public class TestDatabaseManager {
         }
 
 
-        if (isInSuccessState && Passport.find.all().isEmpty()) {
+        if (isInSuccessState && Passport.find().all().isEmpty()) {
             boolean successfullyAddedAllPassports =  UtilityFunctions.addAllPassports();
             if (! successfullyAddedAllPassports) {
                 isInSuccessState = false;
@@ -197,7 +197,7 @@ public class TestDatabaseManager {
 
             user2.setNationality(Nationality.find().all().subList(70, 72));
 
-            user2.setPassport(Passport.find.all().subList(70, 72));
+            user2.setPassport(Passport.find().all().subList(70, 72));
 
             try{
                 user2.save();

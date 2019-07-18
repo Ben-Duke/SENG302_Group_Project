@@ -68,7 +68,7 @@
                 <ul class="list-group" >
                     @for(passport <- user.getPassports) {
                     <li class="list-group-item">
-                        @passport.passportName
+                        @passport.getName
                         @countryErrorMessage(passport)
                     </li>
                     }

@@ -20,11 +20,11 @@ public class UserAccessor {
     }
 
     public static Passport getPassport(int id) {
-        return Passport.find.query().where().eq("passid", id).findOne();
+        return Passport.find().query().where().eq("passid", id).findOne();
     }
 
     public static List<Passport> getAllPassports() {
-        return Passport.find.all();
+        return Passport.find().all();
     }
 
     public static List<Nationality> getAllNationalities() {

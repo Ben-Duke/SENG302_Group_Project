@@ -228,7 +228,7 @@ public class UtilityFunctions {
 
         CountryUtils.updateCountries();
 
-        if (Passport.find.all().isEmpty()) {
+        if (Passport.find().all().isEmpty()) {
             if (CountryUtils.getCountries() == null){
 
                 logger.error("Countries have not been loaded. " +

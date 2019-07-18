@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class CreateTripFromVisitsCommandTest extends BaseTestWithApplicationAndDatabase {
     private Database database;
@@ -66,9 +67,37 @@ public class CreateTripFromVisitsCommandTest extends BaseTestWithApplicationAndD
 
     @Test
     public void undo() {
+        User user = User.find.byId(1);
+        CreateTripFromVisitsCommand command = new CreateTripFromVisitsCommand(visits, "testTrip", user);
+        command.execute();
+
+        int beforeSize = Visit.find.all().size();
+
+        command.undo();
+
+        user = User.find.byId(1);
+        assertEquals(0, user.getTrips().size());
+
+        int afterSize = Visit.find.all().size();
+
+        assertEquals(beforeSize, afterSize + 3);
+
+
     }
 
     @Test
     public void redo() {
+        User user = User.find.byId(1);
+        CreateTripFromVisitsCommand command = new CreateTripFromVisitsCommand(visits, "testTrip", user);
+        command.execute();
+        command.undo();
+        int afterUndoSize = Visit.find.all().size();
+        command.redo();
+        int afterRedoSize = Visit.find.all().size();
+
+        user = User.find.byId(1);
+        assertEquals("testTrip", user.getTrips().get(0).getTripName());
+        assertEquals(3, user.getTrips().get(0).getVisits().size());
+        assertEquals(afterRedoSize, afterUndoSize + 3);
     }
 }

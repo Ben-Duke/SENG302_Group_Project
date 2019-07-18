@@ -33,6 +33,7 @@ public class CreateTripFromVisitsCommand extends UndoableCommand {
         TripAccessor.insert(trip);
         for (Visit visit : visits) {
             visit.setTrip(trip);
+            System.out.println(visit.getVisitid());
             VisitAccessor.insert(visit);
         }
 
@@ -41,9 +42,16 @@ public class CreateTripFromVisitsCommand extends UndoableCommand {
 
     public void undo() {
 
-        trip.
+        trip = TripAccessor.getTripById(trip.getTripid());
+
+        trip.removeAllVisits();
+        TripAccessor.update(trip);
 
 
+        trip = TripAccessor.getTripById(trip.getTripid());
+
+
+        TripAccessor.delete(trip);
     }
 
 

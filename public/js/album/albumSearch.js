@@ -1,6 +1,6 @@
 /**
- * Function to search for public destinations.
- * Updates the rows of tables with class "publicDestinations" depending on what's entered in the input form with class name "searchPublicDestinations"
+ * Function to search for albums.
+ * Updates the rows of photos with album titles matching the search term
  */
 function searchAlbum(){
     // Declare variables
@@ -22,3 +22,4 @@ function searchAlbum(){
         }
     }
 }
+

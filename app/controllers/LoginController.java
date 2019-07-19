@@ -11,6 +11,7 @@ import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.Http;
 import play.mvc.Result;
+import utilities.UtilityFunctions;
 import views.html.users.loginpage.loginPage;
 
 import javax.inject.Inject;
@@ -28,7 +29,7 @@ public class LoginController {
     @Inject
     FormFactory formFactory;
 
-    private final Logger logger = LoggerFactory.getLogger("application");
+    private final Logger logger = UtilityFunctions.getLogger();
 
     /**
      * Renders the login page where the user can log in.

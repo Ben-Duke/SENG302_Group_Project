@@ -2,6 +2,7 @@ package models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import controllers.ApplicationManager;
 import io.ebean.Finder;
 import io.ebean.Model;
 
@@ -24,7 +25,7 @@ public class Nationality extends CountryItem {
     @JsonIgnore
     public Set<User> users;
 
-    public static Finder<Integer,Nationality> find = new Finder<>(Nationality.class);
+    public static Finder<Integer,Nationality> find = new Finder<>(Nationality.class, ApplicationManager.getDatabaseName());
 
 
     // --------------------- methods below here--------------------------------

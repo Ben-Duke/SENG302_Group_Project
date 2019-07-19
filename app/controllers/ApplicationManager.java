@@ -1,15 +1,31 @@
 package controllers;
 
+import org.slf4j.Logger;
+import utilities.UtilityFunctions;
+
 import java.nio.file.Paths;
+
+/**
+ * Enum for the two databases used by the application
+ *  matches those declared in db {} of application.conf and test.conf
+ */
+enum DatabaseName {
+    PROD, TEST
+}
 
 /**
  * Application manager used to differentiate between the test environment and main environment
  */
 public class ApplicationManager {
 
+    private static final Logger logger = UtilityFunctions.getLogger();
+
     private static String userPhotoPath;
 
     private static boolean isTest = false;
+
+    /** Current database app is using saved as the name of the database */
+    private static DatabaseName databaseName = DatabaseName.PROD;
 
     /**
      * Method to get the user photo path.
@@ -47,5 +63,15 @@ public class ApplicationManager {
 
     public static void setIsTest(boolean isTest) {
         ApplicationManager.isTest = isTest;
+    }
+
+    /** Return database name as it is in the .conf files (lowercase) */
+    public static String getDatabaseName() {
+        return databaseName.toString().toLowerCase();
+    }
+
+    /** Set the app to use the testing database */
+    public static void setTesting() {
+        databaseName = DatabaseName.TEST;
     }
 }

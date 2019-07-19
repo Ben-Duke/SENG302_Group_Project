@@ -40,7 +40,7 @@ public class UserPhoto extends Model {
     @OneToMany(mappedBy = "primaryPhoto")
     public List<Destination> primaryPhotoDestinations;
 
-    public static Finder<Integer,UserPhoto> find = new Finder<>(UserPhoto.class);
+    public static Finder<Integer,UserPhoto> find = new Finder<>(UserPhoto.class, ApplicationManager.getDatabaseName());
 
     /**
      * Constructor method for UserPhoto.

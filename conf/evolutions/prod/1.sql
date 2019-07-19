@@ -1,6 +1,6 @@
 # --- SQL file for mysql databases
 # --- Differences from prod sql files
-# ---   1. Uses '#' for !Ups/!Downs
+# ---   1. Uses '#' for Ups/Downs
 # ---   2. Will NOT work if varchars are > 191
 
 

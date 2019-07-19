@@ -2,6 +2,7 @@ package models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import controllers.ApplicationManager;
 import io.ebean.Finder;
 import io.ebean.Model;
 
@@ -63,7 +64,7 @@ public class TravellerType extends Model implements Comparable<TravellerType> {
         this.users = users;
     }
 
-    public static Finder<Integer,TravellerType> find = new Finder<>(TravellerType.class);
+    public static Finder<Integer,TravellerType> find = new Finder<>(TravellerType.class, ApplicationManager.getDatabaseName());
 
     @Override
     public boolean equals(Object obj) {

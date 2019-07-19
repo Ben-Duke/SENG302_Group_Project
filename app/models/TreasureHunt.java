@@ -1,6 +1,7 @@
 package models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import controllers.ApplicationManager;
 import io.ebean.Finder;
 import io.ebean.Model;
 
@@ -93,7 +94,7 @@ public class TreasureHunt extends Model {
     @ManyToMany(mappedBy = "guessedTHunts")
     public List<User> users;
 
-    public static Finder<Integer,TreasureHunt> find = new Finder<>(TreasureHunt.class);
+    public static Finder<Integer,TreasureHunt> find = new Finder<>(TreasureHunt.class, ApplicationManager.getDatabaseName());
 
     public Integer getThuntid() {
         return thuntid;

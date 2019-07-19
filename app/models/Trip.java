@@ -2,6 +2,7 @@ package models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import controllers.ApplicationManager;
 import formdata.TripFormData;
 import io.ebean.Ebean;
 import io.ebean.Finder;
@@ -35,7 +36,7 @@ public class Trip extends Model {
     @OneToMany(mappedBy = "trip")
     public List<Visit> visits;
 
-    public static Finder<Integer,Trip> find = new Finder<>(Trip.class);
+    public static Finder<Integer,Trip> find = new Finder<>(Trip.class, ApplicationManager.getDatabaseName());
 
     public boolean isPublic = true;
 

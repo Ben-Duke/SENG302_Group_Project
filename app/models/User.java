@@ -2,6 +2,7 @@ package models;
 
 import accessors.CommandManagerAccessor;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import controllers.ApplicationManager;
 import io.ebean.ExpressionList;
 import io.ebean.Finder;
 import io.ebean.Model;
@@ -101,7 +102,7 @@ public class User extends Model implements Comparable<User> {
     @OneToMany(mappedBy = "user")
     public List<UserPhoto> userPhotos;
 
-    public static Finder<Integer,User> find = new Finder<>(User.class);
+    public static Finder<Integer,User> find = new Finder<>(User.class, ApplicationManager.getDatabaseName());
 
     @Deprecated
     public Boolean isAdmin = false;

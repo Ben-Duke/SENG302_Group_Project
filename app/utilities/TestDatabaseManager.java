@@ -2,6 +2,7 @@ package utilities;
 
 import controllers.ApplicationManager;
 import models.*;
+import org.slf4j.Logger;
 import play.db.Database;
 import play.db.Databases;
 import play.db.evolutions.Evolution;
@@ -19,6 +20,8 @@ import java.util.concurrent.CountDownLatch;
  * for information on the layout of the test database.
  */
 public class TestDatabaseManager {
+
+    private final Logger logger = UtilityFunctions.getLogger();
 
     public TestDatabaseManager(){
 
@@ -57,6 +60,8 @@ public class TestDatabaseManager {
      * Populates the database. Call this method at the before section of each unit test.
      */
     public void populateDatabase() {
+
+        logger.info("attempting to populate database");
 
         boolean isInSuccessState = true;
 

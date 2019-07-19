@@ -40,17 +40,14 @@ public class BaseTestWithApplicationAndDatabase extends WithApplication {
      */
     @Before
     public void setUpDatabase() {
+        ApplicationManager.setTesting();    // use the test database
+
         ApplicationManager.setUserPhotoPath("/test/resources/test_photos/user_");
         ApplicationManager.setIsTest(true);
         CommandManagerAccessor.resetCommandManagers();
         database = Databases.inMemory();
 
         Evolutions.applyEvolutions(database);
-//        Evolutions.applyEvolutions(database, Evolutions.forDefault(new Evolution(
-//                1,
-//                "create table test (id bigint not null, name varchar(255));",
-//                "drop table test;"
-//        )));
 
         TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
         testDatabaseManager.populateDatabase();

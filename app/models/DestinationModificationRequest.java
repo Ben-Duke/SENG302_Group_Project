@@ -1,5 +1,6 @@
 package models;
 
+import controllers.ApplicationManager;
 import io.ebean.Finder;
 import io.ebean.Model;
 import io.ebean.annotation.CreatedTimestamp;
@@ -73,7 +74,7 @@ public class DestinationModificationRequest extends Model {
         return travellerTypesSet;
     }
 
-    public static Finder<Integer, DestinationModificationRequest> find = new Finder<>(DestinationModificationRequest.class);
+    public static Finder<Integer, DestinationModificationRequest> find = new Finder<>(DestinationModificationRequest.class, ApplicationManager.getDatabaseName());
 
     public Integer getId() { return id; }
     public Destination getOldDestination() { return oldDestination; }

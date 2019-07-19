@@ -2,6 +2,7 @@ package models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import controllers.ApplicationManager;
 import formdata.VisitFormData;
 import io.ebean.Finder;
 import io.ebean.Model;
@@ -66,7 +67,7 @@ public class Visit extends Model {
     }
 
 
-    public static Finder<Integer,Visit> find = new Finder<>(Visit.class);
+    public static Finder<Integer,Visit> find = new Finder<>(Visit.class, ApplicationManager.getDatabaseName());
 
     public Integer getVisitid() {
         return visitid;

@@ -2,6 +2,7 @@ package models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import controllers.ApplicationManager;
 import io.ebean.Finder;
 import io.ebean.Model;
 import utilities.UtilityFunctions;
@@ -47,7 +48,7 @@ public class Destination extends Model {
     public Set<TravellerType> travellerTypes;
 
     public static Finder<String,Destination> findString = new Finder<>(Destination.class);
-    public static Finder<Integer,Destination> find = new Finder<>(Destination.class);
+    public static Finder<Integer,Destination> find = new Finder<>(Destination.class, ApplicationManager.getDatabaseName());
 
     /**
      * Destination constructor with isPublic method

@@ -1,5 +1,6 @@
 package models;
 
+import controllers.ApplicationManager;
 import io.ebean.Finder;
 import io.ebean.Model;
 import org.checkerframework.common.aliasing.qual.Unique;
@@ -67,5 +68,5 @@ public class Admin extends BaseModel {
         this.userIdToEdit = userIdToEdit;
     }
 
-    public static Finder<Integer, Admin> find = new Finder<>(Admin.class);
+    public static Finder<Integer, Admin> find = new Finder<>(Admin.class, ApplicationManager.getDatabaseName());
 }

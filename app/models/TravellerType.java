@@ -15,7 +15,7 @@ import java.util.Set;
                 @UniqueConstraint(columnNames={"traveller_type_name"})
 )
 @Entity
-public class TravellerType extends Model implements Comparable<TravellerType> {
+public class TravellerType extends BaseModel implements Comparable<TravellerType> {
 
     public TravellerType(String travellerTypeName){
         this.travellerTypeName = travellerTypeName;

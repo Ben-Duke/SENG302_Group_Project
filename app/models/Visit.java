@@ -13,7 +13,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 @Entity
-public class Visit extends Model {
+public class Visit extends BaseModel {
 
     public Integer visitorder;
 

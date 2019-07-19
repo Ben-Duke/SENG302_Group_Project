@@ -11,7 +11,7 @@ import javax.persistence.*;
 import java.util.*;
 
 @Entity
-public class Destination extends Model {
+public class Destination extends BaseModel {
 
     @Id
     public Integer destid;

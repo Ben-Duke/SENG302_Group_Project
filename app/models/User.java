@@ -24,7 +24,7 @@ import java.util.*;
 @Table(name = "user",
         uniqueConstraints = @UniqueConstraint(columnNames = "email")
 )
-public class User extends Model implements Comparable<User> {
+public class User extends BaseModel implements Comparable<User> {
 
     @Column(name="email")
     public String email; // The email of the User

@@ -16,7 +16,7 @@ import java.util.List;
 @Entity
 
 @Table(uniqueConstraints={@UniqueConstraint(columnNames={"url"})})
-public class UserPhoto extends Model {
+public class UserPhoto extends BaseModel {
     @Id //The photos primary key
     public int photoId;
 

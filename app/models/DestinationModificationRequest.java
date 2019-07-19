@@ -10,7 +10,7 @@ import javax.persistence.*;
 import java.util.*;
 
 @Entity
-public class DestinationModificationRequest extends Model {
+public class DestinationModificationRequest extends BaseModel {
 
     @Id
     public Integer id;

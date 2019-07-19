@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 
 @Entity
-public class TreasureHunt extends Model {
+public class TreasureHunt extends BaseModel {
 
     /**
      * Default Constructor

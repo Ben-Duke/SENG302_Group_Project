@@ -14,7 +14,7 @@ import java.util.Comparator;
 import java.util.List;
 
 @Entity
-public class Trip extends Model {
+public class Trip extends BaseModel {
 
     public Trip(Trip trip, List<Visit> visits) {
         this.tripName = trip.getTripName();

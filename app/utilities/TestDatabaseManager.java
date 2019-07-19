@@ -125,7 +125,6 @@ public class TestDatabaseManager {
         if (isInSuccessState) {
             if(ApplicationManager.getUserMediaPath().equalsIgnoreCase("/test/resources/test_photos/user_")){
                 this.addUserPhotos();
-                this.addAlbums();
             }
         }
 
@@ -200,9 +199,7 @@ public class TestDatabaseManager {
                 err.printStackTrace();
             }
 
-            System.out.println("there");
-            addAlbums();
-            System.out.println("there done");
+//            addAlbums();
             user2.getTravellerTypes().add(travellerType2);
 
             user2.setNationality(Nationality.find.all().subList(70, 72));
@@ -483,7 +480,7 @@ public class TestDatabaseManager {
     }
 
     public void addUserPhotos(){
-        UserPhoto userPhoto1 = new UserPhoto("shrek.jpeg", true, false, User.find.byId(2));
+        UserPhoto userPhoto1 = new UserPhoto("shrek.jpeg", true, true, User.find.byId(2));
         UserPhoto userPhoto2 = new UserPhoto("placeholder.png", false, false, User.find.byId(2));
 //        Destination christchurch = Destination.find.byId(1);
 //        Destination wellington = Destination.find.byId(2);
@@ -503,7 +500,6 @@ public class TestDatabaseManager {
     }
 
     public void addAlbums(){
-        System.out.println("here");
         UserPhoto userPhoto1 = new UserPhoto("card.PNG", true, false, User.find.byId(1));
         UserPhoto userPhoto2 = new UserPhoto("Capture.PNG", false, false, User.find.byId(1));
         Album album1 = new Album(User.find.byId(1), "myAlbum");

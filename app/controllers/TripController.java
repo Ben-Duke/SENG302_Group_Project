@@ -243,7 +243,7 @@ public class TripController extends Controller {
      * Handles the cancellation of a trip on the page to add destinations to a new trip.
      * All visits are removed from the trip and the trip is removed from the database.
      *
-     * @param request the HTTP request
+     * @param request the HTTP request.
      * @param tripid the trip id of the trip being deleted
      * @return Result Redirects to userIndex if success or error otherwise
      */

@@ -6,7 +6,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.slf4j.Logger;
 import play.Application;
-import play.Mode;
 import play.db.Database;
 import play.db.Databases;
 import play.db.evolutions.Evolution;
@@ -33,7 +32,6 @@ public class BaseTestWithApplicationAndDatabase extends WithApplication {
     @Override
     protected Application provideApplication() {
         return new GuiceApplicationBuilder()
-                .in(Mode.TEST)
                 .build();
     }
 
@@ -47,13 +45,13 @@ public class BaseTestWithApplicationAndDatabase extends WithApplication {
         CommandManagerAccessor.resetCommandManagers();
         database = Databases.inMemory();
 
-//        Evolutions.applyEvolutions(database);
+        Evolutions.applyEvolutions(database);
 //        Evolutions.applyEvolutions(database, Evolutions.forDefault(new Evolution(
 //                1,
 //                "create table test (id bigint not null, name varchar(255));",
 //                "drop table test;"
 //        )));
-//
+
         TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
         testDatabaseManager.populateDatabase();
 
@@ -65,7 +63,7 @@ public class BaseTestWithApplicationAndDatabase extends WithApplication {
      */
     @After
     public void shutdownDatabase() {
-//        Evolutions.cleanupEvolutions(database);
+        Evolutions.cleanupEvolutions(database);
         database.shutdown();
     }
 }

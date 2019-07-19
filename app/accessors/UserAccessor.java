@@ -1,6 +1,5 @@
 package accessors;
 
-import io.ebean.Ebean;
 import models.Nationality;
 import models.Passport;
 import models.User;

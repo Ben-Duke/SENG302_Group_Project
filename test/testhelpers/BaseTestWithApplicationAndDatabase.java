@@ -41,6 +41,8 @@ public class BaseTestWithApplicationAndDatabase extends WithApplication {
     @Before
     public void setUpDatabase() {
         ApplicationManager.setTesting();    // use the test database
+        logger.debug("Database name");
+        logger.debug(ApplicationManager.getDatabaseName());
 
         ApplicationManager.setUserPhotoPath("/test/resources/test_photos/user_");
         ApplicationManager.setIsTest(true);
@@ -51,8 +53,6 @@ public class BaseTestWithApplicationAndDatabase extends WithApplication {
 
         TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
         testDatabaseManager.populateDatabase();
-
-
     }
 
     /**

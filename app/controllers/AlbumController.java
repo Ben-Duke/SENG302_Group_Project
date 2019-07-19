@@ -51,6 +51,22 @@ public class AlbumController extends Controller {
     }
 
     /**
+     * Method to get Media Urls from the album in a JSON for ajax requests.
+     * @param request Request
+     * @param albumId Id of the Album
+     * @param hidePrivate true if only private media is required, false otherwise
+     * @return JSON object with media urls
+     */
+    public Result getAlbum(Http.Request request, Integer albumId, Boolean hidePrivate) {
+        Album album = AlbumAccessor.getAlbumById(albumId);
+        List albumDetails = new ArrayList();
+        for(Media media: album.getMedia()) {
+            albumDetails.add(media.getUrl());
+        }
+        return ok(Json.toJson(albumDetails));
+    }
+
+    /**
      * Process the ajax request to create album.
      * Title and optionally a initial piece of media (by id) are given.
      * Command is used to create album.

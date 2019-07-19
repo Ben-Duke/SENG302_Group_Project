@@ -1,1 +1,16 @@
-@()
+@(taggableModel: TaggableModel, user: User)
+
+<div class="container">
+
+    <input id="tag-add" list="tag-add-results" name="Tag Add" title="Tag Add" placeholder="Add Tags">
+    <datalist id="tag-add-results"></datalist>
+
+    <div class="btn-group">
+        @for(tag <- taggableModel.getTags) {
+            <button type="button" class="btn btn-primary">@tag.getName <a id="delete@tag.getTagId"><span class="badge">X</span></a></button>
+        }
+    </div>
+
+</div>
+
+<script src="@routes.Assets.at("js/tags/createTags.js")" type="text/javascript"></script>

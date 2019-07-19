@@ -726,9 +726,9 @@ public class DestinationController extends Controller {
 
     /**
      * Unlinks the UserPhoto from any destinations and then deletes it
-     * @param request
-     * @param photoId
-     * @return
+     * @param request The HTTP request
+     * @param photoId The Id of the photo being unlinked
+     * @return success if the unlinking was successful.
      */
     public Result unlinkPhotoFromDestinationAndDelete(Http.Request request, int photoId) {
         UserPhoto photo = UserPhoto.find.byId(photoId);

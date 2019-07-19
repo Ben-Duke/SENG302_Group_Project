@@ -13,6 +13,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+/**
+ * A class to handle interactions with  the database involving the Trip class.
+ */
 public class TripFactory {
     private static Logger logger = LoggerFactory.getLogger("application");
 
@@ -24,9 +27,10 @@ public class TripFactory {
     /**
      * Updates the visit orders of a trip to match a given array list of visit IDs.
      *
-     * @param list
+     * @param list An ArrayList of visits
      * @param userid the userid of the user
-     * @return
+     * @return False if user accessing trip is not owner of trip or if duplicate visits
+     * True if visit swapping is valid
      */
     public boolean swapVisitsList(ArrayList<String> list, Integer userid) {
         try (Transaction transaction = Visit.db().beginTransaction()) {
@@ -52,6 +56,13 @@ public class TripFactory {
         }
     }
 
+    /**
+     * Inititalizes new trip using formData
+     *
+     * @param tripFormData Data to create new trip with
+     * @param user User creating new trip
+     * @return The new trip id
+     */
     public int createTrip(TripFormData tripFormData, User user) {
         Trip trip = new Trip();
         trip.tripName = tripFormData.tripName;
@@ -62,6 +73,16 @@ public class TripFactory {
         return trip.tripid;
     }
 
+    /**
+     * Handles actions where a visit within a trip is being changed either by deletion,
+     * adding or moving to check for repeated visits being invalid
+     *
+     * @param visits List of all visits within a trip
+     * @param visit the visit being changed within the trip
+     * @param operation The way the visit is being changed
+     * @return False if user accessing trip is not owner of trip or if duplicate visit
+     * True if visit swapping is valid
+     */
     public boolean hasRepeatDest(List<Visit> visits, Visit visit, String operation) {
         if ((operation.equalsIgnoreCase("DELETE")) && (visits.size() > 2)) {
             visits.sort(Comparator.comparing(Visit::getVisitOrder));

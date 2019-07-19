@@ -102,6 +102,9 @@ public class DestinationFactory {
 
     /**
      * Return a DestinationFormData instance constructed from a destination instance
+     *
+     * @param dest The destination instance being converted
+     * @return The FormData corresponding to the destination specified
      */
     public DestinationFormData makeDestinationFormData(Destination dest) {
         return new DestinationFormData(dest.getDestName(), dest.getDestType(),
@@ -209,7 +212,6 @@ public class DestinationFactory {
      * Merges all matching destination when one private destination is made public, will not merge if destination is used in trip
      * @param destinationList list of all matching private destinations
      * @param destination destination of user making private destination public
-     * @return check to see if destinations are used in trips
      */
     public void mergeDestinations(List<Destination> destinationList, Destination destination) {
         Admin defaultAdmin = Admin.find.query().where().eq("isDefault", true).findOne();

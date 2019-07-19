@@ -37,9 +37,12 @@ public class ProfileController extends Controller {
     FormFactory formFactory;
 
     /**
-     * If the user is logged in, renders the update profile page.
-     * If the user is not logged in, returns an error.
-     * @return update profile page or error page
+     * Delete given photo by Id from profile page.
+     *
+     * @param photoId Id of photo being deleted
+     * @param request The HTTP request
+     * @param userInput True or False depending on user input
+     * @return will delete the given photo and return to index page
      */
     public Result deletePhoto(Http.Request request, Integer photoId, Boolean userInput){
         UserPhoto photo = UserPhoto.find.byId(photoId);
@@ -58,6 +61,13 @@ public class ProfileController extends Controller {
         return ok();
     }
 
+    /**
+     * If the user is logged in, renders the update profile page.
+     * If the user is not logged in, returns an error.
+     *
+     * @param request The HTTP request
+     * @return If successful will return to the user index after updated the user profile
+     */
     public Result updateProfile(Http.Request request){
         List<User> users = User.getCurrentUser(request, true);
         Boolean isAdmin = false;

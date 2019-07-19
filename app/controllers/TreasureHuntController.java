@@ -59,6 +59,7 @@ public class TreasureHuntController extends Controller {
     /**
      * If the user is logged in, renders the treasure hunt index page
      * If the user is not logged in, returns an error.
+     *
      * @param request The HTTP request
      * @return index treasure hunt page or error page
      */
@@ -76,6 +77,7 @@ public class TreasureHuntController extends Controller {
     /**
      * Gets a list of open treasure hunts. A treasure hunt is open if its start date is before the current date
      * and the end date is after the current date.
+     *
      * @return list of open treasure hunts
      */
     public List<TreasureHunt> getOpenTreasureHunts(){
@@ -96,6 +98,7 @@ public class TreasureHuntController extends Controller {
     /**
      * If the user is logged in, renders the create treasure hunt page
      * If the user is not logged in, returns an error.
+     *
      * @param request The HTTP request
      * @return create treasure hunt page or error page
      */
@@ -114,6 +117,7 @@ public class TreasureHuntController extends Controller {
     /**
      * If the user is logged in, creates and saves the treasure hunt and redirects to the index treasure hunt page
      * If the user is not logged in, returns an error.
+     *
      * @param request The HTTP request
      * @return index treasure hunt page or create treasure hunt page if there are validation errors
      */
@@ -147,7 +151,9 @@ public class TreasureHuntController extends Controller {
     /**
      * If the user is logged in, renders the edit treasure hunt page
      * If the user is not logged in, returns an error.
+     *
      * @param request The HTTP request
+     * @param treasureHuntId The Id of the treasure hunt being edited
      * @return edit treasure hunt page or error page
      */
     public Result editTreasureHunt(Http.Request request, Integer treasureHuntId){
@@ -176,7 +182,9 @@ public class TreasureHuntController extends Controller {
     /**
      * If the user is logged in, creates and saves the treasure hunt and redirects to the index treasure hunt page
      * If the user is not logged in, returns an error.
+     *
      * @param request The HTTP request
+     * @param treasureHuntId The Id of the treasure hunt being updated
      * @return index treasure hunt page or create treasure hunt page if there are validation errors
      */
     public Result editAndSaveTreasureHunt(Http.Request request, Integer treasureHuntId){
@@ -217,7 +225,9 @@ public class TreasureHuntController extends Controller {
     /**
      * If the user is logged in, deletes the treasure hunt and renders the index treasure hunt page.
      * If the user is not logged in, returns an error.
+     *
      * @param request The HTTP request
+     * @param treasureHuntId The Id of the treasure hunt being deleted
      * @return index treasure hunt page or error page
      */
     public Result deleteTreasureHunt(Http.Request request, Integer treasureHuntId){

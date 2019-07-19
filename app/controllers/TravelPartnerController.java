@@ -33,6 +33,7 @@ public class TravelPartnerController {
      *
      * @param resultProfiles all the profile resulting from the users search.
      *                       This will be empty when the user first enters the page
+     * @param user The User currently logged in
      * @return renders the search profile page
      */
     private Result displayRenderedFilterPage(Set<User> resultProfiles, User user) {
@@ -65,6 +66,7 @@ public class TravelPartnerController {
     /**
      * This method is called when the user first hits the searchprofile page.
      * Initialises an empty User list as there user has not searched anything yet.
+     *
      * @param request the http request
      * @return the filter page
      */
@@ -82,6 +84,7 @@ public class TravelPartnerController {
 
     /**
      * From the form retrieve all users from the database that have the given traveler type
+     *
      * @param filterForm the form object containing the users search selections
      * @return A list of all users that match the traveler type
      */
@@ -105,6 +108,7 @@ public class TravelPartnerController {
 
     /**
      * From the form retrieve all users from the database that have the given nationality
+     *
      * @param filterForm the form object containing the users search selections
      * @return A list of all users that match the nationality
      */
@@ -127,6 +131,7 @@ public class TravelPartnerController {
 
     /**
      * From the form retrieve all users from the database that have the given genders selected
+     *
      * @param filterForm the form object containing the users search selections
      * @return A list of all users that match the genders
      */
@@ -153,6 +158,7 @@ public class TravelPartnerController {
     /**
      * From the form retrieve all users from the database that have the given date range.
      * If one of the date selector has not been chosen then that field is not used as a bound
+     *
      * @param filterForm the form object containing the users search selections
      * @return A list of all users that match the date range
      */
@@ -190,8 +196,8 @@ public class TravelPartnerController {
 
     /**
      * Handles the request to search users by attributes.
-     * Add results from all parameters to a list, find all common users between each
-     * search criteria.
+     * Add results from all parameters to a list, find all common users between each search criteria.
+     *
      * @param request the HTTP request
      * @return List of users or error message
      */

@@ -37,6 +37,7 @@ public class UserController {
      * Only one thread gets into the if block and all other concurrent threads
      * wait in the else block for the if block free the lock.
      *
+     * @param request The HTTP request
      * @return the user index page
      */
     public Result userindex(Http.Request request){
@@ -61,7 +62,9 @@ public class UserController {
     }
 
     /**
-     * Handles the ajax request to get a user.
+     * Handles the ajax request to get a user as a json object.
+     *
+     * @param request The HTTP request
      * @return the corresponding user as a json based on the login session.
      */
     public Result getUser(Http.Request request){
@@ -76,6 +79,8 @@ public class UserController {
 
     /**
      * Handles the ajax request to get a user.
+     *
+     * @param request The HTTP Request
      * @return the corresponding user as a json based on the login session.
      */
     public Result getUserPhotosAjax(Http.Request request){

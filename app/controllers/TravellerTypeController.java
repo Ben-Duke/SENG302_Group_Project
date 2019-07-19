@@ -49,6 +49,7 @@ public class TravellerTypeController {
      * If the user is not logged in, returns an error.
      * If the user already has the selected traveller type, returns an error.
      * @param request The HTTP request
+     * @param destid The Id of the destination being updated
      * @return create profile page or error page
      */
     public Result updateDestinationTravellerType(Http.Request request, Integer destid){
@@ -107,6 +108,7 @@ public class TravellerTypeController {
      * If the user is logged in, add the selected traveller type into the user's profile.
      * If the user is not logged in, returns an error.
      * @param request The HTTP request
+     * @param destid The Id of the destination being updated
      * @return update traveller type page or error page
      */
     public Result submitUpdateDestinationTravellerType(Http.Request request, Integer destid){
@@ -144,6 +146,7 @@ public class TravellerTypeController {
      * If the user is logged in, remove the selected traveller type from the user's profile.
      * If the user is not logged in, returns an error.
      * @param request the HTTP request
+     * @param typeId The Id of the traveller type being deleted
      * @return update traveller type page or error page
      */
     public Result deleteUpdateTravellerType(Http.Request request, Integer typeId){
@@ -173,6 +176,8 @@ public class TravellerTypeController {
      * If the user is logged in and the user owns the destination, remove the selected traveller type from the destination.
      * If the user is not logged in, returns an error.
      * @param request the HTTP request
+     * @param typeId The Id of the traveller type being changed
+     * @param destId The Id of the destination being changed
      * @return update traveller type page or error page
      */
     public Result deleteUpdateDestinationTravellerType(Http.Request request, Integer destId, Integer typeId){

@@ -46,8 +46,9 @@ public class TripController extends Controller {
     /**
      * If the user is logged in, renders the create trip page.
      * If the user is not logged in, returns an error.
+     *
      * @param request The HTTP request
-     * @return create profile page or error page
+     * @return create profile page or error page if user is not logged in
      */
     public Result createtrip(Http.Request request){
         User user = User.getCurrentUser(request);
@@ -64,8 +65,9 @@ public class TripController extends Controller {
      * Renders the page to display visits of a trip given by the trip id.
      * Users can swap visit destinations by drag and dropping them with their mouse, which should be saved within the
      * database.
-     * @param request
-     * @param tripId the trip id
+     *
+     * @param request The HTTP request
+     * @param tripId the Id of the trip being displayed
      * @return display visits page
      */
     public Result displaytrip(Http.Request request, Integer tripId){
@@ -98,6 +100,7 @@ public class TripController extends Controller {
      * If the user is logged in, a trip is created for the user based on the form values and stored into the database.
      * The user is then redirected to the create trip page.
      * If the user is not logged in, an error message is displayed.
+     *
      * @param request The HTTP request
      * @return create trip page or error page
      */
@@ -125,14 +128,15 @@ public class TripController extends Controller {
 
     /**
      * Renders the page to edit a visit given by the visit id.
+     *
      * @param request the HTTP request
-     * @param visitid the visit id
+     * @param visitId the visit id
      * @return the edit visit page
      */
-    public Result editvisit(Http.Request request, Integer visitid){
+    public Result editvisit(Http.Request request, Integer visitId){
         User user = User.getCurrentUser(request);
         if (user != null) {
-            Visit visit = Visit.find.byId(visitid);
+            Visit visit = Visit.find.byId(visitId);
 
 
             VisitFormData visitFormData = new VisitFormData(visit.getArrival(), visit.getDeparture());
@@ -154,9 +158,10 @@ public class TripController extends Controller {
     /**
      * Handles the update visit request. Updates a visit with the given form details. If the updated visit would cause
      * two of the same destinations to be visited in a row, cancels the update and returns bad request.
+     *
      * @param request the HTTP request
-     * @param visitid the vistID of the visit
-     * @return OK or Bad request
+     * @param visitid the visitID of the visit being updated
+     * @return OK if visit is successfully updated or Bad request otherwise
      */
     public Result updateVisit(Http.Request request, Integer visitid){
         Visit visit = Visit.find.byId(visitid);
@@ -201,9 +206,10 @@ public class TripController extends Controller {
     /**
      * Renders the page to add destinations onto a new trip.
      * This has to be separated with existing trips due to the cancel button which deletes the trip.
+     *
      * @param request the HTTP request
      * @param tripid the trip id of the trip
-     * @return
+     * @return Result Will redirect to userIndex if success or error otherwise
      */
     public Result addTripDestinations(Http.Request request, Integer tripid) {
         Trip trip = Trip.find.byId(tripid);
@@ -236,9 +242,10 @@ public class TripController extends Controller {
     /**
      * Handles the cancellation of a trip on the page to add destinations to a new trip.
      * All visits are removed from the trip and the trip is removed from the database.
+     *
      * @param request the HTTP request
-     * @param tripid the trip id of the trip
-     * @return
+     * @param tripid the trip id of the trip being deleted
+     * @return Result Redirects to userIndex if success or error otherwise
      */
     public Result deleteTrip(Http.Request request, Integer tripid) {
         Trip trip = Trip.find.byId(tripid);
@@ -268,6 +275,7 @@ public class TripController extends Controller {
      * to null as a destination and arrival time is not specified on the table. This can be later edited.
      * The user is then redirected to the edit trip page.
      * If the user is not logged in, an error message is displayed.
+     *
      * @param request The HTTP request
      * @param tripid The trip id that the user is editing.
      * @param destid The destination of the trip that the user is editing
@@ -324,9 +332,10 @@ public class TripController extends Controller {
      * Handles the request to remove destinations from a trip. Removes the destination (which gets converted into a
      * visit) from the trip that the user is editing, then redirects the user to the edit trip page. Displays an error
      * if the user is not logged in.
+     *
      * @param request The HTTP request
      * @param visitid The visit ID that the user is deleting.
-     * @return edit trip page or error page
+     * @return Result edit trip page or error page
      */
     public Result deletevisit(Http.Request request, Integer visitid){
         Visit visit = Visit.find.byId(visitid);
@@ -362,9 +371,10 @@ public class TripController extends Controller {
      * Handles the request to swap two destinations from a trip. If the swapped list has repeat destinations or the
      * user is not logged in or they are trying to swap a visit which does not belong to them, sends a bad request.
      * Displays an error if the user is not logged in.
+     *
      * @param request The HTTP request
      * @param tripId The trip ID that the user is editing.
-     * @return edit trip page or error page
+     * @return Result edit trip page or error page
      */
     public Result swapvisits(Http.Request request, Integer tripId){
         ArrayList<String> list = new ObjectMapper().convertValue(request.body().asJson(), ArrayList.class);

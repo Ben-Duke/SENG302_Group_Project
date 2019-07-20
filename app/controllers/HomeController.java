@@ -4,8 +4,10 @@ import accessors.UserAccessor;
 import factories.UserFactory;
 import io.ebean.DuplicateKeyException;
 import models.Album;
+import models.Media;
 import models.User;
 import models.UserPhoto;
+import models.commands.Albums.AddMediaToAlbumCommand;
 import models.commands.Albums.CreateAlbumCommand;
 import models.commands.Profile.HomePageCommand;
 import models.commands.Photos.UploadPhotoCommand;
@@ -24,6 +26,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -85,8 +88,9 @@ public class HomeController {
             //Get the photo data from the multipart form data encoding
             Http.MultipartFormData<Files.TemporaryFile> body = request.body().asMultipartFormData();
             Http.MultipartFormData.FilePart<Files.TemporaryFile> picture = body.getFile("picture");
-            if (picture != null) {
-                return getResultFromSaveUserPhoto(user, isPublic, picture);
+            String albumName = dataPart.get("Album Search")[0];
+            if ((picture != null) && (!albumName.isEmpty())) {
+                return getResultFromSaveUserPhoto(user, isPublic, picture, albumName);
             } else {
                 return badRequest("Error uploading the picture.");
             }
@@ -105,7 +109,7 @@ public class HomeController {
      * @param picture The FilePart of the picture, not null.
      * @return A Result from trying to save the photo.
      */
-    private Result getResultFromSaveUserPhoto(User user, boolean isPublic, Http.MultipartFormData.FilePart<Files.TemporaryFile> picture) {
+    private Result getResultFromSaveUserPhoto(User user, boolean isPublic, Http.MultipartFormData.FilePart<Files.TemporaryFile> picture, String albumName) {
         String origionalFilePath = picture.getFilename();
         long fileSize = picture.getFileSize();
         String contentType = picture.getContentType();
@@ -121,9 +125,29 @@ public class HomeController {
             newPhoto.setUrl(unusedPhotoUrl);
             UploadPhotoCommand uploadPhotoCommand = new UploadPhotoCommand(newPhoto, fileObject);
             user.getCommandManager().executeCommand(uploadPhotoCommand);
+            addUploadToAlbum(user, newPhoto, albumName);
             return redirect(routes.HomeController.showhome());
         } else {
             return badRequest();
+        }
+    }
+
+    private void addUploadToAlbum(User user, UserPhoto media, String albumName) {
+        List<Album> albumList = UserAccessor.getAlbums();
+        int albumCount = 0;
+        for (Album album : albumList) {
+            if (albumName.equals(album.getTitle())) {
+                albumCount = 1;
+                List<Media> mediaList = new ArrayList<>();
+                mediaList.add(media);
+                AddMediaToAlbumCommand cmd = new AddMediaToAlbumCommand(album, mediaList);
+                user.getCommandManager().executeCommand(cmd);
+            }
+        }
+        if (albumCount == 0) {
+            CreateAlbumCommand cmd;
+            cmd = new CreateAlbumCommand(albumName, user, media);
+            user.getCommandManager().executeCommand(cmd);
         }
     }
 
@@ -174,21 +198,7 @@ public class HomeController {
                     }
                     //DB saving
                     UserFactory.replaceProfilePicture(user.getUserid(), newPhoto);
-                    List<Album> albumList = UserAccessor.getAlbums();
-                    int albumCount = 0;
-                    for (Album album: albumList) {
-                        if(albumName.equals(album.getTitle())) {
-                            albumCount = 1;
-                            album.addMedia(newPhoto);
-                        }
-                    }
-                    if (albumCount == 0) {
-                        CreateAlbumCommand cmd;
-                        cmd = new CreateAlbumCommand(albumName, user, newPhoto);
-                        user.getCommandManager().executeCommand(cmd);
-                        Album album = cmd.getAlbum();
-
-                    }
+                    addUploadToAlbum(user, newPhoto, albumName);
                     return redirect(routes.HomeController.showhome());
                 }
             }

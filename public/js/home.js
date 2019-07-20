@@ -94,17 +94,14 @@ $('#save-profile').click(function (eve){
 
 
     eve.preventDefault();
-    var searchbar = document.getElementById('album-search');
-    console.log(searchbar.value);
+    var searchbar = document.getElementById('album-search-profile');
     if (searchbar.value === null || searchbar.value === "") {
         alert("File must be in an album");
-        console.log(searchbar.value);
     } else {
         var formData = new FormData();
         croppedCanvas.toBlob(function (blob) {
             formData.append('picture', blob, filename);
             formData.append('album', searchbar.value);
-            console.log(formData)
             var token = $('input[name="csrfToken"]').attr('value');
             $.ajaxSetup({
                 beforeSend: function (xhr) {
@@ -120,9 +117,9 @@ $('#save-profile').click(function (eve){
                 success: function (data, textStatus, xhr) {
                     if (xhr.status == 200) {
                         $("#selectProfileInput").show();
-                        //window.location = '/users/home'
+                        window.location = '/users/home'
                     } else {
-                        //window.location = '/users/home'
+                        window.location = '/users/home'
                     }
                 }
             })

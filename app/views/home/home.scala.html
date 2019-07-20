@@ -162,9 +162,21 @@
                                 >
 
                                 <br>
+                                    <div>
+                                        <p>
+                                            Add to Album
+                                            @helper.CSRF.formField
+                                            <input id="album-search" list="album-results" name="Album Search" title="Album Search" placeholder="Search Album">
+                                            <datalist id="album-results">
+                                            @for(album <- user.getAlbums()){
+                                                <option value="@album.getTitle()"></option>
+                                            }
+                                            </datalist>
+                                        </p>
+                                    </div>
 
                                 <p>
-                                    <input type="submit" value="Upload">
+                                    <input type="submit" value="Upload" id="photo-upload">
                                     @helper.CSRF.formField
                                     <input type="checkbox" name="private" value="private" title=""> Make photo private
                                 </p>
@@ -207,8 +219,8 @@
                                         <div>
                                             <p>
                                                 Add to Album
-                                                <input id="album-search" list="album-results" name="Album Search" title="Album Search" placeholder="Search Album">
-                                                <datalist id="album-results">
+                                                <input id="album-search-profile" list="album-results-profile" name="Album Search" title="Album Search" placeholder="Search Album">
+                                                <datalist id="album-results-profile">
                                                 @for(album <- user.getAlbums()){
                                                     <option value="@album.getTitle()"></option>
                                                 }

@@ -205,13 +205,15 @@
                                 <div>
                                     <li>
                                         <div>
-                                            <input id="album-search" list="album-results" name="Album Search" title="Album Search" placeholder="Search Album">
-                                            <datalist id="album-results">
+                                            <p>
+                                                Add to Album
+                                                <input id="album-search" list="album-results" name="Album Search" title="Album Search" placeholder="Search Album">
+                                                <datalist id="album-results">
                                                 @for(album <- user.getAlbums()){
                                                     <option value="@album.getTitle()"></option>
                                                 }
-                                            </datalist>
-
+                                                </datalist>
+                                            </p>
                                         </div>
                                     </li>
                                     <button class="btn btn-default" id="save-profile">

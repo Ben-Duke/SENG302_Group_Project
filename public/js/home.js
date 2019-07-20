@@ -21,7 +21,7 @@ var loadFile = function (event) {
     var output = document.getElementById('change-profile-pic');
     var upload = document.getElementById('selectProfileInput');
 
-    if(upload.files[0].size > 2097152){
+    if(upload.files[0].size > 2097152) {
         alert("File is too big! (larger than 2MB)");
         upload.value = "";
     } else {
@@ -58,41 +58,6 @@ var loadFile = function (event) {
     }
 };
 
-addAlbumSearchTagListeners();
-
-function addAlbumSearchTagListeners() {
-    function redirectToAlbumPage(album, datalist) {
-        for (let dataAlbum of datalist.options) {
-            if (dataAlbum.value.toUpperCase() === album.toUpperCase()) {
-                window.location.href = "/albums/" + album.toLowerCase();
-            }
-        }
-    }
-
-    try {
-        const searchBar = document.getElementById("album-search");
-        const datalist = document.getElementById("album-results");
-        searchBar.addEventListener('input', (e) => {
-            if (e.constructor.name !== 'InputEvent') {
-                // then this is a selection, not user input
-                redirectToAlbumPage(searchBar.value, datalist)
-            }
-            const query = searchBar.value;
-            for (let album of datalist.options) {
-                if (album === query) {
-
-                }
-            }
-        });
-        searchBar.addEventListener('keyup', e => {
-            if (e.key === 'Enter') {
-                redirectToAlbumPage(searchBar.value, datalist);
-            }
-        })
-    } catch (err) {
-        //do nothing. Just to avoid errors if the correct page is not loaded
-    }
-}
 
 
 
@@ -129,32 +94,40 @@ $('#save-profile').click(function (eve){
 
 
     eve.preventDefault();
-    var formData = new FormData();
-    croppedCanvas.toBlob(function(blob){
-        formData.append('picture', blob, filename);
-        var token =  $('input[name="csrfToken"]').attr('value');
-        $.ajaxSetup({
-            beforeSend: function(xhr) {
-                xhr.setRequestHeader('Csrf-Token', token);
-            }
+    var searchbar = document.getElementById('album-search');
+    console.log(searchbar.value);
+    if (searchbar.value === null || searchbar.value === "") {
+        alert("File must be in an album");
+        console.log(searchbar.value);
+    } else {
+        var formData = new FormData();
+        croppedCanvas.toBlob(function (blob) {
+            formData.append('picture', blob, filename);
+            formData.append('album', searchbar.value);
+            console.log(formData)
+            var token = $('input[name="csrfToken"]').attr('value');
+            $.ajaxSetup({
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader('Csrf-Token', token);
+                }
+            });
+            $.ajax({
+                type: 'POST',
+                processData: false,
+                contentType: false,
+                url: '/users/home/profilePicture',
+                data: formData,
+                success: function (data, textStatus, xhr) {
+                    if (xhr.status == 200) {
+                        $("#selectProfileInput").show();
+                        //window.location = '/users/home'
+                    } else {
+                        //window.location = '/users/home'
+                    }
+                }
+            })
         });
-        $.ajax({
-            type: 'POST',
-            processData: false,
-            contentType: false,
-            url:'/users/home/profilePicture',
-            data: formData,
-            success: function(data, textStatus, xhr){
-                if(xhr.status == 200) {
-                    $("#selectProfileInput").show();
-                    window.location = '/users/home'
-                }
-                else{
-                    window.location = '/users/home'
-                }
-            }
-        })
-    });
+    }
 });
 
 /**

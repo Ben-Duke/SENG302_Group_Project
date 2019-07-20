@@ -3,8 +3,10 @@ package controllers;
 import accessors.UserAccessor;
 import factories.UserFactory;
 import io.ebean.DuplicateKeyException;
+import models.Album;
 import models.User;
 import models.UserPhoto;
+import models.commands.Albums.CreateAlbumCommand;
 import models.commands.Profile.HomePageCommand;
 import models.commands.Photos.UploadPhotoCommand;
 import play.data.FormFactory;
@@ -144,6 +146,7 @@ public class HomeController {
             //Get the photo data from the multipart form data encoding
             Http.MultipartFormData<Files.TemporaryFile> body = request.body().asMultipartFormData();
             Http.MultipartFormData.FilePart<Files.TemporaryFile> picture = body.getFile("picture");
+            String albumName = datapart.get("album")[0];
             if (picture != null) {
                 String originalFilePath = picture.getFilename();
                 //String fileName = datapart.get("filename")[0];
@@ -171,6 +174,21 @@ public class HomeController {
                     }
                     //DB saving
                     UserFactory.replaceProfilePicture(user.getUserid(), newPhoto);
+                    List<Album> albumList = UserAccessor.getAlbums();
+                    int albumCount = 0;
+                    for (Album album: albumList) {
+                        if(albumName.equals(album.getTitle())) {
+                            albumCount = 1;
+                            album.addMedia(newPhoto);
+                        }
+                    }
+                    if (albumCount == 0) {
+                        CreateAlbumCommand cmd;
+                        cmd = new CreateAlbumCommand(albumName, user, newPhoto);
+                        user.getCommandManager().executeCommand(cmd);
+                        Album album = cmd.getAlbum();
+
+                    }
                     return redirect(routes.HomeController.showhome());
                 }
             }
@@ -180,6 +198,8 @@ public class HomeController {
             return redirect(routes.UserController.userindex());
         }
     }
+
+    //public Result addToAlbumFromUpload(Http.Request request)
 
     /**Serve an image file with a get request
      * @param request the HTTP request

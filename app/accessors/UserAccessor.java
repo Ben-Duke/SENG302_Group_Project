@@ -1,10 +1,7 @@
 package accessors;
 
 import io.ebean.Ebean;
-import models.Nationality;
-import models.Passport;
-import models.User;
-import models.UserPhoto;
+import models.*;
 
 import java.util.List;
 
@@ -26,6 +23,10 @@ public class UserAccessor {
 
     public static List<Nationality> getAllNationalities() {
         return Nationality.find.all();
+    }
+
+    public static List<Album> getAlbums() {
+        return Album.find.all();
     }
 
     /**

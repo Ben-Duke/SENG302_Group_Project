@@ -37,7 +37,10 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 import static org.apache.commons.io.FileUtils.getFile;
 import static org.junit.Assert.*;
@@ -127,10 +130,14 @@ public class HomeControllerTest extends BaseTestWithApplicationAndDatabase {
         createUser();
         File file = getFile(Paths.get(".").toAbsolutePath().normalize().toString() + "/test/resources/imagetest.png");
         Http.MultipartFormData.Part<Source<ByteString, ?>> part = new Http.MultipartFormData.FilePart<>("picture", "imagetest.png", "image/png", FileIO.fromPath(file.toPath()), Files.size(file.toPath()));
+        Http.MultipartFormData.DataPart part1 = new Http.MultipartFormData.DataPart("Album Search", "album1");
+        List formData = new ArrayList<>();
+        formData.add(part);
+        formData.add(part1);
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(POST)
                 .uri("/users/home").session("connected", "2")
-                .bodyRaw(Collections.singletonList(part),
+                .bodyRaw(formData,
                         play.libs.Files.singletonTemporaryFileCreator(),
                         app.asScala().materializer());
         CSRFTokenHelper.addCSRFToken(request);
@@ -147,10 +154,14 @@ public class HomeControllerTest extends BaseTestWithApplicationAndDatabase {
         createUser();
         File file = getFile(Paths.get(".").toAbsolutePath().normalize().toString() + "/test/resources/imagetest.png");
         Http.MultipartFormData.Part<Source<ByteString, ?>> part = new Http.MultipartFormData.FilePart<>("picture", "imagetest.png", "image/png", FileIO.fromPath(file.toPath()), Files.size(file.toPath()));
+        Http.MultipartFormData.DataPart part1 = new Http.MultipartFormData.DataPart("album", "album1");
+        List formData = new ArrayList<>();
+        formData.add(part);
+        formData.add(part1);
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(POST)
                 .uri("/users/home/profilePicture").session("connected", "2")
-                .bodyRaw(Collections.singletonList(part),
+                .bodyRaw(formData,
                         play.libs.Files.singletonTemporaryFileCreator(),
                         app.asScala().materializer());
         CSRFTokenHelper.addCSRFToken(request);

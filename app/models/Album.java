@@ -25,22 +25,26 @@ public class Album extends Model {
     @JoinColumn(name = "user", referencedColumnName = "userid")
     public User user;
 
+    private Destination destination;
+
+    private AlbumOwner owner;
+
     private String title;
 
-    public Album(User user, String title) {
+    public Album(AlbumOwner owner, String title) {
         media = new ArrayList<>();
-        this.user = user;
+        this.owner = owner;
         this.title = title;
     }
-    public Album(Media media, User user, String title) {
+    public Album(Media media, AlbumOwner owner, String title) {
         this.media = new ArrayList<>();
         this.media.add(media);
-        this.user = user;
+        this.owner = user;
         this.title = title;
     }
-    public Album(List<Media> media, User user, String title) {
+    public Album(List<Media> media, AlbumOwner owner, String title) {
         this.media = media;
-        this.user = user;
+        this.owner = owner;
         this.title = title;
     }
 

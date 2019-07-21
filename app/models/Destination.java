@@ -10,7 +10,7 @@ import javax.persistence.*;
 import java.util.*;
 
 @Entity
-public class Destination extends Model {
+public class Destination extends Model implements AlbumOwner {
 
     @Id
     public Integer destid;
@@ -45,6 +45,10 @@ public class Destination extends Model {
     @JsonIgnore
     @ManyToMany(cascade = CascadeType.ALL)
     public Set<TravellerType> travellerTypes;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "user")
+    public List<Album> albums;
 
     public static Finder<String,Destination> findString = new Finder<>(Destination.class);
     public static Finder<Integer,Destination> find = new Finder<>(Destination.class);
@@ -297,5 +301,10 @@ public class Destination extends Model {
         this.longitude = newDestination.getLongitude();
         this.latitude = newDestination.getLatitude();
         this.destType = newDestination.getDestType();
+    }
+
+    @Override
+    public List<Album> getAlbums() {
+        return null;
     }
 }

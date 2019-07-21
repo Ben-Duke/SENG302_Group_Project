@@ -27,6 +27,7 @@ public abstract class Media extends Model {
     @JoinColumn(name = "user", referencedColumnName = "userid")
     public User user;
 
+    @JsonIgnore
     @ManyToMany(mappedBy = "media")
     public List<Album> albums;
 

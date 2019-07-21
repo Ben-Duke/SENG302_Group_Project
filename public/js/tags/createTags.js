@@ -1,4 +1,5 @@
 var user;
+var toAddTagList = new Set();
 
 addTagAddTagListeners();
 
@@ -14,17 +15,13 @@ function addTagAddTagListeners() {
         }
     }
 
-    function addTag(name) {
-
-    }
-
     try {
         const addInput = document.getElementById("tag-add");
         const addList = document.getElementById("tag-add-results");
         addInput.addEventListener('input', (e) => {
             if (e.constructor.name !== 'InputEvent') {
             // then this is a selection, not user input
-            redirectToTagPage(addInput.value, addList)
+            addTag(addInput.value);
         }
         while (addList.firstChild) {
             addList.removeChild(addList.firstChild);
@@ -36,12 +33,43 @@ function addTagAddTagListeners() {
     });
         addInput.addEventListener('keyup', e => {
             if (e.key === 'Enter') {
-            redirectToTagPage(addInput.value, addList);
+            addTag(addInput.value);
         }
     })
     } catch (err) {
         //do nothing. Just to avoid errors if the correct page is not loaded
     }
+}
+
+function addTag(name) {
+    let tagList = document.getElementById("tag-list");
+    let newTag = document.createElement("span");
+    let newText = document.createElement("span");
+    let newRemove = document.createElement("a");
+    let newIcon = document.createElement("i");
+    let input = document.getElementById("tag-add");
+    input.value = "";
+
+    newTag.className = "tag label label-info";
+    newTag.id = name;
+    newText.innerHTML = name;
+    newIcon.className = "remove glyphicon glyphicon-remove-sign glyphicon-white";
+    newRemove.onclick = function() {
+           tagList.removeChild(newTag);
+           toAddTagList.delete(name.toLowerCase());
+     }
+    newRemove.appendChild(newIcon);
+    newTag.appendChild(newText);
+    newTag.appendChild(newRemove);
+    if(!toAddTagList.has(name.toLowerCase())) {
+        toAddTagList.add(name.toLowerCase());
+        tagList.appendChild(newTag);
+    }
+
+}
+
+function addExistingTag(name) {
+
 }
 
 /**
@@ -64,6 +92,29 @@ function searchAddTags(query) {
         console.log(xhr.status + " " + textStatus + " " + errorThrown);
 });
 }
+
+/**
+ * Search the database for the tag and if it succeeds adds these tags to the datalist on the search bar
+ * @param query the tag to search for
+ */
+function searchAddTags(query) {
+    $.ajax({
+        type: 'PUT',
+        url: '/tags/search',
+        data: JSON.stringify({
+            search: query
+        }),
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    }).done((result) => {
+        addTagsToAddList(result)
+    }).fail((xhr, textStatus, errorThrown) => {
+        console.log(xhr.status + " " + textStatus + " " + errorThrown);
+});
+}
+
+
 
 /**
  * Adds a list of tags as the datalist for the search bar

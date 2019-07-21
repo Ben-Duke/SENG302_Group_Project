@@ -4,11 +4,7 @@ import accessors.DestinationAccessor;
 import accessors.TagAccessor;
 import accessors.TripAccessor;
 import accessors.UserPhotoAccessor;
-import models.Destination;
-import models.Tag;
-import models.Trip;
-import models.User;
-import models.UserPhoto;
+import models.*;
 import play.libs.Json;
 import play.mvc.Http;
 import play.mvc.Result;
@@ -260,6 +256,21 @@ public class TagController {
 
         return unauthorized();
 
+    }
+
+    public Result addTag(Http.Request request, TaggableModel itemToTag) {
+        if (itemToTag.getClass() == Destination.class) {
+            Destination destination = (Destination) itemToTag;
+            return addDestTag(request, destination.getDestId());
+        } else if (itemToTag.getClass() == Trip.class) {
+            Trip trip = (Trip) itemToTag;
+            return addTripTag(request, trip.getTripid());
+        } else if (itemToTag.getClass() == UserPhoto.class) {
+            UserPhoto userPhoto = (UserPhoto) itemToTag;
+            return addPhotoTag(request, userPhoto.getPhotoId());
+        } else {
+            return badRequest();
+        }
     }
 
     /**

@@ -1,15 +1,17 @@
-@(taggableModel: TaggableModel, user: User)
+@(user: User)
+
+<head>
+    <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/createTag.css")">
+</head>
 
 <div class="container">
 
-    <input id="tag-add" list="tag-add-results" name="Tag Add" title="Tag Add" placeholder="Add Tags">
-    <datalist id="tag-add-results"></datalist>
 
-    <div class="btn-group">
-        @for(tag <- taggableModel.getTags) {
-            <button type="button" class="btn btn-primary">@tag.getName <a id="delete@tag.getTagId"><span class="badge">X</span></a></button>
-        }
+    <div id ="tag-list">
+        <input type="text" id="tag-add" list="tag-add-results" name="Tag Add" title="Tag Add" placeholder="Add Tags">
     </div>
+
+    <datalist id="tag-add-results"></datalist>
 
 </div>
 

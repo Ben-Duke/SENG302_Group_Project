@@ -204,6 +204,12 @@ $('#addProfilePhoto').on('shown.bs.modal', function (e) {
  * Function to search for private destinations.
  * Updates the rows of tables with class "privateDestinations" depending on what's entered in the input form with class name "searchDestinations"
  */
+
+$('#photoForm').bind('keypress keydown keyup', function(e){
+        if(e.keyCode == 13) { e.preventDefault(); }
+     });
+
+
 function searchDestination(){
     // Declare variables
     var input, elements, filter, tables, table, tr, th, td, td2, i, txtValue, txtValue2, txtValue3;

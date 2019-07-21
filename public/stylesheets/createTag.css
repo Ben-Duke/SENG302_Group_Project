@@ -22,3 +22,15 @@
   color: #fff;
   margin-bottom: 2px;
 }
+
+#tag-line {
+      overflow: scroll; /* for CSS3 lacking browsers */
+      overflow: scroll hidden;
+      display: inline-block;
+      white-space: nowrap;
+      width:390px;
+      height:50px;
+    }
+    span, input {
+      display: inline-block;
+    }

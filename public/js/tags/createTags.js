@@ -42,7 +42,7 @@ function addTagAddTagListeners() {
 }
 
 function addTag(name) {
-    let tagList = document.getElementById("tag-list");
+    let tagList = document.getElementById("tag-line");
     let newTag = document.createElement("span");
     let newText = document.createElement("span");
     let newRemove = document.createElement("a");

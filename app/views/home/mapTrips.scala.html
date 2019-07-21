@@ -1,0 +1,40 @@
+@(user : User)
+
+<style>
+        #map {
+            height: 100%;
+            position: relative;
+            z-index: 1;
+
+        }
+        #control {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            height: 80%;
+            width: 425px;
+            right: 7%;
+            z-index: 2;
+
+            text-align: center;
+            border-radius: 10px;
+            background-color: white;
+        }
+</style>
+
+
+@main(user, "Map") {
+
+
+    <div id="map"></div>
+    <div id="control">
+        <h2>Hello</h2>
+    </div>
+
+    <script src="@routes.Assets.at("js/map/map.js")"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDCyC_ON0GgSmJIfPlL7oke5PZgbR8TLbg&callback=initMap&libraries=drawing,places"
+    async defer></script>
+
+
+
+}

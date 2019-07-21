@@ -9,6 +9,7 @@ var isExistingPhoto = false;
 var photoIdToEdit;
 
 
+
 /**
  * This function is called when an image file is chosen and uploaded by the user.
  * Creates a crop canvas using cropperjs where the user can crop their image, which is stored into a croppedCanvas variable.
@@ -20,7 +21,7 @@ var loadFile = function (event) {
     var output = document.getElementById('change-profile-pic');
     var upload = document.getElementById('selectProfileInput');
 
-    if(upload.files[0].size > 2097152){
+    if(upload.files[0].size > 2097152) {
         alert("File is too big! (larger than 2MB)");
         upload.value = "";
     } else {
@@ -57,6 +58,9 @@ var loadFile = function (event) {
     }
 };
 
+
+
+
 /**
  * This function is called when the user clicks the upload button to upload the cropped canvas image to the database.
  * Sends an AJAX post request to the backend with the photo's information to store the photo within the database.
@@ -90,32 +94,37 @@ $('#save-profile').click(function (eve){
 
 
     eve.preventDefault();
-    var formData = new FormData();
-    croppedCanvas.toBlob(function(blob){
-        formData.append('picture', blob, filename);
-        var token =  $('input[name="csrfToken"]').attr('value');
-        $.ajaxSetup({
-            beforeSend: function(xhr) {
-                xhr.setRequestHeader('Csrf-Token', token);
-            }
+    var searchbar = document.getElementById('album-search-profile');
+    if (searchbar.value === null || searchbar.value === "") {
+        alert("File must be in an album");
+    } else {
+        var formData = new FormData();
+        croppedCanvas.toBlob(function (blob) {
+            formData.append('picture', blob, filename);
+            formData.append('album', searchbar.value);
+            var token = $('input[name="csrfToken"]').attr('value');
+            $.ajaxSetup({
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader('Csrf-Token', token);
+                }
+            });
+            $.ajax({
+                type: 'POST',
+                processData: false,
+                contentType: false,
+                url: '/users/home/profilePicture',
+                data: formData,
+                success: function (data, textStatus, xhr) {
+                    if (xhr.status == 200) {
+                        $("#selectProfileInput").show();
+                        window.location = '/users/home'
+                    } else {
+                        window.location = '/users/home'
+                    }
+                }
+            })
         });
-        $.ajax({
-            type: 'POST',
-            processData: false,
-            contentType: false,
-            url:'/users/home/profilePicture',
-            data: formData,
-            success: function(data, textStatus, xhr){
-                if(xhr.status == 200) {
-                    $("#selectProfileInput").show();
-                    window.location = '/users/home'
-                }
-                else{
-                    window.location = '/users/home'
-                }
-            }
-        })
-    });
+    }
 });
 
 /**

@@ -7,6 +7,7 @@ import io.ebean.Model;
 import javax.persistence.*;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -56,19 +57,22 @@ public class Album extends Model {
 
     public void setTitle(String title) { this.title = title; }
 
-    public void addMedia(Media media) { this.media.add(media); }
-    public void removeMedia(Media media) { this.media.remove(media); }
-    public void removeAllMedia() { this.media = new ArrayList<>(); }
+    public void addMedia(Media media) {
+        this.media.add(media);
+    }
+    public void removeMedia(Media media) {
+        this.media.remove(media);
+    }
+    public void removeAllMedia() {
+        this.media = new ArrayList<>();
+    }
 
     public boolean userIsOwner(User user) {
         return this.getUser().getUserid() == user.getUserid();
     }
 
     public boolean isPublic() {
-        // Loop through all media item testing for
-        // publicity. If all private then return false
-        // AC7
-        return true;
+        return getVisibility();
     }
 
     public boolean containsMedia(Media testedMedia) {
@@ -81,6 +85,50 @@ public class Album extends Model {
     }
 
     public static Finder<Integer, Album> find = new Finder<>(Album.class);
+
+    /**
+     * Filter out the private media returning a list with only public media
+     * @return a list with only public media
+     */
+    private List<Media> filterOutPrivateMedia() {
+        List<Media> publicList = new ArrayList<Media>();
+        for(Media media: this.media) {
+            if(media.isMediaPublic) {
+                publicList.add(media);
+            }
+        }
+        return Collections.unmodifiableList(publicList);
+    }
+
+    /**
+     * View the list of all media in the album
+     * @param filterPrivateMedia filter out private media if true
+     * @return a list of all media in the album (may be filtered)
+     */
+    public List<Media> viewAllMedia(Boolean filterPrivateMedia) {
+        List<Media> mediaList = Collections.unmodifiableList(this.media);
+        if(filterPrivateMedia) {
+            mediaList = filterOutPrivateMedia();
+        }
+        return mediaList;
+    }
+
+    /**
+     * Iterate over all media in the album checking the visibility, getting the album visibility accordingly
+     */
+    private Boolean getVisibility() {
+        Boolean containsPublicMedia = false;
+        for(Media media: this.media) {
+            if(media.isMediaPublic) {
+                containsPublicMedia = true;
+            }
+        }
+        if (containsPublicMedia) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 
     public String toString() {
         return "Album title: "+this.getTitle()+

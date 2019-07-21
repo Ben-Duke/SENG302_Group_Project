@@ -1,17 +1,33 @@
 @(album: Album, user: User)
 
+@allMedia = {album.viewAllMedia(true)}
+
 @main(user, "View Album") {
 
     <head>
+        <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/album.css")">
         <title>Album</title>
     </head>
 
-    <body>
-        <h2>Hello</h2>
+    <body onpageshow="getAlbum(@user.getUserid, @album.getAlbumId, @album.userIsOwner(user))">
+    <h2 style="text-align: center;">@album.getTitle</h2>
 
-        <p>@album.getTitle()</p>
+    <p id="para"> </p>
+    <div class="container">
+        <div class="row">
+            <!--Media items added through Javascript-->
+            <div id="col1" class="column"></div>
+            <div id="col2" class="column"></div>
+            <div id="col3" class="column"></div>
+            <div id="col4" class="column"></div>
+        </div>
+    </div>
 
     </body>
 
+    <script>
+
+    </script>
+    <script src="@routes.Assets.at("js/album/albumView.js")" type="text/javascript"></script>
 
 }

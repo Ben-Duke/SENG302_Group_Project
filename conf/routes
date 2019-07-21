@@ -280,6 +280,10 @@ GET     /users/treasurehunts/delete/:id                    controllers.TreasureH
 #Albums index page
 GET     /users/albums   controllers.AlbumController.indexAlbum(request : Request)
 
+
+#Get JSON of one album
+GET     /users/albums/get/:all/:id   controllers.AlbumController.getAlbum(request : Request, id : Integer, all : Boolean)
+
 #View one album
 GET     /users/albums/:id   controllers.AlbumController.viewAlbum(request : Request, id : Integer)
 

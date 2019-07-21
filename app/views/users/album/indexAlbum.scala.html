@@ -1,53 +1,72 @@
+@import factories.UserFactory
+@import views.html.users.profile.countryErrorMessage
 @(albums: List[Album], user: User)
 
 @main(user, "Albums") {
 
     <head>
-        <title>Album</title>
+        <link rel="stylesheet" href="@routes.Assets.at("stylesheets/cropper.min.css")">
+        <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/home.css")">
+        <title>Home</title>
     </head>
 
-    <body>
-        <h2>Users Albums displayed here</h2>
+    <br>
+
+    <div class="container">
+        @if(albums.isEmpty) {
+            <div class="well" style="width: 250px; height: 50px"><p>You don't have any albums yet.</p></div>
+        } else {
+            <input type="text" id="searchAlbums" onkeyup="searchAlbum()" placeholder="Search for albums">
+        }
+    </div>
+
+    <div class="container">
+        <div class="row" id="albumList">
+        @for(album <- albums) {
+            <div class="col-sm-3 album">
+                <a href="@routes.AlbumController.viewAlbum(album.getAlbumId)">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">@album.getTitle()</h3>
+                            @album.getMedia.size() items
+                        </div>
+                        <div class="panel-body" style="min-height: 150px; max-height: 150px; height: 150px;">
+                            <div id="Carousel@album.getAlbumId" class="carousel slide" data-ride="carousel">
+
+                                    <!-- Wrapper for slides -->
+                                <div class="carousel-inner">
+                                    @if(0 < album.viewAllMedia(true).size()) {
+                                        <div class="item active">
+                                            <img class="center" id=@{album.viewAllMedia(true).get(0).getUrl()} style="width:140px;height:125px;" src="@{routes.HomeController.index(album.viewAllMedia(true).get(0).getUrlWithPath)}" alt="User Image">
+                                        </div>
+                                    } else {
+                                        <div class="item active">
+                                            <img class="center"  style="width:140px;height:125px;"src="/assets/images/destinationPlaceHolder.png">
+                                        </div>
+                                    }
 
 
+                                    @for(i <- 1 to 2) {
+                                        @if(i < album.viewAllMedia(true).size()){
+                                            <div class="item">
+                                                <img class="center" id=@{album.viewAllMedia(true).get(i).getUrl()} style="width:140px;height:125px;" src="@{routes.HomeController.index(album.viewAllMedia(true).get(i).getUrlWithPath)}" alt="User Image">
+                                            </div>
+                                        }
+                                    }
+                                </div>
 
-        <h3>Create album, this will be somewhere else</h3>
-        <input id="albumTitleInput" type="text">
-        <button onclick="
-            createAlbum(
-                '@routes.AlbumController.createAlbum()',
-                document.getElementById('albumTitleInput').value,
-                null)
-        ">Create</button>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        }
+        </div>
+    </div>
 
-
-        <button onclick="
-            manipulateMediaInAlbum(
-            '@routes.AlbumController.addMediaToAlbum(1)',
-            [1, 2, 3])
-        ">Add media to album</button>
-
-        <button onclick="
-            manipulateMediaInAlbum(
-                    '@routes.AlbumController.removeMediaFromAlbum(1)',
-                    [1, 2])
-        ">Remove media from album</button>
-
-        <button onclick="
-            manipulateMediaInAlbum(
-                    '@routes.AlbumController.moveMediaToAlbum(1)',
-                    [1, 2])
-        ">Move media to album</button>
-
-        <button onclick="
-            updateAlbum(
-                    '@routes.AlbumController.updateAlbum(1)',
-                    document.getElementById('albumTitleInput').value)
-        ">Update album title</button>
-
-    </body>
 
     <script src="@routes.Assets.at("js/album/albumMediaManipulationRequests.js")" type="text/javascript"></script>
+    <script src="@routes.Assets.at("js/album/albumSearch.js")" type="text/javascript"></script>
 
 
 }

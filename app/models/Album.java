@@ -26,7 +26,10 @@ public class Album extends Model {
     @JoinColumn(name = "user", referencedColumnName = "userid")
     public User user;
 
-    private Destination destination;
+    @JsonIgnore
+    @ManyToOne
+    @JoinColumn(name = "destination", referencedColumnName = "destinationid")
+    public Destination destination;
 
     private AlbumOwner owner;
 
@@ -34,19 +37,32 @@ public class Album extends Model {
 
     public Album(AlbumOwner owner, String title) {
         media = new ArrayList<>();
-        this.owner = owner;
+        setAlbumOwnerDetails(owner);
         this.title = title;
     }
     public Album(Media media, AlbumOwner owner, String title) {
         this.media = new ArrayList<>();
         this.media.add(media);
-        this.owner = user;
+        setAlbumOwnerDetails(owner);
         this.title = title;
     }
     public Album(List<Media> media, AlbumOwner owner, String title) {
         this.media = media;
-        this.owner = owner;
+        setAlbumOwnerDetails(owner);
         this.title = title;
+    }
+
+    private void setAlbumOwnerDetails(AlbumOwner owner) {
+        this.owner = owner;
+        if(owner instanceof User) {
+            user = (User) owner;
+        }
+        else if(owner instanceof Destination) {
+            destination = (Destination) owner;
+        }
+        else {
+            throw new IllegalArgumentException("Invalid AlbumOwner type");
+        }
     }
 
 

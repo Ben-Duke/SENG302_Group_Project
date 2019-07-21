@@ -24,7 +24,9 @@ public class Destination extends Model implements AlbumOwner {
     public double longitude;
     public boolean isPublic;
 
-
+    @JsonIgnore
+    @OneToMany(mappedBy = "destination")
+    private List<Album> albums;
 
     @ManyToOne
     public UserPhoto primaryPhoto;
@@ -45,10 +47,6 @@ public class Destination extends Model implements AlbumOwner {
     @JsonIgnore
     @ManyToMany(cascade = CascadeType.ALL)
     public Set<TravellerType> travellerTypes;
-
-    @JsonIgnore
-    @OneToMany(mappedBy = "user")
-    public List<Album> albums;
 
     public static Finder<String,Destination> findString = new Finder<>(Destination.class);
     public static Finder<Integer,Destination> find = new Finder<>(Destination.class);

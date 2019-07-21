@@ -1,4 +1,8 @@
-        .row {
+img {
+    cursor: pointer;
+}
+
+.row {
   display: flex;
   flex-wrap: wrap;
   padding: 0 4px;
@@ -69,6 +73,7 @@
 /* Hide the slides by default */
 .mySlides {
   display: none;
+  background-color: black;
 }
 
 /* Next & previous buttons */
@@ -114,7 +119,6 @@
 .caption-container {
   text-align: center;
   background-color: black;
-  padding: 2px 16px;
   color: white;
 }
 

@@ -1,3 +1,5 @@
+var slideIndex = 1;
+
 /**
  * Function to search for albums.
  * Updates the rows of photos with album titles matching the search term
@@ -16,33 +18,50 @@ function getAlbum(userId, albumId, isOwner){
             type: 'GET',
             url: '/users/albums/get/' + hidePrivate + '/' + albumId,
             contentType: 'application/json',
-            success: function(albumData){
-                for (i=0; i<albumData.length; i++) {
-                    var img1 = document.createElement("img");
-                    img1.setAttribute('id', i+1);
-                    img1.src = path + albumData[i];
-                    img1.class = "hover-shadow";
-                    img1.addEventListener('click', openModal);
-                    img1.addEventListener('click', currentSlide(i+1));
-                    if (i%4==0) {
-                        document.getElementById('col1').appendChild(img1);
-                    } else if (i%4==1){
-                        document.getElementById('col2').appendChild(img1);
-                    } else if (i%4==2){
-                        document.getElementById('col3').appendChild(img1);
-                    } else if (i%4==3){
-                        document.getElementById('col4').appendChild(img1);
-                    }
+            success: (albumData) => {
+                    addAlbum(albumData, path)
                 }
-            }
-    });
-    console.log("done");
+            });
 }
 
-// MDB Lightbox Init
-$(function () {
-$("#mdb-lightbox-ui").load("mdb-addons/mdb-lightbox-ui.html");
-});
+async function addAlbum(albumData, path) {
+    for (i=0; i<albumData.length; i++) {
+        await displayGrid(i, albumData[i], path);
+        await displaySlides(albumData[i], path);
+    }
+    showSlides(slideIndex);
+}
+
+async function displayGrid(i, url, path) {
+    var img1 = document.createElement("img");
+    img1.src = path + url;
+    img1.classList.add("hover-shadow");
+    img1.addEventListener('click', openModal);
+    img1.addEventListener('click', () => {
+        currentSlide(i+1)
+    });
+    if (i%4==0) {
+        document.getElementById('col1').appendChild(img1);
+    } else if (i%4==1){
+        document.getElementById('col2').appendChild(img1);
+    } else if (i%4==2){
+        document.getElementById('col3').appendChild(img1);
+    } else if (i%4==3){
+        document.getElementById('col4').appendChild(img1);
+    }
+}
+
+async function displaySlides(url, path) {
+    var lightBox = document.getElementById("lightbox-modal");
+    var mySlidesDiv = document.createElement("div");
+    mySlidesDiv.classList.add("mySlides");
+    var img1 = document.createElement("img");
+    img1.setAttribute('id', "img-" + (i+1));
+    img1.classList.add("center-block");
+    img1.src = path + url;
+    mySlidesDiv.appendChild(img1);
+    lightBox.appendChild(mySlidesDiv);
+}
 
 
 // Open the Modal
@@ -55,8 +74,7 @@ function closeModal() {
   document.getElementById("myModal").style.display = "none";
 }
 
-var slideIndex = 1;
-showSlides(slideIndex);
+
 
 // Next/previous controls
 function plusSlides(n) {
@@ -71,17 +89,13 @@ function currentSlide(n) {
 function showSlides(n) {
   var i;
   var slides = document.getElementsByClassName("mySlides");
-  var dots = document.getElementsByClassName("demo");
   var captionText = document.getElementById("caption");
   if (n > slides.length) {slideIndex = 1}
   if (n < 1) {slideIndex = slides.length}
   for (i = 0; i < slides.length; i++) {
     slides[i].style.display = "none";
   }
-  for (i = 0; i < dots.length; i++) {
-    dots[i].className = dots[i].className.replace(" active", "");
-  }
+  console.log(slides)
   slides[slideIndex-1].style.display = "block";
-  dots[slideIndex-1].className += " active";
-  captionText.innerHTML = dots[slideIndex-1].alt;
+
 }

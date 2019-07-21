@@ -433,6 +433,15 @@ public class TripController extends Controller {
         }
     }
 
+    public Result displayTripsOnMap(Http.Request request) {
+        User user = User.getCurrentUser(request);
+        if (user == null) { return redirect(routes.UserController.userindex()); }
+
+        List<Trip> trips = user.getTrips();
+
+        ok()
+    }
+
 
 }
 

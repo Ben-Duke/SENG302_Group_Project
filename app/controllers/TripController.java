@@ -9,6 +9,7 @@ import models.Destination;
 import models.Trip;
 import models.User;
 import models.Visit;
+import models.commands.Trips.CreateTripFromVisitsCommand;
 import models.commands.Trips.TripPageCommand;
 import models.commands.Visits.EditVisitCommand;
 import models.commands.Trips.DeleteTripCommand;
@@ -56,6 +57,23 @@ public class TripController extends Controller {
             return redirect(routes.UserController.userindex());
         }
     }
+
+
+    /**
+     * Create trips from a list of visits. To be used for the save trip button for the map trips story.
+     * @param visits a list of visits which are not linked a trip
+     * @param name the name of the trip
+     * @param user the user that's creating the trip
+     * @return created status code
+     */
+    public Result createTripFromVisits(List<Visit> visits, String name, User user) {
+
+        CreateTripFromVisitsCommand command = new CreateTripFromVisitsCommand(visits, name, user);
+        user.getCommandManager().executeCommand(command);
+        return created();
+
+    }
+
 
     /**
      * Renders the page to display visits of a trip given by the trip id.

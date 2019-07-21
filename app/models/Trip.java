@@ -1,5 +1,6 @@
 package models;
 
+import accessors.VisitAccessor;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import formdata.TripFormData;
@@ -60,6 +61,9 @@ public class Trip extends Model {
         this.user = user;
         this.visits = new ArrayList<>();
     }
+
+
+
     public Trip(){
     }
 
@@ -134,6 +138,16 @@ public class Trip extends Model {
     public void setRemovedVisits(Integer removedVisits) {
         this.removedVisits = removedVisits;
     }
+
+    public void removeAllVisits() {
+
+//        for (Visit visit : visits) {
+//            VisitAccessor.delete(visit);
+//        }
+        visits = new ArrayList<>();
+    }
+
+
 
     public boolean hasVisit(){
         if (visits != null) {

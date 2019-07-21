@@ -1,6 +1,9 @@
 package controllers;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import factories.TripFactory;
 import factories.VisitFactory;
 import formdata.TripFormData;
@@ -19,6 +22,7 @@ import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
+import views.html.home.mapTrips;
 import views.html.users.trip.*;
 
 import javax.inject.Inject;
@@ -439,7 +443,46 @@ public class TripController extends Controller {
 
         List<Trip> trips = user.getTrips();
 
-        ok()
+        return ok(mapTrips.render(user, trips));
+    }
+
+
+    /**
+     * Turns a users trips into and array of json node with each destinations
+     * coordinates
+     * @param request
+     * @return an ArrayNode of ArrayNodes of JsonNodes with lat and lng coordinates
+     */
+    public Result getTripsRoutesJson(Http.Request request) {
+        User user = User.getCurrentUser(request);
+        if (user == null) { return redirect(routes.UserController.userindex()); }
+
+        List<Trip> trips = user.getTrips();
+
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        ArrayNode tripNodes = objectMapper.createArrayNode();
+
+        for (Trip trip : trips) {
+
+            ArrayNode destinationNodes = objectMapper.createArrayNode();
+
+            for (Visit visit : trip.getOrderedVisits()) {
+                ObjectNode destinationNode = objectMapper.createObjectNode();
+
+                Destination destination = visit.getDestination();
+
+                destinationNode.put("lat", destination.getLatitude());
+                destinationNode.put("lng", destination.getLongitude());
+
+                destinationNodes.add(destinationNode);
+            }
+
+            tripNodes.add(destinationNodes);
+        }
+
+        return ok(tripNodes);
+
     }
 
 

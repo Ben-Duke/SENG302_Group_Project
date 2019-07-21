@@ -273,6 +273,12 @@ POST     /users/treasurehunts/edit/save/:id                    controllers.Treas
 #Delete treasure hunt
 GET     /users/treasurehunts/delete/:id                    controllers.TreasureHuntController.deleteTreasureHunt(request : Request, id : Integer)
 
+
+GET /users/trips/display/map     controllers.TripController.displayTripsOnMap(request : Request)
+
+GET /users/trips/fetch/trips_routes_json  controllers.TripController.getTripsRoutesJson(request : Request)
+
+
 # Undo
 +nocsrf
 PUT     /undo                                              controllers.UndoRedoController.undo(request: Request)

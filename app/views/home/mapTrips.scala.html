@@ -1,4 +1,4 @@
-@(user : User)
+@(user : User, trips : List[Trip])
 
 <style>
         #map {
@@ -27,11 +27,10 @@
 
 
     <div id="map"></div>
-    <div id="control">
-        <h2>Hello</h2>
-    </div>
+
 
     <script src="@routes.Assets.at("js/map/map.js")"></script>
+    <script src="@routes.Assets.at("js/destination/destinationMap.js")"></script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDCyC_ON0GgSmJIfPlL7oke5PZgbR8TLbg&callback=initMap&libraries=drawing,places"
     async defer></script>
 

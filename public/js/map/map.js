@@ -1,4 +1,4 @@
-var tripArray = [];
+var vistArray = [];
 
 let controlContent = document.getElementById('controlContent');
 
@@ -28,7 +28,7 @@ function initMap() {
 
     marker.setMap(map);
     var infowindow = new google.maps.InfoWindow({
-        content: "yay content <br> <button onclick='tripArray.push(`Marker 1`); console.log(tripArray)' >start a trip</button>"
+        content: "yay content <br> <button onclick='vistArray.push(`Marker 1`); controlContent.innerText = vistArray'' >start a trip</button>"
     });
 
     marker.addListener('click', function() {
@@ -36,7 +36,8 @@ function initMap() {
     });
 
     var infowindow2 = new google.maps.InfoWindow({
-        content: "second marker <br> <button onclick='tripArray.push(`Marker 2`); console.log(tripArray)'>Start a trip</button>"
+        content: "second marker <br> <button onclick='vistArray.push(`Marker 2`); controlContent.innerText = vistArray'>" +
+            "Start a trip</button>"
     });
 
     marker2.addListener('click', function() {

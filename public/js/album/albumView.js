@@ -7,7 +7,7 @@ var slideIndex = 1;
 function getAlbum(userId, albumId, isOwner){
     // Declare variables
     var col1, col2, col3, col4, album, path, hidePrivate;
-    path = "/assets/images/user_photos/user_" + userId + "/";
+    path = "/users/home/servePicture/";
     col1 = document.getElementById('col1');
     col2 = document.getElementById('col2');
     col3 = document.getElementById('col3');
@@ -34,7 +34,7 @@ async function addAlbum(albumData, path) {
 
 async function displayGrid(i, url, path) {
     var img1 = document.createElement("img");
-    img1.src = path + url;
+    img1.src = path + encodeURIComponent(url);
     img1.classList.add("hover-shadow");
     img1.addEventListener('click', openModal);
     img1.addEventListener('click', () => {

@@ -441,10 +441,12 @@ public class TripController extends Controller {
         User user = User.getCurrentUser(request);
         if (user == null) { return redirect(routes.UserController.userindex()); }
 
-        List<Trip> trips = user.getTrips();
+        List<Trip> trips = user.getTripsSorted();
+
 
         return ok(mapTrips.render(user, trips));
     }
+
 
 
     /**

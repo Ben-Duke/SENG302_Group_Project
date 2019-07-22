@@ -23,17 +23,22 @@ function initTripRoutes() {
     .then(routes => {
 
         for (var i = 0; i < routes.length; i++) {
-            console.log(routes[i]);
+            // console.log(routes[i]);
 
-        var flightPath = new google.maps.Polyline({
-            path: routes[i],
-            geodesic: true,
-            strokeColor: '#'+(Math.random()*0xFFFFFF<<0).toString(16),
-            strokeOpacity: 1.0,
-            strokeWeight: 2
+            var flightPath = new google.maps.Polyline({
+                path: routes[i],
+                geodesic: true,
+                strokeColor: '#'+(Math.random()*0xFFFFFF<<0).toString(16),
+                strokeOpacity: 1.0,
+                strokeWeight: 2
+            });
+
+            flightPath.setMap(window.globalMap);
+
+        flightPath.addListener('click', function() {
+            console.log("hello");
         });
 
-        flightPath.setMap(window.globalMap);
 
         }
     });

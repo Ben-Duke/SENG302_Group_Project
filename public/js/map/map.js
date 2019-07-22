@@ -5,24 +5,40 @@ let controlContent = document.getElementById('controlContent');
 function updateTripsTab(){
     controlContent.innerHTML = '';
     for(let i = 0; i < visitArray.length; i ++){
-        var visitDiv = document.createElement('div');
+        let visitDiv = document.createElement('div');
         visitDiv.innerText = visitArray[i]['name'];
         visitDiv.appendChild(document.createElement('br'));
+        //Arrival date code
         let arrivalDate = document.createElement('input');
-        arrivalDate.setAttribute('id', i+"arrivalid");
+        arrivalDate.setAttribute('id', i+"arrivalId");
+        arrivalDate.setAttribute('type', "date");
         arrivalDate.setAttribute('onblur', `
-        console.log(this.id + " would be saved in the array")`);
-
+        let id = this.id.slice(0,1);
+        visitArray[id].arrivalDate = this.value;
+        console.log(visitArray[id])`);
         arrivalDate.value =  visitArray[i]['arrivalDate'];
-
         visitDiv.appendChild(arrivalDate);
+
+        //Departure date code
+        let departureDiv = document.createElement('div');
+        let departureText = document.createElement('h2');
+        departureText.text = "Departure Date";
+        departureDiv.appendChild(departureText);
         let departureDate = document.createElement('input');
         departureDate.setAttribute('id', i+"departureId");
         departureDate.setAttribute('onblur', `
-        console.log(this.id + " would be saved in the array")`);
+        let id = this.id.slice(0,1);
+        visitArray[id].departureDate = this.value;
+        console.log(visitArray[id])`);
+        departureDate.setAttribute('type', "date");
         departureDate.value = visitArray[i]['departureDate'];
+        departureDiv.appendChild(departureDate);
         visitDiv.appendChild(departureDate);
+
+        //Delete button code
         let deleteButton = document.createElement('button');
+        deleteButton.innerText = "X"
+        deleteButton.setAttribute('style', 'background-color:red; text-color:white; color: white;');
         deleteButton.setAttribute('id', i+"deleteId");
         deleteButton.setAttribute('onclick','visitArray.pop(this.id.slice(0,1)); console.log(`deleted item`); updateTripsTab()');
         visitDiv.appendChild(deleteButton);

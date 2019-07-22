@@ -1,12 +1,10 @@
 package utilities;
 
+import accessors.TagAccessor;
 import com.fasterxml.jackson.databind.JsonNode;
 import controllers.ApplicationManager;
 import controllers.routes;
-import models.Nationality;
-import models.Passport;
-import models.TravellerType;
-import models.User;
+import models.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import play.libs.Json;
@@ -394,6 +392,26 @@ public class UtilityFunctions {
         Set countrySet = new TreeSet<String>();
         countrySet.addAll(countries);
         return countrySet;
+    }
+
+    /**
+     * Turn a List of Strings into a set of tags replacing them with existing ones if needed
+     * @param tagList the list of strings to make into tags
+     * @return a set of tags
+     */
+    public static Set<Tag> tagLiteralsAsSet(ArrayList<String> tagList) {
+        Set<Tag> tagSet = new HashSet<>();
+        for (String tagName : tagList) {
+            Tag existingTag = TagAccessor.getTagByName(tagName.toLowerCase());
+            if(existingTag == null) {
+                Tag newTag = new Tag(tagName);
+                TagAccessor.insert(newTag);
+                tagSet.add(new Tag(tagName));
+            } else {
+                tagSet.add(existingTag);
+            }
+        }
+        return tagSet;
     }
 
 

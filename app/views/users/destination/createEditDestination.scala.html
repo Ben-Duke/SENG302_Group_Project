@@ -13,16 +13,28 @@
     </head>
 
     @if(destId == null) {
-        <h1>Create Destination</h1>
-        @helper.form(action = helper.CSRF(routes.DestinationController.saveDestinationFromRequest())) {
-            @formBody()
-        }
-    } else {
-        <h1>Edit Destination</h1>
-        @helper.form(action = helper.CSRF(routes.DestinationController.updateDestination(destId))) {
-            @formBody()
-        }
-    }
+        <div class="container">
+            <div class="row">
+                <h1>Create Destination</h1>
+                @users.tag.createSearchTags(user)
+            </div>
+
+            <div class="row">
+                @helper.form(action = helper.CSRF(routes.DestinationController.saveDestinationFromRequest())) {
+                @formBody()
+                }
+                } else {
+                <h1>Edit Destination</h1>
+                @helper.form(action = helper.CSRF(routes.DestinationController.updateDestination(destId))) {
+                @formBody()
+                }
+                }
+            </div>
+
+
+
+
+        </div>
 
 
     <div id="legend"><h3>Legend</h3></div>

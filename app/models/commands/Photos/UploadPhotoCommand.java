@@ -53,7 +53,6 @@ public class UploadPhotoCommand extends HomePageCommand {
             UserPhotoAccessor.update(userPhoto);
 
         }
-        UserPhotoAccessor.update(userPhoto);
 
     }
 

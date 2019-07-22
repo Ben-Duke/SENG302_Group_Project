@@ -403,12 +403,12 @@ public class UtilityFunctions {
         Set<Tag> tagSet = new HashSet<>();
         for (String tagName : tagList) {
             Tag existingTag = TagAccessor.getTagByName(tagName.toLowerCase());
-            if(existingTag == null) {
-                Tag newTag = new Tag(tagName);
-                TagAccessor.insert(newTag);
-                tagSet.add(new Tag(tagName));
-            } else {
+            if(existingTag != null) {
                 tagSet.add(existingTag);
+            } else {
+                Tag newTag = new Tag(tagName.toLowerCase());
+                tagSet.add(newTag);
+                TagAccessor.insert(newTag);
             }
         }
         return tagSet;

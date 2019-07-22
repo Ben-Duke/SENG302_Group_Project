@@ -119,7 +119,8 @@ public class HomeController {
             UserPhoto newPhoto = new UserPhoto(origionalFilePath, isPublic, false, user);
             String unusedPhotoUrl = newPhoto.getUnusedUserPhotoFileName();
             newPhoto.setUrl(unusedPhotoUrl);
-            UploadPhotoCommand uploadPhotoCommand = new UploadPhotoCommand(newPhoto, fileObject, UtilityFunctions.tagLiteralsAsSet(tags));
+            Set uniqueTags = UtilityFunctions.tagLiteralsAsSet(tags);
+            UploadPhotoCommand uploadPhotoCommand = new UploadPhotoCommand(newPhoto, fileObject, uniqueTags);
             user.getCommandManager().executeCommand(uploadPhotoCommand);
             return redirect(routes.HomeController.showhome());
         } else {

@@ -47,6 +47,34 @@ function initTripRoutes() {
 
 
 
+var currentlyDisplayedTrip;
+/**
+ * Displays the given trip in the table and centers on map.
+ * @param tripId The id of the trip to be displayed
+ * @param startLat the latitude to zoom to
+ * @param startLng the longitude to zoom to
+ */
+function displayTrip(tripId, startLat, startLng) {
+
+    if (currentlyDisplayedTrip !== undefined) {
+        document.getElementById("tripTable_"+currentlyDisplayedTrip).style.display = "none";
+    }
+
+    currentlyDisplayedTrip = tripId;
+
+    document.getElementById("tripTable_"+tripId).style.display = "initial";
+
+
+    var tripStartLatLng = new google.maps.LatLng(
+        startLat, startLng
+    );
+
+    window.globalMap.setCenter(tripStartLatLng);
+    window.globalMap.setZoom(9);
+
+}
+
+
 
 function initPlacesAutocomplete() {
     var input = document.getElementById('placesAutocomplete');

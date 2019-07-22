@@ -40,14 +40,43 @@
                     <th></th>
                 </tr>
             </thead>
-            <tbody>
+            @for(trip <- trips) {
 
+
+            <tbody id="tripTable_@trip.getTripid()" style="display: none;">
+            @for(visit <- trip.getOrderedVisits()){
+                <tr id=@visit.getVisitid()>
+                    <th scope ="row">@visit.getDestination().getDestName()</th>
+                    <td>@visit.getDestination().getDestType()</td>
+                    <td>@visit.getDestination().getCountry()
+                        @if(!visit.getDestination().getIsCountryValid()) {
+                            <span style="color:red">invalid country</span>
+                        }
+                    </td>
+                    <td>@visit.getArrival()</td>
+                    <td>@visit.getDeparture()</td>
+                    <td><a href=@routes.TripController.editvisit(visit.visitid) class="btn btn-primary">Edit</a></td>
+                    <td><button class="btn btn-danger" onclick="sendDeleteVisitRequest(
+                            '@routes.TripController.deletevisit(visit.getVisitid())',
+                            '@routes.TripController.displaytrip(trip.tripid)',
+                            '@routes.TripController.displaytrip(trip.tripid)',
+                            '@routes.TripController.displaytrip(trip.tripid)',
+                            '@routes.TripController.displaytrip(trip.tripid)')">Delete</button></td>
+                </tr>
+                }
             </tbody>
+
+            }
+
         </table>
 
         <div class="list-group">
             @for(trip <- trips) {
-                <a onclick="" class="list-group-item list-group-item-action">
+
+                <a onclick="displayTrip(@trip.getTripid(),
+                @trip.getOrderedVisits().get(0).getDestination().getLatitude(),
+                    @trip.getOrderedVisits().get(0).getDestination().getLongitude())"
+                class="list-group-item list-group-item-action">
                 @if(trip.getTripStart() != null){
                     @trip.getTripName() | Arrival date: @trip.getTripStart()
                 } else{

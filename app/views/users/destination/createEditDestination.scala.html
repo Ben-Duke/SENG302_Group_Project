@@ -5,145 +5,145 @@
 @main(user, "Destinations") {
 
 
-    <head>
-        <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/destination/indexDestination.css")">
-        <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/destination/mapStyle.css")">
-        <title>Simple Map</title>
-        <meta name="viewport" content="initial-scale=1.0">
-    </head>
+<head>
+    <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/destination/indexDestination.css")">
+    <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/destination/mapStyle.css")">
+    <title>Simple Map</title>
+    <meta name="viewport" content="initial-scale=1.0">
+</head>
 
-    @if(destId == null) {
-        <div class="container">
-            <div class="row">
-                <h1>Create Destination</h1>
-                @users.tag.createSearchTags(user)
-            </div>
+@if(destId == null) {
+<div class="container">
+    <div class="row">
+        <h1>Create Destination</h1>
+        @users.tag.createSearchTags(user)
+    </div>
 
-            <div class="row">
-                @helper.form(action = helper.CSRF(routes.DestinationController.saveDestinationFromRequest())) {
-                @formBody()
-                }
-                } else {
-                <h1>Edit Destination</h1>
-                @helper.form(action = helper.CSRF(routes.DestinationController.updateDestination(destId))) {
-                @formBody()
-                }
-                }
-            </div>
-
-
-
-
-        </div>
-
-
-    <div id="legend"><h3>Legend</h3></div>
-    <div id="map"></div>
-
-
-    <div>
-        Portions of this page are reproduced from work created and
-        <a href="https://developers.google.com/readme/policies/">
-            shared by Google</a> and used according to terms described in the
-        <a href="https://creativecommons.org/licenses/by/3.0/">
-            Creative Commons 3.0 Attribution License</a>. Links to origional
-        works:
-        <a href="https://developers.google.com/maps/documentation/javascript/adding-a-google-map">
-            adding-a-google-map</a>,
-        <a href="https://developers.google.com/maps/documentation/javascript/localization">
-            localization</a>,
-        <a href="https://developers.google.com/maps/documentation/javascript/adding-a-legend">
-            adding-a-legend</a>,
-        <a href="https://developers.google.com/maps/documentation/javascript/events">
-            events</a>,
-        <a href="https://developers.google.com/maps/documentation/javascript/markers">
-            markers</a>.
+    <div class="row">
+        @helper.form(action = helper.CSRF(routes.DestinationController.saveDestinationFromRequest()), 'id -> "createDestinationForm") {
+        @formBody()
+        }
+        } else {
+        <h1>Edit Destination</h1>
+        @helper.form(action = helper.CSRF(routes.DestinationController.updateDestination(destId))) {
+        @formBody()
+        }
+        }
     </div>
 
 
-    <script src="@routes.Assets.at("js/destination/indexDestination.js")" type="text/javascript"></script>
+
+
+</div>
+
+
+<div id="legend"><h3>Legend</h3></div>
+<div id="map"></div>
+
+
+<div>
+    Portions of this page are reproduced from work created and
+    <a href="https://developers.google.com/readme/policies/">
+        shared by Google</a> and used according to terms described in the
+    <a href="https://creativecommons.org/licenses/by/3.0/">
+        Creative Commons 3.0 Attribution License</a>. Links to origional
+    works:
+    <a href="https://developers.google.com/maps/documentation/javascript/adding-a-google-map">
+        adding-a-google-map</a>,
+    <a href="https://developers.google.com/maps/documentation/javascript/localization">
+        localization</a>,
+    <a href="https://developers.google.com/maps/documentation/javascript/adding-a-legend">
+        adding-a-legend</a>,
+    <a href="https://developers.google.com/maps/documentation/javascript/events">
+        events</a>,
+    <a href="https://developers.google.com/maps/documentation/javascript/markers">
+        markers</a>.
+</div>
+
+
+<script src="@routes.Assets.at("js/destination/indexDestination.js")" type="text/javascript"></script>
     <script src="@routes.Assets.at("js/destination/destinationMap.js")"></script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDCyC_ON0GgSmJIfPlL7oke5PZgbR8TLbg&callback=initCreateDestinationMap&libraries=drawing"
-    async defer></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDCyC_ON0GgSmJIfPlL7oke5PZgbR8TLbg&callback=initCreateDestinationMap&libraries=drawing"
+        async defer></script>
 
 }
 
-    @formBody()= {
-        <fieldset>
-                <!-- Name -->
-            @text(destForm("destName"),
-                label = "Destination Name",
-                placeholder = "destination name",
-                help = "Please enter the destination. (required)")
+@formBody()= {
+<fieldset>
+    <!-- Name -->
+    @text(destForm("destName"),
+    label = "Destination Name",
+    placeholder = "destination name",
+    help = "Please enter the destination. (required)")
 
-            @views.html.bootstrap3.select(destForm("country"),
-                label = "Country",
-                optionMap = countryMap,
-                isMultiple = false,
-                help= "Select a country",
-            )
+    @views.html.bootstrap3.select(destForm("country"),
+    label = "Country",
+    optionMap = countryMap,
+    isMultiple = false,
+    help= "Select a country",
+    )
 
-            @text(destForm("district"),
-                label = "District",
-                placeholder = "district",
-            )
+    @text(destForm("district"),
+    label = "District",
+    placeholder = "district",
+    )
 
-            @text(destForm("latitude"),
-                label = "Latitude",
-                placeholder = "latitude (click on map)"
-            )
+    @text(destForm("latitude"),
+    label = "Latitude",
+    placeholder = "latitude (click on map)"
+    )
 
-            @text(destForm("longitude"),
-                label = "Longitude",
-                placeholder = "longitude (click on map)"
-            )
+    @text(destForm("longitude"),
+    label = "Longitude",
+    placeholder = "longitude (click on map)"
+    )
 
-            @views.html.bootstrap3.select(destForm("destType"),
-                label = "Type",
-                optionMap = typeMap,
-                isMultiple = false,
-                help = "Select a type")
-        </fieldset>
+    @views.html.bootstrap3.select(destForm("destType"),
+    label = "Type",
+    optionMap = typeMap,
+    isMultiple = false,
+    help = "Select a type")
+</fieldset>
 
-        <p>
-            <div class="form-group actions">
-                <div class="col-sm-offset-2 col-sm-10">
-                    <input id="submit" type="submit" value="Submit" class="btn btn-primary"/>
-                    @if(destId != null) {   @*Button implementation only works for editing an existing destination*@
-                        <a class="btn btn-default" href="@routes.TravellerTypeController.updateDestinationTravellerType(destId)" role="button">
-                            Update destination traveller type</a>
-                    }
-                    <a class="btn btn-danger" href="@routes.DestinationController.indexDestination()" role="button">Cancel</a>
-                </div>
-            </div>
+<p>
+<div class="form-group actions">
+    <div class="col-sm-offset-2 col-sm-10">
+        <input id="submit" type="submit" value="Submit" class="btn btn-primary"/>
+        @if(destId != null) {   @*Button implementation only works for editing an existing destination*@
+        <a class="btn btn-default" href="@routes.TravellerTypeController.updateDestinationTravellerType(destId)" role="button">
+            Update destination traveller type</a>
+        }
+        <a class="btn btn-danger" href="@routes.DestinationController.indexDestination()" role="button">Cancel</a>
+    </div>
+</div>
 
-            <div style="margin-top: 50px">
-                @if(flash.containsKey("privateDestinationExists")) {
-                    <div class="well">
-                        <div id="error-message" class="text-danger">
-                        @flash.get("privateDestinationExists")
-                        </div>
-                    </div>
-                }
-
-                @if(flash.containsKey("publicDestinationExists")) {
-                    <div class="well">
-                        <div id="error-message" class="text-danger">
-                        @flash.get("publicDestinationExists")
-                        </div>
-                    </div>
-                }
-
-                @if(flash.containsKey("countryInvalid")) {
-                    <div class="well">
-                        <div id="error-message" class="text-danger">
-                        @flash.get("countryInvalid")
-                        </div>
-                    </div>
-                }
-            </div>
-        </p>
-
+<div style="margin-top: 50px">
+    @if(flash.containsKey("privateDestinationExists")) {
+    <div class="well">
+        <div id="error-message" class="text-danger">
+            @flash.get("privateDestinationExists")
+        </div>
+    </div>
     }
+
+    @if(flash.containsKey("publicDestinationExists")) {
+    <div class="well">
+        <div id="error-message" class="text-danger">
+            @flash.get("publicDestinationExists")
+        </div>
+    </div>
+    }
+
+    @if(flash.containsKey("countryInvalid")) {
+    <div class="well">
+        <div id="error-message" class="text-danger">
+            @flash.get("countryInvalid")
+        </div>
+    </div>
+    }
+</div>
+</p>
+
+}
 
 

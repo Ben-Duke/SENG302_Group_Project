@@ -182,6 +182,7 @@ public class DestinationController extends Controller {
         User user = User.getCurrentUser(request);
 
         if (user != null) { // checks if a user is logged in
+                ArrayList<String> tags = new ArrayList<>();
                 Result errorForm = validateEditCreateForm(request, user, null);
                 if (errorForm != null) {
                     return errorForm;
@@ -191,7 +192,11 @@ public class DestinationController extends Controller {
                     newDestination.setUser(user);
                     newDestination.setCountryValid(true);
                     newDestination.save();
-
+                    Map<String, String[]> dataPart = request.body().asMultipartFormData().asFormUrlEncoded();
+                    if (dataPart.get("tags[]") != null) {
+                        tags = new ArrayList<String>(Arrays.asList(dataPart.get("tags[]")));
+                        System.out.println(tags);
+                    }
 
                     return redirect(routes.DestinationController.indexDestination());
                 }

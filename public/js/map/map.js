@@ -1,7 +1,34 @@
-var vistArray = [];
+var visitArray = [];
 
 let controlContent = document.getElementById('controlContent');
 
+function updateTripsTab(){
+    controlContent.innerHTML = '';
+    for(let i = 0; i < visitArray.length; i ++){
+        var visitDiv = document.createElement('div');
+        visitDiv.innerText = visitArray[i]['name'];
+        visitDiv.appendChild(document.createElement('br'));
+        let arrivalDate = document.createElement('input');
+        arrivalDate.setAttribute('id', i+"arrivalid");
+        arrivalDate.setAttribute('onblur', `
+        console.log(this.id + " would be saved in the array")`);
+
+        arrivalDate.value =  visitArray[i]['arrivalDate'];
+
+        visitDiv.appendChild(arrivalDate);
+        let departureDate = document.createElement('input');
+        departureDate.setAttribute('id', i+"departureId");
+        departureDate.setAttribute('onblur', `
+        console.log(this.id + " would be saved in the array")`);
+        departureDate.value = visitArray[i]['departureDate'];
+        visitDiv.appendChild(departureDate);
+        let deleteButton = document.createElement('button');
+        deleteButton.setAttribute('id', i+"deleteId");
+        deleteButton.setAttribute('onclick','visitArray.pop(this.id.slice(0,1)); console.log(`deleted item`); updateTripsTab()');
+        visitDiv.appendChild(deleteButton);
+        controlContent.appendChild(visitDiv);
+    }
+}
 function initMap() {
     var myLatLng = {lat: -43.522057156877615, lng: 172.62360347218828};
 
@@ -17,18 +44,20 @@ function initMap() {
     var marker = new google.maps.Marker({
         position: myLatLng,
         map: map,
-        title: 'Hello World!'
+        title: 'Hello World!',
+        destId: 1
     });
 
     var marker2 = new google.maps.Marker({
         position: {lat: -40, lng:176.6},
         map: map,
-        title: 'Hello World!'
+        title: 'Hello World!',
+        destId: 2
     });
 
     marker.setMap(map);
     var infowindow = new google.maps.InfoWindow({
-        content: "yay content <br> <button onclick='vistArray.push(`Marker 1`); controlContent.innerText = vistArray'' >start a trip</button>"
+        content: "yay content <br> <button onclick='visitArray.push({name : `marker1`, id:1, arrivalDate: new Date().toISOString().slice(0, 10) , departureDate: new Date().toISOString().slice(0, 10)}); updateTripsTab()' >start a trip</button>"
     });
 
     marker.addListener('click', function() {
@@ -36,7 +65,9 @@ function initMap() {
     });
 
     var infowindow2 = new google.maps.InfoWindow({
-        content: "second marker <br> <button onclick='vistArray.push(`Marker 2`); controlContent.innerText = vistArray'>" +
+        content: "second marker <br> <button onclick='visitArray.push(" +
+            "{name : `marker2`, id:1,  arrivalDate: new Date().toISOString().slice(0, 10)," +
+            " departureDate: new Date().toISOString().slice(0, 10)}); updateTripsTab()'>" +
             "Start a trip</button>"
     });
 

@@ -45,7 +45,7 @@
 
             <tbody id="tripTable_@trip.getTripid()" style="display: none;">
             @for(visit <- trip.getOrderedVisits()){
-                <tr id=@visit.getVisitid()>
+                <tr id="@visit.getVisitid()">
                     <th scope ="row">@visit.getDestination().getDestName()</th>
                     <td>@visit.getDestination().getDestType()</td>
                     <td>@visit.getDestination().getCountry()

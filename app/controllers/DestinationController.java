@@ -187,16 +187,21 @@ public class DestinationController extends Controller {
                 if (errorForm != null) {
                     return errorForm;
                 } else {
-                    Destination newDestination = formFactory.form(Destination.class)
-                            .bindFromRequest(request).get();
-                    newDestination.setUser(user);
-                    newDestination.setCountryValid(true);
-                    newDestination.save();
+//                    Destination newDestination = formFactory.form(Destination.class)
+//                            .bindFromRequest(request).get();
+//                    newDestination.setUser(user);
+//                    newDestination.setCountryValid(true);
+//                    newDestination.save();
                     Map<String, String[]> dataPart = request.body().asMultipartFormData().asFormUrlEncoded();
-                    if (dataPart.get("tags[]") != null) {
-                        tags = new ArrayList<String>(Arrays.asList(dataPart.get("tags[]")));
+                    if (dataPart.get("tags") != null) {
+                        tags = new ArrayList<String>(Arrays.asList(dataPart.get("tags")));
                         System.out.println(tags);
                     }
+                    if (dataPart.get("destName") != null) {
+                        ArrayList<String> destName = new ArrayList<String>(Arrays.asList(dataPart.get("destName")));
+                        System.out.println(destName);
+                    }
+
 
                     return redirect(routes.DestinationController.indexDestination());
                 }

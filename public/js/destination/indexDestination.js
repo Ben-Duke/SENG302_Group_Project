@@ -483,9 +483,14 @@ $('#createDestinationForm').submit(function(eve) {
 
     toAddTagList = Array.from(toAddTagList);
     console.log(toAddTagList);
+
+    let tags_delimited_string = "";
     for (var i = 0; i < toAddTagList.length; i++) {
-        formData.append('tags[]', toAddTagList[i]);
+        tags_delimited_string += ",";
+        tags_delimited_string += toAddTagList[i];
     }
+    formData.append('tags', tags_delimited_string);
+
     var token =  $('input[name="csrfToken"]').attr('value');
         $.ajaxSetup({
             beforeSend: function(xhr) {

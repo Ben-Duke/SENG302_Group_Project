@@ -58,7 +58,7 @@ async function displaySlides(url, path) {
     var img1 = document.createElement("img");
     img1.setAttribute('id', "img-" + (i+1));
     img1.classList.add("center-block");
-    img1.src = path + url;
+    img1.src = path + encodeURIComponent(url);
     mySlidesDiv.appendChild(img1);
     lightBox.appendChild(mySlidesDiv);
 }

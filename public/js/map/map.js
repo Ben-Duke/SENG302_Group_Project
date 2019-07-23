@@ -8,7 +8,14 @@ function updateTripsTab(){
         let visitDiv = document.createElement('div');
         visitDiv.innerText = visitArray[i]['name'];
         visitDiv.appendChild(document.createElement('br'));
+
         //Arrival date code
+        let arrivalDateDiv = document.createElement('div');
+        arrivalDateDiv.appendChild(document.createTextNode("Arrival Date"));
+        arrivalDateDiv.appendChild(document.createElement('br'));
+        visitDiv.appendChild(arrivalDateDiv);
+        arrivalDateDiv.setAttribute('style', 'float:left; padding-left:10%');
+
         let arrivalDate = document.createElement('input');
         arrivalDate.setAttribute('id', i+"arrivalId");
         arrivalDate.setAttribute('type', "date");
@@ -17,13 +24,14 @@ function updateTripsTab(){
         visitArray[id].arrivalDate = this.value;
         console.log(visitArray[id])`);
         arrivalDate.value =  visitArray[i]['arrivalDate'];
-        visitDiv.appendChild(arrivalDate);
+        arrivalDateDiv.appendChild(arrivalDate);
 
         //Departure date code
         let departureDiv = document.createElement('div');
-        let departureText = document.createElement('h2');
-        departureText.text = "Departure Date";
-        departureDiv.appendChild(departureText);
+        departureDiv.appendChild(document.createTextNode("Departure Date"))
+        visitDiv.appendChild(departureDiv);
+        departureDiv.setAttribute('style', 'display: inline-block')
+        departureDiv.appendChild(document.createElement('br'));
         let departureDate = document.createElement('input');
         departureDate.setAttribute('id', i+"departureId");
         departureDate.setAttribute('onblur', `
@@ -33,12 +41,12 @@ function updateTripsTab(){
         departureDate.setAttribute('type', "date");
         departureDate.value = visitArray[i]['departureDate'];
         departureDiv.appendChild(departureDate);
-        visitDiv.appendChild(departureDate);
+        visitDiv.appendChild(departureDiv);
 
         //Delete button code
         let deleteButton = document.createElement('button');
         deleteButton.innerText = "X"
-        deleteButton.setAttribute('style', 'background-color:red; text-color:white; color: white;');
+        deleteButton.setAttribute('style', 'background-color:red; text-color:white; color: white; display: inline-block');
         deleteButton.setAttribute('id', i+"deleteId");
         deleteButton.setAttribute('onclick','visitArray.pop(this.id.slice(0,1)); console.log(`deleted item`); updateTripsTab()');
         visitDiv.appendChild(deleteButton);
@@ -73,7 +81,7 @@ function initMap() {
 
     marker.setMap(map);
     var infowindow = new google.maps.InfoWindow({
-        content: "yay content <br> <button onclick='visitArray.push({name : `marker1`, id:1, arrivalDate: new Date().toISOString().slice(0, 10) , departureDate: new Date().toISOString().slice(0, 10)}); updateTripsTab()' >start a trip</button>"
+        content: "yay content <br> <button onclick='visitArray.push({name : `marker1`, id:1, arrivalDate: new Date().toISOString().slice(0, 10) , departureDate: new Date().toISOString().slice(0, 10)}); updateTripsTab()' >start a trip/Add Destination</button>"
     });
 
     marker.addListener('click', function() {

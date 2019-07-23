@@ -29,7 +29,6 @@ public class DestinationAccessor {
      */
     public static List<Destination> getDestinationsbyName(String name) {
         return Destination.find.query().where()
-                .eq("isPublic", true).and()
                 .eq("destName", name)
                 .findList();
     }

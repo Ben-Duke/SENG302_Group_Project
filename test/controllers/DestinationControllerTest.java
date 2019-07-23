@@ -1,5 +1,6 @@
 package controllers;
 
+import accessors.AlbumAccessor;
 import accessors.DestinationAccessor;
 import accessors.TreasureHuntAccessor;
 import accessors.VisitAccessor;
@@ -466,6 +467,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
         int destinationSize = DestinationAccessor.getAllDestinations().size();
         int visitSize = VisitAccessor.getAll().size();
         int treasureHuntSize = TreasureHuntAccessor.getAll().size();
+        int albumSize = AlbumAccessor.getAll().size();
         int destId = 1;
         String adminId = "1";
 
@@ -473,6 +475,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
 
         assertEquals(destinationSize, DestinationAccessor.getAllDestinations().size());
         assertEquals(treasureHuntSize, TreasureHuntAccessor.getAll().size());
+        assertEquals(albumSize, AlbumAccessor.getAll().size());
         assertEquals(visitSize, VisitAccessor.getAll().size());
     }
 
@@ -484,6 +487,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
     public void deleteDestination_asAdmin_undo_redo_checkDestinationDeleted() {
         int destinationSize = DestinationAccessor.getAllDestinations().size();
         int visitSize = VisitAccessor.getAll().size();
+        int albumSize = AlbumAccessor.getAll().size();
         int treasureHuntSize = TreasureHuntAccessor.getAll().size();
 
         int destId = 1;
@@ -503,6 +507,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
         route(app, redoRequest);
 
         assertEquals(destinationSize-1, DestinationAccessor.getAllDestinations().size());
+        assertEquals(albumSize-1, AlbumAccessor.getAll().size());
         assertEquals(treasureHuntSize-destinationTreasureHunts, TreasureHuntAccessor.getAll().size());
         assertEquals(visitSize-destinationVisits, VisitAccessor.getAll().size());
     }

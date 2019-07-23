@@ -303,6 +303,6 @@ public class Destination extends Model implements AlbumOwner {
 
     @Override
     public List<Album> getAlbums() {
-        return null;
+        return albums;
     }
 }

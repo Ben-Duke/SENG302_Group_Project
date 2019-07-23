@@ -2,6 +2,7 @@ package utilities;
 
 import controllers.ApplicationManager;
 import models.*;
+import models.commands.Albums.CreateAlbumCommand;
 import play.db.Database;
 import play.db.Databases;
 import play.db.evolutions.Evolution;
@@ -286,11 +287,13 @@ public class TestDatabaseManager {
                 User.find.byId(2));
         destination1.setIsPublic(true);
         destination1.addTravellerType(TravellerType.find.byId(1));
+        createAlbumFromDestination(destination1);
 
         Destination destination2 = new Destination(
                 "Wellington", "Town", "Wellington",
                 "New Zealand", -41.2866, 174.7756,
                 User.find.byId(2));
+        createAlbumFromDestination(destination2);
 
         Destination destination3 = new Destination(
                 "The Wok", "Cafe/Restaurant",
@@ -299,6 +302,7 @@ public class TestDatabaseManager {
         destination3.setIsPublic(true);
         destination3.addTravellerType(TravellerType.find.byId(1));
         destination3.addTravellerType(TravellerType.find.byId(3));
+        createAlbumFromDestination(destination3);
 
 
         // Adds destinations for user3
@@ -309,17 +313,20 @@ public class TestDatabaseManager {
         destination4.setIsPublic(true);
         destination4.addTravellerType(TravellerType.find.byId(5));
         destination4.addTravellerType(TravellerType.find.byId(7));
+        createAlbumFromDestination(destination4);
 
         Destination destination5 = new Destination(
                 "Le Mans 24 hour race", "Event",
                 "Le Mans", "France", 47.956221,
                 0.207828, User.find.byId(3));
+        createAlbumFromDestination(destination5);
         Destination destination6 = new Destination(
                 "Great Pyramid of Giza", "Attraction",
                 "Giza", "Egypt", 29.979481,
                 31.134159, User.find.byId(3));
         destination6.setIsPublic(true);
         destination6.addTravellerType(TravellerType.find.byId(7));
+        createAlbumFromDestination(destination6);
 
         //Adds destinations for user4
         Destination destination7 = new Destination(
@@ -327,10 +334,12 @@ public class TestDatabaseManager {
                 "New York", "United States", 29.979481,
                 31.134159, User.find.byId(4));
         destination7.addTravellerType(TravellerType.find.byId(2));
+        createAlbumFromDestination(destination7);
         Destination destination8 = new Destination(
                 "Vatican City", "Country", "Rome",
                 "Vatican City", 41.903133, 12.454341,
                 User.find.byId(4));
+        createAlbumFromDestination(destination8);
         Destination destination9 = new Destination(
                 "Lincoln Memorial", "Monument",
                 "Washington DC", "United States", 38.889406,
@@ -339,6 +348,7 @@ public class TestDatabaseManager {
         destination9.addTravellerType(TravellerType.find.byId(1));
         destination9.addTravellerType(TravellerType.find.byId(4));
         destination9.addTravellerType(TravellerType.find.byId(6));
+        createAlbumFromDestination(destination9);
 
 
         // saving the destinations
@@ -524,6 +534,20 @@ public class TestDatabaseManager {
         treasureHunt2.save();
         TreasureHunt treasureHunt3 = new TreasureHunt("Closed Treasure Hunt", "You should not be able to view this", Destination.find.byId(4), "2019-04-17", "2019-04-25", User.find.byId(4));
         treasureHunt3.save();
+    }
+
+    public void createAlbumFromDestination(AlbumOwner owner) {
+        if(owner instanceof Destination) {
+            Destination dest = (Destination) owner;
+            CreateAlbumCommand cmd = new CreateAlbumCommand(
+                    dest.getDestName(),
+                    dest,
+                    null);
+            cmd.execute();
+        }
+        else{
+            throw new IllegalArgumentException("Argument is not of type destination.");
+        }
     }
 
 }

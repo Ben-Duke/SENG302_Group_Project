@@ -3,6 +3,8 @@ package accessors;
 import models.Album;
 import models.Media;
 
+import java.util.List;
+
 public class AlbumAccessor {
 
     public static Album getAlbumById(int id) {
@@ -14,5 +16,9 @@ public class AlbumAccessor {
     public static void delete(Album album) { album.delete(); }
 
     public static void update(Album album) { album.update(); }
+
+    public static List<Album> getAll() {
+        return Album.find.all();
+    }
 
 }

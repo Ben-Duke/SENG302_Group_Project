@@ -28,7 +28,7 @@ public class Album extends Model {
 
     @JsonIgnore
     @ManyToOne
-    @JoinColumn(name = "destination", referencedColumnName = "destinationid")
+    @JoinColumn(name = "destination", referencedColumnName = "destid")
     public Destination destination;
 
     private AlbumOwner owner;

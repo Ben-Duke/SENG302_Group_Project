@@ -14,6 +14,7 @@ create table admin (
 create table album (
   album_id                      integer auto_increment not null,
   user                          integer,
+  destination                   integer,
   title                         varchar(255),
   constraint pk_album primary key (album_id)
 );
@@ -178,6 +179,9 @@ create table visit (
 create index ix_album_user on album (user);
 alter table album add constraint fk_album_user foreign key (user) references user (userid) on delete restrict on update restrict;
 
+create index ix_album_destination on album (destination);
+alter table album add constraint fk_album_destination foreign key (destination) references destination (destid) on delete restrict on update restrict;
+
 create index ix_album_media_album on album_media (album_album_id);
 alter table album_media add constraint fk_album_media_album foreign key (album_album_id) references album (album_id) on delete restrict on update restrict;
 
@@ -261,6 +265,9 @@ alter table visit add constraint fk_visit_trip foreign key (trip) references tri
 
 alter table album drop constraint if exists fk_album_user;
 drop index if exists ix_album_user;
+
+alter table album drop constraint if exists fk_album_destination;
+drop index if exists ix_album_destination;
 
 alter table album_media drop constraint if exists fk_album_media_album;
 drop index if exists ix_album_media_album;

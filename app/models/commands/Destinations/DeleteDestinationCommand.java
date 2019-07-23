@@ -55,10 +55,9 @@ public class DeleteDestinationCommand extends DestinationPageCommand {
             userPhoto.removeDestination(destination);
             userPhoto.update();
         }
-        //Check with Moffat
-        List<Album> albumsCopy = new ArrayList<>(destination.getAlbums());
+        List<Album> albumsCopy = AlbumAccessor.getAlbumsByOwner(destination);
         for (Album album : albumsCopy) {
-            deletedAlbums.add(album);
+            deletedAlbums.add(new Album(album));
             AlbumAccessor.delete(album);
         }
         DestinationAccessor.delete(destination);
@@ -85,7 +84,6 @@ public class DeleteDestinationCommand extends DestinationPageCommand {
             userPhoto.addDestination(destination);
             userPhoto.update();
         }
-
         for (Album album : deletedAlbums) {
            // album
             album.setOwner(destination);

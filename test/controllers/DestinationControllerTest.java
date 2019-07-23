@@ -156,8 +156,8 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
      */
     @Test
     public void createAlbumOnDestinationSave() throws Exception {
+        Integer albumSize = Album.find.all().size();
         assertEquals(3, User.find.byId(2).getDestinations().size());
-        assertEquals(0, Album.find.all().size());
         Map<String, String> formData = new HashMap<>();
         formData.put("destName", "Summoner's Rift");
         formData.put("destType", "Yes");
@@ -175,6 +175,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
             Destination dest = DestinationAccessor
                     .getDestinationsbyName("Summoner's Rift").get(0);
             assertEquals(1, dest.getAlbums().size());
+            assertEquals(albumSize+1, Album.find.all().size());
         }
         else{
             fail();

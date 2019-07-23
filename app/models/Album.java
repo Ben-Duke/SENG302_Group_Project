@@ -52,6 +52,12 @@ public class Album extends Model {
         this.title = title;
     }
 
+    public Album(Album album) {
+        setAlbumOwnerDetails(album.getOwner());
+        this.media = album.getMedia();
+        this.title = album.getTitle();
+    }
+
     private void setAlbumOwnerDetails(AlbumOwner owner) {
         this.owner = owner;
         if(owner instanceof User) {
@@ -72,6 +78,16 @@ public class Album extends Model {
     public String getTitle() { return title; }
     public void setOwner(AlbumOwner owner) {
         setAlbumOwnerDetails(owner);
+    }
+
+    public AlbumOwner getOwner() {
+        if(destination == null) {
+            return user;
+        }
+        else if(user == null) {
+            return destination;
+        }
+        return owner;
     }
 
     public void setTitle(String title) { this.title = title; }
@@ -153,7 +169,7 @@ public class Album extends Model {
     public String toString() {
         return "Album title: "+this.getTitle()+
                 " ID: "+this.getAlbumId()+
-                " Owner userId: "+this.getUser().getUserid()+
+                " Owner: "+this.getOwner()+
                 " Size: " +this.getMedia().size();
     }
 

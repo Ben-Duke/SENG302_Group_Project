@@ -53,17 +53,19 @@ function updateTripsTab(){
         controlContent.appendChild(visitDiv);
     }
 }
+
+
 function initMap() {
     var myLatLng = {lat: -43.522057156877615, lng: 172.62360347218828};
-
-    let map = new google.maps.Map(document.getElementById('map'), {
+    window.globalMap = new google.maps.Map(document.getElementById('map'), {
         center: {lat: -43.522057156877615, lng: 172.62360347218828},
         zoom: 5
     });
 
     // initPlacesAutocomplete();
-    // initDestinationMarkers();
+    initDestinationMarkers();
     // initMapLegend();
+    initTripRoutes();
 
     var marker = new google.maps.Marker({
         position: myLatLng,
@@ -99,7 +101,43 @@ function initMap() {
         infowindow2.open(map, marker2);
     });
     marker2.setMap(map);
+
+
+
+    initDestinationMarkers();
+    // initMapLegend();
+
+    initTripRoutes();
+
+
+
 }
+
+    function initTripRoutes() {
+
+        fetch('/users/trips/fetch/trips_routes_json', {
+            method: 'GET'})
+            .then(res => res.json())
+            .then(routes => {
+
+                for (var i = 0; i < routes.length; i++) {
+                    console.log(routes[i]);
+
+                    var flightPath = new google.maps.Polyline({
+                        path: routes[i],
+                        geodesic: true,
+                        strokeColor: '#'+(Math.random()*0xFFFFFF<<0).toString(16),
+                        strokeOpacity: 1.0,
+                        strokeWeight: 2
+                    });
+
+                    flightPath.setMap(window.globalMap);
+
+                }
+            });
+
+    }
+
 
 function initPlacesAutocomplete() {
     var input = document.getElementById('placesAutocomplete');

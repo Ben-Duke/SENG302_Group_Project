@@ -11,6 +11,7 @@ import io.ebean.DuplicateKeyException;
 import models.*;
 
 
+import models.commands.Albums.CreateAlbumCommand;
 import models.commands.Destinations.*;
 import models.commands.Photos.DeletePhotoCommand;
 import org.slf4j.Logger;
@@ -192,8 +193,11 @@ public class DestinationController extends Controller {
                     newDestination.setUser(user);
                     newDestination.setCountryValid(true);
                     newDestination.save();
-
-
+                    CreateAlbumCommand cmd = new CreateAlbumCommand(
+                            newDestination.getDestName(),
+                            newDestination,
+                            null);
+                    cmd.execute();
                     return redirect(routes.DestinationController.indexDestination());
                 }
         } else {

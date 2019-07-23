@@ -70,6 +70,9 @@ public class Album extends Model {
     public List<Media> getMedia() { return media; }
     public User getUser() { return user; }
     public String getTitle() { return title; }
+    public void setOwner(AlbumOwner owner) {
+        setAlbumOwnerDetails(owner);
+    }
 
     public void setTitle(String title) { this.title = title; }
 
@@ -83,7 +86,8 @@ public class Album extends Model {
         this.media = new ArrayList<>();
     }
 
-    public boolean userIsOwner(User user) {
+    public boolean userIsOwner(User user)
+    {
         return this.getUser().getUserid() == user.getUserid();
     }
 

@@ -151,6 +151,36 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
     }
 
     /**
+     * Test to check if an album is created when a destination is saved
+     */
+    @Test
+    public void createAlbumOnDestinationSave() throws Exception {
+        assertEquals(3, User.find.byId(2).getDestinations().size());
+        assertEquals(0, Album.find.all().size());
+        Map<String, String> formData = new HashMap<>();
+        formData.put("destName", "Summoner's Rift");
+        formData.put("destType", "Yes");
+        formData.put("district", "Demacia");
+        formData.put("country", "Angola");
+        formData.put("latitude", "50.0");
+        formData.put("longitude", "-50.0");
+        Http.RequestBuilder request = Helpers.fakeRequest().bodyForm(formData).method(POST).uri("/users/destinations/save").session("connected", "2");
+        Result result = route(app, request);
+        assertEquals(SEE_OTHER, result.status());
+        assertEquals(4, User.find.byId(2).getDestinations().size());
+        assertEquals(1,
+                DestinationAccessor.getDestinationsbyName("Summoner's Rift").size());
+        if(DestinationAccessor.getDestinationsbyName("Summoner's Rift").size() > 0) {
+            Destination dest = DestinationAccessor
+                    .getDestinationsbyName("Summoner's Rift").get(0);
+            assertEquals(1, dest.getAlbums().size());
+        }
+        else{
+            fail();
+        }
+    }
+
+    /**
      * Test to see if a non number value will be picked up by the validation
      */
     @Test

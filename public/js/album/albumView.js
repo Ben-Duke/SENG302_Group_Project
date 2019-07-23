@@ -1,4 +1,5 @@
 var slideIndex = 1;
+var currentSlideNo = 1;
 var albumData = null;
 
 function setProfilePicture() {
@@ -18,20 +19,24 @@ function changePrivacy(userId, albumId, isOwner) {
             contentType: 'application/json',
             success: (albumData) => {
                     var mediaId = albumData[slideIndex-1]["mediaId"];
+                    console.log("index: " + slideIndex);
                     if(albumData[slideIndex-1]["isMediaPublic"]==true) {setPrivacy=0;}
                     else {setPrivacy=1;}
+                    console.log("privacy: " + setPrivacy);
                     $.ajax({
                            type: 'GET',
                            url: '/users/home/photoPrivacy/' + mediaId + '/' + setPrivacy,
                            contentType: 'application/json',
                            success: () => {
-                                if(setPrivacy==0) {document.getElementById("privacyBtn").innerHTML = "Make Private";}
-                                else if(setPrivacy==1) {document.getElementById("privacyBtn").innerHTML = "Make Public";}
+                                if(setPrivacy==0) {
+                                    document.getElementById("privacyBtn").innerHTML = "Make Public";
+                                    document.querySelector('div[data-mediaId="'+mediaId+'"]').setAttribute("data-privacy", false);
+                                }
+                                else if(setPrivacy==1) {
+                                    document.getElementById("privacyBtn").innerHTML = "Make Private";
+                                    document.querySelector('div[data-mediaId="'+mediaId+'"]').setAttribute("data-privacy", true);}
                            },
-                           error: () => {
-                                if(setPrivacy==1) {document.getElementById("privacyBtn").innerHTML = "Make Private";}
-                                else if(setPrivacy==0) {document.getElementById("privacyBtn").innerHTML = "Make Public";}
-                           }
+
 
                     });
             }
@@ -146,10 +151,10 @@ function showSlides(n) {
     slides[i].style.display = "none";
   }
   slides[slideIndex-1].style.display = "block";
-  if(slides[slideIndex-1].getAttribute("data-privacy") == true) {
-    document.getElementById("privacyBtn").innerHTML = "Make Public";
-  } else {
+  if(slides[slideIndex-1].getAttribute("data-privacy") == "true") {
     document.getElementById("privacyBtn").innerHTML = "Make Private";
+  } else if (slides[slideIndex-1].getAttribute("data-privacy") == "false"){
+    document.getElementById("privacyBtn").innerHTML = "Make Public";
   }
 
 }

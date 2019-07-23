@@ -60,8 +60,12 @@ public class AlbumAccessor {
      * @return the list of albums belonging to the destination
      */
     private static List<Album> getAlbumsFromDestination(Destination dest) {
-        return Album.find.query()
+        List<Album> albums = Album.find.query()
                 .where().eq("destination", dest).findList();
+        for (Album album : albums) {
+            album.setOwner(dest);
+        }
+        return albums;
     }
 
     /**
@@ -70,7 +74,11 @@ public class AlbumAccessor {
      * @return the list of albums belonging to the user
      */
     private static List<Album> getAlbumsFromUser(User user) {
-        return Album.find.query()
+        List<Album> albums = Album.find.query()
                 .where().eq("user", user).findList();
+        for (Album album : albums) {
+            album.setOwner(user);
+        }
+        return albums;
     }
 }

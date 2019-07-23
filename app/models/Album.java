@@ -58,6 +58,11 @@ public class Album extends Model {
         this.title = album.getTitle();
     }
 
+
+    /**
+     * Sets the album owner depending on the type of the owner.
+     * @param owner the album owner
+     */
     private void setAlbumOwnerDetails(AlbumOwner owner) {
         this.owner = owner;
         if(owner instanceof User) {
@@ -80,6 +85,11 @@ public class Album extends Model {
         setAlbumOwnerDetails(owner);
     }
 
+    /**
+     * If the destination is null, a user owns the album
+     * If the user is null, a destination owns the album
+     * @return the album owner
+     */
     public AlbumOwner getOwner() {
         if(destination == null) {
             return user;

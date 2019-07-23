@@ -35,9 +35,16 @@
         <a class="prev" onclick="plusSlides(-1)">&#10094;</a>
         <a class="next" onclick="plusSlides(1)">&#10095;</a>
 
+
         <!-- Caption text -->
         <div class="caption-container">
-            <p id="caption"></p>
+            <p id="img-caption"></p>
+            <a class="btn btn-link" id="setProfilePictureBtn"
+               onclick="setProfilePicture()">Make Profile Picture</a>
+            <a class="btn btn-link" id="deletePhotoBtn" onclick="deletePhoto()">Delete</a>
+            <a class="btn btn-link" id="privacyBtn" onclick="changePrivacy(@user.getUserid, @album.getAlbumId,
+            @album.userIsOwner(user))">Make Public/Private</a>
+            <a class="btn btn-link" id="linkDestinationBtn" onclick="linkToDestination()">Link Destination</a>
         </div>
 
         <!-- Thumbnail image controls -->

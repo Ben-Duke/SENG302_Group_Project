@@ -147,6 +147,16 @@ public class DestinationFactory {
         userPhotos.removeAll(photosToRemove);
     }
 
+    public void removePrivateMedia(List<Media> media, Integer viewerId) {
+        ArrayList<Media> photosToRemove = new ArrayList<Media>();
+        for (Media med : media) {
+            if(!med.getIsPublic() && med.getUser().getUserid() != viewerId) {
+                photosToRemove.add(med);
+            }
+        }
+        media.removeAll(photosToRemove);
+    }
+
     /**
      * Returns a list of all public destinations and all private destinations that the user can see
      * @param userId the user accessing the destinations

@@ -25,6 +25,8 @@ public class LinkPhotoDestinationCommand extends DestinationPageCommand  {
      * Link the destination to the photo
      */
     public void execute() {
+        destination.getAlbums().get(0).addMedia(photo);
+        destination.update();
         photo.addDestination(destination);
         UserPhotoAccessor.update(photo);
     }
@@ -35,6 +37,8 @@ public class LinkPhotoDestinationCommand extends DestinationPageCommand  {
      * was unlinked.
      */
     public void undo() {
+        destination.getAlbums().get(0).removeMedia(photo);
+        destination.update();
         photo.removeDestination(destination);
         UserPhotoAccessor.update(photo);
         if ((destination.getPrimaryPhoto() != null) &&

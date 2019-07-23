@@ -791,15 +791,12 @@ public class DestinationController extends Controller {
         User user = User.getCurrentUser(request);
         if(user != null){
             Destination destination = Destination.find.byId(destId);
-            List<UserPhoto> photos;
+            List<Media> photos = Destination.find.byId(destId).getAlbums().get(0).getMedia();;
             if(destination.getIsPublic() && !user.userIsAdmin()) {
-                photos = Destination.find.byId(destId).getUserPhotos();
                 DestinationFactory destinationFactory = new DestinationFactory();
-                destinationFactory.removePrivatePhotos(photos, user.getUserid());
-            } else {
-                photos = Destination.find.byId(destId).getUserPhotos();
+                destinationFactory.removePrivateMedia(photos, user.getUserid());
             }
-
+            System.out.println(photos.size());
             return ok(Json.toJson(photos));
         } else {
             return redirect(routes.UserController.userindex());
@@ -815,7 +812,7 @@ public class DestinationController extends Controller {
     public Result getPhoto(Http.Request request, Integer photoId) {
         User user = User.getCurrentUser(request);
         if(user != null){
-            UserPhoto photo = UserPhoto.find.byId(photoId);
+            Media photo = Media.find.byId(photoId);
             if (photo.getUser().getUserid() == user.getUserid() || photo.getIsPublic() || user.userIsAdmin()) {
                 return ok(Json.toJson(photo));
             } else {

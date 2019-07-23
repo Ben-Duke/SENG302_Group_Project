@@ -478,18 +478,14 @@ $('#removePhotoButton').click(function(e){
  */
 $('#createDestinationForm').submit(function(eve) {
     eve.preventDefault();
-    let form = document.getElementById("createDestinationForm")
+    let form = document.getElementById("createDestinationForm");
     var formData = new FormData(form);
 
-    toAddTagList = Array.from(toAddTagList);
-    console.log(toAddTagList);
 
-    let tags_delimited_string = "";
+    toAddTagList = Array.from(toAddTagList);
     for (var i = 0; i < toAddTagList.length; i++) {
-        tags_delimited_string += ",";
-        tags_delimited_string += toAddTagList[i];
+        formData.append('tags', toAddTagList[i]);
     }
-    formData.append('tags', tags_delimited_string);
 
     var token =  $('input[name="csrfToken"]').attr('value');
         $.ajaxSetup({
@@ -506,9 +502,6 @@ $('#createDestinationForm').submit(function(eve) {
             success: function(data, textStatus, xhr){
                 if(xhr.status == 200) {
                     window.location = '/users/destinations'
-                }
-                else{
-                    window.location = '/users/destinations/create'
                 }
             }
         })

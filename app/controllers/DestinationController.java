@@ -194,13 +194,34 @@ public class DestinationController extends Controller {
 //                    newDestination.save();
                     Map<String, String[]> dataPart = request.body().asMultipartFormData().asFormUrlEncoded();
                     if (dataPart.get("tags") != null) {
-                        tags = new ArrayList<String>(Arrays.asList(dataPart.get("tags")));
+                        tags = new ArrayList<>(Arrays.asList(dataPart.get("tags")));
                         System.out.println(tags);
                     }
                     if (dataPart.get("destName") != null) {
-                        ArrayList<String> destName = new ArrayList<String>(Arrays.asList(dataPart.get("destName")));
+                        ArrayList<String> destName = new ArrayList<>(Arrays.asList(dataPart.get("destName")));
                         System.out.println(destName);
                     }
+                    if (dataPart.get("country") != null) {
+                        ArrayList<String> country = new ArrayList<String>(Arrays.asList(dataPart.get("country")));
+                        System.out.println(country);
+                    }
+                    if (dataPart.get("district") != null) {
+                        ArrayList<String> district = new ArrayList<String>(Arrays.asList(dataPart.get("district")));
+                        System.out.println(district);
+                    }
+                    if (dataPart.get("latitude") != null) {
+                        ArrayList<String> latitude = new ArrayList<String>(Arrays.asList(dataPart.get("latitude")));
+                        System.out.println(latitude);
+                    }
+                    if (dataPart.get("longitude") != null) {
+                        ArrayList<String> longitude = new ArrayList<String>(Arrays.asList(dataPart.get("longitude")));
+                        System.out.println(longitude);
+                    }
+                    if (dataPart.get("destType") != null) {
+                        ArrayList<String> destType = new ArrayList<String>(Arrays.asList(dataPart.get("destType")));
+                        System.out.println(destType);
+                    }
+
 
 
                     return redirect(routes.DestinationController.indexDestination());

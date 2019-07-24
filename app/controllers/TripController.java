@@ -22,7 +22,7 @@ import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
-import views.html.home.mapTrips;
+import views.html.home.mapHome;
 import views.html.users.trip.*;
 
 import javax.inject.Inject;
@@ -441,10 +441,12 @@ public class TripController extends Controller {
         User user = User.getCurrentUser(request);
         if (user == null) { return redirect(routes.UserController.userindex()); }
 
-        List<Trip> trips = user.getTrips();
+        List<Trip> trips = user.getTripsSorted();
 
-        return ok(mapTrips.render(user, trips));
+
+        return ok(mapHome.render(user, trips));
     }
+
 
 
     /**
@@ -464,6 +466,9 @@ public class TripController extends Controller {
         ArrayNode tripNodes = objectMapper.createArrayNode();
 
         for (Trip trip : trips) {
+
+
+
 
             ArrayNode destinationNodes = objectMapper.createArrayNode();
 

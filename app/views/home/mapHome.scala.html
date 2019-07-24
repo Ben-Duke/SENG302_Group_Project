@@ -1,0 +1,121 @@
+@(user : User, trips : List[Trip])
+
+<style>
+        #map {
+            height: 100%;
+            /*position: relative;*/
+            /*z-index: 1;*/
+
+        }
+        #control {
+            /*position: absolute;*/
+            /*top: 50%;*/
+            /*transform: translateY(-50%);*/
+            height: 100%;
+            /*width: 425px;*/
+            /*right: 7%;*/
+            /*z-index: 2;*/
+
+            text-align: center;
+            /*border-radius: 10px;*/
+            /*background-color: white;*/
+        }
+        /*#tripsTab {*/
+        /*    height: 100%;*/
+        /*}*/
+
+        .singleTrip {
+            height: 60%;
+            overflow-y: auto;
+        }
+        #tripList {
+            height 60%;
+            overflow-y: auto;
+        }
+
+</style>
+
+
+@main(user, "Map") {
+
+
+    <div id="map" class="col-md-8"></div>
+    <div id="control" class="col-md-4">
+
+        <ul class="nav nav-tabs nav-justified">
+            <li class="active"><a data-toggle="tab" href="#destinationsTab">Destinaions</a></li>
+            <li><a data-toggle="tab" href="#tripsTab">Trips</a></li>
+        </ul>
+
+        <div id="destinationsTab" class="tab-pane fade in active">
+
+        </div>
+
+        <div id="tripsTab" class="tab-pane fade">
+
+            <div id="singleTrip" class="singleTrip">
+
+
+                <table class="table table-hover" id="tripTable">
+                    <thead>
+                        <tr>
+                            <th scope="col">Name</th>
+                            <th scope="col">Type</th>
+                            <th scope="col">Arrival</th>
+                            <th scope="col">Departure</th>
+                        </tr>
+                    </thead>
+                    @for(trip <- trips) {
+
+                    <tbody id="tripTable_@trip.getTripid()" style="display: none;">
+                    @for(visit <- trip.getOrderedVisits()){
+                        <tr id="@visit.getVisitid()">
+                            <th scope ="row">@visit.getDestination().getDestName()</th>
+                            <td>@visit.getDestination().getDestType()</td>
+                            <td>@visit.getArrival()</td>
+                            <td>@visit.getDeparture()</td>
+                        </tr>
+                        }
+                    </tbody>
+
+                    }
+
+                </table>
+
+            </div>
+            <hr>
+            <div id="tripList">
+
+                <div class="list-group">
+                    @for(trip <- trips) {
+
+                        <a onclick="displayTrip(@trip.getTripid(),
+                        @trip.getOrderedVisits().get(0).getDestination().getLatitude(),
+                            @trip.getOrderedVisits().get(0).getDestination().getLongitude())"
+                        class="list-group-item list-group-item-action">
+                        @if(trip.getTripStart() != null){
+                            @trip.getTripName() | Arrival date: @trip.getTripStart()
+                        } else{
+                            @trip.getTripName | No arrival dates
+                        }
+                        </a>
+                    }
+                    <a></a>
+                </div>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+
+    <script src="@routes.Assets.at("js/map/map.js")"></script>
+    <script src="@routes.Assets.at("js/destination/destinationMap.js")"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDCyC_ON0GgSmJIfPlL7oke5PZgbR8TLbg&callback=initMap&libraries=drawing,places"
+    async defer></script>
+
+
+
+}

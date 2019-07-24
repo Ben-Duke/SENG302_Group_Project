@@ -463,12 +463,11 @@ public class TripController extends Controller {
 
         ObjectMapper objectMapper = new ObjectMapper();
 
-        ArrayNode tripNodes = objectMapper.createArrayNode();
+        ObjectNode tripNodes = objectMapper.createObjectNode();
 
         for (Trip trip : trips) {
 
-
-
+//            ObjectNode tripNode = objectMapper.createObjectNode();
 
             ArrayNode destinationNodes = objectMapper.createArrayNode();
 
@@ -483,7 +482,11 @@ public class TripController extends Controller {
                 destinationNodes.add(destinationNode);
             }
 
-            tripNodes.add(destinationNodes);
+            tripNodes.put(trip.getTripid().toString(), destinationNodes);
+
+
+
+//            tripNodes.add(tripNode);
         }
 
         return ok(tripNodes);

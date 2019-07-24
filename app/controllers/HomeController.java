@@ -1,8 +1,10 @@
 package controllers;
 
+import accessors.DestinationAccessor;
 import accessors.UserAccessor;
 import factories.UserFactory;
 import io.ebean.DuplicateKeyException;
+import models.Destination;
 import models.Trip;
 import models.User;
 import models.UserPhoto;
@@ -24,6 +26,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -42,9 +45,20 @@ public class HomeController {
 
         List<Trip> trips = user.getTripsSorted();
 
+        List<Destination> allDestinations = DestinationAccessor.getAllDestinations();
 
+        List<Destination> userAccessibleDestinations = new ArrayList<>();
 
-        return ok(mapHome.render(user, trips));
+        for (Destination destination : allDestinations) {
+            if (destination.getUser().getUserid() == user.getUserid() ||
+            destination.getIsPublic()) {
+
+                userAccessibleDestinations.add(destination);
+
+            }
+        }
+
+        return ok(mapHome.render(user, trips, userAccessibleDestinations));
 
     }
 

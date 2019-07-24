@@ -63,27 +63,29 @@ function initMap() {
 
 }
 
-var tripRoutes = [];
+let tripFlightPaths = {};
 
 function initTripRoutes() {
 
     fetch('/users/trips/fetch/trips_routes_json', {
         method: 'GET'})
         .then(res => res.json())
-        .then(routes => {
+        .then(tripRoutes => {
 
-        for (var i = 0; i < routes.length; i++) {
-            // console.log(routes[i]);
+        for (let tripId in tripRoutes) {
+            // console.log(tripRoutes[tripId]);
 
-            var flightPath = new google.maps.Polyline({
-                path: routes[i],
+            let flightPath = new google.maps.Polyline({
+                path: tripRoutes[tripId],
                 geodesic: true,
                 strokeColor: '#'+(Math.random()*0xFFFFFF<<0).toString(16),
                 strokeOpacity: 1.0,
                 strokeWeight: 2
             });
 
-                tripRoutes.push(flightPath);
+            tripFlightPaths[tripId] = flightPath;
+
+            // tripFlightPaths.push({'tripId': flightPath});
 
             flightPath.setMap(window.globalMap);
 
@@ -142,11 +144,9 @@ $('tbody').sortable({
             success: function(data, textStatus, xhr){
 
                 if(xhr.status == 200) {
-
                     //This is an inefficient way of update the route
-                    for (var i in tripRoutes) {
-                        tripRoutes[i].setMap(null);
-
+                    for (let tripId in tripFlightPaths) {
+                        tripFlightPaths[tripId].setMap(null);
                     }
                     initTripRoutes();
 

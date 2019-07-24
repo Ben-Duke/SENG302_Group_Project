@@ -1,4 +1,4 @@
-@(user : User, trips : List[Trip])
+@(user : User, trips : List[Trip], destinations : List[Destination])
 
 <style>
         #map {
@@ -33,6 +33,10 @@
             overflow-y: auto;
         }
 
+        .singleDestination {
+
+        }
+
 </style>
 
 
@@ -48,6 +52,63 @@
         </ul>
 
         <div id="destinationsTab" class="tab-pane fade in active">
+
+            @for(destination <- destinations) {
+
+                <div id="singleDestination_@destination.getDestId()" class="singleDestination">
+
+                    <div class="row">
+                        <label class="col-sm-3 control-label">Type</label>
+                        <div class="col-sm-9">
+                            <span>@destination.getDestType()</span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <label class="col-sm-3 control-label">Traveller Types</label>
+                        <div class="col-sm-9">
+                        @for(travellerType <- destination.getTravellerTypes()) {
+                            <span style="margin-right: 6px;">@travellerType</span>
+                        }
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <label class="col-sm-3 control-label">Country</label>
+                        <div class="col-sm-9">
+                            <span>@destination.getCountry()</span>
+                            @if(!destination.getIsCountryValid()) {
+                                <span class="text-danger"> Invalid country</span>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <label class="col-sm-3 control-label">District</label>
+                        <div class="col-sm-9">
+                            <span>@destination.getDistrict()</span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <label class="col-sm-3 control-label">Latitude</label>
+                        <div class="col-sm-9">
+                            <span>@destination.getLatitude()</span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <label class="col-sm-3 control-label">Longitude</label>
+                        <div class="col-sm-9">
+                            <span>@destination.getLongitude()</span>
+                        </div>
+                    </div>
+            }
+
+
+
+            </div>
+
 
         </div>
 

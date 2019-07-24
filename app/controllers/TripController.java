@@ -22,7 +22,7 @@ import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
-import views.html.home.mapTrips;
+import views.html.home.mapHome;
 import views.html.users.trip.*;
 
 import javax.inject.Inject;
@@ -444,7 +444,7 @@ public class TripController extends Controller {
         List<Trip> trips = user.getTripsSorted();
 
 
-        return ok(mapTrips.render(user, trips));
+        return ok(mapHome.render(user, trips));
     }
 
 

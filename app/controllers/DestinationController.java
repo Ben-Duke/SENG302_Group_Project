@@ -180,48 +180,62 @@ public class DestinationController extends Controller {
      */
     public Result saveDestinationFromRequest(Http.Request request) {
         User user = User.getCurrentUser(request);
+        System.out.println("A save");
 
         if (user != null) { // checks if a user is logged in
-                ArrayList<String> tags = new ArrayList<>();
+
                 Result errorForm = validateEditCreateForm(request, user, null);
                 if (errorForm != null) {
                     return errorForm;
                 } else {
-//                    Destination newDestination = formFactory.form(Destination.class)
-//                            .bindFromRequest(request).get();
-//                    newDestination.setUser(user);
-//                    newDestination.setCountryValid(true);
-//                    newDestination.save();
+                    Destination newDestination = formFactory.form(Destination.class)
+                            .bindFromRequest(request).get();
+                    Form<DestinationFormData> destinationForm = formFactory.form(DestinationFormData.class).bindFromRequest();
+                    System.out.println(newDestination.destName);
+                    System.out.println(newDestination.getTags());
+                    /*ArrayList<String> tags = new ArrayList<>();
+                    String destName = "";
+                    String destType = "";
+                    String country = "";
+                    String district = "";
+                    Double latitude = 0.0;
+                    Double longitude = 0.0;
                     Map<String, String[]> dataPart = request.body().asMultipartFormData().asFormUrlEncoded();
                     if (dataPart.get("tags") != null) {
                         tags = new ArrayList<>(Arrays.asList(dataPart.get("tags")));
                         System.out.println(tags);
                     }
                     if (dataPart.get("destName") != null) {
-                        ArrayList<String> destName = new ArrayList<>(Arrays.asList(dataPart.get("destName")));
+                        destName = new ArrayList<>(Arrays.asList(dataPart.get("destName"))).get(0);
                         System.out.println(destName);
                     }
                     if (dataPart.get("country") != null) {
-                        ArrayList<String> country = new ArrayList<String>(Arrays.asList(dataPart.get("country")));
+                        country = new ArrayList<>(Arrays.asList(dataPart.get("country"))).get(0);
                         System.out.println(country);
                     }
                     if (dataPart.get("district") != null) {
-                        ArrayList<String> district = new ArrayList<String>(Arrays.asList(dataPart.get("district")));
+                        district = new ArrayList<>(Arrays.asList(dataPart.get("district"))).get(0);
                         System.out.println(district);
                     }
                     if (dataPart.get("latitude") != null) {
-                        ArrayList<String> latitude = new ArrayList<String>(Arrays.asList(dataPart.get("latitude")));
+                        latitude = Double.parseDouble(new ArrayList<>(Arrays.asList(dataPart.get("latitude"))).get(0));
                         System.out.println(latitude);
                     }
                     if (dataPart.get("longitude") != null) {
-                        ArrayList<String> longitude = new ArrayList<String>(Arrays.asList(dataPart.get("longitude")));
+                        longitude = Double.parseDouble(new ArrayList<>(Arrays.asList(dataPart.get("longitude"))).get(0));
                         System.out.println(longitude);
                     }
                     if (dataPart.get("destType") != null) {
-                        ArrayList<String> destType = new ArrayList<String>(Arrays.asList(dataPart.get("destType")));
+                        destType = new ArrayList<>(Arrays.asList(dataPart.get("destType"))).get(0);
                         System.out.println(destType);
                     }
-
+                    Destination newDestination = new Destination(destName, destType, district, country, latitude, longitude, user);
+                    newDestination.setUser(user);
+                    newDestination.setCountryValid(true);
+                    newDestination.save();
+                    Set uniqueTags = UtilityFunctions.tagLiteralsAsSet(tags);
+                    newDestination.setTags(uniqueTags);
+                    newDestination.update();*/
 
 
                     return redirect(routes.DestinationController.indexDestination());

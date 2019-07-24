@@ -5,15 +5,14 @@ import io.ebean.Model;
 
 import javax.persistence.ManyToMany;
 import javax.persistence.MappedSuperclass;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 @MappedSuperclass
 public abstract class TaggableModel extends Model {
 
     @JsonIgnore
     @ManyToMany
-    protected Set<Tag> tags = new TreeSet<>();
+    protected Set<Tag> tags = new HashSet<>();
 
     public Set<Tag> getTags() {
         return tags;

@@ -21,7 +21,6 @@ public class Destination extends TaggableModel {
     public boolean isPublic;
 
 
-
     @ManyToOne
     public UserPhoto primaryPhoto;
 

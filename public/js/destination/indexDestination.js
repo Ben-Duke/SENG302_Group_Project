@@ -204,9 +204,11 @@ function populateViewDestinationModal()
         contentType: 'application/json',
         success: function(destinationData){
             destData = destinationData;
+            console.log(destinationData);
             $('#destTitle').html(destinationData.destName);
             $('#destLocation').html(destinationData.district + ", " + destinationData.country);
             $('#coordinates').html("Coordinates: (" + destinationData.latitude + ", " + destinationData.longitude + ")");
+            $('#destTags').html("Tags:" + destinationData);
             $.ajax({
                 type: 'GET',
                 url: '/users/destinations/ttypes/' + getIdFromRow,

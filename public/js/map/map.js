@@ -15,6 +15,8 @@ function initMap() {
 
 }
 
+var tripRoutes = [];
+
 function initTripRoutes() {
 
     fetch('/users/trips/fetch/trips_routes_json', {
@@ -33,21 +35,24 @@ function initTripRoutes() {
                 strokeWeight: 2
             });
 
-            flightPath.setMap(window.globalMap);
+            tripRoutes.push(flightPath);
 
-        flightPath.addListener('click', function() {
-            console.log("hello");
-        });
+        flightPath.setMap(window.globalMap);
 
 
         }
+
+
+
     });
+
+
 
 }
 
 
 
-var currentlyDisplayedTrip;
+var currentlyDisplayedTripId;
 /**
  * Displays the given trip in the table and centers on map.
  * @param tripId The id of the trip to be displayed
@@ -56,13 +61,13 @@ var currentlyDisplayedTrip;
  */
 function displayTrip(tripId, startLat, startLng) {
 
-    if (currentlyDisplayedTrip !== undefined) {
-        document.getElementById("tripTable_"+currentlyDisplayedTrip).style.display = "none";
+    if (currentlyDisplayedTripId !== undefined) {
+        document.getElementById("tripTable_"+currentlyDisplayedTripId).style.display = "none";
     }
 
-    currentlyDisplayedTrip = tripId;
+    currentlyDisplayedTripId = tripId;
 
-    document.getElementById("tripTable_"+tripId).style.display = "initial";
+    document.getElementById("tripTable_"+tripId).style.display = "table-row-group";
 
 
     var tripStartLatLng = new google.maps.LatLng(
@@ -73,6 +78,49 @@ function displayTrip(tripId, startLat, startLng) {
     window.globalMap.setZoom(9);
 
 }
+
+$('tbody').sortable({
+    axis: 'y',
+    update: function (event, ui) {
+        var token =  $('input[name="csrfToken"]').attr('value')
+        $.ajaxSetup({
+            beforeSend: function(xhr) {
+                xhr.setRequestHeader('Csrf-Token', token);
+            }
+        });
+        var data = jQuery('#myTable tr').map(function(){
+            return jQuery (this).attr("id");
+        }).get();
+        var url = '/users/trips/edit/' + currentlyDisplayedTripId;
+        // POST to server using $.post or $.ajax
+        $.ajax({
+            data : JSON.stringify(data),
+            contentType : 'application/json',
+            type: 'PUT',
+            url: url,
+            success: function(data, textStatus, xhr){
+
+                if(xhr.status == 200) {
+
+                    //This is an inefficient way of update the route
+                    for (var i in tripRoutes) {
+                        tripRoutes[i].setMap(null);
+
+                    }
+                    initTripRoutes();
+
+                }
+                else{
+                }
+            },
+            error: function(xhr, textStatus, errorThrown){
+                $('tbody').sortable('cancel');
+                alert("You cannot visit the same destination twice in a row!");
+            }
+        });
+    }
+});
+
 
 
 
@@ -119,5 +167,8 @@ function initMapLegend() {
 
     window.globalMap.controls[google.maps.ControlPosition.LEFT_BOTTOM].push(legend);
 }
+
+
+
 
 

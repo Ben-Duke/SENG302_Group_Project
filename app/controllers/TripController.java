@@ -467,6 +467,9 @@ public class TripController extends Controller {
 
         for (Trip trip : trips) {
 
+
+
+
             ArrayNode destinationNodes = objectMapper.createArrayNode();
 
             for (Visit visit : trip.getOrderedVisits()) {

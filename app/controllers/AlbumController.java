@@ -10,8 +10,7 @@ import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
-import scala.Int;
-import views.html.users.album.viewAlbum;
+import views.html.users.album.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +29,7 @@ public class AlbumController extends Controller {
 
         List<Album> albums = user.getAlbums();
 
-        return ok(views.html.users.album.indexAlbum.render(albums, user));
+        return ok(indexAlbum.render(albums, user));
     }
 
     /**

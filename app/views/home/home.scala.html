@@ -314,11 +314,11 @@
                             <div class="col-sm-2">
 
                                 @if(i < user.getUserPhotos.size() ){
-                                <a id="addPhotoLink@user.getUserPhotos.get(i).getMediaId()" href="#" data-toggle="modal" data-target="#destination-carousel">
+                                <a id="addPhotoLink@user.getUserPhotos.get(i).getMediaId" href="#" data-toggle="modal" data-target="#destination-carousel">
                                     <div class="container" id="imagesContainer" >
                                         <div class="overlay">
                                             <i class="icon" title="User Profile">
-                                                @if(user.getUserPhotos.get(i).getIsPublic()) {
+                                                @if(user.getUserPhotos.get(i).getIsPublic) {
                                                 <i class="fa fa-eye-green"></i>
                                                 } else {
                                                 <i class="fa fa-eye-red"></i>
@@ -343,11 +343,11 @@
                             <div class="col-sm-2">
 
                                 @if(i < user.getUserPhotos.size() ){
-                                <a id="addPhotoLink@user.getUserPhotos.get(i).getMediaId()" href="#" data-toggle="modal" data-target="#destination-carousel">
+                                <a id="addPhotoLink@user.getUserPhotos.get(i).getMediaId" href="#" data-toggle="modal" data-target="#destination-carousel">
                                     <div class="container" id="imagesContainer" >
                                         <div class="overlay">
                                             <i class="icon" title="User Profile">
-                                                @if(user.getUserPhotos.get(i).getIsPublic()) {
+                                                @if(user.getUserPhotos.get(i).getIsPublic) {
                                                 <i class="fa fa-eye-green"></i>
                                                 } else {
                                                 <i class="fa fa-eye-red"></i>
@@ -370,11 +370,11 @@
                             <div class="col-sm-2">
 
                                 @if(i < user.getUserPhotos.size() ){
-                                <a id="addPhotoLink@user.getUserPhotos.get(i).getMediaId()" href="#" data-toggle="modal" data-target="#destination-carousel">
+                                <a id="addPhotoLink@user.getUserPhotos.get(i).getMediaId" href="#" data-toggle="modal" data-target="#destination-carousel">
                                     <div class="container" id="imagesContainer" >
                                         <div class="overlay">
                                             <i class="icon" title="User Profile">
-                                                @if(user.getUserPhotos.get(i).getIsPublic()) {
+                                                @if(user.getUserPhotos.get(i).getIsPublic) {
                                                 <i class="fa fa-eye-green"></i>
                                                 } else {
                                                 <i class="fa fa-eye-red"></i>
@@ -499,13 +499,21 @@
                             } else{
                             <div id="caro-@photo.getMediaId" class="item">
                                 }
-                                @*<a href="#" data-toggle="modal" data-target=#@photo.getMediaId()>*@
-                                @*<img id="carouselImage" src="@{routes.HomeController.index(photo.getUrlWithPath)}" width="1280">*@
-                                <img class="center" id="carouselImage@photo.getMediaId()" src="@{routes.HomeController.index(photo.getUrlWithPath)}">
-                                @*</a>*@
-                                @*                                    <div class="carousel-caption">
-                                <h2>insert caption here</h2>
-                            </div>*@
+                                <img class="center" id="carouselImage@photo.getMediaId" src="@{routes.HomeController.index(photo.getUrlWithPath)}">
+                                <h2 class=caption id="caption-@photo.getMediaId" onclick="editCaption(@photo.getMediaId)">@photo.getCaption</h2>
+                                <br/>
+                                <div>
+                                    <input type="text" class="captionInput center" id="captionInput-@photo.getMediaId" name="caption" title="caption" placeholder="No Caption" style="display: none">
+                                    <span id="lengthErrorMessage-@photo.getMediaId" class="center" style="color: red; display: none">This caption is too long</span>
+
+                                    @if(user.getUserid.eq(photo.getUser.getUserid) || user.userIsAdmin) {
+                                        <button class="btn btn-primary captionButton center" id="editCaptionButton-@photo.getMediaId" style="padding-left: 100px" onclick="editCaption(@photo.getMediaId)">
+                                            Add Caption
+                                        </button>
+                                    }
+                                    <br/>
+
+                                </div>
                                 <a class="btn btn-primary" id="linkButton" href="#" data-toggle="modal" data-target="#@photo.getMediaId">Destinations</a>
                                 <a class="btn btn-primary" id="setProfilePicture"
                                    onclick="setProfilePictureRequest(

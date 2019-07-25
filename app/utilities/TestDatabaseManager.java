@@ -486,6 +486,7 @@ public class TestDatabaseManager {
 
     public void addUserPhotos(){
         UserPhoto userPhoto1 = new UserPhoto("shrek.jpeg", true, true, User.find.byId(2));
+        userPhoto1.setCaption("Get out of my swamp");
         UserPhoto userPhoto2 = new UserPhoto("placeholder.png", false, false, User.find.byId(2));
 //        Destination christchurch = Destination.find.byId(1);
 //        Destination wellington = Destination.find.byId(2);

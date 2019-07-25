@@ -208,7 +208,6 @@ function populateViewDestinationModal()
             $('#destTitle').html(destinationData.destName);
             $('#destLocation').html(destinationData.district + ", " + destinationData.country);
             $('#coordinates').html("Coordinates: (" + destinationData.latitude + ", " + destinationData.longitude + ")");
-            $('#destTags').html("Tags:" + destinationData);
             $.ajax({
                 type: 'GET',
                 url: '/users/destinations/ttypes/' + getIdFromRow,

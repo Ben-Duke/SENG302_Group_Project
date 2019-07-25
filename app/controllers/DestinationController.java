@@ -3,6 +3,7 @@ package controllers;
 import accessors.DestinationAccessor;
 import com.fasterxml.jackson.databind.JsonNode;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import factories.DestinationFactory;
 import factories.UserFactory;
 import formdata.DestinationFormData;
@@ -193,7 +194,7 @@ public class DestinationController extends Controller {
                     newDestination.setTags(new HashSet<>());
                     newDestination.setUser(user);
                     newDestination.setCountryValid(true);
-                    if (destinationForm.get().tags.length() > 0) {
+                    if (destinationForm.get().tags != null && destinationForm.get().tags.length() > 0) {
                         List<String> tags = Arrays.asList(destinationForm.get().tags.split(","));
                         Set uniqueTags = UtilityFunctions.tagLiteralsAsSet(tags);
                         newDestination.setTags(uniqueTags);
@@ -840,6 +841,7 @@ public class DestinationController extends Controller {
         User user = User.getCurrentUser(request);
         if (user != null) {
             Destination destination = Destination.find.byId(destId);
+            System.out.println(destination.getTags().size());
             if (destination.getIsPublic() || destination.getUser().getUserid() == user.getUserid() || user.userIsAdmin()) {
                 return ok(Json.toJson(destination));
             } else {

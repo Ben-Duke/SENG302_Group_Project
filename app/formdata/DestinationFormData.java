@@ -61,7 +61,6 @@ public class DestinationFormData implements Constraints.Validatable<List<Validat
      */
     @Override
     public List<ValidationError> validate() {
-        System.out.println("Play validation");
         List<ValidationError> errors = new ArrayList<>();
 
         destName = destName.trim();

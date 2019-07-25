@@ -55,7 +55,7 @@ function initMap() {
 
 
     initDestinationMarkers();
-    // initMapLegend();
+    initMapLegend();
 
     initTripRoutes();
 
@@ -162,6 +162,29 @@ $('tbody').sortable({
     }
 });
 
+var currentlyDisplayedDestId;
+
+function displayDestination(destId, startLat, startLng) {
+
+    if (currentlyDisplayedDestId !== undefined) {
+        document.getElementById("singleDestination_"+currentlyDisplayedDestId).style.display = "none";
+    }
+
+    currentlyDisplayedDestId = destId;
+
+    document.getElementById("singleDestination_"+destId).style.display = "block";
+
+
+    var tripStartLatLng = new google.maps.LatLng(
+        startLat, startLng
+    );
+
+    window.globalMap.setCenter(tripStartLatLng);
+    window.globalMap.setZoom(9);
+
+
+}
+
 
 
 
@@ -186,28 +209,6 @@ function initPlacesAutocomplete() {
     });
 }
 
-
-/**
- * Creates the destination map legend.
- *
- * Code from here
- * https://developers.google.com/maps/documentation/javascript/adding-a-legend
- */
-function initMapLegend() {
-    let icons = getAllMarkerIcons();
-
-    let legend = document.getElementById('legend');
-    for (let key in icons) {
-        let type = icons[key];
-        let name = type.name;
-        let icon = type.url;
-        let div = document.createElement('div');
-        div.innerHTML = '<img src="' + icon + '"> ' + name;
-        legend.appendChild(div);
-    }
-
-    window.globalMap.controls[google.maps.ControlPosition.LEFT_BOTTOM].push(legend);
-}
 
 
 

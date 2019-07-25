@@ -29,12 +29,20 @@
             overflow-y: auto;
         }
         #tripList {
-            height 60%;
+            height: 30%;
             overflow-y: auto;
         }
 
-        .singleDestination {
+        #singleDestinationContainer {
+            height: 50%;
+        }
 
+        .singleDestination {
+            display: none;
+        }
+
+        .tripDateInput {
+            width: 100px;
         }
 
 </style>
@@ -53,62 +61,88 @@
 
         <div id="destinationsTab" class="tab-pane fade in active">
 
-            @for(destination <- destinations) {
+            <div id="singleDestinationContainer">
 
-                <div id="singleDestination_@destination.getDestId()" class="singleDestination">
+                @for(destination <- destinations) {
 
-                    <div class="row">
-                        <label class="col-sm-3 control-label">Type</label>
-                        <div class="col-sm-9">
-                            <span>@destination.getDestType()</span>
+                    <div id="singleDestination_@destination.getDestId()" class="singleDestination">
+
+                        <div class="row">
+                            <label class="col-sm-3 control-label">Name</label>
+                            <div class="col-sm-9">
+                                <span>@destination.getDestName()</span>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="row">
-                        <label class="col-sm-3 control-label">Traveller Types</label>
-                        <div class="col-sm-9">
-                        @for(travellerType <- destination.getTravellerTypes()) {
-                            <span style="margin-right: 6px;">@travellerType</span>
-                        }
+                        <div class="row">
+                            <label class="col-sm-3 control-label">Type</label>
+                            <div class="col-sm-9">
+                                <span>@destination.getDestType()</span>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="row">
-                        <label class="col-sm-3 control-label">Country</label>
-                        <div class="col-sm-9">
-                            <span>@destination.getCountry()</span>
-                            @if(!destination.getIsCountryValid()) {
-                                <span class="text-danger"> Invalid country</span>
+                        <div class="row">
+                            <label class="col-sm-3 control-label">Traveller Types</label>
+                            <div class="col-sm-9">
+                            @for(travellerType <- destination.getTravellerTypes()) {
+                                <span style="margin-right: 6px;">@travellerType</span>
                             }
+                            </div>
                         </div>
+
+                        <div class="row">
+                            <label class="col-sm-3 control-label">Country</label>
+                            <div class="col-sm-9">
+                                <span>@destination.getCountry()</span>
+                                @if(!destination.getIsCountryValid()) {
+                                    <span class="text-danger"> Invalid country</span>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <label class="col-sm-3 control-label">District</label>
+                            <div class="col-sm-9">
+                                <span>@destination.getDistrict()</span>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <label class="col-sm-3 control-label">Latitude</label>
+                            <div class="col-sm-9">
+                                <span>@destination.getLatitude()</span>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <label class="col-sm-3 control-label">Longitude</label>
+                            <div class="col-sm-9">
+                                <span>@destination.getLongitude()</span>
+                            </div>
+                        </div>
+
                     </div>
 
-                    <div class="row">
-                        <label class="col-sm-3 control-label">District</label>
-                        <div class="col-sm-9">
-                            <span>@destination.getDistrict()</span>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <label class="col-sm-3 control-label">Latitude</label>
-                        <div class="col-sm-9">
-                            <span>@destination.getLatitude()</span>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <label class="col-sm-3 control-label">Longitude</label>
-                        <div class="col-sm-9">
-                            <span>@destination.getLongitude()</span>
-                        </div>
-                    </div>
-            }
-
-
+                }
 
             </div>
+            <hr>
+            <div id="destinationList">
 
+                <div class="list-group">
+                    @for(destination <- destinations) {
+
+                        <a onclick="displayDestination(@destination.getDestId(),
+                                @destination.getLatitude(),
+                                @destination.getLongitude())"
+                        class="list-group-item list-group-item-action">
+                        @destination.getDestName()
+                        </a>
+                    }
+                    <a></a>
+                </div>
+
+            </div>
 
         </div>
 
@@ -124,6 +158,7 @@
                             <th scope="col">Type</th>
                             <th scope="col">Arrival</th>
                             <th scope="col">Departure</th>
+                            <th scope="col"></th>
                         </tr>
                     </thead>
                     @for(trip <- trips) {
@@ -133,8 +168,9 @@
                         <tr id="@visit.getVisitid()">
                             <th scope ="row">@visit.getDestination().getDestName()</th>
                             <td>@visit.getDestination().getDestType()</td>
-                            <td>@visit.getArrival()</td>
-                            <td>@visit.getDeparture()</td>
+                            <td><input class="tripDateInput" type="text" onblur="" value="@visit.getArrival()"></td>
+                            <td><input class="tripDateInput" type="text" onblur="" value="@visit.getDeparture()"></td>
+                            <td><a>&#10060</a></td>
                         </tr>
                         }
                     </tbody>

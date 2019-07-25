@@ -47,7 +47,7 @@ public class BaseTestWithApplicationAndDatabase extends WithApplication {
     public static Application application;
 
     @Inject
-    private EbeanDynamicEvolutions ebeanDynamicEvolutions;
+    private EbeanDynamicEvolutions ebeanDynamicEvolutions;  // Prevents DataSource null error
 
 
 //    /**
@@ -74,31 +74,27 @@ public class BaseTestWithApplicationAndDatabase extends WithApplication {
         configuration.put("play.evolutions.db.test.enabled", "true");
         configuration.put("play.evolutions.autoApply", "false");
 
+        configuration.put("db.default.driver", "org.h2.Driver");
+        configuration.put("db.default.url", "jdbc:h2:mem:defaultDB;MODE=MYSQL;");
+        configuration.put("ebean.default", "models.*");
+
         //Set up the fake application to use the in memory database config
         application = fakeApplication(configuration);
 
         database = application.injector().instanceOf(Database.class);
 
-        applyEvolutions();
 
         ApplicationManager.setUserPhotoPath("/test/resources/test_photos/user_");
         ApplicationManager.setIsTest(true);
         CommandManagerAccessor.resetCommandManagers();
-        //database = Databases.inMemory();
+//        database = Databases.inMemory();
+
+        Evolutions.applyEvolutions(database);
 
         TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
         testDatabaseManager.populateDatabase();
 
         Helpers.start(application);
-    }
-
-    /**
-     * Applies down evolutions to the database from the test/evolutions/default directory.
-     *
-     * This drops tables and data from the database.
-     */
-    private void applyEvolutions() {
-        Evolutions.applyEvolutions(database);
     }
 
     /**

@@ -1,24 +1,24 @@
-# --- DB population file, same contents as prod/2.sql except for ups/downs comments
-
-# -- Disable inspection for checking tables exist as they are in another file
+# # --- DB population file, same contents as prod/2.sql except for ups/downs comments
+#
+# # -- Disable inspection for checking tables exist as they are in another file
 # noinspection SqlResolveForFile
-
-
-# --- !Ups
-
-insert into traveller_type (traveller_type_name)
-values ('Groupie'),
-('Thrillseeker'),
-('Gap Year'),
-('Frequent Weekender'),
-('Holidaymaker'),
-('Business Traveller'),
-('Backpacker');
-
-insert into nationality (country_valid, nationality_name)
-values ('1', 'Test');
-
-# --- !Downs
+#
+#
+# !Ups
+#
+# insert into traveller_type (traveller_type_name)
+# values ('Groupie'),
+# ('Thrillseeker'),
+# ('Gap Year'),
+# ('Frequent Weekender'),
+# ('Holidaymaker'),
+# ('Business Traveller'),
+# ('Backpacker');
+#
+# insert into nationality (country_valid, nationality_name)
+# values ('1', 'Test');
+#
+# !Downs
 
 delete from admin;
 

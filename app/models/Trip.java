@@ -118,13 +118,13 @@ public class Trip extends BaseModel {
             return null;
         }
         else {
-            String startDate = Ebean.find(Visit.class).where().eq("trip", this).orderBy("arrival DESC").findList().get(0).getArrival();
+            String startDate = Visit.find.query().where().eq("trip", this).orderBy("arrival DESC").findList().get(0).getArrival();
             return startDate;
         }
     }
 
     public String getTripEnd(){
-        String endDate = Ebean.find(Visit.class).where().eq("trip", this).orderBy("departure ASC").findList().get(0).getDeparture();
+        String endDate = Visit.find.query().where().eq("trip", this).orderBy("departure ASC").findList().get(0).getDeparture();
         return endDate;
     }
 

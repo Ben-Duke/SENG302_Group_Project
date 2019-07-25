@@ -313,7 +313,9 @@ PUT /tags/search                                            controllers.TagContr
 # Tag page
 GET /tags/:tagName                                            controllers.TagController.displayTags(request: Request, tagName: String)
 
-GET /tags/destinations/:tagId                                  controllers.TagController.getDestinationTagDetails(request: Request, tagId: Integer)
+GET /tags/taggedItems/:tagId                                  controllers.TagController.getTagDetails(request: Request, tagId: Integer)
+
+
 
 # Undo
 +nocsrf

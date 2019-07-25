@@ -15,6 +15,7 @@ import java.util.List;
 public class Tag extends Model implements Comparable{
 
     public static Finder<Integer,Tag> find = new Finder<>(Tag.class);
+
     @JsonIgnore
     @ManyToMany
     public List<Destination> destinations;

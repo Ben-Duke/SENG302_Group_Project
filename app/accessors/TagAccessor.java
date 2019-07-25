@@ -1,12 +1,12 @@
 package accessors;
 
-import io.ebean.RawSql;
-import io.ebean.SqlQuery;
-import models.Destination;
-import models.Tag;
+import models.*;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 
 public class TagAccessor {
@@ -72,13 +72,21 @@ public class TagAccessor {
         return Tag.find.query().where().ilike("name", "%" + searchQuery + "%").findSet();
     }
 
-    public static Set<Destination> searchTaggedDestination(Tag tag) {
-        String sql = "SELECT destination_destid FROM destination_tag WHERE tag_tag_id = " + tag.getTagId();
-        RawSql sqlQuery = RawSqlBuilder
-        Set<Destination> destinations = Destination.find.query().findSet();
+    private static Predicate<TaggableModel> containsTag(Tag tag) {
+        return taggableModel -> taggableModel.getTags().contains(tag);
+    }
 
-        System.out.println(destinations);
-        return destinations;
+    public static Set<TaggableModel> searchTaggedDestination(Tag tag) {
+
+
+        Set<TaggableModel> taggables = new HashSet<>();
+        taggables.addAll(Destination.find.query().findSet());
+        taggables.addAll(UserPhoto.find.query().findSet());
+        taggables.addAll(Trip.find.query().findSet());
+
+        return taggables.stream()
+                .filter(containsTag(tag))
+                .collect(Collectors.toSet());
     }
 
 }

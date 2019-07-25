@@ -4,11 +4,7 @@ import accessors.DestinationAccessor;
 import accessors.TagAccessor;
 import accessors.TripAccessor;
 import accessors.UserPhotoAccessor;
-import models.Destination;
-import models.Tag;
-import models.Trip;
-import models.User;
-import models.UserPhoto;
+import models.*;
 import play.libs.Json;
 import play.mvc.Http;
 import play.mvc.Result;
@@ -76,14 +72,15 @@ public class TagController {
         }
     }
 
-    public Result getDestinationTagDetails(Http.Request request, int tagId) {
+    public Result getTagDetails(Http.Request request, int tagId) {
         User user = User.getCurrentUser(request);
         if (user == null) {
             return unauthorized();
         } else {
            Tag newTag = TagAccessor.getTagById(tagId);
-           Set<Destination> destinationList = TagAccessor.searchTaggedDestination(newTag);
-           return ok(Json.toJson(destinationList));
+           Set<TaggableModel> taggables = TagAccessor.searchTaggedDestination(newTag);
+
+           return ok(Json.toJson(taggables));
         }
     }
 

@@ -7,17 +7,25 @@ function loadContent() {
 
     $.ajax({
         type: 'GET',
-        url: 'destinations/' + tagId,
-        success: function(destinationData) {
-            createDestinationContent(destinationData)
+        url: '/tags/taggedItems/' + tagId,
+        success: function(tagData) {
+            createTagContent(tagData)
         }
     });
 
 }
 
-function createDestinationContent(destinationData) {
+function createTagContent(tagData) {
     const tagFeed = document.getElementById('tag-feed');
-    console.log(destinationData);
+    console.log(tagData);
+}
 
+function createPhotoContent(photoData) {
+    const tagFeed = document.getElementById('tag-feed');
+    console.log(photoData);
+}
 
+function createTripContent(tripData) {
+    const tagFeed = document.getElementById('tag-feed');
+    console.log(tripData);
 }

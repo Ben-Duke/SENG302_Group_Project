@@ -399,7 +399,7 @@ public class UtilityFunctions {
      * @param tagList the list of strings to make into tags
      * @return a set of tags
      */
-    public static Set<Tag> tagLiteralsAsSet(ArrayList<String> tagList) {
+    public static Set<Tag> tagLiteralsAsSet(List<String> tagList) {
         Set<Tag> tagSet = new HashSet<>();
         for (String tagName : tagList) {
             Tag existingTag = TagAccessor.getTagByName(tagName.toLowerCase());

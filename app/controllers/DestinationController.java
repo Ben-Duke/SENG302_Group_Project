@@ -180,7 +180,6 @@ public class DestinationController extends Controller {
      */
     public Result saveDestinationFromRequest(Http.Request request) {
         User user = User.getCurrentUser(request);
-        System.out.println("A save");
 
         if (user != null) { // checks if a user is logged in
 
@@ -191,51 +190,15 @@ public class DestinationController extends Controller {
                     Destination newDestination = formFactory.form(Destination.class)
                             .bindFromRequest(request).get();
                     Form<DestinationFormData> destinationForm = formFactory.form(DestinationFormData.class).bindFromRequest();
-                    System.out.println(newDestination.destName);
-                    System.out.println(newDestination.getTags());
-                    /*ArrayList<String> tags = new ArrayList<>();
-                    String destName = "";
-                    String destType = "";
-                    String country = "";
-                    String district = "";
-                    Double latitude = 0.0;
-                    Double longitude = 0.0;
-                    Map<String, String[]> dataPart = request.body().asMultipartFormData().asFormUrlEncoded();
-                    if (dataPart.get("tags") != null) {
-                        tags = new ArrayList<>(Arrays.asList(dataPart.get("tags")));
-                        System.out.println(tags);
-                    }
-                    if (dataPart.get("destName") != null) {
-                        destName = new ArrayList<>(Arrays.asList(dataPart.get("destName"))).get(0);
-                        System.out.println(destName);
-                    }
-                    if (dataPart.get("country") != null) {
-                        country = new ArrayList<>(Arrays.asList(dataPart.get("country"))).get(0);
-                        System.out.println(country);
-                    }
-                    if (dataPart.get("district") != null) {
-                        district = new ArrayList<>(Arrays.asList(dataPart.get("district"))).get(0);
-                        System.out.println(district);
-                    }
-                    if (dataPart.get("latitude") != null) {
-                        latitude = Double.parseDouble(new ArrayList<>(Arrays.asList(dataPart.get("latitude"))).get(0));
-                        System.out.println(latitude);
-                    }
-                    if (dataPart.get("longitude") != null) {
-                        longitude = Double.parseDouble(new ArrayList<>(Arrays.asList(dataPart.get("longitude"))).get(0));
-                        System.out.println(longitude);
-                    }
-                    if (dataPart.get("destType") != null) {
-                        destType = new ArrayList<>(Arrays.asList(dataPart.get("destType"))).get(0);
-                        System.out.println(destType);
-                    }
-                    Destination newDestination = new Destination(destName, destType, district, country, latitude, longitude, user);
+                    newDestination.setTags(new HashSet<>());
                     newDestination.setUser(user);
                     newDestination.setCountryValid(true);
+                    if (destinationForm.get().tags.length() > 0) {
+                        List<String> tags = Arrays.asList(destinationForm.get().tags.split(","));
+                        Set uniqueTags = UtilityFunctions.tagLiteralsAsSet(tags);
+                        newDestination.setTags(uniqueTags);
+                    }
                     newDestination.save();
-                    Set uniqueTags = UtilityFunctions.tagLiteralsAsSet(tags);
-                    newDestination.setTags(uniqueTags);
-                    newDestination.update();*/
 
 
                     return redirect(routes.DestinationController.indexDestination());
@@ -1015,7 +978,6 @@ public class DestinationController extends Controller {
         if (destId != null) {
             UserPhoto primaryPicture = DestinationFactory.getPrimaryPicture(destId);
             if (primaryPicture != null) {
-                System.out.println("Sending image back");
                 return ok(new File(primaryPicture.getUrlWithPath()));
             } else {
                 //should be 404 but then console logs an error

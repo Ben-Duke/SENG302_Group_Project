@@ -479,17 +479,27 @@ $('#removePhotoButton').click(function(e){
  * Sends an AJAX post request to the backend with the destination and tag information.
  */
 $('#createDestinationForm').submit(function(eve) {
-    eve.preventDefault();
+    //eve.preventDefault();
     let form = document.getElementById("createDestinationForm");
+
+
     var formData = new FormData(form);
 
 
     toAddTagList = Array.from(toAddTagList);
+    let toAddTagString = "";
     for (var i = 0; i < toAddTagList.length; i++) {
-        formData.append('tags', toAddTagList[i]);
+        toAddTagString += toAddTagList[i] + ",";
     }
+    if (toAddTagString.length > 0) {
+        toAddTagString = toAddTagString.substring(0, toAddTagString.length - 1);
+    }
+    $("<input />").attr("type", "hidden")
+        .attr("name", "tags")
+        .attr("value", toAddTagString)
+        .appendTo(this);
 
-    var token =  $('input[name="csrfToken"]').attr('value');
+    /*var token =  $('input[name="csrfToken"]').attr('value');
         $.ajaxSetup({
             beforeSend: function(xhr) {
                 xhr.setRequestHeader('Csrf-Token', token);
@@ -502,11 +512,17 @@ $('#createDestinationForm').submit(function(eve) {
             url: '/users/destinations/save',
             data: formData,
             success: function(data, textStatus, xhr){
-                if(xhr.status == 200) {
-                    window.location = '/users/destinations'
-                }
+                console.log("success");
+                console.log(data);
+                console.log(textStatus);
+                document.write(data);
+            },
+            error: function(data) {
+                console.log("error");
+                console.log(data);
+                document.write(data.responseText);
             }
-        })
+        })*/
 });
 
 

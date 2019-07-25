@@ -17,7 +17,7 @@ public class DestinationFormData implements Constraints.Validatable<List<Validat
     public String country;
     public String latitude;
     public String longitude;
-    public List<String> tags;
+    public String tags;
 
 
     /** Required for form instantiation. */
@@ -26,7 +26,7 @@ public class DestinationFormData implements Constraints.Validatable<List<Validat
 
     /** Constructor */
     public DestinationFormData(String destName, String destType, String district,
-                               String country, Double latitude, Double longitude, List<String> tags) {
+                               String country, Double latitude, Double longitude, String tags) {
         this.destName = destName;
         this.destType = destType;
         this.district = district;
@@ -61,6 +61,7 @@ public class DestinationFormData implements Constraints.Validatable<List<Validat
      */
     @Override
     public List<ValidationError> validate() {
+        System.out.println("Play validation");
         List<ValidationError> errors = new ArrayList<>();
 
         destName = destName.trim();

@@ -12,24 +12,28 @@
     <meta name="viewport" content="initial-scale=1.0">
 </head>
 
-@if(destId == null) {
-<div class="container">
-    <div class="row">
-        <h1>Create Destination</h1>
-        @users.tag.createSearchTags(user)
-    </div>
+    @if(destId == null) {
+        <div class="container">
+            <div class="row">
+                <h1>Create Destination</h1>
+                @users.tag.createSearchTags(user)
+            </div>
 
-    <div class="row">
-        @helper.form(action = helper.CSRF(routes.DestinationController.saveDestinationFromRequest()), 'id -> "createDestinationForm") {
-        @formBody()
-        }
-        } else {
-        <h1>Edit Destination</h1>
-        @helper.form(action = helper.CSRF(routes.DestinationController.updateDestination(destId))) {
-        @formBody()
-        }
-        }
-    </div>
+            <div class="row">
+            @helper.form(action = helper.CSRF(routes.DestinationController.saveDestinationFromRequest()), 'id -> "createDestinationForm") {
+                @formBody()
+            }
+            </div>
+            } else {
+        <div class="row">
+            <h1>Edit Destination</h1>
+            @helper.form(action = helper.CSRF(routes.DestinationController.updateDestination(destId))) {
+                @formBody()
+            }
+        </div>
+
+    }
+
 
 
 

@@ -17,6 +17,7 @@ public class Admin extends BaseModel {
     /**
      * The ID of the user. This is the foreign key to user.
      */
+    @Id
     @Unique
     @OneToOne(mappedBy = "userid")
     public Integer userId;

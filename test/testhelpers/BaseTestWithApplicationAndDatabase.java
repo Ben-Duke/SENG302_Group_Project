@@ -83,18 +83,27 @@ public class BaseTestWithApplicationAndDatabase extends WithApplication {
 
         database = application.injector().instanceOf(Database.class);
 
-
         ApplicationManager.setUserPhotoPath("/test/resources/test_photos/user_");
         ApplicationManager.setIsTest(true);
         CommandManagerAccessor.resetCommandManagers();
-//        database = Databases.inMemory();
 
+        // setup tables
         Evolutions.applyEvolutions(database);
 
-        TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
-        testDatabaseManager.populateDatabase();
+        // populate data
+        populateDatabase();
 
         Helpers.start(application);
+    }
+
+    /**
+     * Populates the database with test data
+     * Can be overridden in subclasses if they want to provide their own test data
+     */
+    public void populateDatabase() {
+        System.out.println("upper populate called");
+        TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
+        testDatabaseManager.populateDatabase();
     }
 
     /**

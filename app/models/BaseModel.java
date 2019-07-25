@@ -4,13 +4,18 @@ import controllers.ApplicationManager;
 import io.ebean.Ebean;
 import io.ebean.Model;
 import javafx.application.Application;
+import scala.App;
 
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 
-/** Class which all models inherit from */
+/**
+ * Class which all models inherit from
+ * Overrides ebean methods to make them be saved to the currently active database
+ */
 @MappedSuperclass
 public class BaseModel extends Model {
+
     @Override
     /* Override ebean save so the save occurs on the current database
     *  There is no save(String databaseName) method so we have to use getServer
@@ -31,5 +36,9 @@ public class BaseModel extends Model {
         return super.delete(ApplicationManager.getDatabaseName());
     }
 
-
+    @Override
+    /* Override ebean insert so it occurs on the current database */
+    public void insert() {
+        super.insert(ApplicationManager.getDatabaseName());
+    }
 }

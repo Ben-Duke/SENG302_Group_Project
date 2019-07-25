@@ -15,7 +15,10 @@ import play.mvc.Http;
 import play.mvc.Result;
 import play.test.Helpers;
 import play.test.WithApplication;
+import testhelpers.BaseTestWithApplicationAndDatabase;
 
+
+import java.sql.SQLOutput;
 
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertEquals;
@@ -23,31 +26,14 @@ import static play.mvc.Http.Status.*;
 import static play.test.Helpers.GET;
 import static play.test.Helpers.route;
 
-public class AdminControllerTest extends WithApplication {
-
-    /**
-     * The fake database.
-     */
-    Database database;
-
-    @Override
-    protected Application provideApplication() {
-        return new GuiceApplicationBuilder().build();
-    }
-
+public class AdminControllerTest extends BaseTestWithApplicationAndDatabase {
 
     /**
      * Sets up the fake database before each test.
      */
-    @Before
-    public void setUpDatabase() {
-        database = Databases.inMemory();
-        Evolutions.applyEvolutions(database, Evolutions.forDefault(new Evolution(
-                1,
-                "create table test (id bigint not null, name varchar(255));",
-                "drop table test;"
-        )));
-
+    @Override
+    public void populateDatabase() {
+        System.out.println("populate admin called");
 
         //Initialises test users and default admin and saves it to the database.
         User user = new User("testAdmin");
@@ -58,15 +44,6 @@ public class AdminControllerTest extends WithApplication {
         user1.save();
         User user2 = new User("testUser2");
         user2.save();
-    }
-
-    /**
-     * Clears the fake database after each test.
-     */
-    @After
-    public void shutdownDatabase() {
-        Evolutions.cleanupEvolutions(database);
-        database.shutdown();
     }
 
     /**

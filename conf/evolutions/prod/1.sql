@@ -1,5 +1,5 @@
 # --- SQL file for mysql databases
-# --- Differences from prod sql files
+# --- Differences from test sql files
 # ---   1. Uses '#' for Ups/Downs
 # ---   2. Will NOT work if varchars are > 191
 
@@ -10,20 +10,20 @@ create table admin (
   id                            bigint auto_increment not null,
   user_id                       integer,
   user_id_to_edit               integer,
-  is_default                    tinyint(1) default 0 not null,
+  is_default                    boolean default false not null,
   constraint pk_admin primary key (id)
 );
 
 create table destination (
   destid                        integer auto_increment not null,
-  dest_name                     varchar(191),
-  dest_type                     varchar(191),
-  district                      varchar(191),
-  country                       varchar(191),
-  is_country_valid              tinyint(1) default 0 not null,
+  dest_name                     varchar(199),
+  dest_type                     varchar(199),
+  district                      varchar(199),
+  country                       varchar(199),
+  is_country_valid              boolean default false not null,
   latitude                      double not null,
   longitude                     double not null,
-  is_public                     tinyint(1) default 0 not null,
+  is_public                     boolean default false not null,
   primary_photo_photo_id        integer,
   user                          integer,
   constraint pk_destination primary key (destid)
@@ -38,14 +38,14 @@ create table destination_traveller_type (
 create table destination_modification_request (
   id                            integer auto_increment not null,
   old_destination_destid        integer,
-  new_dest_name                 varchar(191),
-  new_dest_type                 varchar(191),
-  new_dest_country              varchar(191),
-  new_dest_district             varchar(191),
+  new_dest_name                 varchar(199),
+  new_dest_type                 varchar(199),
+  new_dest_country              varchar(199),
+  new_dest_district             varchar(199),
   new_dest_latitude             double not null,
   new_dest_longitude            double not null,
   request_author_userid         integer,
-  creation_date                 datetime(6) not null,
+  creation_date                 timestamp not null,
   constraint pk_destination_modification_request primary key (id)
 );
 
@@ -57,58 +57,58 @@ create table destination_modification_request_traveller_type (
 
 create table nationality (
   natid                         integer auto_increment not null,
-  country_valid                 tinyint(1),
-  nationality_name              varchar(191),
+  country_valid                 boolean,
+  nationality_name              varchar(199),
   constraint uq_nationality_nationality_name unique (nationality_name),
   constraint pk_nationality primary key (natid)
 );
 
 create table passport (
   passid                        integer auto_increment not null,
-  country_valid                 tinyint(1),
-  passport_name                 varchar(191),
+  country_valid                 boolean,
+  passport_name                 varchar(199),
   constraint uq_passport_passport_name unique (passport_name),
   constraint pk_passport primary key (passid)
 );
 
 create table traveller_type (
   ttypeid                       integer auto_increment not null,
-  traveller_type_name           varchar(191),
+  traveller_type_name           varchar(199),
   constraint uq_traveller_type_traveller_type_name unique (traveller_type_name),
   constraint pk_traveller_type primary key (ttypeid)
 );
 
 create table treasure_hunt (
   thuntid                       integer auto_increment not null,
-  title                         varchar(191),
-  riddle                        varchar(191),
+  title                         varchar(199),
+  riddle                        varchar(199),
   destination_destid            integer,
-  start_date                    varchar(191),
-  end_date                      varchar(191),
+  start_date                    varchar(199),
+  end_date                      varchar(199),
   user                          integer,
   constraint pk_treasure_hunt primary key (thuntid)
 );
 
 create table trip (
   tripid                        integer auto_increment not null,
-  trip_name                     varchar(191),
+  trip_name                     varchar(199),
   removed_visits                integer default 0,
-  is_public                     tinyint(1) default 0 not null,
+  is_public                     boolean default false not null,
   user                          integer,
   constraint pk_trip primary key (tripid)
 );
 
 create table user (
   userid                        integer auto_increment not null,
-  email                         varchar(191),
-  password_hash                 varchar(191),
+  email                         varchar(199),
+  password_hash                 varchar(199),
   date_of_birth                 date,
-  gender                        varchar(191),
-  f_name                        varchar(191),
-  l_name                        varchar(191),
-  undo_redo_error               tinyint(1) default 0 not null,
-  is_admin                      tinyint(1),
-  creation_date                 datetime(6) not null,
+  gender                        varchar(199),
+  f_name                        varchar(199),
+  l_name                        varchar(199),
+  undo_redo_error               boolean default false not null,
+  is_admin                      boolean,
+  creation_date                 timestamp not null,
   constraint uq_user_email unique (email),
   constraint pk_user primary key (userid)
 );
@@ -139,9 +139,10 @@ create table user_treasure_hunt (
 
 create table user_photo (
   photo_id                      integer auto_increment not null,
-  url                           varchar(191),
-  is_public                     tinyint(1) default 0 not null,
-  is_profile                    tinyint(1) default 0 not null,
+  url                           varchar(199),
+  is_public                     boolean default false not null,
+  is_profile                    boolean default false not null,
+  caption                       varchar(199),
   user                          integer,
   constraint uq_user_photo_url unique (url),
   constraint pk_user_photo primary key (photo_id)
@@ -158,9 +159,9 @@ create table visit (
   visitorder                    integer,
   destination                   integer,
   trip                          integer,
-  arrival                       varchar(191),
-  departure                     varchar(191),
-  visit_name                    varchar(191),
+  arrival                       varchar(199),
+  departure                     varchar(199),
+  visit_name                    varchar(199),
   constraint pk_visit primary key (visitid)
 );
 
@@ -239,77 +240,77 @@ alter table visit add constraint fk_visit_trip foreign key (trip) references tri
 
 # !Downs
 
-alter table destination drop foreign key fk_destination_primary_photo_photo_id;
-drop index ix_destination_primary_photo_photo_id on destination;
+alter table destination drop constraint if exists fk_destination_primary_photo_photo_id;
+drop index if exists ix_destination_primary_photo_photo_id;
 
-alter table destination drop foreign key fk_destination_user;
-drop index ix_destination_user on destination;
+alter table destination drop constraint if exists fk_destination_user;
+drop index if exists ix_destination_user;
 
-alter table destination_traveller_type drop foreign key fk_destination_traveller_type_destination;
-drop index ix_destination_traveller_type_destination on destination_traveller_type;
+alter table destination_traveller_type drop constraint if exists fk_destination_traveller_type_destination;
+drop index if exists ix_destination_traveller_type_destination;
 
-alter table destination_traveller_type drop foreign key fk_destination_traveller_type_traveller_type;
-drop index ix_destination_traveller_type_traveller_type on destination_traveller_type;
+alter table destination_traveller_type drop constraint if exists fk_destination_traveller_type_traveller_type;
+drop index if exists ix_destination_traveller_type_traveller_type;
 
-alter table destination_modification_request drop foreign key fk_destination_modification_request_old_destination_destid;
-drop index ix_destination_modification_request_old_destination_destid on destination_modification_request;
+alter table destination_modification_request drop constraint if exists fk_destination_modification_request_old_destination_destid;
+drop index if exists ix_destination_modification_request_old_destination_destid;
 
-alter table destination_modification_request drop foreign key fk_destination_modification_request_request_author_userid;
-drop index ix_destination_modification_request_request_author_userid on destination_modification_request;
+alter table destination_modification_request drop constraint if exists fk_destination_modification_request_request_author_userid;
+drop index if exists ix_destination_modification_request_request_author_userid;
 
-alter table destination_modification_request_traveller_type drop foreign key fk_destination_modification_request_traveller_type_destin_1;
-drop index ix_destination_modification_request_traveller_type_destin_1 on destination_modification_request_traveller_type;
+alter table destination_modification_request_traveller_type drop constraint if exists fk_destination_modification_request_traveller_type_destin_1;
+drop index if exists ix_destination_modification_request_traveller_type_destin_1;
 
-alter table destination_modification_request_traveller_type drop foreign key fk_destination_modification_request_traveller_type_travel_2;
-drop index ix_destination_modification_request_traveller_type_travel_2 on destination_modification_request_traveller_type;
+alter table destination_modification_request_traveller_type drop constraint if exists fk_destination_modification_request_traveller_type_travel_2;
+drop index if exists ix_destination_modification_request_traveller_type_travel_2;
 
-alter table treasure_hunt drop foreign key fk_treasure_hunt_destination_destid;
-drop index ix_treasure_hunt_destination_destid on treasure_hunt;
+alter table treasure_hunt drop constraint if exists fk_treasure_hunt_destination_destid;
+drop index if exists ix_treasure_hunt_destination_destid;
 
-alter table treasure_hunt drop foreign key fk_treasure_hunt_user;
-drop index ix_treasure_hunt_user on treasure_hunt;
+alter table treasure_hunt drop constraint if exists fk_treasure_hunt_user;
+drop index if exists ix_treasure_hunt_user;
 
-alter table trip drop foreign key fk_trip_user;
-drop index ix_trip_user on trip;
+alter table trip drop constraint if exists fk_trip_user;
+drop index if exists ix_trip_user;
 
-alter table user_nationality drop foreign key fk_user_nationality_user;
-drop index ix_user_nationality_user on user_nationality;
+alter table user_nationality drop constraint if exists fk_user_nationality_user;
+drop index if exists ix_user_nationality_user;
 
-alter table user_nationality drop foreign key fk_user_nationality_nationality;
-drop index ix_user_nationality_nationality on user_nationality;
+alter table user_nationality drop constraint if exists fk_user_nationality_nationality;
+drop index if exists ix_user_nationality_nationality;
 
-alter table user_passport drop foreign key fk_user_passport_user;
-drop index ix_user_passport_user on user_passport;
+alter table user_passport drop constraint if exists fk_user_passport_user;
+drop index if exists ix_user_passport_user;
 
-alter table user_passport drop foreign key fk_user_passport_passport;
-drop index ix_user_passport_passport on user_passport;
+alter table user_passport drop constraint if exists fk_user_passport_passport;
+drop index if exists ix_user_passport_passport;
 
-alter table user_traveller_type drop foreign key fk_user_traveller_type_user;
-drop index ix_user_traveller_type_user on user_traveller_type;
+alter table user_traveller_type drop constraint if exists fk_user_traveller_type_user;
+drop index if exists ix_user_traveller_type_user;
 
-alter table user_traveller_type drop foreign key fk_user_traveller_type_traveller_type;
-drop index ix_user_traveller_type_traveller_type on user_traveller_type;
+alter table user_traveller_type drop constraint if exists fk_user_traveller_type_traveller_type;
+drop index if exists ix_user_traveller_type_traveller_type;
 
-alter table user_treasure_hunt drop foreign key fk_user_treasure_hunt_user;
-drop index ix_user_treasure_hunt_user on user_treasure_hunt;
+alter table user_treasure_hunt drop constraint if exists fk_user_treasure_hunt_user;
+drop index if exists ix_user_treasure_hunt_user;
 
-alter table user_treasure_hunt drop foreign key fk_user_treasure_hunt_treasure_hunt;
-drop index ix_user_treasure_hunt_treasure_hunt on user_treasure_hunt;
+alter table user_treasure_hunt drop constraint if exists fk_user_treasure_hunt_treasure_hunt;
+drop index if exists ix_user_treasure_hunt_treasure_hunt;
 
-alter table user_photo drop foreign key fk_user_photo_user;
-drop index ix_user_photo_user on user_photo;
+alter table user_photo drop constraint if exists fk_user_photo_user;
+drop index if exists ix_user_photo_user;
 
-alter table user_photo_destination drop foreign key fk_user_photo_destination_user_photo;
-drop index ix_user_photo_destination_user_photo on user_photo_destination;
+alter table user_photo_destination drop constraint if exists fk_user_photo_destination_user_photo;
+drop index if exists ix_user_photo_destination_user_photo;
 
-alter table user_photo_destination drop foreign key fk_user_photo_destination_destination;
-drop index ix_user_photo_destination_destination on user_photo_destination;
+alter table user_photo_destination drop constraint if exists fk_user_photo_destination_destination;
+drop index if exists ix_user_photo_destination_destination;
 
-alter table visit drop foreign key fk_visit_destination;
-drop index ix_visit_destination on visit;
+alter table visit drop constraint if exists fk_visit_destination;
+drop index if exists ix_visit_destination;
 
-alter table visit drop foreign key fk_visit_trip;
-drop index ix_visit_trip on visit;
+alter table visit drop constraint if exists fk_visit_trip;
+drop index if exists ix_visit_trip;
 
 drop table if exists admin;
 
@@ -346,4 +347,6 @@ drop table if exists user_photo;
 drop table if exists user_photo_destination;
 
 drop table if exists visit;
+
+
 

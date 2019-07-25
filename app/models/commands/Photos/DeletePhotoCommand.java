@@ -100,6 +100,10 @@ public class DeletePhotoCommand extends UndoableCommand {
         factory.deletePhoto(savedUserPhoto.getPhotoId());
     }
 
+    /**
+     * Returns result from the undo/redo command as a string
+     * @return String result of command
+     */
     public String toString() {
         return this.userPhoto.getUrl() + "Deleting";
     }

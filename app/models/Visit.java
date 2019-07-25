@@ -11,6 +11,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
+/** The model class for visit construction */
 @Entity
 public class Visit extends Model {
 
@@ -38,6 +39,14 @@ public class Visit extends Model {
 
     public String visitName;
 
+    /**
+     * Constructor for visits
+     * @param arrival The arrival date of the visit
+     * @param departure The departure date of the visit
+     * @param trip The trip the visit is a apart of
+     * @param destination The destination of the visit
+     * @param visitOrder The order this visit in within the trip it is a part of
+     */
     public Visit(String arrival, String departure, Trip trip, Destination destination, Integer visitOrder) {
         this.arrival = arrival;
         this.departure = departure;
@@ -46,6 +55,13 @@ public class Visit extends Model {
         setDestination(destination);
     }
 
+    /**
+     * Constructor for visits without a visit order parameter
+     * @param arrival The arrival date of the visit
+     * @param departure The departure date of the visit
+     * @param trip The trip the visit is a apart of
+     * @param destination The destination of the visit
+     */
     public Visit(String arrival, String departure, Trip trip, Destination destination) {
         this.arrival = arrival;
         this.departure = departure;
@@ -53,9 +69,16 @@ public class Visit extends Model {
         setDestination(destination);
     }
 
+    /**
+     * Empty visit constructor
+     */
     public Visit() {
     }
 
+    /**
+     * Visit constructor using a visit object
+     * @param visit The visit object being used
+     */
     public Visit(Visit visit) {
         this(visit.getArrival(),
                 visit.getDeparture(),
@@ -141,7 +164,7 @@ public class Visit extends Model {
 
     /**
      * Apply the changes from another visit to this visit
-     * @param editedVisit the visit with the changes
+     * @param editedVisit the visit being updated
      */
     public void applyEditChanges(Visit editedVisit) {
         this.arrival = editedVisit.arrival;

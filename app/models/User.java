@@ -126,7 +126,7 @@ public class User extends Model implements Comparable<User> {
     /**
      * The constructor for the User that takes the parameters, email, password, first name, last name, date of birth,
      * gender, nationality and passport.
-     * @param email
+     * @param email The email of the user
      * @param plaintextPassword The Users plaintext password
      * @param fName A String parameter that is used to set the first name of the User.
      * @param lName A String parameter that is used to set the last name of the User.
@@ -146,8 +146,13 @@ public class User extends Model implements Comparable<User> {
         this.lName = lName;
         this.dateOfBirth = dateOfBirth;
         this.gender = gender;
-        this.isAdmin = false;    }
+        this.isAdmin = false;
+    }
 
+    /**
+     * The constructor for the user object with just an email attribute
+     * @param email The string email parameter
+     */
     public User(String email){
         this.email = email.toLowerCase();
         this.isAdmin = false;
@@ -160,6 +165,10 @@ public class User extends Model implements Comparable<User> {
 
     }
 
+    /**
+     * Returns this user objects as a string with it's parameters
+     * @return The user objects attributes as a string
+     */
     @Override
     public String toString() {
         return "User{" +
@@ -223,6 +232,7 @@ public class User extends Model implements Comparable<User> {
     public int getUserid() {
         return userid;
     }
+
 
     public static int checkUser(String email){
         ExpressionList<User> usersExpressionList = User.find.query().where().eq("email", email.toLowerCase());
@@ -549,6 +559,12 @@ public class User extends Model implements Comparable<User> {
         return sortedTrips;
     }
 
+    /**
+     * Method to check the values for the date map to sort the users trips
+     *
+     * @param map The dates map
+     * @return A HashMap with the sorted date values
+     */
     private static HashMap sortByValues(HashMap map) {
         List list = new LinkedList(map.entrySet());
         // Defined Custom Comparator here
@@ -569,6 +585,10 @@ public class User extends Model implements Comparable<User> {
         return sortedHashMap;
     }
 
+    /**
+     * Method to check if a the user object is an admin
+     * @return True if an admin, false otherwise
+     */
     public boolean userIsAdmin() {
         List<Admin> admins = Admin.find.all();
         for (Admin admin : admins) {
@@ -579,13 +599,20 @@ public class User extends Model implements Comparable<User> {
         return false;
     }
 
+    /**
+     * Method to compare this use object to another user
+     * @param other The user object being compared
+     * @return The hash value when the user objects are compared
+     */
     public int compareTo(User other) {
         return this.userid.compareTo(other.getUserid());
     }
 
     /** Modifies the fields of this User which are included in the
      *   profile editing form to be equal to those fields of the user
-     *   passed in */
+     *   passed in
+     * @param editedUser The updated user object
+     */
     public void applyEditChanges(User editedUser) {
         this.fName = editedUser.getFName();
         this.lName = editedUser.getLName();

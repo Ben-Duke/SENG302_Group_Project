@@ -13,8 +13,8 @@ public class UnlinkPhotoDestinationCommand extends DestinationPageCommand  {
 
     /**
      * The destination and the photo that are linked together
-     * @param photo
-     * @param destination
+     * @param photo The photo being unlinked
+     * @param destination The destination being unlinked
      */
     public UnlinkPhotoDestinationCommand(UserPhoto photo, Destination destination) {
         this.photo = photo;

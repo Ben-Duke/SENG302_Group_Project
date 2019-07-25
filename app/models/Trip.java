@@ -44,15 +44,18 @@ public class Trip extends Model {
     @JoinColumn(name = "user", referencedColumnName = "userid")
     public User user;
 
-    public static Trip makeInstance(TripFormData formData){
-        Trip trip = new Trip();
-        trip.tripName = formData.tripName;
-        trip.user = formData.user;
-        trip.removedVisits = 0;
-        trip.visits = new ArrayList<>();
-        return trip;
+    /**
+     * Default Constructor
+     */
+    public Trip(){
     }
 
+    /**
+     * Trip Constructor
+     * @param tripName Name of the trip
+     * @param isPublic the public attribute for the trip
+     * @param user The owner of the trip
+     */
     public Trip(String tripName, boolean isPublic, User user) {
         this.removedVisits = 0;
         this.tripName = tripName;
@@ -60,9 +63,6 @@ public class Trip extends Model {
         this.user = user;
         this.visits = new ArrayList<>();
     }
-    public Trip(){
-    }
-
 
     public Integer getTripid() {
         return tripid;
@@ -112,6 +112,10 @@ public class Trip extends Model {
         this.visits.add(visit);
     }
 
+    /**
+     * Returns the start date of the trip
+     * @return The date of the start of the trip as a string
+     */
     public String getTripStart(){
         if(this.visits.isEmpty()){
             return null;
@@ -122,6 +126,10 @@ public class Trip extends Model {
         }
     }
 
+    /**
+     * Returns the end date of the trip
+     * @return The date of the end of the trip as a string
+     */
     public String getTripEnd(){
         String endDate = Ebean.find(Visit.class).where().eq("trip", this).orderBy("departure ASC").findList().get(0).getDeparture();
         return endDate;

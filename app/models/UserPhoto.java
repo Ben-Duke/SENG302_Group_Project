@@ -74,9 +74,10 @@ public class UserPhoto extends Model {
         this.primaryPhotoDestinations = primaryPhotoDestinations;
     }
 
-    public boolean getIsProfile(){
-        return this.isProfile;
-    }
+    /**
+     * Create a userPhoto using another userPhoto objects and it's attributes
+     * @param userPhoto The userPhoto object being used
+     */
     public UserPhoto(UserPhoto userPhoto){
         this.url = userPhoto.getUrl();
         this.isPublic = userPhoto.getIsPhotoPublic();
@@ -84,6 +85,10 @@ public class UserPhoto extends Model {
         this.isProfile = userPhoto.getIsProfilePhoto();
         this.destinations = userPhoto.getDestinations();
         this.primaryPhotoDestinations = userPhoto.getPrimaryPhotoDestinations();
+    }
+
+    public boolean getIsProfile(){
+        return this.isProfile;
     }
 
 
@@ -119,8 +124,7 @@ public class UserPhoto extends Model {
     /**
      * Calling this function will delete a user photo that has that photoId does nothing if the photoId doesn't
      * match a photo in the database
-     * @param idOfPhoto
-     * @return
+     * @param idOfPhoto The Id of the photo being deleted
      */
     public static void deletePhoto(int idOfPhoto){
         UserPhoto.find.query().where().eq("photoId",idOfPhoto).delete();
@@ -227,6 +231,10 @@ public class UserPhoto extends Model {
         return primaryPhotoDestinations;
     }
 
+    /**
+     * Returns this userPhoto objects as a string with it's parameters
+     * @return The userPhoto objects attributes as a string
+     */
     @Override
     public String toString() {
         return "url is " + this.url + " Id is " + this.getPhotoId();

@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
 
-
+/** Utilities class for county functionality */
 public class CountryUtils {
 
     private static final Logger logger = UtilityFunctions.getLogger();
@@ -19,16 +19,25 @@ public class CountryUtils {
     private static Date lastUpdated;
     private static List<String> countries;
 
-    // Private constructor to hide the implicit public one
+    /** Private constructor to hide the implicit public one */
     private CountryUtils() {
         throw new IllegalStateException("Utility class");
     }
 
+
+    /**
+     * Return all countries from the API as a list
+     * @return List of all countries
+     */
     static List<String> getCountries() {
         updateCountries();
         return countries;
     }
 
+    /**
+     * Return all countries from the API as a Map
+     * @return Map of all countries
+     */
     public static Map<String, Boolean> getCountriesMap() {
         updateCountries();
 
@@ -111,6 +120,10 @@ public class CountryUtils {
         }
     }
 
+    /**
+     * Print the message for loading the countries api
+     * @param message The string message to be logged
+     */
     private static void printLoadingCountriesMessage(String message) {
 
         LocalDateTime dateNowUTC = LocalDateTime.now(ZoneId.of("UTC"));

@@ -64,6 +64,11 @@ public class UtilityFunctions {
         return null;
     }
 
+    /**
+     * Makes a set of all the users to be retained
+     * @param lists A set of user as a list
+     * @return A set of all retained users
+     */
     public static Set<User> retainFromLists(List<Set<User>> lists) {
         int count = 0;
         Set<User> retainedList = lists.get(count);
@@ -80,7 +85,7 @@ public class UtilityFunctions {
      *
      * @param max         the character limit
      * @param inputString the input string
-     * @return
+     * @return if the string has more characters than the limit return false, else return true.
      */
     public static boolean validateMaxCharLimit(String inputString, Integer max) {
         return inputString.length() <= max;
@@ -92,7 +97,7 @@ public class UtilityFunctions {
      *
      * @param min         the minimum number of characters
      * @param inputString the input string
-     * @return
+     * @return A boolean,  if the string has less characters than the limit return false, else return true.
      */
     public static boolean validateMinCharLimit(String inputString, Integer min) {
         return min <= inputString.length();
@@ -313,8 +318,8 @@ public class UtilityFunctions {
     /**
      * This method sends a get request to the countries api and returns a sorted set of these countries
      *
-     * @return
-     * @throws Exception
+     * @return Map of all countries fom the api
+     * @throws Exception Throws exception if error found when using countries api
      */
     public static Map<String, Boolean> CountryUtils() throws IOException {
         Map<String, Boolean> countryMap = new TreeMap<>();
@@ -357,8 +362,8 @@ public class UtilityFunctions {
     /**
      * This method sends a get request to the countries api and returns a sorted set of these countries
      *
-     * @return
-     * @throws Exception
+     * @return A set of all countries from the api
+     * @throws Exception Throws exception if error found when using countries api
      */
     public static Set countriesAsStrings() throws Exception {
         Set<String> countries = new HashSet<String>();

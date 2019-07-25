@@ -8,6 +8,7 @@ import play.data.format.Formats;
 import javax.persistence.*;
 import java.util.*;
 
+/** The model class for the destination modification request */
 @Entity
 public class DestinationModificationRequest extends Model {
 
@@ -35,6 +36,12 @@ public class DestinationModificationRequest extends Model {
     @ManyToOne
     public User requestAuthor;
 
+    /**
+     * Constructor for the destination modification request
+     * @param oldDestination The previous destination
+     * @param newDestination The modified destination
+     * @param user The user making the changes
+     */
     public DestinationModificationRequest(Destination oldDestination, Destination newDestination, User user) {
         this.oldDestination = oldDestination;
         this.newDestName = newDestination.getDestName();

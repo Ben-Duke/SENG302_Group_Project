@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+/** Model class for treasure hunt construction */
 @Entity
 public class TreasureHunt extends Model {
 
@@ -35,6 +36,11 @@ public class TreasureHunt extends Model {
         this.users = new ArrayList<>();
     }
 
+    /**
+     * Constructor to create a treasure hunt from an existing treasure hunt object
+     *
+     * @param treasureHunt The treasure hunt object being created
+     */
     public TreasureHunt(TreasureHunt treasureHunt) {
         this(treasureHunt.getTitle(),
                 treasureHunt.getRiddle(),
@@ -155,6 +161,11 @@ public class TreasureHunt extends Model {
         this.title = title;
     }
 
+    /**
+     *The unique hashcode of a treasure hunt given it's attributes
+     *
+     * @return The full hash code of the treasure hunt
+     */
     @Override
     public int hashCode() {
         int result = 17;
@@ -166,6 +177,13 @@ public class TreasureHunt extends Model {
         return result;
     }
 
+    /**
+     * Method to check equal treasure hunt objects
+     *
+     * @param obj The object being checked
+     * @return True of the object is equal to this treasure hunt,
+     * False otherwise
+     */
     @Override
     public boolean equals(Object obj) {
         if (obj == this) return true;
@@ -178,9 +196,13 @@ public class TreasureHunt extends Model {
                 endDate.equals(other.endDate);
     }
 
-    /** Modifies the fields of this Treasure Hunt which are included in the
+    /**
+     * Modifies the fields of this Treasure Hunt which are included in the
      *   treasure hunt editing form to be equal to those fields of the TreasureHunt
-     *   passed in */
+     *   passed in
+     *
+     * @param editedTreasureHunt The changed treasure hunt
+     */
     public void applyEditChanges(TreasureHunt editedTreasureHunt) {
         this.title = editedTreasureHunt.getTitle();
         this.destination = editedTreasureHunt.getDestination();

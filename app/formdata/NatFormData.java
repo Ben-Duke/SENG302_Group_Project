@@ -10,6 +10,7 @@ import java.util.List;
 import factories.UserFactory;
 
 @Constraints.Validate
+/**A form class used ot validate user inputs on the nationality form page */
 public class NatFormData implements Constraints.Validatable<List<ValidationError>>{
 
     public static Logger logger = LoggerFactory.getLogger("application");
@@ -64,6 +65,7 @@ public class NatFormData implements Constraints.Validatable<List<ValidationError
         this.nationalitydelete = delNat;
         this.userId = id;
     }
+    /** Required for form instantiation. */
     public NatFormData(){
 
     }

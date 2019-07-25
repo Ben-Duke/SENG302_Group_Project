@@ -11,6 +11,7 @@ import javax.persistence.*;
 //@Table(name = "admin",
 //        uniqueConstraints = @UniqueConstraint(columnNames = "userId")
 //)
+/** Model class for admin construction */
 public class Admin extends BaseModel {
 
     /**

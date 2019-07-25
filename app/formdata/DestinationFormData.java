@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 @Constraints.Validate
+/** A form class used to validate user inputs on the destination form page */
 public class DestinationFormData implements Constraints.Validatable<List<ValidationError>> {
 
     public String destName;

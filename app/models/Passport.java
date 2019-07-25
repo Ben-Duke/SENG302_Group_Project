@@ -8,12 +8,17 @@ import io.ebean.Model;
 import javax.persistence.*;
 import java.util.List;
 
+/** The model class for passport construction */
 @Entity
 @Table(name = "passport",
         uniqueConstraints = @UniqueConstraint(columnNames = "passport_name")
 )
 public class Passport extends CountryItem {
 
+    /**
+     * Constructor for passports
+     * @param passportName The passport object being created
+     */
     public Passport(String passportName){
         super();
         this.passportName = passportName;

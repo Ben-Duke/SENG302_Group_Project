@@ -11,7 +11,7 @@ import utilities.UtilityFunctions;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
-
+/** Command for user photo uploads */
 public class UploadPhotoCommand extends HomePageCommand {
 
     private UserPhoto userPhoto;

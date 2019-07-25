@@ -13,8 +13,8 @@ public class LinkPhotoDestinationCommand extends DestinationPageCommand  {
 
     /**
      * A user photo and a destination is needed to link the two together
-     * @param photo
-     * @param destination
+     * @param photo The photo being linked
+     * @param destination The destination being linked
      */
     public LinkPhotoDestinationCommand(UserPhoto photo, Destination destination) {
         this.photo = photo;

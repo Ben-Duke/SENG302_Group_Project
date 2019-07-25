@@ -469,6 +469,10 @@ public class TestDatabaseManager {
         return isInSuccessState;
     }
 
+    /**
+     * Populates the database with user photos added to user 2.
+     *
+     */
     private static void addUserPhotos(){
         UserPhoto userPhoto1 = new UserPhoto("shrek.jpeg", true, true, User.find.byId(2));
         UserPhoto userPhoto2 = new UserPhoto("placeholder.png", false, false, User.find.byId(2));
@@ -486,6 +490,10 @@ public class TestDatabaseManager {
         }
     }
 
+    /**
+     * Populates the database with treasure hunts added to users 2,3 and 4.
+     *
+     */
     private static void addTreasureHunts(){
         TreasureHunt treasureHunt1 = new TreasureHunt("Surprise", "The garden city", Destination.find.byId(1), "2019-04-17", "2019-12-25", User.find.byId(2));
         treasureHunt1.save();

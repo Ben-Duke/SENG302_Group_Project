@@ -199,7 +199,7 @@ public class TestDatabaseManager {
                 err.printStackTrace();
             }
 
-            addAlbums();
+//            addAlbums();
             user2.getTravellerTypes().add(travellerType2);
 
             user2.setNationality(Nationality.find.all().subList(70, 72));

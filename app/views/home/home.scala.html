@@ -269,8 +269,8 @@
                     </div>
                 </div>
 
-                    </div>
-                </div>
+            </div>
+        </div>
 
 
         <div id="confirmDeletePhotoModal" class="modal fade" role="dialog">
@@ -291,8 +291,8 @@
                     </div>
                 </div>
 
-                    </div>
-                </div>
+            </div>
+        </div>
 
                 <br>
 
@@ -512,7 +512,7 @@
                                                 @photo.getMediaId())">Set as Profile Picture</a>
 
                                 <button class="btn btn-danger" onclick="deletePhotoRequest(
-                                            '@routes.ProfileController.deletePhoto(photo.getMediaId(),false)', @photo.getMediaId(), '@photo.getUrl(), false')">Delete Photo</button></td>
+                                            '@routes.ProfileController.deletePhoto(photo.getMediaId(),false)', @photo.getMediaId())">Delete Photo</button></td>
                                 @if(photo.getIsPublic()) {
                                 <a class="btn btn-primary" id="makePrivate" href="@routes.HomeController.makePicturePublic(photo.getMediaId, 0)" >Make Private</a>
                                 } else {

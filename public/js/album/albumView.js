@@ -6,11 +6,23 @@ function setProfilePicture() {
 
 }
 
-function deletePhoto(mediaId) {
-
+function deletePhoto(userId, albumId, isOwner) {
+    var hidePrivate;
+    if(isOwner) {hidePrivate = false;}
+    else {hidePrivate = true}
+    $.ajax({
+            type: 'GET',
+            url: '/users/albums/get/' + hidePrivate + '/' + albumId,
+            contentType: 'application/json',
+            success: (albumData) => {
+                    var mediaId = albumData[slideIndex-1]["mediaId"];
+                    deletePhotoRequest(mediaId);
+            }
+    });
 }
 
 function changePrivacy(userId, albumId, isOwner) {
+    var hidePrivate, setPrivacy;
     if(isOwner) {hidePrivate = false;}
     else {hidePrivate = true}
     $.ajax({
@@ -53,11 +65,7 @@ function linkToDestination(mediaId) {
  */
 function getAlbum(userId, albumId, isOwner){
     // Declare variables
-    var col1, col2, col3, col4, path, hidePrivate;
-    col1 = document.getElementById('col1');
-    col2 = document.getElementById('col2');
-    col3 = document.getElementById('col3');
-    col4 = document.getElementById('col4');
+    var hidePrivate;
     if(isOwner) {hidePrivate = false;}
     else {hidePrivate = true}
     $.ajax({
@@ -70,11 +78,11 @@ function getAlbum(userId, albumId, isOwner){
             });
 }
 
-[{"mediaId":1,"url":"card.PNG","isMediaPublic":true,"isProfile":false,"profile":false,"isProfilePhoto":false,"unusedUserPhotoFileName":"1_card.PNG","urlWithPath":"C:\\Users\\Priyesh\\IdeaProjects\\team-800-newnull1/card.PNG","isPublic":true,"mediaPublic":true},{"mediaId":2,"url":"Capture.PNG","isMediaPublic":false,"isProfile":false,"profile":false,"isProfilePhoto":false,"unusedUserPhotoFileName":"1_Capture.PNG","urlWithPath":"C:\\Users\\Priyesh\\IdeaProjects\\team-800-newnull1/Capture.PNG","isPublic":false,"mediaPublic":false},{"mediaId":3,"url":"1_elegant-christmas-background_23-2147722745.jpg","isMediaPublic":true,"isProfile":false,"profile":false,"isProfilePhoto":false,"unusedUserPhotoFileName":"1_1_elegant-christmas-background_23-2147722745.jpg","urlWithPath":"C:\\Users\\Priyesh\\IdeaProjects\\team-800-newnull1/1_elegant-christmas-background_23-2147722745.jpg","isPublic":true,"mediaPublic":true},{"mediaId":4,"url":"1_shop-grand-opening-poster.jpg","isMediaPublic":true,"isProfile":false,"profile":false,"isProfilePhoto":false,"unusedUserPhotoFileName":"1_1_shop-grand-opening-poster.jpg","urlWithPath":"C:\\Users\\Priyesh\\IdeaProjects\\team-800-newnull2/1_shop-grand-opening-poster.jpg","isPublic":true,"mediaPublic":true},{"mediaId":5,"url":"1_InvalidCountryBug.png","isMediaPublic":true,"isProfile":false,"profile":false,"isProfilePhoto":false,"unusedUserPhotoFileName":"1_1_InvalidCountryBug.png","urlWithPath":"C:\\Users\\Priyesh\\IdeaProjects\\team-800-newnull2/1_InvalidCountryBug.png","isPublic":true,"mediaPublic":true}]
+//[{"mediaId":1,"url":"card.PNG","isMediaPublic":true,"isProfile":false,"profile":false,"isProfilePhoto":false,"unusedUserPhotoFileName":"1_card.PNG","urlWithPath":"C:\\Users\\Priyesh\\IdeaProjects\\team-800-newnull1/card.PNG","isPublic":true,"mediaPublic":true},{"mediaId":2,"url":"Capture.PNG","isMediaPublic":false,"isProfile":false,"profile":false,"isProfilePhoto":false,"unusedUserPhotoFileName":"1_Capture.PNG","urlWithPath":"C:\\Users\\Priyesh\\IdeaProjects\\team-800-newnull1/Capture.PNG","isPublic":false,"mediaPublic":false},{"mediaId":3,"url":"1_elegant-christmas-background_23-2147722745.jpg","isMediaPublic":true,"isProfile":false,"profile":false,"isProfilePhoto":false,"unusedUserPhotoFileName":"1_1_elegant-christmas-background_23-2147722745.jpg","urlWithPath":"C:\\Users\\Priyesh\\IdeaProjects\\team-800-newnull1/1_elegant-christmas-background_23-2147722745.jpg","isPublic":true,"mediaPublic":true},{"mediaId":4,"url":"1_shop-grand-opening-poster.jpg","isMediaPublic":true,"isProfile":false,"profile":false,"isProfilePhoto":false,"unusedUserPhotoFileName":"1_1_shop-grand-opening-poster.jpg","urlWithPath":"C:\\Users\\Priyesh\\IdeaProjects\\team-800-newnull2/1_shop-grand-opening-poster.jpg","isPublic":true,"mediaPublic":true},{"mediaId":5,"url":"1_InvalidCountryBug.png","isMediaPublic":true,"isProfile":false,"profile":false,"isProfilePhoto":false,"unusedUserPhotoFileName":"1_1_InvalidCountryBug.png","urlWithPath":"C:\\Users\\Priyesh\\IdeaProjects\\team-800-newnull2/1_InvalidCountryBug.png","isPublic":true,"mediaPublic":true}]
 
 async function addAlbum(albumData) {
-    path = "/users/home/servePicture/";
-    for (i=0; i<albumData.length; i++) {
+    var path = "/users/home/servePicture/";
+    for (var i=0; i<albumData.length; i++) {
         await displayGrid(i, albumData, path);
         await displaySlides(i, albumData, path);
     }
@@ -144,7 +152,7 @@ function currentSlide(n) {
 function showSlides(n) {
   var i;
   var slides = document.getElementsByClassName("mySlides");
-  var captionText = document.getElementById("caption");
+//  var captionText = document.getElementById("caption");
   if (n > slides.length) {slideIndex = 1}
   if (n < 1) {slideIndex = slides.length}
   for (i = 0; i < slides.length; i++) {
@@ -166,9 +174,9 @@ function showSlides(n) {
  * @param photoId
  */
 function setProfilePictureRequest(photoId){
-    $("#destination-carousel").modal('hide');
-    isExistingPhoto = true;
-    photoIdToEdit = photoId;
+    $("#myModal").modal('hide');
+    let isExistingPhoto = true;
+    let photoIdToEdit = photoId;
     $('#addProfilePhoto').modal('show');
 }
 
@@ -189,13 +197,14 @@ $('#addProfilePhoto').on('show.bs.modal', function (e) {
  *
  */
 $('#addProfilePhoto').on('shown.bs.modal', function (e) {
+    var isExistingPhoto;
     if(isExistingPhoto == true){
         isExistingPhoto = false;
         $.ajax({
             type: 'GET',
             url: '/users/photos/' + photoIdToEdit,
             success: function(data){
-                filename = data["url"];
+                let filename = data["url"];
                 $('#change-profile-pic').cropper("destroy");
 
                 var $previews = $('.preview');
@@ -219,7 +228,7 @@ $('#addProfilePhoto').on('shown.bs.modal', function (e) {
                         },
                     crop: function (e) {
                         var imageData = $(this).cropper('getImageData');
-                        croppedCanvas = $(this).cropper('getCroppedCanvas');
+                        var croppedCanvas = $(this).cropper('getCroppedCanvas');
                         $('.preview').html('<img src="' + croppedCanvas.toDataURL() + '" class="thumb-lg img-circle" style="width:100px;height:100px;">');
                         var previewAspectRatio = e.width / e.height;
                         $previews.each(function (){
@@ -302,3 +311,87 @@ $('#save-profile').click(function (eve){
         })
     });
 });
+
+
+/**
+ * This function makes a request to the server to delete a photo with the passed id.
+ * @param url
+ * @param photoid
+ * @param imageId
+ */
+function deletePhotoRequest(photoId){
+    var url = '/users/home/deletePicture/' + photoId + '/false';
+    var token =  $('input[name="csrfToken"]').attr('value');
+    $.ajaxSetup({
+        beforeSend: function(xhr) {
+            xhr.setRequestHeader('Csrf-Token', token);
+        }
+    });
+    $.ajax({
+        url: url,
+        method: "Delete",
+        data: JSON.stringify({
+            photoid: '"' + photoId + '"',
+            response: false
+        }),
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        success: function(res){},
+        error: function(res){
+            if(res.responseText === "Is profile picture ask user"){
+                $(document.getElementById('myModal')).modal('hide');
+                $(document.getElementById('confirmDeleteProfilePhotoModal')).modal('show');
+
+                document.getElementById('yesDeleteProfilePhoto').onclick =
+                    function(){
+                        $.ajax({
+                            url: '/users/unlinkAndDeletePicture/'+photoId,
+                            method: "Delete",
+                            success:function(res) {},
+                            error:function(res){
+                                console.log(res.responseText);
+                            }
+                        });
+                        $(document.getElementById('myModal')).modal('show')
+                    };
+                document.getElementById('noCloseDeleteProfilePhotoButton').onclick =
+                    function(){
+                        $(document.getElementById('myModal')).modal('show')
+                    };
+
+                $('#confirmDeletePhotoModal').on('hidden.bs.modal', function () {
+                    $(document.getElementById('myModal')).modal('show');
+                })
+
+            }
+             else if(res.responseText === "Failed to delete image"){
+                 $(document.getElementById('myModal')).modal('hide');
+                 $(document.getElementById('confirmDeletePhotoModal')).modal('show');
+
+                 document.getElementById('yesDeletePhoto').onclick =
+                     function(){
+                         $.ajax({
+                             url: '/users/unlinkAndDeletePicture/'+photoId,
+                             method: "Delete",
+                             success: function (res) {},
+                             error: function (res) {
+                                 console.log(JSON.stringify(res));
+                             }
+                         })
+                         $(document.getElementById('myModal')).modal('show')
+                     };
+                 document.getElementById('noCloseDeletePhotoButton').onclick =
+                     function(){
+                         $(document.getElementById('myModal')).modal('show')
+                 };
+
+                 $('#confirmDeletePhotoModal').on('hidden.bs.modal', function () {
+                     $(document.getElementById('myModal')).modal('show');
+                 })
+
+             }
+        }
+
+    })
+}

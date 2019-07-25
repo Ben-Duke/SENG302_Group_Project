@@ -158,3 +158,147 @@ function showSlides(n) {
   }
 
 }
+
+
+
+/**
+ * New set profile picture from existing picture function. Makes use of the cropper.
+ * @param photoId
+ */
+function setProfilePictureRequest(photoId){
+    $("#destination-carousel").modal('hide');
+    isExistingPhoto = true;
+    photoIdToEdit = photoId;
+    $('#addProfilePhoto').modal('show');
+}
+
+
+/**
+ *
+ */
+$('#addProfilePhoto').on('show.bs.modal', function (e) {
+    if(isExistingPhoto == true){
+        $("#myModal").hide();
+        var output = document.getElementById('change-profile-pic');
+        output.src = "/users/home/serveDestPicture/" + photoIdToEdit;
+        $("#selectProfileInput").hide();
+    }
+});
+
+/**
+ *
+ */
+$('#addProfilePhoto').on('shown.bs.modal', function (e) {
+    if(isExistingPhoto == true){
+        isExistingPhoto = false;
+        $.ajax({
+            type: 'GET',
+            url: '/users/photos/' + photoIdToEdit,
+            success: function(data){
+                filename = data["url"];
+                $('#change-profile-pic').cropper("destroy");
+
+                var $previews = $('.preview');
+                $('#change-profile-pic').cropper({
+                    movable: false,
+                    autoCropArea: 1,
+                    aspectRatio: 1,
+                    ready: function(e){
+
+                        //DO NOT DELETE THIS SET TIMEOUT
+                        // setTimeout(function(){
+                        //     $('#change-profile-pic').cropper('crop');
+                        //     croppedCanvas = $('#change-profile-pic').cropper('getCroppedCanvas');
+                        // }, 1);
+
+                        let cropBoxElements = document.getElementsByClassName('cropper-face cropper-move');
+                        let cropBoxElement = cropBoxElements[0];
+                        let cropBoxMoveEvent = new Event('crop');
+                        cropBoxElement.dispatchEvent(cropBoxMoveEvent);
+
+                        },
+                    crop: function (e) {
+                        var imageData = $(this).cropper('getImageData');
+                        croppedCanvas = $(this).cropper('getCroppedCanvas');
+                        $('.preview').html('<img src="' + croppedCanvas.toDataURL() + '" class="thumb-lg img-circle" style="width:100px;height:100px;">');
+                        var previewAspectRatio = e.width / e.height;
+                        $previews.each(function (){
+                            var $preview = $(this);
+                            var previewWidth = $preview.width();
+                            var previewHeight = previewWidth / previewAspectRatio;
+                            var imageScaledRatio = e.width / previewWidth;
+                            $preview.height(previewHeight).find('img').css({
+                                width: imageData.naturalWidth / imageScaledRatio,
+                                height: imageData.naturalHeight / imageScaledRatio,
+                                marginLeft: -e.x / imageScaledRatio,
+                                marginTop: -e.y / imageScaledRatio
+                            });
+                        });
+                    }
+                });
+            }
+        });
+    }
+});
+
+
+/**
+ * This function is called when the user clicks the upload button to upload the cropped canvas image to the database.
+ * Sends an AJAX post request to the backend with the photo's information to store the photo within the database.
+ * The cropped image will be used as the user's profile picture.
+ */
+$('#save-profile').click(function (eve){
+
+
+    /*
+        WARNING
+        WARNING
+        WARNING
+        WARNING
+
+        This solves the bug where the crop box needs to move a little before the image can
+        be successfully uploaded.
+
+        We do not know why this works.
+
+        Please do not touch.
+     */
+    let cropper = $("#change-profile-pic").data('cropper');
+    cropper.scale(1);
+    /*
+        WARNING END
+        WARNING END
+        WARNING END
+        WARNING END
+     */
+
+
+
+    eve.preventDefault();
+    var formData = new FormData();
+    croppedCanvas.toBlob(function (blob) {
+        formData.append('picture', blob, filename);
+        formData.append('album', "Profile Pictures");
+        var token = $('input[name="csrfToken"]').attr('value');
+        $.ajaxSetup({
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader('Csrf-Token', token);
+            }
+        });
+        $.ajax({
+            type: 'POST',
+            processData: false,
+            contentType: false,
+            url: '/users/home/profilePicture',
+            data: formData,
+            success: function (data, textStatus, xhr) {
+                if (xhr.status == 200) {
+                    $("#selectProfileInput").show();
+                    window.location = '/users/home'
+                } else {
+                    window.location = '/users/home'
+                }
+            }
+        })
+    });
+});

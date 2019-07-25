@@ -5,6 +5,7 @@
 @main(user, "View Album") {
 
 <head>
+    <link rel="stylesheet" href="@routes.Assets.at("stylesheets/cropper.min.css")">
     <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/album.css")">
     <title>Album</title>
 </head>
@@ -40,37 +41,55 @@
         <div class="caption-container">
             <p id="img-caption"></p>
             <a class="btn btn-link" id="setProfilePictureBtn"
-               onclick="setProfilePicture()">Make Profile Picture</a>
+               onclick="setProfilePictureRequest(2)">Set Profile Picture</a>
             <a class="btn btn-link" id="deletePhotoBtn" onclick="deletePhoto()">Delete</a>
             <a class="btn btn-link" id="privacyBtn" onclick="changePrivacy(@user.getUserid, @album.getAlbumId,
             @album.userIsOwner(user))">Make Public/Private</a>
             <a class="btn btn-link" id="linkDestinationBtn" onclick="linkToDestination()">Link Destination</a>
         </div>
-
-        <!-- Thumbnail image controls -->
-        <!--<div class="column">-->
-        <!--<img class="demo" src="/assets/images/destinationPlaceHolder.png" onclick="currentSlide(1)" alt="Nature">-->
-        <!--</div>-->
-
-        <!--<div class="column">-->
-        <!--<img class="demo" src="/assets/images/destinationPlaceHolder.png" onclick="currentSlide(2)" alt="Snow">-->
-        <!--</div>-->
-
-        <!--<div class="column">-->
-        <!--<img class="demo" src="/assets/images/destinationPlaceHolder.png" onclick="currentSlide(3)" alt="Mountains">-->
-        <!--</div>-->
-
-        <!--<div class="column">-->
-        <!--<img class="demo" src="/assets/images/destinationPlaceHolder.png" onclick="currentSlide(4)" alt="Lights">-->
-        <!--</div>-->
     </div>
+</div>
+
+<!-- Modal to upload a new profile picture -->
+<div id="addProfilePhoto" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Upload a new profile picture </h4>
+            </div>
+
+            <div class="modal-body">
+
+                <div class="profile-pic-wraper ">
+                    <img class="img"  width = "450" height="450" id="change-profile-pic" src="@{routes.HomeController.serveProfilePicture(user.getUserid())}" alt="Profile photo image"/>
+                </div>
+                <div class="preview-wrapper">
+                    <div class="preview">
+
+                    </div><br>
+                </div>
+                <br>
+                <input id="selectProfileInput" type="file" accept="image/png,image/jpeg" name="picture" required onchange="loadFile(event);"/>
+                <div>
+                    <button class="btn btn-default" id="save-profile">
+                        Upload
+                    </button>
+                </div>
+                <div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
 </div>
 
 </body>
 
-<script>
-
-</script>
+<script src="@routes.Assets.at("js/cropper.min.js")" type="text/javascript"></script>
 <script src="@routes.Assets.at("js/album/albumView.js")" type="text/javascript"></script>
 
 }

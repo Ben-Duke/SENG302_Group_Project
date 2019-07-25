@@ -1,6 +1,23 @@
-img {
-    cursor: pointer;
+.preview-wrapper{
+    width: 100px;
+    height:100px;
+    position: absolute;
+    top: 25%;
+    right: 10%;
+    overflow: hidden;
+    border-radius: 100%;
 }
+
+preview-wrapper-original{
+    width: 100px;
+    height:100px;
+    overflow: hidden;
+    border-radius: 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 100%;
+}
+
 
 .row {
   display: flex;
@@ -19,6 +36,7 @@ img {
   margin-top: 8px;
   vertical-align: middle;
   width: 100%;
+  cursor: pointer;
 }
 
 /* Responsive layout - makes a two column-layout instead of four columns */
@@ -72,7 +90,7 @@ img {
     font-weight: bold;
 }
 /* Modal Content */
-.modal-content {
+#myModal .modal-content {
   position: relative;
   background-color: black;
   margin: auto;

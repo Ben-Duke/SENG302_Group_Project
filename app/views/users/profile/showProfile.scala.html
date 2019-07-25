@@ -82,6 +82,7 @@
         <div>
             <div id="modal-picture" class="modal">
                 <img class="modal-content" id="img01">
+                <h2 class="caption" id="modal-caption"></h2>
             </div>
             <div class="container">
                 <div class="row">
@@ -93,14 +94,15 @@
                             <div class="container" id="imagesContainer" >
                                 <div class="overlay">
                                     <i class="icon" title="User Profile">
-                                    @if(user.getUserPhotos.get(i).getIsPublic()) {
+                                    @if(user.getUserPhotos.get(i).getIsPublic) {
                                         <i class="fa fa-eye"></i>
                                     } else {
                                         <i class="fa fa-eye-slash"></i>
                                     }
                                     </i>
                                 </div>
-                                @if(user.getUserPhotos.get(i).getIsPublic()) {
+                                @if(user.getUserPhotos.get(i).getIsPublic) {
+                                    <div class="hidden" id="caption-@user.getUserPhotos.get(i).getUrl">@user.getUserPhotos.get(i).getCaption</div>
                                     <img class="img-thumbnail" id=@{user.getUserPhotos.get(i).getUrl} width="60" src="@{routes.HomeController.index(user.getUserPhotos.get(i).getUrlWithPath)}" alt="User Image">
                                 }
 
@@ -123,14 +125,15 @@
                             <div class="container" id="imagesContainer" >
                                 <div class="overlay">
                                     <i class="icon" title="User Profile">
-                                    @if(user.getUserPhotos.get(i).getIsPublic()) {
+                                    @if(user.getUserPhotos.get(i).getIsPublic) {
                                         <i class="fa fa-eye"></i>
                                     } else {
                                         <i class="fa fa-eye-slash"></i>
                                     }
                                     </i>
                                 </div>
-                                @if(user.getUserPhotos.get(i).getIsPublic()) {
+                                @if(user.getUserPhotos.get(i).getIsPublic) {
+                                    <div class="hidden" id="caption-@user.getUserPhotos.get(i).getUrl">@user.getUserPhotos.get(i).getCaption</div>
                                     <img class="img-thumbnail" id=@{user.getUserPhotos.get(i).getUrl} width="60" src="@{routes.HomeController.index(user.getUserPhotos.get(i).getUrlWithPath)}" alt="User Image">
                                 }
 
@@ -152,14 +155,15 @@
                             <div class="container" id="imagesContainer" >
                                 <div class="overlay">
                                     <i class="icon" title="User Profile">
-                                    @if(user.getUserPhotos.get(i).getIsPublic()) {
+                                    @if(user.getUserPhotos.get(i).getIsPublic) {
                                         <i class="fa fa-eye"></i>
                                     } else {
                                         <i class="fa fa-eye-slash"></i>
                                     }
                                     </i>
                                 </div>
-                                @if(user.getUserPhotos.get(i).getIsPublic()) {
+                                @if(user.getUserPhotos.get(i).getIsPublic) {
+                                    <div class="hidden" id="caption-@user.getUserPhotos.get(i).getUrl">@user.getUserPhotos.get(i).getCaption</div>
                                     <img class="img-thumbnail" id=@{user.getUserPhotos.get(i).getUrl} width="60" src="@{routes.HomeController.index(user.getUserPhotos.get(i).getUrlWithPath)}" alt="User Image">
                                 }
 
@@ -184,11 +188,14 @@
                     // Get the image and insert it inside the modal
                     var images = document.getElementsByClassName("img-thumbnail");
                     var modalImg = document.getElementById("img01");
+                    var caption = document.getElementById("modal-caption");
                     // loops through each thumbnail and adds the event listener
                     for (i = 0; i < @user.getUserPhotos.length; i++) {
                         images[i].onclick = function() {
                             modal.style.display = "block";
                             modalImg.src = this.src;
+                            const captionId = "caption-" + this.id;
+                            caption.innerText = document.getElementById(captionId).innerText;
                         };
                     }
             </script>

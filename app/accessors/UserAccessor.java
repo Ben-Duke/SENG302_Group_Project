@@ -1,6 +1,5 @@
 package accessors;
 
-import io.ebean.Ebean;
 import models.*;
 
 import java.util.List;
@@ -9,7 +8,8 @@ public class UserAccessor {
 
     public static void insert(User user) { user.save(); }
 
-    public static User getDefaultAdmin(){
+    /** Hides the implicit public constructor */
+    private UserAccessor() {
         throw new UnsupportedOperationException();
     }
 
@@ -51,7 +51,7 @@ public class UserAccessor {
         return User.find.byId(id);
     }
 
-    public static User getUserByEmail(String email) {
+    static User getUserByEmail(String email) {
         List<User> users = getUsersFromEmail(email);
         if (!users.isEmpty()) {
             return users.get(0);
@@ -68,16 +68,14 @@ public class UserAccessor {
      *
      * @param user The User to get the photo of.
      * @return A UserPhoto representing the users profile picture.
-     * @throws io.ebean.DuplicateKeyException If the user has more than 1
-     *          profile picture (should never happen).
      */
-    public static UserPhoto getProfilePhoto(User user) throws io.ebean.DuplicateKeyException {
+    public static UserPhoto getProfilePhoto(User user) {
         List<UserPhoto> userProfilePhotoList = UserPhoto.find.query()
                 .where().eq("user", user)
                 .and().eq("isProfile", true)
                 .findList();
 
-        if (0 == userProfilePhotoList.size()) {
+        if (userProfilePhotoList.isEmpty()) {
             return null;
         } else if (1 == userProfilePhotoList.size()) {
             return userProfilePhotoList.get(0);

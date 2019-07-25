@@ -31,7 +31,7 @@ public class DestinationFactory {
     public static UserPhoto getPrimaryPicture(int destID) {
         Destination destination = Destination.find.byId(destID);
         if (destination != null) {
-            return destination.getPrimaryPhoto();
+            return destination.getAlbums().get(0).getPrimaryPhoto();
         }
        return null;
     }

@@ -1,5 +1,6 @@
 package models.commands.Destinations;
 
+import accessors.AlbumAccessor;
 import accessors.DestinationAccessor;
 import accessors.UserPhotoAccessor;
 import models.Destination;
@@ -26,9 +27,9 @@ public class LinkPhotoDestinationCommand extends DestinationPageCommand  {
      */
     public void execute() {
         destination.getAlbums().get(0).addMedia(photo);
-        destination.update();
-        photo.addDestination(destination);
-        UserPhotoAccessor.update(photo);
+        AlbumAccessor.update(destination.getAlbums().get(0));
+        //photo.addDestination(destination);
+        //UserPhotoAccessor.update(photo);
     }
 
     /**
@@ -38,13 +39,14 @@ public class LinkPhotoDestinationCommand extends DestinationPageCommand  {
      */
     public void undo() {
         destination.getAlbums().get(0).removeMedia(photo);
-        destination.update();
-        photo.removeDestination(destination);
-        UserPhotoAccessor.update(photo);
-        if ((destination.getPrimaryPhoto() != null) &&
-                (photo.getMediaId() == destination.getPrimaryPhoto().getMediaId())) {
-            destination.setPrimaryPhoto(null);
-            DestinationAccessor.update(destination);
+        AlbumAccessor.update(destination.getAlbums().get(0));
+        //photo.removeDestination(destination);
+        //UserPhotoAccessor.update(photo);
+        if ((destination.getAlbums().get(0).getPrimaryPhoto() != null) &&
+                (photo.getMediaId() == destination.getAlbums().get(0)
+                        .getPrimaryPhoto().getMediaId())) {
+            destination.getAlbums().get(0).setPrimaryPhoto(null);
+            AlbumAccessor.update(destination.getAlbums().get(0));
         }
     }
 

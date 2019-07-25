@@ -28,9 +28,6 @@ public class Destination extends Model implements AlbumOwner {
     @OneToMany(mappedBy = "destination")
     private List<Album> albums;
 
-    @ManyToOne
-    public UserPhoto primaryPhoto;
-
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "user", referencedColumnName = "userid")
@@ -151,9 +148,6 @@ public class Destination extends Model implements AlbumOwner {
     public List<UserPhoto> getUserPhotos() {
         return userPhotos;
     }
-    public UserPhoto getPrimaryPhoto() {
-        return primaryPhoto;
-    }
     public List<Visit> getVisits() {
         return visits;
     }
@@ -180,9 +174,6 @@ public class Destination extends Model implements AlbumOwner {
     }
     public void setUserPhotos(List<UserPhoto> userPhotos) {
         this.userPhotos = userPhotos;
-    }
-    public void setPrimaryPhoto(UserPhoto primaryPhoto) {
-        this.primaryPhoto = primaryPhoto;
     }
     public void setVisits(List<Visit> visits) {
         this.visits = visits;
@@ -215,7 +206,6 @@ public class Destination extends Model implements AlbumOwner {
                 ", latitude=" + latitude +
                 ", longitude=" + longitude +
                 ", isPublic=" + isPublic +
-                ", primaryPhoto=" + primaryPhoto +
                 ", user=" + user +
                 ", visits=" + visits +
                 ", userPhotos=" + userPhotos +

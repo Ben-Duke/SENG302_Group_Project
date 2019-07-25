@@ -15,6 +15,7 @@ create table album (
   album_id                      integer auto_increment not null,
   user                          integer,
   destination                   integer,
+  primary_photo_media_id        integer,
   title                         varchar(255),
   constraint pk_album primary key (album_id)
 );
@@ -35,7 +36,6 @@ create table destination (
   latitude                      double not null,
   longitude                     double not null,
   is_public                     boolean default false not null,
-  primary_photo_media_id        integer,
   user                          integer,
   constraint pk_destination primary key (destid)
 );
@@ -72,6 +72,7 @@ create table media (
   url                           varchar(255),
   user                          integer,
   is_media_public               boolean default false not null,
+  caption                       varchar(255),
   is_profile                    boolean default false not null,
   constraint uq_media_url unique (url),
   constraint pk_media primary key (media_id)
@@ -182,14 +183,14 @@ alter table album add constraint fk_album_user foreign key (user) references use
 create index ix_album_destination on album (destination);
 alter table album add constraint fk_album_destination foreign key (destination) references destination (destid) on delete restrict on update restrict;
 
+create index ix_album_primary_photo_media_id on album (primary_photo_media_id);
+alter table album add constraint fk_album_primary_photo_media_id foreign key (primary_photo_media_id) references media (media_id) on delete restrict on update restrict;
+
 create index ix_album_media_album on album_media (album_album_id);
 alter table album_media add constraint fk_album_media_album foreign key (album_album_id) references album (album_id) on delete restrict on update restrict;
 
 create index ix_album_media_media on album_media (media_media_id);
 alter table album_media add constraint fk_album_media_media foreign key (media_media_id) references media (media_id) on delete restrict on update restrict;
-
-create index ix_destination_primary_photo_media_id on destination (primary_photo_media_id);
-alter table destination add constraint fk_destination_primary_photo_media_id foreign key (primary_photo_media_id) references media (media_id) on delete restrict on update restrict;
 
 create index ix_destination_user on destination (user);
 alter table destination add constraint fk_destination_user foreign key (user) references user (userid) on delete restrict on update restrict;
@@ -269,14 +270,14 @@ drop index if exists ix_album_user;
 alter table album drop constraint if exists fk_album_destination;
 drop index if exists ix_album_destination;
 
+alter table album drop constraint if exists fk_album_primary_photo_media_id;
+drop index if exists ix_album_primary_photo_media_id;
+
 alter table album_media drop constraint if exists fk_album_media_album;
 drop index if exists ix_album_media_album;
 
 alter table album_media drop constraint if exists fk_album_media_media;
 drop index if exists ix_album_media_media;
-
-alter table destination drop constraint if exists fk_destination_primary_photo_media_id;
-drop index if exists ix_destination_primary_photo_media_id;
 
 alter table destination drop constraint if exists fk_destination_user;
 drop index if exists ix_destination_user;

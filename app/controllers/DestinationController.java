@@ -1,5 +1,6 @@
 package controllers;
 
+import accessors.AlbumAccessor;
 import accessors.DestinationAccessor;
 import accessors.UserPhotoAccessor;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -796,7 +797,6 @@ public class DestinationController extends Controller {
                 DestinationFactory destinationFactory = new DestinationFactory();
                 destinationFactory.removePrivateMedia(photos, user.getUserid());
             }
-            System.out.println(photos.size());
             return ok(Json.toJson(photos));
         } else {
             return redirect(routes.UserController.userindex());
@@ -877,11 +877,12 @@ public class DestinationController extends Controller {
             UserPhoto photo = UserPhoto.find.byId(Integer.parseInt(photoid));
             Destination destination = Destination.find.byId(destId);
             if (destination != null || photo != null) {
-                if ((destination.getUser().getUserid() == user.getUserid() && destination.getUserPhotos().contains(photo)) || user.userIsAdmin()) {
+                if ((destination.getUser().getUserid() == user.getUserid() && destination.getAlbums()
+                        .get(0).getMedia().contains(photo)) || user.userIsAdmin()) {
                     //add checks for private destinations here once destinations have been merged in.
                     //You can only link a photo to a private destination if you own the private destination.
-                    destination.setPrimaryPhoto(photo);
-                    destination.update();
+                    destination.getAlbums().get(0).setPrimaryPhoto(photo);
+                    AlbumAccessor.update(destination.getAlbums().get(0));
                 } else {
                     return unauthorized("Oops, this is not your photo!");
                 }

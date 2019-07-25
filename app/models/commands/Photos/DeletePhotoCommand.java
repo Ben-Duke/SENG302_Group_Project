@@ -1,10 +1,12 @@
 package models.commands.Photos;
 
+import accessors.AlbumAccessor;
 import accessors.DestinationAccessor;
 import accessors.UserPhotoAccessor;
 import accessors.VisitAccessor;
 import controllers.DestinationController;
 import factories.UserFactory;
+import models.Album;
 import models.Destination;
 import models.UserPhoto;
 import models.Visit;
@@ -20,7 +22,7 @@ public class DeletePhotoCommand extends UndoableCommand {
     private UserPhoto userPhoto;
     private UserPhoto savedUserPhoto;
     private HashSet<Destination> refToDestinations = new HashSet<>();
-    private HashSet<Destination> refToPrimaryPhotoDestinations = new HashSet<>();
+    private HashSet<Album> refToPrimaryPhotoDestinations = new HashSet<>();
     /**
      * Constructor to create an DeleteUserPhotoCommand. Takes the UserPhoto to delete
      * as the parameter.
@@ -33,8 +35,8 @@ public class DeletePhotoCommand extends UndoableCommand {
         for (Destination destination : userPhoto.getDestinations()) {
             refToDestinations.add(destination);
         }
-        for (Destination destination : userPhoto.getPrimaryPhotoDestinations()) {
-            refToPrimaryPhotoDestinations.add(destination);
+        for (Album album : userPhoto.getPrimaryPhotoDestinations()) {
+            refToPrimaryPhotoDestinations.add(album);
         }
 
     }
@@ -48,10 +50,11 @@ public class DeletePhotoCommand extends UndoableCommand {
 
             userPhoto.removeDestination(destination);
             UserPhotoAccessor.update(userPhoto);
-            if ((destination.getPrimaryPhoto() != null) &&
-                    (userPhoto.getMediaId() == destination.getPrimaryPhoto().getMediaId())) {
-                destination.setPrimaryPhoto(null);
-                DestinationAccessor.update(destination);
+            if ((destination.getAlbums().get(0).getPrimaryPhoto() != null) &&
+                    (userPhoto.getMediaId() == destination.getAlbums()
+                            .get(0).getPrimaryPhoto().getMediaId())) {
+                destination.getAlbums().get(0).setPrimaryPhoto(null);
+                AlbumAccessor.update(destination.getAlbums().get(0));
             }
         }
 
@@ -75,9 +78,9 @@ public class DeletePhotoCommand extends UndoableCommand {
         UserPhotoAccessor.insert(userPhoto);
         savedUserPhoto = UserPhotoAccessor.getUserPhotoById(userPhoto.getMediaId());
 
-        for (Destination destination : refToPrimaryPhotoDestinations) {
-            destination.setPrimaryPhoto(userPhoto);
-            DestinationAccessor.update(destination);
+        for (Album album : refToPrimaryPhotoDestinations) {
+            album.setPrimaryPhoto(userPhoto);
+            AlbumAccessor.update(album);
         }
 
     }
@@ -90,10 +93,11 @@ public class DeletePhotoCommand extends UndoableCommand {
 
             savedUserPhoto.removeDestination(destination);
             UserPhotoAccessor.update(savedUserPhoto);
-            if ((destination.getPrimaryPhoto() != null) &&
-                    (savedUserPhoto.getMediaId() == destination.getPrimaryPhoto().getMediaId())) {
-                destination.setPrimaryPhoto(null);
-                DestinationAccessor.update(destination);
+            if ((destination.getAlbums().get(0).getPrimaryPhoto() != null) &&
+                    (savedUserPhoto.getMediaId() ==
+                            destination.getAlbums().get(0).getPrimaryPhoto().getMediaId())) {
+                destination.getAlbums().get(0).setPrimaryPhoto(null);
+                AlbumAccessor.update(destination.getAlbums().get(0));
             }
         }
 

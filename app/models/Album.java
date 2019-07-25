@@ -31,6 +31,9 @@ public class Album extends Model {
     @JoinColumn(name = "destination", referencedColumnName = "destid")
     public Destination destination;
 
+    @ManyToOne
+    public UserPhoto primaryPhoto;
+
     private AlbumOwner owner;
 
     private String title;
@@ -101,7 +104,12 @@ public class Album extends Model {
     }
 
     public void setTitle(String title) { this.title = title; }
-
+    public UserPhoto getPrimaryPhoto() {
+        return primaryPhoto;
+    }
+    public void setPrimaryPhoto(UserPhoto primaryPhoto) {
+        this.primaryPhoto = primaryPhoto;
+    }
     public void addMedia(Media media) {
         this.media.add(media);
     }
@@ -180,6 +188,7 @@ public class Album extends Model {
         return "Album title: "+this.getTitle()+
                 " ID: "+this.getAlbumId()+
                 " Owner: "+this.getOwner()+
+                ", primaryPhoto=" + this.getPrimaryPhoto() +
                 " Size: " +this.getMedia().size();
     }
 

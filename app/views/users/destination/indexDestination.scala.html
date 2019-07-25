@@ -42,7 +42,7 @@
                     <tr data-id="@destination.getDestId" data-dest-name="@destination.getDestName">
                         <th scope ="row">
                             <span id="primary@destination.destid">
-                            @if(destination.getPrimaryPhoto != null){
+                            @if(destination.getAlbums.get(0).getPrimaryPhoto != null){
                                 <img src="@routes.DestinationController.servePrimaryPicture(destination.getDestId) " width="50" height="60">
                                 }
                             </span>
@@ -133,8 +133,8 @@
                     <tr data-id="@destination.getDestId" data-dest-name="@destination.getDestName">
                         <th scope="row">
                                 <span id="primary@destination.destid">
-                                @if(destination.getPrimaryPhoto != null){
-                                    <img src="@routes.DestinationController.servePrimaryPicture(destination.getPrimaryPhoto.getMediaId) " width="50" height="60">
+                                @if(destination.getAlbums.get(0).getPrimaryPhoto != null){
+                                    <img src="@routes.DestinationController.servePrimaryPicture(destination.getAlbums.get(0).getPrimaryPhoto.getMediaId) " width="50" height="60">
                                     }
                                 </span>
 

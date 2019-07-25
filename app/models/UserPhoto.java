@@ -25,7 +25,7 @@ public class UserPhoto extends Media {
 
     @JsonIgnore
     @OneToMany(mappedBy = "primaryPhoto")
-    public List<Destination> primaryPhotoDestinations;
+    public List<Album> primaryPhotoDestinations;
 
     public static final Finder<Integer,UserPhoto> find = new Finder<>(UserPhoto.class);
 
@@ -55,7 +55,7 @@ public class UserPhoto extends Media {
      * @param primaryPhotoDestinations the photos linked primary photo destinations
      */
     public UserPhoto(String url, boolean isPublic, boolean isProfile, User user, List<Destination> destinations,
-                     List<Destination> primaryPhotoDestinations) {
+                     List<Album> primaryPhotoDestinations) {
         super(url, isPublic, user);
         this.isProfile = isProfile;
         this.primaryPhotoDestinations = primaryPhotoDestinations;
@@ -143,7 +143,7 @@ public class UserPhoto extends Media {
      * Get the primary photo destinations of the photo
      * @return the primary photo list
      */
-    public List<Destination> getPrimaryPhotoDestinations() {
+    public List<Album> getPrimaryPhotoDestinations() {
         return primaryPhotoDestinations;
     }
 

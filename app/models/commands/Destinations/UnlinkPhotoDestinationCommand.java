@@ -1,5 +1,6 @@
 package models.commands.Destinations;
 
+import accessors.AlbumAccessor;
 import accessors.DestinationAccessor;
 import accessors.UserPhotoAccessor;
 import models.Destination;
@@ -29,10 +30,11 @@ public class UnlinkPhotoDestinationCommand extends DestinationPageCommand  {
     public void execute() {
         photo.removeDestination(destination);
         UserPhotoAccessor.update(photo);
-        if ((destination.getPrimaryPhoto() != null) &&
-                (photo.getMediaId() == destination.getPrimaryPhoto().getMediaId())) {
-            destination.setPrimaryPhoto(null);
-            DestinationAccessor.update(destination);
+        if ((destination.getAlbums().get(0).getPrimaryPhoto() != null) &&
+                (photo.getMediaId() ==
+                        destination.getAlbums().get(0).getPrimaryPhoto().getMediaId())) {
+            destination.getAlbums().get(0).setPrimaryPhoto(null);
+            AlbumAccessor.update(destination.getAlbums().get(0));
         }
     }
 

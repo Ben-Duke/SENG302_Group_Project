@@ -313,6 +313,8 @@ PUT /tags/search                                            controllers.TagContr
 # Tag page
 GET /tags/:tagName                                            controllers.TagController.displayTags(request: Request, tagName: String)
 
+GET /tags/destinations/:tagId                                  controllers.TagController.getDestinationTagDetails(request: Request, tagId: Integer)
+
 # Undo
 +nocsrf
 PUT     /undo                                              controllers.UndoRedoController.undo(request: Request)

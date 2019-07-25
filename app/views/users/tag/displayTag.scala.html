@@ -1,23 +1,39 @@
 @import helper._
+@import views.html.bootstrap3._
 
-@(tag: Tag, user : User)
+@(tag: Tag, user: User)
 
-@main(user, "Tags") {
-    <div class="container">
-        <div class="row">
-            <h2>Items with tag @tag.getName</h2>
-        </div>
-        <div id="photoDiv">
-            <h3>Photos</h3>
-        </div>
-        <div id="destinationDiv">
-            <h3>Destinations</h3>
-        </div>
-        <div id="tripDiv">
-            <h3>Trips</h3>
-        </div>
-    </div>
+    @main(user, "Tags") {
+        <h2>Results for @tag.getName</h2>
 
-    <script src="@routes.Assets.at("js/tags/displayTags.js")" type="text/javascript"></script>
-}
+        <div class="container">
+            <h3>Filter by tag type</h3>
+            <div class="checkbox">
+                <label><input type="checkbox" value="">Trips</label>
+            </div>
+            <div class="checkbox">
+                <label><input type="checkbox" value="">Destinations</label>
+            </div>
+            <div class="checkbox">
+                <label><input type="checkbox" value="">Photos</label>
+            </div>
+        </div>
+        <div class="container pre-scrollable" id="tag-feed" data-tag="@tag.getTagId" data-user="@user.getUserid">
+            <!-- Links to photos and other taggable items are placed in here by js -->
+            <div class="media">
+                <div class="media-left">
+                    <img class="img-thumbnail" src="https://img.purch.com/w/660/aHR0cDovL3d3dy5saXZlc2NpZW5jZS5jb20vaW1hZ2VzL2kvMDAwLzAzOS84ODUvb3JpZ2luYWwvc2h1dHRlcnN0b2NrXzc3NDAwNjYxLmpwZw==">
+                </div>
+                <div class="media-body">
+                    <h3 class="media-heading">
+                        <a href="http://google.com">Paris</a>
+                    </h3>
+                    <strong>Paris, France</strong>
+                    <p>Destination</p>
+                </div>
+            </div>
+        </div>
+        <script src="@routes.Assets.at("js/tags/displayTags.js")" type="text/javascript"></script>
+    }
+
 

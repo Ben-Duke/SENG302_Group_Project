@@ -1,7 +1,11 @@
 package accessors;
 
+import io.ebean.RawSql;
+import io.ebean.SqlQuery;
+import models.Destination;
 import models.Tag;
 
+import java.util.List;
 import java.util.Set;
 
 
@@ -66,6 +70,15 @@ public class TagAccessor {
      */
     public static Set<Tag> searchTags(String searchQuery) {
         return Tag.find.query().where().ilike("name", "%" + searchQuery + "%").findSet();
+    }
+
+    public static Set<Destination> searchTaggedDestination(Tag tag) {
+        String sql = "SELECT destination_destid FROM destination_tag WHERE tag_tag_id = " + tag.getTagId();
+        RawSql sqlQuery = RawSqlBuilder
+        Set<Destination> destinations = Destination.find.query().findSet();
+
+        System.out.println(destinations);
+        return destinations;
     }
 
 }

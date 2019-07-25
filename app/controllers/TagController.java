@@ -26,7 +26,6 @@ public class TagController {
      * @return Ok if the user is logged in, otherwise unauthorized
      */
     public Result displayTags(Http.Request request, String tagName) {
-        System.out.println(tagName);
         User user = User.getCurrentUser(request);
         if (user == null) {
             return unauthorized();
@@ -74,6 +73,17 @@ public class TagController {
             return ok(Json.toJson(tags));
         } else {
             return unauthorized();
+        }
+    }
+
+    public Result getDestinationTagDetails(Http.Request request, int tagId) {
+        User user = User.getCurrentUser(request);
+        if (user == null) {
+            return unauthorized();
+        } else {
+           Tag newTag = TagAccessor.getTagById(tagId);
+           Set<Destination> destinationList = TagAccessor.searchTaggedDestination(newTag);
+           return ok(Json.toJson(destinationList));
         }
     }
 

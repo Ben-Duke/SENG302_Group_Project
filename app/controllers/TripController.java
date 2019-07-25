@@ -16,6 +16,7 @@ import models.User;
 import models.Visit;
 import models.commands.Trips.CreateTripFromVisitsCommand;
 import models.commands.Trips.TripPageCommand;
+import models.commands.Visits.DeleteVisitCommand;
 import models.commands.Visits.EditVisitCommand;
 import models.commands.Trips.DeleteTripCommand;
 import play.data.Form;
@@ -28,6 +29,8 @@ import views.html.home.mapHome;
 import views.html.users.trip.*;
 
 import javax.inject.Inject;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
@@ -370,16 +373,38 @@ public class TripController extends Controller {
             return badRequest();
         }
 
-        VisitAccessor.delete(visit);
-        Integer removedVisits = 0;
-        if (trip.getRemovedVisits() != null) {
-            removedVisits = trip.getRemovedVisits();
-        }
-        trip.setRemovedVisits(removedVisits + 1);
-        TripAccessor.update(trip);
+        DeleteVisitCommand command = new DeleteVisitCommand(visit);
+        user.getCommandManager().executeCommand(command);
 
         return ok();
 
+    }
+
+    public Result updateVisitDates(Http.Request request, Integer visitId) {
+        /*
+        User user = User.getCurrentUser(request);
+        if (user == null) { return redirect(routes.UserController.userindex()); }
+
+        Visit visit = VisitAccessor.getById(visitId);
+        if (visit == null) { return redirect(routes.UserController.userindex()); }
+
+        Trip trip = visit.getTrip();
+        if (!trip.isUserOwner(user.getUserid())) { return unauthorized(); }
+
+        String dateString = new ObjectMapper().convertValue(request.body().asJson(), String.class);
+        System.out.println(dateString);
+
+        if ((!dateString.isEmpty())) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            LocalDate arrivalDate = LocalDate.parse(dateString, formatter);
+            if ((arrivalDate.compareTo(visit.getDeparture())) > 0) {
+                System.out.println("error date");
+                errors.add(new ValidationError("arrival", "Please provide an arrival date after the departure date"));
+                errors.add(new ValidationError("departure", "Please provide an arrival date after the departure date"));
+            }
+        }
+        */
+        return ok();
     }
 
 

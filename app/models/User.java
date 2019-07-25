@@ -533,13 +533,16 @@ public class User extends Model implements Comparable<User> {
     {
         HashMap<Trip,LocalDate> datesMap = new HashMap<>();
         for(Trip trip: trips){
-            if(trip.getVisits().size() < 2){
-                for(Visit visit : trip.getVisits()){
-                    visit.delete();
-                }
-                trip.delete();
-            }
-            else {
+
+            //Commented out because no AC saying that a trip must have two or more destinations can be found
+
+//            if(trip.getVisits().size() < 2){
+//                for(Visit visit : trip.getVisits()){
+//                    visit.delete();
+//                }
+//                trip.delete();
+//            }
+//            else {
                 ArrayList<LocalDate> datesList = new ArrayList<>();
                 for (Visit visit : trip.getVisits()) {
                     if (visit.getArrival() != null && !(visit.getArrival().isEmpty())) {
@@ -558,7 +561,7 @@ public class User extends Model implements Comparable<User> {
                     datesMap.put(trip, datesList.get(0));
                 }
             }
-        }
+//        }
         datesMap = sortByValues(datesMap);
         Set datesSet = datesMap.keySet();
         List<Trip> sortedTrips = new ArrayList(datesSet);

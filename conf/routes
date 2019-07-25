@@ -126,6 +126,8 @@ GET    /users/trips/table/edit/:tripid/:destid       controllers.TripController.
 #Renders page for editing a visit of a trip
 GET    /users/trips/visit/edit/:id       controllers.TripController.editvisit(request: Request, id:Integer)
 
+PATCH     /user/trips/visit/dates/:id      controllers.TripController.updateVisitDates(request: Request, id: Integer)
+
 #Handles editing a visit of a trip
 POST    /users/trips/visit/edit/:id       controllers.TripController.updateVisit(request: Request, id:Integer)
 

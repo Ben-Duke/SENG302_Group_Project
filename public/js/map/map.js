@@ -1,5 +1,5 @@
 var visitArray = [];
-
+const updateVisitDateUrl = "/user/trips/visit/dates/";
 
 
 
@@ -229,7 +229,7 @@ function initPlacesAutocomplete() {
 // }
 
 
-function sendDeleteVisitRequest(url) {
+function sendDeleteVisitRequest(url, visitId) {
     console.log(url);
     let token =  $('input[name="csrfToken"]').attr('value');
     $.ajaxSetup({
@@ -240,6 +240,40 @@ function sendDeleteVisitRequest(url) {
     $.ajax({
         url: url,
         method: "DELETE",
+        contentType : 'application/json',
+        success: function(data, textStatus, xhr){
+            if(xhr.status == 200) {
+                document.getElementById("visit_row_" + visitId).remove();
+            }
+            else{
+
+            }
+        },
+        error: function(xhr, settings){
+            if(xhr.status == 400) {
+            }
+            else if(xhr.status == 403){
+            }
+            else{
+            }
+        }
+    });
+}
+
+
+function updateVisitDate(visitId, date) {
+    console.log(visitId);
+    console.log(date);
+    let token =  $('input[name="csrfToken"]').attr('value');
+    $.ajaxSetup({
+        beforeSend: function(xhr) {
+            xhr.setRequestHeader('Csrf-Token', token);
+        }
+    });
+    $.ajax({
+        url: updateVisitDateUrl + visitId,
+        method: "PATCH",
+        data:JSON.stringify(date),
         contentType : 'application/json',
         success: function(data, textStatus, xhr){
             if(xhr.status == 200) {
@@ -259,3 +293,7 @@ function sendDeleteVisitRequest(url) {
         }
     });
 }
+
+$(".deleteButton").on('click', function(e) {
+    e.preventDefault();
+});

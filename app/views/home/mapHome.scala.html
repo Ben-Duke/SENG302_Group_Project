@@ -34,7 +34,7 @@
         }
 
         .tripDateInput {
-            width: 100px;
+            width: 147px;
         }
 
 </style>
@@ -159,13 +159,14 @@
 
                         <tbody id="tripTable_@trip.getTripid()" style="display: none;">
                         @for(visit <- trip.getOrderedVisits()){
-                            <tr id="@visit.getVisitid()">
+                            <tr id="visit_row_@visit.getVisitid()">
                                 <th scope ="row">@visit.getDestination().getDestName()</th>
                                 <td>@visit.getDestination().getDestType()</td>
-                                <td><input class="tripDateInput" type="text" onblur="" value="@visit.getArrival()"></td>
-                                <td><input class="tripDateInput" type="text" onblur="" value="@visit.getDeparture()"></td>
+                                <td><input class="tripDateInput" type="date" onblur="updateVisitDate(@visit.getVisitid(), this.value)" value="@visit.getArrival()"></td>
+                                <td><input class="tripDateInput" type="date" onblur="" value="@visit.getDeparture()"></td>
                                 <td onclick="sendDeleteVisitRequest(
-                                '@routes.TripController.deletevisit(visit.getVisitid())')"><a>&#10060</a></td>
+                                '@routes.TripController.deletevisit(visit.getVisitid())',
+                                '@visit.getVisitid()')"><a class="deleteButton" href="">&#10060</a></td>
                             </tr>
                             }
                         </tbody>

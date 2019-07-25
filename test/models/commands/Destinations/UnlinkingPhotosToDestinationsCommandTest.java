@@ -26,16 +26,7 @@ public class UnlinkingPhotosToDestinationsCommandTest extends BaseTestWithApplic
     private Destination destination;
 
     @Override
-    @Before
-    public void setUpDatabase() {
-        ApplicationManager.setUserPhotoPath("/test/resources/test_photos/user_");
-        ApplicationManager.setIsTest(true);
-        database = Databases.inMemory();
-        Evolutions.applyEvolutions(database, Evolutions.forDefault(new Evolution(
-                1,
-                "create table test (id bigint not null, name varchar(255));",
-                "drop table test;"
-        )));
+    public void populateDatabase() {
         TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
         testDatabaseManager.populateDatabase();
 
@@ -52,13 +43,6 @@ public class UnlinkingPhotosToDestinationsCommandTest extends BaseTestWithApplic
         UserPhotoAccessor.update(photo);
 
         unlinkCmd = new UnlinkPhotoDestinationCommand(photo, destination);
-    }
-
-    @Override
-    @After
-    public void shutdownDatabase() {
-        Evolutions.cleanupEvolutions(database);
-        database.shutdown();
     }
 
     @Test

@@ -21,38 +21,12 @@ import static org.junit.Assert.*;
  */
 public class LoginFactoryTest extends BaseTestWithApplicationAndDatabase {
 
-    /**
-     * The fake database
-     */
-    Database database;
-
     @Override
-    protected Application provideApplication() {
-        return new GuiceApplicationBuilder().build();
-    }
-
-    @Before
-    public void setUpDatabase() {
-        database = Databases.inMemory();
-        Evolutions.applyEvolutions(database, Evolutions.forDefault(new Evolution(
-                1,
-                "create table test (id bigint not null, name varchar(255));",
-                "drop table test;"
-        )));
+    public void populateDatabase() {
         //Initialises a test user with name "testUser" and saves it to the database.
         User user = new User("gon12@uclive.ac.nz", "hunter22");
         user.save();
     }
-
-    /**
-     * Clears the fake database after each test
-     */
-    @After
-    public void shutdownDatabase() {
-        Evolutions.cleanupEvolutions(database);
-        database.shutdown();
-    }
-
 
     @Test
     public void getUserIdInvalidName() {

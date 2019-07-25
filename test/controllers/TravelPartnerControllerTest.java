@@ -37,11 +37,11 @@ import static play.test.Helpers.route;
 
 public class TravelPartnerControllerTest extends BaseTestWithApplicationAndDatabase {
 
-    /**
-     * Sets up the fake database before each test
+    @Override
+    /*
+     * Populate the test data
      */
-    @Before
-    public void setupDatabase() {
+    public void populateDatabase() {
         UtilityFunctions.addAllNationalities();
         UtilityFunctions.addAllPassports();
         UtilityFunctions.addTravellerTypes();

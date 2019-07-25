@@ -33,8 +33,6 @@ public class AdminControllerTest extends BaseTestWithApplicationAndDatabase {
      */
     @Override
     public void populateDatabase() {
-        System.out.println("populate admin called");
-
         //Initialises test users and default admin and saves it to the database.
         User user = new User("testAdmin");
         user.save();

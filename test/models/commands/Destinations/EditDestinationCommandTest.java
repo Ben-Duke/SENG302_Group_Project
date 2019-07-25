@@ -19,18 +19,11 @@ public class EditDestinationCommandTest extends BaseTestWithApplicationAndDataba
     private Database database;
 
     @Override
-    @Before
-    public void setUpDatabase() {
-        ApplicationManager.setUserPhotoPath("/test/resources/test_photos/user_");
-        ApplicationManager.setIsTest(true);
-        database = Databases.inMemory();
-        Evolutions.applyEvolutions(database, Evolutions.forDefault(new Evolution(
-                1,
-                "create table test (id bigint not null, name varchar(255));",
-                "drop table test;"
-        )));
+    /* Populate the database */
+    public void populateDatabase() {
         TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
         testDatabaseManager.populateDatabase();
+
         Destination christchurch = Destination.find.byId(1);
         christchurch.setDestName("Auckland");
         christchurch.setDistrict("District 12");
@@ -40,13 +33,6 @@ public class EditDestinationCommandTest extends BaseTestWithApplicationAndDataba
         christchurch.setDestType("Attraction");
          editDestinationCommand =
                 new EditDestinationCommand(christchurch);
-    }
-
-    @Override
-    @After
-    public void shutdownDatabase() {
-        Evolutions.cleanupEvolutions(database);
-        database.shutdown();
     }
 
     @Test

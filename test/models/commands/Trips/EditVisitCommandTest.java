@@ -26,29 +26,13 @@ public class EditVisitCommandTest extends BaseTestWithApplicationAndDatabase {
 
 
     @Override
-    @Before
-    public void setUpDatabase() {
-        ApplicationManager.setUserPhotoPath("/test/resources/test_photos/user_");
-        ApplicationManager.setIsTest(true);
-        database = Databases.inMemory();
-        Evolutions.applyEvolutions(database, Evolutions.forDefault(new Evolution(
-                1,
-                "create table test (id bigint not null, name varchar(255));",
-                "drop table test;"
-        )));
+    public void populateDatabase() {
         TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
         testDatabaseManager.populateDatabase();
         visit = Visit.find.byId(1);
         user = User.find.byId(1);
 
 
-    }
-
-    @Override
-    @After
-    public void shutdownDatabase() {
-        Evolutions.cleanupEvolutions(database);
-        database.shutdown();
     }
 
     @Test

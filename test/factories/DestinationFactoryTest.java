@@ -21,8 +21,9 @@ public class DestinationFactoryTest extends BaseTestWithApplicationAndDatabase {
     private User testUser;
     private Destination testPublicDestination;
 
-    @Before
-    public void setUpDatabase() {
+    @Override
+    /* Populate the database */
+    public void populateDatabase() {
         //Initialises a test user with name "testUser" and saves it to the database.
         User user = new User("gon12@uclive.ac.nz", "hunter22");
         testUser = user;
@@ -32,18 +33,6 @@ public class DestinationFactoryTest extends BaseTestWithApplicationAndDatabase {
                 "destType", "district", "country",
                 45.0, 45.0, testUser, true);
     }
-
-    /**
-     * Clears the fake database after each test
-     */
-    @After
-    public void shutdownDatabase() {
-        testUserId = -1;
-        destinationFactory = null;
-        testUser = null;
-        testPublicDestination = null;
-    }
-
 
     @Test
     public void userHasPrivateDestinationInvalidUserId() {

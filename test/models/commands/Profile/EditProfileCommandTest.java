@@ -29,18 +29,11 @@ public class EditProfileCommandTest extends BaseTestWithApplicationAndDatabase {
     private LoginFactory loginFactory = new LoginFactory();
 
     @Override
-    @Before
-    public void setUpDatabase() {
-        ApplicationManager.setUserPhotoPath("/test/resources/test_photos/user_");
-        ApplicationManager.setIsTest(true);
-        database = Databases.inMemory();
-        Evolutions.applyEvolutions(database, Evolutions.forDefault(new Evolution(
-                1,
-                "create table test (id bigint not null, name varchar(255));",
-                "drop table test;"
-        )));
+    /* Populate the database */
+    public void populateDatabase() {
         TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
         testDatabaseManager.populateDatabase();
+
         User user = User.find.byId(2);
         user.setfName("Logan");
         user.setlName("Paul");
@@ -50,13 +43,6 @@ public class EditProfileCommandTest extends BaseTestWithApplicationAndDatabase {
         user.hashAndSetPassword("its everyday bro");
         editProfileCommand =
                 new EditProfileCommand(user);
-    }
-
-    @Override
-    @After
-    public void shutdownDatabase() {
-        Evolutions.cleanupEvolutions(database);
-        database.shutdown();
     }
 
     @Test

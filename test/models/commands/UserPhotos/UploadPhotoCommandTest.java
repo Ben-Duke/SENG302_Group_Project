@@ -8,6 +8,7 @@ import models.commands.Photos.UploadPhotoCommand;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
 import play.db.Database;
 import play.db.Databases;
 import play.db.evolutions.Evolution;
@@ -15,6 +16,7 @@ import play.db.evolutions.Evolutions;
 import play.libs.Files;
 import testhelpers.BaseTestWithApplicationAndDatabase;
 import utilities.TestDatabaseManager;
+import utilities.UtilityFunctions;
 
 import java.io.File;
 import java.nio.file.Paths;
@@ -30,18 +32,11 @@ public class UploadPhotoCommandTest extends BaseTestWithApplicationAndDatabase {
     private User user;
     private Files.TemporaryFile temporaryFile;
 
+    private final Logger logger = UtilityFunctions.getLogger();
+
 
     @Override
-    @Before
-    public void setUpDatabase() {
-        ApplicationManager.setUserPhotoPath("/test/resources/test_photos/user_");
-        ApplicationManager.setIsTest(true);
-        database = Databases.inMemory();
-        Evolutions.applyEvolutions(database, Evolutions.forDefault(new Evolution(
-                1,
-                "create table test (id bigint not null, name varchar(255));",
-                "drop table test;"
-        )));
+    public void populateDatabase() {
         TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
         testDatabaseManager.populateDatabase();
         user = User.find.byId(1);
@@ -52,13 +47,6 @@ public class UploadPhotoCommandTest extends BaseTestWithApplicationAndDatabase {
         Files.TemporaryFileCreator creator = Files.singletonTemporaryFileCreator();
         temporaryFile = creator.create(Paths.get(Paths.get(".").toAbsolutePath().normalize().toString() + "/test/resources/imagetest.png"));
         uploadPhotoCommand = new UploadPhotoCommand(userPhoto, temporaryFile);
-    }
-
-    @Override
-    @After
-    public void shutdownDatabase() {
-        Evolutions.cleanupEvolutions(database);
-        database.shutdown();
     }
 
     @Test

@@ -49,20 +49,8 @@ public class BaseTestWithApplicationAndDatabase extends WithApplication {
     @Inject
     private EbeanDynamicEvolutions ebeanDynamicEvolutions;  // Prevents DataSource null error
 
-
-//    /**
-//     * Set's up a dummy application for the tests.
-//     *
-//     * @return The dummy Application.
-//     */
-//    @Override
-//    protected Application provideApplication() {
-//        return new GuiceApplicationBuilder()
-//                .build();
-//    }
-
     @Before
-    public void setUpDatabase() {
+    public void setupDatabase() {
         ApplicationManager.setTesting();    // use the test database
 
         Map<String, String> configuration = new HashMap<>();
@@ -101,7 +89,6 @@ public class BaseTestWithApplicationAndDatabase extends WithApplication {
      * Can be overridden in subclasses if they want to provide their own test data
      */
     public void populateDatabase() {
-        System.out.println("upper populate called");
         TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
         testDatabaseManager.populateDatabase();
     }
@@ -121,53 +108,10 @@ public class BaseTestWithApplicationAndDatabase extends WithApplication {
 
     /**
      * Applies up evolutions to the database from the test/evolutions/default directory.
-     *
+     * <p>
      * This populates the database with necessary tables and values.
      */
     private void cleanEvolutions() {
         Evolutions.cleanupEvolutions(database);
     }
-
-
-
-//    @BeforeClass
-//    public static void startApp() {
-//        System.setProperty("config.resource", "test.conf");
-//        app = Helpers.fakeApplication();
-//        Helpers.start(app);
-//    }
-
-//    /**
-//     * Initilizes the test database. Only contains one user.
-//     */
-//    @Before
-//    public void setUpDatabase() {
-//        ApplicationManager.setTesting();    // use the test database
-//        logger.debug("Database name");
-//        logger.debug("setupDatabase " + ApplicationManager.getDatabaseName());
-//
-//        ApplicationManager.setUserPhotoPath("/test/resources/test_photos/user_");
-//        ApplicationManager.setIsTest(true);
-//        CommandManagerAccessor.resetCommandManagers();
-//        database = Databases.inMemory();
-//
-//        Evolutions.applyEvolutions(database);
-//
-////        TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
-////        testDatabaseManager.populateDatabase();
-//    }
-//
-//    /**
-//     * Clears the fake database after each test
-//     */
-//    @After
-//    public void shutdownDatabase() {
-//        Evolutions.cleanupEvolutions(database);
-//        database.shutdown();
-//    }
-//
-//    @AfterClass
-//    public static void stopApp() {
-//        Helpers.stop(app);
-//    }
 }

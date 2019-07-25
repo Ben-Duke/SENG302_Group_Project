@@ -1,5 +1,7 @@
 package controllers;
 
+import accessors.TripAccessor;
+import accessors.VisitAccessor;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -352,38 +354,32 @@ public class TripController extends Controller {
      * @return edit trip page or error page
      */
     public Result deletevisit(Http.Request request, Integer visitid){
-        //Form<VisitFormData> incomingForm = formFactory.form(VisitFormData.class).bindFromRequest(request);
-        //VisitFormData created = incomingForm.get();
-        Visit visit = Visit.find.byId(visitid);
+
         User user = User.getCurrentUser(request);
-        //change later
-        if (user != null && visit != null) {
-            Trip trip = visit.getTrip();
-            if(trip.isUserOwner(user.getUserid())) {
-                List<Visit> visits = trip.getVisits();
-                if(tripFactory.hasRepeatDest(visits, visit, "DELETE")){
-                    //flash("danger", "You cannot visit the same destination twice in a row!");
-                    return badRequest();
-                }
-                visit.delete();
-                Integer removedVisits = 0;
-                if (trip.getRemovedVisits() != null) {
-                    removedVisits = trip.getRemovedVisits();
-                }
-                trip.setRemovedVisits(removedVisits + 1);
-                trip.update();
-            }
-            else{
-                //flash("danger", "You are not the owner of this trip.");
-                return unauthorized();
-            }
+        if (user == null) { return redirect(routes.UserController.userindex()); }
+
+        Visit visit = VisitAccessor.getById(visitid);
+        if (visit == null) { return redirect(routes.UserController.userindex()); }
+
+        Trip trip = visit.getTrip();
+        if (!trip.isUserOwner(user.getUserid())) { return unauthorized(); }
+
+        List<Visit> visits = trip.getVisits();
+
+        if (tripFactory.hasRepeatDest(visits, visit, "DELETE")) {
+            return badRequest();
         }
-        else{
-            //flash("danger", "You are not logged in.");
-            return redirect(routes.UserController.userindex());
+
+        VisitAccessor.delete(visit);
+        Integer removedVisits = 0;
+        if (trip.getRemovedVisits() != null) {
+            removedVisits = trip.getRemovedVisits();
         }
-        //flash("success", "Destination deleted.");
+        trip.setRemovedVisits(removedVisits + 1);
+        TripAccessor.update(trip);
+
         return ok();
+
     }
 
 

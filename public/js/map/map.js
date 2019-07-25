@@ -15,48 +15,6 @@ function initMap() {
     // initMapLegend();
     initTripRoutes();
 
-    // var myLatLng = {lat: -43.522057156877615, lng: 172.62360347218828};
-
-    // var marker = new google.maps.Marker({
-    //     position: myLatLng,
-    //     map: map,
-    //     title: 'Hello World!',
-    //     destId: 1
-    // });
-    //
-    // var marker2 = new google.maps.Marker({
-    //     position: {lat: -40, lng:176.6},
-    //     map: map,
-    //     title: 'Hello World!',
-    //     destId: 2
-    // });
-    //
-    // marker.setMap(map);
-    // var infowindow = new google.maps.InfoWindow({
-    //     content: "yay content <br> <button onclick='visitArray.push({name : `marker1`, id:1, arrivalDate: new Date().toISOString().slice(0, 10) , departureDate: new Date().toISOString().slice(0, 10)}); updateTripsTab()' >start a trip/Add Destination</button>"
-    // });
-    //
-    // marker.addListener('click', function() {
-    //     infowindow.open(map, marker);
-    // });
-    //
-    // var infowindow2 = new google.maps.InfoWindow({
-    //     content: "second marker <br> <button onclick='visitArray.push(" +
-    //         "{name : `marker2`, id:1,  arrivalDate: new Date().toISOString().slice(0, 10)," +
-    //         " departureDate: new Date().toISOString().slice(0, 10)}); updateTripsTab()'>" +
-    //         "Start a trip</button>"
-    // });
-    //
-    // marker2.addListener('click', function() {
-    //     infowindow2.open(map, marker2);
-    // });
-    // marker2.setMap(map);
-
-
-
-    initDestinationMarkers();
-    initMapLegend();
-
     initTripRoutes();
 
 
@@ -131,17 +89,20 @@ $('tbody').sortable({
                 xhr.setRequestHeader('Csrf-Token', token);
             }
         });
-        var data = jQuery('#myTable tr').map(function(){
+        var data = jQuery('#tripTable_'+currentlyDisplayedTripId+' tr').map(function(){
             return jQuery (this).attr("id");
         }).get();
         var url = '/users/trips/edit/' + currentlyDisplayedTripId;
         // POST to server using $.post or $.ajax
+
+        console.log(data);
+
         $.ajax({
             data : JSON.stringify(data),
             contentType : 'application/json',
             type: 'PUT',
             url: url,
-            success: function(data, textStatus, xhr){
+            success: function(data, textStatus, xhr) {
 
                 if(xhr.status == 200) {
                     //This is an inefficient way of update the route
@@ -268,3 +229,33 @@ function initPlacesAutocomplete() {
 // }
 
 
+function sendDeleteVisitRequest(url) {
+    console.log(url);
+    let token =  $('input[name="csrfToken"]').attr('value');
+    $.ajaxSetup({
+        beforeSend: function(xhr) {
+            xhr.setRequestHeader('Csrf-Token', token);
+        }
+    });
+    $.ajax({
+        url: url,
+        method: "DELETE",
+        contentType : 'application/json',
+        success: function(data, textStatus, xhr){
+            if(xhr.status == 200) {
+
+            }
+            else{
+
+            }
+        },
+        error: function(xhr, settings){
+            if(xhr.status == 400) {
+            }
+            else if(xhr.status == 403){
+            }
+            else{
+            }
+        }
+    });
+}

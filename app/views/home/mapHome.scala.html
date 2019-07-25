@@ -2,7 +2,7 @@
 
 <style>
         #map {
-            height: 100%;
+            height: calc(100% - 50px);
             /*position: relative;*/
             /*z-index: 1;*/
 
@@ -29,6 +29,7 @@
         }
 
         .singleDestination {
+            height: 45%;
             display: none;
         }
 
@@ -163,7 +164,8 @@
                                 <td>@visit.getDestination().getDestType()</td>
                                 <td><input class="tripDateInput" type="text" onblur="" value="@visit.getArrival()"></td>
                                 <td><input class="tripDateInput" type="text" onblur="" value="@visit.getDeparture()"></td>
-                                <td><a>&#10060</a></td>
+                                <td onclick="sendDeleteVisitRequest(
+                                '@routes.TripController.deletevisit(visit.getVisitid())')"><a>&#10060</a></td>
                             </tr>
                             }
                         </tbody>

@@ -1157,6 +1157,8 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
      */
     @Test
     public void unlinkPhotoFromDestinationNoDestinationCheckNotFound() {
+        logger.debug("in the single test " + ApplicationManager.getDatabaseName());
+
         int destId = Destination.find.all().size() + 10; // give it a few extra to be safe
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .uri("/users/destinations/1/" + destId)

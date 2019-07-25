@@ -30,4 +30,6 @@ public class BaseModel extends Model {
     public boolean delete() {
         return super.delete(ApplicationManager.getDatabaseName());
     }
+
+
 }

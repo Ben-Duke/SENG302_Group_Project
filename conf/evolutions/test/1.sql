@@ -3,9 +3,6 @@
 # ---   1. Uses '# ---' for Ups/Downs
 # ---   2. Will work if varchars are > 191
 
-# --- Created by Ebean DDL
-# To stop Ebean DDL generation, remove this comment and start using Evolutions
-
 # --- !Ups
 
 create table admin (

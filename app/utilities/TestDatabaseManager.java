@@ -62,6 +62,7 @@ public class TestDatabaseManager {
     public void populateDatabase() {
 
         logger.info("attempting to populate database");
+        logger.info("PopulationDatabase is " + ApplicationManager.getDatabaseName());
 
         boolean isInSuccessState = true;
 

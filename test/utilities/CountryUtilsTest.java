@@ -19,7 +19,13 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static utilities.CountryUtils.*;
 
-public class CountryUtilsTest extends WithApplication {
+public class CountryUtilsTest extends BaseTestWithApplicationAndDatabase {
+
+    @Override
+    public void populateDatabase() {
+        // Do not populate the database
+        // validateValidPassportCountry requires passport table being empty
+    }
 
     @Test
     public void validateValidPassportCountry() {
@@ -48,5 +54,4 @@ public class CountryUtilsTest extends WithApplication {
 
         assertFalse(passport.getCountryValid());
     }
-
 }

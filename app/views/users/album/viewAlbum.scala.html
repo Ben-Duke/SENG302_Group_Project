@@ -17,6 +17,9 @@
         @if(album.getMedia.size()==0) {
             <div class="well" style="width: 250px; height: 50px; margin: auto;"><p>There is no media in this album.</p></div>
         } else {
+            <div class="well" id="emptyAlbumMessage" style="width: 250px; height: 50px; margin: auto; display: none;">
+                <p>There is no media in this album.</p>
+            </div>
             <div class="row">
                 <!--Media items added through Javascript-->
                 <div id="col1" class="column"></div>

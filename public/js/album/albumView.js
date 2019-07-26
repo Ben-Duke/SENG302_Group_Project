@@ -332,11 +332,20 @@ function deletePhotoFromUI(mediaId) {
         if (slides[i].getAttribute('data-mediaId') == mediaId) {
             slides[i].remove();
             document.querySelectorAll("img[data-mediaId='" + mediaId + "']")[0].remove();
+            var wellStyle = document.getElementById('emptyAlbumMessage').getAttribute("style");
+            wellStyle += "display: none;"
+            document.getElementById('emptyAlbumMessage').setAttribute("style", wellStyle);
             size-=1;
         }
     }
     if (size > 0) {plusSlides(1);}
-    else {closeModal();}
+    else
+    {
+        closeModal();
+        var wellStyle = document.getElementById('emptyAlbumMessage').getAttribute("style");
+        wellStyle += "display: block;"
+        document.getElementById('emptyAlbumMessage').setAttribute("style", wellStyle);
+    }
     showMessage("Deleted the photo successfully!");
 }
 

@@ -30,8 +30,8 @@ function getItemData(item) {
     } else if (item.hasOwnProperty('caption')) {
         data.header = item.caption;
         data.type = 'Photo';
-        data.body = 'idek';
-        data.img = "https://img.purch.com/w/660/aHR0cDovL3d3dy5saXZlc2NpZW5jZS5jb20vaW1hZ2VzL2kvMDAwLzAzOS84ODUvb3JpZ2luYWwvc2h1dHRlcnN0b2NrXzc3NDAwNjYxLmpwZw==";
+        data.body = '';
+        data.img = '/users/home/servePicture/' + encodeURIComponent(item.urlWithPath);
     }
     return data;
 }
@@ -78,6 +78,7 @@ function addItem(data) {
 
 function createTagContent(tagData) {
     for (let item of tagData) {
+        console.log(item);
         const data = getItemData(item);
         addItem(data);
     }

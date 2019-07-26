@@ -56,6 +56,7 @@
             </li>
         </ul>
 
+
     </div>
     <div class="row">
         <div class="col-md-4">
@@ -153,7 +154,11 @@
                             </div>
 
                             <div class="modal-body">
-                                @helper.form(action = routes.HomeController.upload, 'id -> "myForm", 'enctype -> "multipart/form-data") {
+                                <div class="container-fluid">
+                                    <div class="row">
+                                        @users.tag.createSearchTags(user)
+                                    </div>
+                                @helper.form(action = routes.HomeController.upload, 'id -> "photoForm", 'enctype -> "multipart/form-data") {
                                 @helper.CSRF.formField
                                 <input id="photoUpload"
                                        type="file"
@@ -164,15 +169,16 @@
 
                                 <br>
 
+                                <br>
+
                                 <p>
                                     <input type="submit" value="Upload">
                                     @helper.CSRF.formField
-                                    <input type="checkbox" name="private" value="private" title=""> Make photo private
+                                    <input id="uploadPrivacy" type="checkbox" name="private" value="private" title=""> Make photo private
                                 </p>
 
                                 }
-
-
+                                </div>
                             </div>
                         </div>
                     </div>

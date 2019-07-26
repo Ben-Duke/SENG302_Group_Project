@@ -22,8 +22,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static play.mvc.Results.*;
 
@@ -76,15 +75,18 @@ public class HomeController {
         if(user != null) {
             Map<String, String[]> dataPart = request.body().asMultipartFormData().asFormUrlEncoded();
             boolean isPublic = false;
+            ArrayList<String> tags = new ArrayList<>();
             if (dataPart.get("private") == null) {
                 isPublic = true;
             }
-
+            if (dataPart.get("tags[]") != null) {
+                tags = new ArrayList<String>(Arrays.asList(dataPart.get("tags[]")));
+            }
             //Get the photo data from the multipart form data encoding
             Http.MultipartFormData<Files.TemporaryFile> body = request.body().asMultipartFormData();
             Http.MultipartFormData.FilePart<Files.TemporaryFile> picture = body.getFile("picture");
             if (picture != null) {
-                return getResultFromSaveUserPhoto(user, isPublic, picture);
+                return getResultFromSaveUserPhoto(user, isPublic, picture, tags);
             } else {
                 return badRequest("Error uploading the picture.");
             }
@@ -103,7 +105,7 @@ public class HomeController {
      * @param picture The FilePart of the picture, not null.
      * @return A Result from trying to save the photo.
      */
-    private Result getResultFromSaveUserPhoto(User user, boolean isPublic, Http.MultipartFormData.FilePart<Files.TemporaryFile> picture) {
+    private Result getResultFromSaveUserPhoto(User user, boolean isPublic, Http.MultipartFormData.FilePart<Files.TemporaryFile> picture, ArrayList<String> tags) {
         String origionalFilePath = picture.getFilename();
         long fileSize = picture.getFileSize();
         String contentType = picture.getContentType();
@@ -117,7 +119,8 @@ public class HomeController {
             UserPhoto newPhoto = new UserPhoto(origionalFilePath, isPublic, false, user);
             String unusedPhotoUrl = newPhoto.getUnusedUserPhotoFileName();
             newPhoto.setUrl(unusedPhotoUrl);
-            UploadPhotoCommand uploadPhotoCommand = new UploadPhotoCommand(newPhoto, fileObject);
+            Set uniqueTags = UtilityFunctions.tagLiteralsAsSet(tags);
+            UploadPhotoCommand uploadPhotoCommand = new UploadPhotoCommand(newPhoto, fileObject, uniqueTags);
             user.getCommandManager().executeCommand(uploadPhotoCommand);
             return redirect(routes.HomeController.showhome());
         } else {

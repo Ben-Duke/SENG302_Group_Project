@@ -20,7 +20,6 @@ public class Destination extends TaggableModel {
     public double longitude;
 
 
-
     @ManyToOne
     public UserPhoto primaryPhoto;
 

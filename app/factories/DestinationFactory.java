@@ -104,7 +104,7 @@ public class DestinationFactory {
     public DestinationFormData makeDestinationFormData(Destination dest) {
         return new DestinationFormData(dest.getDestName(), dest.getDestType(),
                 dest.getDistrict(), dest.getCountry(), dest.getLatitude(),
-                dest.getLongitude());
+                dest.getLongitude(), null);
     }
 
     /**

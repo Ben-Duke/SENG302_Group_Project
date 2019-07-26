@@ -204,6 +204,50 @@ $('#addProfilePhoto').on('shown.bs.modal', function (e) {
  * Function to search for private destinations.
  * Updates the rows of tables with class "privateDestinations" depending on what's entered in the input form with class name "searchDestinations"
  */
+
+$('#photoForm').bind('keypress keydown keyup', function(e){
+        if(e.keyCode == 13) { e.preventDefault(); }
+     });
+
+/**
+ * This function is called when the user clicks the upload button to upload an image.
+ * Sends an AJAX post request to the backend with the photo's information to store the photo within the database.
+ */
+$('#photoForm').submit(function(eve) {
+    eve.preventDefault();
+    let fileInput = document.getElementById("photoUpload");
+    let privacy = document.getElementById("uploadPrivacy").checked;
+    let file = fileInput.files[0];
+    var formData = new FormData();
+    formData.append('picture', file);
+    formData.append('private', privacy);
+    toAddTagList = Array.from(toAddTagList);
+    for (var i = 0; i < toAddTagList.length; i++) {
+        formData.append('tags[]', toAddTagList[i]);
+    }
+    var token =  $('input[name="csrfToken"]').attr('value');
+        $.ajaxSetup({
+            beforeSend: function(xhr) {
+                xhr.setRequestHeader('Csrf-Token', token);
+            }
+        });
+        $.ajax({
+            type: 'POST',
+            processData: false,
+            contentType: false,
+            url:'/users/home',
+            data: formData,
+            success: function(data, textStatus, xhr){
+                if(xhr.status == 200) {
+                    window.location = '/users/home'
+                }
+                else{
+                    window.location = '/users/home'
+                }
+            }
+        })
+});
+
 function searchDestination(){
     // Declare variables
     var input, elements, filter, tables, table, tr, th, td, td2, i, txtValue, txtValue2, txtValue3;

@@ -276,6 +276,21 @@ public class TagController {
 
     }
 
+    public Result addTag(Http.Request request, TaggableModel itemToTag) {
+        if (itemToTag.getClass() == Destination.class) {
+            Destination destination = (Destination) itemToTag;
+            return addDestTag(request, destination.getDestId());
+        } else if (itemToTag.getClass() == Trip.class) {
+            Trip trip = (Trip) itemToTag;
+            return addTripTag(request, trip.getTripid());
+        } else if (itemToTag.getClass() == UserPhoto.class) {
+            UserPhoto userPhoto = (UserPhoto) itemToTag;
+            return addPhotoTag(request, userPhoto.getPhotoId());
+        } else {
+            return badRequest();
+        }
+    }
+
     /**
      * This function is used to do a request to add a tag to a destination
      * @param request

@@ -310,6 +310,7 @@ DELETE /destinations/:destId/tags                               controllers.TagC
 # Search for tag
 PUT /tags/search                                            controllers.TagController.searchTags(request : Request)
 
+
 # Tag page
 GET /tags/display/:tagName                                            controllers.TagController.displayTags(request: Request, tagName: String)
 

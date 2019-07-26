@@ -7,15 +7,14 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 @MappedSuperclass
 public abstract class TaggableModel extends Model {
 
     @JsonIgnore
     @ManyToMany
-    protected Set<Tag> tags = new TreeSet<>();
+    protected Set<Tag> tags = new HashSet<>();
 
     @JsonIgnore
     @ManyToOne

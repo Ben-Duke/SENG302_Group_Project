@@ -1,7 +1,9 @@
 package models.commands.Photos;
 
+import accessors.TagAccessor;
 import accessors.UserPhotoAccessor;
 import controllers.ApplicationManager;
+import models.Tag;
 import models.UserPhoto;
 import models.commands.Profile.HomePageCommand;
 import play.libs.Files;
@@ -9,15 +11,25 @@ import play.libs.Files;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.HashSet;
+import java.util.Set;
 
 public class UploadPhotoCommand extends HomePageCommand {
 
     private UserPhoto userPhoto;
     private Files.TemporaryFile fileObject;
+    private Set<Tag> tags;
 
     public UploadPhotoCommand(UserPhoto photo, Files.TemporaryFile fileObject) {
         this.userPhoto = photo;
         this.fileObject = fileObject;
+        this.tags = new HashSet<>();
+    }
+
+    public UploadPhotoCommand(UserPhoto photo, Files.TemporaryFile fileObject, Set<Tag> tags) {
+        this.userPhoto = photo;
+        this.fileObject = fileObject;
+        this.tags = tags;
     }
 
     /**
@@ -35,6 +47,12 @@ public class UploadPhotoCommand extends HomePageCommand {
                 + ApplicationManager.getUserPhotoPath() + userPhoto.getUser().getUserid() + "/" + userPhoto.getUrl();
         fileObject.copyTo(Paths.get(unusedAbsoluteFilePath), true);
         UserPhotoAccessor.insert(userPhoto);
+        for (Tag tag: tags) {
+            userPhoto.addTag(tag);
+            TagAccessor.update(tag);
+            UserPhotoAccessor.update(userPhoto);
+
+        }
 
     }
 
@@ -44,7 +62,14 @@ public class UploadPhotoCommand extends HomePageCommand {
     public void undo() {
         File file = new File(userPhoto.getUrlWithPath());
         file.delete();
+        for (Tag tag: tags) {
+            userPhoto.removeTag(tag);
+            TagAccessor.update(tag);
+            UserPhotoAccessor.update(userPhoto);
+
+        }
         UserPhotoAccessor.delete(userPhoto);
+
     }
 
     /**

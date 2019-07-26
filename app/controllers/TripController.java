@@ -357,18 +357,18 @@ public class TripController extends Controller {
             if (trip == null) {
                 return notFound();
             }
-            if (!trip.isUserOwner(user.getUserid())  && !user.userIsAdmin()) {
-                System.out.println("Jack is right");
-                System.out.println(trip.getUser() != user);
-                System.out.println(!user.userIsAdmin());
+            if (!trip.isUserOwner(user.getUserid())) {
+                System.out.println(user.userIsAdmin());
+                System.out.println("Trip forbid");
                 return forbidden("1");
             }
             if(destination == null) {
                 return notFound();
             }
             if (!destination.getIsPublic() && destination.getUser() != user) {
-                System.out.println("Ben is right");
+                System.out.println("Dest forbid");
                 return forbidden("2");
+
             }
             VisitFactory visitFactory = new VisitFactory();
             Visit newVisit = visitFactory.createVisitByJSRequest(destination, trip);

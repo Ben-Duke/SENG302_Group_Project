@@ -1,5 +1,6 @@
 package controllers;
 
+import accessors.UserAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import factories.TripFactory;
@@ -242,34 +243,60 @@ public class TripControllerTest extends BaseTestWithApplicationAndDatabase {
         assertEquals("2019-06-09", visit.getDeparture());
     }
 
-    /**
-     * Unit test for adding a visit to a trip request
-     * TO ADD: VALIDATION FOR BACK TO BACK OF THE SAME VISITS ADD (might want to refactor first though?)
-     */
-//    @Test
-//    public void addvisit() {
-//        Map<String, String> formData = new HashMap<>();
-//        String arrival = "2019-04-20";
-//        String departure = "2019-06-09";
-//        //VisitFormData visitformdata = new VisitFormData(Destination.find.byId(1).getDestName(), arrival, departure, Trip.find.byId(1).tripName);
-////        Visit visit = visitfactory.createVisit(visitformdata, Destination.find.byId(1), Trip.find.byId(1), 3 );
-////        visit.save();
-//        //Christchurch
-//        formData.put("destName", Destination.find.byId(1).getDestName());
-//        formData.put("arrival", arrival);
-//        formData.put("departure", departure);
-//        formData.put("visitName", Destination.find.byId(1).getDestName());
-//        //Add the visit to the auto-generated trip of ID 1 belonging to user of ID 2.
-//        Http.RequestBuilder fakeRequest = Helpers.fakeRequest().bodyForm(formData).method(Helpers.POST).uri("/users/trips/edit/1").session("connected", "2");
-//        CSRFTokenHelper.addCSRFToken(fakeRequest);
-//        Result result = Helpers.route(app, fakeRequest);
-//        assertEquals(SEE_OTHER, result.status());
-//        //User should be redirected to the edit trip page
-//        //"Newly created Visit with name "Christchurch" should be the third index in the trip
-//        assertEquals("Christchurch", User.find.byId(2).getTrips().get(0).getVisits().get(2).getVisitName());
-//        assertEquals("2019-04-20", User.find.byId(2).getTrips().get(0).getVisits().get(2).getArrival());
-//        assertEquals("2019-06-09", User.find.byId(2).getTrips().get(0).getVisits().get(2).getDeparture());
-//    }
+    @Test
+    public void checkAddVistToTripJSRequestNoUserSignedIn() {
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(POST)
+                .uri("/users/trips/1/addVisit/1").session("connected", null);
+        Result result = route(app, request);
+        assertEquals(UNAUTHORIZED, result.status());
+    }
+
+   @Test
+   public void checkAddVistToTripJSRequestTripIsNotFound() {
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(POST)
+                .uri("/users/trips/100000/addVisit/1").session("connected", "1");
+        Result result = route(app, request);
+        assertEquals(NOT_FOUND, result.status());
+   }
+
+    @Test
+    public void checkAddVistToTripJSRequestDestinationIsNotFound() {
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(POST)
+                .uri("/users/trips/1/addVisit/10000000").session("connected", "1");
+        Result result = route(app, request);
+        assertEquals(NOT_FOUND, result.status());
+    }
+
+    @Test
+    public void checkAddVistToTripJSRequestNotTripOwner() {
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(POST)
+                .uri("/users/trips/6/addVisit/1").session("connected", "2");
+        Result result = route(app, request);
+        assertEquals(FORBIDDEN, result.status());
+    }
+
+    @Test
+    public void checkAddVistToTripJSRequestNotDestinationOwner() {
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(POST)
+                .uri("/users/trips/1/addVisit/5").session("connected", "1");
+        Result result = route(app, request);
+        assertEquals(FORBIDDEN, result.status());
+    }
+
+    @Test
+    public void checkAddVistToTripJSRequestOK() {
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(POST)
+                .uri("/users/trips/1/addVisit/1").session("connected", "1");
+        Result result = route(app, request);
+        assertEquals(OK, result.status());
+    }
+
 
     /**
      * Unit test for edit trip page

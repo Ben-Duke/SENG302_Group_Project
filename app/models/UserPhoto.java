@@ -27,7 +27,12 @@ public class UserPhoto extends Media {
     @OneToMany(mappedBy = "primaryPhoto")
     public List<Destination> primaryPhotoDestinations;
 
-    public static Finder<Integer,UserPhoto> find = new Finder<>(UserPhoto.class);
+    public static final Finder<Integer,UserPhoto> find = new Finder<>(UserPhoto.class);
+
+    /**
+     * Default constructor for caption edit commands
+     */
+    public UserPhoto() {}
 
     /**
      * Constructor method for UserPhoto.
@@ -58,7 +63,7 @@ public class UserPhoto extends Media {
 
 
     public UserPhoto(UserPhoto userPhoto) {
-        super(userPhoto.getUrl(), userPhoto.getIsPublic(), userPhoto.getUser());
+        super(userPhoto.getUrl(), userPhoto.getIsPublic(), userPhoto.getUser(), userPhoto.getCaption());
         this.isProfile = userPhoto.getIsProfilePhoto();
         this.primaryPhotoDestinations = userPhoto.getPrimaryPhotoDestinations();
     }
@@ -141,5 +146,21 @@ public class UserPhoto extends Media {
     public List<Destination> getPrimaryPhotoDestinations() {
         return primaryPhotoDestinations;
     }
+
+    /**
+     * Modifies the fields of this UserPhoto which are included in the
+     * UserPhoto editing form to be equal to those fields of the UserPhoto
+     * passed in
+     * */
+    public void applyEditChanges(UserPhoto editedPhoto) {
+        setUrl(editedPhoto.getUrl());
+        setPublic(editedPhoto.getIsPublic());
+        setProfile(editedPhoto.getIsProfile());
+        setCaption(editedPhoto.getCaption());
+        setUser(editedPhoto.getUser());
+        this.destinations = editedPhoto.getDestinations();
+        this.primaryPhotoDestinations = editedPhoto.getPrimaryPhotoDestinations();
+    }
+
 
 }

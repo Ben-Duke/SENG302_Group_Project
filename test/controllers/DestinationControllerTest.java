@@ -230,7 +230,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
         Destination destination = new Destination("test","dest","1","test",0.00,0.00,User.find.byId(2),true);
         destination.save();
         UserPhoto photo = new UserPhoto("/test",true,false,User.find.byId(2));
-        photo.addDestination(destination);
+        destination.getAlbums().get(0).getMedia().add(photo);         AlbumAccessor.update(destination.getAlbums().get(0));
         photo.save();
 
         int beforeDeletion = UserPhoto.find.all().size();
@@ -1291,7 +1291,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
         route(app, linkRequest);
 
         Destination destination = Destination.find.byId(1);
-        int destPhotosSize = destination.getUserPhotos().size();
+        int destPhotosSize = destination.getAlbums().get(0).getMedia().size();
 
         Http.RequestBuilder unlinkRequest = Helpers.fakeRequest()
                 .method(DELETE)
@@ -1338,7 +1338,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
         route(app, linkRequest);
 
         Destination destination = Destination.find.byId(4);
-        int destPhotosSize = destination.getUserPhotos().size();
+        int destPhotosSize = destination.getAlbums().get(0).getMedia().size();
 
         Http.RequestBuilder unlinkRequest = Helpers.fakeRequest()
                 .method(DELETE)
@@ -1385,7 +1385,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
         route(app, linkRequest);
 
         Destination destination = Destination.find.byId(4);
-        int destPhotosSize = destination.getUserPhotos().size();
+        int destPhotosSize = destination.getAlbums().get(0).getMedia().size();
 
         Http.RequestBuilder unlinkRequest = Helpers.fakeRequest()
                 .method(DELETE)

@@ -1,5 +1,6 @@
 package models.commands.Destinations;
 
+import accessors.AlbumAccessor;
 import accessors.DestinationAccessor;
 import accessors.UserPhotoAccessor;
 import controllers.ApplicationManager;
@@ -47,8 +48,8 @@ public class UnlinkingPhotosToDestinationsCommandTest extends BaseTestWithApplic
         UserPhotoAccessor.insert(photo);
 
         destination = DestinationAccessor.getDestinationById(1);
-
-        photo.addDestination(destination);
+        destination.getAlbums().get(0).getMedia().add(photo);
+        AlbumAccessor.update(destination.getAlbums().get(0));
         UserPhotoAccessor.update(photo);
 
         unlinkCmd = new UnlinkPhotoDestinationCommand(photo, destination);
@@ -63,33 +64,33 @@ public class UnlinkingPhotosToDestinationsCommandTest extends BaseTestWithApplic
 
     @Test
     public void testExecute() {
-        int beforeSize = destination.getUserPhotos().size();
+        int beforeSize = destination.getAlbums().get(0).getMedia().size();
         user.getCommandManager().executeCommand(unlinkCmd);
         destination = DestinationAccessor.getDestinationById(1);
-        int afterSize = destination.getUserPhotos().size();
+        int afterSize = destination.getAlbums().get(0).getMedia().size();
 
         assertEquals(beforeSize - 1, afterSize);
     }
 
     @Test
     public void testUndo() {
-        int beforeSize = destination.getUserPhotos().size();
+        int beforeSize = destination.getAlbums().get(0).getMedia().size();
         user.getCommandManager().executeCommand(unlinkCmd);
         user.getCommandManager().undo();
         destination = DestinationAccessor.getDestinationById(1);
-        int afterSize = destination.getUserPhotos().size();
+        int afterSize = destination.getAlbums().get(0).getMedia().size();
 
         assertEquals(beforeSize, afterSize);
     }
 
     @Test
     public void testRedo() {
-        int beforeSize = destination.getUserPhotos().size();
+        int beforeSize = destination.getAlbums().get(0).getMedia().size();
         user.getCommandManager().executeCommand(unlinkCmd);
         user.getCommandManager().undo();
         user.getCommandManager().redo();
         destination = DestinationAccessor.getDestinationById(1);
-        int afterSize = destination.getUserPhotos().size();
+        int afterSize = destination.getAlbums().get(0).getMedia().size();
 
         assertEquals(beforeSize - 1, afterSize);
     }

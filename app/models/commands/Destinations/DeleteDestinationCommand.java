@@ -17,18 +17,16 @@ public class DeleteDestinationCommand extends DestinationPageCommand {
     private Destination destination;
     private Boolean deletedByAdmin;
 
-    // Using sets as the items do not need to be ordered and are unique
+    // Using sets as the items do not need to be ordered and are u nique
     private List<Visit> deletedVisits = new ArrayList<>();
     private List<TreasureHunt> deletedTreasureHunts = new ArrayList<>();
     private List<Album> deletedAlbums = new ArrayList<>();
-    private List<UserPhoto> unlinkedPhotos = new ArrayList<>();
 
     private final Logger logger = UtilityFunctions.getLogger();
 
     public DeleteDestinationCommand(Destination destination, Boolean deletedByAdmin) {
         this.destination = destination;
         this.deletedByAdmin = deletedByAdmin;
-        this.unlinkedPhotos = destination.getUserPhotos();
     }
 
     /**
@@ -49,11 +47,6 @@ public class DeleteDestinationCommand extends DestinationPageCommand {
                 deletedTreasureHunts.add(new TreasureHunt(treasureHunt));
                 TreasureHuntAccessor.delete(treasureHunt);
             }
-        }
-        List<UserPhoto> userPhotosList = new ArrayList<>(unlinkedPhotos);
-        for (UserPhoto userPhoto : userPhotosList) {
-            userPhoto.removeDestination(destination);
-            userPhoto.update();
         }
         List<Album> albumsCopy = AlbumAccessor.getAlbumsByOwner(destination);
         for (Album album : albumsCopy) {
@@ -78,11 +71,6 @@ public class DeleteDestinationCommand extends DestinationPageCommand {
         for (Visit visit : deletedVisits) {
             visit.setDestination(destination);
             VisitAccessor.insert(visit);
-        }
-
-        for (UserPhoto userPhoto : unlinkedPhotos) {
-            userPhoto.addDestination(destination);
-            userPhoto.update();
         }
         for (Album album : deletedAlbums) {
            // album

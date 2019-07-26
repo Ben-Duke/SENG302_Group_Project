@@ -574,7 +574,7 @@
                             <td>@destination.getLongitude</td>
                             <td>
                                 <div>
-                                    @if(photo.getDestinations.contains(destination)) {
+                                    @if(photo.getAlbums.contains(destination.getAlbums.get(0))) {
                                     <button class="btn btn-primary" style="display: none"
                                             id="@{"link" + destination.getDestId + "-" + photo.getMediaId + "-link"}"
                                     onclick="sendLinkDestinationRequest(
@@ -647,7 +647,7 @@
                             <!-- TO BE CHANGED -->
                             <td>
                                 <div>
-                                    @if(photo.getDestinations.contains(destination)) {
+                                    @if(photo.getAlbums.contains(destination.getAlbums.get(0))) {
                                     <button class="btn btn-primary" style="display: none"
                                             id="@{"link" + destination.getDestId + "-" + photo.getMediaId + "-link"}"
                                     onclick="sendLinkDestinationRequest(

@@ -1,5 +1,6 @@
 package factories;
 
+import accessors.AlbumAccessor;
 import formdata.DestinationFormData;
 import models.*;
 
@@ -181,14 +182,14 @@ public class DestinationFactory {
      * @param destinationTwo the new destination which will hold new photos
      */
     private void movePhotosToAnotherDestination(Destination destinationOne, Destination destinationTwo) {
-        while(!destinationOne.getUserPhotos().isEmpty()) {
-            UserPhoto changingPhoto = destinationOne.getUserPhotos().get(0);
-            changingPhoto.removeDestination(destinationOne);
-            changingPhoto.addDestination(destinationTwo);
-            destinationOne.getUserPhotos().remove(changingPhoto);
-            changingPhoto.update();
-            destinationOne.update();
-            destinationTwo.update();
+        while(!destinationOne.getAlbums().get(0).getMedia().isEmpty()) {
+            Media changingPhoto = destinationOne.getAlbums().get(0).getMedia().get(0);
+
+            destinationOne.getAlbums().get(0).removeMedia(changingPhoto);
+            AlbumAccessor.update(destinationOne.getAlbums().get(0));
+
+            destinationTwo.getAlbums().get(0).addMedia(changingPhoto);
+            AlbumAccessor.update(destinationTwo.getAlbums().get(0));
         }
     }
 

@@ -38,10 +38,6 @@ public class Destination extends Model implements AlbumOwner {
     public List<Visit> visits;
 
     @JsonIgnore
-    @ManyToMany(mappedBy = "destinations")
-    public List<UserPhoto> userPhotos;
-
-    @JsonIgnore
     @ManyToMany(cascade = CascadeType.ALL)
     public Set<TravellerType> travellerTypes;
 
@@ -145,9 +141,6 @@ public class Destination extends Model implements AlbumOwner {
     public double getLatitude() { return latitude; }
     public double getLongitude() { return longitude; }
     public boolean getIsPublic() { return isPublic; }
-    public List<UserPhoto> getUserPhotos() {
-        return userPhotos;
-    }
     public List<Visit> getVisits() {
         return visits;
     }
@@ -171,9 +164,6 @@ public class Destination extends Model implements AlbumOwner {
     public void setIsPublic(boolean isPublic) { this.isPublic = isPublic; }
     public void setTravellerTypes(Set<TravellerType> travellerTypes) {
         this.travellerTypes = travellerTypes;
-    }
-    public void setUserPhotos(List<UserPhoto> userPhotos) {
-        this.userPhotos = userPhotos;
     }
     public void setVisits(List<Visit> visits) {
         this.visits = visits;
@@ -208,7 +198,7 @@ public class Destination extends Model implements AlbumOwner {
                 ", isPublic=" + isPublic +
                 ", user=" + user +
                 ", visits=" + visits +
-                ", userPhotos=" + userPhotos +
+                ", albums=" + albums +
                 ", travellerTypes=" + travellerTypes +
                 '}';
     }

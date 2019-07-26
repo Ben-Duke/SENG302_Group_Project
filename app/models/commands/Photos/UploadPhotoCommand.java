@@ -52,7 +52,7 @@ public class UploadPhotoCommand extends HomePageCommand {
      */
     public void redo() {
         userPhoto = new UserPhoto(userPhoto.getUrl(), userPhoto.getIsPublic(), userPhoto.isProfile(), userPhoto.getUser(),
-                userPhoto.getDestinations(), userPhoto.getPrimaryPhotoDestinations());
+                userPhoto.getAlbums(), userPhoto.getPrimaryPhotoDestinations());
         execute();
 
     }

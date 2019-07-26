@@ -6,22 +6,20 @@ import accessors.UserPhotoAccessor;
 import accessors.VisitAccessor;
 import controllers.DestinationController;
 import factories.UserFactory;
-import models.Album;
-import models.Destination;
-import models.UserPhoto;
-import models.Visit;
+import models.*;
 import models.commands.Destinations.UnlinkPhotoDestinationCommand;
 import models.commands.General.UndoableCommand;
+import models.commands.Profile.HomePageCommand;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
 /** Command to delete a user's UserPhoto */
-public class DeletePhotoCommand extends UndoableCommand {
+public class DeletePhotoCommand extends HomePageCommand {
     private UserPhoto userPhoto;
     private UserPhoto savedUserPhoto;
-    private HashSet<Destination> refToDestinations = new HashSet<>();
+    private HashSet<Album> refToAlbums = new HashSet<>();
     private HashSet<Album> refToPrimaryPhotoDestinations = new HashSet<>();
     /**
      * Constructor to create an DeleteUserPhotoCommand. Takes the UserPhoto to delete
@@ -32,8 +30,8 @@ public class DeletePhotoCommand extends UndoableCommand {
 
         this.userPhoto = userPhoto;
 
-        for (Destination destination : userPhoto.getDestinations()) {
-            refToDestinations.add(destination);
+        for (Album album : userPhoto.getAlbums()) {
+            refToAlbums.add(album);
         }
         for (Album album : userPhoto.getPrimaryPhotoDestinations()) {
             refToPrimaryPhotoDestinations.add(album);
@@ -45,19 +43,7 @@ public class DeletePhotoCommand extends UndoableCommand {
      * Deletes the UserPhoto and unlinks photos to destinations
      */
     public void execute() {
-
-        for (Destination destination : refToDestinations) {
-
-            userPhoto.removeDestination(destination);
-            UserPhotoAccessor.update(userPhoto);
-            if ((destination.getAlbums().get(0).getPrimaryPhoto() != null) &&
-                    (userPhoto.getMediaId() == destination.getAlbums()
-                            .get(0).getPrimaryPhoto().getMediaId())) {
-                destination.getAlbums().get(0).setPrimaryPhoto(null);
-                AlbumAccessor.update(destination.getAlbums().get(0));
-            }
-        }
-
+        removeMediaFromAlbums(refToAlbums, userPhoto);
         UserFactory factory = new UserFactory();
         factory.deletePhoto(userPhoto.getMediaId());
 
@@ -69,14 +55,14 @@ public class DeletePhotoCommand extends UndoableCommand {
      */
     public void undo() {
         UserPhoto userPhoto = new UserPhoto(this.userPhoto);
-
-        for(Destination destination: refToDestinations){
-            userPhoto.addDestination(destination);
-        }
-//        System.out.println("Userphoto is " + userPhoto.toString());
-
         UserPhotoAccessor.insert(userPhoto);
         savedUserPhoto = UserPhotoAccessor.getUserPhotoById(userPhoto.getMediaId());
+
+        for (Album album: refToAlbums){
+            album.addMedia(userPhoto);
+            AlbumAccessor.update(album);
+        }
+//        System.out.println("Userphoto is " + userPhoto.toString());
 
         for (Album album : refToPrimaryPhotoDestinations) {
             album.setPrimaryPhoto(userPhoto);
@@ -89,23 +75,26 @@ public class DeletePhotoCommand extends UndoableCommand {
      * Redos the deletion of the UserPhoto
      */
     public void redo() {
-        for (Destination destination : refToDestinations) {
-
-            savedUserPhoto.removeDestination(destination);
-            UserPhotoAccessor.update(savedUserPhoto);
-            if ((destination.getAlbums().get(0).getPrimaryPhoto() != null) &&
-                    (savedUserPhoto.getMediaId() ==
-                            destination.getAlbums().get(0).getPrimaryPhoto().getMediaId())) {
-                destination.getAlbums().get(0).setPrimaryPhoto(null);
-                AlbumAccessor.update(destination.getAlbums().get(0));
-            }
-        }
-
+        removeMediaFromAlbums(refToAlbums, savedUserPhoto);
         UserFactory factory = new UserFactory();
         factory.deletePhoto(savedUserPhoto.getMediaId());
     }
 
     public String toString() {
         return this.userPhoto.getUrl() + "Deleting";
+    }
+
+    private void removeMediaFromAlbums(HashSet<Album> albums, Media mediaToRemove) {
+        for (Album album : albums) {
+
+            album.removeMedia(mediaToRemove);
+            AlbumAccessor.update(album);
+            if ((album.getPrimaryPhoto() != null) &&
+                    (mediaToRemove.getMediaId() ==
+                            album.getPrimaryPhoto().getMediaId())) {
+                album.setPrimaryPhoto(null);
+                AlbumAccessor.update(album);
+            }
+        }
     }
 }

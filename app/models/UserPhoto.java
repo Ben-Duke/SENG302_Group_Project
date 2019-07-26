@@ -16,11 +16,6 @@ import java.util.List;
 
 public class UserPhoto extends Media {
 
-    /** The destinations the media is related to. */
-    @JsonIgnore
-    @ManyToMany
-    private List<Destination> destinations;
-
     public boolean isProfile;
 
     @JsonIgnore
@@ -51,14 +46,15 @@ public class UserPhoto extends Media {
      * @param url A String representing the relative path to the photo resource.
      * @param isPublic A boolean, true if the photo is visible to everybody, false otherwise.
      * @param user The User who owns this photograph.
-     * @param destinations the photos linked destinations
+     * @param albums the albums containing the photo
      * @param primaryPhotoDestinations the photos linked primary photo destinations
      */
-    public UserPhoto(String url, boolean isPublic, boolean isProfile, User user, List<Destination> destinations,
+    public UserPhoto(String url, boolean isPublic, boolean isProfile, User user, List<Album> albums,
                      List<Album> primaryPhotoDestinations) {
         super(url, isPublic, user);
         this.isProfile = isProfile;
         this.primaryPhotoDestinations = primaryPhotoDestinations;
+        this.albums = albums;
     }
 
 
@@ -66,24 +62,6 @@ public class UserPhoto extends Media {
         super(userPhoto.getUrl(), userPhoto.getIsPublic(), userPhoto.getUser(), userPhoto.getCaption());
         this.isProfile = userPhoto.getIsProfilePhoto();
         this.primaryPhotoDestinations = userPhoto.getPrimaryPhotoDestinations();
-    }
-
-
-    public List<Destination> getDestinations() { return destinations; }
-
-
-
-    public void addDestination(Destination destination) {
-        this.destinations.add(destination);
-    }
-
-    /**
-     * Unlink the media from the given destination
-     * @param destination the destination to unlink from
-     * @return true if the removal changed the list, else false
-     */
-    public boolean removeDestination(Destination destination) {
-        return this.destinations.remove(destination);
     }
 
 
@@ -158,7 +136,7 @@ public class UserPhoto extends Media {
         setProfile(editedPhoto.getIsProfile());
         setCaption(editedPhoto.getCaption());
         setUser(editedPhoto.getUser());
-        this.destinations = editedPhoto.getDestinations();
+        this.albums = editedPhoto.getAlbums();
         this.primaryPhotoDestinations = editedPhoto.getPrimaryPhotoDestinations();
     }
 

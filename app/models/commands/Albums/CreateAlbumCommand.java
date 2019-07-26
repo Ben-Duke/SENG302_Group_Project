@@ -2,6 +2,7 @@ package models.commands.Albums;
 
 import accessors.AlbumAccessor;
 import models.Album;
+import models.AlbumOwner;
 import models.Media;
 import models.User;
 import models.commands.General.UndoableCommand;
@@ -10,23 +11,22 @@ public class CreateAlbumCommand extends UndoableCommand {
 
     private Album album;
     private String title;
-    private User user;
+    private AlbumOwner owner;
     private Media media;
 
 
-    public CreateAlbumCommand(String title, User user, Media media) {
+    public CreateAlbumCommand(String title, AlbumOwner owner, Media media) {
         this.title = title;
-        this.user = user;
+        this.owner = owner;
         this.media = media;
     }
 
     public void execute() {
         if (media == null) {
-            album = new Album(user, title);
+            album = new Album(owner, title);
         } else {
-            album = new Album(media, user, title);
+            album = new Album(media, owner, title);
         }
-
         AlbumAccessor.insert(album);
     }
 

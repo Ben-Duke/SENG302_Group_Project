@@ -1,5 +1,6 @@
 package controllers;
 
+import accessors.AlbumAccessor;
 import accessors.DestinationAccessor;
 import accessors.TreasureHuntAccessor;
 import accessors.VisitAccessor;
@@ -148,6 +149,37 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
         Result result = route(app, request);
         assertEquals(SEE_OTHER, result.status());
         assertEquals(4, User.find.byId(2).getDestinations().size());
+    }
+
+    /**
+     * Test to check if an album is created when a destination is saved
+     */
+    @Test
+    public void createAlbumOnDestinationSave() throws Exception {
+        Integer albumSize = Album.find.all().size();
+        assertEquals(3, User.find.byId(2).getDestinations().size());
+        Map<String, String> formData = new HashMap<>();
+        formData.put("destName", "Summoner's Rift");
+        formData.put("destType", "Yes");
+        formData.put("district", "Demacia");
+        formData.put("country", "Angola");
+        formData.put("latitude", "50.0");
+        formData.put("longitude", "-50.0");
+        Http.RequestBuilder request = Helpers.fakeRequest().bodyForm(formData).method(POST).uri("/users/destinations/save").session("connected", "2");
+        Result result = route(app, request);
+        assertEquals(SEE_OTHER, result.status());
+        assertEquals(4, User.find.byId(2).getDestinations().size());
+        assertEquals(1,
+                DestinationAccessor.getDestinationsbyName("Summoner's Rift").size());
+        if(DestinationAccessor.getDestinationsbyName("Summoner's Rift").size() > 0) {
+            Destination dest = DestinationAccessor
+                    .getDestinationsbyName("Summoner's Rift").get(0);
+            assertEquals(1, dest.getAlbums().size());
+            assertEquals(albumSize+1, Album.find.all().size());
+        }
+        else{
+            fail();
+        }
     }
 
     /**
@@ -436,6 +468,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
         int destinationSize = DestinationAccessor.getAllDestinations().size();
         int visitSize = VisitAccessor.getAll().size();
         int treasureHuntSize = TreasureHuntAccessor.getAll().size();
+        int albumSize = AlbumAccessor.getAll().size();
         int destId = 1;
         String adminId = "1";
 
@@ -443,6 +476,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
 
         assertEquals(destinationSize, DestinationAccessor.getAllDestinations().size());
         assertEquals(treasureHuntSize, TreasureHuntAccessor.getAll().size());
+        assertEquals(albumSize, AlbumAccessor.getAll().size());
         assertEquals(visitSize, VisitAccessor.getAll().size());
     }
 
@@ -454,6 +488,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
     public void deleteDestination_asAdmin_undo_redo_checkDestinationDeleted() {
         int destinationSize = DestinationAccessor.getAllDestinations().size();
         int visitSize = VisitAccessor.getAll().size();
+        int albumSize = AlbumAccessor.getAll().size();
         int treasureHuntSize = TreasureHuntAccessor.getAll().size();
 
         int destId = 1;
@@ -473,6 +508,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
         route(app, redoRequest);
 
         assertEquals(destinationSize-1, DestinationAccessor.getAllDestinations().size());
+        assertEquals(albumSize-1, AlbumAccessor.getAll().size());
         assertEquals(treasureHuntSize-destinationTreasureHunts, TreasureHuntAccessor.getAll().size());
         assertEquals(visitSize-destinationVisits, VisitAccessor.getAll().size());
     }

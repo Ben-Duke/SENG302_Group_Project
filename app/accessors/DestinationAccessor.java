@@ -22,6 +22,17 @@ public class DestinationAccessor {
                 .findOne();
     }
 
+    /**
+     * Used for unit tests
+     * Return the first destination that matches this name.
+     * Private destinations can share the same name so list size can be more than one
+     */
+    public static List<Destination> getDestinationsbyName(String name) {
+        return Destination.find.query().where()
+                .eq("destName", name)
+                .findList();
+    }
+
     public static List<Destination> getAllDestinations() {
         return Destination.find.all();
     }

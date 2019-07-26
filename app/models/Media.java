@@ -33,6 +33,15 @@ public abstract class Media extends Model {
 
     public boolean isMediaPublic;
 
+    private String caption = "";
+
+    public Media(String url, boolean isPublic, User user, String caption) {
+        this.url = url;
+        this.isMediaPublic = isPublic;
+        this.user = user;
+        this.caption = caption;
+    }
+
     public Media(String url, boolean isPublic, User user) {
         this.url = url;
         this.isMediaPublic = isPublic;
@@ -41,11 +50,18 @@ public abstract class Media extends Model {
 
     public static Finder<Integer,Media> find = new Finder<>(Media.class);
 
+    /**
+     * Default constructor for caption edit commands
+     */
+    protected Media() {
+    }
+
     public Integer getMediaId() { return mediaId; }
     public String getUrl() { return url; }
     public boolean getIsPublic() { return isMediaPublic; }
     public User getUser() { return user; }
     public List<Album> getAlbums() { return albums; }
+    public String getCaption() { return caption; }
 
     /**
      * Get the url for the media with its full path
@@ -65,6 +81,8 @@ public abstract class Media extends Model {
 
     public void setUrl(String url) {this.url = url; }
     public void setPublic(boolean isPublic) { this.isMediaPublic = isPublic; }
+    public void setCaption(String caption) { this.caption = caption; }
+    protected void setUser(User user) { this.user = user; }
 
 //    public void addAlbum(Album album) { this.albums.add(album); }
 

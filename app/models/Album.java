@@ -26,24 +26,54 @@ public class Album extends Model {
     @JoinColumn(name = "user", referencedColumnName = "userid")
     public User user;
 
+    @JsonIgnore
+    @ManyToOne
+    @JoinColumn(name = "destination", referencedColumnName = "destid")
+    public Destination destination;
+
+    private AlbumOwner owner;
+
     private String title;
 
-
-    public Album(User user, String title) {
+    public Album(AlbumOwner owner, String title) {
         media = new ArrayList<>();
-        this.user = user;
+        setAlbumOwnerDetails(owner);
         this.title = title;
     }
-    public Album(Media media, User user, String title) {
+    public Album(Media media, AlbumOwner owner, String title) {
         this.media = new ArrayList<>();
         this.media.add(media);
-        this.user = user;
+        setAlbumOwnerDetails(owner);
         this.title = title;
     }
-    public Album(List<Media> media, User user, String title) {
+    public Album(List<Media> media, AlbumOwner owner, String title) {
         this.media = media;
-        this.user = user;
+        setAlbumOwnerDetails(owner);
         this.title = title;
+    }
+
+    public Album(Album album) {
+        setAlbumOwnerDetails(album.getOwner());
+        this.media = album.getMedia();
+        this.title = album.getTitle();
+    }
+
+
+    /**
+     * Sets the album owner depending on the type of the owner.
+     * @param owner the album owner
+     */
+    private void setAlbumOwnerDetails(AlbumOwner owner) {
+        this.owner = owner;
+        if(owner instanceof User) {
+            user = (User) owner;
+        }
+        else if(owner instanceof Destination) {
+            destination = (Destination) owner;
+        }
+        else {
+            throw new IllegalArgumentException("Invalid AlbumOwner type");
+        }
     }
 
 
@@ -51,6 +81,24 @@ public class Album extends Model {
     public List<Media> getMedia() { return media; }
     public User getUser() { return user; }
     public String getTitle() { return title; }
+    public void setOwner(AlbumOwner owner) {
+        setAlbumOwnerDetails(owner);
+    }
+
+    /**
+     * If the destination is null, a user owns the album
+     * If the user is null, a destination owns the album
+     * @return the album owner
+     */
+    public AlbumOwner getOwner() {
+        if(destination == null) {
+            return user;
+        }
+        else if(user == null) {
+            return destination;
+        }
+        return owner;
+    }
 
     public void setTitle(String title) { this.title = title; }
 
@@ -64,7 +112,8 @@ public class Album extends Model {
         this.media = new ArrayList<>();
     }
 
-    public boolean userIsOwner(User user) {
+    public boolean userIsOwner(User user)
+    {
         return this.getUser().getUserid() == user.getUserid();
     }
 
@@ -130,7 +179,7 @@ public class Album extends Model {
     public String toString() {
         return "Album title: "+this.getTitle()+
                 " ID: "+this.getAlbumId()+
-                " Owner userId: "+this.getUser().getUserid()+
+                " Owner: "+this.getOwner()+
                 " Size: " +this.getMedia().size();
     }
 

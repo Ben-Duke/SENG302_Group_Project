@@ -10,7 +10,7 @@ import javax.persistence.*;
 import java.util.*;
 
 @Entity
-public class Destination extends Model {
+public class Destination extends Model implements AlbumOwner {
 
     @Id
     public Integer destid;
@@ -24,7 +24,9 @@ public class Destination extends Model {
     public double longitude;
     public boolean isPublic;
 
-
+    @JsonIgnore
+    @OneToMany(mappedBy = "destination")
+    private List<Album> albums;
 
     @ManyToOne
     public UserPhoto primaryPhoto;
@@ -297,5 +299,10 @@ public class Destination extends Model {
         this.longitude = newDestination.getLongitude();
         this.latitude = newDestination.getLatitude();
         this.destType = newDestination.getDestType();
+    }
+
+    @Override
+    public List<Album> getAlbums() {
+        return albums;
     }
 }

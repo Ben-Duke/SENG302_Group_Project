@@ -1,7 +1,9 @@
 package utilities;
 
+import accessors.AlbumAccessor;
 import controllers.ApplicationManager;
 import models.*;
+import models.commands.Albums.CreateAlbumCommand;
 import play.db.Database;
 import play.db.Databases;
 import play.db.evolutions.Evolution;
@@ -363,6 +365,18 @@ public class TestDatabaseManager {
                         destination.getDestName()));
             }
         }
+        if (isInSuccessState) {
+            //saving the destination albums
+            AlbumAccessor.createAlbumFromDestination(destination1);
+            AlbumAccessor.createAlbumFromDestination(destination2);
+            AlbumAccessor.createAlbumFromDestination(destination3);
+            AlbumAccessor.createAlbumFromDestination(destination4);
+            AlbumAccessor.createAlbumFromDestination(destination5);
+            AlbumAccessor.createAlbumFromDestination(destination6);
+            AlbumAccessor.createAlbumFromDestination(destination7);
+            AlbumAccessor.createAlbumFromDestination(destination8);
+            AlbumAccessor.createAlbumFromDestination(destination9);
+        }
 
         if (isInSuccessState) {
             // Gets the first trip with that name. This may have bad side effects.
@@ -481,6 +495,7 @@ public class TestDatabaseManager {
 
     public void addUserPhotos(){
         UserPhoto userPhoto1 = new UserPhoto("shrek.jpeg", true, true, User.find.byId(2));
+        userPhoto1.setCaption("Get out of my swamp");
         UserPhoto userPhoto2 = new UserPhoto("placeholder.png", false, false, User.find.byId(2));
 //        Destination christchurch = Destination.find.byId(1);
 //        Destination wellington = Destination.find.byId(2);
@@ -525,5 +540,7 @@ public class TestDatabaseManager {
         TreasureHunt treasureHunt3 = new TreasureHunt("Closed Treasure Hunt", "You should not be able to view this", Destination.find.byId(4), "2019-04-17", "2019-04-25", User.find.byId(4));
         treasureHunt3.save();
     }
+
+
 
 }

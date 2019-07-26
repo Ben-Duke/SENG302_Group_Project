@@ -1,10 +1,12 @@
 package factories;
 
+import accessors.UserAccessor;
 import accessors.UserPhotoAccessor;
-import controllers.ApplicationManager;
 import formdata.UpdateUserFormData;
 import formdata.UserFormData;
 import models.*;
+import models.commands.General.UndoableCommand;
+import models.commands.Photos.EditPhotoCaptionCommand;
 import play.data.FormFactory;
 import play.mvc.Http;
 
@@ -26,7 +28,7 @@ public class UserFactory {
 
     /**Returns 1 if in the database and 0 if not in the database
      *
-     * @param email
+     * @param email the email to check if is in the database
      * @return 0 if email is not present or 1 if email is present.
      */
     public static int checkEmail(String email) {
@@ -35,10 +37,10 @@ public class UserFactory {
 
         int present = 0;
         String userEmail;
-        for (int i = 0; i < users.size(); i++) {
+        for (User user : users) {
 
-            userEmail = users.get(i).getEmail();
-            if(userEmail.equalsIgnoreCase(email)){
+            userEmail = user.getEmail();
+            if (userEmail.equalsIgnoreCase(email)) {
                 present = 1;
             }
         }
@@ -52,14 +54,14 @@ public class UserFactory {
     }
 
     public static void deleteNatsOnUser(int id, String nationalityId) {
-        User user = User.find.query().where().eq("userid", id).findOne();
-        try {
-            Nationality nationality = Nationality.find.byId(Integer.parseInt(nationalityId));
-            user.deleteNationality(nationality);
-            user.update();
-        } catch (NumberFormatException e) {
-
+        User user = UserAccessor.getById(id);
+        if (user == null) {
+            return;
         }
+
+        Nationality nationality = Nationality.find.byId(Integer.parseInt(nationalityId));
+        user.deleteNationality(nationality);
+        user.update();
     }
     /** Returns a User object from a userId int.
      *
@@ -79,10 +81,10 @@ public class UserFactory {
         List<Passport> passports = Passport.find.all();
 
         SortedMap<String, Boolean> passportList = new TreeMap<>();
-        for (int i = 0; i < passports.size(); i++) {
+        for (Passport passport : passports) {
 
             String localeName;
-            localeName = passports.get(i).passportName;
+            localeName = passport.passportName;
             passportList.put(localeName, false);
         }
         passportList.remove("");
@@ -99,10 +101,10 @@ public class UserFactory {
 
 
         SortedMap<String, Boolean> tTypesList = new TreeMap<>();
-        for (int i = 0; i < tTypes.size(); i++) {
+        for (TravellerType tType : tTypes) {
 
             String localeName;
-            localeName = tTypes.get(i).getTravellerTypeName();
+            localeName = tType.getTravellerTypeName();
             tTypesList.put(localeName, false);
         }
         tTypesList.remove("");
@@ -118,10 +120,10 @@ public class UserFactory {
 
 
         SortedMap<String, Boolean> nationalities = new TreeMap<>();
-        for (int i = 0; i < nationalityList.size(); i++) {
+        for (Nationality aNationalityList : nationalityList) {
 
             String localeName;
-            localeName = nationalityList.get(i).getNationalityName();
+            localeName = aNationalityList.getNationalityName();
             nationalities.put(localeName, false);
         }
         nationalities.remove("");
@@ -142,7 +144,7 @@ public class UserFactory {
                     user.addPassport(passport);
                     user.update();
                 } catch (io.ebean.DuplicateKeyException e) {
-
+                    // Do nothing, duplicate not inserted
                 }
             }
         }
@@ -162,7 +164,7 @@ public class UserFactory {
                     user.addNationality(nationality);
                     user.update();
                 } catch (io.ebean.DuplicateKeyException e) {
-
+                    // Do nothing, duplicate not inserted
                 }
             }
         }
@@ -183,7 +185,7 @@ public class UserFactory {
                     user.addTravellerType(travellerType);
                     user.update();
                 } catch (io.ebean.DuplicateKeyException e) {
-
+                    // Do nothing, duplicate not inserted
                 }
             }
         }
@@ -191,7 +193,7 @@ public class UserFactory {
 
     /**Returns the id of the Passport with the name passed in.
      *
-     * @param name
+     * @param name The name associated the with passport
      * @return Passport id with the name passed in.
      */
     public static int getPassportId(String name){
@@ -199,12 +201,12 @@ public class UserFactory {
 
         int id = -1;
         String passportName;
-        for (int i = 0; i < passports.size(); i++) {
+        for (Passport passport : passports) {
 
-            passportName = passports.get(i).passportName;
+            passportName = passport.passportName;
 
-            if(passportName.equals( name)){
-                id = passports.get(i).getPassportId();
+            if (passportName.equals(name)) {
+                id = passport.getPassportId();
             }
         }
 
@@ -213,20 +215,20 @@ public class UserFactory {
 
     /**Returns the id of the Nationality with the name passed in.
      *
-     * @param name
+     * @param name the name of the nationality
      * @return Nationality id with the name passed in.
      */
-    public static int getNatId(String name){
+    private static int getNatId(String name){
         List<Nationality> nationalities = Nationality.find.all();
 
         int id = -1;
         String natName;
-        for (int i = 0; i < nationalities.size(); i++) {
+        for (Nationality nationality : nationalities) {
 
-            natName = nationalities.get(i).nationalityName;
+            natName = nationality.nationalityName;
 
-            if(natName.equals( name)){
-                id = nationalities.get(i).natid;
+            if (natName.equals(name)) {
+                id = nationality.natid;
             }
         }
 
@@ -235,20 +237,20 @@ public class UserFactory {
 
     /**Returns the id of the Traveller Type with the name passed in.
      *
-     * @param name
+     * @param name the name of the traveller type
      * @return Traveller Type id with the name passed in.
      */
-    public static int getTTypeId(String name){
+    private static int getTTypeId(String name){
         List<TravellerType> tTypes = TravellerType.find.all();
 
         int id = -1;
         String tName;
-        for (int i = 0; i < tTypes.size(); i++) {
+        for (TravellerType tType : tTypes) {
 
-            tName = tTypes.get(i).getTravellerTypeName();
+            tName = tType.getTravellerTypeName();
 
-            if(tName.equals( name)){
-                id = tTypes.get(i).getTtypeid();
+            if (tName.equals(name)) {
+                id = tType.getTtypeid();
             }
         }
 
@@ -281,24 +283,24 @@ public class UserFactory {
 
 
             user.save();
-            for (int i = 0; i < tType.size(); i++) {
+            for (String aTType : tType) {
 
-                int tTypeId = getTTypeId(tType.get(i));
+                int tTypeId = getTTypeId(aTType);
                 updateTravellerType(user, tTypeId);
             }
             //Passport loop
             if (passports != null) {
-                for (int j = 0; j < passports.size(); j++) {
+                for (String passport : passports) {
 
-                    int passportId = getPassportId(passports.get(j));
+                    int passportId = getPassportId(passport);
                     updatePassport(user, passportId);
                 }
             }
 
 
-            for (int k = 0; k < nationalities.size(); k++) {
+            for (String nationality : nationalities) {
 
-                int natId = getNatId(nationalities.get(k));
+                int natId = getNatId(nationality);
                 updateNationality(user, natId);
             }
 
@@ -310,17 +312,19 @@ public class UserFactory {
 
     public static int getNatsForUserbyId(int userId){
         int count = 0;
-        User user = User.find.query().where().eq("userid", userId).findOne();
-        count = user.nationality.size();
+        User user = UserAccessor.getById(userId);
+        if (user != null) {
+            count = user.nationality.size();
+        }
         return count;
     }
 
     public static List<Passport> getUserPassports(int id){
-        return User.find.query().where().eq("userid", id).findOne().passports;
+        return UserAccessor.getById(id).passports;
     }
 
     public static List<Nationality> getUserNats(int id){
-        return User.find.query().where().eq("userid", id).findOne().nationality;
+        return UserAccessor.getById(id).nationality;
     }
 
     public static void addPassportToUser(int id, String passportId){
@@ -328,38 +332,42 @@ public class UserFactory {
         Passport passport = Passport.find.byId(Integer.parseInt(passportId));
 
         try {
-            User user = User.find.query().where().eq("userid", id).findOne();
+            User user = UserAccessor.getById(id);
+            if (user == null) {
+                return;
+            }
+
             user.addPassport(passport);
             user.update();
         } catch (io.ebean.DuplicateKeyException e) {
-            //return unauthorized("Oops, you have already have this passport");
+            // Do nothing since the duplicate will not be inserted
         }
     }
 
     public static void deletePassportOnUser(int id, String passportId){
-
-
-        try {
-            Passport passport = Passport.find.byId(Integer.parseInt(passportId));
-            User user = User.find.query().where().eq("userid", id).findOne();
-            user.deletePassport(passport);
-            user.update();
-        } catch (NumberFormatException e) {
-            //return  unauthorized("Oops, you do not have any passports to delete");
+        Passport passport = Passport.find.byId(Integer.parseInt(passportId));
+        User user = UserAccessor.getById(id);
+        if (user == null) {
+            return;
         }
+        user.deletePassport(passport);
+        user.update();
     }
 
     public static void addNatsOnUser(int id, String nationalityId){
-        User user = User.find.query().where().eq("userid", id).findOne();
+        User user = UserAccessor.getById(id);
+        if (user == null) {
+            return;
+        }
+
         try {
             Nationality nationality = Nationality.find.byId(Integer.parseInt(nationalityId));
             user.addNationality(nationality);
             user.update();
         } catch (io.ebean.DuplicateKeyException e) {
+            // do nothing since the duplicate will not be inserted
         }
     }
-
-
 
     /**
      * Get the user's profile picture if it exists
@@ -367,7 +375,7 @@ public class UserFactory {
      * @return the UserPhoto that is the profile picture if it exists, otherwise null
      */
     public static UserPhoto getUserProfilePicture(int userId) {
-        User user = User.find.query().where().eq("userid", userId).findOne();
+        User user = UserAccessor.getById(userId);
         UserPhoto userPhoto = UserPhoto.find.query().where().eq("user", user).and().eq("isProfile", true).findOne();
         if(userPhoto != null) {
             return  userPhoto;
@@ -380,7 +388,7 @@ public class UserFactory {
      * Remove the user's existing profile picture if it exists
      * @param userId the user id of the user whose profile picture is to be removed
      */
-    public static void removeExistingProfilePicture(int userId) {
+    private static void removeExistingProfilePicture(int userId) {
         UserPhoto existingProfile = getUserProfilePicture(userId);
         if (existingProfile != null) {
             existingProfile.setProfile(false);
@@ -401,29 +409,15 @@ public class UserFactory {
         }
     }
 
-    /**
-     * Get the path to the User's profile picture
-     * @param user the user whose profile picture path is to be retrieved
-     * @return the path to the photo
-     */
-    public static String getProfilePhotoPath(User user) {
-        return java.nio.file.Paths.get(".").toAbsolutePath().normalize().toString() + ApplicationManager.getUserMediaPath() + user.getUserid() + "/profilethumbnail.png";
-    }
-
-
-
     public static UpdateUserFormData getUpdateUserFormDataForm(Http.Request request) {
         List<User> users = User.getCurrentUser(request, true);
         User user = users.get(0);
-        Boolean isAdmin = false;
-        if (users.size() != 0) {
-            if(users.get(0).getUserid() != users.get(1).getUserid()) {
-                isAdmin = true;
-            }
-            return new UpdateUserFormData(user, isAdmin);
-        } else {
-            return null;
+
+        boolean isAdmin = false;
+        if (users.get(0).getUserid() != users.get(1).getUserid()) {
+            isAdmin = true;
         }
+        return new UpdateUserFormData(user, isAdmin);
     }
 
     /**
@@ -434,9 +428,31 @@ public class UserFactory {
      */
     public static void makePicturePublic(int userId, UserPhoto newPhoto, boolean setPublic) {
         User user = User.find.byId(userId);
-        if (!user.equals(null)) {
+        if (user != null) {
             newPhoto.setPublic(setPublic);
             newPhoto.save();
+        }
+    }
+
+    /**
+     * Changes a photos caption to the caption provided
+     * @param userId The id of the user that is trying to change the photo
+     * @param photoId The id of the photo with a caption to be changed
+     * @param caption the caption that is going ot be the new caption
+     */
+    public static void editPictureCaption(int userId, int photoId, String caption) {
+        User user = UserAccessor.getById(userId);
+        UserPhoto photo = UserPhotoAccessor.getUserPhotoById(photoId);
+        if (user != null && photo != null) {
+            if (user.equals(photo.getUser()) || user.userIsAdmin()) {
+                photo.setCaption(caption);
+                UndoableCommand editCaptionCommand = new EditPhotoCaptionCommand(photo);
+                user.getCommandManager().executeCommand(editCaptionCommand);
+            } else {
+                throw new IllegalArgumentException("Forbidden");
+            }
+        } else {
+            throw new IllegalArgumentException("Not Found");
         }
     }
 }

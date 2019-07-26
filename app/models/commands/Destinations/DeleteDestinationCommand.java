@@ -1,12 +1,10 @@
 package models.commands.Destinations;
 
+import accessors.AlbumAccessor;
 import accessors.DestinationAccessor;
 import accessors.TreasureHuntAccessor;
 import accessors.VisitAccessor;
-import models.Destination;
-import models.TreasureHunt;
-import models.UserPhoto;
-import models.Visit;
+import models.*;
 import models.commands.General.UndoableCommand;
 import org.slf4j.Logger;
 import utilities.UtilityFunctions;
@@ -22,6 +20,7 @@ public class DeleteDestinationCommand extends DestinationPageCommand {
     // Using sets as the items do not need to be ordered and are unique
     private List<Visit> deletedVisits = new ArrayList<>();
     private List<TreasureHunt> deletedTreasureHunts = new ArrayList<>();
+    private List<Album> deletedAlbums = new ArrayList<>();
     private List<UserPhoto> unlinkedPhotos = new ArrayList<>();
 
     private final Logger logger = UtilityFunctions.getLogger();
@@ -56,6 +55,11 @@ public class DeleteDestinationCommand extends DestinationPageCommand {
             userPhoto.removeDestination(destination);
             userPhoto.update();
         }
+        List<Album> albumsCopy = AlbumAccessor.getAlbumsByOwner(destination);
+        for (Album album : albumsCopy) {
+            deletedAlbums.add(new Album(album));
+            AlbumAccessor.delete(album);
+        }
         DestinationAccessor.delete(destination);
     }
 
@@ -79,6 +83,11 @@ public class DeleteDestinationCommand extends DestinationPageCommand {
         for (UserPhoto userPhoto : unlinkedPhotos) {
             userPhoto.addDestination(destination);
             userPhoto.update();
+        }
+        for (Album album : deletedAlbums) {
+           // album
+            album.setOwner(destination);
+            AlbumAccessor.insert(album);
         }
     }
 

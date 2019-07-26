@@ -11,124 +11,127 @@
 </head>
 
 <body onpageshow="getAlbum(@user.getUserid, @album.getAlbumId, @album.userIsOwner(user))">
-<h2 style="text-align: center;">@album.getTitle</h2>
+    <h2 style="text-align: center;">@album.getTitle</h2>
 
-<p id="para"></p>
-<div class="container">
-    <div class="row">
-        <!--Media items added through Javascript-->
-        <div id="col1" class="column"></div>
-        <div id="col2" class="column"></div>
-        <div id="col3" class="column"></div>
-        <div id="col4" class="column"></div>
+    <div class="container">
+        @if(album.getMedia.size()==0) {
+            <div class="well" style="width: 250px; height: 50px; margin: auto;"><p>There is no media in this album.</p></div>
+        } else {
+            <div class="row">
+                <!--Media items added through Javascript-->
+                <div id="col1" class="column"></div>
+                <div id="col2" class="column"></div>
+                <div id="col3" class="column"></div>
+                <div id="col4" class="column"></div>
+            </div>
+        }
     </div>
-</div>
 
-<!-- The Modal/Lightbox -->
-<div id="myModal" class="modal">
+    <!-- The Modal/Lightbox -->
+    <div id="myModal" class="modal">
 
-    <div class="modal-content">
-        <div id="lightbox-modal">
-            <span class="close cursor" onclick="closeModal()">&times;</span>
-        </div>
-
-        <!-- Next/previous controls -->
-        <a class="prev" onclick="plusSlides(-1)">&#10094;</a>
-        <a class="next" onclick="plusSlides(1)">&#10095;</a>
-
-
-        <!-- Caption text -->
-        <div class="caption-container">
-            <p id="img-caption"></p>
-            <a class="btn btn-link" id="setProfilePictureBtn"
-               onclick="setProfilePictureRequest(2)">Set Profile Picture</a>
-            <a class="btn btn-link" id="deletePhotoBtn" onclick="deletePhoto(@user.getUserid, @album.getAlbumId,
-            @album.userIsOwner(user))">Delete</a>
-            <a class="btn btn-link" id="privacyBtn" onclick="changePrivacy(@user.getUserid, @album.getAlbumId,
-            @album.userIsOwner(user))">Make Public/Private</a>
-            <a class="btn btn-link" id="linkDestinationBtn" onclick="linkToDestination()">Link Destination</a>
-        </div>
-    </div>
-</div>
-
-<!-- Modal to upload a new profile picture -->
-<div id="addProfilePhoto" class="modal fade" role="dialog">
-    <div class="modal-dialog">
-
-        <!-- Modal content-->
         <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">Upload a new profile picture </h4>
+            <div id="snackbar"></div>
+            <div id="lightbox-modal">
+                <span class="close cursor" onclick="closeModal()">&times;</span>
             </div>
 
-            <div class="modal-body">
+            <!-- Next/previous controls -->
+            <a class="prev" onclick="plusSlides(-1)">&#10094;</a>
+            <a class="next" onclick="plusSlides(1)">&#10095;</a>
 
-                <div class="profile-pic-wraper ">
-                    <img class="img"  width = "450" height="450" id="change-profile-pic" src="@{routes.HomeController.serveProfilePicture(user.getUserid())}" alt="Profile photo image"/>
-                </div>
-                <div class="preview-wrapper">
-                    <div class="preview">
 
-                    </div><br>
-                </div>
-                <br>
-                <input id="selectProfileInput" type="file" accept="image/png,image/jpeg" name="picture" required onchange="loadFile(event);"/>
-                <div>
-                    <button class="btn btn-default" id="save-profile">
-                        Upload
-                    </button>
-                </div>
-                <div>
-                </div>
+            <!-- Caption text -->
+            <div class="caption-container">
+                <p id="img-caption"></p>
+                <a class="btn btn-link" id="setProfilePictureBtn"
+                   onclick="setProfilePictureRequest(2)">Set Profile Picture</a>
+                <a class="btn btn-link" id="deletePhotoBtn" onclick="deletePhoto(@user.getUserid, @album.getAlbumId,
+                @album.userIsOwner(user))">Delete</a>
+                <a class="btn btn-link" id="privacyBtn" onclick="changePrivacy(@user.getUserid, @album.getAlbumId,
+                @album.userIsOwner(user))">Make Public/Private</a>
+                <a class="btn btn-link" id="linkDestinationBtn" onclick="linkToDestination()">Link Destination</a>
             </div>
         </div>
     </div>
 
-</div>
+    <!-- Modal to upload a new profile picture -->
+    <div id="addProfilePhoto" class="modal fade" role="dialog">
+        <div class="modal-dialog">
 
-<div id="confirmDeleteProfilePhotoModal" class="modal fade" role="dialog">
-    <div class="modal-dialog">
-        <!-- Modal content-->
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title" id="deleteTitle">About to delete profile picture</h4>
-            </div>
-            <div class="modal-body">
-                <p id="message">This image is your profile picture, do you want to delete it? This will also unlink it from any
-                    destinations</p>
-            </div>
-            <div class="modal-footer">
-                <button id="yesDeleteProfilePhoto" class="btn btn-danger" data-dismiss="modal">Yes</button>
-                <button id="noCloseDeleteProfilePhotoButton" class="btn btn-primary" data-dismiss="modal">No</button>
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Upload a new profile picture </h4>
+                </div>
+
+                <div class="modal-body">
+
+                    <div class="profile-pic-wraper ">
+                        <img class="img"  width = "450" height="450" id="change-profile-pic" src="@{routes.HomeController.serveProfilePicture(user.getUserid())}" alt="Profile photo image"/>
+                    </div>
+                    <div class="preview-wrapper">
+                        <div class="preview">
+
+                        </div><br>
+                    </div>
+                    <br>
+                    <input id="selectProfileInput" type="file" accept="image/png,image/jpeg" name="picture" required onchange="loadFile(event);"/>
+                    <div>
+                        <button class="btn btn-default" id="save-profile">
+                            Upload
+                        </button>
+                    </div>
+                    <div>
+                    </div>
+                </div>
             </div>
         </div>
 
     </div>
-</div>
 
+    <div id="confirmDeleteProfilePhotoModal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title" id="deleteTitle">About to delete profile picture</h4>
+                </div>
+                <div class="modal-body">
+                    <p id="message">This image is your profile picture, do you want to delete it? This will also unlink it from any
+                        destinations</p>
+                </div>
+                <div class="modal-footer">
+                    <button id="yesDeleteProfilePhoto" class="btn btn-danger" data-dismiss="modal">Yes</button>
+                    <button id="noCloseDeleteProfilePhotoButton" class="btn btn-primary" data-dismiss="modal">No</button>
+                </div>
+            </div>
 
-<div id="confirmDeletePhotoModal" class="modal fade" role="dialog">
-    <div class="modal-dialog">
-        <!-- Modal content-->
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title" id="deleteTitle">Deleting a photo that is linked to 1 or more destinations</h4>
-            </div>
-            <div class="modal-body">
-                <p id="message">This image is linked to destination(s), do you want to
-                    unlink it from these places?</p>
-            </div>
-            <div class="modal-footer">
-                <button id="yesDeletePhoto" class="btn btn-danger" data-dismiss="modal">Yes</button>
-                <button id="noCloseDeletePhotoButton" class="btn btn-primary" data-dismiss="modal">No</button>
-            </div>
         </div>
-
     </div>
-</div>
+
+    <div id="confirmDeletePhotoModal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title" id="deleteTitle">Deleting a photo that is linked to 1 or more destinations</h4>
+                </div>
+                <div class="modal-body">
+                    <p id="message">This image is linked to destination(s), do you want to
+                        unlink it from these places?</p>
+                </div>
+                <div class="modal-footer">
+                    <button id="yesDeletePhoto" class="btn btn-danger" data-dismiss="modal">Yes</button>
+                    <button id="noCloseDeletePhotoButton" class="btn btn-primary" data-dismiss="modal">No</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
 
 </body>
 

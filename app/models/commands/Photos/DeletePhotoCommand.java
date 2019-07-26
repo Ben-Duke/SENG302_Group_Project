@@ -49,7 +49,7 @@ public class DeletePhotoCommand extends UndoableCommand {
             userPhoto.removeDestination(destination);
             UserPhotoAccessor.update(userPhoto);
             if ((destination.getPrimaryPhoto() != null) &&
-                    (userPhoto.getMediaId() == destination.getPrimaryPhoto().getMediaId())) {
+                    (userPhoto.getMediaId().equals(destination.getPrimaryPhoto().getMediaId()))) {
                 destination.setPrimaryPhoto(null);
                 DestinationAccessor.update(destination);
             }
@@ -69,7 +69,6 @@ public class DeletePhotoCommand extends UndoableCommand {
         for(Destination destination: refToDestinations){
             userPhoto.addDestination(destination);
         }
-//        System.out.println("Userphoto is " + userPhoto.toString());
 
         UserPhotoAccessor.insert(userPhoto);
         savedUserPhoto = UserPhotoAccessor.getUserPhotoById(userPhoto.getMediaId());
@@ -90,7 +89,7 @@ public class DeletePhotoCommand extends UndoableCommand {
             savedUserPhoto.removeDestination(destination);
             UserPhotoAccessor.update(savedUserPhoto);
             if ((destination.getPrimaryPhoto() != null) &&
-                    (savedUserPhoto.getMediaId() == destination.getPrimaryPhoto().getMediaId())) {
+                    (savedUserPhoto.getMediaId().equals(destination.getPrimaryPhoto().getMediaId()))) {
                 destination.setPrimaryPhoto(null);
                 DestinationAccessor.update(destination);
             }

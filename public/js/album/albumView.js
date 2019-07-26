@@ -94,6 +94,7 @@ async function displayGrid(i, albumData, path) {
     var img1 = document.createElement("img");
     img1.src = path + encodeURIComponent(url);
     img1.setAttribute("data-id", i);
+    img1.setAttribute("data-mediaId", albumData[i]["mediaId"]);
     img1.classList.add("hover-shadow");
     img1.addEventListener('click', openModal);
     img1.addEventListener('click', () => {
@@ -312,6 +313,32 @@ $('#save-profile').click(function (eve){
     });
 });
 
+function showMessage(message) {
+    const x = document.getElementById("snackbar");
+
+    // Add the "show" class to DIV
+    x.className = "show";
+    x.innerText = message;
+    // After 3 seconds, remove the show class from DIV
+    setTimeout(function(){
+        x.className = x.className.replace("show", "");
+    }, 3000);
+}
+
+function deletePhotoFromUI(mediaId) {
+    var slides = document.getElementsByClassName("mySlides");
+    var size = slides.length;
+    for (var i=0; i < slides.length; i++) {
+        if (slides[i].getAttribute('data-mediaId') == mediaId) {
+            slides[i].remove();
+            document.querySelectorAll("img[data-mediaId='" + mediaId + "']")[0].remove();
+            size-=1;
+        }
+    }
+    if (size > 0) {plusSlides(1);}
+    else {closeModal();}
+    showMessage("Deleted the photo successfully!");
+}
 
 /**
  * This function makes a request to the server to delete a photo with the passed id.
@@ -337,7 +364,9 @@ function deletePhotoRequest(photoId){
         headers: {
             'Content-Type': 'application/json'
         },
-        success: function(res){},
+        success: function(res){
+                    deletePhotoFromUI(photoId);
+                },
         error: function(res){
             if(res.responseText === "Is profile picture ask user"){
                 $(document.getElementById('myModal')).modal('hide');
@@ -348,7 +377,9 @@ function deletePhotoRequest(photoId){
                         $.ajax({
                             url: '/users/unlinkAndDeletePicture/'+photoId,
                             method: "Delete",
-                            success:function(res) {},
+                            success:function(res) {
+                                deletePhotoFromUI(photoId);
+                            },
                             error:function(res){
                                 console.log(res.responseText);
                             }
@@ -374,7 +405,9 @@ function deletePhotoRequest(photoId){
                          $.ajax({
                              url: '/users/unlinkAndDeletePicture/'+photoId,
                              method: "Delete",
-                             success: function (res) {},
+                             success: function (res) {
+                                deletePhotoFromUI(photoId);
+                             },
                              error: function (res) {
                                  console.log(JSON.stringify(res));
                              }

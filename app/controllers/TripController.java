@@ -1,5 +1,7 @@
 package controllers;
 
+import accessors.TripAccessor;
+import accessors.VisitAccessor;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -341,6 +343,46 @@ public class TripController extends Controller {
         else{
             return redirect(routes.UserController.userindex());
         }
+    }
+
+    /**
+     * Add visit based off destination Id to a trip
+     * @return
+     */
+    public Result addVistToTripJSRequest(Http.Request request, Integer tripid, Integer destid){
+        User user = User.getCurrentUser(request);
+        if(user != null) {
+            Trip trip = Trip.find.byId(tripid);
+            Destination destination = Destination.find.byId(destid);
+            if (trip == null) {
+                return notFound();
+            }
+            if (!trip.isUserOwner(user.getUserid())  && !user.userIsAdmin()) {
+                System.out.println("Jack is right");
+                System.out.println(trip.getUser() != user);
+                System.out.println(!user.userIsAdmin());
+                return forbidden("1");
+            }
+            if(destination == null) {
+                return notFound();
+            }
+            if (!destination.getIsPublic() && destination.getUser() != user) {
+                System.out.println("Ben is right");
+                return forbidden("2");
+            }
+            VisitFactory visitFactory = new VisitFactory();
+            Visit newVisit = visitFactory.createVisitByJSRequest(destination, trip);
+            VisitAccessor.insert(newVisit);
+
+            trip.addVisit(newVisit);
+            TripAccessor.update(trip);
+            VisitAccessor.update(newVisit);
+
+            return ok("Visit was added to the trip");
+
+
+        }
+        return unauthorized();
     }
 
     /**

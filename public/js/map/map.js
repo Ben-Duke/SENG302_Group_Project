@@ -1,7 +1,61 @@
 var visitArray = [];
 
+/**
+ * Gets the HTML for a Destinations infoWindow, for the google map.
+ *
+ * @param destination A JSON object of the Destination, from an AJAX query from
+ *  /users/destinations/getalljson endpoint.
+ *
+ * @returns {string} A String containing the HTML to display in the markers
+ *                   infoWindow.
+ */
+function getInfoWindowHTML(destination) {
+// create the destinations info window
+    const destinationName = destination.destName;
+    const destinationType = destination.destType;
+    const destinationCountry = destination.country;
+    const destinationDistrict = destination.district;
 
 
+    let infoWindowHTML;
+    // uses a ES6 template string
+    infoWindowHTML = `<style>.basicLink {text-underline: #0000EE;}</style>
+                      <a class="basicLink" href="javascript:;" onclick="viewDestination(${destination.destid})">
+                        ${destinationName}
+                      </a>
+                      <div>${destinationType}</div>
+                      <div>District: ${destinationDistrict}</div>
+                      <div>${destinationCountry}</div>
+                      <div><button id="addToTripButton" onclick="addSelectedToVistToTrip(${destination.destid})">Add to trip</button></div>
+                      <script src="indexDestination.js"></script>`;
+
+    return infoWindowHTML;
+}
+
+function addSelectedToVistToTrip(destId){
+    if(currentlyDisplayedTripId == null){
+        //Start a new trip
+        console.log("No trip");
+    }
+    else {
+        console.log("DestId is " + destId);
+        let data = '';
+        let url = '/users/trips/' + currentlyDisplayedTripId + '/addVisit/' + destId;
+        // POST to server using $.post or $.ajax
+        $.ajax({
+            data : JSON.stringify(data),
+            contentType : 'application/json',
+            type: 'POST',
+            url: url,
+            success: function(data, textStatus, xhr){
+                console.log(data)
+            },
+            error: function(xhr, textStatus, errorThrown){
+                alert(errorThrown);
+            }
+        });
+    }
+}
 
 function initMap() {
 
@@ -13,50 +67,6 @@ function initMap() {
     // initPlacesAutocomplete();
     initDestinationMarkers();
     // initMapLegend();
-    initTripRoutes();
-
-    // var myLatLng = {lat: -43.522057156877615, lng: 172.62360347218828};
-
-    // var marker = new google.maps.Marker({
-    //     position: myLatLng,
-    //     map: map,
-    //     title: 'Hello World!',
-    //     destId: 1
-    // });
-    //
-    // var marker2 = new google.maps.Marker({
-    //     position: {lat: -40, lng:176.6},
-    //     map: map,
-    //     title: 'Hello World!',
-    //     destId: 2
-    // });
-    //
-    // marker.setMap(map);
-    // var infowindow = new google.maps.InfoWindow({
-    //     content: "yay content <br> <button onclick='visitArray.push({name : `marker1`, id:1, arrivalDate: new Date().toISOString().slice(0, 10) , departureDate: new Date().toISOString().slice(0, 10)}); updateTripsTab()' >start a trip/Add Destination</button>"
-    // });
-    //
-    // marker.addListener('click', function() {
-    //     infowindow.open(map, marker);
-    // });
-    //
-    // var infowindow2 = new google.maps.InfoWindow({
-    //     content: "second marker <br> <button onclick='visitArray.push(" +
-    //         "{name : `marker2`, id:1,  arrivalDate: new Date().toISOString().slice(0, 10)," +
-    //         " departureDate: new Date().toISOString().slice(0, 10)}); updateTripsTab()'>" +
-    //         "Start a trip</button>"
-    // });
-    //
-    // marker2.addListener('click', function() {
-    //     infowindow2.open(map, marker2);
-    // });
-    // marker2.setMap(map);
-
-
-
-    initDestinationMarkers();
-    // initMapLegend();
-
     initTripRoutes();
 
 
@@ -119,6 +129,8 @@ function displayTrip(tripId, startLat, startLng) {
     window.globalMap.setZoom(9);
 
 }
+
+
 
 $('tbody').sortable({
     axis: 'y',

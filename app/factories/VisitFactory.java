@@ -23,4 +23,20 @@ public class VisitFactory {
         Visit visit = new Visit(null, null, trip, destination, visitOrder);
         return visit;
     }
+
+    /**
+     * Create a visit for a given trip from a destination
+     * @param destination the destination that is to be a visit
+     * @param trip the trip the visit is to be added to
+     * @return the new visit
+     */
+    public Visit createVisitByJSRequest(Destination destination, Trip trip) {
+        Visit visit = new Visit();
+        visit.trip = trip;
+        visit.destination = destination;
+        visit.visitName = destination.destName;
+        Integer visitSize = trip.getVisits().size();
+        visit.visitorder = visitSize + 1;
+        return visit;
+    }
 }

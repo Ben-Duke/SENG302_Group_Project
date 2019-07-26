@@ -26,19 +26,19 @@ import java.util.*;
 public class User extends Model implements Comparable<User> {
 
     @Column(name="email")
-    public String email; // The email of the User
+    private String email; // The email of the User
 
 
     @Id
-    public Integer userid; // The ID of the user. This is the primary key.
+    private Integer userid; // The ID of the user. This is the primary key.
 
-    public String passwordHash; // hashed password
+    private String passwordHash; // hashed password
 
     @Temporal(TemporalType.TIMESTAMP)
     @Formats.DateTime(pattern="yyyy-MM-dd HH:mm:ss")
     //date was protected not public/private for some reason
     @CreatedTimestamp
-    public Date creationDate;
+    private Date creationDate;
 
     /**
      * The nationality of the user.
@@ -46,24 +46,24 @@ public class User extends Model implements Comparable<User> {
      */
     @JsonIgnore
     @ManyToMany
-    public List<Nationality> nationality;
+    private List<Nationality> nationality;
 
     /**
      * The date of birth of the user
      */
-    public LocalDate dateOfBirth;
+    private LocalDate dateOfBirth;
     /**
      * The gender of the user.
      */
-    public String gender;
+    private String gender;
     /**
      * The first name of the user.
      */
-    public String fName;
+    private String fName;
     /**
      * The last name of the user
      */
-    public String lName;
+    private String lName;
 
     /**
      * True if there was an error undoing or redoing the stack, false otherwise.
@@ -75,36 +75,36 @@ public class User extends Model implements Comparable<User> {
      */
     @JsonIgnore
     @ManyToMany
-    public List<Passport> passports;
+    private List<Passport> passports;
 
     @JsonIgnore
     @OneToMany(mappedBy = "user")
-    public List<Trip> trips;
+    private List<Trip> trips;
 
     @JsonIgnore
     @OneToMany(mappedBy = "user")
-    public List<TreasureHunt> treasureHunts;
+    private List<TreasureHunt> treasureHunts;
 
     @JsonIgnore
     @OneToMany(mappedBy = "user")
-    public List<Destination> destinations;
+    private List<Destination> destinations;
 
     @JsonIgnore
     @ManyToMany
-    public List<TravellerType> travellerTypes;
+    private List<TravellerType> travellerTypes;
 
     @JsonIgnore
     @ManyToMany
-    public List<TreasureHunt> guessedTHunts;
+    private List<TreasureHunt> guessedTHunts;
 
     @JsonIgnore
     @OneToMany(mappedBy = "user")
-    public List<UserPhoto> userPhotos;
+    private List<UserPhoto> userPhotos;
 
-    public static Finder<Integer,User> find = new Finder<>(User.class);
+    private static Finder<Integer,User> find = new Finder<>(User.class);
 
     @Deprecated
-    public Boolean isAdmin = false;
+    private Boolean isAdmin = false;
 
 
     // ^^^^^ Class attributes ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -169,6 +169,15 @@ public class User extends Model implements Comparable<User> {
      * Returns this user objects as a string with it's parameters
      * @return The user objects attributes as a string
      */
+    /**
+     * Method to get EBeans finder object for queries.
+     *
+     * @return a Finder<Integer, User> object.
+     */
+    public static Finder<Integer, User> find() {
+        return find;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -235,7 +244,7 @@ public class User extends Model implements Comparable<User> {
 
 
     public static int checkUser(String email){
-        ExpressionList<User> usersExpressionList = User.find.query().where().eq("email", email.toLowerCase());
+        ExpressionList<User> usersExpressionList = User.find().query().where().eq("email", email.toLowerCase());
         int userPresent = 0;
         if (usersExpressionList.findCount() > 0) {
             userPresent = 1;
@@ -323,7 +332,7 @@ public class User extends Model implements Comparable<User> {
     }
 
     public List<User> getUsers() {
-        List<User> users= User.find.all();
+        List<User> users= User.find().all();
         return  users;
     }
 
@@ -436,28 +445,25 @@ public class User extends Model implements Comparable<User> {
                 .getOptional("connected")
                 .orElse(null);
         if (userId != null) {
-            User requestUser = User.find.query().where()
+            User requestUser = User.find().query().where()
                     .eq("userid", userId)
                     .findOne();
-
-            if (requestUser != null) {
-                if (requestUser.userIsAdmin()) {
-                    List<Admin> adminList = Admin.find.query().where()
-                            .eq("userId", userId).findList();
-                    if (adminList.size() == 1) {
-                        Admin admin = adminList.get(0);
-                        if (admin.getUserIdToActAs() != null) {
-                            User userToEdit = User.find.byId(admin.getUserIdToActAs());
-                            return userToEdit;
-                        } else {
-                            return requestUser;
-                        }
+            if (requestUser != null && requestUser.userIsAdmin()) {
+                List<Admin> adminList = Admin.find().query().where()
+                        .eq("userId", userId).findList();
+                if (adminList.size() == 1) {
+                    Admin admin = adminList.get(0);
+                    if (admin.getUserIdToActAs() != null) {
+                        User userToEdit = User.find.byId(admin.getUserIdToActAs());
+                        return userToEdit;
                     } else {
-                        return null;
+                        return requestUser;
                     }
+                } else {
+                    return null;
                 }
-                return requestUser;
             }
+            return requestUser;
         }
         return null;
     }
@@ -481,34 +487,32 @@ public class User extends Model implements Comparable<User> {
                 .getOptional("connected")
                 .orElse(null);
         if (userId != null) {
-            User requestUser = User.find.query().where()
+            User requestUser = User.find().query().where()
                     .eq("userid", userId)
                     .findOne();
             users.add(requestUser);
 
-            if (requestUser != null) {
-                if (requestUser.userIsAdmin()) {
-                    List<Admin> adminList = Admin.find.query().where()
-                            .eq("userId", userId).findList();
-                    if (adminList.size() == 1) {
-                        Admin admin = adminList.get(0);
-                        if (admin.getUserIdToActAs() != null) {
-                            User userToEdit = User.find.byId(admin.getUserIdToActAs());
-                            users.add(0, userToEdit);
-                            return users;
-                        } else {
-                            users.add(requestUser);
-                            return users;
-                        }
+            if (requestUser != null && requestUser.userIsAdmin()) {
+                List<Admin> adminList = Admin.find().query().where()
+                        .eq("userId", userId).findList();
+                if (adminList.size() == 1) {
+                    Admin admin = adminList.get(0);
+                    if (admin.getUserIdToActAs() != null) {
+                        User userToEdit = User.find().byId(admin.getUserIdToActAs());
+                        users.add(0, userToEdit);
+                        return users;
                     } else {
-                        //this should never happen
+                        users.add(requestUser);
                         return users;
                     }
                 } else {
-                    users.add(requestUser);
+                    //this should never happen
+                    return users;
                 }
-                return users;
+            } else {
+                users.add(requestUser);
             }
+            return users;
         }
         return users;
     }
@@ -590,9 +594,9 @@ public class User extends Model implements Comparable<User> {
      * @return True if an admin, false otherwise
      */
     public boolean userIsAdmin() {
-        List<Admin> admins = Admin.find.all();
+        List<Admin> admins = Admin.find().all();
         for (Admin admin : admins) {
-            if (admin.userId.equals(userid)) {
+            if (admin.getUserId().equals(userid)) {
                 return true;
             }
         }

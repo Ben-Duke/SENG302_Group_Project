@@ -3,7 +3,8 @@ package models.commands.Photos;
 import accessors.UserPhotoAccessor;
 import controllers.ApplicationManager;
 import models.UserPhoto;
-import models.commands.Profile.HomePageCommand;
+import models.commands.General.CommandPage;
+import models.commands.General.UndoableCommand;
 import org.slf4j.Logger;
 import play.libs.Files;
 import utilities.UtilityFunctions;
@@ -11,14 +12,17 @@ import utilities.UtilityFunctions;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
+
 /** Command for user photo uploads */
-public class UploadPhotoCommand extends HomePageCommand {
+
+public class UploadPhotoCommand extends UndoableCommand {
 
     private UserPhoto userPhoto;
     private Files.TemporaryFile fileObject;
     private final Logger logger = UtilityFunctions.getLogger();
 
     public UploadPhotoCommand(UserPhoto photo, Files.TemporaryFile fileObject) {
+        super(CommandPage.HOME);
         this.userPhoto = photo;
         this.fileObject = fileObject;
     }

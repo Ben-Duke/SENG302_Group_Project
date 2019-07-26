@@ -424,14 +424,14 @@ public class UtilityFunctionsTest extends WithApplication {
                 "create table test (id bigint not null, name varchar(255));",
                 "drop table test;"
         )));
-        List<TravellerType> travellerTypes= TravellerType.find.all();
+        List<TravellerType> travellerTypes= TravellerType.find().all();
         for(TravellerType travellerType : travellerTypes){
             travellerType.delete();
         }
-        assertEquals(0, TravellerType.find.all().size());
+        assertEquals(0, TravellerType.find().all().size());
         //Add travel types
         UtilityFunctions.addTravellerTypes();
-        assertEquals(7, TravellerType.find.all().size());        Evolutions.cleanupEvolutions(database);
+        assertEquals(7, TravellerType.find().all().size());        Evolutions.cleanupEvolutions(database);
         database.shutdown();
 
     }

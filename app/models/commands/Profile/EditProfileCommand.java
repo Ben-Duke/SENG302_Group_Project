@@ -2,9 +2,11 @@ package models.commands.Profile;
 
 import accessors.UserAccessor;
 import models.User;
+import models.commands.General.CommandPage;
+import models.commands.General.UndoableCommand;
 
 /** Command to edit a user profile */
-public class EditProfileCommand extends HomePageCommand {
+public class EditProfileCommand extends UndoableCommand {
     private User uneditedUser;
     private User editedUser;
     private User actualUser;
@@ -17,6 +19,7 @@ public class EditProfileCommand extends HomePageCommand {
      * @param editedUser the edited user
      */
     public EditProfileCommand(User editedUser) {
+        super(CommandPage.HOME);
         this.editedUser = new User();
         actualUser = editedUser;
         this.editedUser.applyEditChanges(actualUser);
@@ -52,7 +55,7 @@ public class EditProfileCommand extends HomePageCommand {
      * @return String result of command
      */
     public String toString() {
-        return this.actualUser.getFName() + " " + this.actualUser.lName + " editing";
+        return this.actualUser.getFName() + " " + this.actualUser.getLName() + " editing";
     }
 }
 

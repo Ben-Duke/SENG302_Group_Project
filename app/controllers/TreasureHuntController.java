@@ -6,9 +6,9 @@ import formdata.TreasureHuntFormData;
 import models.Destination;
 import models.TreasureHunt;
 import models.User;
+import models.commands.General.CommandPage;
 import models.commands.General.UndoableCommand;
 import models.commands.Treasurehunts.DeleteTreasureHuntCommand;
-import models.commands.Treasurehunts.TreasureHuntPageCommand;
 import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.Controller;
@@ -41,7 +41,7 @@ public class TreasureHuntController extends Controller {
      * Creates the option map of public destinations for treasure hunts.
      */
     void createPublicDestinationsMap() {
-        List<Destination> allDestinations = Destination.find.query().where().eq("is_public", true).findList();
+        List<Destination> allDestinations = Destination.find().query().where().eq("is_public", true).findList();
         for (Destination destination: allDestinations) {
             destinationMap.put(destination.getDestName(), false);
         }
@@ -66,7 +66,7 @@ public class TreasureHuntController extends Controller {
     public Result indexTreasureHunt(Http.Request request){
         User user = User.getCurrentUser(request);
         if (user != null) {
-            user.getCommandManager().setAllowedType(TreasureHuntPageCommand.class); // clear stack
+            user.getCommandManager().setAllowedPage(CommandPage.TREASURE_HUNT); // clear stack
             return ok(indexTreasureHunt.render(user.getTreasureHunts(), getOpenTreasureHunts(), user));
         }
         else{
@@ -81,7 +81,7 @@ public class TreasureHuntController extends Controller {
      * @return list of open treasure hunts
      */
     public List<TreasureHunt> getOpenTreasureHunts(){
-        List<TreasureHunt> treasureHunts = TreasureHunt.find.all();
+        List<TreasureHunt> treasureHunts = TreasureHunt.find().all();
         List<TreasureHunt> openTreasureHunts = new ArrayList<>();
         for(TreasureHunt treasureHunt : treasureHunts){
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -134,7 +134,7 @@ public class TreasureHuntController extends Controller {
                 }
                 return badRequest(createTreasureHunt.render(incomingForm, user, destinationMap));
             }
-            for (TreasureHunt tHunt: TreasureHunt.find.all()) {
+            for (TreasureHunt tHunt: TreasureHunt.find().all()) {
                 if (incomingForm.get().getTitle().equals(tHunt.getTitle())) {
                     return badRequest(createTreasureHunt.render(incomingForm.withError("title", "Another Treasure Hunt with the same title exists in the system."), user, destinationMap));
                 }
@@ -159,7 +159,7 @@ public class TreasureHuntController extends Controller {
     public Result editTreasureHunt(Http.Request request, Integer treasureHuntId){
         User user = User.getCurrentUser(request);
         if (user != null) {
-            TreasureHunt treasureHunt = TreasureHunt.find.byId(treasureHuntId);
+            TreasureHunt treasureHunt = TreasureHunt.find().byId(treasureHuntId);
             if (treasureHunt != null) {
                 if (treasureHunt.getUser().getUserid() == (user.getUserid())) {
                     TreasureHuntFormData treasureHuntFormData = new TreasureHuntFormData(treasureHunt.getTitle(),
@@ -189,37 +189,36 @@ public class TreasureHuntController extends Controller {
      */
     public Result editAndSaveTreasureHunt(Http.Request request, Integer treasureHuntId){
         User user = User.getCurrentUser(request);
-        if (user != null) {
-            TreasureHunt treasureHunt = TreasureHunt.find.byId(treasureHuntId);
-            if (treasureHunt != null) {
-                if (treasureHunt.getUser().getUserid() == (user.getUserid())) {
-                    Form<TreasureHuntFormData> incomingForm = formFactory.form(TreasureHuntFormData.class).bindFromRequest(request);
-                    createPublicDestinationsMap();
-                    if (incomingForm.hasErrors()) {
-                        // Change the destination map to keep track of the current destination selected in the select
-                        String destName = incomingForm.rawData().get("destination");
-                        if (destName !=null && !destName.isEmpty()) {
-                            destinationMap.put(destName, true);
-                        }
-                        return badRequest(editTreasureHunt.render(incomingForm, treasureHunt, user, destinationMap));
-                    }
-                    for (TreasureHunt userTreasureHunt: TreasureHunt.find.all()) {
-                        if (incomingForm.get().getTitle().equals(userTreasureHunt.getTitle())
-                                && !incomingForm.get().getTitle().equals(treasureHunt.getTitle())) {
-                            return badRequest(editTreasureHunt.render(incomingForm.withError("title", "Another Treasure Hunt with the same title exists in the system."), treasureHunt, user, destinationMap));
-                        }
-                    }
-                    TreasureHuntFormData edited = incomingForm.get();
-                    treasureHuntFactory.editTreasureHunt(user, treasureHuntId, edited);
-                    return redirect(routes.TreasureHuntController.indexTreasureHunt());
-                } else {
-                    return unauthorized("This Treasure Hunt does not belong to you.");
-                }
-            } else {
-                return notFound("The given Treasure Hunt doesn't exist.");
+        if (user == null) {
+            return redirect(routes.UserController.userindex());
+        }
+        TreasureHunt treasureHunt = TreasureHunt.find().byId(treasureHuntId);
+        if (treasureHunt == null) {
+            return notFound("The given Treasure Hunt doesn't exist.");
+        }
+
+        if (treasureHunt.getUser().getUserid() != (user.getUserid())) {
+            return unauthorized("This Treasure Hunt does not belong to you.");
+        }
+        Form<TreasureHuntFormData> incomingForm = formFactory.form(TreasureHuntFormData.class).bindFromRequest(request);
+        createPublicDestinationsMap();
+        if (incomingForm.hasErrors()) {
+            // Change the destination map to keep track of the current destination selected in the select
+            String destName = incomingForm.rawData().get("destination");
+            if (destName !=null && !destName.isEmpty()) {
+                destinationMap.put(destName, true);
+            }
+            return badRequest(editTreasureHunt.render(incomingForm, treasureHunt, user, destinationMap));
+        }
+        for (TreasureHunt userTreasureHunt: TreasureHunt.find().all()) {
+            if (incomingForm.get().getTitle().equals(userTreasureHunt.getTitle())
+                    && !incomingForm.get().getTitle().equals(treasureHunt.getTitle())) {
+                return badRequest(editTreasureHunt.render(incomingForm.withError("title", "Another Treasure Hunt with the same title exists in the system."), treasureHunt, user, destinationMap));
             }
         }
-        return redirect(routes.UserController.userindex());
+        TreasureHuntFormData edited = incomingForm.get();
+        treasureHuntFactory.editTreasureHunt(user, treasureHuntId, edited);
+        return redirect(routes.TreasureHuntController.indexTreasureHunt());
     }
 
     /**

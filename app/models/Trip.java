@@ -15,39 +15,41 @@ import java.util.List;
 @Entity
 public class Trip extends Model {
 
+    @Id
+    private Integer tripid;
+
+    private String tripName;
+
+    @Column(columnDefinition = "integer default 0")
+    private Integer removedVisits;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "trip")
+    private List<Visit> visits;
+
+    private static Finder<Integer,Trip> find = new Finder<>(Trip.class);
+
+    private boolean isPublic = true;
+
+    @JsonIgnore
+    @ManyToOne
+    @JoinColumn(name = "user", referencedColumnName = "userid")
+    private User user;
+
+
+
+    /**
+     * Default Constructor
+     */
+    public Trip(){
+    }
+
     public Trip(Trip trip, List<Visit> visits) {
         this.tripName = trip.getTripName();
         this.removedVisits = trip.getRemovedVisits();
         this.isPublic = trip.getIsPublic();
         this.user = trip.getUser();
         this.visits = visits;
-    }
-
-    @Id
-    public Integer tripid;
-
-    public String tripName;
-
-    @Column(columnDefinition = "integer default 0")
-    public Integer removedVisits;
-
-    @JsonIgnore
-    @OneToMany(mappedBy = "trip")
-    public List<Visit> visits;
-
-    public static Finder<Integer,Trip> find = new Finder<>(Trip.class);
-
-    public boolean isPublic = true;
-
-    @JsonIgnore
-    @ManyToOne
-    @JoinColumn(name = "user", referencedColumnName = "userid")
-    public User user;
-
-    /**
-     * Default Constructor
-     */
-    public Trip(){
     }
 
     /**
@@ -63,6 +65,16 @@ public class Trip extends Model {
         this.user = user;
         this.visits = new ArrayList<>();
     }
+
+    /**
+     * Gets finder object for Trip.
+     *
+     * @return Finder<Integer,Trip> object
+     */
+    public static Finder<Integer,Trip> find() {
+        return find;
+    }
+
 
     public Integer getTripid() {
         return tripid;

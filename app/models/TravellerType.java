@@ -26,23 +26,36 @@ public class TravellerType extends Model implements Comparable<TravellerType> {
     }
 
     @Id
-    public Integer ttypeid;
+    private Integer ttypeid;
 
     @Column(name="traveller_type_name")
-    public String travellerTypeName;
+    private String travellerTypeName;
+
+    @JsonIgnore
+    @ManyToMany(mappedBy = "travellerTypes")
+    private Set<User> users;
+
+    @JsonIgnore
+    @ManyToMany(mappedBy = "travellerTypes")
+    private Set<Destination> destinations;
+
+    private static Finder<Integer,TravellerType> find = new Finder<>(TravellerType.class);
+
+
+
+    /**
+     * Get's EBeans finder object for TravellerType
+     *
+     * @return A Finder<Integer,TravellerType> object.
+     */
+    public static Finder<Integer,TravellerType> find() {
+        return find;
+    }
 
     @Override
     public String toString() {
         return travellerTypeName;
     }
-
-    @JsonIgnore
-    @ManyToMany(mappedBy = "travellerTypes")
-    public Set<User> users;
-
-    @JsonIgnore
-    @ManyToMany(mappedBy = "travellerTypes")
-    public Set<Destination> destinations;
 
     public Integer getTtypeid() {
         return ttypeid;
@@ -68,7 +81,6 @@ public class TravellerType extends Model implements Comparable<TravellerType> {
         this.users = users;
     }
 
-    public static Finder<Integer,TravellerType> find = new Finder<>(TravellerType.class);
 
     /**
      * Method to check equal traveller type objects

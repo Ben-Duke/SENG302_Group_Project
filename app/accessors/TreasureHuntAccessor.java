@@ -20,21 +20,21 @@ public class TreasureHuntAccessor {
      * @return Treasure Hunt
      */
     public static TreasureHunt getById(int id) {
-        return TreasureHunt.find.query().where().eq("thuntid", id).findOne();
+        return TreasureHunt.find().query().where().eq("thuntid", id).findOne();
     }
 
     /** Return all Treasure Hunts
      * @return List of Treasure Hunts
      */
     public static List<TreasureHunt> getAll() {
-        return TreasureHunt.find.all();
+        return TreasureHunt.find().all();
     }
 
     /** Insert a TreasureHunt
      * @param treasureHunt Treasure Hunt to insert into database
      */
     public static void insert(TreasureHunt treasureHunt) {
-        treasureHunt.thuntid = null;
+        treasureHunt.setThuntIdNull();
         treasureHunt.save();
     }
 
@@ -57,7 +57,7 @@ public class TreasureHuntAccessor {
      * @return List of treasure hunts
      */
     public static List<TreasureHunt> getByDestination(Destination destination) {
-        return TreasureHunt.find.query().where().eq(
+        return TreasureHunt.find().query().where().eq(
                 "destination", destination).findList();
     }
 }

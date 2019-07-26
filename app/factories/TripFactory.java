@@ -37,11 +37,11 @@ public class TripFactory {
             int size = list.size();
             for (int i = 0; i < size; i++) {
                 Integer currentVisitId = Integer.parseInt(list.get(i));
-                Visit visit = Visit.find.byId(currentVisitId);
+                Visit visit = Visit.find().byId(currentVisitId);
                 if (visit.getTrip().getUser().getUserid() != userid) {
                     return false;
                 } else if (i < size - 1) {
-                    Visit visit2 = Visit.find.byId(Integer.parseInt(list.get(i + 1)));
+                    Visit visit2 = Visit.find().byId(Integer.parseInt(list.get(i + 1)));
                     if (visit.getVisitName().equalsIgnoreCase(visit2.getVisitName())) {
                         return false;
                     }
@@ -65,12 +65,12 @@ public class TripFactory {
      */
     public int createTrip(TripFormData tripFormData, User user) {
         Trip trip = new Trip();
-        trip.tripName = tripFormData.tripName;
-        trip.user = user;
-        trip.removedVisits = 0;
-        trip.visits = new ArrayList<Visit>();
+        trip.setTripName(tripFormData.tripName);
+        trip.setUser(user);
+        trip.setRemovedVisits(0);
+        trip.setVisits(new ArrayList<Visit>());
         trip.save();
-        return trip.tripid;
+        return trip.getTripid();
     }
 
     /**
@@ -84,18 +84,17 @@ public class TripFactory {
      * True if visit swapping is valid
      */
     public boolean hasRepeatDest(List<Visit> visits, Visit visit, String operation) {
-        if ((operation.equalsIgnoreCase("DELETE")) && (visits.size() > 2)) {
+        if (operation.equalsIgnoreCase("DELETE") && visits.size() > 2) {
             visits.sort(Comparator.comparing(Visit::getVisitOrder));
             Integer index = visits.indexOf(visit);
-            if ((index != 0)
-                && (index + 1 != visits.size())
-                && (visits.get(index - 1).getVisitName().equalsIgnoreCase(visits.get(index + 1).getVisitName()))) {
+            Boolean deleteIndexCheck = index != 0 && (index + 1 != visits.size());
+            if (deleteIndexCheck && visits.get(index - 1).getVisitName().equalsIgnoreCase(visits.get(index + 1).getVisitName())) {
                 return true;
             }
         }
-        if (operation.equalsIgnoreCase("ADD") && (!visits.isEmpty())) {
+        if (operation.equalsIgnoreCase("ADD") && !visits.isEmpty()) {
             visits.sort(Comparator.comparing(Visit::getVisitOrder));
-            if (visits.get(visits.size() - 1).visitName.equalsIgnoreCase(visit.getVisitName())) {
+            if (visits.get(visits.size() - 1).getVisitName().equalsIgnoreCase(visit.getVisitName())) {
                 //probably the wrong status header
                 return true;
             }

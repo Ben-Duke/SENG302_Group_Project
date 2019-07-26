@@ -40,6 +40,6 @@ public class UserPhotoAccessor {
      * @return UserPhoto
      */
     public static UserPhoto getUserPhotoById(int id) {
-        return UserPhoto.find.byId(id);
+        return UserPhoto.find().byId(id);
     }
 }

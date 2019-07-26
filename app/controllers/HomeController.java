@@ -5,7 +5,7 @@ import factories.UserFactory;
 import io.ebean.DuplicateKeyException;
 import models.User;
 import models.UserPhoto;
-import models.commands.Profile.HomePageCommand;
+import models.commands.General.CommandPage;
 import models.commands.Photos.UploadPhotoCommand;
 import org.slf4j.Logger;
 import play.data.FormFactory;
@@ -57,7 +57,7 @@ public class HomeController {
                 return redirect(routes.ProfileController.updateNatPass());
             } else {
                 // Clear command stack
-                user.getCommandManager().setAllowedType(HomePageCommand.class);
+                user.getCommandManager().setAllowedPage(CommandPage.HOME);
 
                 // Load countries from api and update validity of pass/nat/destinations
                 CountryUtils.updateCountries();
@@ -188,7 +188,7 @@ public class HomeController {
     {
         User user = User.getCurrentUser(request);
         if(user != null) {
-            UserPhoto photo = UserPhoto.find.byId(photoId);
+            UserPhoto photo = UserPhoto.find().byId(photoId);
             if(!photo.isPublic() && user.getUserid() != photo.getUser().getUserid() && !user.userIsAdmin()){
                 return unauthorized("Oops, this is a private photo.");
             }
@@ -220,7 +220,7 @@ public class HomeController {
         User user = User.getCurrentUser(httpRequest);
         if(user != null) {
 
-            User otherUser = User.find.byId(userId);
+            User otherUser = User.find().byId(userId);
             if (otherUser != null) {
                 UserPhoto profilePicture = UserFactory.getUserProfilePicture(userId);
                 if (profilePicture != null) {
@@ -250,7 +250,7 @@ public class HomeController {
      */
     public Result setProfilePicture(Http.Request request, Integer photoId) {
         User user = User.getCurrentUser(request);
-        UserPhoto profilePhoto = UserPhoto.find.byId(photoId);
+        UserPhoto profilePhoto = UserPhoto.find().byId(photoId);
         if(user != null) {
             if (profilePhoto != null) {
                 if(user.getUserid() == profilePhoto.getUser().getUserid() || user.userIsAdmin()) {
@@ -277,7 +277,7 @@ public class HomeController {
      */
     public Result makePicturePublic(Http.Request request, Integer photoId, Integer setPublic) {
         User user = User.getCurrentUser(request);
-        UserPhoto photo = UserPhoto.find.byId(photoId);
+        UserPhoto photo = UserPhoto.find().byId(photoId);
         if(user != null) {
             if (photo != null) {
                 if(user.getUserid() == photo.getUser().getUserid() || user.userIsAdmin()) {

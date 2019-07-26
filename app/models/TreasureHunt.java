@@ -14,6 +14,58 @@ import java.util.List;
 public class TreasureHunt extends Model {
 
     /**
+     * The id of the treasure hunt
+     */
+    @Id
+    private Integer thuntid;
+
+    /**
+     * The title of the treasure hunt
+     */
+    private String title;
+
+    /**
+     * The treasure hunt's riddle
+     */
+    private String riddle;
+
+    /**
+     * The destination that is the correct answer to the treasure hunt
+     */
+    @JsonIgnore
+    @ManyToOne
+    private Destination destination;
+
+    /**
+     * The starting date of the treasure hunt
+     */
+    private String startDate;
+
+    /**
+     * The end date of the treasure hunt;
+     */
+    private String endDate;
+
+    /**
+     * The owner of the treasure hunt;
+     */
+    @JsonIgnore
+    @ManyToOne
+    @JoinColumn(name = "user", referencedColumnName = "userid")
+    private User user;
+
+    /**
+     * The users who have made a guess
+     */
+    @JsonIgnore
+    @ManyToMany(mappedBy = "guessedTHunts")
+    private List<User> users;
+
+    private static Finder<Integer,TreasureHunt> find = new Finder<>(TreasureHunt.class);
+
+
+
+    /**
      * Default Constructor
      */
     public TreasureHunt() {}
@@ -48,59 +100,17 @@ public class TreasureHunt extends Model {
                 treasureHunt.getStartDate(),
                 treasureHunt.getEndDate(),
                 treasureHunt.getUser()
-            );
+        );
     }
 
-    /**
-     * The id of the treasure hunt
-     */
-    @Id
-    public Integer thuntid;
 
-    /**
-     * The title of the treasure hunt
-     */
-    public String title;
-
-    /**
-     * The treasure hunt's riddle
-     */
-    public String riddle;
-
-    /**
-     * The destination that is the correct answer to the treasure hunt
-     */
-    @JsonIgnore
-    @ManyToOne
-    public Destination destination;
-
-    /**
-     * The starting date of the treasure hunt
-     */
-    public String startDate;
-
-    /**
-     * The end date of the treasure hunt;
-     */
-    public String endDate;
-
-    /**
-     * The owner of the treasure hunt;
-     */
-    @JsonIgnore
-    @ManyToOne
-    @JoinColumn(name = "user", referencedColumnName = "userid")
-    public User user;
-
-    /**
-     * The users who have made a guess
-     */
-    @JsonIgnore
-    @ManyToMany(mappedBy = "guessedTHunts")
-    public List<User> users;
-
-    public static Finder<Integer,TreasureHunt> find = new Finder<>(TreasureHunt.class);
-
+     /** Gets the Ebeans finder object for TreasureHunt
+     *
+     * @return Finder<Integer,TreasureHunt> object.
+      */
+    public static Finder<Integer,TreasureHunt> find() {
+        return find;
+    }
     public Integer getThuntid() {
         return thuntid;
     }
@@ -210,5 +220,12 @@ public class TreasureHunt extends Model {
         this.startDate = editedTreasureHunt.getStartDate();
         this.endDate = editedTreasureHunt.getEndDate();
         this.users = editedTreasureHunt.getUsers();
+    }
+
+    /**
+     * Sets the TreasureHunt ID to null.
+     */
+    public void setThuntIdNull() {
+        this.thuntid = null;
     }
 }

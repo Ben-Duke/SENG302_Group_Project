@@ -40,18 +40,18 @@ public class TravelPartnerController {
 
         DynamicForm dynamicForm = formFactory.form();
 
-        List<TravellerType> travellerTypes = TravellerType.find.all();
+        List<TravellerType> travellerTypes = TravellerType.find().all();
         List<String> convertedTravellerTypes = new ArrayList<>();
         convertedTravellerTypes.add("");
         for (TravellerType traveller : travellerTypes) {
-            convertedTravellerTypes.add(traveller.travellerTypeName);
+            convertedTravellerTypes.add(traveller.getTravellerTypeName());
         }
 
-        List<Nationality> nationalities = Nationality.find.all();
+        List<Nationality> nationalities = Nationality.find().all();
         List<String> convertedNationalities = new ArrayList<>();
         convertedNationalities.add("");
         for (Nationality nationality : nationalities) {
-            convertedNationalities.add(nationality.nationalityName);
+            convertedNationalities.add(nationality.getNationalityName());
         }
 
         Map<String, Boolean> genderMap = new TreeMap<>();
@@ -96,9 +96,9 @@ public class TravelPartnerController {
                 return new HashSet<>();
 
             } else {
-                List<TravellerType> travellerTypes = TravellerType.find.query().where().eq("travellerTypeName", travellerType).findList();
+                List<TravellerType> travellerTypes = TravellerType.find().query().where().eq("travellerTypeName", travellerType).findList();
                 if (!travellerTypes.isEmpty()) {
-                    return TravellerType.find.byId(travellerTypes.get(0).ttypeid).getUsers();
+                    return TravellerType.find().byId(travellerTypes.get(0).getTtypeid()).getUsers();
                 }
 
             }
@@ -120,9 +120,9 @@ public class TravelPartnerController {
                 return new HashSet<>();
 
             } else {
-                List<Nationality> nationalities = Nationality.find.query().where().eq("nationalityName", nationality).findList();
+                List<Nationality> nationalities = Nationality.find().query().where().eq("nationalityName", nationality).findList();
                 if (nationalities.size() > 0) {
-                    return Nationality.find.byId(nationalities.get(0).natid).getUsers();
+                    return Nationality.find().byId(nationalities.get(0).getNatId()).getUsers();
                 }
             }
         }
@@ -147,7 +147,7 @@ public class TravelPartnerController {
         for (String gender: genderSelections) {
             if (gender != null) {
 
-                List<User> query = User.find.query().where().eq("gender", gender).findList();
+                List<User> query = User.find().query().where().eq("gender", gender).findList();
                 results.addAll(query);
             }
         }
@@ -168,27 +168,24 @@ public class TravelPartnerController {
         String agerange2 = filterForm.get("agerange2");
         Date date1 = null;
         Date date2 = null;
-
-        if ((agerange1 != null && agerange2 != null)
-            && (agerange1.equals("") || agerange2.equals(""))) {
-            try {
-                if (agerange1.equals("") && !agerange2.equals("")) {
-                    date1 = new Date(Long.MIN_VALUE);
-                    date2 = new SimpleDateFormat("yyyy-MM-dd").parse(agerange2);
-                } else if (agerange2.equals("") && !agerange1.equals("")) {
-                    date1 = new SimpleDateFormat("yyyy-MM-dd").parse(agerange1);
-                    date2 = new Date();
-                } else if (!agerange1.equals("") && !agerange2.equals("")) {
-                    date1 = new SimpleDateFormat("yyyy-MM-dd").parse(agerange1);
-                    date2 = new SimpleDateFormat("yyyy-MM-dd").parse(agerange2);
-                }
-            } catch (ParseException e) {
-                //Do Nothing
+        Boolean parseDate = (agerange1 != null && agerange2 != null) && (agerange1.equals("") || agerange2.equals(""));
+        try {
+            if (parseDate && agerange1.equals("") && !agerange2.equals("")) {
+                date1 = new Date(Long.MIN_VALUE);
+                date2 = new SimpleDateFormat("yyyy-MM-dd").parse(agerange2);
+            } else if (parseDate && agerange2.equals("") && !agerange1.equals("")) {
+                date1 = new SimpleDateFormat("yyyy-MM-dd").parse(agerange1);
+                date2 = new Date();
+            } else if (parseDate && !agerange1.equals("") && !agerange2.equals("")) {
+                date1 = new SimpleDateFormat("yyyy-MM-dd").parse(agerange1);
+                date2 = new SimpleDateFormat("yyyy-MM-dd").parse(agerange2);
             }
+        } catch (ParseException e) {
+            //Do Nothing
         }
 
         if(date1 != null && date2 != null){
-            return User.find.query().where().gt("dateOfBirth", date1).lt("dateOfBirth", date2).findSet();
+            return User.find().query().where().gt("dateOfBirth", date1).lt("dateOfBirth", date2).findSet();
         }
         return new HashSet<>();
     }

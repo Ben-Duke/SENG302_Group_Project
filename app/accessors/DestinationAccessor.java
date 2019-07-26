@@ -20,7 +20,7 @@ public class DestinationAccessor {
      * @return Destination
      */
     public static Destination getDestinationById(int id) {
-        return Destination.find.query().where().eq("destid", id).findOne();
+        return Destination.find().query().where().eq("destid", id).findOne();
     }
 
     /**
@@ -30,7 +30,7 @@ public class DestinationAccessor {
      * @return Destination
      */
     public static Destination getPublicDestinationbyName(String name) {
-        return Destination.find.query().where()
+        return Destination.find().query().where()
                 .eq("isPublic", true).and()
                 .eq("destName", name)
                 .findOne();
@@ -41,7 +41,7 @@ public class DestinationAccessor {
      * @return List of destinations
      */
     public static List<Destination> getAllDestinations() {
-        return Destination.find.all();
+        return Destination.find().all();
     }
 
     /** Insert a destination

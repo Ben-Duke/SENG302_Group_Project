@@ -13,10 +13,10 @@ import factories.UserFactory;
 /**A form class used ot validate user inputs on the nationality form page */
 public class NatFormData implements Constraints.Validatable<List<ValidationError>>{
 
-    public static Logger logger = LoggerFactory.getLogger("application");
+    private static Logger logger = LoggerFactory.getLogger("application");
     public int userId = -1;
-    public int natcount;
-    public int nationality;
+    private int natcount;
+    private int nationality;
     public String nationalitydelete;
 
 

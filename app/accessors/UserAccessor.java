@@ -1,6 +1,5 @@
 package accessors;
 
-import io.ebean.Ebean;
 import models.Nationality;
 import models.Passport;
 import models.User;
@@ -23,21 +22,21 @@ public class UserAccessor {
     }
 
     public static Passport getPassport(int id) {
-        return Passport.find.query().where().eq("passid", id).findOne();
+        return Passport.find().query().where().eq("passid", id).findOne();
     }
 
     /** Return a list of all passports
      * @return List of passports
      */
     public static List<Passport> getAllPassports() {
-        return Passport.find.all();
+        return Passport.find().all();
     }
 
     /** Return a list of all nationalities
      * @return List of nationalities
      */
     public static List<Nationality> getAllNationalities() {
-        return Nationality.find.all();
+        return Nationality.find().all();
     }
 
     /**
@@ -50,7 +49,7 @@ public class UserAccessor {
      * @return A List of User objects with a matching email address.
      */
     public static List<User> getUsersFromEmail(String email) {
-        return  User.find.query()
+        return  User.find().query()
                     .where().eq("email", email.toLowerCase()).findList();
     }
 
@@ -60,7 +59,7 @@ public class UserAccessor {
      * @return User
      */
     public static User getById(int id) {
-        return User.find.byId(id);
+        return User.find().byId(id);
     }
 
     /**
@@ -90,13 +89,13 @@ public class UserAccessor {
      * @throws io.ebean.DuplicateKeyException If the user has more than 1
      *          profile picture (should never happen).
      */
-    public static UserPhoto getProfilePhoto(User user) throws io.ebean.DuplicateKeyException {
-        List<UserPhoto> userProfilePhotoList = UserPhoto.find.query()
+    public static UserPhoto getProfilePhoto(User user) {
+        List<UserPhoto> userProfilePhotoList = UserPhoto.find().query()
                 .where().eq("user", user)
                 .and().eq("isProfile", true)
                 .findList();
 
-        if (0 == userProfilePhotoList.size()) {
+        if (userProfilePhotoList.isEmpty()) {
             return null;
         } else if (1 == userProfilePhotoList.size()) {
             return userProfilePhotoList.get(0);

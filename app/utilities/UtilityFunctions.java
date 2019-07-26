@@ -186,7 +186,7 @@ public class UtilityFunctions {
 
         CountryUtils.updateCountries();
 
-        if (Nationality.find.all().isEmpty()) {
+        if (Nationality.find().all().isEmpty()) {
             try {
 
                 if (CountryUtils.getCountries() == null){
@@ -233,7 +233,7 @@ public class UtilityFunctions {
 
         CountryUtils.updateCountries();
 
-        if (Passport.find.all().isEmpty()) {
+        if (Passport.find().all().isEmpty()) {
             if (CountryUtils.getCountries() == null){
 
                 logger.error("Countries have not been loaded. " +
@@ -276,7 +276,7 @@ public class UtilityFunctions {
         types.add("Business Traveller");
         types.add("Backpacker");
         boolean successfullyAddedAllTravvelers = true;
-        if (TravellerType.find.all().isEmpty()) {
+        if (TravellerType.find().all().isEmpty()) {
             for (String type : types) {
                 try {
                     (new TravellerType(type)).save();

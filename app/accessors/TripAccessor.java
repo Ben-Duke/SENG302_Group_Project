@@ -19,14 +19,14 @@ public class TripAccessor {
      * @return Trip
      */
     public static Trip getTripById(int id) {
-        return Trip.find.byId(id);
+        return Trip.find().byId(id);
     }
 
     /** Return a list of all trips
      * @return List of trips
      */
     public static List<Trip> getAllTrips() {
-        return Trip.find.all();
+        return Trip.find().all();
     }
 
     /** Insert a trip

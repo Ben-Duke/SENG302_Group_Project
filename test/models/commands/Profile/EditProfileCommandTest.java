@@ -37,7 +37,7 @@ public class EditProfileCommandTest extends BaseTestWithApplicationAndDatabase {
                 "drop table test;"
         )));
         TestDatabaseManager.populateDatabase();
-        User user = User.find.byId(2);
+        User user = User.find().byId(2);
         user.setFName("Logan");
         user.setLName("Paul");
         user.setGender("Female");
@@ -58,7 +58,7 @@ public class EditProfileCommandTest extends BaseTestWithApplicationAndDatabase {
     @Test
     public void testExecute(){
         editProfileCommand.execute();
-        User updatedUser = User.find.byId(2);
+        User updatedUser = User.find().byId(2);
         assertEquals("Logan", updatedUser.getFName());
         assertEquals("Paul", updatedUser.getLName());
         assertEquals("Female", updatedUser.getGender());
@@ -72,7 +72,7 @@ public class EditProfileCommandTest extends BaseTestWithApplicationAndDatabase {
     public void testUndo(){
         testExecute();
         editProfileCommand.undo();
-        User undoUser = User.find.byId(2);
+        User undoUser = User.find().byId(2);
         assertEquals("Gavin", undoUser.getFName());
         assertEquals("Ong", undoUser.getLName());
         assertEquals("Male", undoUser.getGender());
@@ -88,7 +88,7 @@ public class EditProfileCommandTest extends BaseTestWithApplicationAndDatabase {
         editProfileCommand.execute();
         editProfileCommand.undo();
         editProfileCommand.redo();
-        User updatedUser = User.find.byId(2);
+        User updatedUser = User.find().byId(2);
         assertEquals("Logan", updatedUser.getFName());
         assertEquals("Paul", updatedUser.getLName());
         assertEquals("Female", updatedUser.getGender());

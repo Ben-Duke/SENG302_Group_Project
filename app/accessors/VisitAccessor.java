@@ -20,14 +20,14 @@ public class VisitAccessor {
      * @return Visit
      */
     public static Visit getById(int id) {
-        return Visit.find.query().where().eq("visitid", id).findOne();
+        return Visit.find().query().where().eq("visitid", id).findOne();
     }
 
     /** Return a list of all visits in the databse
      * @return List of visits
      */
     public static List<Visit> getAll() {
-        return Visit.find.all();
+        return Visit.find().all();
     }
 
     /** Insert the destination

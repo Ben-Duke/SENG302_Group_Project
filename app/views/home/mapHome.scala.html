@@ -55,13 +55,13 @@
     <div id="control" class="col-md-4">
 
         <ul class="nav nav-tabs nav-justified">
-            <li class="active"><a data-toggle="tab" href="#destinationsTab">Destinations</a></li>
-            <li><a data-toggle="tab" href="#tripsTab">Trips</a></li>
+            <li class="active"><a data-toggle="tab" href="#tripsTab">Trips</a></li>
+            <li><a data-toggle="tab" href="#destinationsTab">Destinations</a></li>
         </ul>
 
         <div class="tab-content">
 
-            <div id="destinationsTab" class="tab-content tab-pane fade in active">
+            <div id="destinationsTab" class="tab-content tab-pane fade">
 
                 <div id="singleDestinationContainer">
 
@@ -130,25 +130,38 @@
                 </div>
                 <hr>
                 <div id="destinationList">
-
+                    <h4 style="text-align: left">My Destinations</h4>
                     <div class="list-group">
                         @for(destination <- destinations) {
-
-                            <a onclick="displayDestination(@destination.getDestId(),
-                                    @destination.getLatitude(),
-                                    @destination.getLongitude())"
-                            class="list-group-item list-group-item-action">
-                            @destination.getDestName()
-                            </a>
+                            @if(!destination.getIsPublic()) {
+                                <a onclick="displayDestination(@destination.getDestId(),
+                                        @destination.getLatitude(),
+                                        @destination.getLongitude())"
+                                class="list-group-item list-group-item-action">
+                                @destination.getDestName()
+                                </a>
+                            }
                         }
-                        <a></a>
+                    </div>
+                    <h4 style="text-align: left">Public Destinations</h4>
+                    <div class="list-group">
+                        @for(destination <- destinations) {
+                            @if(destination.getIsPublic()) {
+                                <a onclick="displayDestination(@destination.getDestId(),
+                                        @destination.getLatitude(),
+                                        @destination.getLongitude())"
+                                    class="list-group-item list-group-item-action">
+                                @destination.getDestName() | @destination.getDestType() | @destination.getCountry()
+                                </a>
+                            }
+                        }
                     </div>
 
                 </div>
 
             </div>
 
-            <div id="tripsTab" class="tab-content tab-pane fade">
+            <div id="tripsTab" class="tab-content tab-pane fade in active">
 
                 <div id="singleTrip" class="singleTrip">
 
@@ -217,7 +230,7 @@
 
     <script src="@routes.Assets.at("js/map/map.js")"></script>
     <script src="@routes.Assets.at("js/destination/destinationMap.js")"></script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC9Z1g5p2rQtS0nHgDudzCCXVl2HJl3NPI&callback=initMap&libraries=drawing,places"
+    <script src="https://maps.googleapis.com/maps/api/js?key=&callback=initMap&libraries=drawing,places"
     async defer></script>
 
 

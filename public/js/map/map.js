@@ -173,60 +173,6 @@ function initPlacesAutocomplete() {
 
 
 
-// let controlContent = document.getElementById('controlContent');
-//
-// function updateTripsTab(){
-//     controlContent.innerHTML = '';
-//     for(let i = 0; i < visitArray.length; i ++){
-//         let visitDiv = document.createElement('div');
-//         visitDiv.innerText = visitArray[i]['name'];
-//         visitDiv.appendChild(document.createElement('br'));
-//
-//         //Arrival date code
-//         let arrivalDateDiv = document.createElement('div');
-//         arrivalDateDiv.appendChild(document.createTextNode("Arrival Date"));
-//         arrivalDateDiv.appendChild(document.createElement('br'));
-//         visitDiv.appendChild(arrivalDateDiv);
-//         arrivalDateDiv.setAttribute('style', 'float:left; padding-left:10%');
-//
-//         let arrivalDate = document.createElement('input');
-//         arrivalDate.setAttribute('id', i+"arrivalId");
-//         arrivalDate.setAttribute('type', "date");
-//         arrivalDate.setAttribute('onblur', `
-//         let id = this.id.slice(0,1);
-//         visitArray[id].arrivalDate = this.value;
-//         console.log(visitArray[id])`);
-//         arrivalDate.value =  visitArray[i]['arrivalDate'];
-//         arrivalDateDiv.appendChild(arrivalDate);
-//
-//         //Departure date code
-//         let departureDiv = document.createElement('div');
-//         departureDiv.appendChild(document.createTextNode("Departure Date"))
-//         visitDiv.appendChild(departureDiv);
-//         departureDiv.setAttribute('style', 'display: inline-block')
-//         departureDiv.appendChild(document.createElement('br'));
-//         let departureDate = document.createElement('input');
-//         departureDate.setAttribute('id', i+"departureId");
-//         departureDate.setAttribute('onblur', `
-//         let id = this.id.slice(0,1);
-//         visitArray[id].departureDate = this.value;
-//         console.log(visitArray[id])`);
-//         departureDate.setAttribute('type', "date");
-//         departureDate.value = visitArray[i]['departureDate'];
-//         departureDiv.appendChild(departureDate);
-//         visitDiv.appendChild(departureDiv);
-//
-//         //Delete button code
-//         let deleteButton = document.createElement('button');
-//         deleteButton.innerText = "X"
-//         deleteButton.setAttribute('style', 'background-color:red; text-color:white; color: white; display: inline-block');
-//         deleteButton.setAttribute('id', i+"deleteId");
-//         deleteButton.setAttribute('onclick','visitArray.pop(this.id.slice(0,1)); console.log(`deleted item`); updateTripsTab()');
-//         visitDiv.appendChild(deleteButton);
-//         controlContent.appendChild(visitDiv);
-//     }
-// }
-
 
 function sendDeleteVisitRequest(url, visitId) {
     console.log(url);

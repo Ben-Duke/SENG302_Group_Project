@@ -311,9 +311,9 @@ DELETE /destinations/:destId/tags                               controllers.TagC
 PUT /tags/search                                            controllers.TagController.searchTags(request : Request)
 
 # Tag page
-GET /tags/:tagName                                            controllers.TagController.displayTags(request: Request, tagName: String)
+GET /tags/display/:tagName                                            controllers.TagController.displayTags(request: Request, tagName: String)
 
-GET /tags/taggedItems/:tagId                                  controllers.TagController.getTagDetails(request: Request, tagId: Integer)
+GET /tags/items/:tagId                                  controllers.TagController.getTagDetails(request: Request, tagId: Integer)
 
 
 

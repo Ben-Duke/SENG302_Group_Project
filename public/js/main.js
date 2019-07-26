@@ -9,7 +9,7 @@ function addTagSearchTagListeners() {
     function redirectToTagPage(tag, datalist) {
         for (let dataTag of datalist.options) {
             if (dataTag.value.toUpperCase() === tag.toUpperCase()) {
-                window.location.href = "/tags/" + tag.toLowerCase();
+                window.location.href = "/tags/display/" + tag.toLowerCase();
             }
         }
     }

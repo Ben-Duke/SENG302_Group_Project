@@ -25,6 +25,7 @@ import play.mvc.Http;
 import play.mvc.Result;
 import play.test.Helpers;
 import play.test.WithApplication;
+import testhelpers.BaseCumumberTestHelper;
 import testhelpers.BaseTestWithApplicationAndDatabase;
 import utilities.TestDatabaseManager;
 
@@ -38,40 +39,7 @@ import java.util.Map;
 import static org.junit.Assert.*;
 import static play.mvc.Http.Status.*;
 
-public class TreasureHuntSteps extends BaseTestWithApplicationAndDatabase {
-
-    private TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
-
-    @Inject
-    private Application application;
-
-    @Override
-    protected Application provideApplication() {
-        return new GuiceApplicationBuilder().build();
-    }
-
-    @Before
-    public void setup(){
-        Module testModule = new AbstractModule() {
-            @Override
-            public void configure() {
-            }
-        };
-        GuiceApplicationBuilder builder = new GuiceApplicationLoader()
-                .builder(new ApplicationLoader.Context(Environment.simple()))
-                .overrides(testModule);
-        Guice.createInjector(builder.applicationModule()).injectMembers(this);
-        Helpers.start(application);
-        ApplicationManager.setIsTest(true);
-        ApplicationManager.setUserPhotoPath("/test/resources/test_photos/user_");
-        testDatabaseManager.populateDatabase();
-    }
-
-    @After
-    public void tearDown(){
-        Helpers.stop(application);
-    }
-
+public class TreasureHuntSteps extends BaseCumumberTestHelper {
 
     @Given("There are no treasure hunts with the title {string}")
     public void thereAreNoTreasureHuntsWithTheTitle(String string) {
@@ -90,7 +58,7 @@ public class TreasureHuntSteps extends BaseTestWithApplicationAndDatabase {
         formData.put("endDate", string5);
         Http.RequestBuilder fakeRequest = Helpers.fakeRequest().bodyForm(formData).method(Helpers.POST).uri("/users/treasurehunts/save").session("connected", "2");
         fakeRequest = CSRFTokenHelper.addCSRFToken(fakeRequest);
-        Result result = Helpers.route(application, fakeRequest);
+        Result result = Helpers.route(BaseCumumberTestHelper.getApplication(), fakeRequest);
         //User should be redirected to the index treasure hunts page
         assertEquals(SEE_OTHER, result.status());
     }
@@ -126,7 +94,7 @@ public class TreasureHuntSteps extends BaseTestWithApplicationAndDatabase {
         formData.put("endDate", string5);
         Http.RequestBuilder fakeRequest = Helpers.fakeRequest().bodyForm(formData).method(Helpers.POST).uri("/users/treasurehunts/save").session("connected", "2");
         fakeRequest = CSRFTokenHelper.addCSRFToken(fakeRequest);
-        Result result = Helpers.route(application, fakeRequest);
+        Result result = Helpers.route(BaseCumumberTestHelper.getApplication(), fakeRequest);
         //User should be redirected to the index treasure hunts page
         assertEquals(BAD_REQUEST, result.status());
     }
@@ -149,7 +117,7 @@ public class TreasureHuntSteps extends BaseTestWithApplicationAndDatabase {
         formData.put("endDate", string5);
         Http.RequestBuilder fakeRequest = Helpers.fakeRequest().bodyForm(formData).method(Helpers.POST).uri("/users/treasurehunts/edit/save/" + tHuntId).session("connected", "2");
         fakeRequest = CSRFTokenHelper.addCSRFToken(fakeRequest);
-        Result result = Helpers.route(application, fakeRequest);
+        Result result = Helpers.route(BaseCumumberTestHelper.getApplication(), fakeRequest);
         //User should be redirected to the index treasure hunts page
         assertEquals(SEE_OTHER, result.status());
     }
@@ -177,7 +145,7 @@ public class TreasureHuntSteps extends BaseTestWithApplicationAndDatabase {
         formData.put("endDate", "2019-12-25");
         Http.RequestBuilder fakeRequest = Helpers.fakeRequest().bodyForm(formData).method(Helpers.POST).uri("/users/treasurehunts/edit/save/" + tHuntId).session("connected", "2");
         fakeRequest = CSRFTokenHelper.addCSRFToken(fakeRequest);
-        Result result = Helpers.route(application, fakeRequest);
+        Result result = Helpers.route(BaseCumumberTestHelper.getApplication(), fakeRequest);
         //User should be redirected to the index treasure hunts page
         assertEquals(BAD_REQUEST, result.status());
     }
@@ -246,7 +214,7 @@ public class TreasureHuntSteps extends BaseTestWithApplicationAndDatabase {
     public void i_delete_one_my_treasure_hunt_with_the_title(String string) {
         int tHuntId = TreasureHunt.find.query().where().eq("title", string).findOne().getThuntid();
         Http.RequestBuilder fakeRequest = Helpers.fakeRequest().method(Helpers.GET).uri("/users/treasurehunts/delete/" + tHuntId).session("connected", "2");
-        Result result = Helpers.route(application, fakeRequest);
+        Result result = Helpers.route(BaseCumumberTestHelper.getApplication(), fakeRequest);
         //User should be redirected to the index treasure hunts page
         assertEquals(SEE_OTHER, result.status());
     }
@@ -261,7 +229,7 @@ public class TreasureHuntSteps extends BaseTestWithApplicationAndDatabase {
     public void i_try_to_delete_other_users_treasure_hunt_with_the_title(String string) {
         int tHuntId = TreasureHunt.find.query().where().eq("title", string).findOne().getThuntid();
         Http.RequestBuilder fakeRequest = Helpers.fakeRequest().method(Helpers.GET).uri("/users/treasurehunts/delete/" + tHuntId).session("connected", "2");
-        Result result = Helpers.route(application, fakeRequest);
+        Result result = Helpers.route(BaseCumumberTestHelper.getApplication(), fakeRequest);
         //User should be redirected to the index treasure hunts page
         assertEquals(UNAUTHORIZED, result.status());
     }

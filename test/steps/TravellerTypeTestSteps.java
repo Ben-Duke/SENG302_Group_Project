@@ -23,6 +23,7 @@ import play.mvc.Http;
 import play.mvc.Result;
 import play.test.Helpers;
 import play.test.WithApplication;
+import testhelpers.BaseCumumberTestHelper;
 import testhelpers.BaseTestWithApplicationAndDatabase;
 import utilities.TestDatabaseManager;
 
@@ -32,38 +33,7 @@ import java.util.Map;
 
 import static play.test.Helpers.route;
 
-public class TravellerTypeTestSteps extends BaseTestWithApplicationAndDatabase {
-
-    private TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
-
-    @Inject
-    private Application application;
-
-    @Override
-    protected Application provideApplication() {
-        return new GuiceApplicationBuilder().build();
-    }
-
-    @Before
-    public void setup(){
-        Module testModule = new AbstractModule() {
-            @Override
-            public void configure() {
-            }
-        };
-        GuiceApplicationBuilder builder = new GuiceApplicationLoader()
-                .builder(new ApplicationLoader.Context(Environment.simple()))
-                .overrides(testModule);
-        Guice.createInjector(builder.applicationModule()).injectMembers(this);
-        Helpers.start(application);
-        ApplicationManager.setUserPhotoPath("/test/resources/test_photos/user_");
-        testDatabaseManager.populateDatabase();
-    }
-
-    @After
-    public void tearDown(){
-        Helpers.stop(application);
-    }
+public class TravellerTypeTestSteps extends BaseCumumberTestHelper {
 
     @Given("A new user is to register with TravelEA with their email {string} not already taken")
     public void aNewUserIsToRegisterWithTravelEAWithTheirEmailNotAlreadyTaken(String string) {
@@ -91,7 +61,7 @@ public class TravellerTypeTestSteps extends BaseTestWithApplicationAndDatabase {
         formData.put("dob", dob);
 
         Http.RequestBuilder request = Helpers.fakeRequest().bodyForm(formData).method(Helpers.POST).uri("/users/register");
-        Result result = route(application, request);
+        Result result = route(BaseCumumberTestHelper.getApplication(), request);
         int finalSize = User.find.all().size();
 
         Assert.assertEquals(initialSize + 1, finalSize);
@@ -128,7 +98,7 @@ public class TravellerTypeTestSteps extends BaseTestWithApplicationAndDatabase {
         System.out.println(travellerType.getTtypeid().toString());
         formData.put("typeId", travellerType.getTtypeid().toString());
         Http.RequestBuilder fakeRequest = Helpers.fakeRequest().bodyForm(formData).method(Helpers.POST).uri("/users/profile/delete/" + travellerType.getTtypeid()).session("connected", id);
-        Result result = Helpers.route(application, fakeRequest);
+        Result result = Helpers.route(BaseCumumberTestHelper.getApplication(), fakeRequest);
         System.out.println(result.status());
         Assert.assertEquals(1, newUser.getTravellerTypes().size());
 
@@ -142,7 +112,7 @@ public class TravellerTypeTestSteps extends BaseTestWithApplicationAndDatabase {
         Map<String, String> formData = new HashMap<>();
         formData.put("typeId", travellerType.getTtypeid().toString());
         Http.RequestBuilder fakeRequest = Helpers.fakeRequest().bodyForm(formData).method(Helpers.POST).uri("/users/profile/delete/" + travellerType.getTtypeid()).session("connected", id);
-        Result result = Helpers.route(application, fakeRequest);
+        Result result = Helpers.route(BaseCumumberTestHelper.getApplication(), fakeRequest);
         Assert.assertEquals(1, newUser.getTravellerTypes().size());
     }
 

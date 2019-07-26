@@ -23,6 +23,7 @@ import play.mvc.Http;
 import play.mvc.Result;
 import play.test.Helpers;
 import play.test.WithApplication;
+import testhelpers.BaseCumumberTestHelper;
 import testhelpers.BaseTestWithApplicationAndDatabase;
 import utilities.TestDatabaseManager;
 
@@ -37,34 +38,7 @@ import static play.mvc.Http.Status.UNAUTHORIZED;
 import static play.test.Helpers.*;
 
 
-public class DestinationTestSteps extends BaseTestWithApplicationAndDatabase {
-
-    private TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
-
-    @Inject
-    private Application application;
-
-    @Before
-    public void setup(){
-        Module testModule = new AbstractModule() {
-            @Override
-            public void configure() {
-            }
-        };
-        GuiceApplicationBuilder builder = new GuiceApplicationLoader()
-                .builder(new ApplicationLoader.Context(Environment.simple()))
-                .overrides(testModule);
-        Guice.createInjector(builder.applicationModule()).injectMembers(this);
-        Helpers.start(application);
-        ApplicationManager.setIsTest(true);
-        ApplicationManager.setUserPhotoPath("/test/resources/test_photos/user_");
-        testDatabaseManager.populateDatabase();
-    }
-
-    @After
-    public void tearDown(){
-        Helpers.stop(application);
-    }
+public class DestinationTestSteps extends BaseCumumberTestHelper {
 
     @Given("There is a prepopulated database")
     public void thereIsAPrepopulatedDatabase()
@@ -73,9 +47,6 @@ public class DestinationTestSteps extends BaseTestWithApplicationAndDatabase {
         //Assert.assertTrue(true);
         throw new cucumber.api.PendingException();
     }
-
-
-
 
     @Given("I am logged in with user id {string}")
     public void iAmLoggedInWithUserId(String string) {
@@ -97,7 +68,7 @@ public class DestinationTestSteps extends BaseTestWithApplicationAndDatabase {
         formData.put("latitude", string5);
         formData.put("longitude", string6);
         Http.RequestBuilder request = Helpers.fakeRequest().bodyForm(formData).method(POST).uri("/users/destinations/save").session("connected", "2");
-        Result result = route(application, request);
+        Result result = route(BaseCumumberTestHelper.getApplication(), request);
         assertEquals(SEE_OTHER, result.status());
         assertEquals(4, User.find.byId(2).getDestinations().size());
         */
@@ -163,7 +134,7 @@ public class DestinationTestSteps extends BaseTestWithApplicationAndDatabase {
         formData.put("longitude", string6);
         Destination destination = User.find.byId(2).getDestinations().get(3);
         Http.RequestBuilder request = Helpers.fakeRequest().bodyForm(formData).method(POST).uri("/users/destinations/update/" + destination.getDestId()).session("connected", "2");
-        Result result = route(application, request);
+        Result result = route(BaseCumumberTestHelper.getApplication(), request);
         assertEquals(SEE_OTHER, result.status());
     }
 
@@ -187,7 +158,7 @@ public class DestinationTestSteps extends BaseTestWithApplicationAndDatabase {
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(GET)
                 .uri("/users/destinations/delete/" + destination.getDestId()).session("connected", "2");
-        Result result = route(application, request);
+        Result result = route(BaseCumumberTestHelper.getApplication(), request);
         assertEquals(SEE_OTHER, result.status());
     }
 
@@ -207,7 +178,7 @@ public class DestinationTestSteps extends BaseTestWithApplicationAndDatabase {
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(GET)
                 .uri("/users/destinations/public/" + destination.getDestId()).session("connected", "2");
-        Result result = route(application, request);
+        Result result = route(BaseCumumberTestHelper.getApplication(), request);
         assertEquals(SEE_OTHER, result.status());
         destination = Destination.find.query().where().eq("destName", string).findOne();
         assertTrue(destination.getIsPublic());
@@ -292,7 +263,7 @@ public class DestinationTestSteps extends BaseTestWithApplicationAndDatabase {
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(GET)
                 .uri("/users/destinations/public/" + destination.getDestId()).session("connected", "2");
-        Result result = route(application, request);
+        Result result = route(BaseCumumberTestHelper.getApplication(), request);
         assertEquals(SEE_OTHER, result.status());
         destination = Destination.find.query().where().eq("destName", string).findOne();
         assertTrue(destination.getIsPublic());
@@ -310,7 +281,7 @@ public class DestinationTestSteps extends BaseTestWithApplicationAndDatabase {
         formData.put("latitude", string6);
         formData.put("longitude", string7);
         Http.RequestBuilder request = Helpers.fakeRequest().bodyForm(formData).method(POST).uri("/users/destinations/update/" + destination.getDestId()).session("connected", "2");
-        Result result = route(application, request);
+        Result result = route(BaseCumumberTestHelper.getApplication(), request);
         assertEquals(SEE_OTHER, result.status());
     }
 
@@ -337,7 +308,7 @@ public class DestinationTestSteps extends BaseTestWithApplicationAndDatabase {
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(GET)
                 .uri("/users/destinations/public/" + destination.getDestId()).session("connected", "2");
-        Result result = route(application, request);
+        Result result = route(BaseCumumberTestHelper.getApplication(), request);
         assertEquals(SEE_OTHER, result.status());
         destination = Destination.find.query().where().eq("destName", string).findOne();
         assertTrue(destination.getIsPublic());
@@ -345,7 +316,7 @@ public class DestinationTestSteps extends BaseTestWithApplicationAndDatabase {
         request = Helpers.fakeRequest()
                 .method(GET)
                 .uri("/users/trips/table/edit/3/" + destination.getDestId()).session("connected", string2);
-        result = route(application, request);
+        result = route(BaseCumumberTestHelper.getApplication(), request);
         assertEquals(SEE_OTHER, result.status());
         boolean tripContainsDestination = false;
         for(Visit visit : Trip.find.byId(3).getVisits()){
@@ -368,7 +339,7 @@ public class DestinationTestSteps extends BaseTestWithApplicationAndDatabase {
         formData.put("latitude", "50.0");
         formData.put("longitude", "-50.0");
         Http.RequestBuilder request = Helpers.fakeRequest().bodyForm(formData).method(POST).uri("/users/destinations/update/" + destination.getDestId()).session("connected", "2");
-        Result result = route(application, request);
+        Result result = route(BaseCumumberTestHelper.getApplication(), request);
         assertEquals(UNAUTHORIZED, result.status());
     }
 

@@ -27,22 +27,6 @@ public class TestDatabaseManager {
 
     }
 
-    public static Database getTestDatabase() {
-        Database database = Databases.inMemory();
-        Evolutions.applyEvolutions(database, Evolutions.forDefault(new Evolution(
-                1,
-                "create table test (id bigint not null, name varchar(255));",
-                "drop table test;"
-        )));
-
-        return database;
-    }
-
-    public static void shutdownTestDatabase(Database database) {
-        Evolutions.cleanupEvolutions(database);
-        database.shutdown();
-    }
-
     /**
      * Method to populate the database when the application is first started.
      *

@@ -62,7 +62,14 @@ public class UploadPhotoCommand extends HomePageCommand {
     public void undo() {
         File file = new File(userPhoto.getUrlWithPath());
         file.delete();
+        for (Tag tag: tags) {
+            userPhoto.removeTag(tag);
+            TagAccessor.update(tag);
+            UserPhotoAccessor.update(userPhoto);
+
+        }
         UserPhotoAccessor.delete(userPhoto);
+
     }
 
     /**

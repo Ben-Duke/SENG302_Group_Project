@@ -72,6 +72,7 @@ create table media (
   url                           varchar(255),
   user                          integer,
   is_media_public               boolean default false not null,
+  caption                       varchar(255),
   is_profile                    boolean default false not null,
   constraint uq_media_url unique (url),
   constraint pk_media primary key (media_id)

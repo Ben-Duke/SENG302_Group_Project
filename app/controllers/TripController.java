@@ -285,7 +285,7 @@ public class TripController extends Controller {
                 List<Visit> visits = trip.getVisits();
                 Destination destination = Destination.find.byId(destid);
                 if(destination != null) {
-                    if(destination.isPublic || destination.getUser().getUserid() == user.getUserid() || user.userIsAdmin()) {
+                    if(destination.isPublic() || destination.getUser().getUserid() == user.getUserid() || user.userIsAdmin()) {
                         Visit visit = visitfactory.createVisitTable(trip, destination, visitOrder);
                         if (tripFactory.hasRepeatDest(visits, visit, "ADD")) {
                             //flash("danger", "You cannot have repeat destinations!");

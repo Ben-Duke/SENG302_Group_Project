@@ -143,7 +143,7 @@
                             </td>                        <td>@destination.getDistrict</td>
                             <td>@destination.getLatitude</td>
                             <td>@destination.getLongitude</td>
-                            @if(destination.getUser().getUserid() == trip.user.getUserid() || trip.getUser().isAdmin()) {
+                            @if(destination.getUser().getUserid() == trip.getUser.getUserid() || trip.getUser().isAdmin()) {
                                 <td><a href="@routes.DestinationController.editDestination(destination.getDestId())" class="btn btn-primary">
                                     Edit</a></td>
                                 <td><a href="@routes.DestinationController.deleteDestination(destination.getDestId())" class="btn btn-danger">

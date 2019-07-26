@@ -482,7 +482,7 @@
                                     <input type="text" class="captionInput center" id="captionInput-@photo.getPhotoId" name="caption" title="caption" placeholder="No Caption" style="display: none">
                                     <span id="lengthErrorMessage-@photo.getPhotoId" class="center" style="color: red; display: none">This caption is too long</span>
 
-                                    @if(user.userid.eq(photo.user.userid) || user.userIsAdmin) {
+                                    @if(user.userid.eq(photo.getUser.userid) || user.userIsAdmin) {
                                         <button class="btn btn-primary captionButton center" id="editCaptionButton-@photo.getPhotoId" style="padding-left: 100px" onclick="editCaption(@photo.photoId)">
                                             Add Caption
                                         </button>

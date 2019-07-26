@@ -22,16 +22,10 @@ public class UserPhoto extends TaggableModel {
     @Column(name = "url")
     public String url;
 
-    private boolean isPublic;
     private boolean isProfile;
 
     private String caption = "";
 
-    // Creating  the relation to User
-    @JsonIgnore
-    @ManyToOne
-    @JoinColumn(name = "user", referencedColumnName = "userid")
-    public User user;
 
     // Creating  the relation to Destination
     @JsonIgnore
@@ -209,32 +203,6 @@ public class UserPhoto extends TaggableModel {
         this.url = url;
     }
 
-    /**
-     * Method to get whether the photo is public or private.
-     *
-     * @return A boolean, true if photo is public, false otherwise.
-     */
-    public boolean isPublic() {
-        return isPublic;
-    }
-
-    /**
-     * Method to set the privacy of the photo.
-     *
-     * @param aPublic A boolean, true for publicly visible, false for private.
-     */
-    public void setPublic(boolean aPublic) {
-        isPublic = aPublic;
-    }
-
-    /**
-     * Gets the User who owns this photo.
-     *
-     * @return A User object, the owner of the photo.
-     */
-    public User getUser() {
-        return user;
-    }
 
     /**
      * Get the primary photo destinations of the photo

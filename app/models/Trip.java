@@ -35,12 +35,6 @@ public class Trip extends TaggableModel {
 
     public static Finder<Integer,Trip> find = new Finder<>(Trip.class);
 
-    public boolean isPublic = true;
-
-    @JsonIgnore
-    @ManyToOne
-    @JoinColumn(name = "user", referencedColumnName = "userid")
-    public User user;
 
     public static Trip makeInstance(TripFormData formData){
         Trip trip = new Trip();
@@ -82,18 +76,8 @@ public class Trip extends TaggableModel {
         return visits;
     }
 
-    public boolean getIsPublic() { return isPublic; }
-
     public void setVisits(List<Visit> visits) {
         this.visits = visits;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
     }
 
     public List<Visit> getOrderedVisits(){

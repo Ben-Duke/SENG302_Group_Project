@@ -72,21 +72,17 @@ public class TagAccessor {
         return Tag.find.query().where().ilike("name", "%" + searchQuery + "%").findSet();
     }
 
-    private static Predicate<TaggableModel> containsTag(Tag tag) {
-        return taggableModel -> taggableModel.getTags().contains(tag);
-    }
-
-    public static Set<TaggableModel> searchTaggedDestination(Tag tag) {
-
-
-        Set<TaggableModel> taggables = new HashSet<>();
-        taggables.addAll(Destination.find.query().findSet());
-        taggables.addAll(UserPhoto.find.query().findSet());
-        taggables.addAll(Trip.find.query().findSet());
-
-        return taggables.stream()
-                .filter(containsTag(tag))
-                .collect(Collectors.toSet());
+    /**
+     * Finds all TaggableModels that are tagged with the given tag
+     * @param tag the tag to match for
+     * @return the set of all taggable models tagged
+     */
+    public static Set<TaggableModel> findTaggedItems(Tag tag) {
+        String tagQuery = "tags.tagId";
+        Set<TaggableModel> taggedItems = new HashSet<>(Destination.find.query().where().eq(tagQuery, tag.getTagId()).findSet());
+        taggedItems.addAll(UserPhoto.find.query().where().eq(tagQuery, tag.getTagId()).findSet());
+        taggedItems.addAll(Trip.find.query().where().eq(tagQuery, tag.getTagId()).findSet());
+        return taggedItems;
     }
 
 }

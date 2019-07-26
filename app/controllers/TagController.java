@@ -10,6 +10,8 @@ import play.mvc.Http;
 import play.mvc.Result;
 import views.html.users.tag.displayTag;
 import java.util.Set;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import static play.mvc.Results.*;
 
@@ -76,12 +78,17 @@ public class TagController {
         User user = User.getCurrentUser(request);
         if (user == null) {
             return unauthorized();
-        } else {
-           Tag newTag = TagAccessor.getTagById(tagId);
-           Set<TaggableModel> taggables = TagAccessor.searchTaggedDestination(newTag);
-
-           return ok(Json.toJson(taggables));
         }
+        Tag tag = TagAccessor.getTagById(tagId);
+        Set<TaggableModel> taggedItems = TagAccessor.findTaggedItems(tag);
+        if (!user.userIsAdmin()) {
+            Predicate<TaggableModel> accessFilter = item -> item.isPublic() || item.getUser().equals(user);
+            taggedItems = taggedItems.stream().
+                    filter(accessFilter)
+                    .collect(Collectors.toSet());
+        }
+
+        return ok(Json.toJson(taggedItems));
     }
 
     /**

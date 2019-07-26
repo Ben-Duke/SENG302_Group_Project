@@ -18,17 +18,12 @@ public class Destination extends TaggableModel {
     public boolean isCountryValid;
     public double latitude;
     public double longitude;
-    public boolean isPublic;
 
 
 
     @ManyToOne
     public UserPhoto primaryPhoto;
 
-    @JsonIgnore
-    @ManyToOne
-    @JoinColumn(name = "user", referencedColumnName = "userid")
-    public User user;
 
     @JsonIgnore
     @OneToMany(mappedBy = "destination")
@@ -141,7 +136,6 @@ public class Destination extends TaggableModel {
     public String getCountry() { return country; }
     public double getLatitude() { return latitude; }
     public double getLongitude() { return longitude; }
-    public boolean getIsPublic() { return isPublic; }
     public List<UserPhoto> getUserPhotos() {
         return userPhotos;
     }
@@ -153,9 +147,6 @@ public class Destination extends TaggableModel {
     }
     public boolean getIsCountryValid() { return isCountryValid; }
 
-
-
-    public User getUser() { return user; }
 
     public Set<TravellerType> getTravellerTypes() {
         return travellerTypes;
@@ -169,7 +160,6 @@ public class Destination extends TaggableModel {
     public void setCountry(String country) { this.country = country; }
     public void setLatitude(double latitude) { this.latitude = latitude; }
     public void setLongitude(double longitude) { this.longitude = longitude; }
-    public void setIsPublic(boolean isPublic) { this.isPublic = isPublic; }
     public void setTravellerTypes(Set<TravellerType> travellerTypes) {
         this.travellerTypes = travellerTypes;
     }
@@ -186,7 +176,6 @@ public class Destination extends TaggableModel {
         this.isCountryValid = isCountryValid;
     }
 
-    public void setUser(User user) { this.user = user; }
 
     public void deleteTravellerType(TravellerType travellerType){
         this.travellerTypes.remove(travellerType);

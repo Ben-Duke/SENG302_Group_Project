@@ -13,6 +13,8 @@ create table admin (
 
 create table destination (
   destid                        integer auto_increment not null,
+  user                          integer,
+  is_public                     boolean default false not null,
   dest_name                     varchar(255),
   dest_type                     varchar(255),
   district                      varchar(255),
@@ -20,9 +22,7 @@ create table destination (
   is_country_valid              boolean default false not null,
   latitude                      double not null,
   longitude                     double not null,
-  is_public                     boolean default false not null,
   primary_photo_photo_id        integer,
-  user                          integer,
   constraint pk_destination primary key (destid)
 );
 
@@ -107,10 +107,10 @@ create table treasure_hunt (
 
 create table trip (
   tripid                        integer auto_increment not null,
+  user                          integer,
+  is_public                     boolean default false not null,
   trip_name                     varchar(255),
   removed_visits                integer default 0,
-  is_public                     boolean default false not null,
-  user                          integer,
   constraint pk_trip primary key (tripid)
 );
 
@@ -161,11 +161,11 @@ create table user_treasure_hunt (
 
 create table user_photo (
   photo_id                      integer auto_increment not null,
-  url                           varchar(255),
+  user                          integer,
   is_public                     boolean default false not null,
+  url                           varchar(255),
   is_profile                    boolean default false not null,
   caption                       varchar(255),
-  user                          integer,
   constraint uq_user_photo_url unique (url),
   constraint pk_user_photo primary key (photo_id)
 );
@@ -193,11 +193,11 @@ create table visit (
   constraint pk_visit primary key (visitid)
 );
 
-create index ix_destination_primary_photo_photo_id on destination (primary_photo_photo_id);
-alter table destination add constraint fk_destination_primary_photo_photo_id foreign key (primary_photo_photo_id) references user_photo (photo_id) on delete restrict on update restrict;
-
 create index ix_destination_user on destination (user);
 alter table destination add constraint fk_destination_user foreign key (user) references user (userid) on delete restrict on update restrict;
+
+create index ix_destination_primary_photo_photo_id on destination (primary_photo_photo_id);
+alter table destination add constraint fk_destination_primary_photo_photo_id foreign key (primary_photo_photo_id) references user_photo (photo_id) on delete restrict on update restrict;
 
 create index ix_destination_tag_destination on destination_tag (destination_destid);
 alter table destination_tag add constraint fk_destination_tag_destination foreign key (destination_destid) references destination (destid) on delete restrict on update restrict;
@@ -292,11 +292,11 @@ alter table visit add constraint fk_visit_trip foreign key (trip) references tri
 
 # --- !Downs
 
-alter table destination drop constraint if exists fk_destination_primary_photo_photo_id;
-drop index if exists ix_destination_primary_photo_photo_id;
-
 alter table destination drop constraint if exists fk_destination_user;
 drop index if exists ix_destination_user;
+
+alter table destination drop constraint if exists fk_destination_primary_photo_photo_id;
+drop index if exists ix_destination_primary_photo_photo_id;
 
 alter table destination_tag drop constraint if exists fk_destination_tag_destination;
 drop index if exists ix_destination_tag_destination;

@@ -29,6 +29,8 @@ import views.html.home.mapHome;
 import views.html.users.trip.*;
 
 import javax.inject.Inject;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -380,30 +382,94 @@ public class TripController extends Controller {
 
     }
 
+
+    /**
+     * Gets new dates from request. Validates the dates. Updates the dates using the command.
+     * @param request
+     * @param visitId the id of the visit that is being editted
+     * @return
+     */
     public Result updateVisitDates(Http.Request request, Integer visitId) {
-        /*
         User user = User.getCurrentUser(request);
         if (user == null) { return redirect(routes.UserController.userindex()); }
 
         Visit visit = VisitAccessor.getById(visitId);
-        if (visit == null) { return redirect(routes.UserController.userindex()); }
+        if (visit == null) { return badRequest("Visit does not exits"); }
 
         Trip trip = visit.getTrip();
         if (!trip.isUserOwner(user.getUserid())) { return unauthorized(); }
 
-        String dateString = new ObjectMapper().convertValue(request.body().asJson(), String.class);
-        System.out.println(dateString);
+        String arrivalDateString = new ObjectMapper().convertValue(request.body().asJson().get("arrival"), String.class);
+        String departureDateString = new ObjectMapper().convertValue(request.body().asJson().get("departure"), String.class);
 
-        if ((!dateString.isEmpty())) {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            LocalDate arrivalDate = LocalDate.parse(dateString, formatter);
-            if ((arrivalDate.compareTo(visit.getDeparture())) > 0) {
-                System.out.println("error date");
-                errors.add(new ValidationError("arrival", "Please provide an arrival date after the departure date"));
-                errors.add(new ValidationError("departure", "Please provide an arrival date after the departure date"));
+
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        Date arrivalDate = null;
+        Date departureDate = null;
+        Date existingArrivalDate;
+        Date existingDepartureDate;
+
+        try {
+            if (!arrivalDateString.isEmpty()) {
+                arrivalDate = format.parse(arrivalDateString);
             }
+            if (!departureDateString.isEmpty()) {
+                departureDate = format.parse(departureDateString);
+            }
+
+            if (visit.getArrival() != null) {
+                existingArrivalDate = format.parse(visit.getArrival());
+            }
+            else {
+                existingArrivalDate = format.parse("0000-01-01");
+            }
+            if (visit.getDeparture() != null) {
+                existingDepartureDate = format.parse(visit.getDeparture());
+            } else {
+                existingDepartureDate = format.parse("9999-12-31");
+            }
+
+        } catch (ParseException e) {
+            return badRequest();
         }
-        */
+
+
+
+        if (!arrivalDateString.isEmpty() && !departureDateString.isEmpty()) {
+            if ((arrivalDate.compareTo(departureDate) <= 0)) {
+
+                visit.setArrival(arrivalDateString);
+                visit.setDeparture(departureDateString);
+
+                EditVisitCommand command = new EditVisitCommand(visit);
+                user.getCommandManager().executeCommand(command);
+
+            }
+
+
+        } else if (!arrivalDateString.isEmpty()) {
+
+            if ((arrivalDate.compareTo(existingDepartureDate) <= 0)) {
+
+                visit.setArrival(arrivalDateString);
+
+                EditVisitCommand command = new EditVisitCommand(visit);
+                user.getCommandManager().executeCommand(command);
+
+            }
+
+        } else if (!departureDateString.isEmpty()) {
+            if ((existingArrivalDate.compareTo(departureDate)) <= 0) {
+
+                visit.setArrival(arrivalDateString);
+
+                EditVisitCommand command = new EditVisitCommand(visit);
+                user.getCommandManager().executeCommand(command);
+
+            }
+
+        }
+
         return ok();
     }
 

@@ -2,21 +2,23 @@
 
 <style>
         #map {
-            height: calc(100% - 50px);
+            /*height: calc(100% - 50px);*/
+            height: 100%;
             /*position: relative;*/
             /*z-index: 1;*/
 
         }
         #control {
+            /*height: calc(100% - 50px)%;*/
             height: 100%;
             text-align: center;
         }
         #tripsTab {
-            height: 100%;
+            height: calc(100% - 50px)%;
         }
 
         .singleTrip {
-            height: 60%;
+            height: 55%;
             overflow-y: auto;
         }
         #tripList {
@@ -34,7 +36,13 @@
         }
 
         .tripDateInput {
-            width: 147px;
+            height: 25px;
+            width: 120px;
+            font-size: 12px;
+        }
+
+        a {
+            cursor: pointer;
         }
 
 </style>
@@ -162,11 +170,13 @@
                             <tr id="visit_row_@visit.getVisitid()">
                                 <th scope ="row">@visit.getDestination().getDestName()</th>
                                 <td>@visit.getDestination().getDestType()</td>
-                                <td><input class="tripDateInput" type="date" onblur="updateVisitDate(@visit.getVisitid(), this.value)" value="@visit.getArrival()"></td>
-                                <td><input class="tripDateInput" type="date" onblur="" value="@visit.getDeparture()"></td>
+                                <td><input id="arrival_@visit.getVisitid()" class="tripDateInput" type="date"
+                                onblur="updateVisitDate(@visit.getVisitid())" value="@visit.getArrival()"></td>
+                                <td><input id="departure_@visit.getVisitid()" class="tripDateInput" type="date"
+                                onblur="updateVisitDate(@visit.getVisitid())" value="@visit.getDeparture()"></td>
                                 <td onclick="sendDeleteVisitRequest(
                                 '@routes.TripController.deletevisit(visit.getVisitid())',
-                                '@visit.getVisitid()')"><a class="deleteButton" href="">&#10060</a></td>
+                                '@visit.getVisitid()')"><a class="deleteButton">&#10060</a></td>
                             </tr>
                             }
                         </tbody>
@@ -207,7 +217,7 @@
 
     <script src="@routes.Assets.at("js/map/map.js")"></script>
     <script src="@routes.Assets.at("js/destination/destinationMap.js")"></script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDCyC_ON0GgSmJIfPlL7oke5PZgbR8TLbg&callback=initMap&libraries=drawing,places"
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC9Z1g5p2rQtS0nHgDudzCCXVl2HJl3NPI&callback=initMap&libraries=drawing,places"
     async defer></script>
 
 

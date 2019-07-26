@@ -143,7 +143,6 @@ function displayDestination(destId, startLat, startLng) {
     window.globalMap.setCenter(tripStartLatLng);
     window.globalMap.setZoom(9);
 
-
 }
 
 
@@ -251,6 +250,7 @@ function sendDeleteVisitRequest(url, visitId) {
         },
         error: function(xhr, settings){
             if(xhr.status == 400) {
+
             }
             else if(xhr.status == 403){
             }
@@ -261,9 +261,16 @@ function sendDeleteVisitRequest(url, visitId) {
 }
 
 
-function updateVisitDate(visitId, date) {
-    console.log(visitId);
-    console.log(date);
+function updateVisitDate(visitId) {
+
+    let arrival = document.getElementById("arrival_"+visitId).value;
+    let departure = document.getElementById("departure_"+visitId).value;
+
+    let data = {
+        arrival: arrival,
+        departure: departure
+    };
+
     let token =  $('input[name="csrfToken"]').attr('value');
     $.ajaxSetup({
         beforeSend: function(xhr) {
@@ -273,7 +280,7 @@ function updateVisitDate(visitId, date) {
     $.ajax({
         url: updateVisitDateUrl + visitId,
         method: "PATCH",
-        data:JSON.stringify(date),
+        data: JSON.stringify(data),
         contentType : 'application/json',
         success: function(data, textStatus, xhr){
             if(xhr.status == 200) {
@@ -293,7 +300,3 @@ function updateVisitDate(visitId, date) {
         }
     });
 }
-
-$(".deleteButton").on('click', function(e) {
-    e.preventDefault();
-});

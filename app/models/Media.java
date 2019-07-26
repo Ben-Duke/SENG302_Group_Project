@@ -21,7 +21,7 @@ public abstract class Media extends Model {
     @Column(name = "url")
     private String url;
 
-    /** The user who owns the photo */
+    /** The user who owns the media */
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "user", referencedColumnName = "userid")

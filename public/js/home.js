@@ -504,7 +504,7 @@ function deletePhotoRequest(url, photoId, imageId){
     });
     $.ajax({
         url: url,
-        method: "Delete",
+        method: "DELETE",
         data: JSON.stringify({
             photoid: '"' + photoId + '"',
             response: false

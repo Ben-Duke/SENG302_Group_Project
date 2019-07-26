@@ -1,5 +1,6 @@
 package controllers;
 
+import accessors.MediaAccessor;
 import accessors.UserAccessor;
 import factories.UserFactory;
 import formdata.NatFormData;
@@ -42,7 +43,7 @@ public class ProfileController extends Controller {
 
     public Result deletePhoto(Http.Request request, Integer photoId, Boolean userInput){
         UserFactory factory = new UserFactory();
-        UserPhoto photo = UserPhoto.find.byId(photoId);
+        UserPhoto photo = (UserPhoto) MediaAccessor.getMediaById(photoId);
         User user = User.getCurrentUser(request);
         if (photo != null && photo.getIsProfile() && (!userInput)) {
             return badRequest("Is profile picture ask user");
@@ -52,7 +53,7 @@ public class ProfileController extends Controller {
             return badRequest("Failed to delete image");
         }
 
-        DeletePhotoCommand deletePhotoCommand = new DeletePhotoCommand(UserPhoto.find.byId(photoId));
+        DeletePhotoCommand deletePhotoCommand = new DeletePhotoCommand((UserPhoto) MediaAccessor.getMediaById(photoId));
         user.getCommandManager().executeCommand(deletePhotoCommand);
 
         return ok();

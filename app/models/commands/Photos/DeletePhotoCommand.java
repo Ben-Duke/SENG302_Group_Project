@@ -58,7 +58,6 @@ public class DeletePhotoCommand extends UndoableCommand {
         UserFactory factory = new UserFactory();
         factory.deletePhoto(userPhoto.getMediaId());
 
-
     }
 
     /**

@@ -253,12 +253,14 @@ function populateViewDestinationModal()
                             parNode.appendChild(parTextNode);
                             outerDivNode.appendChild(parNode);
                             var ulNode = document.createElement("ul");
+                            ulNode.style="overflow: auto; height: 100px";
                             ulNode.classList.add("list-group");
                             outerDivNode.appendChild(ulNode);
 
                             $.each(data, function(index, element){
-                                var liNode = document.createElement("li");
+                                var liNode = document.createElement("a");
                                 liNode.classList.add("list-group-item");
+                                liNode.href = "/tag"+element['name'];
                                 var liTextNode = document.createTextNode(element["name"]);
                                 liNode.appendChild(liTextNode);
                                 ulNode.appendChild(liNode);

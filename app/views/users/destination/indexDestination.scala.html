@@ -26,6 +26,7 @@
             <thead class="thead-dark">
                 <tr>
                     <th scope="col">Name</th>
+                    <th scope="col">Tags</th>
                     <th scope="col">Type</th>
                     <th scope="col">Country</th>
                     <th scope="col">District</th>
@@ -38,8 +39,6 @@
             <tbody>
             @for(destination <- destinations) {
                 @if(! destination.getIsPublic) {
-                    @*<tr data-toggle="modal" data-id="@destination.getDestId()" data-dest-name="@destination.getDestName()" data-target="#orderModal" class="clickable">*@
-                        <tr data-id="@destination.getDestId" data-dest-name="@destination.getDestName">
                         <th scope ="row">
                             <span id="primary@destination.destid">
                             @if(destination.getPrimaryPhoto != null){
@@ -55,7 +54,14 @@
                                 >
                             </span>
                         </th>
-                        <td>@destination.getDestType</td>
+                    <td>
+                        <ul style="overflow: auto; height: 50px; padding-left: 2px">
+                            @for(tag <- destination.getTags()) {
+                                <p>@tag</p>
+                            }
+                        </ul>
+                    </td>
+                    <td>@destination.getDestType</td>
                         <td>@destination.getCountry
                             @if(!destination.getIsCountryValid()) {
                                 <span class="text-danger">Invalid country</span>
@@ -120,6 +126,7 @@
             <thead class="thead-dark">
                 <tr>
                     <th scope="col">Name</th>
+                    <th scope="col">Tags</th>
                     <th scope="col">Type</th>
                     <th scope="col">Country</th>
                     <th scope="col">District</th>
@@ -147,7 +154,13 @@
                                 >
                             </span>
                         </th>
-                        <td>@destination.getDestType</td>
+                        <td>
+                            <ul style="overflow: auto; height: 50px; padding-left: 2px">
+                            @for(tag <- destination.getTags()) {
+                                <p>@tag</p>
+                            }
+                            </ul>
+                        </td>
                         <td>@destination.getCountry
                             @if(!destination.getIsCountryValid()) {
                                 <span class="text-danger">Invalid country</span>

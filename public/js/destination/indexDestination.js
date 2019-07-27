@@ -260,7 +260,7 @@ function populateViewDestinationModal()
                             $.each(data, function(index, element){
                                 var liNode = document.createElement("a");
                                 liNode.classList.add("list-group-item");
-                                liNode.href = "/tag"+element['name'];
+                                liNode.href = "/tag/"+element['name'];
                                 var liTextNode = document.createTextNode(element["name"]);
                                 liNode.appendChild(liTextNode);
                                 ulNode.appendChild(liNode);
@@ -271,9 +271,6 @@ function populateViewDestinationModal()
                         }
 
 
-                    }
-                    else{
-                        console.log("Got not successful")
                     }
                     },
                 });

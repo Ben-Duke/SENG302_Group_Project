@@ -134,6 +134,15 @@ public class Destination extends Model implements AlbumOwner {
 
     //GETTERS
     public Integer getDestId() { return destid; }
+
+    /**
+     * Weird scala html bug fix.
+     * Without this, tests will give this error for some reason:
+     * Uncaught error from thread [application-akka.actor.default-dispatcher-4]:
+     * models.Destination.getDestid()Ljava/lang/Integer;
+     * @return the destination id
+     */
+    public Integer getDestid() { return destid; }
     public String getDestName() { return destName; }
     public String getDestType() { return destType; }
     public String getDistrict() { return district; }
@@ -284,5 +293,16 @@ public class Destination extends Model implements AlbumOwner {
     @Override
     public List<Album> getAlbums() {
         return albums;
+    }
+
+    /**
+     * Returns the first album in the destination's list of albums.
+     * Currently, a destination should only have one album so this should return
+     * the only album the destination has.
+     * @return the destination's album
+     */
+    @JsonIgnore
+    public Album getPrimaryAlbum() {
+        return albums.get(0);
     }
 }

@@ -26,8 +26,8 @@ public class LinkPhotoDestinationCommand extends DestinationPageCommand  {
      * Link the destination to the photo
      */
     public void execute() {
-        destination.getAlbums().get(0).addMedia(photo);
-        AlbumAccessor.update(destination.getAlbums().get(0));
+        destination.getPrimaryAlbum().addMedia(photo);
+        AlbumAccessor.update(destination.getPrimaryAlbum());
         //photo.addDestination(destination);
         //UserPhotoAccessor.update(photo);
     }
@@ -38,15 +38,15 @@ public class LinkPhotoDestinationCommand extends DestinationPageCommand  {
      * was unlinked.
      */
     public void undo() {
-        destination.getAlbums().get(0).removeMedia(photo);
-        AlbumAccessor.update(destination.getAlbums().get(0));
+        destination.getPrimaryAlbum().removeMedia(photo);
+        AlbumAccessor.update(destination.getPrimaryAlbum());
         //photo.removeDestination(destination);
         //UserPhotoAccessor.update(photo);
-        if ((destination.getAlbums().get(0).getPrimaryPhoto() != null) &&
-                (photo.getMediaId() == destination.getAlbums().get(0)
+        if ((destination.getPrimaryAlbum().getPrimaryPhoto() != null) &&
+                (photo.getMediaId() == destination.getPrimaryAlbum()
                         .getPrimaryPhoto().getMediaId())) {
-            destination.getAlbums().get(0).setPrimaryPhoto(null);
-            AlbumAccessor.update(destination.getAlbums().get(0));
+            destination.getPrimaryAlbum().setPrimaryPhoto(null);
+            AlbumAccessor.update(destination.getPrimaryAlbum());
         }
     }
 

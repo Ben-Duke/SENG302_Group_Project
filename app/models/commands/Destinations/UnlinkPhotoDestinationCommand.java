@@ -28,13 +28,13 @@ public class UnlinkPhotoDestinationCommand extends DestinationPageCommand  {
      * was unlinked.
      */
     public void execute() {
-        destination.getAlbums().get(0).removeMedia(photo);
-        AlbumAccessor.update(destination.getAlbums().get(0));
-        if ((destination.getAlbums().get(0).getPrimaryPhoto() != null) &&
+        destination.getPrimaryAlbum().removeMedia(photo);
+        AlbumAccessor.update(destination.getPrimaryAlbum());
+        if ((destination.getPrimaryAlbum().getPrimaryPhoto() != null) &&
                 (photo.getMediaId() ==
-                        destination.getAlbums().get(0).getPrimaryPhoto().getMediaId())) {
-            destination.getAlbums().get(0).setPrimaryPhoto(null);
-            AlbumAccessor.update(destination.getAlbums().get(0));
+                        destination.getPrimaryAlbum().getPrimaryPhoto().getMediaId())) {
+            destination.getPrimaryAlbum().setPrimaryPhoto(null);
+            AlbumAccessor.update(destination.getPrimaryAlbum());
         }
     }
 
@@ -42,8 +42,8 @@ public class UnlinkPhotoDestinationCommand extends DestinationPageCommand  {
      * Relink the destination and photo together.
      */
     public void undo() {
-        destination.getAlbums().get(0).addMedia(photo);
-        AlbumAccessor.update(destination.getAlbums().get(0));
+        destination.getPrimaryAlbum().addMedia(photo);
+        AlbumAccessor.update(destination.getPrimaryAlbum());
     }
 
     /**

@@ -672,7 +672,7 @@ public class DestinationController extends Controller {
                 if (photo.getUser().getUserid() == user.getUserid()) {
                     //add checks for private destinations here once destinations have been merged in.
                     //You can only link a photo to a private destination if you own the private destination.
-                    if (!photo.getAlbums().contains(destination.getAlbums().get(0))) {
+                    if (!photo.getAlbums().contains(destination.getPrimaryAlbum())) {
 
                         LinkPhotoDestinationCommand cmd = new LinkPhotoDestinationCommand(photo, destination);
                         user.getCommandManager().executeCommand(cmd);
@@ -737,7 +737,7 @@ public class DestinationController extends Controller {
                 return unauthorized("You cannot unlink this photo from this destination as neither of those belong to you.");
             }
         }
-        if (!photo.getAlbums().contains(destination.getAlbums().get(0)))
+        if (!photo.getAlbums().contains(destination.getPrimaryAlbum()))
             return badRequest("The destination was not linked to this photo");
 
         UnlinkPhotoDestinationCommand cmd = new UnlinkPhotoDestinationCommand(photo, destination);
@@ -773,7 +773,7 @@ public class DestinationController extends Controller {
         User user = User.getCurrentUser(request);
         if(user != null){
             Destination destination = Destination.find.byId(destId);
-            List<Media> photos = Destination.find.byId(destId).getAlbums().get(0).getMedia();;
+            List<Media> photos = Destination.find.byId(destId).getPrimaryAlbum().getMedia();;
             if(destination.getIsPublic() && !user.userIsAdmin()) {
                 DestinationFactory destinationFactory = new DestinationFactory();
                 destinationFactory.removePrivateMedia(photos, user.getUserid());
@@ -862,8 +862,8 @@ public class DestinationController extends Controller {
                         .get(0).getMedia().contains(photo)) || user.userIsAdmin()) {
                     //add checks for private destinations here once destinations have been merged in.
                     //You can only link a photo to a private destination if you own the private destination.
-                    destination.getAlbums().get(0).setPrimaryPhoto(photo);
-                    AlbumAccessor.update(destination.getAlbums().get(0));
+                    destination.getPrimaryAlbum().setPrimaryPhoto(photo);
+                    AlbumAccessor.update(destination.getPrimaryAlbum());
                 } else {
                     return unauthorized("Oops, this is not your photo!");
                 }
@@ -923,7 +923,7 @@ public class DestinationController extends Controller {
                 if (photo.getUser().getUserid() == user.getUserid()) {
                     //add checks for private destinations here once destinations have been merged in.
                     //You can only link a photo to a private destination if you own the private destination.
-                    if (!photo.getAlbums().contains(destination.getAlbums().get(0))) {
+                    if (!photo.getAlbums().contains(destination.getPrimaryAlbum())) {
                         LinkPhotoDestinationCommand cmd = new LinkPhotoDestinationCommand(photo, destination);
                         user.getCommandManager().executeCommand(cmd);
 

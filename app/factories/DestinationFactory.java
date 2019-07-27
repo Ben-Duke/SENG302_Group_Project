@@ -1,6 +1,7 @@
 package factories;
 
 import accessors.AlbumAccessor;
+import accessors.DestinationAccessor;
 import formdata.DestinationFormData;
 import models.*;
 
@@ -32,7 +33,7 @@ public class DestinationFactory {
     public static UserPhoto getPrimaryPicture(int destID) {
         Destination destination = Destination.find.byId(destID);
         if (destination != null) {
-            return destination.getAlbums().get(0).getPrimaryPhoto();
+            return destination.getPrimaryAlbum().getPrimaryPhoto();
         }
        return null;
     }
@@ -182,14 +183,14 @@ public class DestinationFactory {
      * @param destinationTwo the new destination which will hold new photos
      */
     private void movePhotosToAnotherDestination(Destination destinationOne, Destination destinationTwo) {
-        while(!destinationOne.getAlbums().get(0).getMedia().isEmpty()) {
-            Media changingPhoto = destinationOne.getAlbums().get(0).getMedia().get(0);
+        while(!destinationOne.getPrimaryAlbum().getMedia().isEmpty()) {
+            Media changingPhoto = destinationOne.getPrimaryAlbum().getMedia().get(0);
 
-            destinationOne.getAlbums().get(0).removeMedia(changingPhoto);
-            AlbumAccessor.update(destinationOne.getAlbums().get(0));
+            destinationOne.getPrimaryAlbum().removeMedia(changingPhoto);
+            AlbumAccessor.update(destinationOne.getPrimaryAlbum());
 
-            destinationTwo.getAlbums().get(0).addMedia(changingPhoto);
-            AlbumAccessor.update(destinationTwo.getAlbums().get(0));
+            destinationTwo.getPrimaryAlbum().addMedia(changingPhoto);
+            AlbumAccessor.update(destinationTwo.getPrimaryAlbum());
         }
     }
 
@@ -229,7 +230,7 @@ public class DestinationFactory {
                 moveVisitsToAnotherDestination(otherDestination, destination);
                 otherDestination.setVisits(new ArrayList<>());
                 try {
-                    otherDestination.update();
+                    DestinationAccessor.update(otherDestination);
                 } catch (Exception e) {
                     System.out.println("merge destinations 1");
                     e.printStackTrace();
@@ -237,13 +238,14 @@ public class DestinationFactory {
                 List<Visit> visits = Visit.find.query().where().eq("destination", otherDestination).findList();
                 movePhotosToAnotherDestination(otherDestination, destination);
                 try {
-                    otherDestination.delete();
+                    AlbumAccessor.delete(otherDestination.getPrimaryAlbum());
+                    DestinationAccessor.delete(otherDestination);
                 } catch (Exception e) {
                     System.out.println("merge destinations 2");
                     e.printStackTrace();
                 }
                 try {
-                    destination.update();
+                    DestinationAccessor.update(otherDestination);
                 } catch (Exception e) {
                     System.out.println("merge destinations 3");
                     e.printStackTrace();

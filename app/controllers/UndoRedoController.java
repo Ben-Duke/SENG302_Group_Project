@@ -33,7 +33,6 @@ public class UndoRedoController extends Controller {
         if (user == null) {
             return redirect(routes.UserController.userindex());
         }
-        logger.debug("redo happened");
         commandManager = user.getCommandManager();
         String result = commandManager.redo();
 

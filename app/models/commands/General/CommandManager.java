@@ -75,9 +75,7 @@ public class CommandManager extends BaseModel {
     }
 
     public String redo() {
-        logger.debug("Redo happened 2");
         if (!redoStack.isEmpty()) {
-            logger.debug("Redo stack not empty 2");
             UndoableCommand redoCommand = redoStack.pop();
             try {
                 redoCommand.redo();

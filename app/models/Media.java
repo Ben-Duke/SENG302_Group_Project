@@ -7,6 +7,7 @@ import io.ebean.Model;
 
 import javax.persistence.*;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -59,9 +60,30 @@ public abstract class Media extends Model {
     public Integer getMediaId() { return mediaId; }
     public String getUrl() { return url; }
     public boolean getIsPublic() { return isMediaPublic; }
+
+    /**
+     * Required for failing test. If deleted, ViewPublicAlbum test will print:
+     * java.lang.NoSuchMethodError: models.Media.getIsMediaPublic()Z
+     * @return the isMediaPublic attribute
+     */
+    public boolean getIsMediaPublic() { return isMediaPublic; }
     public User getUser() { return user; }
     public List<Album> getAlbums() { return albums; }
     public String getCaption() { return caption; }
+
+    /**
+     * Gets the list of destinations that has an album linked to the photo
+     * @return the list of destinations that has an album linked to the photo
+     */
+    public List<Destination> getDestinations() {
+        List<Destination> destinations = new ArrayList<>();
+        for (Album album : albums) {
+            if (album.getOwner() instanceof Destination) {
+                destinations.add((Destination) album.getOwner());
+            }
+        }
+        return destinations;
+    }
 
     /**
      * Get the url for the media with its full path

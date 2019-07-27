@@ -39,7 +39,7 @@
             @for(destination <- destinations) {
                 @if(! destination.getIsPublic) {
                     @*<tr data-toggle="modal" data-id="@destination.getDestId()" data-dest-name="@destination.getDestName()" data-target="#orderModal" class="clickable">*@
-                    <tr data-id="@destination.getDestId" data-dest-name="@destination.getDestName">
+                        <tr data-id="@destination.getDestId" data-dest-name="@destination.getDestName">
                         <th scope ="row">
                             <span id="primary@destination.destid">
                             @if(destination.getPrimaryPhoto != null){
@@ -223,7 +223,7 @@
 
                                     <div id="coordinates" ></div>
                                     <div id="travellerTypes"></div>
-                                    <div id="destTags"></div>
+                                    <div id="trip-tags-div"></div>
                                     <div class="row">
                                         <button id="removePhotoButton" class="btn btn-danger" >
                                             Remove Photo

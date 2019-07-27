@@ -60,7 +60,7 @@ public class AlbumController extends Controller {
         Album album = AlbumAccessor.getAlbumById(albumId);
         List albumDetails = new ArrayList();
         for(Media media: album.getMedia()) {
-            albumDetails.add(media.getUrl());
+            albumDetails.add(media);
         }
         return ok(Json.toJson(albumDetails));
     }

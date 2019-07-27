@@ -1,5 +1,6 @@
 package factories;
 
+import accessors.MediaAccessor;
 import accessors.UserAccessor;
 import accessors.UserPhotoAccessor;
 import formdata.UpdateUserFormData;
@@ -51,6 +52,12 @@ public class UserFactory {
 
     public void deletePhoto(int photoId){
         UserPhotoAccessor.deleteById(photoId);
+        UserPhoto userPhoto = UserPhotoAccessor.getUserPhotoById(photoId);
+        for (Album album : userPhoto.getAlbums()) {
+            album.removeMedia(userPhoto);
+            album.update();
+        }
+        MediaAccessor.delete(MediaAccessor.getMediaById(photoId));
     }
 
     public static void deleteNatsOnUser(int id, String nationalityId) {

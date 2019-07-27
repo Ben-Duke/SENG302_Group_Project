@@ -47,7 +47,6 @@ public class DeletePhotoCommand extends HomePageCommand {
         UserFactory factory = new UserFactory();
         factory.deletePhoto(userPhoto.getMediaId());
 
-
     }
 
     /**
@@ -90,8 +89,8 @@ public class DeletePhotoCommand extends HomePageCommand {
             album.removeMedia(mediaToRemove);
             AlbumAccessor.update(album);
             if ((album.getPrimaryPhoto() != null) &&
-                    (mediaToRemove.getMediaId() ==
-                            album.getPrimaryPhoto().getMediaId())) {
+                    (mediaToRemove.getMediaId().equals(
+                            album.getPrimaryPhoto().getMediaId()))) {
                 album.setPrimaryPhoto(null);
                 AlbumAccessor.update(album);
             }

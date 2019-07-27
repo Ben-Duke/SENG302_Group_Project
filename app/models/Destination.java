@@ -295,5 +295,6 @@ public class Destination extends TaggableModel {
         this.longitude = newDestination.getLongitude();
         this.latitude = newDestination.getLatitude();
         this.destType = newDestination.getDestType();
+        this.tags = newDestination.getTags();
     }
 }

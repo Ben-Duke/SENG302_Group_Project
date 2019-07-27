@@ -285,11 +285,21 @@ public class DestinationController extends Controller {
             // Save form
             Destination newDestination = formFactory.form(Destination.class).
                     bindFromRequest(request).get();
+            newDestination.setTags(new HashSet<>());
             Destination oldDestination = DestinationAccessor.getDestinationById(destId);
+            Form<DestinationFormData> destinationForm = formFactory.form(DestinationFormData.class).bindFromRequest();
 
             if (oldDestination != null) {
                 if (oldDestination.isUserOwner(user.userid) || user.userIsAdmin()) {
-                    oldDestination.applyEditChanges(newDestination);
+                    if (destinationForm.get().tags != null && destinationForm.get().tags.length() > 0) {
+                        List<String> tags = Arrays.asList(destinationForm.get().tags.split(","));
+                        Set uniqueTags = UtilityFunctions.tagLiteralsAsSet(tags);
+                        newDestination.setTags(uniqueTags);
+                    }
+                    DestinationFactory destinationFactory = new DestinationFactory();
+                    Set<Tag> tagSet = destinationFactory.changedTags(newDestination, destId);
+                    System.out.println(tagSet);
+                    oldDestination.setTags(tagSet);
                     EditDestinationCommand editDestinationCommand =
                             new EditDestinationCommand(oldDestination);
                     user.getCommandManager().executeCommand(editDestinationCommand);
@@ -324,7 +334,6 @@ public class DestinationController extends Controller {
 
             DestinationFactory destinationFactory = new DestinationFactory();
             int userId = user.getUserid();
-
             if (destinationFactory.userHasPrivateDestination(userId, destination)) {
                 flash("privateDestinationExists",
                         "You already have a matching private destination!");

@@ -566,3 +566,26 @@ $('#createDestinationForm').submit(function(eve) {
 });
 
 
+$('#editDestinationForm').submit(function(eve) {
+    //eve.preventDefault();
+    let form = document.getElementById("editDestinationForm");
+
+
+    var formData = new FormData(form);
+
+
+    toAddTagList = Array.from(toAddTagList);
+    let toAddTagString = "";
+    for (var i = 0; i < toAddTagList.length; i++) {
+        toAddTagString += toAddTagList[i] + ",";
+    }
+    if (toAddTagString.length > 0) {
+        toAddTagString = toAddTagString.substring(0, toAddTagString.length - 1);
+    }
+    $("<input />").attr("type", "hidden")
+        .attr("name", "tags")
+        .attr("value", toAddTagString)
+        .appendTo(this);
+
+});
+

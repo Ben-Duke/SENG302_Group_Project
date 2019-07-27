@@ -144,6 +144,7 @@ public class TripController extends Controller {
         }
     }
 
+
     /**
      * Handles the update visit request. Updates a visit with the given form details. If the updated visit would cause
      * two of the same destinations to be visited in a row, cancels the update and returns bad request.

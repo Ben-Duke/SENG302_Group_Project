@@ -291,7 +291,7 @@ DELETE   /photos/:photoId/tags                                    controllers.Ta
 # Get trip tags
 GET   /trips/:tripId/tags                                         controllers.TagController.getTags(request : Request, tripId : Integer)
 
-#Add a new tag to a destination
+#Add new tag to a trip
 PUT /trips/:tripId/tags                                             controllers.TagController.addTripTag(request: Request, tripId :Integer)
 
 #Remove a tag from a trip

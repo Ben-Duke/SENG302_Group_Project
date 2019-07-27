@@ -27,7 +27,8 @@
             } else {
         <div class="row">
             <h1>Edit Destination</h1>
-            @helper.form(action = helper.CSRF(routes.DestinationController.updateDestination(destId))) {
+            @users.tag.createSearchTags(user)
+            @helper.form(action = helper.CSRF(routes.DestinationController.updateDestination(destId)), 'id -> "editDestinationForm") {
                 @formBody()
             }
         </div>

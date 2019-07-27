@@ -1,19 +1,11 @@
 package models.commands.Photos;
 
 import accessors.AlbumAccessor;
-import accessors.DestinationAccessor;
 import accessors.UserPhotoAccessor;
-import accessors.VisitAccessor;
-import controllers.DestinationController;
 import factories.UserFactory;
 import models.*;
-import models.commands.Destinations.UnlinkPhotoDestinationCommand;
-import models.commands.General.UndoableCommand;
 import models.commands.Profile.HomePageCommand;
-
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 
 /** Command to delete a user's UserPhoto */
 public class DeletePhotoCommand extends HomePageCommand {
@@ -30,13 +22,8 @@ public class DeletePhotoCommand extends HomePageCommand {
 
         this.userPhoto = userPhoto;
 
-        for (Album album : userPhoto.getAlbums()) {
-            refToAlbums.add(album);
-        }
-        for (Album album : userPhoto.getPrimaryPhotoDestinations()) {
-            refToPrimaryPhotoDestinations.add(album);
-        }
-
+        refToAlbums.addAll(userPhoto.getAlbums());
+        refToPrimaryPhotoDestinations.addAll(userPhoto.getPrimaryPhotoDestinations());
     }
 
     /**
@@ -61,7 +48,6 @@ public class DeletePhotoCommand extends HomePageCommand {
             album.addMedia(userPhoto);
             AlbumAccessor.update(album);
         }
-//        System.out.println("Userphoto is " + userPhoto.toString());
 
         for (Album album : refToPrimaryPhotoDestinations) {
             album.setPrimaryPhoto(userPhoto);

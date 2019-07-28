@@ -33,6 +33,8 @@
     <!-- The Modal/Lightbox -->
     <div id="myModal" class="modal">
 
+
+
         <div class="modal-content">
             <div id="snackbar"></div>
             <div id="lightbox-modal">
@@ -44,9 +46,25 @@
             <a class="next" onclick="plusSlides(1)">&#10095;</a>
 
 
+            <div id="existingAlbumId" class="hidden">@album.albumId</div>
             <!-- Caption text -->
             <div class="caption-container">
                 <p id="img-caption"></p>
+                <li>
+                    <div>
+                        <p>
+                            Move to Album
+                            <input style="color: #000000;" id="album-search-move" list="album-results-move" name="Album Move" title="Move Album" placeholder="Search for Album to move to">
+                            <datalist  id="album-results-move">
+                                @for(userAlbum <- user.getAlbums()){
+                                    @if(userAlbum.albumId != album.albumId) {
+                                        <option value=@userAlbum.getTitle()></option>
+                                    }
+                                }
+                            </datalist>
+                        </p>
+                    </div>
+                </li>
                 <a class="btn btn-link" id="setProfilePictureBtn"
                    onclick="setProfilePictureRequest(2)">Set Profile Picture</a>
                 <a class="btn btn-link" id="deletePhotoBtn" onclick="deletePhoto(@user.getUserid, @album.getAlbumId,
@@ -54,6 +72,7 @@
                 <a class="btn btn-link" id="privacyBtn" onclick="changePrivacy(@user.getUserid, @album.getAlbumId,
                 @album.userIsOwner(user))">Make Public/Private</a>
                 <a class="btn btn-link" id="linkDestinationBtn" onclick="linkToDestination()">Link Destination</a>
+
             </div>
         </div>
     </div>

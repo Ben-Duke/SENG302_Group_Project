@@ -2,6 +2,71 @@ var slideIndex = 1;
 var currentSlideNo = 1;
 var albumData = null;
 
+moveAlbumSearch();
+
+
+function moveAlbumSearch() {
+      const searchBar = document.getElementById("album-search-move");
+      let oldAlbumId = document.getElementById("existingAlbumId").innerText;
+      searchBar.addEventListener('input', (e) => {
+          if (e.constructor.name !== 'InputEvent') {
+                let title = searchBar.value;
+                console.log(title);
+                $.ajax({
+                                type: 'GET',
+                                url: '/users/albums/getFromTitle/' + title,
+                                contentType: 'application/json',
+                                success: (newAlbumId) => {
+                                        console.log(newAlbumId)
+                                        moveBetweenAlbums(oldAlbumId, newAlbumId);
+                                    }
+                                });
+
+
+          }
+      });
+}
+
+function moveBetweenAlbums(oldAlbumId, newAlbumId) {
+
+  var hidePrivate = false;
+      $.ajax({
+              type: 'GET',
+              url: '/users/albums/get/' + hidePrivate + '/' + oldAlbumId,
+              contentType: 'application/json',
+              success: (albumData) => {
+                      console.log(albumData);
+                      console.log(slideIndex);
+                      let mediaId = albumData[slideIndex-1]["mediaId"];
+                      var token =  $('input[name="csrfToken"]').attr('value');
+                      $.ajaxSetup({
+                          beforeSend: function(xhr) {
+                              xhr.setRequestHeader('Csrf-Token', token);
+                          }
+                          });
+                          $.ajax({
+                              url: "/users/albums/move_media/" + newAlbumId,
+                              method: "PUT",
+                              data: JSON.stringify({
+                                  mediaIds: [mediaId]
+                              }),
+                              headers: {
+                                  'Content-Type': 'application/json'
+                              },
+                              success:function(res, textStatus, xhr){
+                                  if (xhr.status == 200) {
+                                     window.location = oldAlbumId
+                                  }
+                              }
+                          })
+              }
+      });
+
+
+}
+
+
+
 function setProfilePicture() {
 
 }

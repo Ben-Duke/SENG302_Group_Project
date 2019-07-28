@@ -2,6 +2,7 @@ package controllers;
 
 import accessors.AlbumAccessor;
 import accessors.MediaAccessor;
+import accessors.UserAccessor;
 import models.Album;
 import models.Media;
 import models.User;
@@ -57,6 +58,7 @@ public class AlbumController extends Controller {
      * @return JSON object with media urls
      */
     public Result getAlbum(Http.Request request, Integer albumId, Boolean hidePrivate) {
+        System.out.println("Get Album");
         Album album = AlbumAccessor.getAlbumById(albumId);
         List albumDetails = new ArrayList();
         for(Media media: album.getMedia()) {
@@ -225,7 +227,7 @@ public class AlbumController extends Controller {
      *                moved to.
      */
     public Result moveMediaToAlbum(Http.Request request, Integer albumId) {
-
+        System.out.println("Move album");
         User user = User.getCurrentUser(request);
 
         if (user == null) { return redirect(routes.UserController.userindex()); }
@@ -235,7 +237,6 @@ public class AlbumController extends Controller {
 
         List<Integer> mediaIds = Json.fromJson(request.body().asJson().get("mediaIds"), List.class);
         List<Media> medias = new ArrayList<>();
-
         for (Integer mediaId : mediaIds) {
             Media media = MediaAccessor.getMediaById(mediaId);
             if (media == null) { return badRequest("Media does not exist"); }
@@ -251,6 +252,24 @@ public class AlbumController extends Controller {
         user.getCommandManager().executeCommand(cmd);
 
         return ok(viewAlbum.render(album, user));
+    }
+
+    /**
+     * Process the AJAX request to get the album Id based on its title
+     * @param request the HTTP request
+     * @param albumName the name of the album to retrieve
+     * @return a JSON object with the album ID
+     */
+    public Result getAlbumFromTitle(Http.Request request, String albumName) {
+        List<Album> albumList = UserAccessor.getAlbums();
+        Integer albumId = null;
+        for (Album album : albumList) {
+            if (albumName.equals(album.getTitle())) {
+                albumId = album.getAlbumId();
+            }
+        }
+
+        return ok(String.valueOf(albumId));
     }
 
 

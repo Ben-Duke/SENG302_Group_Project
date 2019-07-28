@@ -35,6 +35,7 @@ public class MoveMediaToAlbumCommand extends UndoableCommand {
 
             album.addMedia(media);
         }
+
         AlbumAccessor.update(album);
     }
 

@@ -16,11 +16,12 @@ import java.util.List;
 
 @Table(uniqueConstraints={@UniqueConstraint(columnNames={"url"})})
 public class UserPhoto extends Model {
+
     @Id //The photos primary key
-    public int photoId;
+    private int photoId;
 
     @Column(name = "url")
-    public String url;
+    private String url;
 
     private boolean isPublic;
     private boolean isProfile;
@@ -31,18 +32,18 @@ public class UserPhoto extends Model {
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "user", referencedColumnName = "userid")
-    public User user;
+    private User user;
 
     // Creating  the relation to Destination
     @JsonIgnore
     @ManyToMany
-    public List<Destination> destinations;
+    private List<Destination> destinations;
 
     @JsonIgnore
     @OneToMany(mappedBy = "primaryPhoto")
     private List<Destination> primaryPhotoDestinations;
 
-    public static final Finder<Integer,UserPhoto> find = new Finder<>(UserPhoto.class);
+    private static final Finder<Integer,UserPhoto> find = new Finder<>(UserPhoto.class);
 
     /**
      * Default constructor for caption edit commands
@@ -85,6 +86,10 @@ public class UserPhoto extends Model {
         return this.isProfile;
     }
 
+    /**
+     * Create a userPhoto using another userPhoto objects and it's attributes
+     * @param userPhoto The userPhoto object being used
+     */
     public UserPhoto(UserPhoto userPhoto) {
         this.url = userPhoto.getUrl();
         this.isPublic = userPhoto.getIsPhotoPublic();
@@ -94,6 +99,16 @@ public class UserPhoto extends Model {
         this.primaryPhotoDestinations = userPhoto.getPrimaryPhotoDestinations();
         this.caption = userPhoto.getCaption();
     }
+
+    /**
+     * Gets a finder object for UserPhoto.
+     *
+     * @return A Finder<Integer,UserPhoto> object
+     */
+    public static Finder<Integer,UserPhoto> find() {
+        return find;
+    }
+
 
 
     public boolean getIsPhotoPublic(){
@@ -119,7 +134,7 @@ public class UserPhoto extends Model {
         while(userPhoto != null) {
             count += 1;
             filename = count + "_" + this.url;
-            userPhoto = UserPhoto.find.query().where().eq("url", filename).findOne();
+            userPhoto = UserPhoto.find().query().where().eq("url", filename).findOne();
         }
 
         return filename;
@@ -128,6 +143,7 @@ public class UserPhoto extends Model {
     /**
      * Calling this function will delete a user photo that has that photoId does nothing if the photoId doesn't
      * match a photo in the database
+     * @param idOfPhoto The Id of the photo being deleted
      */
     public static void deletePhoto(int idOfPhoto){
         UserPhoto.find.query().where().eq("photoId",idOfPhoto).delete();
@@ -242,6 +258,10 @@ public class UserPhoto extends Model {
         return primaryPhotoDestinations;
     }
 
+    /**
+     * Returns this userPhoto objects as a string with it's parameters
+     * @return The userPhoto objects attributes as a string
+     */
     @Override
     public String toString() {
         return "url is " + this.url + " Id is " + this.getPhotoId();

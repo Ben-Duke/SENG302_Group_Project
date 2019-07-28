@@ -7,21 +7,36 @@ import models.UserPhoto;
 
 import java.util.List;
 
+/**
+ * A class to handle accessing Users from the database
+ */
 public class UserAccessor {
 
-    /** Hides the implicit public constructor */
-    private UserAccessor() {}
+    // Private constructor to hide the implicit public one
+    private UserAccessor() {
+        throw new IllegalStateException("Utility class");
+    }
+
+    public static User getDefaultAdmin(){
+        throw new UnsupportedOperationException();
+    }
 
     public static Passport getPassport(int id) {
-        return Passport.find.query().where().eq("passid", id).findOne();
+        return Passport.find().query().where().eq("passid", id).findOne();
     }
 
+    /** Return a list of all passports
+     * @return List of passports
+     */
     public static List<Passport> getAllPassports() {
-        return Passport.find.all();
+        return Passport.find().all();
     }
 
+    /** Return a list of all nationalities
+     * @return List of nationalities
+     */
     public static List<Nationality> getAllNationalities() {
-        return Nationality.find.all();
+        return Nationality.find().all();
     }
 
     /**
@@ -34,19 +49,25 @@ public class UserAccessor {
      * @return A List of User objects with a matching email address.
      */
     public static List<User> getUsersFromEmail(String email) {
-        return  User.find.query()
+        return  User.find().query()
                     .where().eq("email", email.toLowerCase()).findList();
     }
 
     /**
      * Return the User matching the id passed
      * @param id the id of the user
+     * @return User
      */
     public static User getById(int id) {
-        return User.find.byId(id);
+        return User.find().byId(id);
     }
 
-    static User getUserByEmail(String email) {
+    /**
+     * Return the User matching the email passed
+     * @param email the email of the user
+     * @return User
+     */
+    public static User getUserByEmail(String email) {
         List<User> users = getUsersFromEmail(email);
         if (!users.isEmpty()) {
             return users.get(0);
@@ -54,7 +75,9 @@ public class UserAccessor {
         return null;
     }
 
-    /** Update the user */
+    /** Update the user
+     * @param user User to update in the database
+     */
     public static void update(User user) { user.update(); }
 
     /**
@@ -67,7 +90,7 @@ public class UserAccessor {
      *          profile picture (should never happen).
      */
     public static UserPhoto getProfilePhoto(User user) {
-        List<UserPhoto> userProfilePhotoList = UserPhoto.find.query()
+        List<UserPhoto> userProfilePhotoList = UserPhoto.find().query()
                 .where().eq("user", user)
                 .and().eq("isProfile", true)
                 .findList();

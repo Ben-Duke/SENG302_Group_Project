@@ -140,10 +140,6 @@ public class Trip extends Model {
     }
 
     public void removeAllVisits() {
-        System.out.println("Removing all vists");
-//        for (Visit visit : visits) {
-//            VisitAccessor.delete(visit);
-//        }
         visits = new ArrayList<>();
     }
 

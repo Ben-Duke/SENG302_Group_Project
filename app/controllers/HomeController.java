@@ -332,8 +332,6 @@ public class HomeController {
      *      200: successfully set the profile photo to a normal photo.
      */
     public Result setProfilePhotoToNormalPhoto(Http.Request request) {
-        System.out.println(request);
-        System.out.println("check");
         User user = User.getCurrentUser(request);
 
         if(user != null) {

@@ -220,7 +220,6 @@ public class DestinationFactory {
                 try {
                     otherDestination.update();
                 } catch (Exception e) {
-                    System.out.println("merge destinations 1");
                     e.printStackTrace();
                 }
                 List<Visit> visits = Visit.find.query().where().eq("destination", otherDestination).findList();
@@ -228,13 +227,11 @@ public class DestinationFactory {
                 try {
                     otherDestination.delete();
                 } catch (Exception e) {
-                    System.out.println("merge destinations 2");
                     e.printStackTrace();
                 }
                 try {
                     destination.update();
                 } catch (Exception e) {
-                    System.out.println("merge destinations 3");
                     e.printStackTrace();
                 }
             }
@@ -244,7 +241,6 @@ public class DestinationFactory {
         try {
             destination.update();
         } catch (Exception e) {
-            System.out.println("merge destinations 4");
             e.printStackTrace();
         }
     }

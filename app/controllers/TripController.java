@@ -358,15 +358,12 @@ public class TripController extends Controller {
                 return notFound();
             }
             if (!trip.isUserOwner(user.getUserid())) {
-                System.out.println(user.userIsAdmin());
-                System.out.println("Trip forbid");
                 return forbidden("1");
             }
             if(destination == null) {
                 return notFound();
             }
-            if (!destination.getIsPublic() && destination.getUser() != user) {
-                System.out.println("Dest forbid");
+            if (!destination.getIsPublic() && destination.getUser().getUserid() != user.getUserid()) {
                 return forbidden("2");
 
             }
@@ -377,7 +374,6 @@ public class TripController extends Controller {
             trip.addVisit(newVisit);
             TripAccessor.update(trip);
             VisitAccessor.update(newVisit);
-
             ArrayList<String> visitInformation = new ArrayList<>();
             visitInformation.add(newVisit.getVisitid().toString());
             visitInformation.add(newVisit.getVisitName());
@@ -408,8 +404,10 @@ public class TripController extends Controller {
             Visit visit = new Visit(null, null, trip, destination);
             TripAccessor.insert(trip);
             VisitAccessor.insert(visit);
+            visit.setVisitorder(0);
             TripAccessor.update(trip);
             VisitAccessor.update(visit);
+
             ObjectNode data =  (ObjectNode) Json.toJson(trip);
             data.put("latitude", destination.getLatitude());
             data.put("longitude", destination.getLongitude());
@@ -418,6 +416,8 @@ public class TripController extends Controller {
             data.put("destType", destination.getDestType());
             data.put("arrival", visit.getArrival());
             data.put("departure", visit.getDeparture());
+            data.put("tripName", trip.getTripName());
+            data.put("tripId", trip.getTripid());
 
 
             return ok(data);

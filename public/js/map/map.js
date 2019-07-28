@@ -26,13 +26,13 @@ function getInfoWindowHTML(destination) {
                       <div>${destinationType}</div>
                       <div>District: ${destinationDistrict}</div>
                       <div>${destinationCountry}</div>
-                      <div><button id="addToTripButton" onclick="addSelectedToVistToTrip(${destination.destid})">Add to trip</button></div>
+                      <div><button id="addToTripButton" onclick="addSelectedToVisitToTrip(${destination.destid})">Add to trip</button></div>
                       <script src="indexDestination.js"></script>`;
 
     return infoWindowHTML;
 }
 
-function addSelectedToVistToTrip(destId){
+function addSelectedToVisitToTrip(destId){
     if(currentlyDisplayedTripId == null){
         //Start a new trip
         console.log("No trip, creating a new one");
@@ -44,24 +44,18 @@ function addSelectedToVistToTrip(destId){
             contentType : 'application/json',
             type: 'POST',
             url: url,
-            success: function(data, textStatus, xhr){
+            success: function(data){
                 console.log(data);
 
-            // <a onclick="displayTrip(@trip.getTripid(),
-            // @trip.getOrderedVisits().get(0).getDestination().getLatitude(),
-            // @trip.getOrderedVisits().get(0).getDestination().getLongitude())"
-            // class="list-group-item list-group-item-action">
-            //         @if(trip.getTripStart() != null){
-            //     @trip.getTripName() | Arrival date: @trip.getTripStart()
-            //             } else{
-            //     @trip.getTripName | No arrival dates
-            //     }
-            //
                 currentlyDisplayedTripId = data.tripId;
-                /*let destTab = document.getElementById("destinationsTabListItem");
+                let destTab = document.getElementById("destinationsTabListItem");
                 let tripsTab = document.getElementById("tripsTabListItem");
+                let tripsDiv = document.getElementById("tripsTab");
+                let destDiv = document .getElementById("destinationsTab");
+                tripsDiv.setAttribute("class", "tab-pane fade in active");
+                destDiv.setAttribute("class", "tab-pane fade");
                 destTab.setAttribute('class', "");
-                tripsTab.setAttribute('class', "active");*/
+                tripsTab.setAttribute('class', "active");
 
 
 
@@ -89,8 +83,11 @@ function addSelectedToVistToTrip(destId){
 
                 let listGroup = document.getElementById('trip-list-group');
                 let tripLink = document.createElement('a');
-                tripLink.onclick = displayTrip(currentlyDisplayedTripId, data.latitude, data.longitude);
+                tripLink.setAttribute('class', "list-group-item list-group-item-action");
+                tripLink.innerText = data.tripName + ' | No arrival dates';
+                tripLink.setAttribute("onclick", "displayTrip(" + currentlyDisplayedTripId + ", " + data.latitude+ ", "+ data.longitude + ")");
                 listGroup.appendChild(tripLink);
+                displayTrip(currentlyDisplayedTripId, data.latitude, data.longitude);
 
 
 
@@ -113,9 +110,14 @@ function addSelectedToVistToTrip(destId){
             url: url,
             success: function(data, textStatus, xhr){
                 console.log(data);
-                tripVisttableRefresh(data);
+                tripVisittableRefresh(data);
 
-                //displayTrip(currentlyDisplayedTripId, data.latitude, data.longitude);
+
+                for (var i in tripRoutes) {
+                    tripRoutes[i].setMap(null);
+                }
+                tripRoutes =[];
+                initTripRoutes();
 
             },
             error: function(xhr, textStatus, errorThrown){
@@ -141,7 +143,7 @@ function initMap() {
 
 }
 
-function tripVisttableRefresh(data){
+function tripVisittableRefresh(data){
     let targetTable = document.getElementById("tripTable_"+ currentlyDisplayedTripId);
     let newRow = document.createElement('tr');
     newRow.setAttribute('id', data[0]);

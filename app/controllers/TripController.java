@@ -410,7 +410,17 @@ public class TripController extends Controller {
             VisitAccessor.insert(visit);
             TripAccessor.update(trip);
             VisitAccessor.update(visit);
-            return ok(Json.toJson(trip));
+            ObjectNode data =  (ObjectNode) Json.toJson(trip);
+            data.put("latitude", destination.getLatitude());
+            data.put("longitude", destination.getLongitude());
+            data.put("visitName", visit.getVisitName());
+            data.put("visitId", visit.getVisitid());
+            data.put("destType", destination.getDestType());
+            data.put("arrival", visit.getArrival());
+            data.put("departure", visit.getDeparture());
+
+
+            return ok(data);
 
         }
 

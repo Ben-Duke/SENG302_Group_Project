@@ -47,6 +47,54 @@ function addSelectedToVistToTrip(destId){
             success: function(data, textStatus, xhr){
                 console.log(data);
 
+            // <a onclick="displayTrip(@trip.getTripid(),
+            // @trip.getOrderedVisits().get(0).getDestination().getLatitude(),
+            // @trip.getOrderedVisits().get(0).getDestination().getLongitude())"
+            // class="list-group-item list-group-item-action">
+            //         @if(trip.getTripStart() != null){
+            //     @trip.getTripName() | Arrival date: @trip.getTripStart()
+            //             } else{
+            //     @trip.getTripName | No arrival dates
+            //     }
+            //
+                currentlyDisplayedTripId = data.tripId;
+                /*let destTab = document.getElementById("destinationsTabListItem");
+                let tripsTab = document.getElementById("tripsTabListItem");
+                destTab.setAttribute('class', "");
+                tripsTab.setAttribute('class', "active");*/
+
+
+
+                let targetTable = document.getElementById("tripTable");
+                let tableBody = document.createElement("tbody");
+                tableBody.setAttribute("id", "tripTable_"+ data.tripId);
+                tableBody.style.display = "none";
+                let newRow = document.createElement('tr');
+                newRow.setAttribute('id', data.visitId);
+                let tableHeader = document.createElement('th');
+                tableHeader.setAttribute('scope', 'row');
+                tableHeader.innerText = data.visitName;
+                let tableDataDestType = document.createElement('td');
+                tableDataDestType.innerText = data.destType;
+                let tableDataArrival = document.createElement('td');
+                tableDataArrival.innerText = data.arrival;
+                let tableDataDeparture = document.createElement('td');
+                tableDataDeparture.innerText = data.departure;
+                newRow.appendChild(tableHeader);
+                newRow.appendChild(tableDataDestType);
+                newRow.appendChild(tableDataArrival);
+                newRow.appendChild(tableDataDeparture);
+                tableBody.appendChild(newRow);
+                targetTable.appendChild(tableBody);
+
+                let listGroup = document.getElementById('trip-list-group');
+                let tripLink = document.createElement('a');
+                tripLink.onclick = displayTrip(currentlyDisplayedTripId, data.latitude, data.longitude);
+                listGroup.appendChild(tripLink);
+
+
+
+
             },
             error: function(xhr, textStatus, errorThrown){
                 alert(errorThrown);
@@ -65,24 +113,7 @@ function addSelectedToVistToTrip(destId){
             url: url,
             success: function(data, textStatus, xhr){
                 console.log(data);
-                let targetTable = document.getElementById("tripTable_"+ currentlyDisplayedTripId)
-                let newRow = document.createElement('tr');
-                newRow.setAttribute('id', data[0]);
-                let tableHeader = document.createElement('th');
-                tableHeader.setAttribute('scope', 'row');
-                tableHeader.innerText = data[1];
-                let tableDataDestType = document.createElement('td');
-                tableDataDestType.innerText = data[2];
-                let tableDataArrival = document.createElement('td');
-                tableDataArrival.innerText = "";
-                let tableDataDeparture = document.createElement('td');
-                tableDataDeparture.innerText = "";
-
-                newRow.appendChild(tableHeader);
-                newRow.appendChild(tableDataDestType);
-                newRow.appendChild(tableDataArrival);
-                newRow.appendChild(tableDataDeparture);
-                targetTable.appendChild(newRow);
+                tripVisttableRefresh(data);
 
                 //displayTrip(currentlyDisplayedTripId, data.latitude, data.longitude);
 
@@ -109,6 +140,28 @@ function initMap() {
 
 
 }
+
+function tripVisttableRefresh(data){
+    let targetTable = document.getElementById("tripTable_"+ currentlyDisplayedTripId);
+    let newRow = document.createElement('tr');
+    newRow.setAttribute('id', data[0]);
+    let tableHeader = document.createElement('th');
+    tableHeader.setAttribute('scope', 'row');
+    tableHeader.innerText = data[1];
+    let tableDataDestType = document.createElement('td');
+    tableDataDestType.innerText = data[2];
+    let tableDataArrival = document.createElement('td');
+    tableDataArrival.innerText = "";
+    let tableDataDeparture = document.createElement('td');
+    tableDataDeparture.innerText = "";
+
+    newRow.appendChild(tableHeader);
+    newRow.appendChild(tableDataDestType);
+    newRow.appendChild(tableDataArrival);
+    newRow.appendChild(tableDataDeparture);
+    targetTable.appendChild(newRow);
+}
+
 
 var tripRoutes = [];
 

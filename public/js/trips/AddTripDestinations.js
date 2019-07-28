@@ -33,8 +33,6 @@ function sendTripTags(tripId) {
     if (toAddTagString.length > 0) {
         toAddTagString = toAddTagString.substring(0, toAddTagString.length - 1);
     }
-    console.log(toAddTagString);
-    console.log(tripId);
 
     const token =  $('input[name="csrfToken"]').attr('value');
     $.ajaxSetup({
@@ -48,6 +46,9 @@ function sendTripTags(tripId) {
         data: JSON.stringify({
             tag: toAddTagString
         }),
+        headers: {
+            'Content-Type': 'application/json'
+        },
         success: function(res) {
             console.log(res)
         },

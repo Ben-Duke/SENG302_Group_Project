@@ -28,6 +28,7 @@
                         <thead>
                             <tr>
                                 <th scope="col">Name</th>
+                                <th scope="col">Tags</th>
                                 <th scope="col">Type</th>
                                 <th scope="col">Country</th>
                                 <th scope="col">Arrival</th>
@@ -39,6 +40,13 @@
                         @for(visit <- trip.getOrderedVisits){
                             <tr id=@visit.getVisitid()>
                                 <th scope ="row">@visit.getDestination().getDestName()</th>
+                                <td>
+                                    <ul style="overflow: auto; height: 50px; padding-left: 2px">
+                                    @for(tag <- visit.getDestination().getTags()) {
+                                        <p>@tag</p>
+                                    }
+                                    </ul>
+                                </td>
                                 <td>@visit.getDestination().getDestType()</td>
                                 <td>@visit.getDestination().getCountry()
                                     @if(!visit.getDestination().getIsCountryValid()) {
@@ -78,6 +86,7 @@
                 <thead class="thead-dark">
                     <tr>
                         <th scope="col">Name</th>
+                        <th scope="col">Tags</th>
                         <th scope="col">Type</th>
                         <th scope="col">Country</th>
                         <th scope="col">District</th>
@@ -92,6 +101,13 @@
                     @if(destination.getIsPublic == false){
                         <tr>
                             <th scope ="row">@destination.getDestName()</th>
+                            <td>
+                                <ul style="overflow: auto; height: 50px; padding-left: 2px">
+                                @for(tag <- destination.getTags()) {
+                                    <p>@tag</p>
+                                }
+                                </ul>
+                            </td>
                             <td>@destination.getDestType()</td>
                             <td>@destination.getCountry
                                 @if(!destination.getIsCountryValid()) {
@@ -121,6 +137,7 @@
                 <thead class="thead-dark">
                     <tr>
                         <th scope="col">Name</th>
+                        <th scope="col">Tags</th>
                         <th scope="col">Type</th>
                         <th scope="col">Country</th>
                         <th scope="col">District</th>
@@ -135,6 +152,13 @@
                     @if(destination.getIsPublic == true){
                         <tr>
                             <th scope ="row">@destination.getDestName()</th>
+                            <th>
+                                <ul style="overflow: auto; height: 50px; padding-left: 2px">
+                                    @for(tag <- destination.getTags()) {
+                                        <p>@tag</p>
+                                    }
+                                </ul>
+                            </th>
                             <td>@destination.getDestType()</td>
                             <td>@destination.getCountry
                                 @if(!destination.getIsCountryValid()) {

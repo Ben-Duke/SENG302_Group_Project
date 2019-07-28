@@ -236,6 +236,44 @@ function populateViewDestinationModal()
                     $('#travellerTypes').html(outerDivNode);
                 }
             });
+            let url = '/destinations/' + getIdFromRow + '/tags';
+            $.ajax({
+                data : '',
+                contentType : 'application/json',
+                type: 'GET',
+                url: url,
+                success: function(data, textStatus, xhr){
+                    if(xhr.status == 200) {
+                        for(let i = 0; i < data.length; i++){
+                            // $('#travellerTypes').append("<p>Traveller type(s):</p>");
+                            var outerDivNode = document.createElement("div");
+                            // outerDivNode.classList.
+                            var parNode = document.createElement("p");
+                            var parTextNode = document.createTextNode("Tags(s)");
+                            parNode.appendChild(parTextNode);
+                            outerDivNode.appendChild(parNode);
+                            var ulNode = document.createElement("ul");
+                            ulNode.style="overflow: auto; height: 100px";
+                            ulNode.classList.add("list-group");
+                            outerDivNode.appendChild(ulNode);
+
+                            $.each(data, function(index, element){
+                                var liNode = document.createElement("a");
+                                liNode.classList.add("list-group-item");
+                                liNode.href = "/tag/"+element['name'];
+                                var liTextNode = document.createTextNode(element["name"]);
+                                liNode.appendChild(liTextNode);
+                                ulNode.appendChild(liNode);
+                            });
+                            // outerDivNode.classList.add("col-md-offset-1");
+                            // outerDivNode.classList.add("col-md-4");
+                            $('#trip-tags-div').html(outerDivNode);
+                        }
+
+
+                    }
+                    },
+                });
             $.ajax({
                 type: 'GET',
                 url: '/users/destinations/photos/' + getIdFromRow,
@@ -472,6 +510,9 @@ $('#removePhotoButton').click(function(e){
         }
     });
 });
+
+
+
 
 /**
  * Called when the user clicks the create destination button.

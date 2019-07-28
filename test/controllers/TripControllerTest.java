@@ -423,7 +423,7 @@ public class TripControllerTest extends BaseTestWithApplicationAndDatabase {
     @Test
     public void addVisitFromTableWithValidLoginSessionWithPrivateDestinationWithInvalidOwner(){
         assertEquals(2, Trip.find.byId(1).getVisits().size());
-        assertFalse(Destination.find.byId(5).isPublic);
+        assertFalse(Destination.find.byId(5).isPublic());
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(GET)
                 .uri("/users/trips/table/edit/1/5").session("connected", "2");
@@ -435,7 +435,7 @@ public class TripControllerTest extends BaseTestWithApplicationAndDatabase {
     @Test
     public void addVisitFromTableWithValidLoginSessionWithPrivateDestinationWithValidOwner(){
         assertEquals(4, Trip.find.byId(2).getVisits().size());
-        assertFalse(Destination.find.byId(2).isPublic);
+        assertFalse(Destination.find.byId(2).isPublic());
         //add Wellington to Christchurch to Wellington, to The Wok and back
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(GET)
@@ -450,7 +450,7 @@ public class TripControllerTest extends BaseTestWithApplicationAndDatabase {
     @Test
     public void addVisitFromTableWithValidLoginSessionWithPublicDestinationWithValidOwnerRepeatDestination(){
         assertEquals(4, Trip.find.byId(2).getVisits().size());
-        assertTrue(Destination.find.byId(1).isPublic);
+        assertTrue(Destination.find.byId(1).isPublic());
         //add Christchurch to Christchurch to Wellington, to The Wok and back
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(GET)
@@ -465,7 +465,7 @@ public class TripControllerTest extends BaseTestWithApplicationAndDatabase {
     @Test
     public void addVisitFromTableWithValidLoginSessionWithPublicDestinationWithValidOwner(){
         assertEquals(2, Trip.find.byId(1).getVisits().size());
-        assertTrue(Destination.find.byId(1).isPublic);
+        assertTrue(Destination.find.byId(1).isPublic());
         //add Wellington to Christchurch to Wellington, to The Wok and back
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(GET)
@@ -480,7 +480,7 @@ public class TripControllerTest extends BaseTestWithApplicationAndDatabase {
     @Test
     public void addVisitFromTableWithValidLoginSessionWithPublicDestinationWithInvalidOwner(){
         assertEquals(3, Trip.find.byId(3).getVisits().size());
-        assertTrue(Destination.find.byId(1).isPublic);
+        assertTrue(Destination.find.byId(1).isPublic());
         //add Wellington to Christchurch to Wellington, to The Wok and back
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(GET)
@@ -508,7 +508,7 @@ public class TripControllerTest extends BaseTestWithApplicationAndDatabase {
     @Test
     public void addVisitFromTableWithValidLoginSessionWithPrivateDestinationWithValidDestinationOwnerWithInvalidTrip(){
         assertEquals(3, Trip.find.byId(5).getVisits().size());
-        assertFalse(Destination.find.byId(2).isPublic);
+        assertFalse(Destination.find.byId(2).isPublic());
         //add Wellington to Christchurch to Wellington, to The Wok and back
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(GET)
@@ -521,7 +521,7 @@ public class TripControllerTest extends BaseTestWithApplicationAndDatabase {
     @Test
     public void addVisitFromTableWithValidLoginSessionWithPrivateDestinationWithAdmin(){
         assertEquals(4, Trip.find.byId(2).getVisits().size());
-        assertFalse(Destination.find.byId(2).isPublic);
+        assertFalse(Destination.find.byId(2).isPublic());
         //add Wellington to Christchurch to Wellington, to The Wok and back
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(GET)

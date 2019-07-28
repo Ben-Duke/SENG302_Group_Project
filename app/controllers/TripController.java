@@ -378,10 +378,42 @@ public class TripController extends Controller {
             TripAccessor.update(trip);
             VisitAccessor.update(newVisit);
 
-            return ok("Visit was added to the trip");
+            ArrayList<String> visitInformation = new ArrayList<>();
+            visitInformation.add(newVisit.getVisitid().toString());
+            visitInformation.add(newVisit.getVisitName());
+            visitInformation.add(newVisit.getDestination().getDestType());
+            visitInformation.add(newVisit.getArrival());
+            visitInformation.add(newVisit.getDeparture());
+
+            return ok(Json.toJson(visitInformation));
 
 
         }
+        return unauthorized();
+    }
+
+    public Result CreateTripFromJSRequest(Http.Request request, Integer destid) {
+        User user = User.getCurrentUser(request);
+        if(user != null) {
+            Destination destination = Destination.find.byId(destid);
+            if(destination == null) {
+                return notFound();
+            }
+            if (!destination.getIsPublic() && destination.getUser() != user) {
+                System.out.println("Dest forbid");
+                return forbidden("2");
+
+            }
+            Trip trip = new Trip("Trip to " + destination.getDestName(),false, user);
+            Visit visit = new Visit(null, null, trip, destination);
+            TripAccessor.insert(trip);
+            VisitAccessor.insert(visit);
+            TripAccessor.update(trip);
+            VisitAccessor.update(visit);
+            return ok(Json.toJson(trip));
+
+        }
+
         return unauthorized();
     }
 

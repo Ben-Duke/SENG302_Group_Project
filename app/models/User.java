@@ -533,30 +533,30 @@ public class User extends Model implements Comparable<User> {
     {
         HashMap<Trip,LocalDate> datesMap = new HashMap<>();
         for(Trip trip: trips){
-            if(trip.getVisits().size() < 2){
+            //TODO check with PO about business logic for this decision to allow less than 2 visits
+            /*if(trip.getVisits().size() < 2){
                 for(Visit visit : trip.getVisits()){
                     visit.delete();
                 }
                 trip.delete();
+            }*/
+
+            ArrayList<LocalDate> datesList = new ArrayList<>();
+            for (Visit visit : trip.getVisits()) {
+                if (visit.getArrival() != null && !(visit.getArrival().isEmpty())) {
+                    String arrival = visit.getArrival();
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                    LocalDate arrivalDate = LocalDate.parse(arrival, formatter);
+                    datesList.add(arrivalDate);
+                } else {
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                    LocalDate arrivalDate = LocalDate.parse("2100-12-25", formatter);
+                    datesList.add(arrivalDate);
+                }
             }
-            else {
-                ArrayList<LocalDate> datesList = new ArrayList<>();
-                for (Visit visit : trip.getVisits()) {
-                    if (visit.getArrival() != null && !(visit.getArrival().isEmpty())) {
-                        String arrival = visit.getArrival();
-                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-                        LocalDate arrivalDate = LocalDate.parse(arrival, formatter);
-                        datesList.add(arrivalDate);
-                    } else {
-                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-                        LocalDate arrivalDate = LocalDate.parse("2100-12-25", formatter);
-                        datesList.add(arrivalDate);
-                    }
-                }
-                Collections.sort(datesList);
-                if (!datesList.isEmpty()) {
-                    datesMap.put(trip, datesList.get(0));
-                }
+            Collections.sort(datesList);
+            if (!datesList.isEmpty()) {
+                datesMap.put(trip, datesList.get(0));
             }
         }
         datesMap = sortByValues(datesMap);

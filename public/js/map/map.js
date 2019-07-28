@@ -35,7 +35,23 @@ function getInfoWindowHTML(destination) {
 function addSelectedToVistToTrip(destId){
     if(currentlyDisplayedTripId == null){
         //Start a new trip
-        console.log("No trip");
+        console.log("No trip, creating a new one");
+        let data = '';
+        let url = "/users/trips/createFromJS/" + destId;
+        // POST to server using $.post or $.ajax
+        $.ajax({
+            data : JSON.stringify(data),
+            contentType : 'application/json',
+            type: 'POST',
+            url: url,
+            success: function(data, textStatus, xhr){
+                console.log(data);
+
+            },
+            error: function(xhr, textStatus, errorThrown){
+                alert(errorThrown);
+            }
+        });
     }
     else {
         console.log("DestId is " + destId);
@@ -48,7 +64,28 @@ function addSelectedToVistToTrip(destId){
             type: 'POST',
             url: url,
             success: function(data, textStatus, xhr){
-                console.log(data)
+                console.log(data);
+                let targetTable = document.getElementById("tripTable_"+ currentlyDisplayedTripId)
+                let newRow = document.createElement('tr');
+                newRow.setAttribute('id', data[0]);
+                let tableHeader = document.createElement('th');
+                tableHeader.setAttribute('scope', 'row');
+                tableHeader.innerText = data[1];
+                let tableDataDestType = document.createElement('td');
+                tableDataDestType.innerText = data[2];
+                let tableDataArrival = document.createElement('td');
+                tableDataArrival.innerText = "";
+                let tableDataDeparture = document.createElement('td');
+                tableDataDeparture.innerText = "";
+
+                newRow.appendChild(tableHeader);
+                newRow.appendChild(tableDataDestType);
+                newRow.appendChild(tableDataArrival);
+                newRow.appendChild(tableDataDeparture);
+                targetTable.appendChild(newRow);
+
+                //displayTrip(currentlyDisplayedTripId, data.latitude, data.longitude);
+
             },
             error: function(xhr, textStatus, errorThrown){
                 alert(errorThrown);

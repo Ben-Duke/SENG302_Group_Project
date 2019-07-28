@@ -84,9 +84,10 @@
 
             </div>
             <hr>
+
             <div id="tripList">
 
-                <div class="list-group">
+                <div id="trip-list-group"class="list-group">
                     @for(trip <- trips) {
 
                         <a onclick="displayTrip(@trip.getTripid(),

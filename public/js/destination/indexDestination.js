@@ -521,23 +521,7 @@ $('#removePhotoButton').click(function(e){
 $('#createDestinationForm').submit(function(eve) {
     //eve.preventDefault();
     let form = document.getElementById("createDestinationForm");
-
-
-    var formData = new FormData(form);
-
-
-    toAddTagList = Array.from(toAddTagList);
-    let toAddTagString = "";
-    for (var i = 0; i < toAddTagList.length; i++) {
-        toAddTagString += toAddTagList[i] + ",";
-    }
-    if (toAddTagString.length > 0) {
-        toAddTagString = toAddTagString.substring(0, toAddTagString.length - 1);
-    }
-    $("<input />").attr("type", "hidden")
-        .attr("name", "tags")
-        .attr("value", toAddTagString)
-        .appendTo(this);
+    addTagToInputForm(form);
 
     /*var token =  $('input[name="csrfToken"]').attr('value');
         $.ajaxSetup({
@@ -569,10 +553,21 @@ $('#createDestinationForm').submit(function(eve) {
 $('#editDestinationForm').submit(function(eve) {
     //eve.preventDefault();
     let form = document.getElementById("editDestinationForm");
+    addTagToInputForm(form);
+});
 
+/**
+ * Form for creating trips
+ */
+$('#submitCreateTrip').submit(function(eve) {
+    //eve.preventDefault();
+    let form = document.getElementById("submitCreateTrip");
+    addTagToInputForm(form);
+});
 
-    var formData = new FormData(form);
-
+function addTagToInputForm(inputForm) {
+    var formData = new FormData(inputForm);
+    console.log(inputForm);
 
     toAddTagList = Array.from(toAddTagList);
     let toAddTagString = "";
@@ -585,7 +580,5 @@ $('#editDestinationForm').submit(function(eve) {
     $("<input />").attr("type", "hidden")
         .attr("name", "tags")
         .attr("value", toAddTagString)
-        .appendTo(this);
-
-});
-
+        .appendTo(inputForm);
+}

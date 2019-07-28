@@ -4,7 +4,7 @@
 
 
 @main(user, "Trips") {
-    @helper.form(action = helper.CSRF(routes.TripController.savetrip())) {
+    @helper.form(action = helper.CSRF(routes.TripController.savetrip()), 'id -> "submitCreateTrip") {
         <fieldset>
                 <!-- Header -->
             <legend>Create Trip</legend>
@@ -17,15 +17,25 @@
                 help = "Please enter the Trip Name. (required)")
 
         </fieldset>
-
+        @users.tag.createSearchTags(user)
         <div class="form-group actions">
             <label class="col-md-4 control-label" for="submit"></label>
             <div class="col-sm-offset-2 col-sm-10">
-                <input id="submit" type="submit" value="Create Trip" class="btn btn-primary"/>
+                <input type="submit" value="Create Trip" class="btn btn-primary"/>
                 <a href= "@routes.HomeController.showhome()" id="cancel" name="cancel" class="btn btn-default">Cancel</a>
             </div>
         </div>
     }
+    <script>
+        $('form input').keydown(function (e) {
+            if (e.keyCode == 13) {
+                e.preventDefault();
+                return false;
+            }
+        });
+    </script>
+    <script src="@routes.Assets.at("js/destination/indexDestination.js")" type="text/javascript"></script>
+    <script src="@routes.Assets.at("js/trips/AddTripDestinations.js")" type="text/javascript"></script>
 }
 
 

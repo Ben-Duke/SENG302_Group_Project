@@ -537,6 +537,10 @@ public class User extends Model implements Comparable<User> {
                 for(Visit visit : trip.getVisits()){
                     visit.delete();
                 }
+                for (Tag tag : trip.getTags()) {
+                    trip.removeTag(tag);
+                    trip.update();
+                }
                 trip.delete();
             }
             else {

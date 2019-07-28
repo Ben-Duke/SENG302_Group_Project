@@ -15,10 +15,12 @@ import java.util.List;
 public class TripFormData implements Constraints.Validatable<List<ValidationError>> {
     public String tripName;
     public User user;
+    public String tags;
 
-    public TripFormData(String tripName, User user) {
+    public TripFormData(String tripName, User user, String tags) {
         this.tripName = tripName;
         this.user = user;
+        this.tags = tags;
     }
 
     public TripFormData() {
@@ -54,5 +56,13 @@ public class TripFormData implements Constraints.Validatable<List<ValidationErro
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public String getTags() {
+        return tags;
+    }
+
+    public void setTags(String tags) {
+        this.tags = tags;
     }
 }

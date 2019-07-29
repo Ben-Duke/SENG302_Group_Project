@@ -68,7 +68,7 @@ public class TreasureHuntControllerTest extends BaseTestWithApplicationAndDataba
      */
     @Test
     public void getOpenTreasureHunts() {
-        List<TreasureHunt> treasureHunts = TreasureHunt.find.all();
+        List<TreasureHunt> treasureHunts = TreasureHunt.find().all();
         List<TreasureHunt> openTreasureHunts = treasureHuntController.getOpenTreasureHunts();
         assertEquals(treasureHunts.size()-1, openTreasureHunts.size());
     }
@@ -78,7 +78,7 @@ public class TreasureHuntControllerTest extends BaseTestWithApplicationAndDataba
      */
     @Test
     public void createPublicDestinationsMap() {
-        List<Destination> allDestinations = Destination.find.query().where().eq("is_public", true).findList();
+        List<Destination> allDestinations = Destination.find().query().where().eq("is_public", true).findList();
         treasureHuntController.createPublicDestinationsMap();
         assertEquals(treasureHuntController.destinationMap.size(), allDestinations.size());
     }
@@ -116,7 +116,7 @@ public class TreasureHuntControllerTest extends BaseTestWithApplicationAndDataba
     @Test
     public void createAndSaveTreasureHunt() {
         //User with id 2 should have one trip
-        assertEquals(1, User.find.byId(2).getTreasureHunts().size());
+        assertEquals(1, User.find().byId(2).getTreasureHunts().size());
         Map<String, String> formData = new HashMap<>();
         //Assuming the user fills in the title form as "triptest123"
         formData.put("title", "test123");
@@ -129,9 +129,9 @@ public class TreasureHuntControllerTest extends BaseTestWithApplicationAndDataba
         //User should be redirected to the index treasure hunts page
         assertEquals(SEE_OTHER, result.status());
         //User with id 2 should have two trips
-        assertEquals(2, User.find.byId(2).getTreasureHunts().size());
+        assertEquals(2, User.find().byId(2).getTreasureHunts().size());
         //The treasure hunt with the title "test123" should be the user's second treasure hunt
-        assertEquals("test123", User.find.byId(2).getTreasureHunts().get(1).getTitle());
+        assertEquals("test123", User.find().byId(2).getTreasureHunts().get(1).getTitle());
     }
 
     /**
@@ -140,7 +140,7 @@ public class TreasureHuntControllerTest extends BaseTestWithApplicationAndDataba
     @Test
     public void createAndSaveTreasureHuntWithInvalidLoginSession() {
         //User with id 2 should have one trip
-        assertEquals(1, User.find.byId(2).getTreasureHunts().size());
+        assertEquals(1, User.find().byId(2).getTreasureHunts().size());
         Map<String, String> formData = new HashMap<>();
         formData.put("title", "test123");
         formData.put("riddle", "test");
@@ -152,7 +152,7 @@ public class TreasureHuntControllerTest extends BaseTestWithApplicationAndDataba
         //User should not be authorized.
         assertEquals(SEE_OTHER, result.status());
         //User with id 2 should still have only one treasure hunt
-        assertEquals(1, User.find.byId(2).getTreasureHunts().size());
+        assertEquals(1, User.find().byId(2).getTreasureHunts().size());
     }
 
     /**
@@ -161,7 +161,7 @@ public class TreasureHuntControllerTest extends BaseTestWithApplicationAndDataba
     @Test
     public void createAndSaveTreasureHuntWithErrors() {
         //User with id 2 should have one trip
-        assertEquals(1, User.find.byId(2).getTreasureHunts().size());
+        assertEquals(1, User.find().byId(2).getTreasureHunts().size());
         Map<String, String> formData = new HashMap<>();
         formData.put("startDate", "2000-01-01");
         formData.put("endDate", "2001-01-01");
@@ -171,7 +171,7 @@ public class TreasureHuntControllerTest extends BaseTestWithApplicationAndDataba
         //User should be redirected to the create treasure hunts page with errors.
         assertEquals(BAD_REQUEST, result.status());
         //User with id 2 should have only one trip
-        assertEquals(1, User.find.byId(2).getTreasureHunts().size());
+        assertEquals(1, User.find().byId(2).getTreasureHunts().size());
     }
 
     /**
@@ -180,7 +180,7 @@ public class TreasureHuntControllerTest extends BaseTestWithApplicationAndDataba
     @Test
     public void createAndSaveTreasureHuntWithDateError() {
         //User with id 2 should have one trip
-        assertEquals(1, User.find.byId(2).getTreasureHunts().size());
+        assertEquals(1, User.find().byId(2).getTreasureHunts().size());
         Map<String, String> formData = new HashMap<>();
         //Assuming the user fills in the title form as "triptest123"
         formData.put("title", "test123");
@@ -194,7 +194,7 @@ public class TreasureHuntControllerTest extends BaseTestWithApplicationAndDataba
         //User should be redirected to the create treasure hunts page with errors.
         assertEquals(BAD_REQUEST, result.status());
         //User with id 2 should have only one trip
-        assertEquals(1, User.find.byId(2).getTreasureHunts().size());
+        assertEquals(1, User.find().byId(2).getTreasureHunts().size());
     }
 
     /**
@@ -203,7 +203,7 @@ public class TreasureHuntControllerTest extends BaseTestWithApplicationAndDataba
     @Test
     public void createAndSaveTreasureHuntWithDuplicateTitle() {
         //User with id 2 should have one trip
-        assertEquals(1, User.find.byId(2).getTreasureHunts().size());
+        assertEquals(1, User.find().byId(2).getTreasureHunts().size());
         Map<String, String> formData = new HashMap<>();
         //Assuming the user fills in the title form as "triptest123"
         formData.put("title", "Surprise");
@@ -217,7 +217,7 @@ public class TreasureHuntControllerTest extends BaseTestWithApplicationAndDataba
         //User should be redirected to the create treasure hunts page with errors.
         assertEquals(BAD_REQUEST, result.status());
         //User with id 2 should have only one trip
-        assertEquals(1, User.find.byId(2).getTreasureHunts().size());
+        assertEquals(1, User.find().byId(2).getTreasureHunts().size());
     }
 
     /**
@@ -267,8 +267,8 @@ public class TreasureHuntControllerTest extends BaseTestWithApplicationAndDataba
     @Test
     public void editAndSaveTreasureHunt() {
         //User with id 2 should have one trip
-        assertEquals(1, User.find.byId(2).getTreasureHunts().size());
-        int tHuntId = User.find.byId(2).getTreasureHunts().get(0).getThuntid();
+        assertEquals(1, User.find().byId(2).getTreasureHunts().size());
+        int tHuntId = User.find().byId(2).getTreasureHunts().get(0).getThuntid();
         Map<String, String> formData = new HashMap<>();
         formData.put("title", "test123");
         formData.put("riddle", "The garden city");
@@ -281,12 +281,12 @@ public class TreasureHuntControllerTest extends BaseTestWithApplicationAndDataba
         //User should be redirected to the index treasure hunts page
         assertEquals(SEE_OTHER, result.status());
         //User with id 2 should still have only one treasure hunt
-        assertEquals(1, User.find.byId(2).getTreasureHunts().size());
-        assertEquals("test123", User.find.byId(2).getTreasureHunts().get(0).getTitle());
-        assertEquals("The garden city", User.find.byId(2).getTreasureHunts().get(0).getRiddle());
-        assertEquals("Christchurch", User.find.byId(2).getTreasureHunts().get(0).getDestination().getDestName());
-        assertEquals("2019-04-17", User.find.byId(2).getTreasureHunts().get(0).getStartDate());
-        assertEquals("2019-12-25", User.find.byId(2).getTreasureHunts().get(0).getEndDate());
+        assertEquals(1, User.find().byId(2).getTreasureHunts().size());
+        assertEquals("test123", User.find().byId(2).getTreasureHunts().get(0).getTitle());
+        assertEquals("The garden city", User.find().byId(2).getTreasureHunts().get(0).getRiddle());
+        assertEquals("Christchurch", User.find().byId(2).getTreasureHunts().get(0).getDestination().getDestName());
+        assertEquals("2019-04-17", User.find().byId(2).getTreasureHunts().get(0).getStartDate());
+        assertEquals("2019-12-25", User.find().byId(2).getTreasureHunts().get(0).getEndDate());
     }
 
     /**
@@ -295,7 +295,7 @@ public class TreasureHuntControllerTest extends BaseTestWithApplicationAndDataba
     @Test
     public void editAndSaveInvalidTreasureHunt() {
         //User with id 2 should have one trip
-        assertEquals(1, User.find.byId(2).getTreasureHunts().size());
+        assertEquals(1, User.find().byId(2).getTreasureHunts().size());
         Map<String, String> formData = new HashMap<>();
         formData.put("title", "test123");
         formData.put("riddle", "The garden city");
@@ -315,8 +315,8 @@ public class TreasureHuntControllerTest extends BaseTestWithApplicationAndDataba
     @Test
     public void editAndSaveTreasureHuntWithUnauthorizedUser() {
         //User with id 2 should have one trip
-        assertEquals(1, User.find.byId(2).getTreasureHunts().size());
-        int tHuntId = User.find.byId(2).getTreasureHunts().get(0).getThuntid();
+        assertEquals(1, User.find().byId(2).getTreasureHunts().size());
+        int tHuntId = User.find().byId(2).getTreasureHunts().get(0).getThuntid();
         Map<String, String> formData = new HashMap<>();
         formData.put("title", "test123");
         formData.put("riddle", "The garden city");
@@ -328,7 +328,7 @@ public class TreasureHuntControllerTest extends BaseTestWithApplicationAndDataba
         Result result = Helpers.route(app, fakeRequest);
         //User should be redirected to the index treasure hunts page
         assertEquals(UNAUTHORIZED, result.status());
-        assertEquals(1, User.find.byId(2).getTreasureHunts().size());
+        assertEquals(1, User.find().byId(2).getTreasureHunts().size());
     }
 
     /**
@@ -337,8 +337,8 @@ public class TreasureHuntControllerTest extends BaseTestWithApplicationAndDataba
     @Test
     public void editAndSaveTreasureHuntWithInvalidLoginSession() {
         //User with id 2 should have one trip
-        assertEquals(1, User.find.byId(2).getTreasureHunts().size());
-        int tHuntId = User.find.byId(2).getTreasureHunts().get(0).getThuntid();
+        assertEquals(1, User.find().byId(2).getTreasureHunts().size());
+        int tHuntId = User.find().byId(2).getTreasureHunts().get(0).getThuntid();
         Map<String, String> formData = new HashMap<>();
         formData.put("title", "test123");
         formData.put("riddle", "test");
@@ -350,7 +350,7 @@ public class TreasureHuntControllerTest extends BaseTestWithApplicationAndDataba
         //User should not be authorized.
         assertEquals(SEE_OTHER, result.status());
         //User with id 2 should still have only one treasure hunt
-        assertEquals(1, User.find.byId(2).getTreasureHunts().size());
+        assertEquals(1, User.find().byId(2).getTreasureHunts().size());
     }
 
     /**
@@ -359,8 +359,8 @@ public class TreasureHuntControllerTest extends BaseTestWithApplicationAndDataba
     @Test
     public void editAndSaveTreasureHuntWithErrors() {
         //User with id 2 should have one trip
-        assertEquals(1, User.find.byId(2).getTreasureHunts().size());
-        int tHuntId = User.find.byId(2).getTreasureHunts().get(0).getThuntid();
+        assertEquals(1, User.find().byId(2).getTreasureHunts().size());
+        int tHuntId = User.find().byId(2).getTreasureHunts().get(0).getThuntid();
         Map<String, String> formData = new HashMap<>();
         formData.put("startDate", "2000-01-01");
         formData.put("endDate", "2001-01-01");
@@ -370,7 +370,7 @@ public class TreasureHuntControllerTest extends BaseTestWithApplicationAndDataba
         //User should be redirected to the edit treasure hunts page with errors.
         assertEquals(BAD_REQUEST, result.status());
         //User with id 2 should have only one trip
-        assertEquals(1, User.find.byId(2).getTreasureHunts().size());
+        assertEquals(1, User.find().byId(2).getTreasureHunts().size());
     }
 
     /**
@@ -379,8 +379,8 @@ public class TreasureHuntControllerTest extends BaseTestWithApplicationAndDataba
     @Test
     public void editAndSaveTreasureHuntWithDateError() {
         //User with id 2 should have one trip
-        assertEquals(1, User.find.byId(2).getTreasureHunts().size());
-        int tHuntId = User.find.byId(2).getTreasureHunts().get(0).getThuntid();
+        assertEquals(1, User.find().byId(2).getTreasureHunts().size());
+        int tHuntId = User.find().byId(2).getTreasureHunts().get(0).getThuntid();
         Map<String, String> formData = new HashMap<>();
         formData.put("title", "test123");
         formData.put("riddle", "test");
@@ -393,7 +393,7 @@ public class TreasureHuntControllerTest extends BaseTestWithApplicationAndDataba
         //User should be redirected to the edit treasure hunts page with errors.
         assertEquals(BAD_REQUEST, result.status());
         //User with id 2 should have only one trip
-        assertEquals(1, User.find.byId(2).getTreasureHunts().size());
+        assertEquals(1, User.find().byId(2).getTreasureHunts().size());
     }
 
     /**
@@ -402,8 +402,8 @@ public class TreasureHuntControllerTest extends BaseTestWithApplicationAndDataba
     @Test
     public void editAndSaveTreasureHuntWithDuplicateTitle() {
         //User with id 2 should have one trip
-        assertEquals(1, User.find.byId(2).getTreasureHunts().size());
-        int tHuntId = User.find.byId(2).getTreasureHunts().get(0).getThuntid();
+        assertEquals(1, User.find().byId(2).getTreasureHunts().size());
+        int tHuntId = User.find().byId(2).getTreasureHunts().get(0).getThuntid();
         Map<String, String> formData = new HashMap<>();
         formData.put("title", "Surprise2");
         formData.put("riddle", "test");
@@ -416,7 +416,7 @@ public class TreasureHuntControllerTest extends BaseTestWithApplicationAndDataba
         //User should be redirected to the edit treasure hunts page with errors.
         assertEquals(BAD_REQUEST, result.status());
         //User with id 2 should have only one trip
-        assertEquals(1, User.find.byId(2).getTreasureHunts().size());
+        assertEquals(1, User.find().byId(2).getTreasureHunts().size());
     }
 
     /**
@@ -425,14 +425,14 @@ public class TreasureHuntControllerTest extends BaseTestWithApplicationAndDataba
     @Test
     public void deleteTreasureHunt() {
         //User with id 2 should have one trip
-        assertEquals(1, User.find.byId(2).getTreasureHunts().size());
-        int tHuntId = User.find.byId(2).getTreasureHunts().get(0).getThuntid();
+        assertEquals(1, User.find().byId(2).getTreasureHunts().size());
+        int tHuntId = User.find().byId(2).getTreasureHunts().get(0).getThuntid();
         Http.RequestBuilder fakeRequest = Helpers.fakeRequest().method(Helpers.GET).uri("/users/treasurehunts/delete/" + tHuntId).session("connected", "2");
         Result result = Helpers.route(app, fakeRequest);
         //User should be redirected to the index treasure hunts page
         assertEquals(SEE_OTHER, result.status());
         //User with id 2 should still have only one treasure hunt
-        assertEquals(0, User.find.byId(2).getTreasureHunts().size());
+        assertEquals(0, User.find().byId(2).getTreasureHunts().size());
 
     }
 
@@ -454,14 +454,14 @@ public class TreasureHuntControllerTest extends BaseTestWithApplicationAndDataba
     @Test
     public void deleteTreasureHuntWithUnauthorizedUser() {
         //User with id 2 should have one trip
-        assertEquals(1, User.find.byId(2).getTreasureHunts().size());
-        int tHuntId = User.find.byId(2).getTreasureHunts().get(0).getThuntid();
+        assertEquals(1, User.find().byId(2).getTreasureHunts().size());
+        int tHuntId = User.find().byId(2).getTreasureHunts().get(0).getThuntid();
         Map<String, String> formData = new HashMap<>();
         Http.RequestBuilder fakeRequest = Helpers.fakeRequest().method(Helpers.GET).uri("/users/treasurehunts/delete/" + tHuntId).session("connected", "3");
         Result result = Helpers.route(app, fakeRequest);
         //User should be redirected to the index treasure hunts page
         assertEquals(UNAUTHORIZED, result.status());
-        assertEquals(1, User.find.byId(2).getTreasureHunts().size());
+        assertEquals(1, User.find().byId(2).getTreasureHunts().size());
     }
 
     /**
@@ -470,14 +470,14 @@ public class TreasureHuntControllerTest extends BaseTestWithApplicationAndDataba
     @Test
     public void deleteTreasureHuntWithInvalidLoginSession() {
         //User with id 2 should have one trip
-        assertEquals(1, User.find.byId(2).getTreasureHunts().size());
-        int tHuntId = User.find.byId(2).getTreasureHunts().get(0).getThuntid();
+        assertEquals(1, User.find().byId(2).getTreasureHunts().size());
+        int tHuntId = User.find().byId(2).getTreasureHunts().get(0).getThuntid();
         Http.RequestBuilder fakeRequest = Helpers.fakeRequest().method(Helpers.GET).uri("/users/treasurehunts/delete/" + tHuntId).session("connected", null);
         Result result = Helpers.route(app, fakeRequest);
         //User should not be authorized.
         assertEquals(SEE_OTHER, result.status());
         //User with id 2 should still have only one treasure hunt
-        assertEquals(1, User.find.byId(2).getTreasureHunts().size());
+        assertEquals(1, User.find().byId(2).getTreasureHunts().size());
     }
 
     @Test
@@ -493,7 +493,7 @@ public class TreasureHuntControllerTest extends BaseTestWithApplicationAndDataba
         Http.RequestBuilder fakeRequest = Helpers.fakeRequest()
                 .bodyForm(formData)
                 .method(Helpers.POST)
-                .uri("/users/treasurehunts/edit/save/" + treasureHunt.thuntid)
+                .uri("/users/treasurehunts/edit/save/" + treasureHunt.getThuntid())
                 .session("connected", "2");
         fakeRequest = CSRFTokenHelper.addCSRFToken(fakeRequest);
         Helpers.route(app, fakeRequest);
@@ -511,7 +511,7 @@ public class TreasureHuntControllerTest extends BaseTestWithApplicationAndDataba
     @Test
     public void redoEditTreasureHunt() {
         User user = UserAccessor.getById(2);
-        int tHuntId = user.getTreasureHunts().get(0).thuntid;
+        int tHuntId = user.getTreasureHunts().get(0).getThuntid();
         Map<String, String> formData = new HashMap<>();
         formData.put("title", "test123");
         formData.put("riddle", "The garden city");
@@ -559,7 +559,7 @@ public class TreasureHuntControllerTest extends BaseTestWithApplicationAndDataba
     public void undoDeleteTreasureHunt() {
         User user = UserAccessor.getById(2);
         int nTreasureHunts = user.getTreasureHunts().size();
-        Integer tHuntId = user.getTreasureHunts().get(0).thuntid;
+        Integer tHuntId = user.getTreasureHunts().get(0).getThuntid();
 
         // Delete
         Http.RequestBuilder fakeRequest = Helpers.fakeRequest().method(Helpers.GET).uri("/users/treasurehunts/delete/" + tHuntId).session("connected", "2");
@@ -577,7 +577,7 @@ public class TreasureHuntControllerTest extends BaseTestWithApplicationAndDataba
     public void redoDeleteTreasureHuntCommand() {
         User user = UserAccessor.getById(2);
         int nTreasureHunts = user.getTreasureHunts().size();
-        Integer tHuntId = user.getTreasureHunts().get(0).thuntid;
+        Integer tHuntId = user.getTreasureHunts().get(0).getThuntid();
 
         // Delete
         Http.RequestBuilder fakeRequest = Helpers.fakeRequest().method(Helpers.GET).uri("/users/treasurehunts/delete/" + tHuntId).session("connected", "2");

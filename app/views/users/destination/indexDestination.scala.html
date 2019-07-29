@@ -45,7 +45,7 @@
                     @*<tr data-toggle="modal" data-id="@destination.getDestId()" data-dest-name="@destination.getDestName()" data-target="#orderModal" class="clickable">*@
                     <tr data-id="@destination.getDestId" data-dest-name="@destination.getDestName">
                         <th scope ="row">
-                            <span id="primary@destination.destid">
+                            <span id="primary@destination.getDestId">
                             @if(destination.getPrimaryPhoto != null){
                                 <img src="@routes.DestinationController.servePrimaryPicture(destination.getDestId) " width="50" height="60">
                                 }
@@ -136,7 +136,7 @@
                 @if(destination.getIsPublic) {
                     <tr data-id="@destination.getDestId" data-dest-name="@destination.getDestName">
                         <th scope="row">
-                                <span id="primary@destination.destid">
+                                <span id="primary@destination.getDestId">
                                 @if(destination.getPrimaryPhoto != null){
                                     <img src="@routes.DestinationController.servePrimaryPicture(destination.getPrimaryPhoto.getPhotoId) " width="50" height="60">
                                     }

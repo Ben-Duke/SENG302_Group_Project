@@ -64,14 +64,13 @@ public class UserFormData implements Constraints.Validatable<List<ValidationErro
 
         if (firstName == null || firstName.length() == 0) {
             errors.add(new ValidationError("firstName", "No first name was given"));
-        }
-        if (firstName.matches(".*\\d+.*") || firstName.length() < 1) {
+        } else if (firstName.matches(".*\\d+.*")) {
             errors.add(new ValidationError("firstName", "First name needs to be only letters and be at least one letter long"));
         }
 
         if (lastName == null || lastName.length() == 0) {
             errors.add(new ValidationError("lastName", "No last name was given"));
-        } else if (lastName.matches(".*\\d+.*") || lastName.length() < 1) {
+        } else if (lastName.matches(".*\\d+.*")) {
             errors.add(new ValidationError("lastName", "Last name needs to be only letters and be at least one letter long"));
         }
         if (email == null || email.length() == 0) {

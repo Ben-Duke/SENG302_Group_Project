@@ -35,13 +35,13 @@
                                 </td>
                                 <td>@visit.getArrival()</td>
                                 <td>@visit.getDeparture()</td>
-                                <td><a href=@routes.TripController.editvisit(visit.visitid) class="btn btn-primary">Edit</a></td>
+                                <td><a href=@routes.TripController.editvisit(visit.getVisitid) class="btn btn-primary">Edit</a></td>
                                 <td><button class="btn btn-danger" onclick="sendDeleteVisitRequest(
                                     '@routes.TripController.deletevisit(visit.getVisitid())',
-                                    '@routes.TripController.displaytrip(trip.tripid)',
-                                    '@routes.TripController.displaytrip(trip.tripid)',
-                                    '@routes.TripController.displaytrip(trip.tripid)',
-                                    '@routes.TripController.displaytrip(trip.tripid)')">Delete</button></td>
+                                    '@routes.TripController.displaytrip(trip.getTripid)',
+                                    '@routes.TripController.displaytrip(trip.getTripid)',
+                                    '@routes.TripController.displaytrip(trip.getTripid)',
+                                    '@routes.TripController.displaytrip(trip.getTripid)')">Delete</button></td>
                             </tr>
                             <br>
                             }
@@ -68,7 +68,7 @@
                         var data = jQuery('#myTable tr').map(function(){
                             return jQuery (this).attr("id");
                         }).get();
-                        var url = '/users/trips/edit/' + @trip.tripid;
+                        var url = '/users/trips/edit/' + @trip.getTripid;
                         // POST to server using $.post or $.ajax
                         $.ajax({
                             data : JSON.stringify(data),

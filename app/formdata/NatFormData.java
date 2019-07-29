@@ -10,21 +10,15 @@ import java.util.List;
 import factories.UserFactory;
 
 @Constraints.Validate
+/**A form class used ot validate user inputs on the nationality form page */
 public class NatFormData implements Constraints.Validatable<List<ValidationError>>{
-    public static UserFactory userFactory;
-    public static Logger logger = LoggerFactory.getLogger("application");
+
+    private static Logger logger = LoggerFactory.getLogger("application");
     public int userId = -1;
-    public int natcount;
-    public int nationality;
+    private int natcount;
+    private int nationality;
     public String nationalitydelete;
 
-    public static UserFactory getUserFactory() {
-        return userFactory;
-    }
-
-    public static void setUserFactory(UserFactory userFactory) {
-        NatFormData.userFactory = userFactory;
-    }
 
     public static Logger getLogger() {
         return logger;
@@ -71,6 +65,7 @@ public class NatFormData implements Constraints.Validatable<List<ValidationError
         this.nationalitydelete = delNat;
         this.userId = id;
     }
+    /** Required for form instantiation. */
     public NatFormData(){
 
     }
@@ -84,7 +79,7 @@ public class NatFormData implements Constraints.Validatable<List<ValidationError
     public List<ValidationError> validate() {
         List<ValidationError> errors = new ArrayList<>();
         if(userId != -1) {
-            natcount = userFactory.getNatsForUserbyId(userId);
+            natcount = UserFactory.getNatsForUserbyId(userId);
         }
         if (natcount < 2) {
             errors.add(

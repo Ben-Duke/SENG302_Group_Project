@@ -362,7 +362,7 @@ function isLatLongValid(latitude, longitude) {
 window.onload = function() {
     const images = document.getElementsByClassName("flyToImage");
 
-    for (image of images) {
+    for (let image of images) {
         image.addEventListener('click', (event) => {
             const targetIMG = event.target;
 

@@ -36,10 +36,9 @@ public class UnlinkingPhotosToDestinationsCommandTest extends BaseTestWithApplic
                 "create table test (id bigint not null, name varchar(255));",
                 "drop table test;"
         )));
-        TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
-        testDatabaseManager.populateDatabase();
+        TestDatabaseManager.populateDatabase();
 
-        user = User.find.byId(1);
+        user = User.find().byId(1);
 
         photo =  new UserPhoto("imagetest.png", false, false, user);
         String unusedPhotoUrl = photo.getUnusedUserPhotoFileName();

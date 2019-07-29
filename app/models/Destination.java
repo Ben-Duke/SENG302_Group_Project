@@ -13,52 +13,49 @@ import java.util.*;
 public class Destination extends Model {
 
     @Id
-    public Integer destid;
+    private Integer destid;
 
-    public String destName;
-    public String destType;
-    public String district;
-    public String country;
-    public boolean isCountryValid;
-    public double latitude;
-    public double longitude;
-    public boolean isPublic;
-
-
+    private String destName;
+    private String destType;
+    private String district;
+    private String country;
+    private boolean isCountryValid;
+    private double latitude;
+    private double longitude;
+    private boolean isPublic;
 
     @ManyToOne
-    public UserPhoto primaryPhoto;
+    private UserPhoto primaryPhoto;
 
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "user", referencedColumnName = "userid")
-    public User user;
+    private User user;
 
     @JsonIgnore
     @OneToMany(mappedBy = "destination")
-    public List<Visit> visits;
+    private List<Visit> visits;
 
     @JsonIgnore
     @ManyToMany(mappedBy = "destinations")
-    public List<UserPhoto> userPhotos;
+    private List<UserPhoto> userPhotos;
 
     @JsonIgnore
     @ManyToMany(cascade = CascadeType.ALL)
-    public Set<TravellerType> travellerTypes;
+    private Set<TravellerType> travellerTypes;
 
-    public static Finder<String,Destination> findString = new Finder<>(Destination.class);
-    public static Finder<Integer,Destination> find = new Finder<>(Destination.class);
+    private static Finder<Integer,Destination> find = new Finder<>(Destination.class);
 
     /**
      * Destination constructor with isPublic method
-     * @param destName
-     * @param destType
-     * @param district
-     * @param country
-     * @param latitude
-     * @param longitude
-     * @param user
-     * @param isPublic
+     * @param destName The name of the destination
+     * @param destType The type of the destination
+     * @param district The district of the destination
+     * @param country The country of the destination
+     * @param latitude The latitude of the destination
+     * @param longitude The longitude of the destination
+     * @param user The user that owns the destination
+     * @param isPublic Is the destination public
      */
     public Destination(String destName, String destType, String district, String country, double latitude, double longitude, User user, boolean isPublic){
         this.destName = destName;
@@ -72,7 +69,11 @@ public class Destination extends Model {
         this.isPublic = isPublic;
     }
 
-
+    /**
+     * Destination construction given a chosen destination
+     *
+     * @param destination The Destination object
+     */
     public Destination(Destination destination){
         this.destName = destination.getDestName();
         this.user = destination.getUser();
@@ -87,19 +88,24 @@ public class Destination extends Model {
 
     /**
      * Destination constructor without isPublic method (isPublic defaults to false)
-     * @param destName
-     * @param destType
-     * @param district
-     * @param country
-     * @param latitude
-     * @param longitude
-     * @param user
+     * @param destName The name of the destination
+     * @param destType The type of the destination
+     * @param district The district of the destination
+     * @param country The country of the destination
+     * @param latitude The latitude of the destination
+     * @param longitude The longitude of the destination
+     * @param user The user that owns the destination
      */
     public Destination(String destName, String destType, String district, String country, double latitude, double longitude, User user){
         this(destName, destType, district, country, latitude, longitude, user, false);
         this.isCountryValid = true;
     }
-    
+
+    /**
+     * Destination constructor given a destination and a list of visits
+     * @param destination The destination object being made
+     * @param visits The list of visits for this destination
+     */
     public Destination(Destination destination, List<Visit> visits) {
         this(destination.destName, destination.destType, destination.district,
                 destination.country, destination.latitude, destination.longitude,
@@ -111,6 +117,10 @@ public class Destination extends Model {
      * Destination constructor
      */
     public Destination(){}
+
+    public static Finder<Integer,Destination> find() {
+        return find;
+    }
 
     /**
      * A function that is called when creating a destination to the the types
@@ -293,6 +303,11 @@ public class Destination extends Model {
         return true;
     }
 
+    /**
+     *The unique hashcode of a destination given it's attributes
+     *
+     * @return The full hash code of the destination
+     */
     @Override
     public int hashCode() {
         int hash = 7;
@@ -319,7 +334,10 @@ public class Destination extends Model {
 
     /** Modifies the fields of this Destination which are included in the
      *   destination editing form to be equal to those fields of the destination
-     *   passed in */
+     *   passed in
+     *
+     * @param newDestination The new destination after updating
+     */
     public void applyEditChanges(Destination newDestination) {
         this.destName = newDestination.getDestName();
         this.country = newDestination.getCountry();

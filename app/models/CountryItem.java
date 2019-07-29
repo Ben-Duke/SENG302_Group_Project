@@ -13,7 +13,8 @@ public abstract class CountryItem  extends Model {
     @Column
     private Boolean countryValid;
 
-    CountryItem() {
+
+    public CountryItem() {
         this.countryValid = true;
     }
 

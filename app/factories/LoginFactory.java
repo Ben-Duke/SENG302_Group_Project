@@ -24,7 +24,7 @@ public class LoginFactory {
     public static int getUserId(String email) {
         int userId = -1;
 
-        ExpressionList<User> users = User.find.query()
+        ExpressionList<User> users = User.find().query()
                             .where().eq("email", email.toLowerCase());
 
         if (users.findCount() == 1) {

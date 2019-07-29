@@ -81,7 +81,6 @@ public class DeletePhotoCommand extends UndoableCommand {
 
     private void removeMediaFromAlbums(HashSet<Album> albums, Media mediaToRemove) {
         for (Album album : albums) {
-
             album.removeMedia(mediaToRemove);
             AlbumAccessor.update(album);
             if ((album.getPrimaryPhoto() != null) &&

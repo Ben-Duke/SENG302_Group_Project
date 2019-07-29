@@ -154,7 +154,7 @@ function closeModal() {
 
 function openDestinationModal(mediaId) {
     console.log("dest modal opened");
-    // document.getElementById('destination-modal').style.display="block";
+    document.getElementById('destination-modal').style.display = "block";
     getDestData(mediaId);
 }
 
@@ -171,8 +171,9 @@ function getDestData(mediaId) {
 
 function loadDestTable(destData, mediaId) {
     for (let destination of destData) {
+        console.log(destination);
         const publicTable = document.getElementById('public-dest-tbody');
-        const privateTable = doucment.getElementById('private-dest-tbody');
+        const privateTable = document.getElementById('private-dest-tbody');
         if (destination.isPublic) {
             addDestRow(publicTable, destination, mediaId);
         } else {
@@ -204,17 +205,23 @@ function addDestRow(table, destination, mediaId) {
     const linkButton = document.createElement('BUTTON');
     linkButton.setAttribute('class', 'btn btn-primary');
     linkButton.innerText = 'Link to destination';
-    linkButton.addEventListener('click', linkDestination(destination.id, mediaId));
+    linkButton.addEventListener('click', () => {
+        linkDestination(destination.id, mediaId)
+    });
 
     const unlinkButton = document.createElement('BUTTON');
     unlinkButton.setAttribute('class', 'btn btn-danger');
     unlinkButton.innerText = 'Unlink from destination';
-    unlinkButton.addEventListener('click', unlinkDestination(destination.id, mediaId));
+    unlinkButton.addEventListener('click', () => {
+        unlinkDestination(destination.id, mediaId)
+    });
 
     const div = document.createElement('DIV');
     div.appendChild(linkButton);
     div.appendChild(unlinkButton);
     row.appendChild(div);
+
+    table.appendChild(row);
 }
 
 

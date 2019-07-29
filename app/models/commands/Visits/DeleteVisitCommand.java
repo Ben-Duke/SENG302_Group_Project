@@ -4,8 +4,8 @@ import accessors.TripAccessor;
 import accessors.VisitAccessor;
 import models.Trip;
 import models.Visit;
+import models.commands.General.CommandPage;
 import models.commands.General.UndoableCommand;
-import models.commands.Trips.TripPageCommand;
 
 /**
  * Command to delete a visit
@@ -21,6 +21,7 @@ public class DeleteVisitCommand extends UndoableCommand {
      * @param visit the visit that is being deleted
      */
     public DeleteVisitCommand(Visit visit) {
+        super(CommandPage.TRIP);
         this.visitToDelete = visit;
         this.trip = visit.getTrip();
     }

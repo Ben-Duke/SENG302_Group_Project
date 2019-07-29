@@ -5,6 +5,7 @@ import accessors.VisitAccessor;
 import models.Trip;
 import models.User;
 import models.Visit;
+import models.commands.General.CommandPage;
 import models.commands.General.UndoableCommand;
 
 import java.util.ArrayList;
@@ -30,7 +31,7 @@ public class CreateTripFromVisitsCommand extends UndoableCommand {
      * @param user the user that's creating the trip
      */
     public CreateTripFromVisitsCommand(List<Visit> visits, String name, User user) {
-
+        super(CommandPage.TRIP);
         this.visits = visits;
         this.cleanVisits = new ArrayList<>();
         this.name = name;

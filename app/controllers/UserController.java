@@ -1,13 +1,17 @@
 package controllers;
 
+import accessors.UserPhotoAccessor;
+import factories.UserFactory;
 import models.Admin;
 import models.User;
 import models.UserPhoto;
+import org.slf4j.Logger;
 import play.libs.Json;
 import play.mvc.Http;
 import play.mvc.Result;
 import utilities.CountryUtils;
 import utilities.TestDatabaseManager;
+import utilities.UtilityFunctions;
 import views.html.users.userIndex;
 
 import java.util.ArrayList;
@@ -15,14 +19,16 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static play.mvc.Results.notFound;
-import static play.mvc.Results.ok;
+import static play.mvc.Results.*;
 
 public class UserController {
+
+    private final Logger logger = UtilityFunctions.getLogger();
+
     // A thread safe boolean
-    AtomicBoolean wasRun = new AtomicBoolean(false);
+    private AtomicBoolean wasRun = new AtomicBoolean(false);
     // A countdownlatch which frees when the database has been populated.
-    CountDownLatch initCompleteLatch = new CountDownLatch(1);
+    private CountDownLatch initCompleteLatch = new CountDownLatch(1);
 
     /**
      * Renders the index page and populates the in memory database
@@ -34,14 +40,14 @@ public class UserController {
      * Only one thread gets into the if block and all other concurrent threads
      * wait in the else block for the if block free the lock.
      *
+     * @param request The HTTP request
      * @return the user index page
      */
     public Result userindex(Http.Request request){
         if (!wasRun.getAndSet(true)) {
             ApplicationManager.setUserPhotoPath("/../user_photos/user_");
-            TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
-            testDatabaseManager.populateDatabase(initCompleteLatch);
-            System.out.println("populating database");
+            TestDatabaseManager.populateDatabase(initCompleteLatch);
+            logger.info("populating database");
 
             CountryUtils.updateCountries();
 
@@ -49,16 +55,19 @@ public class UserController {
             try {
                 initCompleteLatch.await();
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                logger.error("initCompleteLatch interrupted", e);
+                Thread.currentThread().interrupt();
             }
         }
-        List<User> users = User.find.all();
-        List<Admin> admins = Admin.find.all();
+        List<User> users = User.find().all();
+        List<Admin> admins = Admin.find().all();
         return ok(userIndex.render(users, admins,User.getCurrentUser(request)));
     }
 
     /**
-     * Handles the ajax request to get a user.
+     * Handles the ajax request to get a user as a json object.
+     *
+     * @param request The HTTP request
      * @return the corresponding user as a json based on the login session.
      */
     public Result getUser(Http.Request request){
@@ -73,6 +82,8 @@ public class UserController {
 
     /**
      * Handles the ajax request to get a user.
+     *
+     * @param request The HTTP Request
      * @return the corresponding user as a json based on the login session.
      */
     public Result getUserPhotosAjax(Http.Request request){
@@ -82,7 +93,7 @@ public class UserController {
             List<Integer> photoIds = new ArrayList<>();
             if (userPhotos != null) {
                 for (UserPhoto photo: userPhotos) {
-                    photoIds.add(photo.photoId);
+                    photoIds.add(photo.getPhotoId());
                 }
             }
             return ok(Json.toJson(photoIds));
@@ -90,6 +101,59 @@ public class UserController {
         else{
             return notFound();
         }
+    }
+
+    /**
+     * Handles requests to get a photo's caption
+     * @param request The http request from a logged in user
+     * @param photoId the id of the photo that has the caption
+     * @return if successful, a 200 code with the caption.
+     */
+    public Result getPhotoCaption(Http.Request request, int photoId) {
+        User user = User.getCurrentUser(request);
+        if (user == null) {
+            return unauthorized();
+        }
+        UserPhoto userPhoto = UserPhotoAccessor.getUserPhotoById(photoId);
+        if (userPhoto == null) {
+            return notFound();
+
+        }
+        if (!userPhoto.isPublic() && !userPhoto.getUser().equals(user) && !user.userIsAdmin()) {
+            return forbidden();
+        }
+        String caption = userPhoto.getCaption();
+        if (caption == null) {
+            return ok("");
+        }
+        return ok(caption);
+
+    }
+
+    /**
+     * Handles requests to change a caption of a photo
+     * @param request Request with information about the caption and the logged in user
+     * @param photoId the id of the photo to change
+     * @return An http response with the response code.
+     */
+    public Result editPhotoCaption(Http.Request request, int photoId) {
+        String caption = request.body().asJson().get("caption").asText();
+        User user = User.getCurrentUser(request);
+        if (user == null) {
+            return unauthorized();
+        }
+        try {
+            // throws IllegalArgumentException if user forbidden or photo not found
+            UserFactory.editPictureCaption(user.getUserid(), photoId, caption);
+            return ok();
+        } catch (IllegalArgumentException e) {
+            if (e.getMessage().equals("Forbidden")) {
+                return forbidden();
+            } else if (e.getMessage().equals("Not Found")) {
+                return notFound();
+            }
+        }
+        return internalServerError();
     }
 
 }

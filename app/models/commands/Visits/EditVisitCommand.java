@@ -2,6 +2,7 @@ package models.commands.Visits;
 
 import accessors.VisitAccessor;
 import models.Visit;
+import models.commands.General.CommandPage;
 import models.commands.General.UndoableCommand;
 import models.commands.Trips.TripPageCommand;
 
@@ -20,6 +21,7 @@ public class EditVisitCommand extends UndoableCommand {
      * @param visit the visit that is being edited
      */
     public EditVisitCommand(Visit visit) {
+        super(CommandPage.TRIP);
         this.editedVisit = new Visit();
         actualVisit = visit;
         this.editedVisit.applyEditChanges(visit);

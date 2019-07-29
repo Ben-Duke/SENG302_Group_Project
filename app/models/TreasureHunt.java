@@ -9,8 +9,61 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+/** Model class for treasure hunt construction */
 @Entity
 public class TreasureHunt extends Model {
+
+    /**
+     * The id of the treasure hunt
+     */
+    @Id
+    private Integer thuntid;
+
+    /**
+     * The title of the treasure hunt
+     */
+    private String title;
+
+    /**
+     * The treasure hunt's riddle
+     */
+    private String riddle;
+
+    /**
+     * The destination that is the correct answer to the treasure hunt
+     */
+    @JsonIgnore
+    @ManyToOne
+    private Destination destination;
+
+    /**
+     * The starting date of the treasure hunt
+     */
+    private String startDate;
+
+    /**
+     * The end date of the treasure hunt;
+     */
+    private String endDate;
+
+    /**
+     * The owner of the treasure hunt;
+     */
+    @JsonIgnore
+    @ManyToOne
+    @JoinColumn(name = "user", referencedColumnName = "userid")
+    private User user;
+
+    /**
+     * The users who have made a guess
+     */
+    @JsonIgnore
+    @ManyToMany(mappedBy = "guessedTHunts")
+    private List<User> users;
+
+    private static Finder<Integer,TreasureHunt> find = new Finder<>(TreasureHunt.class);
+
+
 
     /**
      * Default Constructor
@@ -35,6 +88,11 @@ public class TreasureHunt extends Model {
         this.users = new ArrayList<>();
     }
 
+    /**
+     * Constructor to create a treasure hunt from an existing treasure hunt object
+     *
+     * @param treasureHunt The treasure hunt object being created
+     */
     public TreasureHunt(TreasureHunt treasureHunt) {
         this(treasureHunt.getTitle(),
                 treasureHunt.getRiddle(),
@@ -42,59 +100,17 @@ public class TreasureHunt extends Model {
                 treasureHunt.getStartDate(),
                 treasureHunt.getEndDate(),
                 treasureHunt.getUser()
-            );
+        );
     }
 
-    /**
-     * The id of the treasure hunt
-     */
-    @Id
-    public Integer thuntid;
 
-    /**
-     * The title of the treasure hunt
-     */
-    public String title;
-
-    /**
-     * The treasure hunt's riddle
-     */
-    public String riddle;
-
-    /**
-     * The destination that is the correct answer to the treasure hunt
-     */
-    @JsonIgnore
-    @ManyToOne
-    public Destination destination;
-
-    /**
-     * The starting date of the treasure hunt
-     */
-    public String startDate;
-
-    /**
-     * The end date of the treasure hunt;
-     */
-    public String endDate;
-
-    /**
-     * The owner of the treasure hunt;
-     */
-    @JsonIgnore
-    @ManyToOne
-    @JoinColumn(name = "user", referencedColumnName = "userid")
-    public User user;
-
-    /**
-     * The users who have made a guess
-     */
-    @JsonIgnore
-    @ManyToMany(mappedBy = "guessedTHunts")
-    public List<User> users;
-
-    public static Finder<Integer,TreasureHunt> find = new Finder<>(TreasureHunt.class);
-
+     /** Gets the Ebeans finder object for TreasureHunt
+     *
+     * @return Finder<Integer,TreasureHunt> object.
+      */
+    public static Finder<Integer,TreasureHunt> find() {
+        return find;
+    }
     public Integer getThuntid() {
         return thuntid;
     }
@@ -155,6 +171,11 @@ public class TreasureHunt extends Model {
         this.title = title;
     }
 
+    /**
+     *The unique hashcode of a treasure hunt given it's attributes
+     *
+     * @return The full hash code of the treasure hunt
+     */
     @Override
     public int hashCode() {
         int result = 17;
@@ -166,6 +187,13 @@ public class TreasureHunt extends Model {
         return result;
     }
 
+    /**
+     * Method to check equal treasure hunt objects
+     *
+     * @param obj The object being checked
+     * @return True of the object is equal to this treasure hunt,
+     * False otherwise
+     */
     @Override
     public boolean equals(Object obj) {
         if (obj == this) return true;
@@ -178,9 +206,13 @@ public class TreasureHunt extends Model {
                 endDate.equals(other.endDate);
     }
 
-    /** Modifies the fields of this Treasure Hunt which are included in the
+    /**
+     * Modifies the fields of this Treasure Hunt which are included in the
      *   treasure hunt editing form to be equal to those fields of the TreasureHunt
-     *   passed in */
+     *   passed in
+     *
+     * @param editedTreasureHunt The changed treasure hunt
+     */
     public void applyEditChanges(TreasureHunt editedTreasureHunt) {
         this.title = editedTreasureHunt.getTitle();
         this.destination = editedTreasureHunt.getDestination();
@@ -188,5 +220,12 @@ public class TreasureHunt extends Model {
         this.startDate = editedTreasureHunt.getStartDate();
         this.endDate = editedTreasureHunt.getEndDate();
         this.users = editedTreasureHunt.getUsers();
+    }
+
+    /**
+     * Sets the TreasureHunt ID to null.
+     */
+    public void setThuntIdNull() {
+        this.thuntid = null;
     }
 }

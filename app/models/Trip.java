@@ -16,6 +16,35 @@ import java.util.List;
 @Entity
 public class Trip extends Model {
 
+    @Id
+    private Integer tripid;
+
+    private String tripName;
+
+    @Column(columnDefinition = "integer default 0")
+    private Integer removedVisits;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "trip")
+    private List<Visit> visits;
+
+    private static Finder<Integer,Trip> find = new Finder<>(Trip.class);
+
+    private boolean isPublic = true;
+
+    @JsonIgnore
+    @ManyToOne
+    @JoinColumn(name = "user", referencedColumnName = "userid")
+    private User user;
+
+
+
+    /**
+     * Default Constructor
+     */
+    public Trip(){
+    }
+
     public Trip(Trip trip, List<Visit> visits) {
         this.tripName = trip.getTripName();
         this.removedVisits = trip.getRemovedVisits();
@@ -24,36 +53,12 @@ public class Trip extends Model {
         this.visits = visits;
     }
 
-    @Id
-    public Integer tripid;
-
-    public String tripName;
-
-    @Column(columnDefinition = "integer default 0")
-    public Integer removedVisits;
-
-    @JsonIgnore
-    @OneToMany(mappedBy = "trip")
-    public List<Visit> visits;
-
-    public static Finder<Integer,Trip> find = new Finder<>(Trip.class);
-
-    public boolean isPublic = true;
-
-    @JsonIgnore
-    @ManyToOne
-    @JoinColumn(name = "user", referencedColumnName = "userid")
-    public User user;
-
-    public static Trip makeInstance(TripFormData formData){
-        Trip trip = new Trip();
-        trip.tripName = formData.tripName;
-        trip.user = formData.user;
-        trip.removedVisits = 0;
-        trip.visits = new ArrayList<>();
-        return trip;
-    }
-
+    /**
+     * Trip Constructor
+     * @param tripName Name of the trip
+     * @param isPublic the public attribute for the trip
+     * @param user The owner of the trip
+     */
     public Trip(String tripName, boolean isPublic, User user) {
         this.removedVisits = 0;
         this.tripName = tripName;
@@ -62,9 +67,13 @@ public class Trip extends Model {
         this.visits = new ArrayList<>();
     }
 
-
-
-    public Trip(){
+    /**
+     * Gets finder object for Trip.
+     *
+     * @return Finder<Integer,Trip> object
+     */
+    public static Finder<Integer,Trip> find() {
+        return find;
     }
 
 
@@ -103,9 +112,9 @@ public class Trip extends Model {
     }
 
     public List<Visit> getOrderedVisits(){
-        List<Visit> visits = this.getVisits();
-        visits.sort(Comparator.comparing(Visit::getVisitOrder));
-        return visits;
+        List<Visit> tempVisits = visits;
+        tempVisits.sort(Comparator.comparing(Visit::getVisitOrder));
+        return tempVisits;
     }
 
     public void deleteVisit(Visit visit){
@@ -116,6 +125,10 @@ public class Trip extends Model {
         this.visits.add(visit);
     }
 
+    /**
+     * Returns the start date of the trip
+     * @return The date of the start of the trip as a string
+     */
     public String getTripStart(){
         if(this.visits.isEmpty()){
             return null;
@@ -126,6 +139,10 @@ public class Trip extends Model {
         }
     }
 
+    /**
+     * Returns the end date of the trip
+     * @return The date of the end of the trip as a string
+     */
     public String getTripEnd(){
         String endDate = Ebean.find(Visit.class).where().eq("trip", this).orderBy("departure ASC").findList().get(0).getDeparture();
         return endDate;
@@ -150,12 +167,7 @@ public class Trip extends Model {
 
 
     public boolean hasVisit(){
-        if (visits != null) {
-            if (! visits.isEmpty()) {
-                return true;
-            }
-        }
-        return false;
+        return (visits != null) && (!visits.isEmpty());
     }
 
 

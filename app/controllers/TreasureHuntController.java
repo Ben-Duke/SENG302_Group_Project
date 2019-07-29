@@ -206,7 +206,7 @@ public class TreasureHuntController extends Controller {
             // Change the destination map to keep track of the current destination selected in the select
             String destName = incomingForm.rawData().get("destination");
             if (destName !=null && !destName.isEmpty()) {
-                destinationMap.put(destName, true);
+                destinationMap.replace(destName, true);
             }
             return badRequest(editTreasureHunt.render(incomingForm, treasureHunt, user, destinationMap));
         }
@@ -217,6 +217,7 @@ public class TreasureHuntController extends Controller {
             }
         }
         TreasureHuntFormData edited = incomingForm.get();
+        System.out.println(edited);
         treasureHuntFactory.editTreasureHunt(user, treasureHuntId, edited);
         return redirect(routes.TreasureHuntController.indexTreasureHunt());
     }

@@ -34,14 +34,7 @@ public class AddMediaToAlbumCommand extends UndoableCommand {
     }
 
     public void undo() {
-        savedMediaList = new ArrayList<>();
         for (Media media : medias) {
-            if(media instanceof UserPhoto) {
-                UserPhoto userPhoto = (UserPhoto) media;
-                userPhoto = new UserPhoto(userPhoto.getUrl(), userPhoto.getIsPublic(), userPhoto.isProfile(), userPhoto.getUser(),
-                        userPhoto.getAlbums(), userPhoto.getPrimaryPhotoDestinations());
-                savedMediaList.add(userPhoto);
-            }
             album.removeMedia(media);
             AlbumAccessor.update(album);
         }
@@ -50,12 +43,6 @@ public class AddMediaToAlbumCommand extends UndoableCommand {
 
 
     public void redo() {
-//        for (Media media : savedMediaList) {
-//            if(!album.getMedia().contains(media)) {
-//                album.addMedia(media);
-//            }
-//        }
-//        AlbumAccessor.update(album);
         execute();
     }
 

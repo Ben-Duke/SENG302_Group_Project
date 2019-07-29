@@ -18,7 +18,11 @@ import play.test.Helpers;
 
 import testhelpers.BaseTestWithApplicationAndDatabase;
 
+import java.util.ArrayList;
+
+import static org.junit.Assert.assertEquals;
 import static play.mvc.Http.Status.*;
+import static play.test.Helpers.GET;
 import static play.test.Helpers.route;
 
 public class AlbumControllerTest extends BaseTestWithApplicationAndDatabase {
@@ -665,6 +669,90 @@ public class AlbumControllerTest extends BaseTestWithApplicationAndDatabase {
     }
 
 
+    @Test
+    /**
+     * Tests that an unauthenticated request get a unaccepted HTTP response.
+     */
+    public void getUnlinkableDestinationsForPhoto_is401HTTPStatus_noActiveSession() {
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/albums/photos/get_linked_destinations/1").session("connected", null);
+        Result result = route(app, request);
 
+        assertEquals(UNAUTHORIZED, result.status());
+    }
 
+    @Test
+    /**
+     * Tests that a request for a photo ID that does not exist gets a not  found (404)
+     * response.
+     */
+    public void getUnlinkableDestinationsForPhoto_is404HTTPStatus_photoDoesNotExist() {
+        String nonExistantPhotoId = "2222";
+        User user = new User("testMcTest@test.com");
+        UserAccessor.insert(user);
+
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/albums/photos/get_linked_destinations/" + nonExistantPhotoId)
+                .session("connected", Integer.toString(user.getUserid()));
+        Result result = route(app, request);
+
+        assertEquals(NOT_FOUND, result.status());
+    }
+
+    @Test
+    /**
+     * Tests that a request for a valid user and a valid photo with no linked destinations
+     * returns a 200 OK http status.
+     */
+    public void getUnlinkableDestinationsForPhoto_is200Status_photoNotLinkedToDestinations() {
+        String userEmail = "userwithaphoto@test.com";
+        String userAlbumName = "test";
+        String photoURL = "/test/test/test.jpg";
+
+        Result result = getResultFromGetUnlinkableDestinations_helper_method(
+                                            userEmail, userAlbumName, photoURL);
+
+        assertEquals(OK, result.status());
+    }
+
+    /**
+     * A helper method to return a Result object from sending a GET request to the
+     * "/users/albums/photos/get_linked_destinations/" endpoint.
+     *
+     * @param userEmail Users email
+     * @param userAlbumName Name of users album
+     * @param photoURL URL to photo
+     * @return A http Result
+     */
+    private Result getResultFromGetUnlinkableDestinations_helper_method(
+                                                            String userEmail,
+                                                            String userAlbumName,
+                                                            String photoURL) {
+        User user = new User(userEmail);
+        UserAccessor.insert(user);
+
+        Album album = new Album(user, userAlbumName);
+        AlbumAccessor.insert(album);
+        ArrayList<Album> albums = new ArrayList<Album>();
+        albums.add(album);
+
+        ArrayList<Album> primaryPhotoDestinations = new ArrayList<Album>();
+
+        UserPhoto photo = new UserPhoto(photoURL,
+                                        true,
+                                        false,
+                                        user,
+                                        albums,
+                                        primaryPhotoDestinations);
+        UserPhotoAccessor.insert(photo);
+        String photoId = Integer.toString(photo.getMediaId());
+
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/albums/photos/get_linked_destinations/" + photoId)
+                .session("connected", Integer.toString(user.getUserid()));
+        return route(app, request);
+    }
 }

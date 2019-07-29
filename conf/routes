@@ -311,7 +311,8 @@ PUT     /users/albums/remove_media/:id     controllers.AlbumController.removeMed
 #Move multiple media to one album
 PUT     /users/albums/move_media/:id     controllers.AlbumController.moveMediaToAlbum(request : Request, id : Integer)
 
-
+#Gets a JSON array containing information on all destinations linked to a user photo
+GET     /users/albums/photos/get_linked_destinations/:photoId controllers.AlbumController.getUnlinkableDestinationsForPhoto(request : Request, photoId : Integer)
 
 # Undo
 +nocsrf

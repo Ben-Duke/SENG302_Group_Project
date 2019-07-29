@@ -184,6 +184,20 @@ public class AlbumController extends Controller {
     }
 
     /**
+     * Get's a JSON array containing all the destinations that a photo was linked to.
+     *
+     * Used when the user deletes a photo from a personal album and must be prompted
+     * to either unlink or leave it linked to destination(s).
+     *
+     * @param request
+     * @param photoId
+     * @return
+     */
+    public Result getUnlinkableDestinationsForPhoto(Http.Request request, Integer photoId) {
+        return new Result(Http.Status.NOT_IMPLEMENTED);
+    }
+
+    /**
      * Process the ajax request to remove multiple media
      * from an album. Takes a list of media ids, if the
      * user owns them all, a command is used to remove them

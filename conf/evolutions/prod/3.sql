@@ -167,8 +167,6 @@ INSERT INTO `visit` (`visitid`, `visitorder`, `destination`, `trip`, `arrival`,
 # Delete in reverse order to the order data was added to avoid violating
 # foreign key constraints
 
-SET FOREIGN_KEY_CHECKS=0; -- to disable them
-
 delete from visit;
 
 delete from user_photo_destination;
@@ -200,5 +198,3 @@ delete from destination;
 delete from admin;
 
 delete from user;
-
-SET FOREIGN_KEY_CHECKS=1; -- to re-enable them

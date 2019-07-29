@@ -3,6 +3,8 @@ var currentSlideNo = 1;
 var albumData = null;
 
 
+document.getElementById('')
+
 function setDeletePhotoListener(albumData, i) {
     document.getElementById('deletePhotoBtn').addEventListener('click', () => {
         const mediaId = albumData[i]["mediaId"];
@@ -155,6 +157,10 @@ function closeModal() {
 function openDestinationModal(mediaId) {
     document.getElementById('destination-modal').style.display = "block";
     getDestData(mediaId);
+}
+
+function closeDestinationModal() {
+    document.getElementById('destination-modal').style.display = 'none';
 }
 
 function getDestData(mediaId) {

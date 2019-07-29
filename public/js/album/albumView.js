@@ -2,62 +2,74 @@ var slideIndex = 1;
 var currentSlideNo = 1;
 var albumData = null;
 
+
+
+function setDeletePhotoListener(albumData, i) {
+    document.getElementById('deletePhotoBtn').addEventListener('click', () => {
+        const mediaId = albumData[i]["mediaId"];
+        deletePhotoRequest(mediaId);
+    });
+}
+
+function setDestinationLinkListener(albumData, i) {
+    document.getElementById('linkDestinationBtn').addEventListener('click', () => {
+        const mediaId = albumData[i]["mediaId"];
+        openDestinationModal(mediaId);
+    })
+}
+
+function setPrivacyListener(setPrivacy, mediaId) {
+    const privacyBtn = document.getElementById('privacyBtn');
+    privacyBtn.addEventListener('click', () => {
+        if(setPrivacy) {
+            privacyBtn.innerHTML = "Make Public";
+            document.querySelector('div[data-mediaId="'+mediaId+'"]').setAttribute("data-privacy", false);
+        }
+        else {
+            privacyBtn.innerHTML = "Make Private";
+            document.querySelector('div[data-mediaId="'+mediaId+'"]').setAttribute("data-privacy", true);}
+    })
+}
+
+
+function setSlideListeners(i) {
+    console.log("Setting listners for slide  " + i);
+    const dataset = document.getElementById('myModal').dataset;
+    const isOwner = dataset.isowner;
+    const albumId = dataset.album;
+    const hidePrivate = !isOwner;
+
+    $.ajax({
+        type: 'GET',
+        url: '/users/albums/get/' + hidePrivate + '/' + albumId,
+        contentType: 'application/json',
+        success: (albumData) => {
+            let setPrivacy;
+            setDeletePhotoListener(albumData, i);
+            setDestinationLinkListener(albumData, i);
+
+            const mediaId = albumData[i]["mediaId"];
+            // console.log("index: " + slideIndex);
+            if(albumData[i]["isMediaPublic"]) {setPrivacy=0;}
+            else {setPrivacy=1;}
+            // console.log("privacy: " + setPrivacy);
+
+            $.ajax({
+                type: 'GET',
+                url: '/users/home/photoPrivacy/' + mediaId + '/' + setPrivacy,
+                contentType: 'application/json',
+                success: () => {
+                    setPrivacyListener(setPrivacy, mediaId)
+                }
+            });
+        }
+    });
+}
+
 function setProfilePicture() {
 
 }
 
-function deletePhoto(userId, albumId, isOwner) {
-    var hidePrivate;
-    if(isOwner) {hidePrivate = false;}
-    else {hidePrivate = true}
-    $.ajax({
-            type: 'GET',
-            url: '/users/albums/get/' + hidePrivate + '/' + albumId,
-            contentType: 'application/json',
-            success: (albumData) => {
-                    var mediaId = albumData[slideIndex-1]["mediaId"];
-                    deletePhotoRequest(mediaId);
-            }
-    });
-}
-
-function changePrivacy(userId, albumId, isOwner) {
-    var hidePrivate, setPrivacy;
-    if(isOwner) {hidePrivate = false;}
-    else {hidePrivate = true}
-    $.ajax({
-            type: 'GET',
-            url: '/users/albums/get/' + hidePrivate + '/' + albumId,
-            contentType: 'application/json',
-            success: (albumData) => {
-                    var mediaId = albumData[slideIndex-1]["mediaId"];
-                    console.log("index: " + slideIndex);
-                    if(albumData[slideIndex-1]["isMediaPublic"]==true) {setPrivacy=0;}
-                    else {setPrivacy=1;}
-                    console.log("privacy: " + setPrivacy);
-                    $.ajax({
-                           type: 'GET',
-                           url: '/users/home/photoPrivacy/' + mediaId + '/' + setPrivacy,
-                           contentType: 'application/json',
-                           success: () => {
-                                if(setPrivacy==0) {
-                                    document.getElementById("privacyBtn").innerHTML = "Make Public";
-                                    document.querySelector('div[data-mediaId="'+mediaId+'"]').setAttribute("data-privacy", false);
-                                }
-                                else if(setPrivacy==1) {
-                                    document.getElementById("privacyBtn").innerHTML = "Make Private";
-                                    document.querySelector('div[data-mediaId="'+mediaId+'"]').setAttribute("data-privacy", true);}
-                           },
-
-
-                    });
-            }
-    });
-}
-
-function linkToDestination(mediaId) {
-
-}
 
 /**
  * Function to search for albums.
@@ -92,13 +104,14 @@ async function addAlbum(albumData) {
 async function displayGrid(i, albumData, path) {
     var url = albumData[i]["urlWithPath"];
     var img1 = document.createElement("img");
+    setSlideListeners(i);
     img1.src = path + encodeURIComponent(url);
     img1.setAttribute("data-id", i);
     img1.setAttribute("data-mediaId", albumData[i]["mediaId"]);
     img1.classList.add("hover-shadow");
-    img1.addEventListener('click', openModal);
     img1.addEventListener('click', () => {
-        currentSlide(i+1)
+        openModal();
+        currentSlide(i+1);
     });
     if (i%4==0) {
         document.getElementById('col1').appendChild(img1);
@@ -136,6 +149,10 @@ function openModal() {
 // Close the Modal
 function closeModal() {
   document.getElementById("myModal").style.display = "none";
+}
+
+function openDestinationModal(mediaId) {
+    console.log("i show " + mediaId)
 }
 
 

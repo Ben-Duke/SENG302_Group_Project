@@ -31,7 +31,7 @@
     </div>
 
     <!-- The Modal/Lightbox -->
-    <div id="myModal" class="modal">
+    <div id="myModal" class="modal" data-album="@album.getAlbumId" data-isOwner="@album.userIsOwner(user)">
 
         <div class="modal-content">
             <div id="snackbar"></div>
@@ -49,11 +49,9 @@
                 <p id="img-caption"></p>
                 <a class="btn btn-link" id="setProfilePictureBtn"
                    onclick="setProfilePictureRequest(2)">Set Profile Picture</a>
-                <a class="btn btn-link" id="deletePhotoBtn" onclick="deletePhoto(@user.getUserid, @album.getAlbumId,
-                @album.userIsOwner(user))">Delete</a>
-                <a class="btn btn-link" id="privacyBtn" onclick="changePrivacy(@user.getUserid, @album.getAlbumId,
-                @album.userIsOwner(user))">Make Public/Private</a>
-                <a class="btn btn-link" id="linkDestinationBtn" onclick="linkToDestination()">Link Destination</a>
+                <a class="btn btn-link" id="deletePhotoBtn">Delete</a>
+                <a class="btn btn-link" id="privacyBtn">Make Public/Private</a>
+                <a class="btn btn-link" id="linkDestinationBtn">Link Destination</a>
             </div>
         </div>
     </div>

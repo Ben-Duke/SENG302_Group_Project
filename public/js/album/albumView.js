@@ -153,7 +153,6 @@ function closeModal() {
 }
 
 function openDestinationModal(mediaId) {
-    console.log("dest modal opened");
     document.getElementById('destination-modal').style.display = "block";
     getDestData(mediaId);
 }
@@ -171,7 +170,6 @@ function getDestData(mediaId) {
 
 function loadDestTable(destData, mediaId) {
     for (let destination of destData) {
-        console.log(destination);
         const publicTable = document.getElementById('public-dest-tbody');
         const privateTable = document.getElementById('private-dest-tbody');
         if (destination.isPublic) {
@@ -184,7 +182,6 @@ function loadDestTable(destData, mediaId) {
 
 function addDestRow(table, destination, mediaId) {
     const row = document.createElement("TR");
-    // row.id = `tr-${destination.destId}`;
 
     const name = document.createElement("TH");
     name.setAttribute('scope', 'row');
@@ -220,6 +217,8 @@ function addDestRow(table, destination, mediaId) {
         unlinkDestination(destination.destId, mediaId)
     });
 
+    checkButtonStatus(mediaId, destination.destId);
+
     const div = document.createElement('DIV');
     div.appendChild(linkButton);
     div.appendChild(unlinkButton);
@@ -228,6 +227,23 @@ function addDestRow(table, destination, mediaId) {
     table.appendChild(row);
 }
 
+function checkButtonStatus(mediaId, destId) {
+    $.ajax({
+        method: "GET",
+        url: `/users/destinations/photos/${destId}`,
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        success: function(photos) {
+            for (let photo of photos) {
+                if (mediaId === photo.mediaId) {
+                    toggleButtons(destId);
+                    return;
+                }
+            }
+        }
+    });
+}
 
 function linkDestination(destId, mediaId) {
     $.ajax({
@@ -257,7 +273,6 @@ function unlinkDestination(destId, mediaId) {
 }
 
 function toggleButtons(destId) {
-    console.log('the dest id is ' + destId);
     const unlink = document.getElementById(`unlink-${destId}`);
     unlink.style.display === "none" ? unlink.style.display = "block" : unlink.style.display = "none";
 

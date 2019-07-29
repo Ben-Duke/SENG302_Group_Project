@@ -12,10 +12,14 @@ function setDeletePhotoListener(albumData, i) {
 }
 
 function setDestinationLinkListener(albumData, i) {
-    document.getElementById('linkDestinationBtn').addEventListener('click', () => {
+    function destinationLinkListener() {
         const mediaId = albumData[i]["mediaId"];
         openDestinationModal(mediaId);
-    })
+    }
+    const original = document.getElementById('linkDestinationBtn');
+    const clone = original.cloneNode(true);
+    original.parentNode.replaceChild(clone, original);
+    clone.addEventListener('click', destinationLinkListener)
 }
 
 function setPrivacyListener(setPrivacy, mediaId) {
@@ -33,7 +37,6 @@ function setPrivacyListener(setPrivacy, mediaId) {
 
 
 function setSlideListeners(i) {
-    console.log("Setting listners for slide  " + i);
     const dataset = document.getElementById('myModal').dataset;
     const isOwner = dataset.isowner;
     const albumId = dataset.album;
@@ -49,10 +52,9 @@ function setSlideListeners(i) {
             setDestinationLinkListener(albumData, i);
 
             const mediaId = albumData[i]["mediaId"];
-            // console.log("index: " + slideIndex);
+
             if(albumData[i]["isMediaPublic"]) {setPrivacy=0;}
             else {setPrivacy=1;}
-            // console.log("privacy: " + setPrivacy);
 
             $.ajax({
                 type: 'GET',
@@ -94,7 +96,7 @@ function getAlbum(userId, albumId, isOwner){
 
 async function addAlbum(albumData) {
     var path = "/users/home/servePicture/";
-    for (var i=0; i<albumData.length; i++) {
+    for (let i=0; i<albumData.length; i++) {
         await displayGrid(i, albumData, path);
         await displaySlides(i, albumData, path);
     }
@@ -104,7 +106,6 @@ async function addAlbum(albumData) {
 async function displayGrid(i, albumData, path) {
     var url = albumData[i]["urlWithPath"];
     var img1 = document.createElement("img");
-    setSlideListeners(i);
     img1.src = path + encodeURIComponent(url);
     img1.setAttribute("data-id", i);
     img1.setAttribute("data-mediaId", albumData[i]["mediaId"]);
@@ -112,6 +113,7 @@ async function displayGrid(i, albumData, path) {
     img1.addEventListener('click', () => {
         openModal();
         currentSlide(i+1);
+        setSlideListeners(i)
     });
     if (i%4==0) {
         document.getElementById('col1').appendChild(img1);
@@ -159,7 +161,8 @@ function openDestinationModal(mediaId) {
 
 // Next/previous controls
 function plusSlides(n) {
-  showSlides(slideIndex += n);
+    setSlideListeners(slideIndex);
+    showSlides(slideIndex += n);
 }
 
 // Thumbnail image controls

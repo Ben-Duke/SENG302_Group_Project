@@ -15,13 +15,25 @@ function initMap() {
     // initMapLegend();
     initTripRoutes();
 
-    initTripRoutes();
-
 
 
 }
 
 let tripFlightPaths = {};
+
+/**
+ * Will toggle the flight path of the trip on the map
+ * according to the value of the checkbox
+ * @param tripid The id of the trip on the map
+ */
+function toggleTrips(tripid) {
+    var checkBox = document.getElementById(tripid);
+    if (checkBox.checked === false) {
+        tripFlightPaths[tripid].setMap(null);
+    } else {
+        tripFlightPaths[tripid].setMap(window.globalMap);
+    }
+}
 
 function initTripRoutes() {
 
@@ -31,7 +43,6 @@ function initTripRoutes() {
         .then(tripRoutes => {
 
         for (let tripId in tripRoutes) {
-            // console.log(tripRoutes[tripId]);
 
             let flightPath = new google.maps.Polyline({
                 path: tripRoutes[tripId],
@@ -61,22 +72,24 @@ var currentlyDisplayedTripId;
  * @param startLng the longitude to zoom to
  */
 function displayTrip(tripId, startLat, startLng) {
+    var checkBox = document.getElementById(tripId);
+    if (checkBox.checked === true) {
+        if (currentlyDisplayedTripId !== undefined) {
+            document.getElementById("tripTable_" + currentlyDisplayedTripId).style.display = "none";
+        }
 
-    if (currentlyDisplayedTripId !== undefined) {
-        document.getElementById("tripTable_"+currentlyDisplayedTripId).style.display = "none";
+        currentlyDisplayedTripId = tripId;
+
+        document.getElementById("tripTable_" + tripId).style.display = "table-row-group";
+
+
+        var tripStartLatLng = new google.maps.LatLng(
+            startLat, startLng
+        );
+
+        window.globalMap.setCenter(tripStartLatLng);
+        window.globalMap.setZoom(9);
     }
-
-    currentlyDisplayedTripId = tripId;
-
-    document.getElementById("tripTable_"+tripId).style.display = "table-row-group";
-
-
-    var tripStartLatLng = new google.maps.LatLng(
-        startLat, startLng
-    );
-
-    window.globalMap.setCenter(tripStartLatLng);
-    window.globalMap.setZoom(9);
 
 }
 

@@ -3,7 +3,6 @@ var currentSlideNo = 1;
 var albumData = null;
 
 
-
 function setDeletePhotoListener(albumData, i) {
     document.getElementById('deletePhotoBtn').addEventListener('click', () => {
         const mediaId = albumData[i]["mediaId"];
@@ -154,10 +153,78 @@ function closeModal() {
 }
 
 function openDestinationModal(mediaId) {
-    console.log("i show " + mediaId)
+    console.log("dest modal opened");
+    // document.getElementById('destination-modal').style.display="block";
+    getDestData(mediaId);
+}
+
+function getDestData(mediaId) {
+    $.ajax({
+        type: 'GET',
+        url: '/users/destinations/getalljson',
+        contentType: 'application/json',
+        success: (destData) => {
+            loadDestTable(destData, mediaId)
+        }
+    });
+}
+
+function loadDestTable(destData, mediaId) {
+    for (let destination of destData) {
+        const publicTable = document.getElementById('public-dest-tbody');
+        const privateTable = doucment.getElementById('private-dest-tbody');
+        if (destination.isPublic) {
+            addDestRow(publicTable, destination, mediaId);
+        } else {
+            addDestRow(privateTable, destination, mediaId)
+        }
+    }
+}
+
+function addDestRow(table, destination, mediaId) {
+    const row = document.createElement("TR");
+
+    const name = document.createElement("TH");
+    name.setAttribute('scope', 'row');
+    name.innerText = destination.destName;
+    row.appendChild(name);
+
+    const type = document.createElement("TD");
+    type.innerText = destination.destType;
+    row.appendChild(type);
+
+    const country = document.createElement("TD");
+    country.innerText = destination.country;
+    row.appendChild(country);
+
+    const district = document.createElement("TD");
+    district.innerText = destination.district;
+    row.appendChild(district);
+
+    const linkButton = document.createElement('BUTTON');
+    linkButton.setAttribute('class', 'btn btn-primary');
+    linkButton.innerText = 'Link to destination';
+    linkButton.addEventListener('click', linkDestination(destination.id, mediaId));
+
+    const unlinkButton = document.createElement('BUTTON');
+    unlinkButton.setAttribute('class', 'btn btn-danger');
+    unlinkButton.innerText = 'Unlink from destination';
+    unlinkButton.addEventListener('click', unlinkDestination(destination.id, mediaId));
+
+    const div = document.createElement('DIV');
+    div.appendChild(linkButton);
+    div.appendChild(unlinkButton);
+    row.appendChild(div);
 }
 
 
+function linkDestination(destId, mediaId) {
+    console.log("linked " + destId + " to " + mediaId);
+}
+
+function unlinkDestination(destId, mediaId) {
+    console.log("unlinked " + destId + " from " + mediaId);
+}
 
 // Next/previous controls
 function plusSlides(n) {

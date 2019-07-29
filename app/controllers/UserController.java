@@ -49,10 +49,6 @@ public class UserController {
             ApplicationManager.setUserPhotoPath("/../user_photos/user_");
             TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
             testDatabaseManager.populateDatabase(initCompleteLatch);
-            logger.info("populating database");
-
-
-
         } else {
             try {
                 initCompleteLatch.await();

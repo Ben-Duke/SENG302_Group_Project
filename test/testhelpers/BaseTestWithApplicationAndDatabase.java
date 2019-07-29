@@ -46,12 +46,13 @@ public class BaseTestWithApplicationAndDatabase extends WithApplication {
 
     public static Application application;
 
+    /* Prevents DataSource null database error even though it appears unused */
     @Inject
-    private EbeanDynamicEvolutions ebeanDynamicEvolutions;  // Prevents DataSource null error
+    private EbeanDynamicEvolutions ebeanDynamicEvolutions;
 
     @Before
     public void setupDatabase() {
-        ApplicationManager.setTesting();    // use the test database
+        ApplicationManager.setTesting();    // set the app in a testing state
 
         Map<String, String> configuration = new HashMap<>();
         configuration.put("play.db.config", "db");
@@ -72,7 +73,6 @@ public class BaseTestWithApplicationAndDatabase extends WithApplication {
         database = application.injector().instanceOf(Database.class);
 
         ApplicationManager.setUserPhotoPath("/test/resources/test_photos/user_");
-        ApplicationManager.setIsTest(true);
         CommandManagerAccessor.resetCommandManagers();
 
         // setup tables
@@ -100,18 +100,8 @@ public class BaseTestWithApplicationAndDatabase extends WithApplication {
      */
     @After
     public void shutdownDatabase() {
-        cleanEvolutions();
+        Evolutions.cleanupEvolutions(database);
         database.shutdown();
         Helpers.stop(application);
-
-    }
-
-    /**
-     * Applies up evolutions to the database from the test/evolutions/default directory.
-     * <p>
-     * This populates the database with necessary tables and values.
-     */
-    private void cleanEvolutions() {
-        Evolutions.cleanupEvolutions(database);
     }
 }

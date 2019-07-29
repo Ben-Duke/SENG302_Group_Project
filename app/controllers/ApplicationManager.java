@@ -22,6 +22,7 @@ public class ApplicationManager {
 
     private static String userPhotoPath;
 
+    /** Used to determine whether to load countries over http or use local data */
     private static boolean isTest = false;
 
     /** Current database app is using saved as the name of the database */
@@ -61,10 +62,6 @@ public class ApplicationManager {
         return isTest;
     }
 
-    public static void setIsTest(boolean isTest) {
-        ApplicationManager.isTest = isTest;
-    }
-
     /** Return database name as it is in the .conf files (lowercase) */
     public static String getDatabaseName() {
         return databaseName.toString().toLowerCase();
@@ -73,5 +70,6 @@ public class ApplicationManager {
     /** Set the app to use the testing database */
     public static void setTesting() {
         databaseName = DatabaseName.TEST;
+        isTest = true;
     }
 }

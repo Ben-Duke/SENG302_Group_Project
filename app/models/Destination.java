@@ -1,10 +1,8 @@
 package models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.ebean.Finder;
 import io.ebean.Model;
-import utilities.UtilityFunctions;
 
 import javax.persistence.*;
 import java.util.*;
@@ -22,7 +20,7 @@ public class Destination extends Model implements AlbumOwner {
     private boolean isCountryValid;
     private double latitude;
     private double longitude;
-    private boolean isPublic;
+    private boolean destIsPublic;
 
     @ManyToOne
     private UserPhoto primaryPhoto;
@@ -47,7 +45,7 @@ public class Destination extends Model implements AlbumOwner {
     private static Finder<Integer,Destination> find = new Finder<>(Destination.class);
 
     /**
-     * Destination constructor with isPublic method
+     * Destination constructor with destIsPublic method
      * @param destName The name of the destination
      * @param destType The type of the destination
      * @param district The district of the destination
@@ -55,9 +53,9 @@ public class Destination extends Model implements AlbumOwner {
      * @param latitude The latitude of the destination
      * @param longitude The longitude of the destination
      * @param user The user that owns the destination
-     * @param isPublic Is the destination public
+     * @param destIsPublic Is the destination public
      */
-    public Destination(String destName, String destType, String district, String country, double latitude, double longitude, User user, boolean isPublic){
+    public Destination(String destName, String destType, String district, String country, double latitude, double longitude, User user, boolean destIsPublic){
         this.destName = destName;
         this.user = user;
         this.destType = destType;
@@ -66,7 +64,7 @@ public class Destination extends Model implements AlbumOwner {
         this.isCountryValid = true;
         this.latitude = latitude;
         this.longitude = longitude;
-        this.isPublic = isPublic;
+        this.destIsPublic = destIsPublic;
     }
 
     /**
@@ -83,11 +81,11 @@ public class Destination extends Model implements AlbumOwner {
         this.isCountryValid = destination.getIsCountryValid();
         this.latitude = destination.getLatitude();
         this.longitude = destination.getLongitude();
-        this.isPublic = destination.getIsPublic();
+        this.destIsPublic = destination.getIsPublic();
     }
 
     /**
-     * Destination constructor without isPublic method (isPublic defaults to false)
+     * Destination constructor without destIsPublic method (destIsPublic defaults to false)
      * @param destName The name of the destination
      * @param destType The type of the destination
      * @param district The district of the destination
@@ -109,7 +107,7 @@ public class Destination extends Model implements AlbumOwner {
     public Destination(Destination destination, List<Visit> visits) {
         this(destination.destName, destination.destType, destination.district,
                 destination.country, destination.latitude, destination.longitude,
-                destination.user, destination.isPublic);
+                destination.user, destination.destIsPublic);
         this.visits = visits;
     }
 
@@ -164,7 +162,7 @@ public class Destination extends Model implements AlbumOwner {
     public String getCountry() { return country; }
     public double getLatitude() { return latitude; }
     public double getLongitude() { return longitude; }
-    public boolean getIsPublic() { return isPublic; }
+    public boolean getIsPublic() { return destIsPublic; }
     public List<Visit> getVisits() {
         return visits;
     }
@@ -185,7 +183,7 @@ public class Destination extends Model implements AlbumOwner {
     public void setCountry(String country) { this.country = country; }
     public void setLatitude(double latitude) { this.latitude = latitude; }
     public void setLongitude(double longitude) { this.longitude = longitude; }
-    public void setIsPublic(boolean isPublic) { this.isPublic = isPublic; }
+    public void setIsPublic(boolean isPublic) { this.destIsPublic = isPublic; }
     public void setTravellerTypes(Set<TravellerType> travellerTypes) {
         this.travellerTypes = travellerTypes;
     }
@@ -219,7 +217,7 @@ public class Destination extends Model implements AlbumOwner {
                 ", country='" + country + '\'' +
                 ", latitude=" + latitude +
                 ", longitude=" + longitude +
-                ", isPublic=" + isPublic +
+                ", destIsPublic=" + destIsPublic +
                 ", user=" + user +
                 ", visits=" + visits +
                 ", albums=" + albums +
@@ -229,7 +227,7 @@ public class Destination extends Model implements AlbumOwner {
 
     /**
      * The equals method compares two Destination objects for equality. The criteria
-     * is all attributes, except isPublic.
+     * is all attributes, except destIsPublic.
      *
      * @param o the other Destination object which is being compared for equality
      * @return true if destinations are equal, false if not.

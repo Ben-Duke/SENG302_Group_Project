@@ -102,11 +102,10 @@ public class User extends Model implements Comparable<User>, AlbumOwner  {
     private List<UserPhoto> userPhotos;
 
     private static Finder<Integer,User> find = new Finder<>(User.class);
+
     @JsonIgnore
     @OneToMany(mappedBy = "user")
     public List<Album> albums;
-
-    public static Finder<Integer,User> find = new Finder<>(User.class);
 
     @Deprecated
     private Boolean isAdmin = false;

@@ -33,7 +33,7 @@ public class UserPhotoTest extends BaseTestWithApplicationAndDatabase{
     public void checkDeletionOfUserPhotoBadIndex (){
 
         int beforeDelete = UserPhoto.find().all().size();
-        UserPhoto.deletePhoto(1000000);
+        UserPhotoAccessor.deleteById(1000000);
 
         int afterDelete = UserPhoto.find().all().size();
         assertEquals(beforeDelete, afterDelete);

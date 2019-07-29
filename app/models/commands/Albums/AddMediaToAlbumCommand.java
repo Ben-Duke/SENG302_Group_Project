@@ -5,19 +5,20 @@ import accessors.MediaAccessor;
 import models.Album;
 import models.Media;
 import models.UserPhoto;
+import models.commands.General.CommandPage;
 import models.commands.General.UndoableCommand;
-import models.commands.Profile.HomePageCommand;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class AddMediaToAlbumCommand extends HomePageCommand {
+public class AddMediaToAlbumCommand extends UndoableCommand {
 
     private Album album;
     private List<Media> medias;
     private List<Media> savedMediaList;
 
     public AddMediaToAlbumCommand(Album album, List<Media> medias) {
+        super(CommandPage.HOME);
         this.album = album;
         this.medias = medias;
     }
@@ -49,13 +50,13 @@ public class AddMediaToAlbumCommand extends HomePageCommand {
 
 
     public void redo() {
-        for (Media media : savedMediaList) {
-            if(!album.getMedia().contains(media)) {
-                album.addMedia(media);
-            }
-            MediaAccessor.update(media);
-        }
-        AlbumAccessor.update(album);
+//        for (Media media : savedMediaList) {
+//            if(!album.getMedia().contains(media)) {
+//                album.addMedia(media);
+//            }
+//        }
+//        AlbumAccessor.update(album);
+        execute();
     }
 
 

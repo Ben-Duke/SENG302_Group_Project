@@ -43,6 +43,12 @@ public class UploadPhotoCommand extends UndoableCommand {
         this.albumName = albumName;
     }
 
+    public UploadPhotoCommand(UserPhoto photo, Files.TemporaryFile fileObject) {
+        super(CommandPage.HOME);
+        this.userPhoto = photo;
+        this.fileObject = fileObject;
+    }
+
     /**
      * Execute an upload photo command
      */

@@ -49,7 +49,7 @@ public class UploadPhotoCommandTest extends BaseTestWithApplicationAndDatabase {
         userPhoto.setUrl(unusedPhotoUrl);
         Files.TemporaryFileCreator creator = Files.singletonTemporaryFileCreator();
         temporaryFile = creator.create(Paths.get(Paths.get(".").toAbsolutePath().normalize().toString() + "/test/resources/imagetest.png"));
-        uploadPhotoCommand = new UploadPhotoCommand(userPhoto, temporaryFile);
+        uploadPhotoCommand = new UploadPhotoCommand(userPhoto, temporaryFile, user, "testAlbum");
     }
 
     @Override

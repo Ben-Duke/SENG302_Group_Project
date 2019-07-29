@@ -35,7 +35,8 @@ create table destination (
   is_country_valid              boolean default false not null,
   latitude                      double not null,
   longitude                     double not null,
-  is_public                     boolean default false not null,
+  dest_is_public                boolean default false not null,
+  primary_photo_media_id        integer,
   user                          integer,
   constraint pk_destination primary key (destid)
 );
@@ -73,9 +74,16 @@ create table media (
   user                          integer,
   is_media_public               boolean default false not null,
   caption                       varchar(255),
+  is_public                     boolean default false not null,
   is_profile                    boolean default false not null,
   constraint uq_media_url unique (url),
   constraint pk_media primary key (media_id)
+);
+
+create table media_destination (
+  media_media_id                integer not null,
+  destination_destid            integer not null,
+  constraint pk_media_destination primary key (media_media_id,destination_destid)
 );
 
 create table nationality (
@@ -186,6 +194,9 @@ alter table album_media add constraint fk_album_media_album foreign key (album_a
 create index ix_album_media_media on album_media (media_media_id);
 alter table album_media add constraint fk_album_media_media foreign key (media_media_id) references media (media_id) on delete restrict on update restrict;
 
+create index ix_destination_primary_photo_media_id on destination (primary_photo_media_id);
+alter table destination add constraint fk_destination_primary_photo_media_id foreign key (primary_photo_media_id) references media (media_id) on delete restrict on update restrict;
+
 create index ix_destination_user on destination (user);
 alter table destination add constraint fk_destination_user foreign key (user) references user (userid) on delete restrict on update restrict;
 
@@ -209,6 +220,12 @@ alter table destination_modification_request_traveller_type add constraint fk_de
 
 create index ix_media_user on media (user);
 alter table media add constraint fk_media_user foreign key (user) references user (userid) on delete restrict on update restrict;
+
+create index ix_media_destination_media on media_destination (media_media_id);
+alter table media_destination add constraint fk_media_destination_media foreign key (media_media_id) references media (media_id) on delete restrict on update restrict;
+
+create index ix_media_destination_destination on media_destination (destination_destid);
+alter table media_destination add constraint fk_media_destination_destination foreign key (destination_destid) references destination (destid) on delete restrict on update restrict;
 
 create index ix_treasure_hunt_destination_destid on treasure_hunt (destination_destid);
 alter table treasure_hunt add constraint fk_treasure_hunt_destination_destid foreign key (destination_destid) references destination (destid) on delete restrict on update restrict;
@@ -267,6 +284,9 @@ drop index if exists ix_album_media_album;
 alter table album_media drop constraint if exists fk_album_media_media;
 drop index if exists ix_album_media_media;
 
+alter table destination drop constraint if exists fk_destination_primary_photo_media_id;
+drop index if exists ix_destination_primary_photo_media_id;
+
 alter table destination drop constraint if exists fk_destination_user;
 drop index if exists ix_destination_user;
 
@@ -290,6 +310,12 @@ drop index if exists ix_destination_modification_request_traveller_type_travel_2
 
 alter table media drop constraint if exists fk_media_user;
 drop index if exists ix_media_user;
+
+alter table media_destination drop constraint if exists fk_media_destination_media;
+drop index if exists ix_media_destination_media;
+
+alter table media_destination drop constraint if exists fk_media_destination_destination;
+drop index if exists ix_media_destination_destination;
 
 alter table treasure_hunt drop constraint if exists fk_treasure_hunt_destination_destid;
 drop index if exists ix_treasure_hunt_destination_destid;
@@ -345,6 +371,8 @@ drop table if exists destination_modification_request;
 drop table if exists destination_modification_request_traveller_type;
 
 drop table if exists media;
+
+drop table if exists media_destination;
 
 drop table if exists nationality;
 

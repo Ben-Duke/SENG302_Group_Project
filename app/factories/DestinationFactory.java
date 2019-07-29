@@ -24,7 +24,7 @@ public class DestinationFactory {
      */
     public List<Destination> getPublicDestinations() {
         return Destination.find().query()
-                .where().eq("isPublic", true).findList();
+                .where().eq("destIsPublic", true).findList();
     }
 
     /**
@@ -52,7 +52,7 @@ public class DestinationFactory {
         User user = UserFactory.getUserFromId(userId);
 
         List<Destination> privateDestinations = Destination.find().query()
-                .where().eq("user", user).and().eq("isPublic", false)
+                .where().eq("user", user).and().eq("destIsPublic", false)
                 .findList();
 
         return privateDestinations;
@@ -124,7 +124,7 @@ public class DestinationFactory {
         User user = UserFactory.getUserFromId(userId);
         // Get all destinations that are private and belong to another user
         List<Destination> allDestinations = Destination.find().query()
-                .where().eq("isPublic", false).and()
+                .where().eq("destIsPublic", false).and()
                 .not().eq("user", user).findList();
 
         List<Destination> matchingDestinations = new ArrayList<>();

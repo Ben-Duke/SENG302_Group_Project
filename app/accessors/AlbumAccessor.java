@@ -13,7 +13,7 @@ public class AlbumAccessor {
     }
 
     public static Album getAlbumByTitle(String title) {
-        return Album.find.query().where().eq("title", title).findOne();
+        return Album.find.query().where().eq("title", title).findList().get(0);
     }
 
     public static void insert(Album album) { album.save(); }

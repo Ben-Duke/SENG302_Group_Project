@@ -505,30 +505,26 @@ public class TestDatabaseManager {
         }
     }
 
-    public void addAlbums(){
-        UserPhoto userPhoto1 = new UserPhoto("card.PNG", true, false, User.find.byId(1));
-        UserPhoto userPhoto2 = new UserPhoto("Capture.PNG", false, false, User.find.byId(1));
-        Album album1 = new Album(User.find.byId(1), "myAlbum");
+    public static void addAlbums(){
+        UserPhoto userPhoto1 = new UserPhoto("card.PNG", true, false, User.find().byId(1));
+        UserPhoto userPhoto2 = new UserPhoto("Capture.PNG", false, false, User.find().byId(1));
+        Album album1 = new Album(User.find().byId(1), "myAlbum");
         try {
             userPhoto1.save();
             userPhoto2.save();
 
-            album1.addMedia(User.find.byId(1).getUserPhotos().get(0));
-            album1.addMedia(User.find.byId(1).getUserPhotos().get(1));
-            System.out.println(album1.media);
+            album1.addMedia(User.find().byId(1).getUserPhotos().get(0));
+            album1.addMedia(User.find().byId(1).getUserPhotos().get(1));
             album1.save();
-        } catch (Exception e) {
-            System.out.println("Failed to add album1 photos");
-        }
-
+        } catch (Exception e) {}
     }
 
     /**
      * Populates the database with treasure hunts added to users 2,3 and 4.
      *
      */
-    public void addTreasureHunts(){
-        TreasureHunt treasureHunt1 = new TreasureHunt("Surprise", "The garden city", Destination.find.byId(1), "2019-04-17", "2019-12-25", User.find.byId(2));
+    public static void addTreasureHunts(){
+        TreasureHunt treasureHunt1 = new TreasureHunt("Surprise", "The garden city", Destination.find().byId(1), "2019-04-17", "2019-12-25", User.find().byId(2));
         treasureHunt1.save();
         TreasureHunt treasureHunt2 = new TreasureHunt("Surprise2", "Prime example of inflation", Destination.find().byId(3), "2019-04-17", "2019-12-25", User.find().byId(3));
         treasureHunt2.save();

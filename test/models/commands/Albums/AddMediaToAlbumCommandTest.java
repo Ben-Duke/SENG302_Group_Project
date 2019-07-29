@@ -3,6 +3,7 @@ package models.commands.Albums;
 import accessors.AlbumAccessor;
 import accessors.MediaAccessor;
 import accessors.UserAccessor;
+import accessors.UserPhotoAccessor;
 import models.Album;
 import models.Media;
 import models.User;
@@ -100,9 +101,9 @@ public class AddMediaToAlbumCommandTest extends BaseTestWithApplicationAndDataba
         MediaAccessor.insert(media3);
 
         List<Media> medias = new ArrayList<>();
-        medias.add(media1);
-        medias.add(media2);
-        medias.add(media3);
+        medias.add(UserPhotoAccessor.getUserPhotoByUrl("/test"));
+        medias.add(UserPhotoAccessor.getUserPhotoByUrl("/test2"));
+        medias.add(UserPhotoAccessor.getUserPhotoByUrl("/test3"));
 
         int beforeSize = album.getMedia().size();
 
@@ -111,7 +112,7 @@ public class AddMediaToAlbumCommandTest extends BaseTestWithApplicationAndDataba
         command.undo();
         command.redo();
 
-        album = AlbumAccessor.getAlbumById(album.getAlbumId());
+        album = AlbumAccessor.getAlbumByTitle("testTitle");
 
         int afterSize = album.getMedia().size();
 

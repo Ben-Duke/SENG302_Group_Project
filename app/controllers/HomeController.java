@@ -151,7 +151,6 @@ public class HomeController {
             //Get the photo data from the multipart form data encoding
             Http.MultipartFormData<Files.TemporaryFile> body = request.body().asMultipartFormData();
             Http.MultipartFormData.FilePart<Files.TemporaryFile> picture = body.getFile("picture");
-            String albumName = datapart.get("album")[0];
             if (picture != null) {
                 String originalFilePath = picture.getFilename();
                 String contentType = picture.getContentType();

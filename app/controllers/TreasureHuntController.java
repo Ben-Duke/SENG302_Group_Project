@@ -41,7 +41,7 @@ public class TreasureHuntController extends Controller {
      * Creates the option map of public destinations for treasure hunts.
      */
     void createPublicDestinationsMap() {
-        List<Destination> allDestinations = Destination.find().query().where().eq("is_public", true).findList();
+        List<Destination> allDestinations = Destination.find().query().where().eq("dest_is_public", true).findList();
         for (Destination destination: allDestinations) {
             destinationMap.put(destination.getDestName(), false);
         }

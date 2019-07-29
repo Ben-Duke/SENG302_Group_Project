@@ -5,10 +5,10 @@ import models.Album;
 import models.AlbumOwner;
 import models.Media;
 import models.User;
+import models.commands.General.CommandPage;
 import models.commands.General.UndoableCommand;
-import models.commands.Profile.HomePageCommand;
 
-public class CreateAlbumCommand extends HomePageCommand {
+public class CreateAlbumCommand extends UndoableCommand {
 
     private Album album;
     private String title;
@@ -17,6 +17,7 @@ public class CreateAlbumCommand extends HomePageCommand {
 
 
     public CreateAlbumCommand(String title, AlbumOwner owner, Media media) {
+        super(CommandPage.HOME);
         this.title = title;
         this.owner = owner;
         this.media = media;

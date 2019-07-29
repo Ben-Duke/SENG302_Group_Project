@@ -31,7 +31,7 @@ public class UserPhotoAccessor {
             userPhoto.update();
         } catch (Exception e) { }
     }
-    public static void deleteById(int id) { delete(UserPhoto.find.byId(id)); }
+    public static void deleteById(int id) { delete(UserPhoto.find().byId(id)); }
 
     /**
      * update the photo
@@ -48,6 +48,6 @@ public class UserPhotoAccessor {
     }
 
     public static UserPhoto getUserPhotoByUrl(String url) {
-        return UserPhoto.find.query().where().eq("url", url).findOne();
+        return UserPhoto.find().query().where().eq("url", url).findOne();
     }
 }

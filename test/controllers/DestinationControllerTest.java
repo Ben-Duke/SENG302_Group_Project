@@ -157,7 +157,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
     @Test
     public void createAlbumOnDestinationSave() throws Exception {
         Integer albumSize = Album.find.all().size();
-        assertEquals(3, User.find.byId(2).getDestinations().size());
+        assertEquals(3, User.find().byId(2).getDestinations().size());
         Map<String, String> formData = new HashMap<>();
         formData.put("destName", "Summoner's Rift");
         formData.put("destType", "Yes");
@@ -169,7 +169,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
                 .method(POST).uri("/users/destinations/save").session("connected", "2");
         Result result = route(app, request);
         assertEquals(SEE_OTHER, result.status());
-        assertEquals(4, User.find.byId(2).getDestinations().size());
+        assertEquals(4, User.find().byId(2).getDestinations().size());
         assertEquals(1,
                 DestinationAccessor.getDestinationsbyName("Summoner's Rift").size());
         if(DestinationAccessor.getDestinationsbyName("Summoner's Rift").size() > 0) {
@@ -1024,9 +1024,9 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
      */
     @Test
     public void addDuplicatePhotoToDestination() {
-        UserPhoto userPhoto1 = UserPhoto.find.byId(1);
-        Destination christchurch = Destination.find.byId(1);
-        Destination wellington = Destination.find.byId(2);
+        UserPhoto userPhoto1 = UserPhoto.find().byId(1);
+        Destination christchurch = Destination.find().byId(1);
+        Destination wellington = Destination.find().byId(2);
         christchurch.getPrimaryAlbum().addMedia(userPhoto1);
         AlbumAccessor.update(christchurch.getPrimaryAlbum());
         wellington.getPrimaryAlbum().addMedia(userPhoto1);
@@ -1154,7 +1154,11 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
 
         UserPhoto photo = UserPhoto.find().byId(1);
         assert photo != null;
-        int nDestinations = photo.getDestinations().size();
+        int nDestinations = 0;
+        List<Media> destMediaList = Destination.find().byId(1).getPrimaryAlbum().getMedia();
+        if (destMediaList.iterator().hasNext()) {
+            if (destMediaList.iterator().next().getMediaId() == 1) {nDestinations+=1;}
+        }
 
         Http.RequestBuilder unlinkRequest = Helpers.fakeRequest()
                 .method(DELETE)
@@ -1164,7 +1168,8 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
 
         photo = UserPhoto.find().byId(1);
         assert photo != null;
-        assertEquals(nDestinations - 1, photo.getDestinations().size());
+        List<Media> newDestMediaList = Destination.find().byId(1).getPrimaryAlbum().getMedia();
+        assertEquals(nDestinations - 1, newDestMediaList.size());
     }
 
     /**

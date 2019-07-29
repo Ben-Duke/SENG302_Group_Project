@@ -7,6 +7,7 @@ import accessors.VisitAccessor;
 import controllers.DestinationController;
 import factories.UserFactory;
 import models.*;
+import models.commands.General.CommandPage;
 import models.commands.General.UndoableCommand;
 
 import java.util.HashSet;
@@ -23,7 +24,7 @@ public class DeletePhotoCommand extends UndoableCommand {
      * @param userPhoto the UserPhoto to delete
      */
     public DeletePhotoCommand(UserPhoto userPhoto) {
-        super(CommandPage.HOME);
+        super(CommandPage.ALBUM);
 
         this.userPhoto = userPhoto;
 

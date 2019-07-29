@@ -386,7 +386,7 @@ public class HomeControllerTest extends BaseTestWithApplicationAndDatabase {
 
     @Test
     public void makePicturePrivateWithValidPhotoWithValidUser(){
-        UserPhoto userPhoto = UserPhoto().find.byId(1);
+        UserPhoto userPhoto = UserPhoto.find().byId(1);
         assertTrue(userPhoto.getIsPublic());
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(GET)

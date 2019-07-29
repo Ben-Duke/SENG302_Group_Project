@@ -1,5 +1,7 @@
 var visitArray = [];
 const updateVisitDateUrl = "/user/trips/visit/dates/";
+const colors = ['6b5b95', 'feb236', 'd64161', 'ff7b25',
+    '6b5b95', '86af49', '3e4444', 'eca1a6', 'ffef96', 'bc5a45', 'c1946a'];
 
 
 
@@ -41,13 +43,15 @@ function initTripRoutes() {
         method: 'GET'})
         .then(res => res.json())
         .then(tripRoutes => {
+            let color;
 
         for (let tripId in tripRoutes) {
+            color = colors[Math.floor(Math.random()*colors.length)];
 
             let flightPath = new google.maps.Polyline({
                 path: tripRoutes[tripId],
                 geodesic: true,
-                strokeColor: '#'+(Math.random()*0xFFFFFF<<0).toString(16),
+                strokeColor: '#' + color,
                 strokeOpacity: 1.0,
                 strokeWeight: 2
             });

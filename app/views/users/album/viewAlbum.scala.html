@@ -54,7 +54,7 @@
                     <div>
                         <p>
                             Move to Album
-                            <input style="color: #000000;" id="album-search-move" list="album-results-move" name="Album Move" title="Move Album" placeholder="Search for Album to move to">
+                            <input style="color: #000000;" id="album-search-move" list="album-results-move" name="Album Move" title="Move Album" placeholder="Search for Album">
                             <datalist  id="album-results-move">
                                 @for(userAlbum <- user.getAlbums()){
                                     @if(userAlbum.albumId != album.albumId) {

@@ -664,6 +664,25 @@ public class AlbumControllerTest extends BaseTestWithApplicationAndDatabase {
 
     }
 
+    @Test
+    public void getAlbumFromTitleTest() {
+        User user = UserAccessor.getById(1);
+
+        Media media = new UserPhoto("/test", false, false, user);
+        MediaAccessor.insert(media);
+        Album album = new Album(media, user, "newAlbum");
+        AlbumAccessor.insert(album);
+
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(Helpers.GET)
+                .uri("/users/albums/getFromTitle/newAlbum").session("connected", Integer.toString(user.getUserid()));
+
+        Result result = route(app, request);
+        assert (result.status() == OK);
+
+
+    }
+
 
 
 

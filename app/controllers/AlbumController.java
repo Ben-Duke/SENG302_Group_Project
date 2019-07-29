@@ -227,7 +227,6 @@ public class AlbumController extends Controller {
      *                moved to.
      */
     public Result moveMediaToAlbum(Http.Request request, Integer albumId) {
-        System.out.println("Move album");
         User user = User.getCurrentUser(request);
 
         if (user == null) { return redirect(routes.UserController.userindex()); }
@@ -255,7 +254,7 @@ public class AlbumController extends Controller {
     }
 
     /**
-     * Process the AJAX request to get the album Id based on its title
+     * Process the AJAX request to get the album Id based on its title null if it doesn't exist
      * @param request the HTTP request
      * @param albumName the name of the album to retrieve
      * @return a JSON object with the album ID

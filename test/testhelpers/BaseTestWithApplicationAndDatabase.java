@@ -61,8 +61,9 @@ public class BaseTestWithApplicationAndDatabase extends WithApplication {
         configuration.put("db.test.url", "jdbc:h2:mem:testDB;MODE=MYSQL;");
         configuration.put("ebean.test", "models.*");
         configuration.put("play.evolutions.db.test.enabled", "true");
-        configuration.put("play.evolutions.autoApply", "false");
+        configuration.put("play.evolutions.db.test.autoApply", "false");
 
+        // Dummy defailt database
         configuration.put("db.default.driver", "org.h2.Driver");
         configuration.put("db.default.url", "jdbc:h2:mem:defaultDB;MODE=MYSQL;");
         configuration.put("ebean.default", "models.*");

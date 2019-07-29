@@ -17,9 +17,7 @@ public class TestDatabaseManager {
 
     private final Logger logger = UtilityFunctions.getLogger();
 
-    public TestDatabaseManager(){
-
-    }
+    public TestDatabaseManager(){}
 
     /**
      * Completes the database population that is done by the sql evolutions

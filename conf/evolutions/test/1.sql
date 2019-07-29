@@ -1,7 +1,7 @@
-# --- Database file for testing using H2 Database
-# --- Differences from prod sql files
-# ---   1. Uses '# ---' for Ups/Downs
-# ---   2. Will work if varchars are > 191
+-- Database file for testing using H2 Database
+-- Differences from prod sql files
+--   1. Uses '# ---' for Ups/Downs
+--   2. Will work if varchars are > 191
 
 # --- !Ups
 

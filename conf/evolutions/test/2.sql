@@ -1,10 +1,10 @@
---- Population data for pass/nats - same rows inserted into both tables,
---- this is reliant on them having the same structure
-
+-- Population data for pass/nats - same rows inserted into both tables,
+-- this is reliant on them having the same structure
 
 
 # --- !Ups
 
+-- user
 INSERT INTO `passport` (`passid`, `country_valid`, `passport_name`) VALUES
 (1, 1, 'Afghanistan'),
 (2, 1, 'Albania'),

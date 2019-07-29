@@ -1,10 +1,10 @@
-# --- SQL file for mysql databases
-# --- Differences from test sql files
-# ---   1. Uses '#' for Ups/Downs
-# ---   2. WILL NOT WORK if varchars are > 191
+-- SQL file for mysql databases
+-- Differences from test sql files
+--   1. Uses '#' for Ups/Downs
+--   2. WILL NOT WORK if varchars are > 191
 
 
-# !Ups
+# --- !Ups
 
 create table admin (
   id                            bigint auto_increment not null,
@@ -238,7 +238,7 @@ create index ix_visit_trip on visit (trip);
 alter table visit add constraint fk_visit_trip foreign key (trip) references trip (tripid) on delete restrict on update restrict;
 
 
-# !Downs
+# --- !Downs
 
 alter table destination drop constraint if exists fk_destination_primary_photo_photo_id;
 drop index if exists ix_destination_primary_photo_photo_id;

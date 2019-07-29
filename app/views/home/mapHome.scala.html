@@ -1,36 +1,48 @@
-@(user : User, trips : List[Trip])
+@(user : User, trips : List[Trip], destinations : List[Destination])
 
 <style>
         #map {
+            /*height: calc(100% - 50px);*/
             height: 100%;
             /*position: relative;*/
             /*z-index: 1;*/
 
         }
         #control {
-            /*position: absolute;*/
-            /*top: 50%;*/
-            /*transform: translateY(-50%);*/
+            /*height: calc(100% - 50px)%;*/
             height: 100%;
-            /*width: 425px;*/
-            /*right: 7%;*/
-            /*z-index: 2;*/
-
             text-align: center;
-            /*border-radius: 10px;*/
-            /*background-color: white;*/
         }
-        /*#tripsTab {*/
-        /*    height: 100%;*/
-        /*}*/
+        #tripsTab {
+            height: calc(100% - 50px)%;
+        }
 
         .singleTrip {
-            height: 60%;
+            height: 55%;
             overflow-y: auto;
         }
         #tripList {
-            height 60%;
+            height: 30%;
             overflow-y: auto;
+        }
+
+        #singleDestinationContainer {
+            height: 50%;
+        }
+
+        .singleDestination {
+            height: 45%;
+            display: none;
+        }
+
+        .tripDateInput {
+            height: 25px;
+            width: 120px;
+            font-size: 12px;
+        }
+
+        a {
+            cursor: pointer;
         }
 
 </style>
@@ -47,66 +59,170 @@
             <li id="tripsTabListItem"><a data-toggle="tab" href="#tripsTab">Trips</a></li>
         </ul>
 
-        <div id="destinationsTab" class="tab-pane fade in active">
+        <div class="tab-content">
 
-        </div>
+            <div id="destinationsTab" class="tab-content tab-pane fade">
 
-        <div id="tripsTab" class="tab-pane fade">
+                <div id="singleDestinationContainer">
 
-            <div id="singleTrip" class="singleTrip">
+                    @for(destination <- destinations) {
 
+                        <div id="singleDestination_@destination.getDestId()" class="singleDestination">
 
-                <table class="table table-hover" id="tripTable">
-                    <thead>
-                        <tr>
-                            <th scope="col">Name</th>
-                            <th scope="col">Type</th>
-                            <th scope="col">Arrival</th>
-                            <th scope="col">Departure</th>
-                        </tr>
-                    </thead>
-                    @for(trip <- trips) {
+                            <div class="row">
+                                <label class="col-sm-3 control-label">Name</label>
+                                <div class="col-sm-9">
+                                    <span>@destination.getDestName()</span>
+                                </div>
+                            </div>
 
-                    <tbody id="tripTable_@trip.getTripid()" style="display: none;">
-                    @for(visit <- trip.getOrderedVisits()){
-                        <tr id="@visit.getVisitid()">
-                            <th scope ="row">@visit.getDestination().getDestName()</th>
-                            <td>@visit.getDestination().getDestType()</td>
-                            <td>@visit.getArrival()</td>
-                            <td>@visit.getDeparture()</td>
-                        </tr>
-                        }
+                            <div class="row">
+                                <label class="col-sm-3 control-label">Type</label>
+                                <div class="col-sm-9">
+                                    <span>@destination.getDestType()</span>
+                                </div>
+                            </div>
 
+                            <div class="row">
+                                <label class="col-sm-3 control-label">Traveller Types</label>
+                                <div class="col-sm-9">
+                                @for(travellerType <- destination.getTravellerTypes()) {
+                                    <span style="margin-right: 6px;">@travellerType</span>
+                                }
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <label class="col-sm-3 control-label">Country</label>
+                                <div class="col-sm-9">
+                                    <span>@destination.getCountry()</span>
+                                    @if(!destination.getIsCountryValid()) {
+                                        <span class="text-danger"> Invalid country</span>
+                                    }
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <label class="col-sm-3 control-label">District</label>
+                                <div class="col-sm-9">
+                                    <span>@destination.getDistrict()</span>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <label class="col-sm-3 control-label">Latitude</label>
+                                <div class="col-sm-9">
+                                    <span>@destination.getLatitude()</span>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <label class="col-sm-3 control-label">Longitude</label>
+                                <div class="col-sm-9">
+                                    <span>@destination.getLongitude()</span>
+                                </div>
+                            </div>
+
+                        </div>
 
                     }
-                </tbody>
-                </table>
+
+                </div>
+                <hr>
+                <div id="destinationList">
+                    <h4 style="text-align: left">My Destinations</h4>
+                    <div class="list-group">
+                        @for(destination <- destinations) {
+                            @if(!destination.getIsPublic()) {
+                                <a onclick="displayDestination(@destination.getDestId(),
+                                        @destination.getLatitude(),
+                                        @destination.getLongitude())"
+                                class="list-group-item list-group-item-action">
+                                @destination.getDestName()
+                                </a>
+                            }
+                        }
+                    </div>
+                    <h4 style="text-align: left">Public Destinations</h4>
+                    <div class="list-group">
+                        @for(destination <- destinations) {
+                            @if(destination.getIsPublic()) {
+                                <a onclick="displayDestination(@destination.getDestId(),
+                                        @destination.getLatitude(),
+                                        @destination.getLongitude())"
+                                    class="list-group-item list-group-item-action">
+                                @destination.getDestName() | @destination.getDestType() | @destination.getCountry()
+                                </a>
+                            }
+                        }
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div id="tripsTab" class="tab-content tab-pane fade in active">
+
+                <div id="singleTrip" class="singleTrip">
+
+
+                    <table class="table table-hover" id="tripTable">
+                        <thead>
+                            <tr>
+                                <th scope="col">Name</th>
+                                <th scope="col">Type</th>
+                                <th scope="col">Arrival</th>
+                                <th scope="col">Departure</th>
+                                <th scope="col"></th>
+                            </tr>
+                        </thead>
+                        @for(trip <- trips) {
+
+                        <tbody id="tripTable_@trip.getTripid()" style="display: none;">
+                        @for(visit <- trip.getOrderedVisits()){
+                            <tr id="visit_row_@visit.getVisitid()">
+                                <th scope ="row">@visit.getDestination().getDestName()</th>
+                                <td>@visit.getDestination().getDestType()</td>
+                                <td><input id="arrival_@visit.getVisitid()" class="tripDateInput" type="date"
+                                onblur="updateVisitDate(@visit.getVisitid())" value="@visit.getArrival()"></td>
+                                <td><input id="departure_@visit.getVisitid()" class="tripDateInput" type="date"
+                                onblur="updateVisitDate(@visit.getVisitid())" value="@visit.getDeparture()"></td>
+                                <td onclick="sendDeleteVisitRequest(
+                                '@routes.TripController.deletevisit(visit.getVisitid())',
+                                '@visit.getVisitid()')"><a class="deleteButton">&#10060</a></td>
+                            </tr>
+                            }
+                        </tbody>
+
+                        }
+
+                    </table>
 
             </div>
             <hr>
-
             <div id="tripList">
 
                 <div id="trip-list-group"class="list-group">
                     @for(trip <- trips) {
 
-                        <a onclick="displayTrip(@trip.getTripid(),
-                        @trip.getOrderedVisits().get(0).getDestination().getLatitude(),
-                            @trip.getOrderedVisits().get(0).getDestination().getLongitude())"
-                        class="list-group-item list-group-item-action">
-                        @if(trip.getTripStart() != null){
-                            @trip.getTripName() | Arrival date: @trip.getTripStart()
-                        } else{
-                            @trip.getTripName | No arrival dates
+                            <a onclick="displayTrip(@trip.getTripid(),
+                            @trip.getOrderedVisits().get(0).getDestination().getLatitude(),
+                                @trip.getOrderedVisits().get(0).getDestination().getLongitude())"
+                            class="list-group-item list-group-item-action">
+                            @if(trip.getTripStart() != null){
+                                @trip.getTripName() | Arrival date: @trip.getTripStart()
+                            } else{
+                                @trip.getTripName | No arrival dates
+                            }
+                            </a>
                         }
-                        </a>
-                    }
-                    <a></a>
+                        <a></a>
+                    </div>
+
                 </div>
 
+
             </div>
-
-
         </div>
 
     </div>

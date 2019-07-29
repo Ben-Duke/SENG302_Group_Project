@@ -16,6 +16,7 @@ import models.User;
 import models.Visit;
 import models.commands.Trips.CreateTripFromVisitsCommand;
 import models.commands.Trips.TripPageCommand;
+import models.commands.Visits.DeleteVisitCommand;
 import models.commands.Visits.EditVisitCommand;
 import models.commands.Trips.DeleteTripCommand;
 import play.data.Form;
@@ -28,6 +29,10 @@ import views.html.home.mapHome;
 import views.html.users.trip.*;
 
 import javax.inject.Inject;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
@@ -436,37 +441,117 @@ public class TripController extends Controller {
      * @return edit trip page or error page
      */
     public Result deletevisit(Http.Request request, Integer visitid){
-        //Form<VisitFormData> incomingForm = formFactory.form(VisitFormData.class).bindFromRequest(request);
-        //VisitFormData created = incomingForm.get();
-        Visit visit = Visit.find.byId(visitid);
+
         User user = User.getCurrentUser(request);
-        //change later
-        if (user != null && visit != null) {
-            Trip trip = visit.getTrip();
-            if(trip.isUserOwner(user.getUserid())) {
-                List<Visit> visits = trip.getVisits();
-                if(tripFactory.hasRepeatDest(visits, visit, "DELETE")){
-                    //flash("danger", "You cannot visit the same destination twice in a row!");
-                    return badRequest();
-                }
-                visit.delete();
-                Integer removedVisits = 0;
-                if (trip.getRemovedVisits() != null) {
-                    removedVisits = trip.getRemovedVisits();
-                }
-                trip.setRemovedVisits(removedVisits + 1);
-                trip.update();
-            }
-            else{
-                //flash("danger", "You are not the owner of this trip.");
-                return unauthorized();
-            }
+        if (user == null) { return redirect(routes.UserController.userindex()); }
+
+        Visit visit = VisitAccessor.getById(visitid);
+        if (visit == null) { return redirect(routes.UserController.userindex()); }
+
+        Trip trip = visit.getTrip();
+        if (!trip.isUserOwner(user.getUserid())) { return unauthorized(); }
+
+        List<Visit> visits = trip.getVisits();
+
+        if (tripFactory.hasRepeatDest(visits, visit, "DELETE")) {
+            return badRequest();
         }
-        else{
-            //flash("danger", "You are not logged in.");
-            return redirect(routes.UserController.userindex());
+
+        DeleteVisitCommand command = new DeleteVisitCommand(visit);
+        user.getCommandManager().executeCommand(command);
+
+        return ok();
+
+    }
+
+
+    /**
+     * Gets new dates from request. Validates the dates. Updates the dates using the command.
+     * @param request
+     * @param visitId the id of the visit that is being editted
+     * @return
+     */
+    public Result updateVisitDates(Http.Request request, Integer visitId) {
+        User user = User.getCurrentUser(request);
+        if (user == null) { return redirect(routes.UserController.userindex()); }
+
+        Visit visit = VisitAccessor.getById(visitId);
+        if (visit == null) { return badRequest("Visit does not exits"); }
+
+        Trip trip = visit.getTrip();
+        if (!trip.isUserOwner(user.getUserid())) { return unauthorized(); }
+
+        String arrivalDateString = new ObjectMapper().convertValue(request.body().asJson().get("arrival"), String.class);
+        String departureDateString = new ObjectMapper().convertValue(request.body().asJson().get("departure"), String.class);
+
+
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        Date arrivalDate = null;
+        Date departureDate = null;
+        Date existingArrivalDate;
+        Date existingDepartureDate;
+
+        try {
+            if (!arrivalDateString.isEmpty()) {
+                arrivalDate = format.parse(arrivalDateString);
+            }
+            if (!departureDateString.isEmpty()) {
+                departureDate = format.parse(departureDateString);
+            }
+
+            if (visit.getArrival() != null) {
+                existingArrivalDate = format.parse(visit.getArrival());
+            }
+            else {
+                existingArrivalDate = format.parse("0000-01-01");
+            }
+            if (visit.getDeparture() != null) {
+                existingDepartureDate = format.parse(visit.getDeparture());
+            } else {
+                existingDepartureDate = format.parse("9999-12-31");
+            }
+
+        } catch (ParseException e) {
+            return badRequest();
         }
-        //flash("success", "Destination deleted.");
+
+
+
+        if (!arrivalDateString.isEmpty() && !departureDateString.isEmpty()) {
+            if ((arrivalDate.compareTo(departureDate) <= 0)) {
+
+                visit.setArrival(arrivalDateString);
+                visit.setDeparture(departureDateString);
+
+                EditVisitCommand command = new EditVisitCommand(visit);
+                user.getCommandManager().executeCommand(command);
+
+            }
+
+
+        } else if (!arrivalDateString.isEmpty()) {
+
+            if ((arrivalDate.compareTo(existingDepartureDate) <= 0)) {
+
+                visit.setArrival(arrivalDateString);
+
+                EditVisitCommand command = new EditVisitCommand(visit);
+                user.getCommandManager().executeCommand(command);
+
+            }
+
+        } else if (!departureDateString.isEmpty()) {
+            if ((existingArrivalDate.compareTo(departureDate)) <= 0) {
+
+                visit.setArrival(arrivalDateString);
+
+                EditVisitCommand command = new EditVisitCommand(visit);
+                user.getCommandManager().executeCommand(command);
+
+            }
+
+        }
+
         return ok();
     }
 
@@ -521,16 +606,6 @@ public class TripController extends Controller {
         }
     }
 
-    public Result displayTripsOnMap(Http.Request request) {
-        User user = User.getCurrentUser(request);
-        if (user == null) { return redirect(routes.UserController.userindex()); }
-
-        List<Trip> trips = user.getTripsSorted();
-
-
-        return ok(mapHome.render(user, trips));
-    }
-
 
 
     /**
@@ -547,12 +622,11 @@ public class TripController extends Controller {
 
         ObjectMapper objectMapper = new ObjectMapper();
 
-        ArrayNode tripNodes = objectMapper.createArrayNode();
+        ObjectNode tripNodes = objectMapper.createObjectNode();
 
         for (Trip trip : trips) {
 
-
-
+//            ObjectNode tripNode = objectMapper.createObjectNode();
 
             ArrayNode destinationNodes = objectMapper.createArrayNode();
 
@@ -567,7 +641,11 @@ public class TripController extends Controller {
                 destinationNodes.add(destinationNode);
             }
 
-            tripNodes.add(destinationNodes);
+            tripNodes.put(trip.getTripid().toString(), destinationNodes);
+
+
+
+//            tripNodes.add(tripNode);
         }
 
         return ok(tripNodes);

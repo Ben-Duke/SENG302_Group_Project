@@ -37,7 +37,7 @@
             </thead>
             <tbody>
             @for(destination <- destinations) {
-                @if(! destination.getIsPublic) {
+                @if(!destination.getIsPublic) {
                     @*<tr data-toggle="modal" data-id="@destination.getDestId()" data-dest-name="@destination.getDestName()" data-target="#orderModal" class="clickable">*@
                     <tr data-id="@destination.getDestId" data-dest-name="@destination.getDestName">
                         <th scope ="row">

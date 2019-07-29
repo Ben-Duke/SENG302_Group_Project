@@ -51,12 +51,6 @@ public class UserFactory {
     }
 
     public void deletePhoto(int photoId){
-        UserPhoto userPhoto = UserPhotoAccessor.getUserPhotoById(photoId);
-        for (Album album : userPhoto.getAlbums()) {
-            album.removeMedia(userPhoto);
-            album.update();
-        }
-        MediaAccessor.delete(MediaAccessor.getMediaById(photoId));
         UserPhotoAccessor.deleteById(photoId);
     }
 

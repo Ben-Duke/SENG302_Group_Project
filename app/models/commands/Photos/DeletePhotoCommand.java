@@ -1,7 +1,10 @@
 package models.commands.Photos;
 
+import accessors.DestinationAccessor;
 import accessors.AlbumAccessor;
 import accessors.UserPhotoAccessor;
+import accessors.VisitAccessor;
+import controllers.DestinationController;
 import factories.UserFactory;
 import models.*;
 import models.commands.Profile.HomePageCommand;

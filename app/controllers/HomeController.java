@@ -123,31 +123,11 @@ public class HomeController {
             UserPhoto newPhoto = new UserPhoto(origionalFilePath, isPublic, false, user);
             String unusedPhotoUrl = newPhoto.getUnusedUserPhotoFileName();
             newPhoto.setUrl(unusedPhotoUrl);
-            UploadPhotoCommand uploadPhotoCommand = new UploadPhotoCommand(newPhoto, fileObject);
+            UploadPhotoCommand uploadPhotoCommand = new UploadPhotoCommand(newPhoto, fileObject, user, albumName);
             user.getCommandManager().executeCommand(uploadPhotoCommand);
-            addUploadToAlbum(user, newPhoto, albumName);
             return redirect(routes.HomeController.showhome());
         } else {
             return badRequest();
-        }
-    }
-
-    private void addUploadToAlbum(User user, UserPhoto media, String albumName) {
-        List<Album> albumList = UserAccessor.getAlbums();
-        int albumCount = 0;
-        for (Album album : albumList) {
-            if (albumName.equals(album.getTitle())) {
-                albumCount = 1;
-                List<Media> mediaList = new ArrayList<>();
-                mediaList.add(media);
-                AddMediaToAlbumCommand cmd = new AddMediaToAlbumCommand(album, mediaList);
-                user.getCommandManager().executeCommand(cmd);
-            }
-        }
-        if (albumCount == 0) {
-            CreateAlbumCommand cmd;
-            cmd = new CreateAlbumCommand(albumName, user, media);
-            user.getCommandManager().executeCommand(cmd);
         }
     }
 
@@ -198,7 +178,7 @@ public class HomeController {
                     }
                     //DB saving
                     UserFactory.replaceProfilePicture(user.getUserid(), newPhoto);
-                    addUploadToAlbum(user, newPhoto, albumName);
+//                    addUploadToAlbum(user, newPhoto, albumName);
                     return redirect(routes.HomeController.showhome());
                 }
             }

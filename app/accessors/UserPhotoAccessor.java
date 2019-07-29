@@ -20,7 +20,8 @@ public class UserPhotoAccessor {
     public static void delete(UserPhoto userPhoto) {
         try {
             userPhoto.delete();
-        } catch (Exception e) {}
+            userPhoto.update();
+        } catch (Exception e) { }
     }
     public static void deleteById(int id) { delete(UserPhoto.find.byId(id)); }
 
@@ -28,5 +29,9 @@ public class UserPhotoAccessor {
 
     public static UserPhoto getUserPhotoById(int id) {
         return UserPhoto.find.byId(id);
+    }
+
+    public static UserPhoto getUserPhotoByUrl(String url) {
+        return UserPhoto.find.query().where().eq("url", url).findOne();
     }
 }

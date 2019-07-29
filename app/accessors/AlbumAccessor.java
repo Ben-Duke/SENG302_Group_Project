@@ -12,6 +12,10 @@ public class AlbumAccessor {
         return Album.find.byId(id);
     }
 
+    public static Album getAlbumByTitle(String title) {
+        return Album.find.query().where().eq("title", title).findOne();
+    }
+
     public static void insert(Album album) { album.save(); }
 
     public static void delete(Album album) { album.delete(); }

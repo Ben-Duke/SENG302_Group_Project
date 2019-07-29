@@ -35,7 +35,6 @@ public class UpdateUserFormData implements Constraints.Validatable<List<Validati
     public String existingUsername;
     public String existingPassword;
 
-    private String existingPasswordToCheck;
 
     public Boolean isAdmin;
 
@@ -55,13 +54,12 @@ public class UpdateUserFormData implements Constraints.Validatable<List<Validati
      * @param user The User whose data to enter into the form.
      */
     public UpdateUserFormData(User user, Boolean isAdmin) {
-        this.firstName = user.getfName();
-        this.lastName = user.getlName();
+        this.firstName = user.getFName();
+        this.lastName = user.getLName();
         this.gender = user.getGender();
         this.username = user.getEmail();
         this.existingUsername = user.getEmail();
         this.password = "";
-        this.existingPasswordToCheck = user.getPasswordHash();
         this.isAdmin = isAdmin;
         if (user.getDateOfBirth() == null) {
             this.dateOfBirth = "null";
@@ -98,10 +96,8 @@ public class UpdateUserFormData implements Constraints.Validatable<List<Validati
 
         if (username == null || username.length() == 0) {
             errors.add(new ValidationError("username", "No username was given"));
-        } else {
-            if (! UtilityFunctions.isEmailValid(username)) {
-                errors.add(new ValidationError("username", "Not an email address"));
-            }
+        } else if (! UtilityFunctions.isEmailValid(username)) {
+            errors.add(new ValidationError("username", "Not an email address"));
         }
 
 
@@ -113,39 +109,35 @@ public class UpdateUserFormData implements Constraints.Validatable<List<Validati
         String[] gendersArray = {"Male", "Female", "Other"};
         List gendersList = Arrays.asList(gendersArray);
         String genderErrorStr = "Please select a gender.";
-        if (gender == null) {
-            errors.add(new ValidationError("gender", genderErrorStr));
-        } else if (! gendersList.contains(gender)) {
+        if (gender == null || ! gendersList.contains(gender)) {
             errors.add(new ValidationError("gender", genderErrorStr));
         }
 
         String dateOfBirthErrorStr = "Please enter the date correctly.";
         if (dateOfBirth == null) {
             errors.add(new ValidationError("dateOfBirth", dateOfBirthErrorStr));
+        } else if (dateOfBirth.length() < 8) {
+            errors.add(new ValidationError("dateOfBirth", dateOfBirthErrorStr));
         } else {
-            if (dateOfBirth.length() < 8) {
-                errors.add(new ValidationError("dateOfBirth", dateOfBirthErrorStr));
-            } else {
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-                //convert String to LocalDate
-                LocalDate birthDate;
-                try {
-                    // not useless, if this fails it throws an error
-                    birthDate = LocalDate.parse(dateOfBirth, formatter);
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            //convert String to LocalDate
+            LocalDate birthDate;
+            try {
+                // not useless, if this fails it throws an error
+                birthDate = LocalDate.parse(dateOfBirth, formatter);
 
-                    LocalDate dateNow = LocalDate.now();
-                    LocalDate date150YearsAgo = LocalDate.now().minusYears(150);
+                LocalDate dateNow = LocalDate.now();
+                LocalDate date150YearsAgo = LocalDate.now().minusYears(150);
 
-                    if (! birthDate.isAfter(date150YearsAgo) ||
+                if (! birthDate.isAfter(date150YearsAgo) ||
                         ! birthDate.isBefore(dateNow)) {
-                        String dobError = "Birth date must be within the last 150 years.";
-                        errors.add(new ValidationError("dateOfBirth", dobError));
-                    }
-
-
-                } catch (Exception e) {
-                    errors.add(new ValidationError("dateOfBirth", dateOfBirthErrorStr));
+                    String dobError = "Birth date must be within the last 150 years.";
+                    errors.add(new ValidationError("dateOfBirth", dobError));
                 }
+
+
+            } catch (Exception e) {
+                errors.add(new ValidationError("dateOfBirth", dateOfBirthErrorStr));
             }
         }
 

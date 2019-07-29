@@ -3,14 +3,14 @@
 <!-- Page name (for unit tests): displayTrip.scala.html -->
 @main(user, "Trip View") {
         @for(visit <- visits) {
-            <div class="modal" id=@visit.visitName>
+            <div class="modal" id=@visit.getVisitName>
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h2 class="modal-title">@visit.visitName</h2>
+                            <h2 class="modal-title">@visit.getVisitName</h2>
                         </div>
                         <div class="modal-body">
-                            <p>Visit name: @visit.visitName | Arrival time: @visit.arrival | Departure time: @visit.departure</p>
+                            <p>Visit name: @visit.getVisitName | Arrival time: @visit.getArrival | Departure time: @visit.getDeparture</p>
                         </div>
                     </div>
                 </div>
@@ -31,13 +31,13 @@
                         } else{
                     <div class="item">
                         }
-                        <a href="#" data-toggle="modal" data-target=#@visit.visitName>
+                        <a href="#" data-toggle="modal" data-target=#@visit.getVisitName>
                             <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Colosseum_in_Rome%2C_Italy_-_April_2007.jpg">
                         </a>
                         <div class="carousel-caption">
-                            <h2>Destination: @visit.visitName</h2>
-                            <h3>Arrival: @visit.arrival</h3>
-                            <h3>Departure: @visit.departure</h3>
+                            <h2>Destination: @visit.getVisitName</h2>
+                            <h3>Arrival: @visit.getArrival</h3>
+                            <h3>Departure: @visit.getDeparture</h3>
                         </div>
                     </div>
                     }

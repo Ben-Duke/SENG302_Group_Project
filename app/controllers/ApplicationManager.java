@@ -7,6 +7,11 @@ import java.nio.file.Paths;
  */
 public class ApplicationManager {
 
+    // Private constructor to hide the implicit public one
+    private ApplicationManager() {
+        throw new IllegalStateException("Utility class");
+    }
+
     private static String userPhotoPath;
 
     private static boolean isTest = false;
@@ -41,10 +46,18 @@ public class ApplicationManager {
         ApplicationManager.userPhotoPath = userPhotoPath;
     }
 
+    /**
+     * Method to check what environment the application is needed to bne run on
+     * @retun isTest A boolean representing the environment
+     */
     public static boolean isIsTest() {
         return isTest;
     }
 
+    /**
+     * Method to check set what environment the application is running on
+     * @param isTest A boolean representing the environment
+     */
     public static void setIsTest(boolean isTest) {
         ApplicationManager.isTest = isTest;
     }

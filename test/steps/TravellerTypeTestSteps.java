@@ -34,7 +34,6 @@ import static play.test.Helpers.route;
 
 public class TravellerTypeTestSteps extends BaseTestWithApplicationAndDatabase {
 
-    private TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
 
     @Inject
     private Application application;
@@ -57,7 +56,7 @@ public class TravellerTypeTestSteps extends BaseTestWithApplicationAndDatabase {
         Guice.createInjector(builder.applicationModule()).injectMembers(this);
         Helpers.start(application);
         ApplicationManager.setUserPhotoPath("/test/resources/test_photos/user_");
-        testDatabaseManager.populateDatabase();
+        TestDatabaseManager.populateDatabase();
     }
 
     @After
@@ -77,7 +76,7 @@ public class TravellerTypeTestSteps extends BaseTestWithApplicationAndDatabase {
                                                                                                 String gender, String dob, String passport,
                                                                                                 String nationality, String travellerType)
     {
-        int initialSize = User.find.all().size();
+        int initialSize = User.find().all().size();
 
         Map<String, String> formData = new HashMap<>();
         formData.put("email", email);
@@ -92,7 +91,7 @@ public class TravellerTypeTestSteps extends BaseTestWithApplicationAndDatabase {
 
         Http.RequestBuilder request = Helpers.fakeRequest().bodyForm(formData).method(Helpers.POST).uri("/users/register");
         Result result = route(application, request);
-        int finalSize = User.find.all().size();
+        int finalSize = User.find().all().size();
 
         Assert.assertEquals(initialSize + 1, finalSize);
     }
@@ -100,7 +99,7 @@ public class TravellerTypeTestSteps extends BaseTestWithApplicationAndDatabase {
 
     @Then("The traveller type {string} is associated with the users profile")
     public void theTravellerTypesAreAssociatedWithTheUsersProfile(String travellerTypeOne) {
-        User newUser = User.find.all().get(4);
+        User newUser = User.find().all().get(4);
         Boolean isCorrectTravellerTypes = true;
         for (TravellerType travellerType : newUser.getTravellerTypes()) {
             if (!travellerType.getTravellerTypeName().equals(travellerTypeOne)) {
@@ -112,7 +111,7 @@ public class TravellerTypeTestSteps extends BaseTestWithApplicationAndDatabase {
 
     @Given("The user with email {string}, id {string} and traveller types {string} and {string} is signed up")
     public void theUserWithFirstNameLastNameEmailPasswordGenderDOBPassportsNationalitiesAndTravellerTypesAndIsSignedUp(String email, String id, String travellerTypeOne, String travellerTypeTwo) {
-        User newUser =  User.find.all().get(Integer.parseInt(id));
+        User newUser =  User.find().all().get(Integer.parseInt(id));
         Assert.assertEquals(newUser.getEmail(), email);
         Assert.assertTrue(newUser.getTravellerTypes().get(0).getTravellerTypeName().equals(travellerTypeOne));
         Assert.assertTrue(newUser.getTravellerTypes().get(1).getTravellerTypeName().equals(travellerTypeTwo));
@@ -120,9 +119,9 @@ public class TravellerTypeTestSteps extends BaseTestWithApplicationAndDatabase {
 
     @When("The user with id {string} removes the traveller type {string}")
     public void theUserRemovesTheTravellerType(String id, String string) {
-        User newUser =  User.find.all().get(Integer.parseInt(id));
+        User newUser =  User.find().all().get(Integer.parseInt(id));
         id = Integer.toString(Integer.parseInt(id) + 1);
-        TravellerType travellerType = TravellerType.find.query().where().eq("travellerTypeName", string).findOne();
+        TravellerType travellerType = TravellerType.find().query().where().eq("travellerTypeName", string).findOne();
         Map<String, String> formData = new HashMap<>();
         System.out.println(newUser.getUserid() + ": " + travellerType.getTravellerTypeName());
         System.out.println(travellerType.getTtypeid().toString());
@@ -136,9 +135,9 @@ public class TravellerTypeTestSteps extends BaseTestWithApplicationAndDatabase {
 
     @When("The user with id {string} removes the only remaining traveller type {string}")
     public void theUserWithIdRemovesTheOnlyRemainingTravellerType(String id, String string) {
-        User newUser =  User.find.all().get(Integer.parseInt(id));
+        User newUser =  User.find().all().get(Integer.parseInt(id));
         id = Integer.toString(Integer.parseInt(id) + 1);
-        TravellerType travellerType = TravellerType.find.query().where().eq("travellerTypeName", string).findOne();
+        TravellerType travellerType = TravellerType.find().query().where().eq("travellerTypeName", string).findOne();
         Map<String, String> formData = new HashMap<>();
         formData.put("typeId", travellerType.getTtypeid().toString());
         Http.RequestBuilder fakeRequest = Helpers.fakeRequest().bodyForm(formData).method(Helpers.POST).uri("/users/profile/delete/" + travellerType.getTtypeid()).session("connected", id);
@@ -148,14 +147,14 @@ public class TravellerTypeTestSteps extends BaseTestWithApplicationAndDatabase {
 
     @Then("The user with id {string} has only one traveller type {string}")
     public void theUserHasOnlyOneTravellerType(String id, String string) {
-        User newUser =  User.find.all().get(Integer.parseInt(id));
+        User newUser =  User.find().all().get(Integer.parseInt(id));
         Assert.assertEquals(1, newUser.getTravellerTypes().size());
         Assert.assertEquals(string, newUser.getTravellerTypes().get(0).getTravellerTypeName());
     }
 
     @Then("The type {string} is not removed and still is associated with the profile with id {string}")
     public void theTypeIsNotRemovedAndStillIsAssociatedWithTheProfile(String string, String id) {
-        User newUser = User.find.all().get(Integer.parseInt(id));
+        User newUser = User.find().all().get(Integer.parseInt(id));
         Assert.assertEquals(1, newUser.getTravellerTypes().size());
         Assert.assertEquals(string, newUser.getTravellerTypes().get(0).getTravellerTypeName());
     }

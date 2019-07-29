@@ -90,8 +90,8 @@ public class ProfileControllerTest extends WithApplication {
 //        User user = User.find.byId(1);
 //        user.setAdmin(true);
 //        user.update();
-//        assertEquals("Gavin", user.getfName());
-//        assertEquals("Ong", user.getlName());
+//        assertEquals("Gavin", user.getFName());
+//        assertEquals("Ong", user.getLName());
 //        assertEquals("Male", user.getGender());
 //        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 //        LocalDate expectedBirthDate = LocalDate.parse("1998-08-23", formatter);
@@ -107,8 +107,8 @@ public class ProfileControllerTest extends WithApplication {
 //        Result result = route(app, request);
 //        assertEquals(SEE_OTHER, result.status());
 //        user = User.find.byId(1);
-//        assertEquals("John", user.getfName());
-//        assertEquals("Cena", user.getlName());
+//        assertEquals("John", user.getFName());
+//        assertEquals("Cena", user.getLName());
 //        assertEquals("Female", user.getGender());
 //        LocalDate expectedBirthDate2 = LocalDate.parse("1969-04-20", formatter);
 //        assertEquals(expectedBirthDate2, user.getDateOfBirth());
@@ -145,46 +145,46 @@ public class ProfileControllerTest extends WithApplication {
     public void submitUpdateNationalityWithDifferentNationality() {
         Map<String, String> formData = new HashMap<>();
         formData.put("nationality", "3");
-        User user = User.find.byId(1);
-        assertEquals(2, user.nationality.size());
+        User user = User.find().byId(1);
+        assertEquals(2, user.getNationality().size());
         Http.RequestBuilder request = Helpers.fakeRequest().bodyForm(formData).method(Helpers.POST).uri("/users/profile/update/natpass/addnat").session("connected", "1");
         Result result = route(app, request);
         assertEquals(SEE_OTHER, result.status());
-        user = User.find.byId(1);
-        assertEquals(3, user.nationality.size());
+        user = User.find().byId(1);
+        assertEquals(3, user.getNationality().size());
     }
 
     @Test
     public void submitUpdateNationalityWithSameNationality() {
         Map<String, String> formData = new HashMap<>();
         formData.put("nationality", "2");
-        User user = User.find.byId(1);
-        assertEquals(2, user.nationality.size());
+        User user = User.find().byId(1);
+        assertEquals(2, user.getNationality().size());
         Http.RequestBuilder request = Helpers.fakeRequest().bodyForm(formData).method(Helpers.POST).uri("/users/profile/update/natpass/addnat").session("connected", "1");
         Result result = route(app, request);
 
-        assertEquals(2, user.nationality.size());
+        assertEquals(2, user.getNationality().size());
     }
 
     @Test
     public void submitUpdatePassportWithDifferentPassport() {
         Map<String, String> formData = new HashMap<>();
         formData.put("passport", "3");
-        User user = User.find.byId(1);
-        assertEquals(2, user.passports.size());
+        User user = User.find().byId(1);
+        assertEquals(2, user.getPassports().size());
         Http.RequestBuilder request = Helpers.fakeRequest().bodyForm(formData).method(Helpers.POST).uri("/users/profile/update/natpass/addpass").session("connected", "1");
         Result result = route(app, request);
         assertEquals(SEE_OTHER, result.status());
-        user = User.find.byId(1);
-        assertEquals(3, user.passports.size());
+        user = User.find().byId(1);
+        assertEquals(3, user.getPassports().size());
     }
 
     @Test
     public void submitUpdatePassportWithSamePassport() {
         Map<String, String> formData = new HashMap<>();
         formData.put("passport", "2");
-        User user = User.find.byId(1);
-        assertEquals(2, user.passports.size());
+        User user = User.find().byId(1);
+        assertEquals(2, user.getPassports().size());
         Http.RequestBuilder request = Helpers.fakeRequest().bodyForm(formData).method(Helpers.POST).uri("/users/profile/update/natpass/addpass").session("connected", "1");
         Result result = route(app, request);
         assertEquals(303, result.status());
@@ -195,39 +195,39 @@ public class ProfileControllerTest extends WithApplication {
         Map<String, String> formData = new HashMap<>();
         formData.put("nationalitydelete", "2");
         formData.put("userId", "1");
-        User user = User.find.byId(1);
-        assertEquals(2, user.nationality.size());
+        User user = User.find().byId(1);
+        assertEquals(2, user.getNationality().size());
         Http.RequestBuilder request = Helpers.fakeRequest().bodyForm(formData).method(Helpers.POST).uri("/users/profile/update/natpass/delnat").session("connected", "1");
         CSRFTokenHelper.addCSRFToken(request);
         Result result = route(app, request);
         assertEquals(SEE_OTHER, result.status());
-        user = User.find.byId(1);
-        assertEquals(1, user.nationality.size());
+        user = User.find().byId(1);
+        assertEquals(1, user.getNationality().size());
     }
 
     @Test
     public void deletePassport() {
         Map<String, String> formData = new HashMap<>();
         formData.put("passportdelete", "2");
-        User user = User.find.byId(1);
-        assertEquals(2, user.passports.size());
+        User user = User.find().byId(1);
+        assertEquals(2, user.getPassports().size());
         Http.RequestBuilder request = Helpers.fakeRequest().bodyForm(formData).method(Helpers.POST).uri("/users/profile/update/natpass/delpass").session("connected", "1");
         Result result = route(app, request);
         assertEquals(SEE_OTHER, result.status());
-        user = User.find.byId(1);
-        assertEquals(1, user.passports.size());
+        user = User.find().byId(1);
+        assertEquals(1, user.getPassports().size());
     }
 
     public void createUser(){
         UtilityFunctions.addTravellerTypes();
         UtilityFunctions.addAllNationalities();
         UtilityFunctions.addAllPassports();
-        TravellerType travellerType1 = TravellerType.find.byId(1);
-        TravellerType travellerType2 = TravellerType.find.byId(2);
-        Nationality nationality1 = Nationality.find.byId(1);
-        Nationality nationality2 = Nationality.find.byId(2);
-        Passport passport1 = Passport.find.byId(1);
-        Passport passport2 = Passport.find.byId(2);
+        TravellerType travellerType1 = TravellerType.find().byId(1);
+        TravellerType travellerType2 = TravellerType.find().byId(2);
+        Nationality nationality1 = Nationality.find().byId(1);
+        Nationality nationality2 = Nationality.find().byId(2);
+        Passport passport1 = Passport.find().byId(1);
+        Passport passport2 = Passport.find().byId(2);
         //Initialises a test user with name "testUser" and saves it to the database.
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         //convert String to LocalDate
@@ -276,7 +276,7 @@ public class ProfileControllerTest extends WithApplication {
      */
     @Test
     public void isProfilePictureSet_withProfilePic_checkJsonHasTrueField() {
-        UserPhoto profilePic = new UserPhoto("/test/url", true, true, User.find.byId(1));
+        UserPhoto profilePic = new UserPhoto("/test/url", true, true, User.find().byId(1));
         profilePic.save();
 
         Http.RequestBuilder request = Helpers.fakeRequest().method(Helpers.GET)

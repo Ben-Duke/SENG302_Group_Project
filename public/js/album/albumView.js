@@ -184,6 +184,7 @@ function loadDestTable(destData, mediaId) {
 
 function addDestRow(table, destination, mediaId) {
     const row = document.createElement("TR");
+    // row.id = `tr-${destination.destId}`;
 
     const name = document.createElement("TH");
     name.setAttribute('scope', 'row');
@@ -203,17 +204,20 @@ function addDestRow(table, destination, mediaId) {
     row.appendChild(district);
 
     const linkButton = document.createElement('BUTTON');
+    linkButton.setAttribute('id', `link-${destination.destId}`);
     linkButton.setAttribute('class', 'btn btn-primary');
     linkButton.innerText = 'Link to destination';
     linkButton.addEventListener('click', () => {
-        linkDestination(destination.id, mediaId)
+        linkDestination(destination.destId, mediaId)
     });
 
     const unlinkButton = document.createElement('BUTTON');
+    unlinkButton.setAttribute('id', `unlink-${destination.destId}`);
     unlinkButton.setAttribute('class', 'btn btn-danger');
     unlinkButton.innerText = 'Unlink from destination';
+    unlinkButton.style.display = 'none';
     unlinkButton.addEventListener('click', () => {
-        unlinkDestination(destination.id, mediaId)
+        unlinkDestination(destination.destId, mediaId)
     });
 
     const div = document.createElement('DIV');
@@ -226,11 +230,39 @@ function addDestRow(table, destination, mediaId) {
 
 
 function linkDestination(destId, mediaId) {
-    console.log("linked " + destId + " to " + mediaId);
+    $.ajax({
+        method: "PUT",
+        url: `/users/destinations/${destId}`,
+        data: JSON.stringify({
+            photoid: '"' + mediaId + '"'
+        }),
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        success: function() {
+            toggleButtons(destId)
+        }
+    });
 }
 
 function unlinkDestination(destId, mediaId) {
-    console.log("unlinked " + destId + " from " + mediaId);
+    $.ajax({
+        type: 'DELETE',
+        url: `/users/destinations/${mediaId}/${destId}`,
+        contentType: 'application/json',
+        success: () => {
+            toggleButtons(destId)
+        }
+    });
+}
+
+function toggleButtons(destId) {
+    console.log('the dest id is ' + destId);
+    const unlink = document.getElementById(`unlink-${destId}`);
+    unlink.style.display === "none" ? unlink.style.display = "block" : unlink.style.display = "none";
+
+    const link = document.getElementById(`link-${destId}`);
+    link.style.display === 'none' ? link.style.display = 'block' : link.style.display = 'none';
 }
 
 // Next/previous controls

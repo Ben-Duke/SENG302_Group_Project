@@ -2,62 +2,77 @@ var slideIndex = 1;
 var currentSlideNo = 1;
 var albumData = null;
 
+
+document.getElementById('')
+
+function setDeletePhotoListener(albumData, i) {
+    document.getElementById('deletePhotoBtn').addEventListener('click', () => {
+        const mediaId = albumData[i]["mediaId"];
+        deletePhotoRequest(mediaId);
+    });
+}
+
+function setDestinationLinkListener(albumData, i) {
+    function destinationLinkListener() {
+        const mediaId = albumData[i]["mediaId"];
+        openDestinationModal(mediaId);
+    }
+    const original = document.getElementById('linkDestinationBtn');
+    const clone = original.cloneNode(true);
+    original.parentNode.replaceChild(clone, original);
+    clone.addEventListener('click', destinationLinkListener)
+}
+
+function setPrivacyListener(setPrivacy, mediaId) {
+    const privacyBtn = document.getElementById('privacyBtn');
+    privacyBtn.addEventListener('click', () => {
+        if(setPrivacy) {
+            privacyBtn.innerHTML = "Make Public";
+            document.querySelector('div[data-mediaId="'+mediaId+'"]').setAttribute("data-privacy", false);
+        }
+        else {
+            privacyBtn.innerHTML = "Make Private";
+            document.querySelector('div[data-mediaId="'+mediaId+'"]').setAttribute("data-privacy", true);}
+    })
+}
+
+
+function setSlideListeners(i) {
+    const dataset = document.getElementById('myModal').dataset;
+    const isOwner = dataset.isowner;
+    const albumId = dataset.album;
+    const hidePrivate = !isOwner;
+
+    $.ajax({
+        type: 'GET',
+        url: '/users/albums/get/' + hidePrivate + '/' + albumId,
+        contentType: 'application/json',
+        success: (albumData) => {
+            let setPrivacy;
+            setDeletePhotoListener(albumData, i);
+            setDestinationLinkListener(albumData, i);
+
+            const mediaId = albumData[i]["mediaId"];
+
+            if(albumData[i]["isMediaPublic"]) {setPrivacy=0;}
+            else {setPrivacy=1;}
+
+            $.ajax({
+                type: 'GET',
+                url: '/users/home/photoPrivacy/' + mediaId + '/' + setPrivacy,
+                contentType: 'application/json',
+                success: () => {
+                    setPrivacyListener(setPrivacy, mediaId)
+                }
+            });
+        }
+    });
+}
+
 function setProfilePicture() {
 
 }
 
-function deletePhoto(userId, albumId, isOwner) {
-    var hidePrivate;
-    if(isOwner) {hidePrivate = false;}
-    else {hidePrivate = true}
-    $.ajax({
-            type: 'GET',
-            url: '/users/albums/get/' + hidePrivate + '/' + albumId,
-            contentType: 'application/json',
-            success: (albumData) => {
-                    var mediaId = albumData[slideIndex-1]["mediaId"];
-                    deletePhotoRequest(mediaId);
-            }
-    });
-}
-
-function changePrivacy(userId, albumId, isOwner) {
-    var hidePrivate, setPrivacy;
-    if(isOwner) {hidePrivate = false;}
-    else {hidePrivate = true}
-    $.ajax({
-            type: 'GET',
-            url: '/users/albums/get/' + hidePrivate + '/' + albumId,
-            contentType: 'application/json',
-            success: (albumData) => {
-                    var mediaId = albumData[slideIndex-1]["mediaId"];
-                    console.log("index: " + slideIndex);
-                    if(albumData[slideIndex-1]["isMediaPublic"]==true) {setPrivacy=0;}
-                    else {setPrivacy=1;}
-                    console.log("privacy: " + setPrivacy);
-                    $.ajax({
-                           type: 'GET',
-                           url: '/users/home/photoPrivacy/' + mediaId + '/' + setPrivacy,
-                           contentType: 'application/json',
-                           success: () => {
-                                if(setPrivacy==0) {
-                                    document.getElementById("privacyBtn").innerHTML = "Make Public";
-                                    document.querySelector('div[data-mediaId="'+mediaId+'"]').setAttribute("data-privacy", false);
-                                }
-                                else if(setPrivacy==1) {
-                                    document.getElementById("privacyBtn").innerHTML = "Make Private";
-                                    document.querySelector('div[data-mediaId="'+mediaId+'"]').setAttribute("data-privacy", true);}
-                           },
-
-
-                    });
-            }
-    });
-}
-
-function linkToDestination(mediaId) {
-
-}
 
 /**
  * Function to search for albums.
@@ -82,7 +97,7 @@ function getAlbum(userId, albumId, isOwner){
 
 async function addAlbum(albumData) {
     var path = "/users/home/servePicture/";
-    for (var i=0; i<albumData.length; i++) {
+    for (let i=0; i<albumData.length; i++) {
         await displayGrid(i, albumData, path);
         await displaySlides(i, albumData, path);
     }
@@ -96,9 +111,10 @@ async function displayGrid(i, albumData, path) {
     img1.setAttribute("data-id", i);
     img1.setAttribute("data-mediaId", albumData[i]["mediaId"]);
     img1.classList.add("hover-shadow");
-    img1.addEventListener('click', openModal);
     img1.addEventListener('click', () => {
-        currentSlide(i+1)
+        openModal();
+        currentSlide(i+1);
+        setSlideListeners(i)
     });
     if (i%4==0) {
         document.getElementById('col1').appendChild(img1);
@@ -138,11 +154,142 @@ function closeModal() {
   document.getElementById("myModal").style.display = "none";
 }
 
+function openDestinationModal(mediaId) {
+    document.getElementById('destination-modal').style.display = "block";
+    getDestData(mediaId);
+}
 
+function closeDestinationModal() {
+    document.getElementById('destination-modal').style.display = 'none';
+}
+
+function getDestData(mediaId) {
+    $.ajax({
+        type: 'GET',
+        url: '/users/destinations/getalljson',
+        contentType: 'application/json',
+        success: (destData) => {
+            loadDestTable(destData, mediaId)
+        }
+    });
+}
+
+function loadDestTable(destData, mediaId) {
+    for (let destination of destData) {
+        const publicTable = document.getElementById('public-dest-tbody');
+        const privateTable = document.getElementById('private-dest-tbody');
+        if (destination.isPublic) {
+            addDestRow(publicTable, destination, mediaId);
+        } else {
+            addDestRow(privateTable, destination, mediaId)
+        }
+    }
+}
+
+function addDestRow(table, destination, mediaId) {
+    const row = document.createElement("TR");
+
+    const name = document.createElement("TH");
+    name.setAttribute('scope', 'row');
+    name.innerText = destination.destName;
+    row.appendChild(name);
+
+    const type = document.createElement("TD");
+    type.innerText = destination.destType;
+    row.appendChild(type);
+
+    const country = document.createElement("TD");
+    country.innerText = destination.country;
+    row.appendChild(country);
+
+    const district = document.createElement("TD");
+    district.innerText = destination.district;
+    row.appendChild(district);
+
+    const linkButton = document.createElement('BUTTON');
+    linkButton.setAttribute('id', `link-${destination.destId}`);
+    linkButton.setAttribute('class', 'btn btn-primary');
+    linkButton.innerText = 'Link to destination';
+    linkButton.addEventListener('click', () => {
+        linkDestination(destination.destId, mediaId)
+    });
+
+    const unlinkButton = document.createElement('BUTTON');
+    unlinkButton.setAttribute('id', `unlink-${destination.destId}`);
+    unlinkButton.setAttribute('class', 'btn btn-danger');
+    unlinkButton.innerText = 'Unlink from destination';
+    unlinkButton.style.display = 'none';
+    unlinkButton.addEventListener('click', () => {
+        unlinkDestination(destination.destId, mediaId)
+    });
+
+    checkButtonStatus(mediaId, destination.destId);
+
+    const div = document.createElement('DIV');
+    div.appendChild(linkButton);
+    div.appendChild(unlinkButton);
+    row.appendChild(div);
+
+    table.appendChild(row);
+}
+
+function checkButtonStatus(mediaId, destId) {
+    $.ajax({
+        method: "GET",
+        url: `/users/destinations/photos/${destId}`,
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        success: function(photos) {
+            for (let photo of photos) {
+                if (mediaId === photo.mediaId) {
+                    toggleButtons(destId);
+                    return;
+                }
+            }
+        }
+    });
+}
+
+function linkDestination(destId, mediaId) {
+    $.ajax({
+        method: "PUT",
+        url: `/users/destinations/${destId}`,
+        data: JSON.stringify({
+            photoid: '"' + mediaId + '"'
+        }),
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        success: function() {
+            toggleButtons(destId)
+        }
+    });
+}
+
+function unlinkDestination(destId, mediaId) {
+    $.ajax({
+        type: 'DELETE',
+        url: `/users/destinations/${mediaId}/${destId}`,
+        contentType: 'application/json',
+        success: () => {
+            toggleButtons(destId)
+        }
+    });
+}
+
+function toggleButtons(destId) {
+    const unlink = document.getElementById(`unlink-${destId}`);
+    unlink.style.display === "none" ? unlink.style.display = "block" : unlink.style.display = "none";
+
+    const link = document.getElementById(`link-${destId}`);
+    link.style.display === 'none' ? link.style.display = 'block' : link.style.display = 'none';
+}
 
 // Next/previous controls
 function plusSlides(n) {
-  showSlides(slideIndex += n);
+    setSlideListeners(slideIndex);
+    showSlides(slideIndex += n);
 }
 
 // Thumbnail image controls

@@ -31,7 +31,7 @@
     </div>
 
     <!-- The Modal/Lightbox -->
-    <div id="myModal" class="modal">
+    <div id="myModal" class="modal" data-album="@album.getAlbumId" data-isOwner="@album.userIsOwner(user)">
 
         <div class="modal-content">
             <div id="snackbar"></div>
@@ -49,11 +49,9 @@
                 <p id="img-caption"></p>
                 <a class="btn btn-link" id="setProfilePictureBtn"
                    onclick="setProfilePictureRequest(2)">Set Profile Picture</a>
-                <a class="btn btn-link" id="deletePhotoBtn" onclick="deletePhoto(@user.getUserid, @album.getAlbumId,
-                @album.userIsOwner(user))">Delete</a>
-                <a class="btn btn-link" id="privacyBtn" onclick="changePrivacy(@user.getUserid, @album.getAlbumId,
-                @album.userIsOwner(user))">Make Public/Private</a>
-                <a class="btn btn-link" id="linkDestinationBtn" onclick="linkToDestination()">Link Destination</a>
+                <a class="btn btn-link" id="deletePhotoBtn">Delete</a>
+                <a class="btn btn-link" id="privacyBtn">Make Public/Private</a>
+                <a class="btn btn-link" id="linkDestinationBtn">Link Destination</a>
             </div>
         </div>
     </div>
@@ -133,6 +131,50 @@
                 </div>
             </div>
 
+        </div>
+    </div>
+
+    <div id="destination-modal" class="modal" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" style="color:black" onclick="closeDestinationModal()">&times;</button>
+                    <h1>Link and unlink photos to destinations</h1>
+                </div>
+                <div class="modal-body">
+                    <h2>Private destinations</h2>
+                    @*<input type="text" class="searchDestinations" onkeyup="searchDestination" placeholder="Search for destinations">*@
+                    <table class="table privateDestinations">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th scope="col">Name</th>
+                                <th scope="col">Type</th>
+                                <th scope="col">Country</th>
+                                <th scope="col">District</th>
+                            </tr>
+                        </thead>
+                        <tbody id="private-dest-tbody">
+                            <!-- all data for the private destinations is loaded in here -->
+                        </tbody>
+                    </table>
+
+                    <h2>Public destinations</h2>
+                    @*<input type="text" class="searchPublicDestinations" onkeyup="searchPublicDestination()" placeholder="Search for destinations">*@
+                    <table class="table publicDestinations">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th scope="col">Name</th>
+                                <th scope="col">Type</th>
+                                <th scope="col">Country</th>
+                                <th scope="col">District</th>
+                            </tr>
+                        </thead>
+                        <tbody id="public-dest-tbody">
+                            <!-- All data for public destinations is loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
 

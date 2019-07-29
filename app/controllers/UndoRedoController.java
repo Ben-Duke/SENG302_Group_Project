@@ -15,6 +15,13 @@ public class UndoRedoController extends Controller {
     private final Logger logger = UtilityFunctions.getLogger();
     private CommandManager commandManager;
 
+
+    /** Handles undo actions and sends information about the
+     * corresponding action back to view
+     *
+     * @param request The HTTP request
+     * @return If undo action is successful shows message.
+     */
     public Result undo(Http.Request request) {
 
         User user = User.getCurrentUser(request);
@@ -28,6 +35,13 @@ public class UndoRedoController extends Controller {
         return ok(result);
     }
 
+    /**
+     * Handles redo actions and sends information about the
+     * corresponding action back to view
+     *
+     * @param request The HTTP request
+     * @return If redo action is successful shows message.
+     */
     public Result redo(Http.Request request) {
         User user = User.getCurrentUser(request);
         if (user == null) {

@@ -7,11 +7,12 @@ import accessors.VisitAccessor;
 import controllers.DestinationController;
 import factories.UserFactory;
 import models.*;
-import models.commands.Profile.HomePageCommand;
+import models.commands.General.UndoableCommand;
+
 import java.util.HashSet;
 
 /** Command to delete a user's UserPhoto */
-public class DeletePhotoCommand extends HomePageCommand {
+public class DeletePhotoCommand extends UndoableCommand {
     private UserPhoto userPhoto;
     private UserPhoto savedUserPhoto;
     private HashSet<Album> refToAlbums = new HashSet<>();
@@ -22,6 +23,7 @@ public class DeletePhotoCommand extends HomePageCommand {
      * @param userPhoto the UserPhoto to delete
      */
     public DeletePhotoCommand(UserPhoto userPhoto) {
+        super(CommandPage.HOME);
 
         this.userPhoto = userPhoto;
 
@@ -68,6 +70,10 @@ public class DeletePhotoCommand extends HomePageCommand {
         factory.deletePhoto(savedUserPhoto.getMediaId());
     }
 
+    /**
+     * Returns result from the undo/redo command as a string
+     * @return String result of command
+     */
     public String toString() {
         return this.userPhoto.getUrl() + "Deleting";
     }

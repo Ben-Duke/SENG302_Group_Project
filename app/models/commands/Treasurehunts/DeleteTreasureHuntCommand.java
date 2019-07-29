@@ -2,13 +2,15 @@ package models.commands.Treasurehunts;
 
 import accessors.TreasureHuntAccessor;
 import models.TreasureHunt;
+import models.commands.General.CommandPage;
 import models.commands.General.UndoableCommand;
 
 /** Command to delete a treasure hunt */
-public class DeleteTreasureHuntCommand extends TreasureHuntPageCommand {
+public class DeleteTreasureHuntCommand extends UndoableCommand {
     private TreasureHunt treasureHunt;
 
     public DeleteTreasureHuntCommand(TreasureHunt treasureHunt) {
+        super(CommandPage.TREASURE_HUNT);
         this.treasureHunt = treasureHunt;
     }
 

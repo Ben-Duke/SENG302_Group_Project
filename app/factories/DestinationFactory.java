@@ -4,6 +4,8 @@ import accessors.AlbumAccessor;
 import accessors.DestinationAccessor;
 import formdata.DestinationFormData;
 import models.*;
+import org.slf4j.Logger;
+import utilities.UtilityFunctions;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,16 +15,16 @@ import java.util.List;
  */
 public class DestinationFactory {
 
+    private final Logger logger = UtilityFunctions.getLogger();
+
     /**
      * Gets a List of all public destinations.
      *
      * @return a List<Destination> of all public Destinations.
      */
     public List<Destination> getPublicDestinations() {
-        List<Destination> allPublicDestinations = Destination.find.query()
+        return Destination.find().query()
                 .where().eq("isPublic", true).findList();
-
-        return allPublicDestinations;
     }
 
     /**
@@ -31,7 +33,7 @@ public class DestinationFactory {
      * @return the primary photo
      */
     public static UserPhoto getPrimaryPicture(int destID) {
-        Destination destination = Destination.find.byId(destID);
+        Destination destination = Destination.find().byId(destID);
         if (destination != null) {
             return destination.getPrimaryAlbum().getPrimaryPhoto();
         }
@@ -49,7 +51,7 @@ public class DestinationFactory {
     public List<Destination> getUsersPrivateDestinations(int userId) {
         User user = UserFactory.getUserFromId(userId);
 
-        List<Destination> privateDestinations = Destination.find.query()
+        List<Destination> privateDestinations = Destination.find().query()
                 .where().eq("user", user).and().eq("isPublic", false)
                 .findList();
 
@@ -102,6 +104,9 @@ public class DestinationFactory {
 
     /**
      * Return a DestinationFormData instance constructed from a destination instance
+     *
+     * @param dest The destination instance being converted
+     * @return The FormData corresponding to the destination specified
      */
     public DestinationFormData makeDestinationFormData(Destination dest) {
         return new DestinationFormData(dest.getDestName(), dest.getDestType(),
@@ -118,7 +123,7 @@ public class DestinationFactory {
     public List<Destination> getOtherUsersMatchingPrivateDestinations(int userId, Destination destination) {
         User user = UserFactory.getUserFromId(userId);
         // Get all destinations that are private and belong to another user
-        List<Destination> allDestinations = Destination.find.query()
+        List<Destination> allDestinations = Destination.find().query()
                 .where().eq("isPublic", false).and()
                 .not().eq("user", user).findList();
 
@@ -167,7 +172,7 @@ public class DestinationFactory {
     public List<Destination> getAllVisibleDestinations(int userId) {
         User user = UserFactory.getUserFromId(userId);
         if (user.userIsAdmin()) {
-            return Destination.find.all();
+            return Destination.find().all();
         }
 
         List<Destination> visibleDestinations = new ArrayList<>();
@@ -200,7 +205,7 @@ public class DestinationFactory {
      * @param destinationTwo the new destination which will hold new visits
      */
     private void moveVisitsToAnotherDestination(Destination destinationOne, Destination destinationTwo){
-        List<Visit> visitsFrom = Visit.find.query().where().eq("destination", destinationOne).findList();
+        List<Visit> visitsFrom = Visit.find().query().where().eq("destination", destinationOne).findList();
         for(Visit visit : visitsFrom) {
             visit.delete();
             //Note: Update this if new attributes are ever added to visit
@@ -209,7 +214,7 @@ public class DestinationFactory {
             try {
                 visit.update();
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error(e.getMessage(), e);
             }
         }
     }
@@ -219,11 +224,10 @@ public class DestinationFactory {
      * Merges all matching destination when one private destination is made public, will not merge if destination is used in trip
      * @param destinationList list of all matching private destinations
      * @param destination destination of user making private destination public
-     * @return check to see if destinations are used in trips
      */
     public void mergeDestinations(List<Destination> destinationList, Destination destination) {
-        Admin defaultAdmin = Admin.find.query().where().eq("isDefault", true).findOne();
-        User defaultAdminUser = User.find.query().where().eq("userid", defaultAdmin.getUserId()).findOne();
+        Admin defaultAdmin = Admin.find().query().where().eq("isDefault", true).findOne();
+        User defaultAdminUser = User.find().query().where().eq("userid", defaultAdmin.getUserId()).findOne();
         destinationList.add(destination);
         for (Destination otherDestination : destinationList) {
             if(otherDestination.getUser() != destination.getUser()) {
@@ -232,23 +236,19 @@ public class DestinationFactory {
                 try {
                     DestinationAccessor.update(otherDestination);
                 } catch (Exception e) {
-                    System.out.println("merge destinations 1");
-                    e.printStackTrace();
+                    logger.error("merge destinations 1", e);
                 }
-                List<Visit> visits = Visit.find.query().where().eq("destination", otherDestination).findList();
                 movePhotosToAnotherDestination(otherDestination, destination);
                 try {
                     AlbumAccessor.delete(otherDestination.getPrimaryAlbum());
                     DestinationAccessor.delete(otherDestination);
                 } catch (Exception e) {
-                    System.out.println("merge destinations 2");
-                    e.printStackTrace();
+                    logger.error("merge destinations 2", e);
                 }
                 try {
                     DestinationAccessor.update(otherDestination);
                 } catch (Exception e) {
-                    System.out.println("merge destinations 3");
-                    e.printStackTrace();
+                    logger.error("merge destinations 3", e);
                 }
             }
         }
@@ -257,8 +257,7 @@ public class DestinationFactory {
         try {
             destination.update();
         } catch (Exception e) {
-            System.out.println("merge destinations 4");
-            e.printStackTrace();
+            logger.error("merge destination 4", e);
         }
     }
 }

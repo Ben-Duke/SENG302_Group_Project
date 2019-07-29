@@ -11,8 +11,11 @@ import models.User;
 import models.UserPhoto;
 import models.commands.Albums.AddMediaToAlbumCommand;
 import models.commands.Albums.CreateAlbumCommand;
-import models.commands.Profile.HomePageCommand;
+import models.commands.General.CommandPage;
+import models.commands.General.UndoableCommand;
+import org.slf4j.Logger;
 import play.libs.Files;
+import utilities.UtilityFunctions;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,7 +23,9 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UploadPhotoCommand extends HomePageCommand {
+/** Command for user photo uploads */
+
+public class UploadPhotoCommand extends UndoableCommand {
 
     private User user;
     private UserPhoto userPhoto;
@@ -28,8 +33,10 @@ public class UploadPhotoCommand extends HomePageCommand {
     private String albumName;
     private AddMediaToAlbumCommand addMediaToAlbumCommand;
     private CreateAlbumCommand createAlbumCommand;
+    private final Logger logger = UtilityFunctions.getLogger();
 
     public UploadPhotoCommand(UserPhoto photo, Files.TemporaryFile fileObject, User user, String albumName) {
+        super(CommandPage.HOME);
         this.user = user;
         this.userPhoto = photo;
         this.fileObject = fileObject;
@@ -45,7 +52,7 @@ public class UploadPhotoCommand extends HomePageCommand {
                     Paths.get(".").toAbsolutePath().normalize().toString()
                     + ApplicationManager.getUserMediaPath() + userPhoto.getUser().getUserid() + "/"));
         } catch (IOException e) {
-
+            logger.error("IOException on creating directory for photo", e);
         }
         String unusedAbsoluteFilePath = Paths.get(".").toAbsolutePath().normalize().toString()
                 + ApplicationManager.getUserMediaPath() + userPhoto.getUser().getUserid() + "/" + userPhoto.getUrl();

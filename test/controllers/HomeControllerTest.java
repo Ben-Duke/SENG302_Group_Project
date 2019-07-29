@@ -236,7 +236,7 @@ public class HomeControllerTest extends BaseTestWithApplicationAndDatabase {
 
     @Test
     public void index(){
-        UserPhoto photo = UserPhoto.find.byId(1);
+        UserPhoto photo = UserPhoto.find().byId(1);
         String path = photo.getUrlWithPath();
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(GET)
@@ -249,7 +249,7 @@ public class HomeControllerTest extends BaseTestWithApplicationAndDatabase {
 
     @Test
     public void serveProfilePictureForUserWithProfilePicture(){
-        UserPhoto photo = UserPhoto.find.byId(1);
+        UserPhoto photo = UserPhoto.find().byId(1);
         String path = photo.getUrlWithPath();
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(GET)
@@ -291,7 +291,7 @@ public class HomeControllerTest extends BaseTestWithApplicationAndDatabase {
 
     @Test
     public void serveOtherProfilePictureForUserWithProfilePicture(){
-        UserPhoto photo = UserPhoto.find.byId(1);
+        UserPhoto photo = UserPhoto.find().byId(1);
         String path = photo.getUrlWithPath();
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(GET)
@@ -311,9 +311,9 @@ public class HomeControllerTest extends BaseTestWithApplicationAndDatabase {
     @Test
     public void setProfilePictureWithValidPhotoAndValidUser(){
         //userPhoto1 is the profile picture
-        UserPhoto userPhoto1 = UserPhoto.find.byId(1);
+        UserPhoto userPhoto1 = UserPhoto.find().byId(1);
         //userPhoto2 is not the profile picture
-        UserPhoto userPhoto2 = UserPhoto.find.byId(2);
+        UserPhoto userPhoto2 = UserPhoto.find().byId(2);
         assertTrue(userPhoto1.isProfile());
         assertFalse(userPhoto2.isProfile());
         Http.RequestBuilder request = Helpers.fakeRequest()
@@ -322,8 +322,8 @@ public class HomeControllerTest extends BaseTestWithApplicationAndDatabase {
         CSRFTokenHelper.addCSRFToken(request);
         Result result = route(app, request);
         assertEquals(SEE_OTHER, result.status());
-        userPhoto1 = UserPhoto.find.byId(1);
-        userPhoto2 = UserPhoto.find.byId(2);
+        userPhoto1 = UserPhoto.find().byId(1);
+        userPhoto2 = UserPhoto.find().byId(2);
         //Oh how the tides have turned
         assertFalse(userPhoto1.isProfile());
         assertTrue(userPhoto2.isProfile());
@@ -332,9 +332,9 @@ public class HomeControllerTest extends BaseTestWithApplicationAndDatabase {
     @Test
     public void setProfilePictureWithValidPhotoAndInvalidUser(){
         //userPhoto1 is the profile picture
-        UserPhoto userPhoto1 = UserPhoto.find.byId(1);
+        UserPhoto userPhoto1 = UserPhoto.find().byId(1);
         //userPhoto2 is not the profile picture
-        UserPhoto userPhoto2 = UserPhoto.find.byId(2);
+        UserPhoto userPhoto2 = UserPhoto.find().byId(2);
         assertTrue(userPhoto1.isProfile());
         assertFalse(userPhoto2.isProfile());
         Http.RequestBuilder request = Helpers.fakeRequest()
@@ -343,8 +343,8 @@ public class HomeControllerTest extends BaseTestWithApplicationAndDatabase {
         CSRFTokenHelper.addCSRFToken(request);
         Result result = route(app, request);
         assertEquals(UNAUTHORIZED, result.status());
-        userPhoto1 = UserPhoto.find.byId(1);
-        userPhoto2 = UserPhoto.find.byId(2);
+        userPhoto1 = UserPhoto.find().byId(1);
+        userPhoto2 = UserPhoto.find().byId(2);
         //Oh how the tides have not turned
         assertTrue(userPhoto1.isProfile());
         assertFalse(userPhoto2.isProfile());
@@ -372,7 +372,7 @@ public class HomeControllerTest extends BaseTestWithApplicationAndDatabase {
 
     @Test
     public void makePicturePublicWithValidPhotoWithValidUser(){
-        UserPhoto userPhoto = UserPhoto.find.byId(2);
+        UserPhoto userPhoto = UserPhoto.find().byId(2);
         assertFalse(userPhoto.getIsPublic());
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(GET)
@@ -380,13 +380,13 @@ public class HomeControllerTest extends BaseTestWithApplicationAndDatabase {
         CSRFTokenHelper.addCSRFToken(request);
         Result result = route(app, request);
         assertEquals(SEE_OTHER, result.status());
-        userPhoto = UserPhoto.find.byId(2);
+        userPhoto = UserPhoto.find().byId(2);
         assertTrue(userPhoto.getIsPublic());
     }
 
     @Test
     public void makePicturePrivateWithValidPhotoWithValidUser(){
-        UserPhoto userPhoto = UserPhoto.find.byId(1);
+        UserPhoto userPhoto = UserPhoto().find.byId(1);
         assertTrue(userPhoto.getIsPublic());
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(GET)
@@ -394,7 +394,7 @@ public class HomeControllerTest extends BaseTestWithApplicationAndDatabase {
         CSRFTokenHelper.addCSRFToken(request);
         Result result = route(app, request);
         assertEquals(SEE_OTHER, result.status());
-        userPhoto = UserPhoto.find.byId(1);
+        userPhoto = UserPhoto.find().byId(1);
         assertFalse(userPhoto.getIsPublic());
     }
 
@@ -420,7 +420,7 @@ public class HomeControllerTest extends BaseTestWithApplicationAndDatabase {
 
     @Test
     public void makePicturePrivateWithValidPhotoWithInvalidUser(){
-        UserPhoto userPhoto = UserPhoto.find.byId(1);
+        UserPhoto userPhoto = UserPhoto.find().byId(1);
         assertTrue(userPhoto.getIsPublic());
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(GET)
@@ -428,7 +428,7 @@ public class HomeControllerTest extends BaseTestWithApplicationAndDatabase {
         CSRFTokenHelper.addCSRFToken(request);
         Result result = route(app, request);
         assertEquals(UNAUTHORIZED, result.status());
-        userPhoto = UserPhoto.find.byId(1);
+        userPhoto = UserPhoto.find().byId(1);
         assertTrue(userPhoto.getIsPublic());
     }
 
@@ -437,12 +437,12 @@ public class HomeControllerTest extends BaseTestWithApplicationAndDatabase {
         UtilityFunctions.addAllNationalities();
         UtilityFunctions.addAllPassports();
         UtilityFunctions.addTravellerTypes();
-        TravellerType travellerType1 = TravellerType.find.byId(1);
-        TravellerType travellerType2 = TravellerType.find.byId(2);
-        Nationality nationality1 = Nationality.find.byId(1);
-        Nationality nationality2 = Nationality.find.byId(2);
-        Passport passport1 = Passport.find.byId(1);
-        Passport passport2 = Passport.find.byId(2);
+        TravellerType travellerType1 = TravellerType.find().byId(1);
+        TravellerType travellerType2 = TravellerType.find().byId(2);
+        Nationality nationality1 = Nationality.find().byId(1);
+        Nationality nationality2 = Nationality.find().byId(2);
+        Passport passport1 = Passport.find().byId(1);
+        Passport passport2 = Passport.find().byId(2);
         //Initialises a test user with name "testUser" and saves it to the database.
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         //convert String to LocalDate
@@ -498,7 +498,7 @@ public class HomeControllerTest extends BaseTestWithApplicationAndDatabase {
     @Test
     public void setProfilePhotoToNormalPhoto_withExistingProfilePhoto_checkStatus200() {
         UserPhoto profilePic = new UserPhoto("/test/url", true,
-                                            true, User.find.byId(1));
+                                            true, User.find().byId(1));
         profilePic.save();
 
         Http.RequestBuilder request = Helpers.fakeRequest()

@@ -23,7 +23,7 @@ import static play.mvc.Results.*;
 
 public class UserController {
 
-    private Logger logger = UtilityFunctions.getLogger();
+    private final Logger logger = UtilityFunctions.getLogger();
 
     // A thread safe boolean
     private AtomicBoolean wasRun = new AtomicBoolean(false);
@@ -40,13 +40,13 @@ public class UserController {
      * Only one thread gets into the if block and all other concurrent threads
      * wait in the else block for the if block free the lock.
      *
+     * @param request The HTTP request
      * @return the user index page
      */
     public Result userindex(Http.Request request){
         if (!wasRun.getAndSet(true)) {
             ApplicationManager.setUserPhotoPath("/../user_photos/user_");
-            TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
-            testDatabaseManager.populateDatabase(initCompleteLatch);
+            TestDatabaseManager.populateDatabase(initCompleteLatch);
             logger.info("populating database");
 
             CountryUtils.updateCountries();
@@ -55,16 +55,19 @@ public class UserController {
             try {
                 initCompleteLatch.await();
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                logger.error("initCompleteLatch interrupted", e);
+                Thread.currentThread().interrupt();
             }
         }
-        List<User> users = User.find.all();
-        List<Admin> admins = Admin.find.all();
+        List<User> users = User.find().all();
+        List<Admin> admins = Admin.find().all();
         return ok(userIndex.render(users, admins,User.getCurrentUser(request)));
     }
 
     /**
-     * Handles the ajax request to get a user.
+     * Handles the ajax request to get a user as a json object.
+     *
+     * @param request The HTTP request
      * @return the corresponding user as a json based on the login session.
      */
     public Result getUser(Http.Request request){
@@ -79,6 +82,8 @@ public class UserController {
 
     /**
      * Handles the ajax request to get a user.
+     *
+     * @param request The HTTP Request
      * @return the corresponding user as a json based on the login session.
      */
     public Result getUserPhotosAjax(Http.Request request){

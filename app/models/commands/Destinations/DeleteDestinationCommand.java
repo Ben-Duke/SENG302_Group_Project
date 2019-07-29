@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** Command to delete a destination */
-public class DeleteDestinationCommand extends DestinationPageCommand {
+public class DeleteDestinationCommand extends UndoableCommand {
     private Destination destination;
     private Boolean deletedByAdmin;
 
@@ -25,6 +25,7 @@ public class DeleteDestinationCommand extends DestinationPageCommand {
     private final Logger logger = UtilityFunctions.getLogger();
 
     public DeleteDestinationCommand(Destination destination, Boolean deletedByAdmin) {
+        super(CommandPage.DESTINATION);
         this.destination = destination;
         this.deletedByAdmin = deletedByAdmin;
     }

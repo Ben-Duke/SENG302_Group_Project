@@ -4,6 +4,7 @@ import accessors.AlbumAccessor;
 import controllers.ApplicationManager;
 import models.*;
 import models.commands.Albums.CreateAlbumCommand;
+import org.slf4j.Logger;
 import play.db.Database;
 import play.db.Databases;
 import play.db.evolutions.Evolution;
@@ -22,8 +23,11 @@ import java.util.concurrent.CountDownLatch;
  */
 public class TestDatabaseManager {
 
-    public TestDatabaseManager(){
+    private static final Logger logger = UtilityFunctions.getLogger();
 
+    // Private constructor to hide the implicit public one
+    private TestDatabaseManager() {
+        throw new IllegalStateException("Utility class");
     }
 
     public static Database getTestDatabase() {
@@ -49,7 +53,7 @@ public class TestDatabaseManager {
      * @param initCompleteLatch A CountDownLatch to call back and unlock when the
      *                          database has been populated.
      */
-    public void populateDatabase(CountDownLatch initCompleteLatch) {
+    public static void populateDatabase(CountDownLatch initCompleteLatch) {
 
         populateDatabase();
         initCompleteLatch.countDown();
@@ -58,24 +62,21 @@ public class TestDatabaseManager {
     /**
      * Populates the database. Call this method at the before section of each unit test.
      */
-    public void populateDatabase() {
+    public static void populateDatabase() {
 
         boolean isInSuccessState = true;
 
-        UtilityFunctions util = new UtilityFunctions();
-
-
-        if(TravellerType.find.all().isEmpty()) {
-            boolean successFullyAddedTravellerTypes = util.addTravellerTypes();
+        if(TravellerType.find().all().isEmpty()) {
+            boolean successFullyAddedTravellerTypes = UtilityFunctions.addTravellerTypes();
 
             if (! successFullyAddedTravellerTypes) {
                 isInSuccessState = false;
             }
         }
 
-        if (isInSuccessState && Nationality.find.all().isEmpty()) {
+        if (isInSuccessState && Nationality.find().all().isEmpty()) {
 
-            boolean successfullyAddedAllNationalities = util.addAllNationalities();
+            boolean successfullyAddedAllNationalities = UtilityFunctions.addAllNationalities();
 
             if (!successfullyAddedAllNationalities) {
 
@@ -84,36 +85,36 @@ public class TestDatabaseManager {
         }
 
 
-        if (isInSuccessState && Passport.find.all().isEmpty()) {
-            boolean successfullyAddedAllPassorts =  util.addAllPassports();
-            if (! successfullyAddedAllPassorts) {
+        if (isInSuccessState && Passport.find().all().isEmpty()) {
+            boolean successfullyAddedAllPassports =  UtilityFunctions.addAllPassports();
+            if (! successfullyAddedAllPassports) {
                 isInSuccessState = false;
             }
         }
 
         if (isInSuccessState) {
-            boolean successfullyAddedAdmin = this.createDefaultAdmin();
+            boolean successfullyAddedAdmin = createDefaultAdmin();
             if (! successfullyAddedAdmin) {
                 isInSuccessState = false;
             }
         }
 
         if (isInSuccessState) {
-            boolean successfullyAddedAllUsers = this.populateNormalUsers();
+            boolean successfullyAddedAllUsers = populateNormalUsers();
             if (! successfullyAddedAllUsers) {
                 isInSuccessState = false;
             }
         }
 
         if (isInSuccessState) {
-            boolean successfullyAddedAllTrips =  this.addTrips();
+            boolean successfullyAddedAllTrips =  addTrips();
             if (! successfullyAddedAllTrips) {
                 isInSuccessState = false;
             }
         }
 
         if (isInSuccessState) {
-            boolean successfullyAddedDestTrips = this.addDestinationsAndVisits();
+            boolean successfullyAddedDestTrips = addDestinationsAndVisits();
             if (! successfullyAddedDestTrips) {
                 isInSuccessState = false;
             }
@@ -121,15 +122,13 @@ public class TestDatabaseManager {
         }
 
         if (isInSuccessState) {
-            this.addTreasureHunts();
+            addTreasureHunts();
         }
 
-        if (isInSuccessState) {
-            if(ApplicationManager.getUserMediaPath().equalsIgnoreCase("/test/resources/test_photos/user_")){
-                this.addUserPhotos();
-            }
+        if (isInSuccessState && ApplicationManager.getUserMediaPath().equalsIgnoreCase("/test/resources/test_photos/user_")) {
+            addUserPhotos();
         }
-
+        CountryUtils.updateCountries();
         CountryUtils.validateUsedCountries();
 
     }
@@ -139,7 +138,7 @@ public class TestDatabaseManager {
      *
      * @return A boolean, true if successfully added all normal users, else false
      */
-    public boolean populateNormalUsers(){
+    private static boolean populateNormalUsers(){
 
         boolean isInSuccessState = true;
         try {
@@ -148,15 +147,12 @@ public class TestDatabaseManager {
             TravellerType travellerType2 = null;
             TravellerType travellerType3 = null;
 
-            travellerType1 = TravellerType.find.query().where().eq("travellerTypeName","Groupie").findOne();
+            travellerType1 = TravellerType.find().query().where().eq("travellerTypeName","Groupie").findOne();
             //Thrillseeker
-            travellerType2 = TravellerType.find.query().where().eq("travellerTypeName","Thrillseeker").findOne();
+            travellerType2 = TravellerType.find().query().where().eq("travellerTypeName","Thrillseeker").findOne();
             //Gap year
-            travellerType3 = TravellerType.find.query().where().eq("travellerTypeName","Gap Year").findOne();
+            travellerType3 = TravellerType.find().query().where().eq("travellerTypeName","Gap Year").findOne();
 
-            String natPassName1 = "New Zealand";
-            String natPassName2 = "Singapore";
-            String natPassName3 = "Australia";
             String invalidNatPassName1 = "Czechoslovakia";
 
             // Insert invalid nationality since normal insertions only include valid ones
@@ -183,12 +179,10 @@ public class TestDatabaseManager {
             user.addTravellerType(travellerType3);
 
 
-//            user.setNationality(Nationality.find.all().subList(0, 2));
             List<Nationality> nats = new ArrayList<>();
             nats.add(invalidNationality);
             user.setNationality(nats);
 
-//            user.setPassport(Passport.find.all().subList(0, 2));
             List<Passport> pass = new ArrayList<>();
             pass.add(invalidPassport);
             user.setPassport(pass);
@@ -197,42 +191,38 @@ public class TestDatabaseManager {
                 user.save();
             }catch(Exception err){
                 isInSuccessState = false;
-                //System.out.printf("User1 failed");
-                err.printStackTrace();
+                logger.error(err.getMessage(), err);
             }
 
 //            addAlbums();
             user2.getTravellerTypes().add(travellerType2);
 
-            user2.setNationality(Nationality.find.all().subList(70, 72));
+            user2.setNationality(Nationality.find().all().subList(70, 72));
 
-            user2.setPassport(Passport.find.all().subList(70, 72));
+            user2.setPassport(Passport.find().all().subList(70, 72));
 
             try{
                 user2.save();
             }catch(Exception err){
                 isInSuccessState = false;
-                System.out.printf("User2 failed");
+                logger.error("User2 failed", err);
             }
             user3.getTravellerTypes().add(travellerType1);
             user3.getTravellerTypes().add(travellerType2);
 
-            user3.setNationality(Nationality.find.all().subList(50, 51));
+            user3.setNationality(Nationality.find().all().subList(50, 51));
 
             try{
                 user3.save();
             }catch(Exception err){
                 isInSuccessState = false;
-                System.out.printf("User1 failed");
+                logger.error("User1 failed", err);
             }
 
 
         } catch (Exception e) {
-
-            System.out.println(e);
-
             isInSuccessState = false;
-            System.out.println("Failed to create all users");
+            logger.error("Failed to create all users", e);
         }
 
         return isInSuccessState;
@@ -243,28 +233,28 @@ public class TestDatabaseManager {
      *
      * @return A boolean, true if successfully created the admin, false otherwise
      */
-    public boolean createDefaultAdmin(){
+    private static boolean createDefaultAdmin(){
         boolean isInSuccessState = true;
 
         User user = new User("admin@admin.com", "admin", "admin", "admin", LocalDate.now(), "male");
         user.setDateOfBirth(LocalDate.of(2019, 2, 18));
-        user.setTravellerTypes(TravellerType.find.all().subList(5, 6)); // Business Traveller
-        user.setNationality(Nationality.find.all().subList(0, 2)); // First two countries alphabetically
+        user.setTravellerTypes(TravellerType.find().all().subList(5, 6)); // Business Traveller
+        user.setNationality(Nationality.find().all().subList(0, 2)); // First two countries alphabetically
 
         try {
             user.save();
         } catch (Exception e) {
             isInSuccessState = false;
-            System.out.println("Error making admin: User is already in db");
+            logger.error("Error making admin: User is already in db", e);
         }
 
         if (isInSuccessState) {
-            Admin admin = new Admin(user.userid, true);
+            Admin admin = new Admin(user.getUserid(), true);
             try {
                 admin.save();
             } catch (Exception e) {
                 isInSuccessState = false;
-                System.out.println("Error making admin: Admin is already in db");
+                logger.error("Error making admin: Admin is already in db", e);
             }
         }
 
@@ -278,69 +268,69 @@ public class TestDatabaseManager {
      *
      * @return A boolean, true if successfully added all destinations and visits.
      */
-    public boolean addDestinationsAndVisits() {
+    private static boolean addDestinationsAndVisits() {
         boolean isInSuccessState = true;
 
         // Adds destinations for user2
         Destination destination1 = new Destination(
                 "Christchurch", "Town", "Canterbury",
                 "New Zealand", -43.5321, 172.6362,
-                User.find.byId(2));
+                User.find().byId(2));
         destination1.setIsPublic(true);
-        destination1.addTravellerType(TravellerType.find.byId(1));
+        destination1.addTravellerType(TravellerType.find().byId(1));
 
         Destination destination2 = new Destination(
                 "Wellington", "Town", "Wellington",
                 "New Zealand", -41.2866, 174.7756,
-                User.find.byId(2));
+                User.find().byId(2));
 
         Destination destination3 = new Destination(
                 "The Wok", "Cafe/Restaurant",
                 "Canterbury", "New Zealand", -43.523593,
-                172.582971, User.find.byId(2));
+                172.582971, User.find().byId(2));
         destination3.setIsPublic(true);
-        destination3.addTravellerType(TravellerType.find.byId(1));
-        destination3.addTravellerType(TravellerType.find.byId(3));
+        destination3.addTravellerType(TravellerType.find().byId(1));
+        destination3.addTravellerType(TravellerType.find().byId(3));
 
 
         // Adds destinations for user3
         Destination destination4 = new Destination(
                 "Hanmer Springs Thermal Pools", "Attraction",
                 "North Canterbury", "New Zealand", -42.522791,
-                172.828944, User.find.byId(3));
+                172.828944, User.find().byId(3));
         destination4.setIsPublic(true);
-        destination4.addTravellerType(TravellerType.find.byId(5));
-        destination4.addTravellerType(TravellerType.find.byId(7));
+        destination4.addTravellerType(TravellerType.find().byId(5));
+        destination4.addTravellerType(TravellerType.find().byId(7));
 
         Destination destination5 = new Destination(
                 "Le Mans 24 hour race", "Event",
                 "Le Mans", "France", 47.956221,
-                0.207828, User.find.byId(3));
+                0.207828, User.find().byId(3));
         Destination destination6 = new Destination(
                 "Great Pyramid of Giza", "Attraction",
                 "Giza", "Egypt", 29.979481,
-                31.134159, User.find.byId(3));
+                31.134159, User.find().byId(3));
         destination6.setIsPublic(true);
-        destination6.addTravellerType(TravellerType.find.byId(7));
+        destination6.addTravellerType(TravellerType.find().byId(7));
 
         //Adds destinations for user4
         Destination destination7 = new Destination(
                 "Niagara Falls", "Natural Spot",
                 "New York", "United States", 29.979481,
-                31.134159, User.find.byId(4));
-        destination7.addTravellerType(TravellerType.find.byId(2));
+                31.134159, User.find().byId(4));
+        destination7.addTravellerType(TravellerType.find().byId(2));
         Destination destination8 = new Destination(
                 "Vatican City", "Country", "Rome",
                 "Vatican City", 41.903133, 12.454341,
-                User.find.byId(4));
+                User.find().byId(4));
         Destination destination9 = new Destination(
                 "Lincoln Memorial", "Monument",
                 "Washington DC", "United States", 38.889406,
-                -77.050155, User.find.byId(4));
+                -77.050155, User.find().byId(4));
         destination9.setIsPublic(true);
-        destination9.addTravellerType(TravellerType.find.byId(1));
-        destination9.addTravellerType(TravellerType.find.byId(4));
-        destination9.addTravellerType(TravellerType.find.byId(6));
+        destination9.addTravellerType(TravellerType.find().byId(1));
+        destination9.addTravellerType(TravellerType.find().byId(4));
+        destination9.addTravellerType(TravellerType.find().byId(6));
 
 
         // saving the destinations
@@ -360,9 +350,9 @@ public class TestDatabaseManager {
                 destination.save();
             } catch (Exception e) {
                 isInSuccessState = false;
-                System.out.println(String.format("Failed to save destination " +
+                logger.error(String.format("Failed to save destination " +
                                 "(%s) due to uniqueness constraint fail",
-                        destination.getDestName()));
+                        destination.getDestName()), e);
             }
         }
         if (isInSuccessState) {
@@ -380,12 +370,12 @@ public class TestDatabaseManager {
 
         if (isInSuccessState) {
             // Gets the first trip with that name. This may have bad side effects.
-            Trip trip1 = Trip.find.query().where().eq("tripName", "Trip to New Zealand").findList().get(0);
-            Trip trip2 = Trip.find.query().where().eq("tripName", "Christchurch to Wellington, to The Wok and back").findList().get(0);
-            Trip trip3 = Trip.find.query().where().eq("tripName", "World Tour").findList().get(0);
-            Trip trip4 = Trip.find.query().where().eq("tripName", "Pyramid to Race and back again").findList().get(0);
-            Trip trip5 = Trip.find.query().where().eq("tripName", "See the pope, the president and come back").findList().get(0);
-            Trip trip6 = Trip.find.query().where().eq("tripName", "Waterfall walk and see the president").findList().get(0);
+            Trip trip1 = Trip.find().query().where().eq("tripName", "Trip to New Zealand").findList().get(0);
+            Trip trip2 = Trip.find().query().where().eq("tripName", "Christchurch to Wellington, to The Wok and back").findList().get(0);
+            Trip trip3 = Trip.find().query().where().eq("tripName", "World Tour").findList().get(0);
+            Trip trip4 = Trip.find().query().where().eq("tripName", "Pyramid to Race and back again").findList().get(0);
+            Trip trip5 = Trip.find().query().where().eq("tripName", "See the pope, the president and come back").findList().get(0);
+            Trip trip6 = Trip.find().query().where().eq("tripName", "Waterfall walk and see the president").findList().get(0);
 
             // creating all the visits
             Visit visit1 =  new Visit("2018-05-04", "2018-05-06", trip1, destination1,1);
@@ -441,7 +431,7 @@ public class TestDatabaseManager {
                     String errorStr;
                     errorStr = String.format(visitSaveErrorFormat, visit.getVisitName());
 
-                    System.out.println(errorStr);
+                    logger.error(errorStr, e);
                 }
             }
         } else {
@@ -456,20 +446,20 @@ public class TestDatabaseManager {
      *
      * @return A boolean, true if successfully added all trips, false otherwise.
      */
-    public boolean addTrips(){
+    private static boolean addTrips(){
         boolean isInSuccessState = true;
 
         //Add trips for user2
-        Trip trip1 = new Trip("Trip to New Zealand", true, User.find.byId(2));
-        Trip trip2 = new Trip("Christchurch to Wellington, to The Wok and back", false, User.find.byId(2));
+        Trip trip1 = new Trip("Trip to New Zealand", true, User.find().byId(2));
+        Trip trip2 = new Trip("Christchurch to Wellington, to The Wok and back", false, User.find().byId(2));
 
         // Add trips to user 3
-        Trip trip3 = new Trip("World Tour", true, User.find.byId(3));
-        Trip trip4 = new Trip("Pyramid to Race and back again", false, User.find.byId(3));
+        Trip trip3 = new Trip("World Tour", true, User.find().byId(3));
+        Trip trip4 = new Trip("Pyramid to Race and back again", false, User.find().byId(3));
 
         //Add trips to user 4
-        Trip trip5 = new Trip("See the pope, the president and come back", true, User.find.byId(4));
-        Trip trip6 = new Trip("Waterfall walk and see the president", false, User.find.byId(4));
+        Trip trip5 = new Trip("See the pope, the president and come back", true, User.find().byId(4));
+        Trip trip6 = new Trip("Waterfall walk and see the president", false, User.find().byId(4));
 
         List<Trip> trips = new ArrayList<Trip>();
         trips.add(trip1);
@@ -484,33 +474,34 @@ public class TestDatabaseManager {
                 trip.save();
             } catch (Exception e) {
                 isInSuccessState = false;
-                System.out.println("Failed to save trip for user: " +
+                logger.error("Failed to save trip for user: " +
                         trip.getUser().getEmail() + " with trip name: " +
-                        trip.getTripName() + " due to uniqueness constraint fail");
+                        trip.getTripName() + " due to uniqueness constraint fail", e);
             }
         }
 
         return isInSuccessState;
     }
 
-    public void addUserPhotos(){
-        UserPhoto userPhoto1 = new UserPhoto("shrek.jpeg", true, true, User.find.byId(2));
+    /**
+     * Populates the database with user photos added to user 2.
+     *
+     */
+    private static void addUserPhotos(){
+        UserPhoto userPhoto1 = new UserPhoto("shrek.jpeg", true, true, User.find().byId(2));
         userPhoto1.setCaption("Get out of my swamp");
-        UserPhoto userPhoto2 = new UserPhoto("placeholder.png", false, false, User.find.byId(2));
-//        Destination christchurch = Destination.find.byId(1);
-//        Destination wellington = Destination.find.byId(2);
-//        userPhoto1.addDestination(christchurch);
-//        userPhoto1.addDestination(wellington);
+        UserPhoto userPhoto2 = new UserPhoto("placeholder.png", false, false, User.find().byId(2));
+
         try {
             userPhoto1.save();
         } catch (Exception e) {
-            System.out.println("Failed to add user1 photos");
+            logger.error("Failed to add user1 photos", e);
         }
 
         try {
             userPhoto2.save();
         } catch (Exception e) {
-            System.out.println("Failed to add user2 photos");
+            logger.error("Failed to add user2 photos", e);
         }
     }
 
@@ -532,12 +523,16 @@ public class TestDatabaseManager {
 
     }
 
+    /**
+     * Populates the database with treasure hunts added to users 2,3 and 4.
+     *
+     */
     public void addTreasureHunts(){
         TreasureHunt treasureHunt1 = new TreasureHunt("Surprise", "The garden city", Destination.find.byId(1), "2019-04-17", "2019-12-25", User.find.byId(2));
         treasureHunt1.save();
-        TreasureHunt treasureHunt2 = new TreasureHunt("Surprise2", "Prime example of inflation", Destination.find.byId(3), "2019-04-17", "2019-12-25", User.find.byId(3));
+        TreasureHunt treasureHunt2 = new TreasureHunt("Surprise2", "Prime example of inflation", Destination.find().byId(3), "2019-04-17", "2019-12-25", User.find().byId(3));
         treasureHunt2.save();
-        TreasureHunt treasureHunt3 = new TreasureHunt("Closed Treasure Hunt", "You should not be able to view this", Destination.find.byId(4), "2019-04-17", "2019-04-25", User.find.byId(4));
+        TreasureHunt treasureHunt3 = new TreasureHunt("Closed Treasure Hunt", "You should not be able to view this", Destination.find().byId(4), "2019-04-17", "2019-04-25", User.find().byId(4));
         treasureHunt3.save();
     }
 

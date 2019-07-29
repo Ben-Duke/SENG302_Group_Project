@@ -18,7 +18,6 @@ import models.commands.General.CommandPage;
 import models.commands.Visits.EditVisitCommand;
 import models.commands.Trips.DeleteTripCommand;
 import models.commands.Trips.CreateTripFromVisitsCommand;
-import models.commands.Trips.TripPageCommand;
 import models.commands.Visits.DeleteVisitCommand;
 import org.slf4j.Logger;
 import play.data.Form;

@@ -4,7 +4,6 @@ import accessors.VisitAccessor;
 import models.Visit;
 import models.commands.General.CommandPage;
 import models.commands.General.UndoableCommand;
-import models.commands.Trips.TripPageCommand;
 
 /**
  * Command to edit a visit

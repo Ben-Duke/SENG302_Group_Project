@@ -37,11 +37,10 @@ public class CreateTripFromVisitsCommandTest extends BaseTestWithApplicationAndD
                 "create table test (id bigint not null, name varchar(255));",
                 "drop table test;"
         )));
-        TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
-        testDatabaseManager.populateDatabase();
-        Visit visit1 = new Visit(null, null, Destination.find.byId(1));
-        Visit visit2 = new Visit(null, null, Destination.find.byId(2));
-        Visit visit3 = new Visit(null, null, Destination.find.byId(3));
+        TestDatabaseManager.populateDatabase();
+        Visit visit1 = new Visit(null, null, Destination.find().byId(1));
+        Visit visit2 = new Visit(null, null, Destination.find().byId(2));
+        Visit visit3 = new Visit(null, null, Destination.find().byId(3));
         visits.add(visit1);
         visits.add(visit2);
         visits.add(visit3);
@@ -57,28 +56,28 @@ public class CreateTripFromVisitsCommandTest extends BaseTestWithApplicationAndD
 
     @Test
     public void testExecute() {
-        User user = User.find.byId(1);
+        User user = User.find().byId(1);
         CreateTripFromVisitsCommand command = new CreateTripFromVisitsCommand(visits, "testTrip", user);
         command.execute();
-        user = User.find.byId(1);
+        user = User.find().byId(1);
         assertEquals("testTrip", user.getTrips().get(0).getTripName());
         assertEquals(3, user.getTrips().get(0).getVisits().size());
     }
 
     @Test
     public void undo() {
-        User user = User.find.byId(1);
+        User user = User.find().byId(1);
         CreateTripFromVisitsCommand command = new CreateTripFromVisitsCommand(visits, "testTrip", user);
         command.execute();
 
-        int beforeSize = Visit.find.all().size();
+        int beforeSize = Visit.find().all().size();
 
         command.undo();
 
-        user = User.find.byId(1);
+        user = User.find().byId(1);
         assertEquals(0, user.getTrips().size());
 
-        int afterSize = Visit.find.all().size();
+        int afterSize = Visit.find().all().size();
 
         assertEquals(beforeSize, afterSize + 3);
 
@@ -87,15 +86,15 @@ public class CreateTripFromVisitsCommandTest extends BaseTestWithApplicationAndD
 
     @Test
     public void redo() {
-        User user = User.find.byId(1);
+        User user = User.find().byId(1);
         CreateTripFromVisitsCommand command = new CreateTripFromVisitsCommand(visits, "testTrip", user);
         command.execute();
         command.undo();
-        int afterUndoSize = Visit.find.all().size();
+        int afterUndoSize = Visit.find().all().size();
         command.redo();
-        int afterRedoSize = Visit.find.all().size();
+        int afterRedoSize = Visit.find().all().size();
 
-        user = User.find.byId(1);
+        user = User.find().byId(1);
         assertEquals("testTrip", user.getTrips().get(0).getTripName());
         assertEquals(3, user.getTrips().get(0).getVisits().size());
         assertEquals(afterRedoSize, afterUndoSize + 3);
@@ -104,20 +103,20 @@ public class CreateTripFromVisitsCommandTest extends BaseTestWithApplicationAndD
 
     @Test
     public void redoThenUndo() {
-        User user = User.find.byId(1);
+        User user = User.find().byId(1);
         CreateTripFromVisitsCommand command = new CreateTripFromVisitsCommand(visits, "testTrip", user);
         command.execute();
         command.undo();
         command.redo();
 
-        int beforeSize = Visit.find.all().size();
+        int beforeSize = Visit.find().all().size();
 
         command.undo();
 
-        int afterSize = Visit.find.all().size();
+        int afterSize = Visit.find().all().size();
 
 
-        user = User.find.byId(1);
+        user = User.find().byId(1);
         assertEquals(0, user.getTrips().size());
         assertEquals(beforeSize, afterSize + 3);
     }

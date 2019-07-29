@@ -73,15 +73,37 @@ function addSelectedToVisitToTrip(destId){
                 let tableDataDestType = document.createElement('td');
                 tableDataDestType.innerText = data.destType;
                 let tableDataArrival = document.createElement('td');
-                tableDataArrival.innerText = data.arrival;
+                let arrivalDateInput = document.createElement('input');
+                arrivalDateInput.setAttribute('type', 'date');
+                arrivalDateInput.setAttribute('class', 'tripDateInput');
+                arrivalDateInput.setAttribute('onblur', "updateVisitDate(" + data[0]+")");
+                arrivalDateInput.setAttribute('id', 'arrival_'+data[0]);
+                tableDataArrival.appendChild(arrivalDateInput);
                 let tableDataDeparture = document.createElement('td');
-                tableDataDeparture.innerText = data.departure;
+                let departureDateInput = document.createElement('input');
+                departureDateInput.setAttribute('id', 'departure_'+data[0]);
+                departureDateInput.setAttribute('type', 'date');
+                departureDateInput.setAttribute('class', 'tripDateInput');
+                departureDateInput.setAttribute('onblur', "updateVisitDate(" + data[0]+")");
+                let deleteButton = document.createElement('td');
+                let deleteButtonText = document.createElement('a');
+                deleteButtonText.innerText = '❌';
+                deleteButtonText.setAttribute('style', 'deleteButton');
+                let urlForDelete = '/users/trips/edit/' + data.tripId;
+                deleteButtonText.setAttribute('onclick', 'sendDeleteVisitRequest(' + '"' + urlForDelete + '"' + ','
+                    + data.tripId + ')');
+                deleteButton.appendChild(deleteButtonText);
+                tableDataDeparture.appendChild(departureDateInput);
                 newRow.appendChild(tableHeader);
                 newRow.appendChild(tableDataDestType);
                 newRow.appendChild(tableDataArrival);
                 newRow.appendChild(tableDataDeparture);
+                newRow.appendChild(deleteButton);
                 tableBody.appendChild(newRow);
                 targetTable.appendChild(tableBody);
+            // <td onclick="sendDeleteVisitRequest(
+            //     '@routes.TripController.deletevisit(visit.getVisitid())',
+            //         '@visit.getVisitid()')"><a class="deleteButton">&#10060</a></td>
 
                 let listGroup = document.getElementById('trip-list-group');
                 let tripLink = document.createElement('a');
@@ -157,9 +179,19 @@ function tripVisittableRefresh(data){
     let tableDataDestType = document.createElement('td');
     tableDataDestType.innerText = data[2];
     let tableDataArrival = document.createElement('td');
-    tableDataArrival.innerText = "";
+    let arrivalDateInput = document.createElement('input');
+    arrivalDateInput.setAttribute('type', 'date');
+    arrivalDateInput.setAttribute('class', 'tripDateInput');
+    arrivalDateInput.setAttribute('onblur', "updateVisitDate(" + data[0]+")");
+    arrivalDateInput.setAttribute('id', 'arrival_'+data[0]);
+    tableDataArrival.appendChild(arrivalDateInput);
     let tableDataDeparture = document.createElement('td');
-    tableDataDeparture.innerText = "";
+    let departureDateInput = document.createElement('input');
+    departureDateInput.setAttribute('id', 'departure_'+data[0]);
+    departureDateInput.setAttribute('type', 'date');
+    departureDateInput.setAttribute('class', 'tripDateInput');
+    departureDateInput.setAttribute('onblur', "updateVisitDate(" + data[0]+")");
+    tableDataDeparture.appendChild(departureDateInput);
 
     newRow.appendChild(tableHeader);
     newRow.appendChild(tableDataDestType);
@@ -273,7 +305,7 @@ $('tbody').sortable({
     }
 });
 
-var currentlyDisplayedDestId;
+let currentlyDisplayedDestId;
 
 function displayDestination(destId, startLat, startLng) {
 

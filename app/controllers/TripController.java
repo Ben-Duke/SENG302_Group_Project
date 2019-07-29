@@ -354,11 +354,11 @@ public class TripController extends Controller {
      * Add visit based off destination Id to a trip
      * @return
      */
-    public Result addVistToTripJSRequest(Http.Request request, Integer tripid, Integer destid){
+    public Result addVisitToTripJSRequest(Http.Request request, Integer tripId, Integer destId){
         User user = User.getCurrentUser(request);
         if(user != null) {
-            Trip trip = Trip.find.byId(tripid);
-            Destination destination = Destination.find.byId(destid);
+            Trip trip = Trip.find.byId(tripId);
+            Destination destination = Destination.find.byId(destId);
             if (trip == null) {
                 return notFound();
             }
@@ -655,36 +655,3 @@ public class TripController extends Controller {
 
 }
 
-//SWAP VISITS WITHOUT THE TABLE (don't delete might come in handy in the future)
-        /*
-        Form<VisitFormData> incomingForm = formFactory.form(VisitFormData.class).bindFromRequest(request);
-        VisitFormData created = incomingForm.get();
-        String visitID1 = created.visitName;
-        String visitID2 = created.visitName;
-        User user = User.getCurrentUser(request);
-        if (user != null) {
-            Visit visit1 = Visit.find.byId(Integer.parseInt(visitID1));
-            Visit visit2 = Visit.find.byId(Integer.parseInt(visitID2));
-            if(visit1.isTripOwner(tripid) && visit2.isTripOwner(tripid)) {
-                //check for back to back trips to be added here?
-                Trip trip = Trip.find.query().where().eq("tripid", tripid).findOne();
-                List<Visit> visits = trip.getVisits();
-                if(hasRepeatDestSwap(visits, visit1, visit2)){
-                    return badRequest("You cannot visit the same destination twice in a row!");
-                }
-                Integer visit1OrderNumber = visit1.getVisitOrder();
-                Integer visit2OrderNumber = visit2.getVisitOrder();
-                visit1.setVisitorder(visit2OrderNumber);
-                visit2.setVisitorder(visit1OrderNumber);
-                visit1.update();
-                visit2.update();
-            }
-            else{
-                return unauthorized("Oops, this is not your trip");
-            }
-        }
-        else{
-            return redirect(routes.UserController.userindex());
-        }
-        //return redirect(routes.UserController.userindex());
-        */

@@ -290,7 +290,7 @@ GET     /users/treasurehunts/delete/:id                    controllers.TreasureH
 
 GET /users/trips/fetch/trips_routes_json  controllers.TripController.getTripsRoutesJson(request : Request)
 
-POST /users/trips/:tripId/addVisit/:destId   controllers.TripController.addVistToTripJSRequest(request : Request, tripId:Integer, destId:Integer)
+POST /users/trips/:tripId/addVisit/:destId   controllers.TripController.addVisitToTripJSRequest(request : Request, tripId:Integer, destId:Integer)
 
 # Undo
 +nocsrf

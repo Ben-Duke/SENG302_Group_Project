@@ -268,6 +268,6 @@ FROM passport;
 
 # !Downs
 
-delete from passport;
-
 delete from nationality;
+
+delete from passport;

@@ -11,20 +11,20 @@
 
 
 # user
-# Have to insert passwords hashed
+# Passwords are set programmatically
 INSERT INTO `user` (`userid`, `email`, `password_hash`, `date_of_birth`, `gender`,
                     `f_name`, `l_name`, `undo_redo_error`, `is_admin`,
                     `creation_date`) VALUES
-(1, 'admin@admin.com', '$2a$10$XIZ6dbHcnk3PrVvsYftFGekaxFhdmasUWNCM/ya.OCXuVqxRBJ0qe',
+(1, 'admin@admin.com', '',
  '2019-02-18', 'male', 'admin', 'admin', 0, 0, '2019-07-26 03:59:17'),
 
-(2, 'testuser1@uclive.ac.nz', '$2a$10$QpIBHLosdViQscy5ydKnceyMe52jhtThQtHz/Xb8ylp6rIlENkpay',
+(2, 'testuser1@uclive.ac.nz', '',
  '1998-08-23', 'Male', 'Gavin', 'Ong', 0, 0, '2019-07-26 03:59:17'),
 
-(3, 'testuser2@uclive.ac.nz', '$2a$10$9vvZhEw.MV1wKhUazZLV7uYTzq.iShj9UBCNcrhTJVNA38SZUmtjK',
+(3, 'testuser2@uclive.ac.nz', '',
  '1960-12-25', 'Female', 'Caitlyn', 'Jenner', 0, 0, '2019-07-26 03:59:17'),
 
-(4, 'testuser3@uclive.ac.nz', '$2a$10$H4tQZWBh3Hd3JqUV3NV5Z.4TnG.mdztdSjUs9VIlQToyuGl4Lz6LW',
+(4, 'testuser3@uclive.ac.nz', '',
  '2006-06-09', 'Male', 'John', 'Smith', 0, 0, '2019-07-26 03:59:17');
 
 
@@ -49,14 +49,14 @@ INSERT INTO `destination` (`destid`, `dest_name`, `dest_type`, `district`, `coun
 
 
 # Traveller Types
-INSERT INTO traveller_type (traveller_type_name)
-VALUES ('Groupie'),
-       ('Thrillseeker'),
-       ('Gap Year'),
-       ('Frequent Weekender'),
-       ('Holidaymaker'),
-       ('Business Traveller'),
-       ('Backpacker');
+INSERT INTO `traveller_type` (`ttypeid`, `traveller_type_name`) VALUES
+(1, 'Backpacker'),
+(2, 'Business Traveller'),
+(3, 'Frequent Weekender'),
+(4, 'Gap Year'),
+(5, 'Groupie'),
+(6, 'Holidaymaker'),
+(7, 'Thrillseeker');
 
 
 # Destination_Traveller_Type
@@ -164,35 +164,41 @@ INSERT INTO `visit` (`visitid`, `visitorder`, `destination`, `trip`, `arrival`,
 
 
 # !Downs
+# Delete in reverse order to the order data was added to avoid violating
+# foreign key constraints
 
-delete from user;
+SET FOREIGN_KEY_CHECKS=0; -- to disable them
 
-delete from admin;
-
-delete from destination;
-
-delete from destination_traveller_type;
-
-delete from destination_modification_request;
-
-delete from destination_modification_request_traveller_type;
-
-delete from traveller_type;
-
-delete from treasure_hunt;
-
-delete from trip;
-
-delete from user_nationality;
-
-delete from user_passport;
-
-delete from user_traveller_type;
-
-delete from user_treasure_hunt;
-
-delete from user_photo;
+delete from visit;
 
 delete from user_photo_destination;
 
-delete from visit;
+delete from user_photo;
+
+delete from user_treasure_hunt;
+
+delete from user_traveller_type;
+
+delete from user_passport;
+
+delete from user_nationality;
+
+delete from trip;
+
+delete from treasure_hunt;
+
+delete from destination_modification_request_traveller_type;
+
+delete from destination_modification_request;
+
+delete from destination_traveller_type;
+
+delete from traveller_type;
+
+delete from destination;
+
+delete from admin;
+
+delete from user;
+
+SET FOREIGN_KEY_CHECKS=1; -- to re-enable them

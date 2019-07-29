@@ -1,12 +1,10 @@
 package utilities;
 
+import accessors.UserAccessor;
 import controllers.ApplicationManager;
 import models.*;
 import org.slf4j.Logger;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
@@ -24,8 +22,8 @@ public class TestDatabaseManager {
     }
 
     /**
-     * Method to populate the database when the application is first started.
-     *
+     * Completes the database population that is done by the sql evolutions
+     * when the application is first started.
      *
      * @param initCompleteLatch A CountDownLatch to call back and unlock when the
      *                          database has been populated.
@@ -36,7 +34,7 @@ public class TestDatabaseManager {
     }
 
     /**
-     * Populates the database. Call this method at the before section of each unit test.
+     * Completes the database population that is done by the sql evolutions
      */
     public void populateDatabase() {
 
@@ -45,5 +43,70 @@ public class TestDatabaseManager {
 
         CountryUtils.updateCountries();
         CountryUtils.validateUsedCountries();
+
+        setUserPasswords();
+    }
+
+    /** Sets the passwords of all test users and admins */
+    private void setUserPasswords() {
+        List<User> users = UserAccessor.getAll();
+        for (User user: users) {
+            if (user.userIsAdmin()) {
+                user.hashAndSetPassword("admin");
+            } else {
+                user.hashAndSetPassword("test");
+            }
+
+            user.update();
+        }
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

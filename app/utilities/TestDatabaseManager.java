@@ -3,10 +3,6 @@ package utilities;
 import controllers.ApplicationManager;
 import models.*;
 import org.slf4j.Logger;
-import play.db.Database;
-import play.db.Databases;
-import play.db.evolutions.Evolution;
-import play.db.evolutions.Evolutions;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -35,7 +31,6 @@ public class TestDatabaseManager {
      *                          database has been populated.
      */
     public void populateDatabase(CountDownLatch initCompleteLatch) {
-
         populateDatabase();
         initCompleteLatch.countDown();
     }
@@ -48,78 +43,11 @@ public class TestDatabaseManager {
         logger.info("attempting to populate database");
         logger.info("PopulationDatabase is " + ApplicationManager.getDatabaseName());
 
-        boolean isInSuccessState = true;
+//        UtilityFunctions.addAllNationalities();
+//        UtilityFunctions.addAllPassports();
 
-        UtilityFunctions util = new UtilityFunctions();
-
-
-        if(TravellerType.find.all().isEmpty()) {
-            boolean successFullyAddedTravellerTypes = util.addTravellerTypes();
-
-            if (! successFullyAddedTravellerTypes) {
-                isInSuccessState = false;
-            }
-        }
-
-        if (isInSuccessState && Nationality.find.all().isEmpty()) {
-
-            boolean successfullyAddedAllNationalities = util.addAllNationalities();
-
-            if (!successfullyAddedAllNationalities) {
-
-                isInSuccessState = false;
-            }
-        }
-
-
-        if (isInSuccessState && Passport.find.all().isEmpty()) {
-            boolean successfullyAddedAllPassorts =  util.addAllPassports();
-            if (! successfullyAddedAllPassorts) {
-                isInSuccessState = false;
-            }
-        }
-
-        if (isInSuccessState) {
-            boolean successfullyAddedAdmin = this.createDefaultAdmin();
-            if (! successfullyAddedAdmin) {
-                isInSuccessState = false;
-            }
-        }
-
-        if (isInSuccessState) {
-            boolean successfullyAddedAllUsers = this.populateNormalUsers();
-            if (! successfullyAddedAllUsers) {
-                isInSuccessState = false;
-            }
-        }
-
-        if (isInSuccessState) {
-            boolean successfullyAddedAllTrips =  this.addTrips();
-            if (! successfullyAddedAllTrips) {
-                isInSuccessState = false;
-            }
-        }
-
-        if (isInSuccessState) {
-            boolean successfullyAddedDestTrips = this.addDestinationsAndVisits();
-            if (! successfullyAddedDestTrips) {
-                isInSuccessState = false;
-            }
-
-        }
-
-        if (isInSuccessState) {
-            this.addTreasureHunts();
-        }
-
-        if (isInSuccessState) {
-            if(ApplicationManager.getUserPhotoPath().equalsIgnoreCase("/test/resources/test_photos/user_")){
-                this.addUserPhotos();
-            }
-        }
-
+        CountryUtils.updateCountries();
         CountryUtils.validateUsedCountries();
-
     }
 
     /**

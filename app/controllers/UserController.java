@@ -25,6 +25,12 @@ public class UserController {
 
     private Logger logger = UtilityFunctions.getLogger();
 
+    // A thread safe boolean
+    private AtomicBoolean wasRun = new AtomicBoolean(false);
+    // A countdownlatch which frees when the database has been populated.
+    private CountDownLatch initCompleteLatch = new CountDownLatch(1);
+
+
     /**
      * Renders the index page and populates the in memory database
      *
@@ -39,12 +45,25 @@ public class UserController {
      */
     public Result userindex(Http.Request request){
 
-        ApplicationManager.setUserPhotoPath("/../user_photos/user_");
-        CountryUtils.updateCountries();
+        if (!wasRun.getAndSet(true)) {
+            ApplicationManager.setUserPhotoPath("/../user_photos/user_");
+            TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
+            testDatabaseManager.populateDatabase(initCompleteLatch);
+            logger.info("populating database");
+
+
+
+        } else {
+            try {
+                initCompleteLatch.await();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
 
         List<User> users = User.find.all();
         List<Admin> admins = Admin.find.all();
-        return ok(userIndex.render(users, admins,User.getCurrentUser(request)));
+        return ok(userIndex.render(users, admins, User.getCurrentUser(request)));
     }
 
     /**

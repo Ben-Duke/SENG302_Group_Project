@@ -1,6 +1,7 @@
 var slideIndex = 1;
 var currentSlideNo = 1;
 var albumData = null;
+var photoIdToEdit;
 
 
 document.getElementById('')
@@ -9,6 +10,13 @@ function setDeletePhotoListener(albumData, i) {
     document.getElementById('deletePhotoBtn').addEventListener('click', () => {
         const mediaId = albumData[i]["mediaId"];
         deletePhotoRequest(mediaId);
+    });
+}
+
+function setMakeProfilePictureListener(albumData, i) {
+    document.getElementById('profilePictureBtn').addEventListener('click', () => {
+        const mediaId = albumData[i]["mediaId"];
+        setProfilePictureRequest(mediaId);
     });
 }
 
@@ -51,7 +59,7 @@ function setSlideListeners(i) {
             let setPrivacy;
             setDeletePhotoListener(albumData, i);
             setDestinationLinkListener(albumData, i);
-
+            setMakeProfilePictureListener(albumData, i);
             const mediaId = albumData[i]["mediaId"];
 
             if(albumData[i]["isMediaPublic"]) {setPrivacy=0;}
@@ -323,8 +331,7 @@ function showSlides(n) {
  */
 function setProfilePictureRequest(photoId){
     $("#myModal").modal('hide');
-    let isExistingPhoto = true;
-    let photoIdToEdit = photoId;
+    photoIdToEdit = photoId;
     $('#addProfilePhoto').modal('show');
 }
 
@@ -333,69 +340,63 @@ function setProfilePictureRequest(photoId){
  *
  */
 $('#addProfilePhoto').on('show.bs.modal', function (e) {
-    if(isExistingPhoto == true){
         $("#myModal").hide();
         var output = document.getElementById('change-profile-pic');
         output.src = "/users/home/serveDestPicture/" + photoIdToEdit;
         $("#selectProfileInput").hide();
-    }
 });
 
 /**
  *
  */
 $('#addProfilePhoto').on('shown.bs.modal', function (e) {
-    var isExistingPhoto;
-    if(isExistingPhoto == true){
-        isExistingPhoto = false;
-        $.ajax({
-            type: 'GET',
-            url: '/users/photos/' + photoIdToEdit,
-            success: function(data){
-                let filename = data["url"];
-                $('#change-profile-pic').cropper("destroy");
+    $.ajax({
+        type: 'GET',
+        url: '/users/photos/' + photoIdToEdit,
+        success: function(data){
+            filename = data["url"];
+            $('#change-profile-pic').cropper("destroy");
 
-                var $previews = $('.preview');
-                $('#change-profile-pic').cropper({
-                    movable: false,
-                    autoCropArea: 1,
-                    aspectRatio: 1,
-                    ready: function(e){
+            var $previews = $('.preview');
+            $('#change-profile-pic').cropper({
+                movable: false,
+                autoCropArea: 1,
+                aspectRatio: 1,
+                ready: function(e){
 
-                        //DO NOT DELETE THIS SET TIMEOUT
-                        // setTimeout(function(){
-                        //     $('#change-profile-pic').cropper('crop');
-                        //     croppedCanvas = $('#change-profile-pic').cropper('getCroppedCanvas');
-                        // }, 1);
+                    //DO NOT DELETE THIS SET TIMEOUT
+                    // setTimeout(function(){
+                    //     $('#change-profile-pic').cropper('crop');
+                    //     croppedCanvas = $('#change-profile-pic').cropper('getCroppedCanvas');
+                    // }, 1);
 
-                        let cropBoxElements = document.getElementsByClassName('cropper-face cropper-move');
-                        let cropBoxElement = cropBoxElements[0];
-                        let cropBoxMoveEvent = new Event('crop');
-                        cropBoxElement.dispatchEvent(cropBoxMoveEvent);
+                    let cropBoxElements = document.getElementsByClassName('cropper-face cropper-move');
+                    let cropBoxElement = cropBoxElements[0];
+                    let cropBoxMoveEvent = new Event('crop');
+                    cropBoxElement.dispatchEvent(cropBoxMoveEvent);
 
-                        },
-                    crop: function (e) {
-                        var imageData = $(this).cropper('getImageData');
-                        var croppedCanvas = $(this).cropper('getCroppedCanvas');
-                        $('.preview').html('<img src="' + croppedCanvas.toDataURL() + '" class="thumb-lg img-circle" style="width:100px;height:100px;">');
-                        var previewAspectRatio = e.width / e.height;
-                        $previews.each(function (){
-                            var $preview = $(this);
-                            var previewWidth = $preview.width();
-                            var previewHeight = previewWidth / previewAspectRatio;
-                            var imageScaledRatio = e.width / previewWidth;
-                            $preview.height(previewHeight).find('img').css({
-                                width: imageData.naturalWidth / imageScaledRatio,
-                                height: imageData.naturalHeight / imageScaledRatio,
-                                marginLeft: -e.x / imageScaledRatio,
-                                marginTop: -e.y / imageScaledRatio
-                            });
+                    },
+                crop: function (e) {
+                    var imageData = $(this).cropper('getImageData');
+                    croppedCanvas = $(this).cropper('getCroppedCanvas');
+                    $('.preview').html('<img src="' + croppedCanvas.toDataURL() + '" class="thumb-lg img-circle" style="width:100px;height:100px;">');
+                    var previewAspectRatio = e.width / e.height;
+                    $previews.each(function (){
+                        var $preview = $(this);
+                        var previewWidth = $preview.width();
+                        var previewHeight = previewWidth / previewAspectRatio;
+                        var imageScaledRatio = e.width / previewWidth;
+                        $preview.height(previewHeight).find('img').css({
+                            width: imageData.naturalWidth / imageScaledRatio,
+                            height: imageData.naturalHeight / imageScaledRatio,
+                            marginLeft: -e.x / imageScaledRatio,
+                            marginTop: -e.y / imageScaledRatio
                         });
-                    }
-                });
-            }
-        });
-    }
+                    });
+                }
+            });
+        }
+    });
 });
 
 

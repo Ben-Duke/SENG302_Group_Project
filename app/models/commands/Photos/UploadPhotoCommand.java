@@ -43,12 +43,6 @@ public class UploadPhotoCommand extends UndoableCommand {
         this.albumName = albumName;
     }
 
-    public UploadPhotoCommand(UserPhoto photo, Files.TemporaryFile fileObject) {
-        super(CommandPage.HOME);
-        this.userPhoto = photo;
-        this.fileObject = fileObject;
-    }
-
     /**
      * Execute an upload photo command
      */
@@ -68,7 +62,7 @@ public class UploadPhotoCommand extends UndoableCommand {
         addUploadToAlbum(user, userPhoto, albumName);
     }
 
-    private void addUploadToAlbum(User user, UserPhoto media, String albumName) {
+    public void addUploadToAlbum(User user, UserPhoto media, String albumName) {
         List<Album> albumList = UserAccessor.getAlbums();
         int albumCount = 0;
         for (Album album : albumList) {

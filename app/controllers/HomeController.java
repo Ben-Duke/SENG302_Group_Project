@@ -1,6 +1,7 @@
 package controllers;
 
 import accessors.UserAccessor;
+import accessors.UserPhotoAccessor;
 import factories.UserFactory;
 import io.ebean.DuplicateKeyException;
 import models.Album;
@@ -176,7 +177,10 @@ public class HomeController {
                     }
                     //DB saving
                     UserFactory.replaceProfilePicture(user.getUserid(), newPhoto);
-//                    addUploadToAlbum(user, newPhoto, albumName);
+                    UploadPhotoCommand uploadPhotoCommand = new UploadPhotoCommand(UserPhotoAccessor.getUserPhotoByUrl(unusedPhotoUrl), file, user,
+                            user.getFName()+"'s "+"Profile Pictures");
+                    uploadPhotoCommand.addUploadToAlbum(user, UserPhotoAccessor.getUserPhotoByUrl(unusedPhotoUrl),
+                            user.getFName()+"'s "+"Profile Pictures");
                     return redirect(routes.HomeController.showhome());
                 }
             }

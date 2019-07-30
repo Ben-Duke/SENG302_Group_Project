@@ -167,6 +167,8 @@ public class Destination extends Model {
     }
     public boolean getIsCountryValid() { return isCountryValid; }
 
+    public boolean hasPrimaryPhoto() { return primaryPhoto != null; }
+
 
     public User getUser() { return user; }
 
@@ -274,6 +276,33 @@ public class Destination extends Model {
         return true;
     }
 
+    public boolean isSame(Destination other) {
+
+        if (!this.destName.equals(other.getDestName())) {
+            return false;
+        }
+        if (!this.country.equals(other.getCountry())) {
+            return false;
+        }
+        if (!this.district.equals(other.getDistrict())) {
+            return false;
+        }
+        if (Math.round(this.latitude*1000) != Math.round(other.getLatitude()*1000)) {
+            return false;
+        }
+        if (Math.round(this.longitude*1000) != Math.round(other.getLongitude()*1000)) {
+            return false;
+        }
+        if (!this.destType.equals(other.getDestType())) {
+            return false;
+        }
+        if (!this.getTravellerTypes().equals(other.getTravellerTypes())) {
+            return false;
+        }
+
+        return true;
+    }
+
     /**
      *The unique hashcode of a destination given it's attributes
      *
@@ -301,6 +330,7 @@ public class Destination extends Model {
     public boolean isUserOwner(Integer userid){
         return this.user.getUserid() == userid;
     }
+    public boolean isUserOwner(User user) { return this.user.getUserid() == user.getUserid(); }
 
     /** Modifies the fields of this Destination which are included in the
      *   destination editing form to be equal to those fields of the destination
@@ -315,5 +345,6 @@ public class Destination extends Model {
         this.longitude = newDestination.getLongitude();
         this.latitude = newDestination.getLatitude();
         this.destType = newDestination.getDestType();
+        this.travellerTypes = newDestination.getTravellerTypes();
     }
 }

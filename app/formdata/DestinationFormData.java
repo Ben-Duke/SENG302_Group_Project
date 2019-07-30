@@ -24,7 +24,6 @@ public class DestinationFormData implements Constraints.Validatable<List<Validat
     public DestinationFormData() {
     }
 
-    /** Constructor */
     public DestinationFormData(String destName, String destType, String district,
                                String country, Double latitude, Double longitude) {
         this.destName = destName;
@@ -34,6 +33,18 @@ public class DestinationFormData implements Constraints.Validatable<List<Validat
         this.latitude = latitude.toString();
         this.longitude = longitude.toString();
     }
+
+    /** Constructor */
+//    public DestinationFormData(String destName, String destType, String district,
+//                               String country, Double latitude, Double longitude,
+//                               List<String> travellerTypes) {
+//        this.destName = destName;
+//        this.destType = destType;
+//        this.district = district;
+//        this.country = country;
+//        this.latitude = latitude.toString();
+//        this.longitude = longitude.toString();
+//    }
 
     /**
      * A function that is called when creating a destination to the the types

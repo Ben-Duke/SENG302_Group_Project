@@ -1,6 +1,7 @@
 package controllers;
 
 import accessors.DestinationAccessor;
+import accessors.TravellerTypeAccessor;
 import accessors.TreasureHuntAccessor;
 import accessors.VisitAccessor;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -73,7 +74,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
     public void displayViewDestinationWithNoLoginSession() {
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(GET)
-                .uri("/users/destinations/1").session("connected", null);
+                .uri("/users/destinations/view/1").session("connected", null);
         Result result = route(app, request);
         assertEquals(SEE_OTHER, result.status());
     }
@@ -85,7 +86,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
     public void displayViewDestinationWithLoginSession() {
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(GET)
-                .uri("/users/destinations/1").session("connected", "1");
+                .uri("/users/destinations/view/1").session("connected", "1");
         Result result = route(app, request);
         assertEquals(OK, result.status());
     }
@@ -258,13 +259,14 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
 
 
     /**
-     * Test to render editing a destination with a login session and valid destination but invalid owner
+     * Test to render editing a destination that is private and belongs to another user
      */
     @Test
-    public void editDestinationWithLoginSessionAndValidDestinationAndInvalidOwner() {
+    public void editPrivateDestinationWithInvalidOwner() {
+
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(GET)
-                .uri("/users/destinations/edit/3").session("connected", "3");
+                .uri("/users/destinations/edit/2").session("connected", "3");
         Result result = route(app, request);
         assertEquals(UNAUTHORIZED, result.status());
     }
@@ -507,7 +509,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
     public void makeDestinationPublicWithoutLoginSession(){
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(GET)
-                .uri("/users/destinations/public/1").session("connected", null);
+                .uri("/users/destinations/update/make_public/1").session("connected", null);
         Result result = route(app, request);
         assertEquals(SEE_OTHER, result.status());
     }
@@ -519,7 +521,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
     public void makeDestinationPublicWithLoginSessionWithInvalidDestination(){
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(GET)
-                .uri("/users/destinations/public/20").session("connected", "1");
+                .uri("/users/destinations/update/make_public/20").session("connected", "1");
         Result result = route(app, request);
         assertEquals(NOT_FOUND, result.status());
     }
@@ -531,7 +533,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
     public void makeDestinationPublicWithLoginSessionWithValidDestinationWithInvalidOwner(){
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(GET)
-                .uri("/users/destinations/public/2").session("connected", "4");
+                .uri("/users/destinations/update/make_public/2").session("connected", "4");
         Result result = route(app, request);
         assertEquals(UNAUTHORIZED, result.status());
     }
@@ -547,9 +549,9 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
         assertEquals(2, destination.getUser().getUserid());
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(GET)
-                .uri("/users/destinations/public/2").session("connected", "2");
+                .uri("/users/destinations/update/make_public/2").session("connected", "2");
         Result result = route(app, request);
-        assertEquals(REDIRECT_HTTP_STATUS, result.status());
+        assertEquals(OK, result.status());
         destination = Destination.find().byId(3);
         assertEquals(true, destination.getIsPublic());
         assertEquals(2, destination.getUser().getUserid());
@@ -568,9 +570,9 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
         //Set destination 3 to public
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(GET)
-                .uri("/users/destinations/public/3").session("connected", "2");
+                .uri("/users/destinations/update/make_public/2").session("connected", "2");
         Result result = route(app, request);
-        assertEquals(REDIRECT_HTTP_STATUS, result.status());
+        assertEquals(OK, result.status());
 
 
         Map<String, String> formData = new HashMap<>();
@@ -580,7 +582,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
         formData.put("country", "Angola");
         formData.put("latitude", "50.0");
         formData.put("longitude", "-50.0");
-        Http.RequestBuilder request2 = Helpers.fakeRequest().bodyForm(formData).method(POST).uri("/users/destinations/update/3").session("connected", "2");
+        Http.RequestBuilder request2 = Helpers.fakeRequest().bodyForm(formData).method(POST).uri("/users/destinations/update/2").session("connected", "2");
         Result result2 = route(app, request2);
         assertEquals(REDIRECT_HTTP_STATUS, result2.status());
     }
@@ -597,9 +599,9 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
         //Set destination 2 to public by user id 2
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(GET)
-                .uri("/users/destinations/public/2").session("connected", "2");
+                .uri("/users/destinations/update/make_public/2").session("connected", "2");
         Result result = route(app, request);
-        assertEquals(REDIRECT_HTTP_STATUS, result.status());
+        assertEquals(OK, result.status());
         //A different user of user id 3 uses the destination in their trip
         Trip trip = new Trip("testTrip", true, User.find().byId(3));
         trip.save();
@@ -625,12 +627,16 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
     @Test
     public void updateDestinationWithLoginSessionAndValidDestinationAndValidOwnerAfterBeingSetToPublicAfterBeingAddedBySameUser(){
 
+        Destination destination = DestinationAccessor.getDestinationById(3);
+        destination.setIsPublic(false);
+        DestinationAccessor.update(destination);
+
         //Set destination 3 to public
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(GET)
-                .uri("/users/destinations/public/3").session("connected", "2");
+                .uri("/users/destinations/update/make_public/3").session("connected", "2");
         Result result = route(app, request);
-        assertEquals(REDIRECT_HTTP_STATUS, result.status());
+        assertEquals(OK, result.status());
 
         Trip trip = new Trip("testTrip", true, User.find().byId(2));
         trip.save();
@@ -877,8 +883,9 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
 
         Destination newDestinationValues = new Destination("Test Dest2", "Town2", "Test District2", "Test Country2", 101, 101, user);
         Set<TravellerType> travellerTypes = new TreeSet<>();
-        travellerTypes.add(new TravellerType("Backpacker"));
-        travellerTypes.add(new TravellerType("Groupie"));
+        travellerTypes.add(TravellerTypeAccessor.getByName("Backpacker"));
+        travellerTypes.add(TravellerTypeAccessor.getByName("Groupie"));
+
         newDestinationValues.setTravellerTypes(travellerTypes);
 
         DestinationModificationRequest modReq = new DestinationModificationRequest(newDestination, newDestinationValues, user);
@@ -916,16 +923,6 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
 
     }
 
-    @Test
-    public void editPublicDestination() {
-        Http.RequestBuilder request = Helpers.fakeRequest()
-                .method(GET)
-                .uri("/users/destinations/edit/public/1")
-                .session("connected", "2");
-
-        Result result = route(app, request);
-        assertEquals(OK, result.status());
-    }
 
     @Test
     public void updatePublicDestination() {
@@ -945,7 +942,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
 
         Result result = route(app, request);
 
-        assertEquals(303, result.status());
+        assertEquals(OK, result.status());
     }
 
     /**
@@ -956,8 +953,8 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
         boolean destPhotoExists = false;
         int destPhotoSize = Destination.find().byId(3).getUserPhotos().size();
         Http.RequestBuilder request = Helpers.fakeRequest()
-                .method(POST)
-                .uri("/users/destinations/3/1")
+                .method(GET)
+                .uri("/users/destinations/3/add_photo/1")
                 .session("connected", "2");
         Result result = route(app, request);
         assertEquals(SEE_OTHER, result.status());
@@ -991,8 +988,8 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
         boolean destPhotoExists = false;
         int destPhotoSize = Destination.find().byId(1).getUserPhotos().size();
         Http.RequestBuilder request = Helpers.fakeRequest()
-                .method(POST)
-                .uri("/users/destinations/1/1")
+                .method(GET)
+                .uri("/users/destinations/1/add_photo/1")
                 .session("connected", "2");
         Result result = route(app, request);
         assertEquals(BAD_REQUEST, result.status());
@@ -1014,8 +1011,8 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
     public void addPhotoToDestinationInvalidUser() {
         int destPhotoSize = Destination.find().byId(1).getUserPhotos().size();
         Http.RequestBuilder request = Helpers.fakeRequest()
-                .method(POST)
-                .uri("/users/destinations/1/1")
+                .method(GET)
+                .uri("/users/destinations/1/add_photo/1")
                 .session("connected", "1");
         Result result = route(app, request);
         assertEquals(UNAUTHORIZED, result.status());
@@ -1031,8 +1028,8 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
     public void addPhotoToDestinationInvalidLoginSession() {
         int destPhotoSize = Destination.find().byId(1).getUserPhotos().size();
         Http.RequestBuilder request = Helpers.fakeRequest()
-                .method(POST)
-                .uri("/users/destinations/1/1")
+                .method(GET)
+                .uri("/users/destinations/1/add_photo/1")
                 .session("connected", null);
         Result result = route(app, request);
         assertEquals(SEE_OTHER, result.status());
@@ -1079,8 +1076,8 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
     public void unlinkPhotoFromDestinationValidCheckResponseOk() {
         // Send request to link a photo to a destination
         Http.RequestBuilder linkRequest = Helpers.fakeRequest()
-                .method(POST)
-                .uri("/users/destinations/1/1")
+                .method(GET)
+                .uri("/users/destinations/1/add_photo/1")
                 .session("connected", "2");
         route(app, linkRequest);
 
@@ -1089,7 +1086,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
                 .uri("/users/destinations/1/1")
                 .session("connected", "2");
         Result result = route(app, unlinkRequest);
-        assertEquals(OK, result.status());
+        assertEquals(SEE_OTHER, result.status());
     }
 
     /**
@@ -1099,8 +1096,8 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
     public void unlinkPhotoFromDestinationCheckPhotoRemoved() {
         // Send request to link a photo to a destination
         Http.RequestBuilder linkRequest = Helpers.fakeRequest()
-                .method(POST)
-                .uri("/users/destinations/1/1")
+                .method(GET)
+                .uri("/users/destinations/1/add_photo/1")
                 .session("connected", "2");
         route(app, linkRequest);
 
@@ -1275,8 +1272,8 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
     public void unlinkPhotoFromDestinationUserOwnerOfDestinationNotPhotoCheckResponse() {
         // Send request to link a photo to a destination
         Http.RequestBuilder linkRequest = Helpers.fakeRequest()
-                .method(POST)
-                .uri("/users/destinations/4/1")
+                .method(GET)
+                .uri("/users/destinations/4/add_photo/1")
                 .session("connected", "2");
         route(app, linkRequest);
 
@@ -1285,7 +1282,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
                 .uri("/users/destinations/1/4")
                 .session("connected", "3");
         Result result = route(app, unlinkRequest);
-        assertEquals(OK, result.status());
+        assertEquals(SEE_OTHER, result.status());
     }
 
     /**
@@ -1296,8 +1293,8 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
     public void unlinkPhotoFromDestinationUserOwnerOfDestinationNotPhotoCheckPhotoRemoved() {
         // Send request to link a photo to a destination
         Http.RequestBuilder linkRequest = Helpers.fakeRequest()
-                .method(POST)
-                .uri("/users/destinations/4/1")
+                .method(GET)
+                .uri("/users/destinations/4/add_photo/1")
                 .session("connected", "2");
         route(app, linkRequest);
 
@@ -1322,8 +1319,8 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
     public void unlinkPhotoFromDestinationUserOwnerOfPhotoNotDestinationCheckResponse() {
         // Send request to link a photo to a destination
         Http.RequestBuilder linkRequest = Helpers.fakeRequest()
-                .method(POST)
-                .uri("/users/destinations/4/1")
+                .method(GET)
+                .uri("/users/destinations/4/add_photo/1")
                 .session("connected", "2");
         route(app, linkRequest);
 
@@ -1332,7 +1329,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
                 .uri("/users/destinations/1/4")
                 .session("connected", "2");
         Result result = route(app, unlinkRequest);
-        assertEquals(OK, result.status());
+        assertEquals(SEE_OTHER, result.status());
     }
 
     /**
@@ -1343,8 +1340,8 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
     public void unlinkPhotoFromDestinationUserOwnerOfPhotoNotDestinationCheckPhotoRemoved() {
         // Send request to link a photo to a destination
         Http.RequestBuilder linkRequest = Helpers.fakeRequest()
-                .method(POST)
-                .uri("/users/destinations/4/1")
+                .method(GET)
+                .uri("/users/destinations/4/add_photo/1")
                 .session("connected", "2");
         route(app, linkRequest);
 

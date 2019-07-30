@@ -63,7 +63,7 @@ public class UploadPhotoCommand extends UndoableCommand {
     }
 
     public void addUploadToAlbum(User user, UserPhoto media, String albumName) {
-        List<Album> albumList = UserAccessor.getAlbums();
+        List<Album> albumList = user.getAlbums();
         int albumCount = 0;
         for (Album album : albumList) {
             if (albumName.equals(album.getTitle())) {
@@ -71,13 +71,13 @@ public class UploadPhotoCommand extends UndoableCommand {
                 List<Media> mediaList = new ArrayList<>();
                 mediaList.add(media);
                 addMediaToAlbumCommand = new AddMediaToAlbumCommand(album, mediaList);
-                System.out.println(userPhoto.getUrl());
                 addMediaToAlbumCommand.execute();
             }
         }
         if (albumCount == 0) {
             createAlbumCommand = new CreateAlbumCommand(albumName, user, media);
             createAlbumCommand.execute();
+            user = UserAccessor.getById(user.getUserid());
             addUploadToAlbum(user, media, albumName);
         }
     }

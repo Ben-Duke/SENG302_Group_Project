@@ -16,21 +16,10 @@ import java.util.List;
 
 public class UserPhoto extends Media {
 
-    private boolean isPublic;
     private boolean isProfile;
 
     private String caption = "";
 
-    // Creating  the relation to User
-    @JsonIgnore
-    @ManyToOne
-    @JoinColumn(name = "user", referencedColumnName = "userid")
-    private User user;
-
-    // Creating  the relation to Destination
-    @JsonIgnore
-    @ManyToMany
-    private List<Destination> destinations;
 
     @JsonIgnore
     @OneToMany(mappedBy = "primaryPhoto")
@@ -98,9 +87,6 @@ public class UserPhoto extends Media {
         return "url is " + this.getUrl() + " Id is " + this.getMediaId();
     }
 
-    public boolean getIsPhotoPublic(){
-        return this.isPublic;
-    }
 
     public boolean getIsProfile() {
         return this.isProfile;
@@ -156,22 +142,7 @@ public class UserPhoto extends Media {
         this.caption = caption;
     }
 
-    public List<Destination> getDestinations() {
-        return destinations;
-    }
 
-    public void addDestination(Destination destination) {
-        this.destinations.add(destination);
-    }
-
-    /**
-     * Unlink the photo from the given destination
-     * @param destination the destination to unlink from
-     * @return true if the removal changed the list, else false
-     */
-    public boolean removeDestination(Destination destination) {
-        return this.destinations.remove(destination);
-    }
     /**
      * Method to set the photo as profile picture (or not)
      * @param isProfile the boolean showing if the picture is the profile picture

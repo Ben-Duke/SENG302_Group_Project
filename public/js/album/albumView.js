@@ -88,7 +88,7 @@ function setDeletePhotoListener(albumData, i) {
         deletePhotoRequest(mediaId);
     }
     const clone = replaceWithClone(document.getElementById('deletePhotoBtn'));
-    clone.addEventListener('click', deletePhotoListener);
+    clone.addEventListener('click', openSelectDestinationsToUnlinkPhotoModal);
 }
 
 /**
@@ -811,4 +811,20 @@ function submitEditCaption(caption, photoId) {
             console.log(xhr.status + " " + textStatus + " " + errorThrown);
         }
     });
+}
+
+/**
+ * Opens the modal to select which destinations the user photo should remain in
+ * after the photo is selected from the users albumn.
+ * @param mediaId the id of the media supplied
+ */
+function openSelectDestinationsToUnlinkPhotoModal(mediaId) {
+    $('#selectDestinationsToUnlinkPhotoModal').modal('show');
+}
+
+/**
+ * Closes the selectDestinationsToUnlinkPhoto modal
+ */
+function closeSelectDestinationsToUnlinkPhotoModal() {
+    $('#selectDestinationsToUnlinkPhotoModal').modal('hide');
 }

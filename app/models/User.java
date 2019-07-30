@@ -335,11 +335,6 @@ public class User extends Model implements Comparable<User>, AlbumOwner  {
         this.dateOfBirth = dateOfBirth;
     }
 
-    public List<User> getUsers() {
-        List<User> users= User.find().all();
-        return  users;
-    }
-
     public String getGender() {
         return gender;
     }

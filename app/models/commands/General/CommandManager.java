@@ -1,6 +1,7 @@
 package models.commands.General;
 
 import accessors.UserAccessor;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import models.BaseModel;
 import models.User;
 import org.slf4j.Logger;
@@ -25,6 +26,7 @@ public class CommandManager extends BaseModel {
 
     private final Logger logger = UtilityFunctions.getLogger();
 
+    @JsonIgnore
     private User user;
 
     public User getUser() {

@@ -9,23 +9,25 @@ moveAlbumSearch();
 function moveAlbumSearch() {
       const searchBar = document.getElementById("album-search-move");
       let oldAlbumId = document.getElementById("existingAlbumId").innerText;
-      searchBar.addEventListener('input', (e) => {
-          if (e.constructor.name !== 'InputEvent') {
-                let title = searchBar.value;
-                console.log(title);
-                $.ajax({
-                                type: 'GET',
-                                url: '/users/albums/getFromTitle/' + title,
-                                contentType: 'application/json',
-                                success: (newAlbumId) => {
-                                        console.log(newAlbumId)
-                                        moveBetweenAlbums(oldAlbumId, newAlbumId);
-                                    }
-                                });
+      if (searchBar != null) {
+          searchBar.addEventListener('input', (e) => {
+              if (e.constructor.name !== 'InputEvent') {
+                  let title = searchBar.value;
+                  console.log(title);
+                  $.ajax({
+                      type: 'GET',
+                      url: '/users/albums/getFromTitle/' + title,
+                      contentType: 'application/json',
+                      success: (newAlbumId) => {
+                          console.log(newAlbumId)
+                          moveBetweenAlbums(oldAlbumId, newAlbumId);
+                      }
+                  });
 
 
-          }
-      });
+              }
+          });
+      }
 }
 
 function moveBetweenAlbums(oldAlbumId, newAlbumId) {
@@ -72,9 +74,11 @@ function moveBetweenAlbums(oldAlbumId, newAlbumId) {
  * @returns a copy of the same node without any listeners
  */
 function replaceWithClone(original) {
-    const clone = original.cloneNode(true);
-    original.parentNode.replaceChild(clone, original);
-    return clone;
+    if (original != null) {
+        const clone = original.cloneNode(true);
+        original.parentNode.replaceChild(clone, original);
+        return clone;
+    }
 }
 
 /**
@@ -88,7 +92,9 @@ function setDeletePhotoListener(albumData, i) {
         deletePhotoRequest(mediaId);
     }
     const clone = replaceWithClone(document.getElementById('deletePhotoBtn'));
-    clone.addEventListener('click', deletePhotoListener);
+    if (clone != null) {
+        clone.addEventListener('click', deletePhotoListener);
+    }
 }
 
 /**
@@ -103,8 +109,9 @@ function setMakeProfilePictureListener(albumData, i) {
     }
     const original = document.getElementById('profilePictureBtn');
     const clone = replaceWithClone(original);
-
-    clone.addEventListener('click', makeProfilePictureListener);
+    if (clone != null) {
+        clone.addEventListener('click', makeProfilePictureListener);
+    }
 }
 
 /**
@@ -119,7 +126,9 @@ function setDestinationLinkListener(albumData, i) {
     }
     const original = document.getElementById('linkDestinationBtn');
     const clone = replaceWithClone(original);
-    clone.addEventListener('click', destinationLinkListener)
+    if (clone != null) {
+        clone.addEventListener('click', destinationLinkListener)
+    }
 }
 
 /**
@@ -159,6 +168,7 @@ function setSlideListeners(i) {
         contentType: 'application/json',
         success: (albumData) => {
             let setPrivacy;
+
             setDeletePhotoListener(albumData, i);
             setDestinationLinkListener(albumData, i);
             setMakeProfilePictureListener(albumData, i);
@@ -211,6 +221,7 @@ async function addAlbum(albumData) {
 
 async function displayGrid(i, albumData, path) {
     var url = albumData[i]["urlWithPath"];
+    console.log(albumData[i]);
     var img1 = document.createElement("img");
     img1.src = path + encodeURIComponent(url);
     img1.setAttribute("data-id", i);
@@ -454,10 +465,14 @@ function showSlides(n) {
         slides[i].style.display = "none";
     }
     slides[slideIndex-1].style.display = "block";
-    if(slides[slideIndex-1].getAttribute("data-privacy") == "true") {
-        document.getElementById("privacyBtn").innerHTML = "Make Private";
-    } else if (slides[slideIndex-1].getAttribute("data-privacy") == "false"){
-        document.getElementById("privacyBtn").innerHTML = "Make Public";
+    const privacyBtn = document.getElementById("privacyBtn")
+
+    if (privacyBtn != null) {
+        if (slides[slideIndex - 1].getAttribute("data-privacy") == "true") {
+            document.getElementById("privacyBtn").innerHTML = "Make Private";
+        } else if (slides[slideIndex - 1].getAttribute("data-privacy") == "false") {
+            document.getElementById("privacyBtn").innerHTML = "Make Public";
+        }
     }
 
 }

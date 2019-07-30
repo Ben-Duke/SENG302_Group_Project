@@ -25,9 +25,9 @@ public class CreateAlbumCommand extends UndoableCommand {
 
     public void execute() {
         if (media == null) {
-            album = new Album(owner, title);
+            album = new Album(owner, title, false);
         } else {
-            album = new Album(media, owner, title);
+            album = new Album(media, owner, title, false);
         }
         AlbumAccessor.insert(album);
         album = AlbumAccessor.getAlbumByTitle(title);

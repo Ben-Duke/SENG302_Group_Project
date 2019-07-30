@@ -17,6 +17,7 @@ public class Album extends Model {
     @Id
     public Integer albumId;
 
+
     @ManyToMany
     public List<Media> media;
 
@@ -36,20 +37,25 @@ public class Album extends Model {
 
     private AlbumOwner owner;
 
+    private Boolean isDefault;
+
     private String title;
 
-    public Album(AlbumOwner owner, String title) {
-        media = new ArrayList<>();
+    public Album(AlbumOwner owner, String title, Boolean isDefault) {
+        this.isDefault = isDefault;
+        this.media = new ArrayList<>();
         setAlbumOwnerDetails(owner);
         this.title = title;
     }
-    public Album(Media media, AlbumOwner owner, String title) {
+    public Album(Media media, AlbumOwner owner, String title, Boolean isDefault) {
+        this.isDefault = isDefault;
         this.media = new ArrayList<>();
         this.media.add(media);
         setAlbumOwnerDetails(owner);
         this.title = title;
     }
-    public Album(List<Media> media, AlbumOwner owner, String title) {
+    public Album(List<Media> media, AlbumOwner owner, String title, Boolean isDefault) {
+        this.isDefault = isDefault;
         this.media = media;
         setAlbumOwnerDetails(owner);
         this.title = title;
@@ -193,4 +199,11 @@ public class Album extends Model {
     }
 
 
+    public Boolean getDefault() {
+        return isDefault;
+    }
+
+    public void setDefault(Boolean aDefault) {
+        isDefault = aDefault;
+    }
 }

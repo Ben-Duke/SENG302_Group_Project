@@ -16,7 +16,7 @@ public class DeleteAlbumCommandTest extends BaseTestWithApplicationAndDatabase {
     public void executeTest() {
         User user = UserAccessor.getById(1);
 
-        Album album = new Album(user, "testAlbum");
+        Album album = new Album(user, "testAlbum", false);
         AlbumAccessor.insert(album);
 
         int beforeSize = user.getAlbums().size();
@@ -35,9 +35,9 @@ public class DeleteAlbumCommandTest extends BaseTestWithApplicationAndDatabase {
 
         User user = UserAccessor.getById(1);
 
-        Album album = new Album(user, "testAlbum");
+        Album album = new Album(user, "testAlbum", false);
         AlbumAccessor.insert(album);
-        Album album2 = new Album(user, "testAlbum2");
+        Album album2 = new Album(user, "testAlbum2", false);
         AlbumAccessor.insert(album2);
 
         Media media1 = new UserPhoto("/test", false, false, user);
@@ -86,7 +86,7 @@ public class DeleteAlbumCommandTest extends BaseTestWithApplicationAndDatabase {
     public void undoTest() {
         User user = UserAccessor.getById(1);
 
-        Album album = new Album(user, "testAlbum");
+        Album album = new Album(user, "testAlbum", false);
         AlbumAccessor.insert(album);
 
         int beforeSize = user.getAlbums().size();
@@ -107,9 +107,9 @@ public class DeleteAlbumCommandTest extends BaseTestWithApplicationAndDatabase {
         User user = new User();
         user.save();
 
-        Album album = new Album(user, "testAlbum");
+        Album album = new Album(user, "testAlbum", false);
         AlbumAccessor.insert(album);
-        Album album2 = new Album(user, "testAlbum2");
+        Album album2 = new Album(user, "testAlbum2", false);
         AlbumAccessor.insert(album2);
 
         Media media1 = new UserPhoto("/test", false, false, user);
@@ -153,7 +153,7 @@ public class DeleteAlbumCommandTest extends BaseTestWithApplicationAndDatabase {
     public void redoTest() {
         User user = UserAccessor.getById(1);
 
-        Album album = new Album(user, "testAlbum");
+        Album album = new Album(user, "testAlbum", false);
         AlbumAccessor.insert(album);
 
         int beforeSize = user.getAlbums().size();
@@ -175,9 +175,9 @@ public class DeleteAlbumCommandTest extends BaseTestWithApplicationAndDatabase {
         User user = new User();
         user.save();
 
-        Album album = new Album(user, "testAlbum");
+        Album album = new Album(user, "testAlbum", false);
         AlbumAccessor.insert(album);
-        Album album2 = new Album(user, "testAlbum2");
+        Album album2 = new Album(user, "testAlbum2", false);
         AlbumAccessor.insert(album2);
 
         Media media1 = new UserPhoto("/test", false, false, user);
@@ -222,9 +222,9 @@ public class DeleteAlbumCommandTest extends BaseTestWithApplicationAndDatabase {
         User user = new User();
         user.save();
 
-        Album album = new Album(user, "testAlbum");
+        Album album = new Album(user, "testAlbum", false);
         AlbumAccessor.insert(album);
-        Album album2 = new Album(user, "testAlbum2");
+        Album album2 = new Album(user, "testAlbum2", false);
         AlbumAccessor.insert(album2);
 
         Media media1 = new UserPhoto("/test", false, false, user);

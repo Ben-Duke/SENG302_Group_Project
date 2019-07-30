@@ -16,7 +16,7 @@ public class UpdateAlbumCommandTest extends BaseTestWithApplicationAndDatabase {
         User user = new User("email12345");
         UserAccessor.insert(user);
 
-        Album album = new Album(user, "testTitle");
+        Album album = new Album(user, "testTitle", false);
         AlbumAccessor.insert(album);
 
         UpdateAlbumCommand command = new UpdateAlbumCommand(album, "newTitle");
@@ -33,7 +33,7 @@ public class UpdateAlbumCommandTest extends BaseTestWithApplicationAndDatabase {
         User user = new User("email12345");
         UserAccessor.insert(user);
 
-        Album album = new Album(user, "testTitle");
+        Album album = new Album(user, "testTitle", false);
         AlbumAccessor.insert(album);
 
         UpdateAlbumCommand command = new UpdateAlbumCommand(album, "newTitle");
@@ -51,7 +51,7 @@ public class UpdateAlbumCommandTest extends BaseTestWithApplicationAndDatabase {
         User user = new User("email12345");
         UserAccessor.insert(user);
 
-        Album album = new Album(user, "testTitle");
+        Album album = new Album(user, "testTitle", false);
         AlbumAccessor.insert(album);
 
         UpdateAlbumCommand command = new UpdateAlbumCommand(album, "newTitle");

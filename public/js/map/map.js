@@ -112,7 +112,7 @@ $('tbody').sortable({
         var url = '/users/trips/edit/' + currentlyDisplayedTripId;
         // POST to server using $.post or $.ajax
 
-        console.log(data);
+        // console.log(data);
 
         $.ajax({
             data : JSON.stringify(data),

@@ -491,6 +491,7 @@ public class TripController extends Controller {
      */
     public Result swapvisits(Http.Request request, Integer tripId){
         ArrayList<String> list = new ObjectMapper().convertValue(request.body().asJson(), ArrayList.class);
+
         User user = User.getCurrentUser(request);
         Trip trip = Trip.find().byId(tripId);
         if (user != null) {

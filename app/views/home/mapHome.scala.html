@@ -186,7 +186,7 @@
                             </thead>
                             <tbody id="tripTable_@trip.getTripid()">
                             @for(visit <- trip.getOrderedVisits()){
-                                <tr id="visit_row_@visit.getVisitid()">
+                                <tr id="@visit.getVisitid()">
                                     <th scope ="row">@visit.getDestination().getDestName()</th>
                                     <td>@visit.getDestination().getDestType()</td>
                                     <td><input id="arrival_@visit.getVisitid()" class="tripDateInput" type="date"

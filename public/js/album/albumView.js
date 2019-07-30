@@ -176,15 +176,7 @@ function setSlideListeners(i) {
 
             if(albumData[i]["isMediaPublic"]) {setPrivacy=0;}
             else {setPrivacy=1;}
-
-            $.ajax({
-                type: 'GET',
-                url: '/users/home/photoPrivacy/' + mediaId + '/' + setPrivacy,
-                contentType: 'application/json',
-                success: () => {
-                    setPrivacyListener(setPrivacy, mediaId)
-                }
-            });
+            setPrivacyListener(setPrivacy, mediaId);
         }
     });
 }

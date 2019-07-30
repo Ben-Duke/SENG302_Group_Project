@@ -165,7 +165,7 @@
         @for(photo <- destination.getUserPhotos()) {
             @if(photo.isUserOwner(user) || photo.isPublic()) {
 
-                <a href="#" data-toggle="modal" data-target="#photo-carousel">
+                <a href="#" data-toggle="modal" data-target="#photo-carousel" onclick="displayPhoto(@photo.getPhotoId)">
                     <img id=@{photo.getUrl} height="150"
                     src="@{routes.HomeController.index(photo.getUrlWithPath())}" alt="Destination Image">
                 </a>
@@ -221,34 +221,21 @@
     <div id="photo-carousel" class="modal fade">
         <div class="container">
             <div class="carousel slide" id="myslider" data-ride="carousel" data-interval="false">
-                <ol class="carousel-indicators">
-                    <li data-target="#myslider" id="slider" size="@(destination.getUserPhotos().length -1)" data-slide-to="@(destination.getUserPhotos().length -1)
-                    " class="active"></li>
-                    @for(i <- 1 to destination.getUserPhotos().length -1) {
-                        <li id="item@i" data-target="#myslider" data-slide-to="@i"></li>
-                    }
-
-                </ol>
                 <div id="carousel-inner" class="carousel-inner" style="text-align: center;">
                     @for(photo <- destination.getUserPhotos()) {
                         @if(photo.isUserOwner(user) || photo.isPublic()) {
-                            <!-- Sets the first image to be the first image displayed. To be changed to the image clicked-->
-                            @if(photo == user.getUserPhotos().get(0)){
-                                <div id="caro-@photo.getPhotoId" class="item active">
-                            } else{
-                                <div id="caro-@photo.getPhotoId" class="item">
-                            }
+                            <div id="caro-@photo.getPhotoId" class="item">
 
-                                    <img class="center" id="carouselImage@photo.getPhotoId()" src="@{routes.HomeController.index(photo.getUrlWithPath)}" style="height: 75%; margin: auto;">
+                                <img class="center" id="carouselImage@photo.getPhotoId()" src="@{routes.HomeController.index(photo.getUrlWithPath)}" style="height: 75%; margin: auto;">
 
-                                    @if(photo != destination.getPrimaryPhoto()) {
-                                        <a class="btn btn-primary" id="setPrimaryPicture" href="@routes.DestinationController.setPrimaryPhoto(photo.getPhotoId(), destination.getDestId())">
-                                        Set as primary</a>
-                                    }
+                                @if(photo != destination.getPrimaryPhoto()) {
+                                    <a class="btn btn-primary" id="setPrimaryPicture" href="@routes.DestinationController.setPrimaryPhoto(photo.getPhotoId(), destination.getDestId())">
+                                    Set as primary</a>
+                                }
 
-                                    <a class="btn btn-danger" href="@routes.DestinationController.unlinkPhotoFromDestination(photo.getPhotoId(), destination.getDestId())">
-                                    Remove Photo</a>
-                                </div>
+                                <a class="btn btn-danger" href="@routes.DestinationController.unlinkPhotoFromDestination(photo.getPhotoId(), destination.getDestId())">
+                                Remove Photo</a>
+                            </div>
                         }
                     }
                 </div>

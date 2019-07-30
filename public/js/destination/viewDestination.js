@@ -85,3 +85,13 @@ function initMapPositionListeners() {
 
     }
 }
+
+let activePhotoId;
+function displayPhoto(photoId) {
+    if (activePhotoId !== undefined) {
+        document.getElementById('caro-'+activePhotoId).classList.remove('active');
+    }
+
+    document.getElementById('caro-'+photoId).classList.add('active');
+    activePhotoId = photoId;
+}

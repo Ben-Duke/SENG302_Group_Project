@@ -217,7 +217,6 @@ public class TreasureHuntController extends Controller {
             }
         }
         TreasureHuntFormData edited = incomingForm.get();
-        System.out.println(edited);
         treasureHuntFactory.editTreasureHunt(user, treasureHuntId, edited);
         return redirect(routes.TreasureHuntController.indexTreasureHunt());
     }

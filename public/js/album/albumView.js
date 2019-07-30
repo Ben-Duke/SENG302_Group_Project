@@ -168,11 +168,16 @@ function setSlideListeners(i) {
         contentType: 'application/json',
         success: (albumData) => {
             let setPrivacy;
-
             setDeletePhotoListener(albumData, i);
             setDestinationLinkListener(albumData, i);
             setMakeProfilePictureListener(albumData, i);
             const mediaId = albumData[i]["mediaId"];
+            const caption = albumData[i]["caption"];
+            if (caption != null) {
+                document.querySelector('div[data-mediaId="'+mediaId+'"] [contenteditable]').innerHTML = caption.toString();
+            } else {
+                document.querySelector('div[data-mediaId="'+mediaId+'"] [contenteditable]').innerHTML = "Click to add caption, press enter to save.";
+            }
 
             if(albumData[i]["isMediaPublic"]) {setPrivacy=0;}
             else {setPrivacy=1;}
@@ -204,7 +209,8 @@ function getAlbum(userId, albumId, isOwner){
         url: '/users/albums/get/' + hidePrivate + '/' + albumId,
         contentType: 'application/json',
         success: (albumData) => {
-            addAlbum(albumData, userId)
+            addAlbum(albumData, userId);
+            console.log(albumData);
         }
     });
 }
@@ -222,8 +228,6 @@ async function addAlbum(albumData, userId) {
 }
 
 async function displayGrid(i, albumData, path) {
-    console.log(albumData[i]);
-
     var url = albumData[i]["urlWithPath"];
     var img1 = document.createElement("img");
     img1.src = path + encodeURIComponent(url);
@@ -251,6 +255,11 @@ async function displaySlides(i, albumData, path) {
     var mediaId = albumData[i]["mediaId"];
     var lightBox = document.getElementById("lightbox-modal");
     var mySlidesDiv = document.createElement("div");
+    var captionInput = document.createElement("p");
+    captionInput.setAttribute("id", "img-caption");
+    captionInput.setAttribute("captionMediaId", mediaId);
+    captionInput.setAttribute("contenteditable", "true");
+    captionInput.setAttribute("style", "color: white;");
     mySlidesDiv.classList.add("mySlides");
     mySlidesDiv.setAttribute("data-privacy", albumData[i]["isMediaPublic"]);
     mySlidesDiv.setAttribute("data-mediaId", mediaId);
@@ -259,7 +268,32 @@ async function displaySlides(i, albumData, path) {
     img1.classList.add("center-block");
     img1.src = path + encodeURIComponent(url);
     mySlidesDiv.appendChild(img1);
+    mySlidesDiv.appendChild(captionInput);
     lightBox.appendChild(mySlidesDiv);
+    var content = document.querySelector('div[data-mediaId="'+mediaId+'"] [contenteditable]');
+    // 1. Listen for changes of the contenteditable element
+    content.addEventListener('keydown', function (event) {
+        var esc = event.which == 27,
+            enterKey = event.which == 13,
+            el = event.target,
+            input = el.nodeName != 'INPUT',
+            data = {};
+
+        if (input) {
+            if (esc) {
+                // restore state
+                document.execCommand('undo');
+                el.blur();
+            } else if (enterKey) {
+                // save
+                data[el.getAttribute('data-name')] = el.innerHTML;
+                // we could send an ajax request to update the field
+                submitEditCaption(content.innerHTML, mediaId);
+                el.blur();
+                event.preventDefault();
+            }
+        }
+    }, true);
 }
 
 
@@ -449,7 +483,6 @@ function toggleButtons(destId) {
 
 // Next/previous controls
 function plusSlides(n) {
-    setSlideListeners(slideIndex);
     showSlides(slideIndex += n);
 }
 
@@ -461,7 +494,6 @@ function currentSlide(n) {
 function showSlides(n) {
     var i;
     var slides = document.getElementsByClassName("mySlides");
-//  var captionText = document.getElementById("caption");
     if (n > slides.length) {slideIndex = 1}
     if (n < 1) {slideIndex = slides.length}
     for (i = 0; i < slides.length; i++) {
@@ -469,7 +501,6 @@ function showSlides(n) {
     }
     slides[slideIndex-1].style.display = "block";
     const privacyBtn = document.getElementById("privacyBtn")
-
     if (privacyBtn != null) {
         if (slides[slideIndex - 1].getAttribute("data-privacy") == "true") {
             document.getElementById("privacyBtn").innerHTML = "Make Private";
@@ -477,6 +508,7 @@ function showSlides(n) {
             document.getElementById("privacyBtn").innerHTML = "Make Public";
         }
     }
+    setSlideListeners(slideIndex-1);
 
 }
 
@@ -745,72 +777,11 @@ function deletePhotoRequest(photoId){
 
 
 /**
- * Requests the photo caption and sets the captionInput to match that if it exists.
- * @param photoId the id of the photo to get the caption from
- */
-function getPhotoCaption(photoId) {
-    $.ajax({
-        type: 'GET',
-        url: '/users/photos/'+ photoId +'/caption',
-        success:function(res){
-            const captionInput = document.getElementById("captionInput-" + photoId);
-            captionInput.value = res;
-        },
-        error: function(xhr, textStatus, errorThrown){
-            console.log(xhr.status + " " + textStatus + " " + errorThrown);
-
-        }
-    })
-}
-
-/**
- * Toggles the visibility of elements relating to captions.
- * Hides the edit caption button only if the caotion exists
- * @param photoId the id of the photo to toggle displays of
- */
-function toggleCaptionDisplays(photoId) {
-    const caption = document.getElementById("caption-" + photoId);
-    const captionInput = document.getElementById("captionInput-" + photoId);
-    const editCaptionBtn = document.getElementById("editCaptionButton-" + photoId);
-
-    if (captionInput.value) {
-        editCaptionBtn.style.display = 'none'
-    } else {
-        editCaptionBtn.style.display = 'block'
-    }
-
-    toggleDisplay(caption);
-    toggleDisplay(captionInput);
-}
-
-/**
- * Used to edit a caption, shows all button required to edit a caption,
- * calls getPhotoCaption to get the caption for the photo so the user
- * can edit it.
- * @param photoId
- */
-function editCaption(photoId) {
-    getPhotoCaption(photoId);
-    toggleCaptionDisplays(photoId);
-    document.getElementById("captionInput-" + photoId).focus();
-    document.getElementById("editCaptionButton-" + photoId).style.display = 'none';
-}
-
-/**
  * Sends a request to change the photo caption and toggles appropriate displays
  * @param caption the new caption
  * @param photoId the id of the photo to change the caption of
  */
 function submitEditCaption(caption, photoId) {
-    const errorMessage = document.getElementById(`lengthErrorMessage-${photoId}`);
-
-    if (caption.length > 255) {
-        errorMessage.style.display = 'block';
-        return;
-    }
-
-    // Remove error message
-    errorMessage.style.display = 'none';
 
     $.ajax({
         type: 'PUT',
@@ -822,8 +793,7 @@ function submitEditCaption(caption, photoId) {
             'Content-Type': 'application/json'
         },
         success:function(){
-            document.getElementById("caption-" + photoId).innerText = caption;
-            toggleCaptionDisplays(photoId);
+            console.log("caption edited");
         },
         error: function(xhr, textStatus, errorThrown){
             console.log(xhr.status + " " + textStatus + " " + errorThrown);

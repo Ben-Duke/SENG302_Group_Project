@@ -164,8 +164,6 @@ public class Album extends Model {
         if(filterPrivateMedia) {
             mediaList = filterOutPrivateMedia();
         }
-        System.out.println(filterPrivateMedia);
-        System.out.println(mediaList);
         return mediaList;
     }
 

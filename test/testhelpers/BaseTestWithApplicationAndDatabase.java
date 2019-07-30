@@ -55,15 +55,12 @@ public class BaseTestWithApplicationAndDatabase extends WithApplication {
         ApplicationManager.setTesting();    // set the app in a testing state
 
         Map<String, String> configuration = new HashMap<>();
-        configuration.put("play.db.config", "db");
-        configuration.put("play.db.default", "default");
         configuration.put("db.default.driver", "org.h2.Driver");
         configuration.put("db.default.url", "jdbc:h2:mem:defaultDB;MODE=MYSQL;");
         configuration.put("ebean.default", "models.*");
         configuration.put("play.evolutions.db.default.enabled", "true");
-        configuration.put("play.evolutions.db.default.autoApply", "false");
 
-        // Dummy defailt database
+        // Dummy database to generate ebean ddl
 //        configuration.put("db.default.driver", "org.h2.Driver");
 //        configuration.put("db.default.url", "jdbc:h2:mem:defaultDB;MODE=MYSQL;");
 //        configuration.put("ebean.default", "models.*");

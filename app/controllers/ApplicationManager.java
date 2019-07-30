@@ -10,7 +10,7 @@ import java.nio.file.Paths;
  *  matches those declared in db {} of application.conf and test.conf
  */
 enum DatabaseName {
-    PROD, DEFAULT
+    DEFAULT
 }
 
 /**
@@ -26,7 +26,7 @@ public class ApplicationManager {
     private static boolean isTest = false;
 
     /** Current database app is using saved as the name of the database */
-    private static DatabaseName databaseName = DatabaseName.PROD;
+    private static DatabaseName databaseName = DatabaseName.DEFAULT;
 
     /**
      * Method to get the user photo path.
@@ -69,6 +69,7 @@ public class ApplicationManager {
 
     /** Set the app to use the testing database */
     public static void setTesting() {
+        // H2 testing db accessed through Default
         databaseName = DatabaseName.DEFAULT;
         isTest = true;
     }

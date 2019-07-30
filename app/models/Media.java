@@ -75,6 +75,7 @@ public abstract class Media extends Model {
      * Gets the list of destinations that has an album linked to the photo
      * @return the list of destinations that has an album linked to the photo
      */
+    @Deprecated
     public List<Destination> getDestinations() {
         List<Destination> destinations = new ArrayList<>();
         for (Album album : albums) {
@@ -107,5 +108,14 @@ public abstract class Media extends Model {
     protected void setUser(User user) { this.user = user; }
 
 //    public void addAlbum(Album album) { this.albums.add(album); }
+
+    /**
+     * Set's the albums for a media item.
+     *
+     * @param albums A List of all albums that contain the media item.
+     */
+    public void setAlbums(List<Album> albums) {
+        this.albums = albums;
+    }
 
 }

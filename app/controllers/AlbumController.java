@@ -2,9 +2,8 @@ package controllers;
 
 import accessors.AlbumAccessor;
 import accessors.MediaAccessor;
-import models.Album;
-import models.Media;
-import models.User;
+import accessors.UserPhotoAccessor;
+import models.*;
 import models.commands.Albums.*;
 import models.commands.General.CommandPage;
 import play.libs.Json;
@@ -194,7 +193,30 @@ public class AlbumController extends Controller {
      * @return
      */
     public Result getUnlinkableDestinationsForPhoto(Http.Request request, Integer photoId) {
-        return new Result(Http.Status.NOT_IMPLEMENTED);
+        User user = User.getCurrentUser(request);
+        if (user == null) {
+            return new Result(Http.Status.UNAUTHORIZED);
+        }
+
+        int authenticatedUserId = user.getUserid();
+        UserPhoto photo = UserPhotoAccessor.getUserPhotoById(photoId);
+
+        if (photo == null) {
+            return new Result(Http.Status.NOT_FOUND);
+        }
+
+        if (photo.getUser() == null) {
+            return new Result(Http.Status.FORBIDDEN);
+        }
+
+        int photoUserId = photo.getUser().getUserid();
+        if (photoUserId != authenticatedUserId) {
+            return new Result(Http.Status.FORBIDDEN);
+        }
+
+        List<Destination> destinations = MediaAccessor.getDestinations(photo);
+
+        return ok(Json.toJson(destinations));
     }
 
     /**

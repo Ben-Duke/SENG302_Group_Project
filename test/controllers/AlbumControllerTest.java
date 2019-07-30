@@ -679,13 +679,17 @@ public class AlbumControllerTest extends BaseTestWithApplicationAndDatabase {
     /**
      * Tests that an unauthenticated request get a unaccepted HTTP response.
      */
-    public void getUnlinkableDestinationsForPhoto_is403HTTPStatus_otherUsersPhoto() {
+    public void getUnlinkableDestinationsForPhoto_is404HTTPStatus_invalidId() {
+        User user = new User("testinvalidID@test.com");
+        UserAccessor.insert(user);
+        String userID = Integer.toString(user.getUserid());
+
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(GET)
-                .uri("/users/albums/photos/get_linked_destinations/1").session("connected", null);
+                .uri("/users/albums/photos/get_linked_destinations/999999").session("connected", userID);
         Result result = route(app, request);
 
-        assertEquals(UNAUTHORIZED, result.status());
+        assertEquals(NOT_FOUND, result.status());
     }
 
     @Test
@@ -693,7 +697,7 @@ public class AlbumControllerTest extends BaseTestWithApplicationAndDatabase {
      * Tests that a request for a photo ID that does not exist gets a not  found (404)
      * response.
      */
-    public void getUnlinkableDestinationsForPhoto_is404HTTPStatus_photoForOtherUser() {
+    public void getUnlinkableDestinationsForPhoto_is403HTTPStatus_photoForOtherUser() {
         String userEmail = "usertestwronguserphoto@test.com";
         String otherUserEmail = "otheruseremail@test.com";
         String userAlbumName = "testOtherUser";
@@ -783,13 +787,15 @@ public class AlbumControllerTest extends BaseTestWithApplicationAndDatabase {
         ArrayList<Album> albums = new ArrayList<Album>();
         albums.add(album);
 
-        ArrayList<Album> primaryPhotoDestinations = new ArrayList<Album>();
-
         Destination destination2 = new Destination(
                 "testtestmctest", "Town", "Wellington",
                 "New Zealand", -41.26, 174.6,
                 user);
         DestinationAccessor.insert(destination2);
+
+        Album destAlbum = new Album(destination2, "default");
+        AlbumAccessor.insert(destAlbum);
+
 
         UserPhoto photo = new UserPhoto(photoURL,
                 true,
@@ -797,6 +803,8 @@ public class AlbumControllerTest extends BaseTestWithApplicationAndDatabase {
                 user);
         UserPhotoAccessor.insert(photo);
         String photoId = Integer.toString(photo.getMediaId());
+
+
 
 
         destination2.getPrimaryAlbum().addMedia(photo);
@@ -812,6 +820,7 @@ public class AlbumControllerTest extends BaseTestWithApplicationAndDatabase {
         Result result = route(app, request);
 
         JsonNode jsonJacksonArray = play.libs.Json.parse(contentAsString(result));
+        System.out.println(jsonJacksonArray);
         assertEquals(1, jsonJacksonArray.size());
     }
 
@@ -820,7 +829,7 @@ public class AlbumControllerTest extends BaseTestWithApplicationAndDatabase {
      * Tests that a request for a valid user and a valid photo with no linked destinations
      * returns an an array with 2 destinations.
      */
-    public void getUnlinkableDestinationsForPhoto_checkJSONHas2Destinations_photoLinkedTo1Destination() {
+    public void getUnlinkableDestinationsForPhoto_checkJSONHas2Destinations_photoLinkedTo2Destination() {
         String userEmail = "userwithaphoto_3@test.com";
         String userAlbumName = "test_3";
         String photoURL = "/test/test/test_3.jpg";
@@ -871,6 +880,7 @@ public class AlbumControllerTest extends BaseTestWithApplicationAndDatabase {
         Result result = route(app, request);
 
         JsonNode jsonJacksonArray = play.libs.Json.parse(contentAsString(result));
+        System.out.println(jsonJacksonArray);
         assertEquals(2, jsonJacksonArray.size());
     }
 

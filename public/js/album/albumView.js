@@ -138,13 +138,15 @@ function setDestinationLinkListener(albumData, i) {
  */
 function setPrivacyListener(setPrivacy, mediaId) {
     function privacyListener() {
-        if(setPrivacy) {
+        if(clone.innerText === 'Make Private') {
             clone.innerHTML = "Make Public";
             document.querySelector('div[data-mediaId="'+mediaId+'"]').setAttribute("data-privacy", false);
+            setMediaPrivacy(mediaId, false)
         }
         else {
             clone.innerHTML = "Make Private";
             document.querySelector('div[data-mediaId="'+mediaId+'"]').setAttribute("data-privacy", true);
+            setMediaPrivacy(mediaId, true)
         }
     }
     const original = document.getElementById('privacyBtn');
@@ -191,6 +193,20 @@ function setSlideListeners(i) {
                 }
             });
         }
+    });
+}
+
+/**
+ * Sets a photo privacy to the setting specified
+ * @param mediaId the id of the media to change privacy
+ * @param setPublic true to set to public, false to set to private
+ */
+function setMediaPrivacy(mediaId, setPublic) {
+    const intPublic = setPublic ? 1 : 0
+    $.ajax({
+        type: 'GET',
+        url: '/users/home/photoPrivacy/' + mediaId + '/' + intPublic,
+        contentType: 'application/json',
     });
 }
 
@@ -519,9 +535,9 @@ function showSlides(n) {
     slides[slideIndex-1].style.display = "block";
     const privacyBtn = document.getElementById("privacyBtn")
     if (privacyBtn != null) {
-        if (slides[slideIndex - 1].getAttribute("data-privacy") == "true") {
+        if (slides[slideIndex - 1].getAttribute("data-privacy") === "true") {
             document.getElementById("privacyBtn").innerHTML = "Make Private";
-        } else if (slides[slideIndex - 1].getAttribute("data-privacy") == "false") {
+        } else if (slides[slideIndex - 1].getAttribute("data-privacy") === "false") {
             document.getElementById("privacyBtn").innerHTML = "Make Public";
         }
     }

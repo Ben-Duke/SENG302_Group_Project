@@ -677,21 +677,59 @@ public class AlbumControllerTest extends BaseTestWithApplicationAndDatabase {
 
     @Test
     /**
+     * Tests that an unauthenticated request get a unaccepted HTTP response.
+     */
+    public void getUnlinkableDestinationsForPhoto_is403HTTPStatus_otherUsersPhoto() {
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/albums/photos/get_linked_destinations/1").session("connected", null);
+        Result result = route(app, request);
+
+        assertEquals(UNAUTHORIZED, result.status());
+    }
+
+    @Test
+    /**
      * Tests that a request for a photo ID that does not exist gets a not  found (404)
      * response.
      */
-    public void getUnlinkableDestinationsForPhoto_is404HTTPStatus_photoDoesNotExist() {
-        String nonExistantPhotoId = "2222";
-        User user = new User("testMcTest@test.com");
+    public void getUnlinkableDestinationsForPhoto_is404HTTPStatus_photoForOtherUser() {
+        String userEmail = "usertestwronguserphoto@test.com";
+        String otherUserEmail = "otheruseremail@test.com";
+        String userAlbumName = "testOtherUser";
+        String photoURL = "/test/test/testotheruser.jpg";
+
+        User user = new User(otherUserEmail);
         UserAccessor.insert(user);
+        String userId = Integer.toString(user.getUserid());
+
+        User otheruser = new User(userEmail);
+        UserAccessor.insert(user);
+
+
+        Album album = new Album(user, userAlbumName);
+        AlbumAccessor.insert(album);
+        ArrayList<Album> albums = new ArrayList<Album>();
+        albums.add(album);
+
+        ArrayList<Album> primaryPhotoDestinations = new ArrayList<Album>();
+
+        UserPhoto photo = new UserPhoto(photoURL,
+                true,
+                false,
+                otheruser,
+                albums,
+                primaryPhotoDestinations);
+        UserPhotoAccessor.insert(photo);
+        String photoId = Integer.toString(photo.getMediaId());
 
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(GET)
-                .uri("/users/albums/photos/get_linked_destinations/" + nonExistantPhotoId)
-                .session("connected", Integer.toString(user.getUserid()));
+                .uri("/users/albums/photos/get_linked_destinations/" + photoId)
+                .session("connected", userId);
         Result result = route(app, request);
 
-        assertEquals(NOT_FOUND, result.status());
+        assertEquals(FORBIDDEN, result.status());
     }
 
     @Test

@@ -3,6 +3,7 @@ var destData;
 var photos;
 var user;
 var destinationOwner;
+var userPhotos;
 
 /**
  * Function to search for private destinations.
@@ -460,7 +461,7 @@ $('#removePhotoButton').click(function(e){
     var photo = document.getElementsByClassName("active")[0].getElementsByTagName('img')[0];
     var photoid = photo.id;
     photoid = parseInt(photoid.split("-")[1]);
-    url = 'destinations/' + photoid + '/' + getIdFromRow;
+    const url = 'destinations/' + photoid + '/' + getIdFromRow;
     const token =  $('input[name="csrfToken"]').attr('value');
     $.ajaxSetup({
         beforeSend: function(xhr) {

@@ -2,14 +2,16 @@ package models.commands.Photos;
 
 import accessors.UserPhotoAccessor;
 import models.UserPhoto;
-import models.commands.Profile.HomePageCommand;
+import models.commands.General.CommandPage;
+import models.commands.General.UndoableCommand;
 
-public class EditPhotoCaptionCommand extends HomePageCommand {
+public class EditPhotoCaptionCommand extends UndoableCommand {
     private UserPhoto uneditedPhoto;
     private UserPhoto editedPhoto;
     private UserPhoto actualPhoto;
 
     public EditPhotoCaptionCommand(UserPhoto editedPhoto) {
+        super(CommandPage.HOME);
         this.editedPhoto = new UserPhoto();
         this.actualPhoto = editedPhoto;
         this.editedPhoto.applyEditChanges(actualPhoto);

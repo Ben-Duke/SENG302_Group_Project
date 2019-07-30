@@ -31,7 +31,7 @@ public class CountryUtilsTest extends WithApplication {
         CountryUtils.updateCountries();
         validatePassportCountries();
 
-        Passport passport = Passport.find.byId(p1.getPassportId());
+        Passport passport = Passport.find().byId(p1.getPassportId());
 
         assertTrue(passport.getCountryValid());
     }
@@ -44,7 +44,7 @@ public class CountryUtilsTest extends WithApplication {
         CountryUtils.updateCountries();
         validatePassportCountries();
 
-        Passport passport = Passport.find.byId(p1.getPassportId());
+        Passport passport = Passport.find().byId(p1.getPassportId());
 
         assertFalse(passport.getCountryValid());
     }

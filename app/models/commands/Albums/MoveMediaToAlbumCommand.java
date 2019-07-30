@@ -4,6 +4,7 @@ import accessors.AlbumAccessor;
 import accessors.MediaAccessor;
 import models.Album;
 import models.Media;
+import models.commands.General.CommandPage;
 import models.commands.General.UndoableCommand;
 
 import java.util.ArrayList;
@@ -15,6 +16,7 @@ public class MoveMediaToAlbumCommand extends UndoableCommand {
     private List<Media> medias;
 
     public MoveMediaToAlbumCommand(Album album, List<Media> medias) {
+        super(CommandPage.ALBUM);
         this.album = album;
         this.medias = medias;
     }

@@ -7,6 +7,7 @@ import models.Album;
 import models.Media;
 import models.User;
 import models.commands.Albums.*;
+import models.commands.General.CommandPage;
 import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Http;
@@ -29,7 +30,8 @@ public class AlbumController extends Controller {
         if (user == null) { return redirect(routes.UserController.userindex()); }
 
         List<Album> albums = user.getAlbums();
-
+        // Clear command stack
+        user.getCommandManager().setAllowedPage(CommandPage.ALBUM);
         return ok(indexAlbum.render(albums, user));
     }
 
@@ -46,7 +48,8 @@ public class AlbumController extends Controller {
 
         Album album = AlbumAccessor.getAlbumById(albumId);
         if (album == null) { return redirect(routes.HomeController.showhome()); }
-
+        // Clear command stack
+        user.getCommandManager().setAllowedPage(CommandPage.ALBUM);
         return ok(viewAlbum.render(album, user));
     }
 

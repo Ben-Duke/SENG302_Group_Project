@@ -16,18 +16,27 @@ import java.util.List;
 
 public class UserPhoto extends Media {
 
-    /** The destinations the media is related to. */
+    private boolean isPublic;
+    private boolean isProfile;
+
+    private String caption = "";
+
+    // Creating  the relation to User
+    @JsonIgnore
+    @ManyToOne
+    @JoinColumn(name = "user", referencedColumnName = "userid")
+    private User user;
+
+    // Creating  the relation to Destination
     @JsonIgnore
     @ManyToMany
     private List<Destination> destinations;
 
-    public boolean isProfile;
-
     @JsonIgnore
     @OneToMany(mappedBy = "primaryPhoto")
-    public List<Destination> primaryPhotoDestinations;
+    public List<Album> primaryPhotoDestinations;
 
-    public static final Finder<Integer,UserPhoto> find = new Finder<>(UserPhoto.class);
+    private static final Finder<Integer,UserPhoto> find = new Finder<>(UserPhoto.class);
 
     /**
      * Default constructor for caption edit commands
@@ -51,45 +60,46 @@ public class UserPhoto extends Media {
      * @param url A String representing the relative path to the photo resource.
      * @param isPublic A boolean, true if the photo is visible to everybody, false otherwise.
      * @param user The User who owns this photograph.
-     * @param destinations the photos linked destinations
+     * @param albums the albums containing the photo
      * @param primaryPhotoDestinations the photos linked primary photo destinations
      */
-    public UserPhoto(String url, boolean isPublic, boolean isProfile, User user, List<Destination> destinations,
-                     List<Destination> primaryPhotoDestinations) {
+    public UserPhoto(String url, boolean isPublic, boolean isProfile, User user, List<Album> albums,
+                     List<Album> primaryPhotoDestinations) {
         super(url, isPublic, user);
         this.isProfile = isProfile;
         this.primaryPhotoDestinations = primaryPhotoDestinations;
+        this.albums = albums;
     }
 
 
+    /**
+     * Create a userPhoto using another userPhoto objects and it's attributes
+     * @param userPhoto The userPhoto object being used
+     */
     public UserPhoto(UserPhoto userPhoto) {
         super(userPhoto.getUrl(), userPhoto.getIsPublic(), userPhoto.getUser(), userPhoto.getCaption());
         this.isProfile = userPhoto.getIsProfilePhoto();
         this.primaryPhotoDestinations = userPhoto.getPrimaryPhotoDestinations();
     }
 
-
-    public List<Destination> getDestinations() { return destinations; }
-
-
-
-    public void addDestination(Destination destination) {
-        this.destinations.add(destination);
-    }
-
     /**
-     * Unlink the media from the given destination
-     * @param destination the destination to unlink from
-     * @return true if the removal changed the list, else false
+     * Gets a finder object for UserPhoto.
+     *
+     * @return A Finder<Integer,UserPhoto> object
      */
-    public boolean removeDestination(Destination destination) {
-        return this.destinations.remove(destination);
+    public static Finder<Integer,UserPhoto> find() {
+        return find;
     }
+
 
 
     @Override
     public String toString() {
         return "url is " + this.getUrl() + " Id is " + this.getMediaId();
+    }
+
+    public boolean getIsPhotoPublic(){
+        return this.isPublic;
     }
 
     public boolean getIsProfile() {
@@ -115,10 +125,19 @@ public class UserPhoto extends Media {
         while(userPhoto != null) {
             count += 1;
             url = count + "_" + this.getUrl();
-            userPhoto = UserPhoto.find.query().where().eq("url", url).findOne();
+            userPhoto = UserPhoto.find().query().where().eq("url", url).findOne();
         }
 
         return url;
+    }
+
+    /**
+     * Calling this function will delete a user photo that has that photoId does nothing if the photoId doesn't
+     * match a photo in the database
+     * @param idOfPhoto The Id of the photo being deleted
+     */
+    public static void deletePhoto(int idOfPhoto){
+        UserPhoto.find.query().where().eq("photoId",idOfPhoto).delete();
     }
 
     /**
@@ -129,7 +148,30 @@ public class UserPhoto extends Media {
         return isProfile;
     }
 
+    public String getCaption() {
+        return caption;
+    }
 
+    public void setCaption(String caption) {
+        this.caption = caption;
+    }
+
+    public List<Destination> getDestinations() {
+        return destinations;
+    }
+
+    public void addDestination(Destination destination) {
+        this.destinations.add(destination);
+    }
+
+    /**
+     * Unlink the photo from the given destination
+     * @param destination the destination to unlink from
+     * @return true if the removal changed the list, else false
+     */
+    public boolean removeDestination(Destination destination) {
+        return this.destinations.remove(destination);
+    }
     /**
      * Method to set the photo as profile picture (or not)
      * @param isProfile the boolean showing if the picture is the profile picture
@@ -143,7 +185,7 @@ public class UserPhoto extends Media {
      * Get the primary photo destinations of the photo
      * @return the primary photo list
      */
-    public List<Destination> getPrimaryPhotoDestinations() {
+    public List<Album> getPrimaryPhotoDestinations() {
         return primaryPhotoDestinations;
     }
 
@@ -158,7 +200,7 @@ public class UserPhoto extends Media {
         setProfile(editedPhoto.getIsProfile());
         setCaption(editedPhoto.getCaption());
         setUser(editedPhoto.getUser());
-        this.destinations = editedPhoto.getDestinations();
+        this.albums = editedPhoto.getAlbums();
         this.primaryPhotoDestinations = editedPhoto.getPrimaryPhotoDestinations();
     }
 

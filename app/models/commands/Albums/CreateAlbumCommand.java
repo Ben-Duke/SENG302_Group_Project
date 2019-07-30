@@ -5,6 +5,7 @@ import models.Album;
 import models.AlbumOwner;
 import models.Media;
 import models.User;
+import models.commands.General.CommandPage;
 import models.commands.General.UndoableCommand;
 
 public class CreateAlbumCommand extends UndoableCommand {
@@ -16,6 +17,7 @@ public class CreateAlbumCommand extends UndoableCommand {
 
 
     public CreateAlbumCommand(String title, AlbumOwner owner, Media media) {
+        super(CommandPage.HOME);
         this.title = title;
         this.owner = owner;
         this.media = media;
@@ -28,6 +30,7 @@ public class CreateAlbumCommand extends UndoableCommand {
             album = new Album(media, owner, title);
         }
         AlbumAccessor.insert(album);
+        album = AlbumAccessor.getAlbumByTitle(title);
     }
 
     public void undo() {

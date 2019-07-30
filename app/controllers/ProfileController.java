@@ -5,7 +5,6 @@ import accessors.UserAccessor;
 import factories.UserFactory;
 import formdata.NatFormData;
 import formdata.UpdateUserFormData;
-import io.ebean.DataIntegrityException;
 import io.ebean.DuplicateKeyException;
 import models.Nationality;
 import models.Passport;
@@ -13,6 +12,7 @@ import models.User;
 import models.UserPhoto;
 import models.commands.Photos.DeletePhotoCommand;
 import models.commands.Profile.EditProfileCommand;
+import org.slf4j.Logger;
 import play.data.DynamicForm;
 import play.data.Form;
 import play.data.FormFactory;
@@ -20,6 +20,7 @@ import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
+import utilities.UtilityFunctions;
 import views.html.users.profile.*;
 import javax.inject.Inject;
 import java.time.LocalDate;
@@ -31,16 +32,19 @@ import java.util.List;
  * A Class to handle interactions from the client to the frontend.
  */
 public class ProfileController extends Controller {
+    private final Logger logger = UtilityFunctions.getLogger();
+
     @Inject
     FormFactory formFactory;
-    private String notLoggedInErrorStr = "Oops, you are not logged in";
 
     /**
-     * If the user is logged in, renders the update profile page.
-     * If the user is not logged in, returns an error.
-     * @return update profile page or error page
+     * Delete given photo by Id from profile page.
+     *
+     * @param photoId Id of photo being deleted
+     * @param request The HTTP request
+     * @param userInput True or False depending on user input
+     * @return will delete the given photo and return to index page
      */
-
     public Result deletePhoto(Http.Request request, Integer photoId, Boolean userInput){
         UserFactory factory = new UserFactory();
         UserPhoto photo = (UserPhoto) MediaAccessor.getMediaById(photoId);
@@ -49,9 +53,12 @@ public class ProfileController extends Controller {
             return badRequest("Is profile picture ask user");
         }
 
+        //TODO AC11 albums. Implement it here
+        /*
         if (photo.getDestinations().size() > 0) {
             return badRequest("Failed to delete image");
         }
+        */
 
         DeletePhotoCommand deletePhotoCommand = new DeletePhotoCommand((UserPhoto) MediaAccessor.getMediaById(photoId));
         user.getCommandManager().executeCommand(deletePhotoCommand);
@@ -59,6 +66,13 @@ public class ProfileController extends Controller {
         return ok();
     }
 
+    /**
+     * If the user is logged in, renders the update profile page.
+     * If the user is not logged in, returns an error.
+     *
+     * @param request The HTTP request
+     * @return If successful will return to the user index after updated the user profile
+     */
     public Result updateProfile(Http.Request request){
         List<User> users = User.getCurrentUser(request, true);
         Boolean isAdmin = false;
@@ -141,8 +155,8 @@ public class ProfileController extends Controller {
         String username = updateProfileForm.get().username;
         String passwordPlainText = updateProfileForm.get().password;
 
-        user.setfName(firstName);
-        user.setlName(lastName);
+        user.setFName(firstName);
+        user.setLName(lastName);
         user.setGender(gender);
         user.setDateOfBirth(birthDate);
         user.setEmail(username);
@@ -170,7 +184,7 @@ public class ProfileController extends Controller {
 
         if (user != null) {
 
-            User otherUser = User.find.byId(userId);
+            User otherUser = User.find().byId(userId);
 
             if (otherUser == null) {
                 return notFound("User does not exist");
@@ -199,8 +213,8 @@ public class ProfileController extends Controller {
             formData.userId = user.getUserid();
             Form<NatFormData> userForm = formFactory.form(NatFormData.class).fill(formData);
 
-            List<Nationality> nationalities = Nationality.find.all();
-            List<Passport> passports = Passport.find.all();
+            List<Nationality> nationalities = Nationality.find().all();
+            List<Passport> passports = Passport.find().all();
             return ok(updateNatPass.render(userForm, nationalities, passports, user.getUserid(), User.getCurrentUser(request)));
         }
         else {
@@ -317,7 +331,7 @@ public class ProfileController extends Controller {
                 profilePicture =  UserAccessor.getProfilePhoto(user);
 
             } catch (DuplicateKeyException e) {
-                System.out.println("ERROR: duplicate profile photos");
+                logger.error("ERROR: duplicate profile photos", e);
             }
 
             String resultFormat = "{\"isProfilePicSet\": %s}";

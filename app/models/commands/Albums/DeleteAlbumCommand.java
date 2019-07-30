@@ -6,6 +6,7 @@ import models.Album;
 import models.Media;
 import models.UserPhoto;
 import models.UserVideo;
+import models.commands.General.CommandPage;
 import models.commands.General.UndoableCommand;
 
 import java.util.ArrayList;
@@ -20,6 +21,7 @@ public class DeleteAlbumCommand extends UndoableCommand {
 
 
     public DeleteAlbumCommand(Album album) {
+        super(CommandPage.ALBUM);
         this.album = album;
         albumsMedia = new ArrayList<>(album.getMedia());
         deletedMedia = new ArrayList<>();

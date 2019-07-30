@@ -1,22 +1,25 @@
 package models.commands.Destinations;
 
+import accessors.AlbumAccessor;
 import accessors.DestinationAccessor;
 import accessors.UserPhotoAccessor;
 import models.Destination;
 import models.UserPhoto;
+import models.commands.General.CommandPage;
 import models.commands.General.UndoableCommand;
 
-public class UnlinkPhotoDestinationCommand extends DestinationPageCommand  {
+public class UnlinkPhotoDestinationCommand extends UndoableCommand {
 
     private UserPhoto photo;
     private Destination destination;
 
     /**
      * The destination and the photo that are linked together
-     * @param photo
-     * @param destination
+     * @param photo The photo being unlinked
+     * @param destination The destination being unlinked
      */
     public UnlinkPhotoDestinationCommand(UserPhoto photo, Destination destination) {
+        super(CommandPage.DESTINATION);
         this.photo = photo;
         this.destination = destination;
     }
@@ -27,12 +30,13 @@ public class UnlinkPhotoDestinationCommand extends DestinationPageCommand  {
      * was unlinked.
      */
     public void execute() {
-        photo.removeDestination(destination);
-        UserPhotoAccessor.update(photo);
-        if ((destination.getPrimaryPhoto() != null) &&
-                (photo.getMediaId() == destination.getPrimaryPhoto().getMediaId())) {
-            destination.setPrimaryPhoto(null);
-            DestinationAccessor.update(destination);
+        destination.getPrimaryAlbum().removeMedia(photo);
+        AlbumAccessor.update(destination.getPrimaryAlbum());
+        if ((destination.getPrimaryAlbum().getPrimaryPhoto() != null) &&
+                (photo.getMediaId() ==
+                        destination.getPrimaryAlbum().getPrimaryPhoto().getMediaId())) {
+            destination.getPrimaryAlbum().setPrimaryPhoto(null);
+            AlbumAccessor.update(destination.getPrimaryAlbum());
         }
     }
 
@@ -40,8 +44,8 @@ public class UnlinkPhotoDestinationCommand extends DestinationPageCommand  {
      * Relink the destination and photo together.
      */
     public void undo() {
-        photo.addDestination(destination);
-        UserPhotoAccessor.update(photo);
+        destination.getPrimaryAlbum().addMedia(photo);
+        AlbumAccessor.update(destination.getPrimaryAlbum());
     }
 
     /**
@@ -56,6 +60,6 @@ public class UnlinkPhotoDestinationCommand extends DestinationPageCommand  {
      * @return String result of command
      */
     public String toString() {
-        return "Photo" + this.photo.getUrl() + " unlinked to" + this.destination.destName;
+        return "Photo" + this.photo.getUrl() + " unlinked to" + this.destination.getDestName();
     }
 }

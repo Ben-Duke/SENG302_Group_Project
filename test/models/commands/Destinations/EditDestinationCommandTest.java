@@ -29,9 +29,8 @@ public class EditDestinationCommandTest extends BaseTestWithApplicationAndDataba
                 "create table test (id bigint not null, name varchar(255));",
                 "drop table test;"
         )));
-        TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
-        testDatabaseManager.populateDatabase();
-        Destination christchurch = Destination.find.byId(1);
+        TestDatabaseManager.populateDatabase();
+        Destination christchurch = Destination.find().byId(1);
         christchurch.setDestName("Auckland");
         christchurch.setDistrict("District 12");
         christchurch.setCountry("New Zealand");
@@ -52,7 +51,7 @@ public class EditDestinationCommandTest extends BaseTestWithApplicationAndDataba
     @Test
     public void testExecute(){
         editDestinationCommand.execute();
-        Destination updatedDestination = Destination.find.byId(1);
+        Destination updatedDestination = Destination.find().byId(1);
         assertEquals("Auckland", updatedDestination.getDestName());
         assertEquals("District 12", updatedDestination.getDistrict());
         assertEquals("New Zealand", updatedDestination.getCountry());
@@ -65,7 +64,7 @@ public class EditDestinationCommandTest extends BaseTestWithApplicationAndDataba
     public void testUndo(){
         testExecute();
         editDestinationCommand.undo();
-        Destination undoneDestination = Destination.find.byId(1);
+        Destination undoneDestination = Destination.find().byId(1);
         assertEquals("Christchurch", undoneDestination.getDestName());
         assertEquals("Canterbury", undoneDestination.getDistrict());
         assertEquals("New Zealand", undoneDestination.getCountry());
@@ -79,7 +78,7 @@ public class EditDestinationCommandTest extends BaseTestWithApplicationAndDataba
         editDestinationCommand.execute();
         editDestinationCommand.undo();
         editDestinationCommand.redo();
-        Destination updatedDestination = Destination.find.byId(1);
+        Destination updatedDestination = Destination.find().byId(1);
         assertEquals("Auckland", updatedDestination.getDestName());
         assertEquals("District 12", updatedDestination.getDistrict());
         assertEquals("New Zealand", updatedDestination.getCountry());

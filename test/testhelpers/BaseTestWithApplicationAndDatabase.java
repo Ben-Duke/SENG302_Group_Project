@@ -49,8 +49,7 @@ public class BaseTestWithApplicationAndDatabase extends WithApplication {
                 "drop table test;"
         )));
 
-        TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
-        testDatabaseManager.populateDatabase();
+        TestDatabaseManager.populateDatabase();
     }
 
     /**

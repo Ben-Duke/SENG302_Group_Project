@@ -12,15 +12,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Constraints.Validate
+/** A form class used to validate user inputs on the create trip form page */
 public class TripFormData implements Constraints.Validatable<List<ValidationError>> {
     public String tripName;
     public User user;
 
+    /** Constructor */
     public TripFormData(String tripName, User user) {
         this.tripName = tripName;
         this.user = user;
     }
 
+    /** Required for form instantiation. */
     public TripFormData() {
 
     }

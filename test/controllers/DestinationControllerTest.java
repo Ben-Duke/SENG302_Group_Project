@@ -137,7 +137,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
      */
     @Test
     public void saveDestinationWithLoginSession() {
-        assertEquals(3, User.find.byId(2).getDestinations().size());
+        assertEquals(3, User.find().byId(2).getDestinations().size());
         Map<String, String> formData = new HashMap<>();
         formData.put("destName", "Summoner's Rift");
         formData.put("destType", "Yes");
@@ -148,7 +148,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
         Http.RequestBuilder request = Helpers.fakeRequest().bodyForm(formData).method(POST).uri("/users/destinations/save").session("connected", "2");
         Result result = route(app, request);
         assertEquals(SEE_OTHER, result.status());
-        assertEquals(4, User.find.byId(2).getDestinations().size());
+        assertEquals(4, User.find().byId(2).getDestinations().size());
     }
 
     /**
@@ -157,7 +157,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
     @Test
     public void createAlbumOnDestinationSave() throws Exception {
         Integer albumSize = Album.find.all().size();
-        assertEquals(3, User.find.byId(2).getDestinations().size());
+        assertEquals(3, User.find().byId(2).getDestinations().size());
         Map<String, String> formData = new HashMap<>();
         formData.put("destName", "Summoner's Rift");
         formData.put("destType", "Yes");
@@ -165,10 +165,11 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
         formData.put("country", "Angola");
         formData.put("latitude", "50.0");
         formData.put("longitude", "-50.0");
-        Http.RequestBuilder request = Helpers.fakeRequest().bodyForm(formData).method(POST).uri("/users/destinations/save").session("connected", "2");
+        Http.RequestBuilder request = Helpers.fakeRequest().bodyForm(formData)
+                .method(POST).uri("/users/destinations/save").session("connected", "2");
         Result result = route(app, request);
         assertEquals(SEE_OTHER, result.status());
-        assertEquals(4, User.find.byId(2).getDestinations().size());
+        assertEquals(4, User.find().byId(2).getDestinations().size());
         assertEquals(1,
                 DestinationAccessor.getDestinationsbyName("Summoner's Rift").size());
         if(DestinationAccessor.getDestinationsbyName("Summoner's Rift").size() > 0) {
@@ -226,23 +227,33 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
      */
     @Test
     public void checkUnlinkFromDestinationAndDelete(){
-        DestinationController testDestinationController = new DestinationController();
-        Destination destination = new Destination("test","dest","1","test",0.00,0.00,User.find.byId(2),true);
-        destination.save();
-        UserPhoto photo = new UserPhoto("/test",true,false,User.find.byId(2));
-        photo.addDestination(destination);
+        Map<String, String> formData = new HashMap<>();
+        formData.put("destName", "Summoner's Rift");
+        formData.put("destType", "Yes");
+        formData.put("district", "Demacia");
+        formData.put("country", "Angola");
+        formData.put("latitude", "50.0");
+        formData.put("longitude", "-50.0");
+        Http.RequestBuilder request = Helpers.fakeRequest().bodyForm(formData)
+                .method(POST).uri("/users/destinations/save").session("connected", "2");
+        route(app, request);
+        Destination destination = DestinationAccessor
+                .getDestinationsbyName("Summoner's Rift").get(0);
+        UserPhoto photo = new UserPhoto("/test",true,false,User.find().byId(2));
         photo.save();
+        destination.getPrimaryAlbum().addMedia(photo);
+        AlbumAccessor.update(destination.getPrimaryAlbum());
 
-        int beforeDeletion = UserPhoto.find.all().size();
+        int beforeDeletion = UserPhoto.find().all().size();
 
-        Http.RequestBuilder request = Helpers.fakeRequest()
+        request = Helpers.fakeRequest()
                 .method(DELETE)
                 .uri("/users/unlinkAndDeletePicture/" + photo.getMediaId())
                 .session("connected", "2");
         CSRFTokenHelper.addCSRFToken(request);
         route(app, request);
 
-        assertEquals(beforeDeletion - 1, UserPhoto.find.all().size());
+        assertEquals(beforeDeletion - 1, UserPhoto.find().all().size());
     }
 
 
@@ -369,12 +380,12 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
      */
     @Test
     public void updateDestinationWithLoginSessionAndValidDestinationAndValidOwner() {
-        assertEquals("Christchurch", User.find.byId(2).getDestinations().get(0).getDestName());
-        assertEquals("Town", User.find.byId(2).getDestinations().get(0).getDestType());
-        assertEquals("Canterbury", User.find.byId(2).getDestinations().get(0).getDistrict());
-        assertEquals("New Zealand", User.find.byId(2).getDestinations().get(0).getCountry());
-        assertEquals(-43.5321, User.find.byId(2).getDestinations().get(0).getLatitude(), 0.01);
-        assertEquals(172.6362, User.find.byId(2).getDestinations().get(0).getLongitude(), 0.01);
+        assertEquals("Christchurch", User.find().byId(2).getDestinations().get(0).getDestName());
+        assertEquals("Town", User.find().byId(2).getDestinations().get(0).getDestType());
+        assertEquals("Canterbury", User.find().byId(2).getDestinations().get(0).getDistrict());
+        assertEquals("New Zealand", User.find().byId(2).getDestinations().get(0).getCountry());
+        assertEquals(-43.5321, User.find().byId(2).getDestinations().get(0).getLatitude(), 0.01);
+        assertEquals(172.6362, User.find().byId(2).getDestinations().get(0).getLongitude(), 0.01);
         Map<String, String> formData = new HashMap<>();
         formData.put("destName", "Summoner's Rift");
         formData.put("destType", "Yes");
@@ -385,12 +396,12 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
         Http.RequestBuilder request = Helpers.fakeRequest().bodyForm(formData).method(POST).uri("/users/destinations/update/1").session("connected", "2");
         Result result = route(app, request);
         assertEquals(REDIRECT_HTTP_STATUS, result.status());
-        assertEquals("Summoner's Rift", User.find.byId(2).getDestinations().get(0).getDestName());
-        assertEquals("Yes", User.find.byId(2).getDestinations().get(0).getDestType());
-        assertEquals("Demacia", User.find.byId(2).getDestinations().get(0).getDistrict());
-        assertEquals("Angola", User.find.byId(2).getDestinations().get(0).getCountry());
-        assertEquals(50.0, User.find.byId(2).getDestinations().get(0).getLatitude(), 0.01);
-        assertEquals(-50.0, User.find.byId(2).getDestinations().get(0).getLongitude(), 0.01);
+        assertEquals("Summoner's Rift", User.find().byId(2).getDestinations().get(0).getDestName());
+        assertEquals("Yes", User.find().byId(2).getDestinations().get(0).getDestType());
+        assertEquals("Demacia", User.find().byId(2).getDestinations().get(0).getDistrict());
+        assertEquals("Angola", User.find().byId(2).getDestinations().get(0).getCountry());
+        assertEquals(50.0, User.find().byId(2).getDestinations().get(0).getLatitude(), 0.01);
+        assertEquals(-50.0, User.find().byId(2).getDestinations().get(0).getLongitude(), 0.01);
     }
 
     /**
@@ -435,13 +446,13 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
      */
     @Test
     public void deleteDestinationWithLoginSessionAndValidDestinationAndValidOwnerWithDestinationInTrips() {
-        assertEquals(3, User.find.byId(2).getDestinations().size());
+        assertEquals(3, User.find().byId(2).getDestinations().size());
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(GET)
                 .uri("/users/destinations/delete/3").session("connected", "2");
         Result result = route(app, request);
         assertEquals(PRECONDITION_REQUIRED, result.status());
-        assertEquals(3, User.find.byId(2).getDestinations().size());
+        assertEquals(3, User.find().byId(2).getDestinations().size());
     }
 
 
@@ -521,7 +532,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
      */
 //    @Test
 //    public void deleteDestinationWithLoginSessionAndValidDestinationAndValidOwnerWithDestinationNotInTripsButInTreasureHunt() {
-//        assertEquals(3, User.find.byId(2).getDestinations().size());
+//        assertEquals(3, User.find().byId(2).getDestinations().size());
 //        Destination destination = Destination.find.byId(3);
 //        for(Visit visit : destination.getVisits()){
 //            visit.delete();
@@ -533,7 +544,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
 //                .uri("/users/destinations/delete/3").session("connected", "2");
 //        Result result = route(app, request);
 //        assertEquals(PRECONDITION_REQUIRED, result.status());
-//        assertEquals(3, User.find.byId(2).getDestinations().size());
+//        assertEquals(3, User.find().byId(2).getDestinations().size());
 //    }
 
     /**
@@ -578,7 +589,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
      */
     @Test
     public void makeDestinationPublicWithLoginSessionWithValidDestinationWithValidOwner(){
-        Destination destination = Destination.find.byId(2);
+        Destination destination = Destination.find().byId(2);
         assertEquals(false, destination.getIsPublic());
         assertEquals(2, destination.getUser().getUserid());
         Http.RequestBuilder request = Helpers.fakeRequest()
@@ -586,7 +597,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
                 .uri("/users/destinations/public/2").session("connected", "2");
         Result result = route(app, request);
         assertEquals(REDIRECT_HTTP_STATUS, result.status());
-        destination = Destination.find.byId(3);
+        destination = Destination.find().byId(3);
         assertEquals(true, destination.getIsPublic());
         assertEquals(2, destination.getUser().getUserid());
     }
@@ -637,7 +648,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
         Result result = route(app, request);
         assertEquals(REDIRECT_HTTP_STATUS, result.status());
         //A different user of user id 3 uses the destination in their trip
-        Trip trip = new Trip("testTrip", true, User.find.byId(3));
+        Trip trip = new Trip("testTrip", true, User.find().byId(3));
         trip.save();
         request = Helpers.fakeRequest()
                 .method(GET)
@@ -668,7 +679,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
         Result result = route(app, request);
         assertEquals(REDIRECT_HTTP_STATUS, result.status());
 
-        Trip trip = new Trip("testTrip", true, User.find.byId(2));
+        Trip trip = new Trip("testTrip", true, User.find().byId(2));
         trip.save();
         request = Helpers.fakeRequest()
                 .method(GET)
@@ -833,21 +844,21 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
 
     @Test
     public void destinationModificationRequestReject() {
-        User user = User.find.all().get(0);
+        User user = User.find().all().get(0);
         Destination newDestination = new Destination("Test Dest", "Town", "Test District", "Test Country", 100, 100, user, true);
         newDestination.save();
         Integer destId = newDestination.getDestId();
 
         Destination newDestinationValues = new Destination("Test Dest2", "Town2", "Test District2", "Test Country2", 101, 101, user);
 
-        Destination destination = Destination.find.byId(destId);
+        Destination destination = Destination.find().byId(destId);
 
         DestinationModificationRequest modReq = new DestinationModificationRequest(destination, newDestinationValues, user);
         modReq.save();
 
         Integer modReqId = modReq.getId();
 
-        Admin admin = Admin.find.all().get(0);
+        Admin admin = Admin.find().all().get(0);
         Integer adminUserId = admin.getUserId();
 
         Http.RequestBuilder request = Helpers.fakeRequest()
@@ -861,13 +872,13 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
         assert(destination.getDestName().equals("Test Dest"));
         assert(destination.getDestType().equals("Town"));
         assert(destination.getLatitude() == 100);
-        assertEquals(null, DestinationModificationRequest.find.query().where().eq("id", modReqId).findOne());
+        assertEquals(null, DestinationModificationRequest.find().query().where().eq("id", modReqId).findOne());
 
     }
 
     @Test
     public void destinationModificationRequestAcceptWithoutTravellerTypes() {
-        User user = User.find.all().get(0);
+        User user = User.find().all().get(0);
         Destination newDestination = new Destination("Test Dest", "Town", "Test District", "Test Country", 100, 100, user, true);
         newDestination.save();
         Integer destId = newDestination.getDestId();
@@ -879,7 +890,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
 
         Integer modReqId = modReq.getId();
 
-        Admin admin = Admin.find.all().get(0);
+        Admin admin = Admin.find().all().get(0);
         Integer adminUserId = admin.getUserId();
 
         Http.RequestBuilder request = Helpers.fakeRequest()
@@ -889,7 +900,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
 
         Result result = route(app, request);
 
-        Destination destination = Destination.find.byId(destId);
+        Destination destination = Destination.find().byId(destId);
 
         assertEquals(303, result.status());
         System.out.println(destination.getDestName());
@@ -899,14 +910,14 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
         assert(destination.getCountry().equals("Test Country2"));
         assert(destination.getLatitude() == 101);
         assert(destination.getLatitude() == 101);
-        assertEquals(null, DestinationModificationRequest.find.query().where().eq("id", modReqId).findOne());
+        assertEquals(null, DestinationModificationRequest.find().query().where().eq("id", modReqId).findOne());
 
     }
 
 
     @Test
     public void destinationModificationRequestAcceptWithTravellerTypes() {
-        User user = User.find.all().get(0);
+        User user = User.find().all().get(0);
         Destination newDestination = new Destination("Test Dest", "Town", "Test District", "Test Country", 100, 100, user, true);
         newDestination.save();
         Integer destId = newDestination.getDestId();
@@ -922,7 +933,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
 
         Integer modReqId = modReq.getId();
 
-        Admin admin = Admin.find.all().get(0);
+        Admin admin = Admin.find().all().get(0);
         Integer adminUserId = admin.getUserId();
 
         Http.RequestBuilder request = Helpers.fakeRequest()
@@ -932,7 +943,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
 
         Result result = route(app, request);
 
-        Destination destination = Destination.find.byId(destId);
+        Destination destination = Destination.find().byId(destId);
 
         assertEquals(303, result.status());
         assert(destination.getDestName().equals("Test Dest2"));
@@ -948,7 +959,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
         }
         assertEquals(2, destination.getTravellerTypes().size());
 
-        assertEquals(null, DestinationModificationRequest.find.query().where().eq("id", modReqId).findOne());
+        assertEquals(null, DestinationModificationRequest.find().query().where().eq("id", modReqId).findOne());
 
     }
 
@@ -990,7 +1001,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
     @Test
     public void addPhotoToDestination() {
         boolean destPhotoExists = false;
-        int destPhotoSize = Destination.find.byId(3).getUserPhotos().size();
+        int destMediaSize = Destination.find().byId(3).getPrimaryAlbum().getMedia().size();
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(POST)
                 .uri("/users/destinations/3/1")
@@ -998,13 +1009,13 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
         Result result = route(app, request);
         assertEquals(SEE_OTHER, result.status());
 
-        List<UserPhoto> destPhotos = Destination.find.byId(3).getUserPhotos();
-        for (UserPhoto destPhoto : destPhotos) {
-            if (destPhoto.getMediaId() == 1) {
+        List<Media> destMediums = Destination.find().byId(3).getPrimaryAlbum().getMedia();
+        for (Media destMedia : destMediums) {
+            if (destMedia.getMediaId() == 1) {
                 destPhotoExists = true;
             }
         }
-        assertEquals(destPhotoSize+1, destPhotos.size());
+        assertEquals(destMediaSize+1, destMediums.size());
         assertTrue(destPhotoExists);
     }
 
@@ -1013,19 +1024,20 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
      */
     @Test
     public void addDuplicatePhotoToDestination() {
-        UserPhoto userPhoto1 = UserPhoto.find.byId(1);
-        Destination christchurch = Destination.find.byId(1);
-        Destination wellington = Destination.find.byId(2);
-        userPhoto1.addDestination(christchurch);
-        userPhoto1.addDestination(wellington);
-        userPhoto1.save();
+        UserPhoto userPhoto1 = UserPhoto.find().byId(1);
+        Destination christchurch = Destination.find().byId(1);
+        Destination wellington = Destination.find().byId(2);
+        christchurch.getPrimaryAlbum().addMedia(userPhoto1);
+        AlbumAccessor.update(christchurch.getPrimaryAlbum());
+        wellington.getPrimaryAlbum().addMedia(userPhoto1);
+        AlbumAccessor.update(wellington.getPrimaryAlbum());
 
 
 
 
         addPhotoToDestination();
         boolean destPhotoExists = false;
-        int destPhotoSize = Destination.find.byId(1).getUserPhotos().size();
+        int destPhotoSize = Destination.find().byId(1).getPrimaryAlbum().getMedia().size();
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(POST)
                 .uri("/users/destinations/1/1")
@@ -1033,13 +1045,13 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
         Result result = route(app, request);
         assertEquals(BAD_REQUEST, result.status());
 
-        List<UserPhoto> destPhotos = Destination.find.byId(1).getUserPhotos();
-        for (UserPhoto destPhoto : destPhotos) {
-            if (destPhoto.getMediaId() == 1) {
+        List<Media> destMediums = Destination.find().byId(1).getPrimaryAlbum().getMedia();
+        for (Media destMedia : destMediums) {
+            if (destMedia.getMediaId() == 1) {
                 destPhotoExists = true;
             }
         }
-        assertEquals(destPhotoSize, destPhotos.size());
+        assertEquals(destPhotoSize, destMediums.size());
         assertTrue(destPhotoExists);
     }
 
@@ -1048,7 +1060,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
      */
     @Test
     public void addPhotoToDestinationInvalidUser() {
-        int destPhotoSize = Destination.find.byId(1).getUserPhotos().size();
+        int destPhotoSize = Destination.find().byId(1).getPrimaryAlbum().getMedia().size();
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(POST)
                 .uri("/users/destinations/1/1")
@@ -1056,8 +1068,8 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
         Result result = route(app, request);
         assertEquals(UNAUTHORIZED, result.status());
 
-        List<UserPhoto> destPhotos = Destination.find.byId(1).getUserPhotos();
-        assertEquals(destPhotoSize, destPhotos.size());
+        List<Media> destMediums = Destination.find().byId(1).getPrimaryAlbum().getMedia();
+        assertEquals(destPhotoSize, destMediums.size());
     }
 
     /**
@@ -1065,7 +1077,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
      */
     @Test
     public void addPhotoToDestinationInvalidLoginSession() {
-        int destPhotoSize = Destination.find.byId(1).getUserPhotos().size();
+        int destPhotoSize = Destination.find().byId(1).getPrimaryAlbum().getMedia().size();
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(POST)
                 .uri("/users/destinations/1/1")
@@ -1073,8 +1085,8 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
         Result result = route(app, request);
         assertEquals(SEE_OTHER, result.status());
 
-        List<UserPhoto> destPhotos = Destination.find.byId(1).getUserPhotos();
-        assertEquals(destPhotoSize, destPhotos.size());
+        List<Media> destMediums = Destination.find().byId(1).getPrimaryAlbum().getMedia();
+        assertEquals(destPhotoSize, destMediums.size());
     }
 
     /**
@@ -1082,7 +1094,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
      */
     @Test
     public void addPhotoToDestinationInvalidPhoto() {
-        int destPhotoSize = Destination.find.byId(1).getUserPhotos().size();
+        int destPhotoSize = Destination.find().byId(1).getPrimaryAlbum().getMedia().size();
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(POST)
                 .uri("/users/destinations/1/10")
@@ -1090,8 +1102,8 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
         Result result = route(app, request);
         assertEquals(NOT_FOUND, result.status());
 
-        List<UserPhoto> destPhotos = Destination.find.byId(1).getUserPhotos();
-        assertEquals(destPhotoSize, destPhotos.size());
+        List<Media> destMediums = Destination.find().byId(1).getPrimaryAlbum().getMedia();
+        assertEquals(destPhotoSize, destMediums.size());
     }
 
     /**
@@ -1140,9 +1152,13 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
                 .session("connected", "2");
         route(app, linkRequest);
 
-        UserPhoto photo = UserPhoto.find.byId(1);
+        UserPhoto photo = UserPhoto.find().byId(1);
         assert photo != null;
-        int nDestinations = photo.getDestinations().size();
+        int nDestinations = 0;
+        List<Media> destMediaList = Destination.find().byId(1).getPrimaryAlbum().getMedia();
+        if (destMediaList.iterator().hasNext()) {
+            if (destMediaList.iterator().next().getMediaId() == 1) {nDestinations+=1;}
+        }
 
         Http.RequestBuilder unlinkRequest = Helpers.fakeRequest()
                 .method(DELETE)
@@ -1150,9 +1166,10 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
                 .session("connected", "2");
         route(app, unlinkRequest);
 
-        photo = UserPhoto.find.byId(1);
+        photo = UserPhoto.find().byId(1);
         assert photo != null;
-        assertEquals(nDestinations - 1, photo.getDestinations().size());
+        List<Media> newDestMediaList = Destination.find().byId(1).getPrimaryAlbum().getMedia();
+        assertEquals(nDestinations - 1, newDestMediaList.size());
     }
 
     /**
@@ -1173,7 +1190,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
      */
     @Test
     public void unlinkPhotoFromDestinationNotLinkedCheckDataNotChanged() {
-        UserPhoto photo = UserPhoto.find.byId(1);
+        UserPhoto photo = UserPhoto.find().byId(1);
         assert photo != null;
         int nDestinations = photo.getDestinations().size();
 
@@ -1183,7 +1200,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
                 .session("connected", "2");
         route(app, request);
 
-        photo = UserPhoto.find.byId(1);
+        photo = UserPhoto.find().byId(1);
         assert photo != null;
         assertEquals(nDestinations, photo.getDestinations().size());
     }
@@ -1193,7 +1210,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
      */
     @Test
     public void unlinkPhotoFromDestinationNoDestinationCheckNotFound() {
-        int destId = Destination.find.all().size() + 10; // give it a few extra to be safe
+        int destId = Destination.find().all().size() + 10; // give it a few extra to be safe
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .uri("/users/destinations/1/" + destId)
                 .session("connected", "2");
@@ -1206,16 +1223,16 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
      */
     @Test
     public void unlinkPhotoFromDestinationNoDestinationCheckDataNotChanged() {
-        UserPhoto photo = UserPhoto.find.byId(1);
+        UserPhoto photo = UserPhoto.find().byId(1);
         assert photo != null;
         int nDestinations = photo.getDestinations().size();
 
-        int destId = Destination.find.all().size() + 10; // give it a few extra to be safe
+        int destId = Destination.find().all().size() + 10; // give it a few extra to be safe
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .uri("/users/destinations/1/" + destId)
                 .session("connected", "2");
         route(app, request);
-        photo = UserPhoto.find.byId(1);
+        photo = UserPhoto.find().byId(1);
         assert photo != null;
 
         assertEquals(nDestinations, photo.getDestinations().size());
@@ -1226,7 +1243,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
      */
     @Test
     public void unlinkPhotoFromDestinationNoPhotoCheckNotFound() {
-        int photoId = UserPhoto.find.all().size() + 10; // give it a few extra to be safe
+        int photoId = UserPhoto.find().all().size() + 10; // give it a few extra to be safe
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .uri("/users/destinations/" + photoId + "/1")
                 .session("connected", "2");
@@ -1239,17 +1256,17 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
      */
     @Test
     public void unlinkPhotoFromDestinationNoPhotoCheckDataNotChanged() {
-        UserPhoto photo = UserPhoto.find.byId(1);
+        UserPhoto photo = UserPhoto.find().byId(1);
         assert photo != null;
         int nDestinations = photo.getDestinations().size();
 
-        int photoId = UserPhoto.find.all().size() + 10; // give it a few extra to be safe
+        int photoId = UserPhoto.find().all().size() + 10; // give it a few extra to be safe
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .uri("/users/destinations/" + photoId + "/1")
                 .session("connected", "2");
         route(app, request);
 
-        photo = UserPhoto.find.byId(1);
+        photo = UserPhoto.find().byId(1);
         assert photo != null;
 
         assertEquals(nDestinations, photo.getDestinations().size());
@@ -1290,17 +1307,18 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
                 .session("connected", "2");
         route(app, linkRequest);
 
-        Destination destination = Destination.find.byId(1);
-        int destPhotosSize = destination.getUserPhotos().size();
+        Destination destination = Destination.find().byId(1);
+        int destPhotosSize = destination.getPrimaryAlbum().getMedia().size();
 
         Http.RequestBuilder unlinkRequest = Helpers.fakeRequest()
                 .method(DELETE)
                 .uri("/users/destinations/1/1")
                 .session("connected", "1");
         route(app, unlinkRequest);
-        Destination destinationAfterDelete = Destination.find.byId(1);
+        Destination destinationAfterDelete = Destination.find().byId(1);
 
-        assertEquals(destPhotosSize, destinationAfterDelete.getUserPhotos().size());
+        assertEquals(destPhotosSize,
+                destinationAfterDelete.getPrimaryAlbum().getMedia().size());
     }
 
     /**
@@ -1337,17 +1355,18 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
                 .session("connected", "2");
         route(app, linkRequest);
 
-        Destination destination = Destination.find.byId(4);
-        int destPhotosSize = destination.getUserPhotos().size();
+        Destination destination = Destination.find().byId(4);
+        int destPhotosSize = destination.getPrimaryAlbum().getMedia().size();
 
         Http.RequestBuilder unlinkRequest = Helpers.fakeRequest()
                 .method(DELETE)
                 .uri("/users/destinations/1/4")
                 .session("connected", "3");
         route(app, unlinkRequest);
-        Destination destinationAfterDelete = Destination.find.byId(4);
+        Destination destinationAfterDelete = Destination.find().byId(4);
 
-        assertEquals(destPhotosSize-1, destinationAfterDelete.getUserPhotos().size());
+        assertEquals(destPhotosSize-1,
+                destinationAfterDelete.getPrimaryAlbum().getMedia().size());
     }
 
     /**
@@ -1384,16 +1403,17 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
                 .session("connected", "2");
         route(app, linkRequest);
 
-        Destination destination = Destination.find.byId(4);
-        int destPhotosSize = destination.getUserPhotos().size();
+        Destination destination = Destination.find().byId(4);
+        int destPhotosSize = destination.getPrimaryAlbum().getMedia().size();
 
         Http.RequestBuilder unlinkRequest = Helpers.fakeRequest()
                 .method(DELETE)
                 .uri("/users/destinations/1/4")
                 .session("connected", "2");
         route(app, unlinkRequest);
-        Destination destinationAfterDelete = Destination.find.byId(4);
+        Destination destinationAfterDelete = Destination.find().byId(4);
 
-        assertEquals(destPhotosSize-1, destinationAfterDelete.getUserPhotos().size());
+        assertEquals(destPhotosSize-1,
+                destinationAfterDelete.getPrimaryAlbum().getMedia().size());
     }
 }

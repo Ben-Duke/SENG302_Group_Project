@@ -89,43 +89,49 @@
             <div class="container">
                 <div class="row" id="albumList">
                 @for(album <- user.getAlbums) {
-                    <div class="col-sm-3 album">
-                        <a href="@routes.AlbumController.viewAlbum(album.getAlbumId)">
-                            <div class="panel panel-default">
-                                <div class="panel-heading">
-                                    <h3 class="panel-title">@album.getTitle()</h3>
-                                    @album.getMedia.size() items
-                                </div>
-                                <div class="panel-body" style="min-height: 150px; max-height: 150px; height: 150px;">
-                                    <div id="Carousel@album.getAlbumId" class="carousel slide" data-ride="carousel">
+                    @if(album.isPublicAlbum(actualUser)) {
+                        <div class="col-sm-3 album">
+                            <a href="@routes.AlbumController.viewAlbum(album.getAlbumId)">
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <h3 class="panel-title">@album.getTitle()</h3>
+                                        @if(album.viewAllMedia(true).size() == 1) {
+                                            @album.viewAllMedia(true).size() item
+                                        } else {
+                                            @album.viewAllMedia(true).size() items
+                                        }
+                                    </div>
+                                    <div class="panel-body" style="min-height: 150px; max-height: 150px; height: 150px;">
+                                        <div id="Carousel@album.getAlbumId" class="carousel slide" data-ride="carousel">
 
-                                            <!-- Wrapper for slides -->
-                                        <div class="carousel-inner">
-                                            @if(0 < album.viewAllMedia(true).size()) {
-                                                <div class="item active">
-                                                    <img class="center" id=@{album.viewAllMedia(true).get(0).getUrl()} style="width:140px;height:125px;" src="@{routes.HomeController.index(album.viewAllMedia(true).get(0).getUrlWithPath)}" alt="User Image">
-                                                </div>
-                                            } else {
-                                                <div class="item active">
-                                                    <img class="center"  style="width:140px;height:125px;"src="/assets/images/destinationPlaceHolder.png">
-                                                </div>
-                                            }
-
-
-                                            @for(i <- 1 to 2) {
-                                                @if(i < album.viewAllMedia(true).size()){
-                                                    <div class="item">
-                                                        <img class="center" id=@{album.viewAllMedia(true).get(i).getUrl()} style="width:140px;height:125px;" src="@{routes.HomeController.index(album.viewAllMedia(true).get(i).getUrlWithPath)}" alt="User Image">
+                                                <!-- Wrapper for slides -->
+                                            <div class="carousel-inner">
+                                                @if(0 < album.viewAllMedia(true).size()) {
+                                                    <div class="item active">
+                                                        <img class="center" id=@{album.viewAllMedia(true).get(0).getUrl()} style="width:140px;height:125px;" src="@{routes.HomeController.index(album.viewAllMedia(true).get(0).getUrlWithPath)}" alt="User Image">
+                                                    </div>
+                                                } else {
+                                                    <div class="item active">
+                                                        <img class="center"  style="width:140px;height:125px;"src="/assets/images/destinationPlaceHolder.png">
                                                     </div>
                                                 }
-                                            }
-                                        </div>
 
+
+                                                @for(i <- 1 to 2) {
+                                                    @if(i < album.viewAllMedia(true).size()){
+                                                        <div class="item">
+                                                            <img class="center" id=@{album.viewAllMedia(true).get(i).getUrl()} style="width:140px;height:125px;" src="@{routes.HomeController.index(album.viewAllMedia(true).get(i).getUrlWithPath)}" alt="User Image">
+                                                        </div>
+                                                    }
+                                                }
+                                            </div>
+
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        </a>
-                    </div>
+                            </a>
+                        </div>
+                    }
                 }
                 </div>
             </div>

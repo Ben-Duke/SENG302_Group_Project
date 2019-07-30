@@ -204,24 +204,27 @@ function getAlbum(userId, albumId, isOwner){
         url: '/users/albums/get/' + hidePrivate + '/' + albumId,
         contentType: 'application/json',
         success: (albumData) => {
-            addAlbum(albumData)
+            addAlbum(albumData, userId)
         }
     });
 }
 
 
-async function addAlbum(albumData) {
+async function addAlbum(albumData, userId) {
     var path = "/users/home/servePicture/";
     for (let i=0; i<albumData.length; i++) {
-        await displayGrid(i, albumData, path);
-        await displaySlides(i, albumData, path);
+        if(!(albumData[i]["user"]["userid"] !== userId && albumData[i]["isPublic"] === false)) {
+            await displayGrid(i, albumData, path);
+            await displaySlides(i, albumData, path);
+        }
     }
-    showSlides(slideIndex);
+        showSlides(slideIndex);
 }
 
 async function displayGrid(i, albumData, path) {
-    var url = albumData[i]["urlWithPath"];
     console.log(albumData[i]);
+
+    var url = albumData[i]["urlWithPath"];
     var img1 = document.createElement("img");
     img1.src = path + encodeURIComponent(url);
     img1.setAttribute("data-id", i);

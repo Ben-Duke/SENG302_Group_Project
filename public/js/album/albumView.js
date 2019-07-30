@@ -3,48 +3,150 @@ var currentSlideNo = 1;
 var albumData = null;
 var photoIdToEdit;
 
+moveAlbumSearch();
 
-document.getElementById('')
 
+function moveAlbumSearch() {
+      const searchBar = document.getElementById("album-search-move");
+      let oldAlbumId = document.getElementById("existingAlbumId").innerText;
+      searchBar.addEventListener('input', (e) => {
+          if (e.constructor.name !== 'InputEvent') {
+                let title = searchBar.value;
+                console.log(title);
+                $.ajax({
+                                type: 'GET',
+                                url: '/users/albums/getFromTitle/' + title,
+                                contentType: 'application/json',
+                                success: (newAlbumId) => {
+                                        console.log(newAlbumId)
+                                        moveBetweenAlbums(oldAlbumId, newAlbumId);
+                                    }
+                                });
+
+
+          }
+      });
+}
+
+function moveBetweenAlbums(oldAlbumId, newAlbumId) {
+
+  var hidePrivate = false;
+      $.ajax({
+              type: 'GET',
+              url: '/users/albums/get/' + hidePrivate + '/' + oldAlbumId,
+              contentType: 'application/json',
+              success: (albumData) => {
+                      console.log(albumData);
+                      console.log(slideIndex);
+                      let mediaId = albumData[slideIndex-1]["mediaId"];
+                      var token =  $('input[name="csrfToken"]').attr('value');
+                      $.ajaxSetup({
+                          beforeSend: function(xhr) {
+                              xhr.setRequestHeader('Csrf-Token', token);
+                          }
+                          });
+                          $.ajax({
+                              url: "/users/albums/move_media/" + newAlbumId,
+                              method: "PUT",
+                              data: JSON.stringify({
+                                  mediaIds: [mediaId]
+                              }),
+                              headers: {
+                                  'Content-Type': 'application/json'
+                              },
+                              success:function(res, textStatus, xhr){
+                                  if (xhr.status == 200) {
+                                     window.location = oldAlbumId
+                                  }
+                              }
+                          })
+              }
+      });
+
+
+}
+
+/**
+ * Clones a node and removes all listeners from it, returns the clone
+ * @param original the node to be cloned
+ * @returns a copy of the same node without any listeners
+ */
+function replaceWithClone(original) {
+    const clone = original.cloneNode(true);
+    original.parentNode.replaceChild(clone, original);
+    return clone;
+}
+
+/**
+ * Sets listener for the delete button on the current slide
+ * @param albumData the data of all media in the current album
+ * @param i the index of the current slide
+ */
 function setDeletePhotoListener(albumData, i) {
-    document.getElementById('deletePhotoBtn').addEventListener('click', () => {
+    function deletePhotoListener() {
         const mediaId = albumData[i]["mediaId"];
         deletePhotoRequest(mediaId);
-    });
+    }
+    const clone = replaceWithClone(document.getElementById('deletePhotoBtn'));
+    clone.addEventListener('click', deletePhotoListener);
 }
 
+/**
+ * Sets listener for the profile picture button on the current slide
+ * @param albumData the data of all media in the current album
+ * @param i the index of the current slide
+ */
 function setMakeProfilePictureListener(albumData, i) {
-    document.getElementById('profilePictureBtn').addEventListener('click', () => {
+    function makeProfilePictureListener() {
         const mediaId = albumData[i]["mediaId"];
         setProfilePictureRequest(mediaId);
-    });
+    }
+    const original = document.getElementById('profilePictureBtn');
+    const clone = replaceWithClone(original);
+
+    clone.addEventListener('click', makeProfilePictureListener);
 }
 
+/**
+ * Sets listener for the destination link button on the current slide
+ * @param albumData the data of all media in the current album
+ * @param i the index of the current slide
+ */
 function setDestinationLinkListener(albumData, i) {
     function destinationLinkListener() {
         const mediaId = albumData[i]["mediaId"];
         openDestinationModal(mediaId);
     }
     const original = document.getElementById('linkDestinationBtn');
-    const clone = original.cloneNode(true);
-    original.parentNode.replaceChild(clone, original);
+    const clone = replaceWithClone(original);
     clone.addEventListener('click', destinationLinkListener)
 }
 
+/**
+ * Sets the listener for the make public/make private button on the current slide
+ * @param setPrivacy true for setting the button to make public else false for setting to make private
+ * @param mediaId the id of the media to set the button for
+ */
 function setPrivacyListener(setPrivacy, mediaId) {
-    const privacyBtn = document.getElementById('privacyBtn');
-    privacyBtn.addEventListener('click', () => {
+    function privacyListener() {
         if(setPrivacy) {
-            privacyBtn.innerHTML = "Make Public";
+            clone.innerHTML = "Make Public";
             document.querySelector('div[data-mediaId="'+mediaId+'"]').setAttribute("data-privacy", false);
         }
         else {
-            privacyBtn.innerHTML = "Make Private";
-            document.querySelector('div[data-mediaId="'+mediaId+'"]').setAttribute("data-privacy", true);}
-    })
+            clone.innerHTML = "Make Private";
+            document.querySelector('div[data-mediaId="'+mediaId+'"]').setAttribute("data-privacy", true);
+        }
+    }
+    const original = document.getElementById('privacyBtn');
+    const clone = replaceWithClone(original);
+    clone.addEventListener('click', privacyListener )
 }
 
-
+/**
+ * Sets listeners for all buttons on the current slide
+ * @param i the index of the current slide
+ */
 function setSlideListeners(i) {
     const dataset = document.getElementById('myModal').dataset;
     const isOwner = dataset.isowner;
@@ -77,10 +179,6 @@ function setSlideListeners(i) {
     });
 }
 
-function setProfilePicture() {
-
-}
-
 
 /**
  * Function to search for albums.
@@ -92,16 +190,15 @@ function getAlbum(userId, albumId, isOwner){
     if(isOwner) {hidePrivate = false;}
     else {hidePrivate = true}
     $.ajax({
-            type: 'GET',
-            url: '/users/albums/get/' + hidePrivate + '/' + albumId,
-            contentType: 'application/json',
-            success: (albumData) => {
-                    addAlbum(albumData)
-                }
-            });
+        type: 'GET',
+        url: '/users/albums/get/' + hidePrivate + '/' + albumId,
+        contentType: 'application/json',
+        success: (albumData) => {
+            addAlbum(albumData)
+        }
+    });
 }
 
-//[{"mediaId":1,"url":"card.PNG","isMediaPublic":true,"isProfile":false,"profile":false,"isProfilePhoto":false,"unusedUserPhotoFileName":"1_card.PNG","urlWithPath":"C:\\Users\\Priyesh\\IdeaProjects\\team-800-newnull1/card.PNG","isPublic":true,"mediaPublic":true},{"mediaId":2,"url":"Capture.PNG","isMediaPublic":false,"isProfile":false,"profile":false,"isProfilePhoto":false,"unusedUserPhotoFileName":"1_Capture.PNG","urlWithPath":"C:\\Users\\Priyesh\\IdeaProjects\\team-800-newnull1/Capture.PNG","isPublic":false,"mediaPublic":false},{"mediaId":3,"url":"1_elegant-christmas-background_23-2147722745.jpg","isMediaPublic":true,"isProfile":false,"profile":false,"isProfilePhoto":false,"unusedUserPhotoFileName":"1_1_elegant-christmas-background_23-2147722745.jpg","urlWithPath":"C:\\Users\\Priyesh\\IdeaProjects\\team-800-newnull1/1_elegant-christmas-background_23-2147722745.jpg","isPublic":true,"mediaPublic":true},{"mediaId":4,"url":"1_shop-grand-opening-poster.jpg","isMediaPublic":true,"isProfile":false,"profile":false,"isProfilePhoto":false,"unusedUserPhotoFileName":"1_1_shop-grand-opening-poster.jpg","urlWithPath":"C:\\Users\\Priyesh\\IdeaProjects\\team-800-newnull2/1_shop-grand-opening-poster.jpg","isPublic":true,"mediaPublic":true},{"mediaId":5,"url":"1_InvalidCountryBug.png","isMediaPublic":true,"isProfile":false,"profile":false,"isProfilePhoto":false,"unusedUserPhotoFileName":"1_1_InvalidCountryBug.png","urlWithPath":"C:\\Users\\Priyesh\\IdeaProjects\\team-800-newnull2/1_InvalidCountryBug.png","isPublic":true,"mediaPublic":true}]
 
 async function addAlbum(albumData) {
     var path = "/users/home/servePicture/";
@@ -154,23 +251,35 @@ async function displaySlides(i, albumData, path) {
 
 // Open the Modal
 function openModal() {
-  document.getElementById("myModal").style.display = "block";
+    document.getElementById("myModal").style.display = "block";
 }
 
 // Close the Modal
 function closeModal() {
-  document.getElementById("myModal").style.display = "none";
+    document.getElementById("myModal").style.display = "none";
 }
 
+
+/**
+ * Opens the modal to link and unlink destinations to the media supplied
+ * @param mediaId the id of the media supplied
+ */
 function openDestinationModal(mediaId) {
     document.getElementById('destination-modal').style.display = "block";
     getDestData(mediaId);
 }
 
+/**
+ * Closes the destination linking modal
+ */
 function closeDestinationModal() {
     document.getElementById('destination-modal').style.display = 'none';
 }
 
+/**
+ * Gets the data of all destinations the user can see to populate the destination linking modal and then loads it
+ * @param mediaId the id of the media to load destination data for
+ */
 function getDestData(mediaId) {
     $.ajax({
         type: 'GET',
@@ -182,6 +291,11 @@ function getDestData(mediaId) {
     });
 }
 
+/**
+ * Adds destination rows to the destination linking table
+ * @param destData the data containing all destinations that the user can view
+ * @param mediaId the id of the media to link destinations to
+ */
 function loadDestTable(destData, mediaId) {
     for (let destination of destData) {
         const publicTable = document.getElementById('public-dest-tbody');
@@ -194,6 +308,12 @@ function loadDestTable(destData, mediaId) {
     }
 }
 
+/**
+ * Adds a row containing one destination to the linking table
+ * @param table the table to add the destination row to
+ * @param destination the destination to add as a row
+ * @param mediaId the id of the media that the table belongs to
+ */
 function addDestRow(table, destination, mediaId) {
     const row = document.createElement("TR");
 
@@ -241,6 +361,11 @@ function addDestRow(table, destination, mediaId) {
     table.appendChild(row);
 }
 
+/**
+ * Shows only the necessary linking or unlinking button for a row on the destination linking table
+ * @param mediaId the id of the media to check for
+ * @param destId the id of the destination row on the table to check
+ */
 function checkButtonStatus(mediaId, destId) {
     $.ajax({
         method: "GET",
@@ -259,6 +384,11 @@ function checkButtonStatus(mediaId, destId) {
     });
 }
 
+/**
+ * Links a media item to a destination
+ * @param destId the id of the destination to link
+ * @param mediaId the id of the media to link
+ */
 function linkDestination(destId, mediaId) {
     $.ajax({
         method: "PUT",
@@ -275,6 +405,11 @@ function linkDestination(destId, mediaId) {
     });
 }
 
+/**
+ * Links a media item to a destination
+ * @param destId the id of the destination to link
+ * @param mediaId the id of the media item to link
+ */
 function unlinkDestination(destId, mediaId) {
     $.ajax({
         type: 'DELETE',
@@ -286,6 +421,10 @@ function unlinkDestination(destId, mediaId) {
     });
 }
 
+/**
+ * Toggles buttons on a destination row of the linking table between linking and unlinking
+ * @param destId the id of the destination row
+ */
 function toggleButtons(destId) {
     const unlink = document.getElementById(`unlink-${destId}`);
     unlink.style.display === "none" ? unlink.style.display = "block" : unlink.style.display = "none";
@@ -302,24 +441,24 @@ function plusSlides(n) {
 
 // Thumbnail image controls
 function currentSlide(n) {
-  showSlides(slideIndex = n);
+    showSlides(slideIndex = n);
 }
 
 function showSlides(n) {
-  var i;
-  var slides = document.getElementsByClassName("mySlides");
+    var i;
+    var slides = document.getElementsByClassName("mySlides");
 //  var captionText = document.getElementById("caption");
-  if (n > slides.length) {slideIndex = 1}
-  if (n < 1) {slideIndex = slides.length}
-  for (i = 0; i < slides.length; i++) {
-    slides[i].style.display = "none";
-  }
-  slides[slideIndex-1].style.display = "block";
-  if(slides[slideIndex-1].getAttribute("data-privacy") == "true") {
-    document.getElementById("privacyBtn").innerHTML = "Make Private";
-  } else if (slides[slideIndex-1].getAttribute("data-privacy") == "false"){
-    document.getElementById("privacyBtn").innerHTML = "Make Public";
-  }
+    if (n > slides.length) {slideIndex = 1}
+    if (n < 1) {slideIndex = slides.length}
+    for (i = 0; i < slides.length; i++) {
+        slides[i].style.display = "none";
+    }
+    slides[slideIndex-1].style.display = "block";
+    if(slides[slideIndex-1].getAttribute("data-privacy") == "true") {
+        document.getElementById("privacyBtn").innerHTML = "Make Private";
+    } else if (slides[slideIndex-1].getAttribute("data-privacy") == "false"){
+        document.getElementById("privacyBtn").innerHTML = "Make Public";
+    }
 
 }
 
@@ -340,10 +479,10 @@ function setProfilePictureRequest(photoId){
  *
  */
 $('#addProfilePhoto').on('show.bs.modal', function (e) {
-        $("#myModal").hide();
-        var output = document.getElementById('change-profile-pic');
-        output.src = "/users/home/serveDestPicture/" + photoIdToEdit;
-        $("#selectProfileInput").hide();
+    $("#myModal").hide();
+    var output = document.getElementById('change-profile-pic');
+    output.src = "/users/home/serveDestPicture/" + photoIdToEdit;
+    $("#selectProfileInput").hide();
 });
 
 /**
@@ -375,7 +514,7 @@ $('#addProfilePhoto').on('shown.bs.modal', function (e) {
                     let cropBoxMoveEvent = new Event('crop');
                     cropBoxElement.dispatchEvent(cropBoxMoveEvent);
 
-                    },
+                },
                 crop: function (e) {
                     var imageData = $(this).cropper('getImageData');
                     croppedCanvas = $(this).cropper('getCroppedCanvas');
@@ -522,8 +661,8 @@ function deletePhotoRequest(photoId){
             'Content-Type': 'application/json'
         },
         success: function(res){
-                    deletePhotoFromUI(photoId);
-                },
+            deletePhotoFromUI(photoId);
+        },
         error: function(res){
             if(res.responseText === "Is profile picture ask user"){
                 $(document.getElementById('myModal')).modal('hide');
@@ -553,34 +692,34 @@ function deletePhotoRequest(photoId){
                 })
 
             }
-             else if(res.responseText === "Failed to delete image"){
-                 $(document.getElementById('myModal')).modal('hide');
-                 $(document.getElementById('confirmDeletePhotoModal')).modal('show');
+            else if(res.responseText === "Failed to delete image"){
+                $(document.getElementById('myModal')).modal('hide');
+                $(document.getElementById('confirmDeletePhotoModal')).modal('show');
 
-                 document.getElementById('yesDeletePhoto').onclick =
-                     function(){
-                         $.ajax({
-                             url: '/users/unlinkAndDeletePicture/'+photoId,
-                             method: "Delete",
-                             success: function (res) {
+                document.getElementById('yesDeletePhoto').onclick =
+                    function(){
+                        $.ajax({
+                            url: '/users/unlinkAndDeletePicture/'+photoId,
+                            method: "Delete",
+                            success: function (res) {
                                 deletePhotoFromUI(photoId);
-                             },
-                             error: function (res) {
-                                 console.log(JSON.stringify(res));
-                             }
-                         })
-                         $(document.getElementById('myModal')).modal('show')
-                     };
-                 document.getElementById('noCloseDeletePhotoButton').onclick =
-                     function(){
-                         $(document.getElementById('myModal')).modal('show')
-                 };
+                            },
+                            error: function (res) {
+                                console.log(JSON.stringify(res));
+                            }
+                        })
+                        $(document.getElementById('myModal')).modal('show')
+                    };
+                document.getElementById('noCloseDeletePhotoButton').onclick =
+                    function(){
+                        $(document.getElementById('myModal')).modal('show')
+                    };
 
-                 $('#confirmDeletePhotoModal').on('hidden.bs.modal', function () {
-                     $(document.getElementById('myModal')).modal('show');
-                 })
+                $('#confirmDeletePhotoModal').on('hidden.bs.modal', function () {
+                    $(document.getElementById('myModal')).modal('show');
+                })
 
-             }
+            }
         }
 
     })

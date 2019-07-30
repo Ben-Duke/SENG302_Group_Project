@@ -283,6 +283,9 @@ GET     /users/treasurehunts/delete/:id                    controllers.TreasureH
 
 # ------ ALBUMS ------
 
+#Get an album's Id from the title
+GET     /users/albums/getFromTitle/:title    controllers.AlbumController.getAlbumFromTitle(request : Request, title : String)
+
 #Albums index page
 GET     /users/albums   controllers.AlbumController.indexAlbum(request : Request)
 

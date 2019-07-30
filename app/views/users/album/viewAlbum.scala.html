@@ -44,9 +44,25 @@
             <a class="next" onclick="plusSlides(1)">&#10095;</a>
 
 
+            <div id="existingAlbumId" class="hidden">@album.albumId</div>
             <!-- Caption text -->
             <div class="caption-container">
                 <p id="img-caption"></p>
+                <li>
+                    <div>
+                        <p>
+                            Move to Album
+                            <input style="color: #000000;" id="album-search-move" list="album-results-move" name="Album Move" title="Move Album" placeholder="Search for Album">
+                            <datalist  id="album-results-move">
+                                @for(userAlbum <- user.getAlbums()){
+                                @if(userAlbum.albumId != album.albumId) {
+                                <option value=@userAlbum.getTitle()></option>
+                                }
+                                }
+                            </datalist>
+                        </p>
+                    </div>
+                </li>
                 <a class="btn btn-link" id="profilePictureBtn">Set Profile Picture</a>
                 <a class="btn btn-link" id="deletePhotoBtn">Delete</a>
                 <a class="btn btn-link" id="privacyBtn">Make Public/Private</a>

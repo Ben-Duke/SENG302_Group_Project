@@ -1,6 +1,4 @@
 var slideIndex = 1;
-var currentSlideNo = 1;
-var albumData = null;
 var photoIdToEdit;
 
 moveAlbumSearch();
@@ -139,14 +137,9 @@ function setDestinationLinkListener(albumData, i) {
 function setPrivacyListener(setPrivacy, mediaId) {
     function privacyListener() {
         if(clone.innerText === 'Make Private') {
-            clone.innerHTML = "Make Public";
-            document.querySelector('div[data-mediaId="'+mediaId+'"]').setAttribute("data-privacy", false);
-            setMediaPrivacy(mediaId, false)
-        }
-        else {
-            clone.innerHTML = "Make Private";
-            document.querySelector('div[data-mediaId="'+mediaId+'"]').setAttribute("data-privacy", true);
-            setMediaPrivacy(mediaId, true)
+            setMediaPrivacy(mediaId, false, clone)
+        } else {
+            setMediaPrivacy(mediaId, true, clone)
         }
     }
     const original = document.getElementById('privacyBtn');
@@ -201,12 +194,26 @@ function setSlideListeners(i) {
  * @param mediaId the id of the media to change privacy
  * @param setPublic true to set to public, false to set to private
  */
-function setMediaPrivacy(mediaId, setPublic) {
-    const intPublic = setPublic ? 1 : 0
+function setMediaPrivacy(mediaId, setPublic, link) {
+    const intPublic = setPublic ? 1 : 0;
     $.ajax({
         type: 'GET',
         url: '/users/home/photoPrivacy/' + mediaId + '/' + intPublic,
         contentType: 'application/json',
+        success: () => {
+            const privacyIcon = document.querySelector('i[data-privacyMediaId="'+mediaId+'"]');
+            if (!setPublic) {
+                link.innerHTML = "Make Public";
+                document.querySelector('div[data-mediaId="'+mediaId+'"]').setAttribute("data-privacy", false.toString());
+                privacyIcon.classList.remove("fa-eye-green");
+                privacyIcon.classList.add("fa-eye-red");
+            } else {
+                link.innerHTML = "Make Private";
+                document.querySelector('div[data-mediaId="'+mediaId+'"]').setAttribute("data-privacy", true.toString());
+                privacyIcon.classList.remove("fa-eye-red");
+                privacyIcon.classList.add("fa-eye-green");
+            }
+        }
     });
 }
 
@@ -253,6 +260,7 @@ async function displayGrid(i, albumData, path) {
     let icon = document.createElement("i");
     icon.classList.add("icon");
     let privacyIcon = document.createElement("i");
+    privacyIcon.setAttribute("data-privacyMediaId", albumData[i]["mediaId"]);
     if (albumData[i]["isMediaPublic"]) {
         privacyIcon.classList.add("fa", "fa-eye-green");
     } else {

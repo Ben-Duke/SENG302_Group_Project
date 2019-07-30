@@ -1,9 +1,8 @@
 package controllers;
 
-import accessors.AlbumAccessor;
-import accessors.MediaAccessor;
-import accessors.UserAccessor;
-import accessors.UserPhotoAccessor;
+import accessors.*;
+import com.fasterxml.jackson.databind.JsonNode;
+import gherkin.deps.com.google.gson.JsonArray;
 import models.*;
 import models.commands.Albums.*;
 import models.commands.General.CommandPage;
@@ -13,6 +12,7 @@ import play.mvc.Http;
 import play.mvc.Result;
 import views.html.users.album.*;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -310,7 +310,62 @@ public class AlbumController extends Controller {
     }
 
 
+    public Result deleteUserPhotoAndUnlinkFromSelectDests(Http.Request request) {
+        User user = User.getCurrentUser(request);
+        if (user == null) {
+            return new Result(Http.Status.UNAUTHORIZED);
+        }
+        int authenticatedUserId = user.getUserid();
+
+        JsonNode json = request.body().asJson();
+        if (json == null) {
+            return new Result(Http.Status.BAD_REQUEST);
+        }
+
+        JsonNode mediaIdNode = json.get("mediaId");
+        if (mediaIdNode == null) {
+            return new Result(Http.Status.BAD_REQUEST);
+        }
+
+        Integer photoId = mediaIdNode.intValue();
+        if (photoId == null) {
+            return new Result(Http.Status.BAD_REQUEST);
+        }
+
+        JsonNode jsonArray = json.get("destinationsToUnlink");
+        if (jsonArray == null) {
+            return new Result(Http.Status.BAD_REQUEST);
+        }
+
+        UserPhoto photo = UserPhotoAccessor.getUserPhotoById(photoId);
+        if (photo == null) {
+            return new Result(Http.Status.NOT_FOUND);
+        }
+
+        int mediaUserId = photo.getUser().getUserid();
+        if (mediaUserId != authenticatedUserId) {
+            return new Result(Http.Status.FORBIDDEN);
+        }
 
 
+        // TRANSACTION START
+        for (int i = 0; i < jsonArray.size(); i++) {
+            int destId = jsonArray.get(i).asInt();
+            Destination destination = DestinationAccessor.getDestinationById(destId);
+            destination.getPrimaryAlbum().removeMedia(photo);
+            AlbumAccessor.update(destination.getPrimaryAlbum());
+            if ((destination.getPrimaryAlbum().getPrimaryPhoto() != null) &&
+                    (photo.getMediaId() ==
+                            destination.getPrimaryAlbum().getPrimaryPhoto().getMediaId())) {
+                destination.getPrimaryAlbum().setPrimaryPhoto(null);
+                AlbumAccessor.update(destination.getPrimaryAlbum());
+            }
+        }
 
+        photo.unlinkFromUser();
+        UserPhotoAccessor.update(photo);
+
+
+        return new Result(Http.Status.NOT_IMPLEMENTED);
+    }
 }

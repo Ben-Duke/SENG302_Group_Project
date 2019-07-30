@@ -50,6 +50,8 @@ public abstract class Media extends Model {
 
     public static Finder<Integer,Media> find = new Finder<>(Media.class);
 
+    public boolean isUnlinkedFromUser = false;
+
     /**
      * Default constructor for caption edit commands
      */

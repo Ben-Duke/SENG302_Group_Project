@@ -4,6 +4,7 @@ var albumData = null;
 var photoIdToEdit;
 
 let destinationsToUnlink_GLOBAL;
+let selectedMediaID_GLOBAL;
 
 moveAlbumSearch();
 
@@ -91,6 +92,7 @@ function replaceWithClone(original) {
 function setDeletePhotoListener(albumData, i) {
     function deletePhotoListener() {
         const mediaId = albumData[i]["mediaId"];
+        selectedMediaID_GLOBAL = mediaId;
         openSelectDestinationsToUnlinkPhotoModal(mediaId);
     }
     const clone = replaceWithClone(document.getElementById('deletePhotoBtn'));
@@ -883,11 +885,12 @@ function setDestinationSelectionsForBulkPhotoLeaving() {
         checkbox.classList.add('form-check-input');
         checkbox.classList.add('destination-delete-photo-checkbox');
         checkbox.id = checkbox_id;
+        checkbox.setAttribute('destinationId', destination.destid);
         modalDiv.appendChild(checkbox);
 
         const label = document.createElement('label');
         label.classList.add('form-check-label');
-        label.for = checkbox_id;
+        label.htmlFor = checkbox_id;
         label.innerText = destination.destName;
         modalDiv.appendChild(label);
 
@@ -937,4 +940,39 @@ function setAllCheckboxDestinationsToDeletePhotoIn(isSelected) {
     for (let checkbox of checkboxs) {
         checkbox.checked = isSelected;
     }
+}
+
+/**
+ * Method to send POST request to delete a user photo and unlink it from selected
+ * destinations.
+ */
+function deleteAndUnlinkPhoto() {
+    const checkboxs = document.querySelectorAll(
+                        ".destination-delete-photo-checkbox");
+
+    const deleteReqestJSON = {
+        'mediaId': selectedMediaID_GLOBAL,
+        'destinationsToUnlink': []
+    };
+    for (let checkbox of checkboxs) {
+        if (checkbox.checked) {
+            const destId = parseInt(checkbox.getAttribute('destinationId'));
+            deleteReqestJSON['destinationsToUnlink'].push(destId);
+        }
+    }
+
+    console.log(deleteReqestJSON);
+
+    $.ajax({
+        type: 'DELETE',
+        url: '/users/albums/delete/photo_and_unlink_selected_destinations',
+        contentType: 'application/json',
+        data: JSON.stringify(deleteReqestJSON),
+        success: () => {
+            console.log("yay");
+        }
+    });
+
+
+
 }

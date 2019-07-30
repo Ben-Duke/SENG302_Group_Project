@@ -730,7 +730,7 @@ public class AlbumControllerTest extends BaseTestWithApplicationAndDatabase {
 
     @Test
     /**
-     * Tests that a request for a photo ID that does not exist gets a not  found (404)
+     * Tests that a request for a photo ID for another user gets a forbidden (403)
      * response.
      */
     public void getUnlinkableDestinationsForPhoto_is403HTTPStatus_photoForOtherUser() {
@@ -958,4 +958,89 @@ public class AlbumControllerTest extends BaseTestWithApplicationAndDatabase {
                 .session("connected", Integer.toString(user.getUserid()));
         return route(app, request);
     }
+
+    @Test
+    /**
+     * Tests that an unauthenticated request gets a unaccepted HTTP response.
+     */
+    public void deleteUserPhotoAndUnlinkFromSelectDests_is401HTTPStatus_noActiveSession() {
+        Destination destination = DestinationAccessor.getPublicDestinationbyName("Christchurch");
+        int destId = destination.getDestid();
+
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .bodyJson(Json.parse("{\"mediaId\": " + destId + ", \"destinationsToUnlink\": [5]}"))
+                .method(DELETE)
+                .uri("/users/albums/delete/photo_and_unlink_selected_destinations")
+                .session("connected", null);
+        Result result = route(app, request);
+
+        assertEquals(UNAUTHORIZED, result.status());
+    }
+
+    @Test
+    /**
+     * Tests that a photo delete request for another user (not authenticated as photo owner)
+     * returns a forbidden (403) http response.
+     */
+    public void deleteUserPhotoAndUnlinkFromSelectDests_is403HTTPStatus_otherUsersPhoto() {
+        Destination destination = DestinationAccessor.getPublicDestinationbyName("Christchurch");
+        User user = UserAccessor.getById(destination.getUser().getUserid());
+
+        User userAccessingOthersPhoto = new User("testnotreal@test.com");
+        UserAccessor.insert(userAccessingOthersPhoto);
+        String userAccessingOthersPhotoId = Integer.toString(userAccessingOthersPhoto.getUserid());
+
+        int destId = destination.getDestid();
+
+
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .bodyJson(Json.parse("{\"mediaId\": " + destId + ", \"destinationsToUnlink\": [5]}"))
+                .method(DELETE)
+                .uri("/users/albums/delete/photo_and_unlink_selected_destinations")
+                .session("connected", userAccessingOthersPhotoId);
+        Result result = route(app, request);
+
+        assertEquals(FORBIDDEN, result.status());
+    }
+
+    @Test
+    /**
+     * Tests that a photo delete request for a media id that does not exist
+     * returns a not found (404) http response.
+     */
+    public void deleteUserPhotoAndUnlinkFromSelectDests_is404HTTPStatus_noMediaForId() {
+        User user = UserAccessor.getUserByEmail("testuser1@uclive.ac.nz");
+        String userId = Integer.toString(user.getUserid());
+
+
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .bodyJson(Json.parse("{\"mediaId\": 99999, \"destinationsToUnlink\": [5]}"))
+                .method(DELETE)
+                .uri("/users/albums/delete/photo_and_unlink_selected_destinations")
+                .session("connected", userId);
+        Result result = route(app, request);
+
+        assertEquals(NOT_FOUND, result.status());
+    }
+
+    @Test
+    /**
+     * Tests that a photo delete request for a media id that does not exist
+     * returns a not found (404) http response.
+     */
+    public void deleteUserPhotoAndUnlinkFromSelectDests_is400HTTPStatus_noJSONbody() {
+        User user = UserAccessor.getUserByEmail("testuser1@uclive.ac.nz");
+        String userId = Integer.toString(user.getUserid());
+
+
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(DELETE)
+                .uri("/users/albums/delete/photo_and_unlink_selected_destinations")
+                .session("connected", userId);
+        Result result = route(app, request);
+
+        assertEquals(BAD_REQUEST, result.status());
+    }
+
+
 }

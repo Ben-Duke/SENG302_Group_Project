@@ -66,9 +66,16 @@ function moveBetweenAlbums(oldAlbumId, newAlbumId) {
 
 }
 
-
-
-
+/**
+ * Clones a node and removes all listeners from it, returns the clone
+ * @param original the node to be cloned
+ * @returns a copy of the same node without any listeners
+ */
+function replaceWithClone(original) {
+    const clone = original.cloneNode(true);
+    original.parentNode.replaceChild(clone, original);
+    return clone;
+}
 
 /**
  * Sets listener for the delete button on the current slide
@@ -76,10 +83,12 @@ function moveBetweenAlbums(oldAlbumId, newAlbumId) {
  * @param i the index of the current slide
  */
 function setDeletePhotoListener(albumData, i) {
-    document.getElementById('deletePhotoBtn').addEventListener('click', () => {
+    function deletePhotoListener() {
         const mediaId = albumData[i]["mediaId"];
         deletePhotoRequest(mediaId);
-    });
+    }
+    const clone = replaceWithClone(document.getElementById('deletePhotoBtn'));
+    clone.addEventListener('click', deletePhotoListener);
 }
 
 /**
@@ -88,10 +97,14 @@ function setDeletePhotoListener(albumData, i) {
  * @param i the index of the current slide
  */
 function setMakeProfilePictureListener(albumData, i) {
-    document.getElementById('profilePictureBtn').addEventListener('click', () => {
+    function makeProfilePictureListener() {
         const mediaId = albumData[i]["mediaId"];
         setProfilePictureRequest(mediaId);
-    });
+    }
+    const original = document.getElementById('profilePictureBtn');
+    const clone = replaceWithClone(original);
+
+    clone.addEventListener('click', makeProfilePictureListener);
 }
 
 /**
@@ -105,8 +118,7 @@ function setDestinationLinkListener(albumData, i) {
         openDestinationModal(mediaId);
     }
     const original = document.getElementById('linkDestinationBtn');
-    const clone = original.cloneNode(true);
-    original.parentNode.replaceChild(clone, original);
+    const clone = replaceWithClone(original);
     clone.addEventListener('click', destinationLinkListener)
 }
 
@@ -116,16 +128,19 @@ function setDestinationLinkListener(albumData, i) {
  * @param mediaId the id of the media to set the button for
  */
 function setPrivacyListener(setPrivacy, mediaId) {
-    const privacyBtn = document.getElementById('privacyBtn');
-    privacyBtn.addEventListener('click', () => {
+    function privacyListener() {
         if(setPrivacy) {
-            privacyBtn.innerHTML = "Make Public";
+            clone.innerHTML = "Make Public";
             document.querySelector('div[data-mediaId="'+mediaId+'"]').setAttribute("data-privacy", false);
         }
         else {
-            privacyBtn.innerHTML = "Make Private";
-            document.querySelector('div[data-mediaId="'+mediaId+'"]').setAttribute("data-privacy", true);}
-    })
+            clone.innerHTML = "Make Private";
+            document.querySelector('div[data-mediaId="'+mediaId+'"]').setAttribute("data-privacy", true);
+        }
+    }
+    const original = document.getElementById('privacyBtn');
+    const clone = replaceWithClone(original);
+    clone.addEventListener('click', privacyListener )
 }
 
 /**

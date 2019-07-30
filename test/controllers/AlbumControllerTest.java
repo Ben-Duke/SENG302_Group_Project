@@ -1,14 +1,8 @@
 package controllers;
 
-import accessors.AlbumAccessor;
-import accessors.MediaAccessor;
-import accessors.UserAccessor;
-import accessors.UserPhotoAccessor;
+import accessors.*;
 import com.fasterxml.jackson.databind.JsonNode;
-import models.Album;
-import models.Media;
-import models.User;
-import models.UserPhoto;
+import models.*;
 import org.junit.Test;
 import play.api.libs.json.Json;
 
@@ -22,8 +16,7 @@ import java.util.ArrayList;
 
 import static org.junit.Assert.assertEquals;
 import static play.mvc.Http.Status.*;
-import static play.test.Helpers.GET;
-import static play.test.Helpers.route;
+import static play.test.Helpers.*;
 
 public class AlbumControllerTest extends BaseTestWithApplicationAndDatabase {
 
@@ -715,6 +708,132 @@ public class AlbumControllerTest extends BaseTestWithApplicationAndDatabase {
                                             userEmail, userAlbumName, photoURL);
 
         assertEquals(OK, result.status());
+    }
+
+    @Test
+    /**
+     * Tests that a request for a valid user and a valid photo with no linked destinations
+     * returns an empty JSON array.
+     */
+    public void getUnlinkableDestinationsForPhoto_isEmptyJSON_photoNotLinkedToDestinations() {
+        String userEmail = "userwithaphoto_1@test.com";
+        String userAlbumName = "test_1";
+        String photoURL = "/test/test/test_1.jpg";
+
+        Result result = getResultFromGetUnlinkableDestinations_helper_method(
+                userEmail, userAlbumName, photoURL);
+
+        JsonNode jsonJacksonArray = play.libs.Json.parse(contentAsString(result));
+        assertEquals(0, jsonJacksonArray.size());
+    }
+
+    @Test
+    /**
+     * Tests that a request for a valid user and a valid photo with no linked destinations
+     * returns an an array with 1 destination.
+     */
+    public void getUnlinkableDestinationsForPhoto_checkJSONHas1Destinations_photoLinkedTo1Destination() {
+        String userEmail = "userwithaphoto_2@test.com";
+        String userAlbumName = "test_2";
+        String photoURL = "/test/test/test_2.jpg";
+
+        User user = new User(userEmail);
+        UserAccessor.insert(user);
+
+        Album album = new Album(user, userAlbumName);
+        AlbumAccessor.insert(album);
+        ArrayList<Album> albums = new ArrayList<Album>();
+        albums.add(album);
+
+        ArrayList<Album> primaryPhotoDestinations = new ArrayList<Album>();
+
+        Destination destination2 = new Destination(
+                "testtestmctest", "Town", "Wellington",
+                "New Zealand", -41.26, 174.6,
+                user);
+        DestinationAccessor.insert(destination2);
+
+        UserPhoto photo = new UserPhoto(photoURL,
+                true,
+                false,
+                user);
+        UserPhotoAccessor.insert(photo);
+        String photoId = Integer.toString(photo.getMediaId());
+
+
+        destination2.getPrimaryAlbum().addMedia(photo);
+        AlbumAccessor.update(destination2.getPrimaryAlbum());
+
+
+
+
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/albums/photos/get_linked_destinations/" + photoId)
+                .session("connected", Integer.toString(user.getUserid()));
+        Result result = route(app, request);
+
+        JsonNode jsonJacksonArray = play.libs.Json.parse(contentAsString(result));
+        assertEquals(1, jsonJacksonArray.size());
+    }
+
+    @Test
+    /**
+     * Tests that a request for a valid user and a valid photo with no linked destinations
+     * returns an an array with 2 destinations.
+     */
+    public void getUnlinkableDestinationsForPhoto_checkJSONHas2Destinations_photoLinkedTo1Destination() {
+        String userEmail = "userwithaphoto_3@test.com";
+        String userAlbumName = "test_3";
+        String photoURL = "/test/test/test_3.jpg";
+
+        User user = new User(userEmail);
+        UserAccessor.insert(user);
+
+        Album album = new Album(user, userAlbumName);
+        AlbumAccessor.insert(album);
+        ArrayList<Album> albums = new ArrayList<Album>();
+        albums.add(album);
+
+        ArrayList<Album> primaryPhotoDestinations = new ArrayList<Album>();
+
+        Destination destination2 = new Destination(
+                "testtestmctest2222", "Town", "Wellington",
+                "New Zealand", -41.26, 174.6,
+                user);
+        DestinationAccessor.insert(destination2);
+
+        Destination destination3 = new Destination(
+                "testtestmctest333", "Town", "Wellington",
+                "New Zealand", -41.26, 174.6,
+                user);
+        DestinationAccessor.insert(destination3);
+
+        UserPhoto photo = new UserPhoto(photoURL,
+                true,
+                false,
+                user);
+        UserPhotoAccessor.insert(photo);
+        String photoId = Integer.toString(photo.getMediaId());
+
+
+        destination2.getPrimaryAlbum().addMedia(photo);
+        AlbumAccessor.update(destination2.getPrimaryAlbum());
+
+        destination3.getPrimaryAlbum().addMedia(photo);
+        AlbumAccessor.update(destination3.getPrimaryAlbum());
+
+
+
+
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/albums/photos/get_linked_destinations/" + photoId)
+                .session("connected", Integer.toString(user.getUserid()));
+        Result result = route(app, request);
+
+        JsonNode jsonJacksonArray = play.libs.Json.parse(contentAsString(result));
+        assertEquals(2, jsonJacksonArray.size());
     }
 
     /**

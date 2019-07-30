@@ -395,18 +395,22 @@ public class TripController extends Controller {
 
     public Result CreateTripFromJSRequest(Http.Request request, Integer destid) {
         User user = User.getCurrentUser(request);
+        System.out.println("creating trip with the user id being " + user.getUserid());
         if(user != null) {
             Destination destination = Destination.find.byId(destid);
             if(destination == null) {
                 return notFound();
             }
-            if (!destination.getIsPublic() && destination.getUser() != user) {
+            System.out.println("Destination is public :" + destination.getIsPublic());
+            if (!destination.getIsPublic() && destination.getUser().getUserid() != user.getUserid()) {
                 System.out.println("Dest forbid");
                 return forbidden("2");
 
             }
             Trip trip = new Trip("Trip to " + destination.getDestName(),false, user);
+            System.out.println("Trip user id is " + trip.getUser().getUserid());
             Visit visit = new Visit(null, null, trip, destination);
+
             TripAccessor.insert(trip);
             VisitAccessor.insert(visit);
             visit.setVisitorder(0);
@@ -423,8 +427,8 @@ public class TripController extends Controller {
             data.put("departure", visit.getDeparture());
             data.put("tripName", trip.getTripName());
             data.put("tripId", trip.getTripid());
-
-
+            System.out.println("Visit trip id is " +  visit.getTrip().getUser().getUserid());
+            System.out.println("***********************************************");
             return ok(data);
 
         }
@@ -446,9 +450,16 @@ public class TripController extends Controller {
         if (user == null) { return redirect(routes.UserController.userindex()); }
 
         Visit visit = VisitAccessor.getById(visitid);
+        System.out.println(visit.isTripOwner(user.getUserid()));
         if (visit == null) { return redirect(routes.UserController.userindex()); }
 
         Trip trip = visit.getTrip();
+
+        System.out.println("User id from the visit trip|" + visit.getTrip().getUser().getUserid());
+
+        System.out.println("User id from request|" + user.getUserid());
+        System.out.println("User id from the trip|" +trip.getUser().getUserid());
+
         if (!trip.isUserOwner(user.getUserid())) { return unauthorized(); }
 
         List<Visit> visits = trip.getVisits();

@@ -66,7 +66,7 @@ function addSelectedToVisitToTrip(destId){
                 tableBody.setAttribute("id", "tripTable_"+ data.tripId);
                 tableBody.style.display = "none";
                 let newRow = document.createElement('tr');
-                newRow.setAttribute('id', data.visitId);
+                newRow.setAttribute('id', "visit_row_" + 19);//data.visitId);
                 let tableHeader = document.createElement('th');
                 tableHeader.setAttribute('scope', 'row');
                 tableHeader.innerText = data.visitName;
@@ -89,7 +89,7 @@ function addSelectedToVisitToTrip(destId){
                 let deleteButtonText = document.createElement('a');
                 deleteButtonText.innerText = '❌';
                 deleteButtonText.setAttribute('style', 'deleteButton');
-                let urlForDelete = '/users/trips/edit/' + data.tripId;
+                let urlForDelete = '/users/trips/edit/' + 2;//data.tripId;
                 deleteButtonText.setAttribute('onclick', 'sendDeleteVisitRequest(' + '"' + urlForDelete + '"' + ','
                     + data.tripId + ')');
                 deleteButton.appendChild(deleteButtonText);
@@ -101,9 +101,6 @@ function addSelectedToVisitToTrip(destId){
                 newRow.appendChild(deleteButton);
                 tableBody.appendChild(newRow);
                 targetTable.appendChild(tableBody);
-            // <td onclick="sendDeleteVisitRequest(
-            //     '@routes.TripController.deletevisit(visit.getVisitid())',
-            //         '@visit.getVisitid()')"><a class="deleteButton">&#10060</a></td>
 
                 let listGroup = document.getElementById('trip-list-group');
                 let tripLink = document.createElement('a');
@@ -391,14 +388,15 @@ function sendDeleteVisitRequest(url, visitId) {
                 document.getElementById("visit_row_" + visitId).remove();
             }
             else{
-
+                console.log("error in success function");
             }
         },
         error: function(xhr, settings){
             if(xhr.status == 400) {
-
+                console.log("400 error");
             }
             else if(xhr.status == 403){
+                console.log("400 error");
             }
             else{
             }

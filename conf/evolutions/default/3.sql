@@ -15,7 +15,7 @@
 INSERT INTO `user` (`userid`, `email`, `password_hash`, `date_of_birth`, `gender`,
                     `f_name`, `l_name`, `undo_redo_error`, `is_admin`,
                     `creation_date`) VALUES
-(1, 'admin@admin.com', 'test',
+(1, 'admin@admin.com', '',
  '2019-02-18', 'male', 'admin', 'admin', 0, 0, '2019-07-26 03:59:17'),
 
 (2, 'testuser1@uclive.ac.nz', '',
@@ -49,6 +49,8 @@ INSERT INTO `destination` (`destid`, `dest_name`, `dest_type`, `district`, `coun
 
 
 -- Traveller Types
+-- Order will look a bit weird on phpMyAdmin as it sorts alphabetically by default
+-- The tests are hard coded to this order
 INSERT INTO `traveller_type` (`ttypeid`, `traveller_type_name`) VALUES
 (1, 'Groupie'),
 (2, 'Thrillseeker'),

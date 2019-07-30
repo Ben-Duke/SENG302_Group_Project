@@ -2,11 +2,17 @@ package utilities;
 
 import accessors.UserAccessor;
 import controllers.ApplicationManager;
+import io.ebean.Ebean;
+import io.ebean.SqlUpdate;
+import io.ebean.Transaction;
 import models.*;
 import org.slf4j.Logger;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
+
+
 
 /**
  * Test Database Manager class. Populates the database. NOTE: Does not create the database, so it requires the database to already be running.
@@ -15,9 +21,10 @@ import java.util.concurrent.CountDownLatch;
  */
 public class TestDatabaseManager {
 
-    private final Logger logger = UtilityFunctions.getLogger();
+    private static final Logger logger = UtilityFunctions.getLogger();
 
-    public TestDatabaseManager(){}
+    public TestDatabaseManager() {
+    }
 
     /**
      * Completes the database population that is done by the sql evolutions
@@ -35,7 +42,6 @@ public class TestDatabaseManager {
      * Completes the database population that is done by the sql evolutions
      */
     public void populateDatabase() {
-
         logger.info("attempting to populate database");
         logger.info("PopulationDatabase is " + ApplicationManager.getDatabaseName());
 
@@ -45,10 +51,12 @@ public class TestDatabaseManager {
         setUserPasswords();
     }
 
-    /** Sets the passwords of all test users and admins */
+    /**
+     * Sets the passwords of all test users and admins
+     */
     private void setUserPasswords() {
         List<User> users = UserAccessor.getAll();
-        for (User user: users) {
+        for (User user : users) {
             if (user.userIsAdmin()) {
                 user.hashAndSetPassword("admin");
             } else {
@@ -56,6 +64,29 @@ public class TestDatabaseManager {
             }
 
             user.update();
+        }
+    }
+
+    /**
+     * Removes all data from the database while keeping the structure
+     * Resets auto_increment (e.g. id)
+     * <p>
+     * Always runs on DEFAULT database not a database with a different name which
+     * the application is connected to
+     */
+    public static void clearAllData() {
+        for (TableName tableName : TableName.values()) {
+            String sql = String.format("DELETE FROM %s", tableName);
+            Ebean.createSqlUpdate(sql).execute();
+
+
+            // reset the auto-increment if the table auto-increments its
+            // primary key
+            if (tableName.isAutoIncremented()) {
+                sql = String.format("ALTER TABLE %s ALTER COLUMN %s RESTART WITH 1",
+                        tableName, tableName.getColumnName());
+                Ebean.createSqlUpdate(sql).execute();
+            }
         }
     }
 }

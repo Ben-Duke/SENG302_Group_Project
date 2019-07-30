@@ -147,7 +147,8 @@ public class User extends BaseModel implements Comparable<User> {
         this.lName = lName;
         this.dateOfBirth = dateOfBirth;
         this.gender = gender;
-        this.isAdmin = false;    }
+        this.isAdmin = false;
+    }
 
     public User(String email){
         this.email = email.toLowerCase();

@@ -16,6 +16,7 @@ import play.mvc.Result;
 import play.test.Helpers;
 import play.test.WithApplication;
 import testhelpers.BaseTestWithApplicationAndDatabase;
+import utilities.TestDatabaseManager;
 
 
 import java.sql.SQLOutput;
@@ -29,10 +30,12 @@ import static play.test.Helpers.route;
 public class AdminControllerTest extends BaseTestWithApplicationAndDatabase {
 
     /**
-     * Sets up the fake database before each test.
+     * Populate custom data
      */
     @Override
     public void populateDatabase() {
+        TestDatabaseManager.clearAllData();
+
         //Initialises test users and default admin and saves it to the database.
         User user = new User("testAdmin");
         user.save();

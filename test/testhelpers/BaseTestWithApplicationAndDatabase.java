@@ -2,9 +2,11 @@ package testhelpers;
 
 import accessors.CommandManagerAccessor;
 import com.google.inject.Guice;
+import com.mysql.jdbc.Connection;
 import controllers.ApplicationManager;
 import io.ebean.Ebean;
 import io.ebean.EbeanServer;
+import io.ebean.Transaction;
 import io.ebean.config.ServerConfig;
 import io.ebeaninternal.dbmigration.migration.Configuration;
 import org.junit.After;
@@ -56,9 +58,12 @@ public class BaseTestWithApplicationAndDatabase extends WithApplication {
 
         Map<String, String> configuration = new HashMap<>();
         configuration.put("db.default.driver", "org.h2.Driver");
-        configuration.put("db.default.url", "jdbc:h2:mem:defaultDB;MODE=MYSQL;");
+        configuration.put("db.default.url", "jdbc:h2:mem:play;;DB_CLOSE_DELAY=-1;");
         configuration.put("ebean.default", "models.*");
         configuration.put("play.evolutions.db.default.enabled", "true");
+//        configuration.put("play.evolutions.db.default.autoApply", "false");
+//        configuration.put("play.evolutions.db.default.autoApplyDowns", "false");
+
 
         // Dummy database to generate ebean ddl
 //        configuration.put("db.default.driver", "org.h2.Driver");

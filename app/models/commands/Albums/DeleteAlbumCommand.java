@@ -34,17 +34,21 @@ public class DeleteAlbumCommand extends UndoableCommand {
      * in an album.
      */
     public void execute() {
-
         album.removeAllMedia();
         AlbumAccessor.update(album);
         AlbumAccessor.delete(album);
-
-        for (Media media : albumsMedia) {
-            if (media.getAlbums().size() == 0) {
-                deletedMedia.add(media);
-                MediaAccessor.delete(media);
+        List<Album> albumList = AlbumAccessor.getAlbumsByOwner(album.getOwner());
+        Album defaultAlbum = new Album(album.getOwner(), "Default", true);
+        for (Album thisAlbum: albumList) {
+            if (thisAlbum.getTitle().equals("Default")) {
+                defaultAlbum = thisAlbum;
             }
         }
+        for (Media media : albumsMedia) {
+            defaultAlbum.addMedia(media);
+        }
+        AlbumAccessor.update(defaultAlbum);
+
     }
 
     /**
@@ -53,7 +57,7 @@ public class DeleteAlbumCommand extends UndoableCommand {
      * that was deleted is resurrected first.
      */
     public void undo() {
-        album = new Album(album.getUser(), album.getTitle());
+        album = new Album(album.getUser(), album.getTitle(), false);
         AlbumAccessor.insert(album);
 
         for (Media media : albumsMedia) {

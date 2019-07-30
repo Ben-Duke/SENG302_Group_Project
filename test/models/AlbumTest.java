@@ -47,7 +47,7 @@ public class AlbumTest extends BaseTestWithApplicationAndDatabase {
         User user = new User();
         UserAccessor.insert(user);
 
-        Album album = new Album(user, "testTitle");
+        Album album = new Album(user, "testTitle", false);
         AlbumAccessor.insert(album);
 
         Media media1 = new UserPhoto("/test", false, false, user);
@@ -75,7 +75,7 @@ public class AlbumTest extends BaseTestWithApplicationAndDatabase {
         User user = new User();
         UserAccessor.insert(user);
 
-        Album album = new Album(user, "testTitle");
+        Album album = new Album(user, "testTitle", false);
         AlbumAccessor.insert(album);
 
         Media media1 = new UserPhoto("/test", false, false, user);
@@ -103,7 +103,7 @@ public class AlbumTest extends BaseTestWithApplicationAndDatabase {
         User user = new User();
         UserAccessor.insert(user);
 
-        Album album = new Album(user, "testTitle");
+        Album album = new Album(user, "testTitle", false);
         AlbumAccessor.insert(album);
 
         Media media1 = new UserPhoto("/test", false, false, user);

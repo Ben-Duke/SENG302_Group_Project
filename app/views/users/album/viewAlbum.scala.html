@@ -11,7 +11,9 @@
 </head>
 
 <body onpageshow="getAlbum(@user.getUserid, @album.getAlbumId, @album.userIsOwner(user))">
-    <h2 style="text-align: center;">@album.getTitle</h2>
+    <div>
+        <h2 style="text-align: center;"> @album.getTitle <a id="deleteAlbumButton" onclick= "showDeleteAlbumModal(@album.getDefault)">&#10060</a></h2>
+    </div>
 
     <div class="container">
         @if(album.getMedia.size()==0) {
@@ -118,6 +120,46 @@
                 <div class="modal-footer">
                     <button id="yesDeleteProfilePhoto" class="btn btn-danger" data-dismiss="modal">Yes</button>
                     <button id="noCloseDeleteProfilePhotoButton" class="btn btn-primary" data-dismiss="modal">No</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="confirmDeleteAlbumModal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+                <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title" id="deleteTitle">About to delete album</h4>
+                </div>
+                <div class="modal-body">
+                    <p id="message">Deleting this album will move all media into the default album, are you sure?</p>
+                </div>
+                <div class="modal-footer">
+                    <button id="yesDeleteAlbum" onclick="deleteAlbum(@album.getAlbumId)"class="btn btn-danger" data-dismiss="modal">Yes</button>
+                    <button id="noCloseDeleteAlbumButton" class="btn btn-primary" data-dismiss="modal">No</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+    <div id="defaultAlbum" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+                <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title" id="deleteTitle">About to delete album</h4>
+                </div>
+                <div class="modal-body">
+                    <p id="message">The default album cannot be deleted</p>
+                </div>
+                <div class="modal-footer">
+                    <button id="okdefaultAlbum" onclick="okDefault()"class="btn btn-danger" data-dismiss="modal">Ok</button>
                 </div>
             </div>
 

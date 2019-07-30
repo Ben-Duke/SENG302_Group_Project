@@ -1,5 +1,6 @@
 package factories;
 
+import accessors.AlbumAccessor;
 import accessors.MediaAccessor;
 import accessors.UserAccessor;
 import accessors.UserPhotoAccessor;
@@ -293,9 +294,9 @@ public class UserFactory {
 
         if(checkEmail(email)!=1){
             User user = new User(email, password, firstName, lastName, date, gender);
-
-
             user.save();
+            Album album = new Album(user, "Default", true);
+            AlbumAccessor.insert(album);
             for (String aTType : tType) {
 
                 int tTypeId = getTTypeId(aTType);

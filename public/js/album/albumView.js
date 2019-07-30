@@ -337,6 +337,41 @@ async function displaySlides(i, albumData, path) {
     }, true);
 }
 
+// Open the Modal
+function showDeleteAlbumModal(isDefault) {
+    if (isDefault === false) {
+        $(document.getElementById('confirmDeleteAlbumModal')).modal('show')
+    } else {
+        $(document.getElementById('defaultAlbum')).modal('show')
+    }
+}
+
+function okDefault(album) {
+    $(document.getElementById('defaultAlbum')).modal('hide')
+}
+
+// Open the Modal
+function deleteAlbum(albumId) {
+    console.log(albumId);
+    var url = '/users/albums/delete/' + albumId;
+    var token = $('input[name="csrfToken"]').attr('value');
+    $.ajaxSetup({
+        beforeSend: function (xhr) {
+            xhr.setRequestHeader('Csrf-Token', token);
+        }
+    });
+    $.ajax({
+        url: url,
+        method: "Delete",
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        success: function() {
+            window.location.replace('/users/albums')
+        }
+    });
+}
+
 
 // Open the Modal
 function openModal() {

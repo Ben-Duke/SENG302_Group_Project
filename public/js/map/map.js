@@ -79,12 +79,12 @@ function displayTrip(tripId, startLat, startLng) {
     var checkBox = document.getElementById(tripId);
     if (checkBox.checked === true) {
         if (currentlyDisplayedTripId !== undefined) {
-            document.getElementById("tripTable_" + currentlyDisplayedTripId).style.display = "none";
+            document.getElementById("singleTrip_" + currentlyDisplayedTripId).style.display = "none";
         }
 
         currentlyDisplayedTripId = tripId;
 
-        document.getElementById("tripTable_" + tripId).style.display = "table-row-group";
+        document.getElementById("singleTrip_" + tripId).style.display = "block";
 
 
         var tripStartLatLng = new google.maps.LatLng(
@@ -100,7 +100,7 @@ function displayTrip(tripId, startLat, startLng) {
 $('tbody').sortable({
     axis: 'y',
     update: function (event, ui) {
-        var token =  $('input[name="csrfToken"]').attr('value')
+        var token =  $('input[name="csrfToken"]').attr('value');
         $.ajaxSetup({
             beforeSend: function(xhr) {
                 xhr.setRequestHeader('Csrf-Token', token);
@@ -225,7 +225,6 @@ function sendDeleteVisitRequest(url, visitId) {
 
 
 function updateVisitDate(visitId) {
-
     let arrival = document.getElementById("arrival_"+visitId).value;
     let departure = document.getElementById("departure_"+visitId).value;
 

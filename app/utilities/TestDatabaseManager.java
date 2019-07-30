@@ -1,6 +1,7 @@
 package utilities;
 
 import accessors.AlbumAccessor;
+import accessors.UserAccessor;
 import controllers.ApplicationManager;
 import models.*;
 import models.commands.Albums.CreateAlbumCommand;

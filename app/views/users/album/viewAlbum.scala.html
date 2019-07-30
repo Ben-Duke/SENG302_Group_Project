@@ -47,28 +47,37 @@
             <div id="existingAlbumId" class="hidden">@album.albumId</div>
             <!-- Caption text -->
             <div class="caption-container">
-                <p id="img-caption"></p>
-                @if(album.getOwner == user || user.userIsAdmin) {
-                    <li>
-                        <div>
-                            <p>
-                                Move to Album
-                                <input style="color: #000000;" id="album-search-move" list="album-results-move" name="Album Move" title="Move Album" placeholder="Search for Album">
-                                <datalist  id="album-results-move">
+                <div>
+                    <p id="img-caption"></p>
+                    @if(album.getOwner == user || user.userIsAdmin) {
+                        <li>
+                            <div>
+                                <p>
+                                    Move to Album
+                                    <input style="color: #000000;" id="album-search-move" list="album-results-move" name="Album Move" title="Move Album" placeholder="Search for Album">
+                                    <datalist  id="album-results-move">
                                     @for(userAlbum <- user.getAlbums()){
-                                    @if(userAlbum.albumId != album.albumId) {
-                                    <option value=@userAlbum.getTitle()></option>
+                                        @if(userAlbum.albumId != album.albumId) {
+                                            <option value=@userAlbum.getTitle()></option>
+                                        }
                                     }
-                                    }
-                                </datalist>
-                            </p>
-                        </div>
-                    </li>
-                    <a class="btn btn-link" id="profilePictureBtn">Set Profile Picture</a>
-                    <a class="btn btn-link" id="deletePhotoBtn">Delete</a>
-                    <a class="btn btn-link" id="privacyBtn">Make Public/Private</a>
-                    <a class="btn btn-link" id="linkDestinationBtn">Link Destination</a>
-                }
+                                    </datalist>
+                                </p>
+                            </div>
+                        </li>
+                        <a class="btn btn-link" id="profilePictureBtn">Set Profile Picture</a>
+                        <a class="btn btn-link" id="deletePhotoBtn">Delete</a>
+                        <a class="btn btn-link" id="privacyBtn">Make Public/Private</a>
+                        <a class="btn btn-link" id="linkDestinationBtn">Link Destination</a>
+                    }
+                </div>
+                <div>
+                    <div id="imageModalAlert" class="alert alert-danger alert-dismissible hiddenDiv" role="alert">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <strong>SERVER ERROR:</strong> Failed to fetch unlinkable destinations.
+                    Try refreshing the page and try again.
+                </div>
+                </div>
             </div>
         </div>
     </div>
@@ -204,20 +213,31 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title"
+                    <h4 class="modal-title"
                         id="selectDestinationToUnlinkModalTitle">
-                            Select Destination to unlink
-                    </h5>
+                            Delete photo and unlink from selected destinations
+                    </h4>
                     <button type="button" class="close" onclick="closeSelectDestinationsToUnlinkPhotoModal()" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
-                    selectDestinationsToUnlinkPhoto stuff
+                    nothing here will be shown, as it is cleared and added in javascript
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" onclick="closeSelectDestinationsToUnlinkPhotoModal()">Close</button>
-                    <button type="button" class="btn btn-danger">Confirm</button>
+                    <div class="buttons-div">
+                        <div class="text-left left-float-div">
+                            <button type="button" class="btn btn-primary" onclick="setAllCheckboxDestinationsToDeletePhotoIn(true)">Select All</button>
+                            <button type="button" class="btn btn-primary" onclick="setAllCheckboxDestinationsToDeletePhotoIn(false)">Unselect All</button>
+                        </div>
+                        <div class="text-right right-float-div">
+                            <button type="button" class="btn btn-secondary" onclick="closeSelectDestinationsToUnlinkPhotoModal()">Close</button>
+                            <button type="button" class="btn btn-danger">Delete*</button>
+                        </div>
+                    </div>
+                    <div class="text-div text-left">
+                        *The photo will remain associated with all unselected destinations
+                    </div>
                 </div>
             </div>
         </div>

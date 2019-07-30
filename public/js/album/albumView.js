@@ -3,6 +3,8 @@ var currentSlideNo = 1;
 var albumData = null;
 var photoIdToEdit;
 
+let destinationsToUnlink_GLOBAL;
+
 moveAlbumSearch();
 
 
@@ -89,11 +91,11 @@ function replaceWithClone(original) {
 function setDeletePhotoListener(albumData, i) {
     function deletePhotoListener() {
         const mediaId = albumData[i]["mediaId"];
-        deletePhotoRequest(mediaId);
+        openSelectDestinationsToUnlinkPhotoModal(mediaId);
     }
     const clone = replaceWithClone(document.getElementById('deletePhotoBtn'));
     if (clone != null) {
-        clone.addEventListener('click', openSelectDestinationsToUnlinkPhotoModal);
+        clone.addEventListener('click', deletePhotoListener);
     }
 }
 
@@ -834,7 +836,74 @@ function submitEditCaption(caption, photoId) {
  * @param mediaId the id of the media supplied
  */
 function openSelectDestinationsToUnlinkPhotoModal(mediaId) {
-    $('#selectDestinationsToUnlinkPhotoModal').modal('show');
+    $.ajax({
+        type: 'GET',
+        url: '/users/albums/photos/get_linked_destinations/' + mediaId,
+        success:function(res){
+            destinationsToUnlink_GLOBAL = res;
+            console.log('destinations: ');
+            console.log(destinationsToUnlink_GLOBAL);
+            resetSelectDestinationsToUnlinkPhotoModal();
+            setDestinationSelectionsForBulkPhotoLeaving();
+            $('#selectDestinationsToUnlinkPhotoModal').modal('show');
+        },
+        error: function(xhr, textStatus, errorThrown){
+            console.log(xhr.status + " " + textStatus + " " + errorThrown);
+            showImageUnlinkalert();
+        }
+    });
+
+
+}
+
+/**
+ * Adds all destinations to the modal where the user selects which Destinations
+ * to keep the picture in, when deleting pic in user album.
+ */
+function setDestinationSelectionsForBulkPhotoLeaving() {
+    const modalBody = document.querySelector(
+        '#selectDestinationsToUnlinkPhotoModal ' +
+        '.modal-dialog .modal-content .modal-body');
+
+    const paragraph = document.createElement("p");
+    paragraph.innerText = "Select which destinations to remove the photo from:";
+    modalBody.appendChild(paragraph);
+
+    for (let destination of destinationsToUnlink_GLOBAL) {
+        const checkbox_id = 'destination-unlink-id-' + destination.destid;
+
+        const modalDiv = document.createElement('div');
+        modalDiv.classList.add('form-check');
+
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.classList.add('form-check-input');
+        checkbox.classList.add('destination-delete-photo-checkbox');
+        checkbox.id = checkbox_id;
+        modalDiv.appendChild(checkbox);
+
+        const label = document.createElement('label');
+        label.classList.add('form-check-label');
+        label.for = checkbox_id;
+        label.innerText = destination.destName;
+        modalDiv.appendChild(label);
+
+        modalBody.appendChild(modalDiv);
+    }
+}
+
+/**
+ * Resets the body of the modal which shows destinations to keep a user photo in.
+ */
+function resetSelectDestinationsToUnlinkPhotoModal() {
+    const modalBody = document.querySelector(
+        '#selectDestinationsToUnlinkPhotoModal ' +
+        '.modal-dialog .modal-content .modal-body');
+
+    while (modalBody.firstChild) {
+        modalBody.removeChild(modalBody.firstChild);
+    }
+
 }
 
 /**
@@ -842,4 +911,27 @@ function openSelectDestinationsToUnlinkPhotoModal(mediaId) {
  */
 function closeSelectDestinationsToUnlinkPhotoModal() {
     $('#selectDestinationsToUnlinkPhotoModal').modal('hide');
+}
+
+/**
+ * Opens the alert to show an action failed while deleting a photo.
+ */
+function showImageUnlinkalert() {
+    const alert = document.querySelector("#imageModalAlert");
+    alert.classList.remove('hiddenDiv');
+    alert.scrollIntoView();
+}
+
+/**
+ * Bulk checks or unchecks all checkboxes for removing a user photo from a destination
+ * media album.
+ *
+ * @param isSelected Boolean, true if setting all checkboxes to checked.
+ */
+function setAllCheckboxDestinationsToDeletePhotoIn(isSelected) {
+    const checkboxs = document.querySelectorAll(
+                                    ".destination-delete-photo-checkbox");
+    for (let checkbox of checkboxs) {
+        checkbox.checked = isSelected;
+    }
 }

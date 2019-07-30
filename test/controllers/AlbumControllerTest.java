@@ -696,9 +696,9 @@ public class AlbumControllerTest extends BaseTestWithApplicationAndDatabase {
 
     @Test
     /**
-     * Tests that an unauthenticated request get a unaccepted HTTP response.
+     * Tests that a non existent photo id gets a not found HTTP response.
      */
-    public void getUnlinkableDestinationsForPhoto_is404HTTPStatus_invalidId() {
+    public void getUnlinkableDestinationsForPhoto_is404HTTPStatus_noPhotoForId() {
         User user = new User("testinvalidID@test.com");
         UserAccessor.insert(user);
         String userID = Integer.toString(user.getUserid());
@@ -709,6 +709,23 @@ public class AlbumControllerTest extends BaseTestWithApplicationAndDatabase {
         Result result = route(app, request);
 
         assertEquals(NOT_FOUND, result.status());
+    }
+
+    @Test
+    /**
+     * Tests that a invalid photo id returns a bad request HTTP response.
+     */
+    public void getUnlinkableDestinationsForPhoto_is400HTTPStatus_invalidId() {
+        User user = new User("testinvalidID@test.com");
+        UserAccessor.insert(user);
+        String userID = Integer.toString(user.getUserid());
+
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/albums/photos/get_linked_destinations/9!lLss9").session("connected", userID);
+        Result result = route(app, request);
+
+        assertEquals(BAD_REQUEST, result.status());
     }
 
     @Test

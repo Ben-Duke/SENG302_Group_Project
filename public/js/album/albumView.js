@@ -9,23 +9,25 @@ moveAlbumSearch();
 function moveAlbumSearch() {
       const searchBar = document.getElementById("album-search-move");
       let oldAlbumId = document.getElementById("existingAlbumId").innerText;
-      searchBar.addEventListener('input', (e) => {
-          if (e.constructor.name !== 'InputEvent') {
-                let title = searchBar.value;
-                console.log(title);
-                $.ajax({
-                                type: 'GET',
-                                url: '/users/albums/getFromTitle/' + title,
-                                contentType: 'application/json',
-                                success: (newAlbumId) => {
-                                        console.log(newAlbumId)
-                                        moveBetweenAlbums(oldAlbumId, newAlbumId);
-                                    }
-                                });
+      if (searchBar != null) {
+          searchBar.addEventListener('input', (e) => {
+              if (e.constructor.name !== 'InputEvent') {
+                  let title = searchBar.value;
+                  console.log(title);
+                  $.ajax({
+                      type: 'GET',
+                      url: '/users/albums/getFromTitle/' + title,
+                      contentType: 'application/json',
+                      success: (newAlbumId) => {
+                          console.log(newAlbumId)
+                          moveBetweenAlbums(oldAlbumId, newAlbumId);
+                      }
+                  });
 
 
-          }
-      });
+              }
+          });
+      }
 }
 
 function moveBetweenAlbums(oldAlbumId, newAlbumId) {
@@ -66,9 +68,18 @@ function moveBetweenAlbums(oldAlbumId, newAlbumId) {
 
 }
 
-
-
-
+/**
+ * Clones a node and removes all listeners from it, returns the clone
+ * @param original the node to be cloned
+ * @returns a copy of the same node without any listeners
+ */
+function replaceWithClone(original) {
+    if (original != null) {
+        const clone = original.cloneNode(true);
+        original.parentNode.replaceChild(clone, original);
+        return clone;
+    }
+}
 
 /**
  * Sets listener for the delete button on the current slide
@@ -76,10 +87,14 @@ function moveBetweenAlbums(oldAlbumId, newAlbumId) {
  * @param i the index of the current slide
  */
 function setDeletePhotoListener(albumData, i) {
-    document.getElementById('deletePhotoBtn').addEventListener('click', () => {
+    function deletePhotoListener() {
         const mediaId = albumData[i]["mediaId"];
         deletePhotoRequest(mediaId);
-    });
+    }
+    const clone = replaceWithClone(document.getElementById('deletePhotoBtn'));
+    if (clone != null) {
+        clone.addEventListener('click', deletePhotoListener);
+    }
 }
 
 /**
@@ -88,10 +103,15 @@ function setDeletePhotoListener(albumData, i) {
  * @param i the index of the current slide
  */
 function setMakeProfilePictureListener(albumData, i) {
-    document.getElementById('profilePictureBtn').addEventListener('click', () => {
+    function makeProfilePictureListener() {
         const mediaId = albumData[i]["mediaId"];
         setProfilePictureRequest(mediaId);
-    });
+    }
+    const original = document.getElementById('profilePictureBtn');
+    const clone = replaceWithClone(original);
+    if (clone != null) {
+        clone.addEventListener('click', makeProfilePictureListener);
+    }
 }
 
 /**
@@ -105,9 +125,10 @@ function setDestinationLinkListener(albumData, i) {
         openDestinationModal(mediaId);
     }
     const original = document.getElementById('linkDestinationBtn');
-    const clone = original.cloneNode(true);
-    original.parentNode.replaceChild(clone, original);
-    clone.addEventListener('click', destinationLinkListener)
+    const clone = replaceWithClone(original);
+    if (clone != null) {
+        clone.addEventListener('click', destinationLinkListener)
+    }
 }
 
 /**
@@ -116,16 +137,19 @@ function setDestinationLinkListener(albumData, i) {
  * @param mediaId the id of the media to set the button for
  */
 function setPrivacyListener(setPrivacy, mediaId) {
-    const privacyBtn = document.getElementById('privacyBtn');
-    privacyBtn.addEventListener('click', () => {
+    function privacyListener() {
         if(setPrivacy) {
-            privacyBtn.innerHTML = "Make Public";
+            clone.innerHTML = "Make Public";
             document.querySelector('div[data-mediaId="'+mediaId+'"]').setAttribute("data-privacy", false);
         }
         else {
-            privacyBtn.innerHTML = "Make Private";
-            document.querySelector('div[data-mediaId="'+mediaId+'"]').setAttribute("data-privacy", true);}
-    })
+            clone.innerHTML = "Make Private";
+            document.querySelector('div[data-mediaId="'+mediaId+'"]').setAttribute("data-privacy", true);
+        }
+    }
+    const original = document.getElementById('privacyBtn');
+    const clone = replaceWithClone(original);
+    clone.addEventListener('click', privacyListener )
 }
 
 /**
@@ -148,6 +172,12 @@ function setSlideListeners(i) {
             setDestinationLinkListener(albumData, i);
             setMakeProfilePictureListener(albumData, i);
             const mediaId = albumData[i]["mediaId"];
+            const caption = albumData[i]["caption"];
+            if (caption != null) {
+                document.querySelector('div[data-mediaId="'+mediaId+'"] [contenteditable]').innerHTML = caption.toString();
+            } else {
+                document.querySelector('div[data-mediaId="'+mediaId+'"] [contenteditable]').innerHTML = "Click to add caption, press enter to save.";
+            }
 
             if(albumData[i]["isMediaPublic"]) {setPrivacy=0;}
             else {setPrivacy=1;}
@@ -179,24 +209,40 @@ function getAlbum(userId, albumId, isOwner){
         url: '/users/albums/get/' + hidePrivate + '/' + albumId,
         contentType: 'application/json',
         success: (albumData) => {
-            addAlbum(albumData)
+            addAlbum(albumData, userId);
+            console.log(albumData);
         }
     });
 }
 
 
-async function addAlbum(albumData) {
+async function addAlbum(albumData, userId) {
     var path = "/users/home/servePicture/";
     for (let i=0; i<albumData.length; i++) {
-        await displayGrid(i, albumData, path);
-        await displaySlides(i, albumData, path);
+        if(!(albumData[i]["user"]["userid"] !== userId && albumData[i]["isPublic"] === false)) {
+            await displayGrid(i, albumData, path);
+            await displaySlides(i, albumData, path);
+        }
     }
-    showSlides(slideIndex);
+        showSlides(slideIndex);
 }
 
 async function displayGrid(i, albumData, path) {
-    var url = albumData[i]["urlWithPath"];
-    var img1 = document.createElement("img");
+    let url = albumData[i]["urlWithPath"];
+    let imgContainer = document.createElement("div");
+    imgContainer.classList.add("container");
+    imgContainer.setAttribute("id", "imgContainer");
+    let overlay = document.createElement("div");
+    overlay.classList.add("overlay");
+    let icon = document.createElement("i");
+    icon.classList.add("icon");
+    let privacyIcon = document.createElement("i");
+    if (albumData[i]["isMediaPublic"]) {
+        privacyIcon.classList.add("fa", "fa-eye-green");
+    } else {
+        privacyIcon.classList.add("fa", "fa-eye-red");
+    }
+    let img1 = document.createElement("img");
     img1.src = path + encodeURIComponent(url);
     img1.setAttribute("data-id", i);
     img1.setAttribute("data-mediaId", albumData[i]["mediaId"]);
@@ -206,14 +252,18 @@ async function displayGrid(i, albumData, path) {
         currentSlide(i+1);
         setSlideListeners(i)
     });
+    icon.appendChild(privacyIcon);
+    overlay.appendChild(icon);
+    imgContainer.appendChild(overlay);
+    imgContainer.appendChild(img1);
     if (i%4==0) {
-        document.getElementById('col1').appendChild(img1);
+        document.getElementById('col1').appendChild(imgContainer);
     } else if (i%4==1){
-        document.getElementById('col2').appendChild(img1);
+        document.getElementById('col2').appendChild(imgContainer);
     } else if (i%4==2){
-        document.getElementById('col3').appendChild(img1);
+        document.getElementById('col3').appendChild(imgContainer);
     } else if (i%4==3){
-        document.getElementById('col4').appendChild(img1);
+        document.getElementById('col4').appendChild(imgContainer);
     }
 }
 
@@ -222,6 +272,11 @@ async function displaySlides(i, albumData, path) {
     var mediaId = albumData[i]["mediaId"];
     var lightBox = document.getElementById("lightbox-modal");
     var mySlidesDiv = document.createElement("div");
+    var captionInput = document.createElement("p");
+    captionInput.setAttribute("id", "img-caption");
+    captionInput.setAttribute("captionMediaId", mediaId);
+    captionInput.setAttribute("contenteditable", "true");
+    captionInput.setAttribute("style", "color: white;");
     mySlidesDiv.classList.add("mySlides");
     mySlidesDiv.setAttribute("data-privacy", albumData[i]["isMediaPublic"]);
     mySlidesDiv.setAttribute("data-mediaId", mediaId);
@@ -230,7 +285,32 @@ async function displaySlides(i, albumData, path) {
     img1.classList.add("center-block");
     img1.src = path + encodeURIComponent(url);
     mySlidesDiv.appendChild(img1);
+    mySlidesDiv.appendChild(captionInput);
     lightBox.appendChild(mySlidesDiv);
+    var content = document.querySelector('div[data-mediaId="'+mediaId+'"] [contenteditable]');
+    // 1. Listen for changes of the contenteditable element
+    content.addEventListener('keydown', function (event) {
+        var esc = event.which == 27,
+            enterKey = event.which == 13,
+            el = event.target,
+            input = el.nodeName != 'INPUT',
+            data = {};
+
+        if (input) {
+            if (esc) {
+                // restore state
+                document.execCommand('undo');
+                el.blur();
+            } else if (enterKey) {
+                // save
+                data[el.getAttribute('data-name')] = el.innerHTML;
+                // we could send an ajax request to update the field
+                submitEditCaption(content.innerHTML, mediaId);
+                el.blur();
+                event.preventDefault();
+            }
+        }
+    }, true);
 }
 
 // Open the Modal
@@ -455,7 +535,6 @@ function toggleButtons(destId) {
 
 // Next/previous controls
 function plusSlides(n) {
-    setSlideListeners(slideIndex);
     showSlides(slideIndex += n);
 }
 
@@ -467,18 +546,21 @@ function currentSlide(n) {
 function showSlides(n) {
     var i;
     var slides = document.getElementsByClassName("mySlides");
-//  var captionText = document.getElementById("caption");
     if (n > slides.length) {slideIndex = 1}
     if (n < 1) {slideIndex = slides.length}
     for (i = 0; i < slides.length; i++) {
         slides[i].style.display = "none";
     }
     slides[slideIndex-1].style.display = "block";
-    if(slides[slideIndex-1].getAttribute("data-privacy") == "true") {
-        document.getElementById("privacyBtn").innerHTML = "Make Private";
-    } else if (slides[slideIndex-1].getAttribute("data-privacy") == "false"){
-        document.getElementById("privacyBtn").innerHTML = "Make Public";
+    const privacyBtn = document.getElementById("privacyBtn")
+    if (privacyBtn != null) {
+        if (slides[slideIndex - 1].getAttribute("data-privacy") == "true") {
+            document.getElementById("privacyBtn").innerHTML = "Make Private";
+        } else if (slides[slideIndex - 1].getAttribute("data-privacy") == "false") {
+            document.getElementById("privacyBtn").innerHTML = "Make Public";
+        }
     }
+    setSlideListeners(slideIndex-1);
 
 }
 
@@ -747,72 +829,11 @@ function deletePhotoRequest(photoId){
 
 
 /**
- * Requests the photo caption and sets the captionInput to match that if it exists.
- * @param photoId the id of the photo to get the caption from
- */
-function getPhotoCaption(photoId) {
-    $.ajax({
-        type: 'GET',
-        url: '/users/photos/'+ photoId +'/caption',
-        success:function(res){
-            const captionInput = document.getElementById("captionInput-" + photoId);
-            captionInput.value = res;
-        },
-        error: function(xhr, textStatus, errorThrown){
-            console.log(xhr.status + " " + textStatus + " " + errorThrown);
-
-        }
-    })
-}
-
-/**
- * Toggles the visibility of elements relating to captions.
- * Hides the edit caption button only if the caotion exists
- * @param photoId the id of the photo to toggle displays of
- */
-function toggleCaptionDisplays(photoId) {
-    const caption = document.getElementById("caption-" + photoId);
-    const captionInput = document.getElementById("captionInput-" + photoId);
-    const editCaptionBtn = document.getElementById("editCaptionButton-" + photoId);
-
-    if (captionInput.value) {
-        editCaptionBtn.style.display = 'none'
-    } else {
-        editCaptionBtn.style.display = 'block'
-    }
-
-    toggleDisplay(caption);
-    toggleDisplay(captionInput);
-}
-
-/**
- * Used to edit a caption, shows all button required to edit a caption,
- * calls getPhotoCaption to get the caption for the photo so the user
- * can edit it.
- * @param photoId
- */
-function editCaption(photoId) {
-    getPhotoCaption(photoId);
-    toggleCaptionDisplays(photoId);
-    document.getElementById("captionInput-" + photoId).focus();
-    document.getElementById("editCaptionButton-" + photoId).style.display = 'none';
-}
-
-/**
  * Sends a request to change the photo caption and toggles appropriate displays
  * @param caption the new caption
  * @param photoId the id of the photo to change the caption of
  */
 function submitEditCaption(caption, photoId) {
-    const errorMessage = document.getElementById(`lengthErrorMessage-${photoId}`);
-
-    if (caption.length > 255) {
-        errorMessage.style.display = 'block';
-        return;
-    }
-
-    // Remove error message
-    errorMessage.style.display = 'none';
 
     $.ajax({
         type: 'PUT',
@@ -824,8 +845,7 @@ function submitEditCaption(caption, photoId) {
             'Content-Type': 'application/json'
         },
         success:function(){
-            document.getElementById("caption-" + photoId).innerText = caption;
-            toggleCaptionDisplays(photoId);
+            console.log("caption edited");
         },
         error: function(xhr, textStatus, errorThrown){
             console.log(xhr.status + " " + textStatus + " " + errorThrown);

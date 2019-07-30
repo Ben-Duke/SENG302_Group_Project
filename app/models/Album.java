@@ -198,6 +198,29 @@ public class Album extends Model {
                 " Size: " +this.getMedia().size();
     }
 
+    /**
+     * Returns whether the album is public or not.
+     * An album is private if all the media within the album is private
+     * and the user viewing the album does not own the album.
+     * @param visitingUser the user viewing the album
+     * @return true if public, false if private
+     */
+    public boolean isPublicAlbum (User visitingUser) {
+        //All non-user albums are public
+        if (!(getOwner() instanceof User)) {
+            return true;
+        }
+        User albumOwner = (User) getOwner();
+        if(albumOwner.getUserid() == visitingUser.getUserid()) {
+            return true;
+        }
+        for (Media media : media) {
+            if(media.isMediaPublic) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     public Boolean getDefault() {
         return isDefault;

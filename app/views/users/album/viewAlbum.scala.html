@@ -47,29 +47,25 @@
 
 
             <div id="existingAlbumId" class="hidden">@album.albumId</div>
-            <!-- Caption text -->
-            <div class="caption-container">
-                <p id="img-caption"></p>
-                <li>
-                    <div>
-                        <p>
-                            Move to Album
-                            <input style="color: #000000;" id="album-search-move" list="album-results-move" name="Album Move" title="Move Album" placeholder="Search for Album">
-                            <datalist  id="album-results-move">
-                                @for(userAlbum <- user.getAlbums()){
-                                @if(userAlbum.albumId != album.albumId) {
-                                <option value=@userAlbum.getTitle()></option>
-                                }
-                                }
-                            </datalist>
-                        </p>
-                    </div>
-                </li>
-                <a class="btn btn-link" id="profilePictureBtn">Set Profile Picture</a>
-                <a class="btn btn-link" id="deletePhotoBtn">Delete</a>
-                <a class="btn btn-link" id="privacyBtn">Make Public/Private</a>
-                <a class="btn btn-link" id="linkDestinationBtn">Link Destination</a>
-            </div>
+            @if(album.getOwner == user || user.userIsAdmin) {
+                <!-- Caption text -->
+                <div class="caption-container">
+                    <a class="btn btn-link" id="profilePictureBtn" style="color: white; padding: 5px;">Set Profile Picture</a>
+                    <a class="btn btn-link" id="deletePhotoBtn" style="color: white; padding: 5px;">Delete</a>
+                    <a class="btn btn-link" id="privacyBtn" style="color: white; padding: 5px;">Make Public/Private</a>
+                    <a class="btn btn-link" id="linkDestinationBtn" style="color: white; padding: 5px;">Link Destination</a>
+                    <label for="album-search-move" style="color: white; padding: 5px;">Move to Album: </label>
+                    <input style="color: #000000;" id="album-search-move" list="album-results-move"
+                           name="Album Move" title="Move Album" placeholder="Search for Album">
+                    <datalist  id="album-results-move">
+                        @for(userAlbum <- user.getAlbums()){
+                        @if(userAlbum.albumId != album.albumId) {
+                        <option value=@userAlbum.getTitle()></option>
+                        }
+                        }
+                    </datalist>
+                </div>
+            }
         </div>
     </div>
 

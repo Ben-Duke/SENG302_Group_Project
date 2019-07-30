@@ -28,16 +28,16 @@
                     <div class="panel panel-default">
                         <div class="panel-heading">
                             <h3 class="panel-title">@album.getTitle()</h3>
-                            @album.getMedia.size() items
+                            @album.viewAllMedia(false).size() items
                         </div>
                         <div class="panel-body" style="min-height: 150px; max-height: 150px; height: 150px;">
                             <div id="Carousel@album.getAlbumId" class="carousel slide" data-ride="carousel">
 
                                     <!-- Wrapper for slides -->
                                 <div class="carousel-inner">
-                                    @if(0 < album.viewAllMedia(true).size()) {
+                                    @if(0 < album.viewAllMedia(false).size()) {
                                         <div class="item active">
-                                            <img class="center" id=@{album.viewAllMedia(true).get(0).getUrl()} style="width:140px;height:125px;" src="@{routes.HomeController.index(album.viewAllMedia(true).get(0).getUrlWithPath)}" alt="User Image">
+                                            <img class="center" id=@{album.viewAllMedia(false).get(0).getUrl()} style="width:140px;height:125px;" src="@{routes.HomeController.index(album.viewAllMedia(false).get(0).getUrlWithPath)}" alt="User Image">
                                         </div>
                                     } else {
                                         <div class="item active">
@@ -47,9 +47,9 @@
 
 
                                     @for(i <- 1 to 2) {
-                                        @if(i < album.viewAllMedia(true).size()){
+                                        @if(i < album.viewAllMedia(false).size()){
                                             <div class="item">
-                                                <img class="center" id=@{album.viewAllMedia(true).get(i).getUrl()} style="width:140px;height:125px;" src="@{routes.HomeController.index(album.viewAllMedia(true).get(i).getUrlWithPath)}" alt="User Image">
+                                                <img class="center" id=@{album.viewAllMedia(false).get(i).getUrl()} style="width:140px;height:125px;" src="@{routes.HomeController.index(album.viewAllMedia(false).get(i).getUrlWithPath)}" alt="User Image">
                                             </div>
                                         }
                                     }

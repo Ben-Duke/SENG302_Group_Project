@@ -61,7 +61,6 @@ public class AlbumController extends Controller {
      * @return JSON object with media urls
      */
     public Result getAlbum(Http.Request request, Integer albumId, Boolean hidePrivate) {
-        System.out.println("Get Album");
         Album album = AlbumAccessor.getAlbumById(albumId);
         List albumDetails = new ArrayList();
         for(Media media: album.getMedia()) {

@@ -84,121 +84,58 @@
                 <img class="modal-content" id="img01">
                 <h2 class="caption" id="modal-caption"></h2>
             </div>
+
+            <!-- new "copy"-->
             <div class="container">
-                <div class="row">
-                @for(i <- 0 to 2) {
-                    <div class="col-sm-2">
+                <div class="row" id="albumList">
+                @for(album <- user.getAlbums) {
+                    @if(album.isPublicAlbum(actualUser)) {
+                        <div class="col-sm-3 album">
+                            <a href="@routes.AlbumController.viewAlbum(album.getAlbumId)">
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <h3 class="panel-title">@album.getTitle()</h3>
+                                        @if(album.viewAllMedia(true).size() == 1) {
+                                            @album.viewAllMedia(true).size() item
+                                        } else {
+                                            @album.viewAllMedia(true).size() items
+                                        }
+                                    </div>
+                                    <div class="panel-body" style="min-height: 150px; max-height: 150px; height: 150px;">
+                                        <div id="Carousel@album.getAlbumId" class="carousel slide" data-ride="carousel">
 
-                    @if(i < user.getUserPhotos.size() ){
-                        <a href="#" data-toggle="modal" data-target="#destination-carousel">
-                            <div class="container" id="imagesContainer" >
-                                <div class="overlay">
-                                    <i class="icon" title="User Profile">
-                                    @if(user.getUserPhotos.get(i).getIsPublic) {
-                                        <i class="fa fa-eye"></i>
-                                    } else {
-                                        <i class="fa fa-eye-slash"></i>
-                                    }
-                                    </i>
+                                                <!-- Wrapper for slides -->
+                                            <div class="carousel-inner">
+                                                @if(0 < album.viewAllMedia(true).size()) {
+                                                    <div class="item active">
+                                                        <img class="center" id=@{album.viewAllMedia(true).get(0).getUrl()} style="width:140px;height:125px;" src="@{routes.HomeController.index(album.viewAllMedia(true).get(0).getUrlWithPath)}" alt="User Image">
+                                                    </div>
+                                                } else {
+                                                    <div class="item active">
+                                                        <img class="center"  style="width:140px;height:125px;"src="/assets/images/destinationPlaceHolder.png">
+                                                    </div>
+                                                }
+
+
+                                                @for(i <- 1 to 2) {
+                                                    @if(i < album.viewAllMedia(true).size()){
+                                                        <div class="item">
+                                                            <img class="center" id=@{album.viewAllMedia(true).get(i).getUrl()} style="width:140px;height:125px;" src="@{routes.HomeController.index(album.viewAllMedia(true).get(i).getUrlWithPath)}" alt="User Image">
+                                                        </div>
+                                                    }
+                                                }
+                                            </div>
+
+                                        </div>
+                                    </div>
                                 </div>
-                                @if(user.getUserPhotos.get(i).getIsPublic) {
-                                    <div class="hidden" id="caption-@user.getUserPhotos.get(i).getUrl">@user.getUserPhotos.get(i).getCaption</div>
-                                    <img class="img-thumbnail" id=@{user.getUserPhotos.get(i).getUrl} width="60" src="@{routes.HomeController.index(user.getUserPhotos.get(i).getUrlWithPath)}" alt="User Image">
-                                }
-
-                            </div>
-                        </a>
-
-
+                            </a>
+                        </div>
                     }
-
-                    </div>
-                }
-                </div>
-
-                <div class="row">
-                @for(i <- 3 to 5) {
-                    <div class="col-sm-2">
-
-                    @if(i < user.getUserPhotos.size() ){
-                        <a href="#" data-toggle="modal" data-target="#destination-carousel">
-                            <div class="container" id="imagesContainer" >
-                                <div class="overlay">
-                                    <i class="icon" title="User Profile">
-                                    @if(user.getUserPhotos.get(i).getIsPublic) {
-                                        <i class="fa fa-eye"></i>
-                                    } else {
-                                        <i class="fa fa-eye-slash"></i>
-                                    }
-                                    </i>
-                                </div>
-                                @if(user.getUserPhotos.get(i).getIsPublic) {
-                                    <div class="hidden" id="caption-@user.getUserPhotos.get(i).getUrl">@user.getUserPhotos.get(i).getCaption</div>
-                                    <img class="img-thumbnail" id=@{user.getUserPhotos.get(i).getUrl} width="60" src="@{routes.HomeController.index(user.getUserPhotos.get(i).getUrlWithPath)}" alt="User Image">
-                                }
-
-                            </div>
-                        </a>
-
-
-                    }
-                    </div>
-                }
-                </div>
-
-                <div class="row">
-                @for(i <- 6 to 8) {
-                    <div class="col-sm-2">
-
-                    @if(i < user.getUserPhotos.size() ){
-                        <a href="#" data-toggle="modal" data-target="#destination-carousel">
-                            <div class="container" id="imagesContainer" >
-                                <div class="overlay">
-                                    <i class="icon" title="User Profile">
-                                    @if(user.getUserPhotos.get(i).getIsPublic) {
-                                        <i class="fa fa-eye"></i>
-                                    } else {
-                                        <i class="fa fa-eye-slash"></i>
-                                    }
-                                    </i>
-                                </div>
-                                @if(user.getUserPhotos.get(i).getIsPublic) {
-                                    <div class="hidden" id="caption-@user.getUserPhotos.get(i).getUrl">@user.getUserPhotos.get(i).getCaption</div>
-                                    <img class="img-thumbnail" id=@{user.getUserPhotos.get(i).getUrl} width="60" src="@{routes.HomeController.index(user.getUserPhotos.get(i).getUrlWithPath)}" alt="User Image">
-                                }
-
-                            </div>
-                        </a>
-
-
-                    }
-
-                    </div>
                 }
                 </div>
             </div>
-            <script>
-                    // Get the modal
-                    var modal = document.getElementById('modal-picture');
-                    // When the user clicks, they quit the modal view
-                    modal.onclick = function () {
-                        this.style.display = "none";
-                    };
 
-                    // Get the image and insert it inside the modal
-                    var images = document.getElementsByClassName("img-thumbnail");
-                    var modalImg = document.getElementById("img01");
-                    var caption = document.getElementById("modal-caption");
-                    // loops through each thumbnail and adds the event listener
-                    for (i = 0; i < @user.getUserPhotos.length; i++) {
-                        images[i].onclick = function() {
-                            modal.style.display = "block";
-                            modalImg.src = this.src;
-                            const captionId = "caption-" + this.id;
-                            caption.innerText = document.getElementById(captionId).innerText;
-                        };
-                    }
-            </script>
         </div>
     </div>
 

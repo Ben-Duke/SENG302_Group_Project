@@ -1,3 +1,64 @@
+
+#imagesContainer {
+    position: relative;
+    max-width: 120px;
+    height: 100%;
+    width: 100%;
+    left: -25px;
+    top: -5px;
+}
+
+.overlay {
+    position: relative;
+    left: 80%;
+    max-width: 120px;
+    opacity: 1;
+    transition: .3s ease;
+}
+
+.icon {
+    color: white;
+    font-size: 25px;
+    position: absolute;
+    top: -10px;
+    max-width: 60px;
+    transform: translate(50%, 50%);
+    -ms-transform: translate(-50%, -50%);
+}
+
+.fa {
+    display: inline-block;
+    font-size: inherit;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale
+}
+
+.fa-eye-green {
+    color: green;
+}
+
+.fa-eye-red {
+    color: red;
+}
+
+.fa-eye-green:before {
+    content: "\1F441";
+}
+
+.fa-eye-red:before {
+    content: "\1F441";
+}
+
+
+#img-caption {
+    margin: 10px 100px 10px 100px;
+    z-index: 1;
+    text-align: center;
+    position: relative;
+    font-size: 20px;
+}
+
 .preview-wrapper{
     width: 100px;
     height:100px;
@@ -32,7 +93,11 @@ preview-wrapper-original{
   padding: 0 4px;
 }
 
-.column img {
+.column .container {
+  width: 100%;
+}
+
+.column .container img{
   margin-top: 8px;
   vertical-align: middle;
   width: 100%;
@@ -61,14 +126,14 @@ preview-wrapper-original{
 
 #lightbox-modal {
     width:100%;
-    height:93%;
+    height:90%;
     display:flex;
     justify-content:center;
     background-color: black;
 }
 
 #lightbox-modal img {
-    max-height: 90%;
+    max-height: 85%;
     max-width: 90%;
     width: auto;
     height: auto;
@@ -167,6 +232,8 @@ preview-wrapper-original{
   text-align: center;
   background-color: black;
   color: white;
+  position: relative;
+  padding: 5px;
 }
 
 img.demo {

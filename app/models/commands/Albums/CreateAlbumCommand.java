@@ -30,7 +30,7 @@ public class CreateAlbumCommand extends UndoableCommand {
             album = new Album(media, owner, title, false);
         }
         AlbumAccessor.insert(album);
-        album = AlbumAccessor.getAlbumByTitle(title);
+        album = AlbumAccessor.getAlbumById(album.getAlbumId());
     }
 
     public void undo() {

@@ -56,17 +56,17 @@ public class BaseTestWithApplicationAndDatabase extends WithApplication {
 
         Map<String, String> configuration = new HashMap<>();
         configuration.put("play.db.config", "db");
-        configuration.put("play.db.default", "test");
-        configuration.put("db.test.driver", "org.h2.Driver");
-        configuration.put("db.test.url", "jdbc:h2:mem:testDB;MODE=MYSQL;");
-        configuration.put("ebean.test", "models.*");
-        configuration.put("play.evolutions.db.test.enabled", "true");
-        configuration.put("play.evolutions.db.test.autoApply", "false");
-
-        // Dummy defailt database
+        configuration.put("play.db.default", "default");
         configuration.put("db.default.driver", "org.h2.Driver");
         configuration.put("db.default.url", "jdbc:h2:mem:defaultDB;MODE=MYSQL;");
         configuration.put("ebean.default", "models.*");
+        configuration.put("play.evolutions.db.default.enabled", "true");
+        configuration.put("play.evolutions.db.default.autoApply", "false");
+
+        // Dummy defailt database
+//        configuration.put("db.default.driver", "org.h2.Driver");
+//        configuration.put("db.default.url", "jdbc:h2:mem:defaultDB;MODE=MYSQL;");
+//        configuration.put("ebean.default", "models.*");
 
         //Set up the fake application to use the in memory database config
         application = fakeApplication(configuration);

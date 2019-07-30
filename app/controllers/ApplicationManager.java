@@ -10,7 +10,7 @@ import java.nio.file.Paths;
  *  matches those declared in db {} of application.conf and test.conf
  */
 enum DatabaseName {
-    PROD, TEST
+    PROD, DEFAULT
 }
 
 /**
@@ -69,7 +69,7 @@ public class ApplicationManager {
 
     /** Set the app to use the testing database */
     public static void setTesting() {
-        databaseName = DatabaseName.TEST;
+        databaseName = DatabaseName.DEFAULT;
         isTest = true;
     }
 }

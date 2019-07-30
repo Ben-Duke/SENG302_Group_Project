@@ -169,12 +169,29 @@
             <div id="tripsTab" class="tab-content tab-pane fade in active">
 
                 <div id="singleTripContainer">
+                    <table class="table table-hover" id="placeholderTripTable">
+                        <thead>
+                            <tr>
+                                <th scope="col">Name</th>
+                                <th scope="col">Type</th>
+                                <th scope="col">Arrival</th>
+                                <th scope="col">Departure</th>
+                                <th scope="col"></th>
+                            </tr>
+                        </thead>
+                    </table>
 
                     @for(trip <- trips) {
 
                     <div id="singleTrip_@trip.getTripid()" class="singleTrip">
 
-                        <table class="table table-hover" id="tripTable">
+                        <div style="margin-top: 15px; height: 30px;">
+                            <h4 id="tripName_@trip.getTripid()" style="cursor: pointer;" onclick="toggleEditTripName(true)">
+                            @trip.getTripName()</h4>
+                            <input style="display: none;" type="text" id="tripNameInput_@trip.getTripid()" value="@trip.getTripName()" onblur="updateTripName(this.value)">
+                        </div>
+
+                        <table class="table table-hover">
                             <thead>
                                 <tr>
                                     <th scope="col">Name</th>
@@ -184,7 +201,7 @@
                                     <th scope="col"></th>
                                 </tr>
                             </thead>
-                            <tbody id="tripTable_@trip.getTripid()">
+                            <tbody id="tripTableBody_@trip.getTripid()">
                             @for(visit <- trip.getOrderedVisits()){
                                 <tr id="@visit.getVisitid()">
                                     <th scope ="row">@visit.getDestination().getDestName()</th>
@@ -202,6 +219,8 @@
                                 }
                             </tbody>
                         </table>
+
+                        <button class="btn btn-danger" onclick="deleteTripRequest(@trip.getTripid(), '@routes.HomeController.mainMapPage()')">Delete trip</button>
 
                     </div>
                     }

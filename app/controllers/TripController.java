@@ -284,7 +284,7 @@ public class TripController extends Controller {
                 if (trip.getUser().getUserid() == user.getUserid() || user.userIsAdmin()) {
                     DeleteTripCommand deleteTripCommand = new DeleteTripCommand(trip);
                     user.getCommandManager().executeCommand(deleteTripCommand);
-                    return redirect(routes.HomeController.showhome());
+                    return redirect(routes.HomeController.mainMapPage());
                 } else {
                     return unauthorized("Oops, this is not your trip.");
                 }
@@ -479,6 +479,31 @@ public class TripController extends Controller {
         return ok();
     }
 
+    public Result updateTripName(Http.Request request, Integer tripId) {
+        User user = User.getCurrentUser(request);
+        if (user == null) { return redirect(routes.UserController.userindex()); }
+
+        Trip trip = TripAccessor.getTripById(tripId);
+        if (trip == null) { return badRequest("Trip does not exits"); }
+
+        if (!trip.isUserOwner(user.getUserid())) { return unauthorized(); }
+
+        String newTripName = new ObjectMapper().convertValue(request.body().asJson(), String.class);
+
+        if (trip.getTripName().equals(newTripName)) {
+            return ok();
+        }
+
+        if (newTripName.isEmpty() || newTripName.equals(" ")) {
+            return badRequest();
+        }
+
+        trip.setTripName(newTripName);
+        TripAccessor.update(trip);
+
+        return ok();
+    }
+
 
     /**
      * Handles the request to swap two destinations from a trip. If the swapped list has repeat destinations or the
@@ -491,7 +516,6 @@ public class TripController extends Controller {
      */
     public Result swapvisits(Http.Request request, Integer tripId){
         ArrayList<String> list = new ObjectMapper().convertValue(request.body().asJson(), ArrayList.class);
-
         User user = User.getCurrentUser(request);
         Trip trip = Trip.find().byId(tripId);
         if (user != null) {

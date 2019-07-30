@@ -80,6 +80,8 @@ function displayTrip(tripId, startLat, startLng) {
     if (checkBox.checked === true) {
         if (currentlyDisplayedTripId !== undefined) {
             document.getElementById("singleTrip_" + currentlyDisplayedTripId).style.display = "none";
+        } else {
+            document.getElementById("placeholderTripTable").style.display = "none";
         }
 
         currentlyDisplayedTripId = tripId;
@@ -106,7 +108,7 @@ $('tbody').sortable({
                 xhr.setRequestHeader('Csrf-Token', token);
             }
         });
-        var data = jQuery('#tripTable_'+currentlyDisplayedTripId+' tr').map(function(){
+        var data = jQuery('#tripTableBody_'+currentlyDisplayedTripId+' tr').map(function(){
             return jQuery (this).attr("id");
         }).get();
         var url = '/users/trips/edit/' + currentlyDisplayedTripId;
@@ -187,7 +189,70 @@ function initPlacesAutocomplete() {
 }
 
 
+function toggleEditTripName(toEdit) {
+    if (toEdit) {
+        document.getElementById("tripName_"+currentlyDisplayedTripId).style.display = 'none';
+        document.getElementById("tripNameInput_"+currentlyDisplayedTripId).style.display = 'inline';
+        document.getElementById("tripNameInput_"+currentlyDisplayedTripId).focus();
+    } else {
+        document.getElementById("tripName_"+currentlyDisplayedTripId).style.display = 'inline';
+        document.getElementById("tripNameInput_"+currentlyDisplayedTripId).style.display = 'none'
+    }
+}
 
+function updateTripName(newName) {
+
+    let token =  $('input[name="csrfToken"]').attr('value');
+    $.ajaxSetup({
+        beforeSend: function(xhr) {
+            xhr.setRequestHeader('Csrf-Token', token);
+        }
+    });
+    $.ajax({
+        url: '/user/trips/edit/'+currentlyDisplayedTripId,
+        method: "PATCH",
+        data: JSON.stringify(newName),
+        contentType : 'application/json',
+        success: function(data, textStatus, xhr){
+            if(xhr.status == 200) {
+                document.getElementById("tripName_"+currentlyDisplayedTripId).innerText = newName;
+                toggleEditTripName(false);
+            }
+            else{
+
+            }
+        },
+        error: function(xhr, settings){
+            if(xhr.status == 400) {
+                document.getElementById("tripNameInput_"+currentlyDisplayedTripId).value =
+                    document.getElementById("tripName_"+currentlyDisplayedTripId).innerText;
+            }
+            else if(xhr.status == 403){
+            }
+            else{
+            }
+        }
+    });
+
+
+
+}
+
+function deleteTripRequest(tripId, url){
+    let token =  $('input[name="csrfToken"]').attr('value');
+    $.ajaxSetup({
+        beforeSend: function(xhr) {
+            xhr.setRequestHeader('Csrf-Token', token);
+        }
+    });
+    $.ajax({
+        url: '/users/trips/' + tripId,
+        method: "DELETE",
+        success: function(res) {
+            window.location = url;
+        }
+    });
+}
 
 
 

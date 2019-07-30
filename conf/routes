@@ -108,6 +108,8 @@ GET     /users/trips/addDestinations/:id    controllers.TripController.addTripDe
 #Handles creating trips
 POST    /users/trips/create         controllers.TripController.savetrip(request: Request)
 
+PATCH /user/trips/edit/:id      controllers.TripController.updateTripName(request: Request, id: Integer)
+
 #Handles deleting visits from a trip
 DELETE    /users/trips/edit/:id    controllers.TripController.deletevisit(request: Request, id:Integer)
 

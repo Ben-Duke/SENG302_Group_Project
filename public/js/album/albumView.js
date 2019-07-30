@@ -261,6 +261,9 @@ function deleteAlbum(albumId) {
         method: "Delete",
         headers: {
             'Content-Type': 'application/json'
+        },
+        success: function() {
+            window.location.replace('/users/albums')
         }
     });
 }

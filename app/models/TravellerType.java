@@ -7,7 +7,9 @@ import io.ebean.Model;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 /** Model class for traveller type construction */
 @Table(
@@ -79,6 +81,16 @@ public class TravellerType extends Model implements Comparable<TravellerType> {
 
     public void setUsers(Set<User> users) {
         this.users = users;
+    }
+
+
+    public static Map<String, Boolean> getTravellerTypeMap() {
+        List<TravellerType> travellerTypes = TravellerType.find.all();
+        Map<String, Boolean> travellerTypesMap = new TreeMap<>();
+        for (TravellerType travellerType : travellerTypes) {
+            travellerTypesMap.put(travellerType.getTravellerTypeName(), false);
+        }
+        return travellerTypesMap;
     }
 
 

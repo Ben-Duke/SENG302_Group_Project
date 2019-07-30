@@ -281,4 +281,8 @@ public class UserPhoto extends Model {
         this.destinations = editedPhoto.getDestinations();
         this.primaryPhotoDestinations = editedPhoto.getPrimaryPhotoDestinations();
     }
+
+    public boolean isUserOwner(User user) {
+        return this.getUser().getUserid() == user.getUserid();
+    }
 }

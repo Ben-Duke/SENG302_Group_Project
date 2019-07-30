@@ -83,12 +83,16 @@
 
             @if(destination.hasPrimaryPhoto()) {
 
-            <div class="row">
-                <img id=@{destination.getPrimaryPhoto.getUrl} height="250"
-                src="@{routes.HomeController.index(destination.getPrimaryPhoto().getUrlWithPath())}" alt="Primary Image">
-            </div>
+                <div class="row">
+                    <img id=@{destination.getPrimaryPhoto.getUrl} height="250"
+                    src="@{routes.HomeController.index(destination.getPrimaryPhoto().getUrlWithPath())}" alt="Primary Image">
+                </div>
 
+            } else {
+                <img id="/assets/images/destinationPlaceHolder.png" height="150"
+                src="/assets/images/destinationPlaceHolder.png" alt="Placeholder Primary Image">
             }
+
 
             <div class="row">
                 <label class="col-sm-3 control-label">Type</label>
@@ -159,11 +163,13 @@
     <div class="row" style="margin-bottom: 50px;">
 
         @for(photo <- destination.getUserPhotos()) {
+            @if(photo.isUserOwner(user) || photo.isPublic()) {
 
-            <a href="#" data-toggle="modal" data-target="#photo-carousel">
-                <img id=@{photo.getUrl} height="150"
-                src="@{routes.HomeController.index(photo.getUrlWithPath())}" alt="Destination Image">
-            </a>
+                <a href="#" data-toggle="modal" data-target="#photo-carousel">
+                    <img id=@{photo.getUrl} height="150"
+                    src="@{routes.HomeController.index(photo.getUrlWithPath())}" alt="Destination Image">
+                </a>
+            }
 
         }
 
@@ -225,23 +231,25 @@
                 </ol>
                 <div id="carousel-inner" class="carousel-inner" style="text-align: center;">
                     @for(photo <- destination.getUserPhotos()) {
+                        @if(photo.isUserOwner(user) || photo.isPublic()) {
                             <!-- Sets the first image to be the first image displayed. To be changed to the image clicked-->
-                        @if(photo == user.getUserPhotos().get(0)){
-                            <div id="caro-@photo.getPhotoId" class="item active">
+                            @if(photo == user.getUserPhotos().get(0)){
+                                <div id="caro-@photo.getPhotoId" class="item active">
                             } else{
-                            <div id="caro-@photo.getPhotoId" class="item">
+                                <div id="caro-@photo.getPhotoId" class="item">
                             }
 
-                        <img class="center" id="carouselImage@photo.getPhotoId()" src="@{routes.HomeController.index(photo.getUrlWithPath)}" style="height: 75%; margin: auto;">
+                                    <img class="center" id="carouselImage@photo.getPhotoId()" src="@{routes.HomeController.index(photo.getUrlWithPath)}" style="height: 75%; margin: auto;">
 
-                        @if(photo != destination.getPrimaryPhoto()) {
-                            <a class="btn btn-primary" id="setPrimaryPicture" href="@routes.DestinationController.setPrimaryPhoto(photo.getPhotoId(), destination.getDestId())">
-                            Set as primary</a>
+                                    @if(photo != destination.getPrimaryPhoto()) {
+                                        <a class="btn btn-primary" id="setPrimaryPicture" href="@routes.DestinationController.setPrimaryPhoto(photo.getPhotoId(), destination.getDestId())">
+                                        Set as primary</a>
+                                    }
+
+                                    <a class="btn btn-danger" href="@routes.DestinationController.unlinkPhotoFromDestination(photo.getPhotoId(), destination.getDestId())">
+                                    Remove Photo</a>
+                                </div>
                         }
-
-                        <a class="btn btn-danger" href="@routes.DestinationController.unlinkPhotoFromDestination(photo.getPhotoId(), destination.getDestId())">
-                        Remove Photo</a>
-                    </div>
                     }
                 </div>
                     <a class ="left carousel-control" href="#myslider" data-slide="prev">
@@ -261,7 +269,7 @@
 
     <script src="@routes.Assets.at("js/destination/viewDestination.js")"></script>
     <script>setLatLng(@destination.getLatitude(), @destination.getLongitude());</script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDCyC_ON0GgSmJIfPlL7oke5PZgbR8TLbg&libraries=drawing&callback=initMap"
+    <script src="https://maps.googleapis.com/maps/api/js?key=&libraries=drawing&callback=initMap"
     async defer></script>
 
 

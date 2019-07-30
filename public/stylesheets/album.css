@@ -1,3 +1,56 @@
+
+#imagesContainer {
+    position: relative;
+    max-width: 120px;
+    height: 100%;
+    width: 100%;
+    left: -25px;
+    top: -5px;
+}
+
+.overlay {
+    position: relative;
+    left: 80%;
+    max-width: 120px;
+    opacity: 1;
+    transition: .3s ease;
+}
+
+.icon {
+    color: white;
+    font-size: 25px;
+    position: absolute;
+    top: -10px;
+    max-width: 60px;
+    transform: translate(50%, 50%);
+    -ms-transform: translate(-50%, -50%);
+}
+
+.fa {
+    display: inline-block;
+    font-size: inherit;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale
+}
+
+.fa-eye-green {
+    color: green;
+}
+
+.fa-eye-red {
+    color: red;
+}
+
+.fa-eye-green:before {
+    content: "\1F441";
+}
+
+.fa-eye-red:before {
+    content: "\1F441";
+}
+
+
 #img-caption {
     margin: 10px 100px 10px 100px;
     z-index: 1;
@@ -40,7 +93,11 @@ preview-wrapper-original{
   padding: 0 4px;
 }
 
-.column img {
+.column .container {
+  width: 100%;
+}
+
+.column .container img{
   margin-top: 8px;
   vertical-align: middle;
   width: 100%;

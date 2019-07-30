@@ -228,8 +228,21 @@ async function addAlbum(albumData, userId) {
 }
 
 async function displayGrid(i, albumData, path) {
-    var url = albumData[i]["urlWithPath"];
-    var img1 = document.createElement("img");
+    let url = albumData[i]["urlWithPath"];
+    let imgContainer = document.createElement("div");
+    imgContainer.classList.add("container");
+    imgContainer.setAttribute("id", "imgContainer");
+    let overlay = document.createElement("div");
+    overlay.classList.add("overlay");
+    let icon = document.createElement("i");
+    icon.classList.add("icon");
+    let privacyIcon = document.createElement("i");
+    if (albumData[i]["isMediaPublic"]) {
+        privacyIcon.classList.add("fa", "fa-eye-green");
+    } else {
+        privacyIcon.classList.add("fa", "fa-eye-red");
+    }
+    let img1 = document.createElement("img");
     img1.src = path + encodeURIComponent(url);
     img1.setAttribute("data-id", i);
     img1.setAttribute("data-mediaId", albumData[i]["mediaId"]);
@@ -239,14 +252,18 @@ async function displayGrid(i, albumData, path) {
         currentSlide(i+1);
         setSlideListeners(i)
     });
+    icon.appendChild(privacyIcon);
+    overlay.appendChild(icon);
+    imgContainer.appendChild(overlay);
+    imgContainer.appendChild(img1);
     if (i%4==0) {
-        document.getElementById('col1').appendChild(img1);
+        document.getElementById('col1').appendChild(imgContainer);
     } else if (i%4==1){
-        document.getElementById('col2').appendChild(img1);
+        document.getElementById('col2').appendChild(imgContainer);
     } else if (i%4==2){
-        document.getElementById('col3').appendChild(img1);
+        document.getElementById('col3').appendChild(imgContainer);
     } else if (i%4==3){
-        document.getElementById('col4').appendChild(img1);
+        document.getElementById('col4').appendChild(imgContainer);
     }
 }
 

@@ -45,9 +45,9 @@
 
 
             <div id="existingAlbumId" class="hidden">@album.albumId</div>
-            <!-- Caption text -->
-            <div class="caption-container">
-                @if(album.getOwner == user || user.userIsAdmin) {
+            @if(album.getOwner == user || user.userIsAdmin) {
+                <!-- Caption text -->
+                <div class="caption-container">
                     <a class="btn btn-link" id="profilePictureBtn" style="color: white; padding: 5px;">Set Profile Picture</a>
                     <a class="btn btn-link" id="deletePhotoBtn" style="color: white; padding: 5px;">Delete</a>
                     <a class="btn btn-link" id="privacyBtn" style="color: white; padding: 5px;">Make Public/Private</a>
@@ -62,8 +62,8 @@
                         }
                         }
                     </datalist>
-                }
-            </div>
+                </div>
+            }
         </div>
     </div>
 

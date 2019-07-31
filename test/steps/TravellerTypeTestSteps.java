@@ -55,7 +55,7 @@ public class TravellerTypeTestSteps extends BaseTestWithApplicationAndDatabase {
                 .overrides(testModule);
         Guice.createInjector(builder.applicationModule()).injectMembers(this);
         Helpers.start(application);
-        ApplicationManager.setUserPhotoPath("/test/resources/test_photos/user_");
+        ApplicationManager.setMediaPath("/test/resources/test_photos/user_");
         TestDatabaseManager.populateDatabase();
     }
 

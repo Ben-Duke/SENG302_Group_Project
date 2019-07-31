@@ -50,12 +50,12 @@ public class UploadPhotoCommand extends UndoableCommand {
         try {
             java.nio.file.Files.createDirectories(Paths.get(
                     Paths.get(".").toAbsolutePath().normalize().toString()
-                    + ApplicationManager.getUserMediaPath() + userPhoto.getUser().getUserid() + "/"));
+                    + ApplicationManager.getMediaPath() + "/"));
         } catch (IOException e) {
             logger.error("IOException on creating directory for photo", e);
         }
         String unusedAbsoluteFilePath = Paths.get(".").toAbsolutePath().normalize().toString()
-                + ApplicationManager.getUserMediaPath() + userPhoto.getUser().getUserid() + "/" + userPhoto.getUrl();
+                + ApplicationManager.getMediaPath() + "/" + userPhoto.getUrl();
         fileObject.copyTo(Paths.get(unusedAbsoluteFilePath), true);
         UserPhotoAccessor.insert(userPhoto);
         userPhoto = UserPhotoAccessor.getUserPhotoByUrl(userPhoto.getUrl());

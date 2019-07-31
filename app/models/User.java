@@ -7,6 +7,7 @@ import io.ebean.Finder;
 import io.ebean.Model;
 import io.ebean.annotation.CreatedTimestamp;
 import models.commands.General.CommandManager;
+import models.media.MediaOwner;
 import org.mindrot.jbcrypt.BCrypt;
 import play.data.format.Formats;
 import play.mvc.Http;
@@ -23,7 +24,7 @@ import java.util.*;
 @Table(name = "user",
         uniqueConstraints = @UniqueConstraint(columnNames = "email")
 )
-public class User extends Model implements Comparable<User>, AlbumOwner  {
+public class User extends Model implements Comparable<User>, AlbumOwner, MediaOwner {
 
     @Column(name="email")
     private String email; // The email of the User
@@ -99,6 +100,7 @@ public class User extends Model implements Comparable<User>, AlbumOwner  {
 
     @JsonIgnore
     @OneToMany(mappedBy = "user")
+    @Deprecated
     private List<UserPhoto> userPhotos;
 
     private static Finder<Integer,User> find = new Finder<>(User.class);

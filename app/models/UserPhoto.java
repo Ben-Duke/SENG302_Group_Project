@@ -174,8 +174,4 @@ public class UserPhoto extends Media {
         this.albums = editedPhoto.getAlbums();
         this.primaryPhotoDestinations = editedPhoto.getPrimaryPhotoDestinations();
     }
-
-    public void unlinkFromUser() {
-        this.isUnlinkedFromUser = true;
-    }
 }

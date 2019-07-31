@@ -94,7 +94,7 @@ public class AlbumController extends Controller {
             Media media = MediaAccessor.getMediaById(mediaId);
 
             if (media == null) { return badRequest("Not such media"); }
-            if (!media.userIsOwner(user)) { return unauthorized("Not your media"); }
+            if (!media.isOwner(user)) { return unauthorized("Not your media"); }
 
             cmd = new CreateAlbumCommand(title, user, media);
 
@@ -169,7 +169,7 @@ public class AlbumController extends Controller {
         for (Integer mediaId : mediaIds) {
             Media media = MediaAccessor.getMediaById(mediaId);
             if (media == null) { return badRequest("Media does not exist"); }
-            if (!media.userIsOwner(user)) { return unauthorized("Not your media"); }
+            if (!media.isOwner(user)) { return unauthorized("Not your media"); }
 
             medias.add(media);
         }
@@ -242,7 +242,7 @@ public class AlbumController extends Controller {
             Media media = MediaAccessor.getMediaById(mediaId);
             if (media == null) { return badRequest("Media does not exist"); }
             if (!album.containsMedia(media)) { return badRequest("Media is not in album"); }
-            if (!media.userIsOwner(user)) { return unauthorized("Not your media"); }
+            if (!media.isOwner(user)) { return unauthorized("Not your media"); }
 
             medias.add(media);
         }
@@ -277,7 +277,7 @@ public class AlbumController extends Controller {
         for (Integer mediaId : mediaIds) {
             Media media = MediaAccessor.getMediaById(mediaId);
             if (media == null) { return badRequest("Media does not exist"); }
-            if (!media.userIsOwner(user)) { return unauthorized("Not your media"); }
+            if (!media.isOwner(user)) { return unauthorized("Not your media"); }
 
             medias.add(media);
         }
@@ -362,8 +362,19 @@ public class AlbumController extends Controller {
             }
         }
 
-        photo.unlinkFromUser();
+        photo.user = null;
         UserPhotoAccessor.update(photo);
+
+        List<Album> albumsToRemoveMediaFrom = new ArrayList<Album>();
+
+        for (Album album: user.getAlbums()) {
+            if (album.containsMedia(photo)) {
+                System.out.println("album size start: " + album.getMedia().size());
+                album.removeMedia(photo);
+                System.out.println("album size end: " + album.getMedia().size());
+                AlbumAccessor.update(album);
+            }
+        }
 
 
         return new Result(Http.Status.NOT_IMPLEMENTED);

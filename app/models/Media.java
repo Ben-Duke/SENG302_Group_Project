@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import controllers.ApplicationManager;
 import io.ebean.Finder;
 import io.ebean.Model;
+import models.media.MediaOwner;
 
 import javax.persistence.*;
 import java.nio.file.Paths;
@@ -27,6 +28,11 @@ public abstract class Media extends Model {
     @JoinColumn(name = "user", referencedColumnName = "userid")
     public User user;
 
+    @ManyToMany(mappedBy = "mediaList")
+    private List<Destination> destinations;
+
+    private List<MediaOwner> mediaOwners;
+
     @JsonIgnore
     @ManyToMany(mappedBy = "media")
     public List<Album> albums;
@@ -49,8 +55,6 @@ public abstract class Media extends Model {
     }
 
     public static Finder<Integer,Media> find = new Finder<>(Media.class);
-
-    public boolean isUnlinkedFromUser = false;
 
     /**
      * Default constructor for caption edit commands
@@ -88,19 +92,57 @@ public abstract class Media extends Model {
     }
 
     /**
+     * Sets the media owner depending on the type of the owner.
+     * @param mediaOwner the media owner
+     */
+    private void addMediaOwnerDetails(MediaOwner mediaOwner) {
+        this.mediaOwners.add(mediaOwner);
+
+        if(mediaOwner instanceof User) {
+            this.user = (User) mediaOwner;
+        } else if(mediaOwner instanceof Destination) {
+            this.destinations.add((Destination) mediaOwner);
+        } else {
+            throw new IllegalArgumentException("Invalid MediaOwner type");
+        }
+    }
+
+    /**
      * Get the url for the media with its full path
      * @return the full path string for the file
      */
     public String getUrlWithPath() {
         return Paths.get(".").toAbsolutePath().normalize().toString()
-                + ApplicationManager.getUserMediaPath()
+                + ApplicationManager.getMediaPath()
                 + this.getUser().getUserid()
                 + "/"
                 + this.getUrl();
     }
 
-    public boolean userIsOwner(User user) {
-        return user.getUserid() == this.getUser().getUserid();
+    /**
+     * Checks if a MediaOwner owns this media item.
+     *
+     * @param mediaOwner The MediaOwner to check owns this media item
+     *
+     * @return A boolean, true if mediaOwner does own it, otherwise false.
+     */
+    public boolean isOwner(MediaOwner mediaOwner) {
+        if(mediaOwner instanceof User) {
+            if (this.user != null) {
+                return ((User) mediaOwner).getUserid() == this.user.getUserid();
+            }
+        } else if(mediaOwner instanceof Destination) {
+            Destination destMaybeOwner = (Destination)mediaOwner;
+            for (Destination destination: this.destinations) {
+                if (destination.getDestId() == destMaybeOwner.getDestId()) {
+                    return true;
+                }
+            }
+        } else {
+            throw new IllegalArgumentException("Invalid MediaOwner type");
+        }
+
+        return false;
     }
 
     public void setUrl(String url) {this.url = url; }

@@ -34,7 +34,7 @@ public class UploadPhotoCommandTest extends BaseTestWithApplicationAndDatabase {
     @Override
     @Before
     public void setUpDatabase() {
-        ApplicationManager.setUserPhotoPath("/test/resources/test_photos/user_");
+        ApplicationManager.setMediaPath("/test/resources/test_photos/user_");
         ApplicationManager.setIsTest(true);
         database = Databases.inMemory();
         Evolutions.applyEvolutions(database, Evolutions.forDefault(new Evolution(

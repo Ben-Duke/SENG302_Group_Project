@@ -39,7 +39,7 @@ public class BaseTestWithApplicationAndDatabase extends WithApplication {
      */
     @Before
     public void setUpDatabase() {
-        ApplicationManager.setUserPhotoPath("/test/resources/test_photos/user_");
+        ApplicationManager.setMediaPath("/test/resources/test_photos/user_");
         ApplicationManager.setIsTest(true);
         CommandManagerAccessor.resetCommandManagers();
         database = Databases.inMemory();

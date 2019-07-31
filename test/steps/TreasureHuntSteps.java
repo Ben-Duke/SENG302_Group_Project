@@ -62,7 +62,7 @@ public class TreasureHuntSteps extends BaseTestWithApplicationAndDatabase {
         Guice.createInjector(builder.applicationModule()).injectMembers(this);
         Helpers.start(application);
         ApplicationManager.setIsTest(true);
-        ApplicationManager.setUserPhotoPath("/test/resources/test_photos/user_");
+        ApplicationManager.setMediaPath("/test/resources/test_photos/user_");
         TestDatabaseManager.populateDatabase();
     }
 

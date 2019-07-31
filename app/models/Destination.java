@@ -3,12 +3,13 @@ package models;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.ebean.Finder;
 import io.ebean.Model;
+import models.media.MediaOwner;
 
 import javax.persistence.*;
 import java.util.*;
 
 @Entity
-public class Destination extends Model implements AlbumOwner {
+public class Destination extends Model implements AlbumOwner, MediaOwner {
 
     @Id
     private Integer destid;
@@ -28,6 +29,9 @@ public class Destination extends Model implements AlbumOwner {
     @JsonIgnore
     @OneToMany(mappedBy = "destination")
     private List<Album> albums;
+
+    @ManyToMany
+    public List<Media> mediaList;
 
     @JsonIgnore
     @ManyToOne

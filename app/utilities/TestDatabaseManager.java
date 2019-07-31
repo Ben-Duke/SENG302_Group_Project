@@ -125,12 +125,14 @@ public class TestDatabaseManager {
             addTreasureHunts();
         }
 
-        if (isInSuccessState && ApplicationManager.getUserMediaPath().equalsIgnoreCase("/test/resources/test_photos/user_")) {
+        String url = ApplicationManager.getMediaPath().toUpperCase();
+        if (isInSuccessState && ApplicationManager.getMediaPath().equalsIgnoreCase("/test/resources/test_photos/user_")) {
             addUserPhotos();
         }
         CountryUtils.updateCountries();
         CountryUtils.validateUsedCountries();
 
+        System.out.println("Populate database success: " + isInSuccessState);
     }
 
     /**

@@ -41,6 +41,12 @@ create table destination (
   constraint pk_destination primary key (destid)
 );
 
+create table destination_media (
+  destination_destid            integer not null,
+  media_media_id                integer not null,
+  constraint pk_destination_media primary key (destination_destid,media_media_id)
+);
+
 create table destination_traveller_type (
   destination_destid            integer not null,
   traveller_type_ttypeid        integer not null,
@@ -193,6 +199,12 @@ alter table destination add constraint fk_destination_primary_photo_media_id for
 create index ix_destination_user on destination (user);
 alter table destination add constraint fk_destination_user foreign key (user) references user (userid) on delete restrict on update restrict;
 
+create index ix_destination_media_destination on destination_media (destination_destid);
+alter table destination_media add constraint fk_destination_media_destination foreign key (destination_destid) references destination (destid) on delete restrict on update restrict;
+
+create index ix_destination_media_media on destination_media (media_media_id);
+alter table destination_media add constraint fk_destination_media_media foreign key (media_media_id) references media (media_id) on delete restrict on update restrict;
+
 create index ix_destination_traveller_type_destination on destination_traveller_type (destination_destid);
 alter table destination_traveller_type add constraint fk_destination_traveller_type_destination foreign key (destination_destid) references destination (destid) on delete restrict on update restrict;
 
@@ -277,6 +289,12 @@ drop index if exists ix_destination_primary_photo_media_id;
 alter table destination drop constraint if exists fk_destination_user;
 drop index if exists ix_destination_user;
 
+alter table destination_media drop constraint if exists fk_destination_media_destination;
+drop index if exists ix_destination_media_destination;
+
+alter table destination_media drop constraint if exists fk_destination_media_media;
+drop index if exists ix_destination_media_media;
+
 alter table destination_traveller_type drop constraint if exists fk_destination_traveller_type_destination;
 drop index if exists ix_destination_traveller_type_destination;
 
@@ -344,6 +362,8 @@ drop table if exists album;
 drop table if exists album_media;
 
 drop table if exists destination;
+
+drop table if exists destination_media;
 
 drop table if exists destination_traveller_type;
 

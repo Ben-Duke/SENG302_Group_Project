@@ -45,7 +45,7 @@ public class UserController {
      */
     public Result userindex(Http.Request request){
         if (!wasRun.getAndSet(true)) {
-            ApplicationManager.setUserPhotoPath("/../user_photos/user_");
+            ApplicationManager.setMediaPath("/../media_");
             TestDatabaseManager.populateDatabase(initCompleteLatch);
             logger.info("populating database");
 

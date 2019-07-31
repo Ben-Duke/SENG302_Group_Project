@@ -261,8 +261,9 @@ public class AlbumController extends Controller {
      * @param albumName the name of the album to retrieve
      * @return a JSON object with the album ID
      */
-    public Result getAlbumFromTitle(Http.Request request, String albumName) {
-        List<Album> albumList = UserAccessor.getAlbums();
+    public Result getAlbumFromTitle(Http.Request request, Integer userId, String albumName) {
+        User user = UserAccessor.getById(userId);
+        List<Album> albumList = AlbumAccessor.getAlbumsByOwner(user);
         Integer albumId = null;
         for (Album album : albumList) {
             if (albumName.equals(album.getTitle())) {

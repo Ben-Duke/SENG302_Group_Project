@@ -1,26 +1,34 @@
 var slideIndex = 1;
 var photoIdToEdit;
+var user;
 
 moveAlbumSearch();
 
 
 function moveAlbumSearch() {
+
       const searchBar = document.getElementById("album-search-move");
       let oldAlbumId = document.getElementById("existingAlbumId").innerText;
       if (searchBar != null) {
           searchBar.addEventListener('input', (e) => {
               if (e.constructor.name !== 'InputEvent') {
                   let title = searchBar.value;
-                  console.log(title);
                   $.ajax({
-                      type: 'GET',
-                      url: '/users/albums/getFromTitle/' + title,
-                      contentType: 'application/json',
-                      success: (newAlbumId) => {
-                          console.log(newAlbumId)
-                          moveBetweenAlbums(oldAlbumId, newAlbumId);
-                      }
-                  });
+                          type: 'GET',
+                          url: '/users/get',
+                          contentType: 'application/json',
+                          success: function(userData){
+                              $.ajax({
+                                    type: 'GET',
+                                    url: '/users/' + userData + '/albums/getFromTitle/' + title,
+                                    contentType: 'application/json',
+                                    success: (newAlbumId) => {
+                                        moveBetweenAlbums(oldAlbumId, newAlbumId);
+                                    }
+                                });
+                          }
+                      });
+
 
 
               }
@@ -36,8 +44,6 @@ function moveBetweenAlbums(oldAlbumId, newAlbumId) {
               url: '/users/albums/get/' + hidePrivate + '/' + oldAlbumId,
               contentType: 'application/json',
               success: (albumData) => {
-                      console.log(albumData);
-                      console.log(slideIndex);
                       let mediaId = albumData[slideIndex-1]["mediaId"];
                       var token =  $('input[name="csrfToken"]').attr('value');
                       $.ajaxSetup({
@@ -176,15 +182,7 @@ function setSlideListeners(i) {
 
             if(albumData[i]["isMediaPublic"]) {setPrivacy=0;}
             else {setPrivacy=1;}
-
-            $.ajax({
-                type: 'GET',
-                url: '/users/home/photoPrivacy/' + mediaId + '/' + setPrivacy,
-                contentType: 'application/json',
-                success: () => {
-                    setPrivacyListener(setPrivacy, mediaId)
-                }
-            });
+            setPrivacyListener(setPrivacy, mediaId);
         }
     });
 }

@@ -24,7 +24,9 @@ public class TestDatabaseManager {
 
     private static final Logger logger = UtilityFunctions.getLogger();
 
-    public TestDatabaseManager() {
+    // Private constructor to hide the implicit public one
+    private TestDatabaseManager() {
+        throw new IllegalStateException("Utility class");
     }
 
     /**

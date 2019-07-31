@@ -2,15 +2,17 @@ package models.commands.Treasurehunts;
 
 import accessors.TreasureHuntAccessor;
 import models.TreasureHunt;
+import models.commands.General.CommandPage;
 import models.commands.General.UndoableCommand;
 
 /** Command to delete a destination */
-public class EditTreasureHuntCommand extends TreasureHuntPageCommand {
+public class EditTreasureHuntCommand extends UndoableCommand {
     private TreasureHunt unEditedTreasureHunt;
     private TreasureHunt editedTreasureHunt;
     private TreasureHunt actualTreasureHunt;
 
     public EditTreasureHuntCommand(TreasureHunt editedTreasureHunt) {
+        super(CommandPage.TREASURE_HUNT);
         this.editedTreasureHunt = new TreasureHunt();
         this.actualTreasureHunt = editedTreasureHunt;
         this.editedTreasureHunt.applyEditChanges(actualTreasureHunt);

@@ -27,19 +27,19 @@
                             <tr>
                                 <th scope ="row">@user.getUserid()</th>
                                 <td>@user.getEmail()</td>
-                                <td>@user.getfName()</td>
-                                <td>@user.getlName()</td>
+                                <td>@user.getFName()</td>
+                                <td>@user.getLName()</td>
                                 <td>@user.getGender()</td>
                                 <td>@user.getDateOfBirth</td>
                                 @if(user.userIsAdmin()) {
-                                    <td><a class="btn btn-link" href="@routes.AdminController.adminToUser(user.userid)" role="button">Revoke Admin</a></td>
+                                    <td><a class="btn btn-link" href="@routes.AdminController.adminToUser(user.getUserid)" role="button">Revoke Admin</a></td>
                                 } else {
-                                    <td><a class="btn btn-link" href="@routes.AdminController.userToAdmin(user.userid)" role="button">Make Admin</a></td>
+                                    <td><a class="btn btn-link" href="@routes.AdminController.userToAdmin(user.getUserid)" role="button">Make Admin</a></td>
                                 }
                                 @if(currentUser.getUserid == adminUser.getUserid) {
-                                    <td><a class="btn btn-link" href="@routes.AdminController.setUserToActAs(user.userid)" role="button">Act as user</a></td>
+                                    <td><a class="btn btn-link" href="@routes.AdminController.setUserToActAs(user.getUserid)" role="button">Act as user</a></td>
                                 } else {
-                                    <td><a class="btn btn-link" href="@routes.AdminController.setUserToActAs(user.userid)" role="button" disabled>Act as user</a></td>
+                                    <td><a class="btn btn-link" href="@routes.AdminController.setUserToActAs(user.getUserid)" role="button" disabled>Act as user</a></td>
                                 }
                             </tr>
                          }
@@ -67,9 +67,9 @@
                         <th scope ="row">@req.getOldDestination().getDestId()</th>
                         <th>@req.getOldDestination().getDestName()</th>
                         <td>@req.getRequestAuthor().getUserid()</td>
-                        <td>@req.getRequestAuthor().getfName() @req.getRequestAuthor().getlName()</td>
+                        <td>@req.getRequestAuthor().getFName() @req.getRequestAuthor().getLName()</td>
                         <td>@req.getCreationDate()</td>
-                        <td><a class="btn btn-link" href="@routes.AdminController.viewDestinationModificationRequest(req.id)" role="button">View</a></td>
+                        <td><a class="btn btn-link" href="@routes.AdminController.viewDestinationModificationRequest(req.getId)" role="button">View</a></td>
 
                     </tr>
 

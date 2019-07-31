@@ -40,11 +40,10 @@ public class UploadPhotoCommandTest extends BaseTestWithApplicationAndDatabase {
         TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
         testDatabaseManager.populateDatabase();
 
-        user = User.find.byId(1);
+        user = User.find().byId(1);
         userPhoto =  new UserPhoto("imagetest.png", false, false, user);
         String unusedPhotoUrl = userPhoto.getUnusedUserPhotoFileName();
         userPhoto.setUrl(unusedPhotoUrl);
-        File file = getFile(Paths.get(".").toAbsolutePath().normalize().toString() + "/test/resources/imagetest.png");
         Files.TemporaryFileCreator creator = Files.singletonTemporaryFileCreator();
         temporaryFile = creator.create(Paths.get(Paths.get(".").toAbsolutePath().normalize().toString() + "/test/resources/imagetest.png"));
         uploadPhotoCommand = new UploadPhotoCommand(userPhoto, temporaryFile);
@@ -54,7 +53,7 @@ public class UploadPhotoCommandTest extends BaseTestWithApplicationAndDatabase {
     public void testExecute() {
         int beforeSize = user.getUserPhotos().size();
         user.getCommandManager().executeCommand(uploadPhotoCommand);
-        User updatedUser = User.find.byId(1);
+        User updatedUser = User.find().byId(1);
         int afterSize = updatedUser.getUserPhotos().size();
         assertEquals(beforeSize + 1, afterSize);
     }
@@ -64,7 +63,7 @@ public class UploadPhotoCommandTest extends BaseTestWithApplicationAndDatabase {
         int beforeSize = user.getUserPhotos().size();
         user.getCommandManager().executeCommand(uploadPhotoCommand);
         user.getCommandManager().undo();
-        User updatedUser = User.find.byId(1);
+        User updatedUser = User.find().byId(1);
         int afterSize = updatedUser.getUserPhotos().size();
         assertEquals(beforeSize, afterSize);
     }
@@ -75,7 +74,7 @@ public class UploadPhotoCommandTest extends BaseTestWithApplicationAndDatabase {
         user.getCommandManager().executeCommand(uploadPhotoCommand);
         user.getCommandManager().undo();
         user.getCommandManager().redo();
-        User redoneUser = User.find.byId(1);
+        User redoneUser = User.find().byId(1);
         int afterSize = redoneUser.getUserPhotos().size();
         assertEquals(beforeSize + 1, afterSize);
     }

@@ -10,28 +10,42 @@ import javax.persistence.*;
 import java.util.List;
 import java.util.Set;
 
+/** The model class for nationality construction */
 @Entity
 @Table(name = "nationality",
         uniqueConstraints = @UniqueConstraint(columnNames = "nationality_name")
 )
 public class Nationality extends CountryItem {
     @Id
-    public Integer natid;
+    private Integer natid;
 
     @Column
-    public String nationalityName;
+    private String nationalityName;
 
     @ManyToMany(mappedBy = "nationality")
     @JsonIgnore
-    public Set<User> users;
+    private Set<User> users;
 
-    public static Finder<Integer,Nationality> find = new Finder<>(Nationality.class, ApplicationManager.getDatabaseName());
+    private static Finder<Integer,Nationality> find = new Finder<>(Nationality.class, ApplicationManager.getDatabaseName());
 
 
+    /**
+     * Constructor for nationalities
+     * @param nationality The nationality object being created
+     */
     // --------------------- methods below here--------------------------------
     public Nationality(String nationality){
         super();
         this.nationalityName = nationality;
+    }
+
+    /**
+     * Method to get EBeans finder.
+     *
+     * @return Finder<Integer,Nationality> object
+     */
+    public static Finder<Integer,Nationality> find() {
+        return find;
     }
 
     public String getNationalityName() { return nationalityName; }
@@ -42,6 +56,10 @@ public class Nationality extends CountryItem {
 
     public void setUsers(Set<User> users) {
         this.users = users;
+    }
+
+    public Integer getNatId() {
+        return this.natid;
     }
 
 

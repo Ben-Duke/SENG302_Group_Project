@@ -235,7 +235,7 @@ public class DestinationFactoryTest extends BaseTestWithApplicationAndDatabase {
     public void testMergingTwoPrivateDestinations() {
         User adminUser = new User("test@testytest.test", "hunter22");
         adminUser.save();
-        Admin admin = new Admin(adminUser.userid, true);
+        Admin admin = new Admin(adminUser.getUserid(), true);
         admin.save();
         Destination testPrivateDestination = new Destination("Rotherham",
                 "Town", "North Canterbury", "New Zealand",
@@ -257,7 +257,7 @@ public class DestinationFactoryTest extends BaseTestWithApplicationAndDatabase {
                 .getOtherUsersMatchingPrivateDestinations(privateUser.getUserid(), testPrivateDestination1);
 
         destinationFactory.mergeDestinations(matchingDests, testPrivateDestination1);
-        List<Destination> destinationsWithSameName = Destination.find.query().where()
+        List<Destination> destinationsWithSameName = Destination.find().query().where()
                 .eq("destName", "Rotherham").findList();
         assertEquals(1, destinationsWithSameName.size());
     }
@@ -266,7 +266,7 @@ public class DestinationFactoryTest extends BaseTestWithApplicationAndDatabase {
     public void testMergingTwoPrivateDestinations2() {
         User adminUser = new User("test@testytest.test", "hunter22");
         adminUser.save();
-        Admin admin = new Admin(adminUser.userid, true);
+        Admin admin = new Admin(adminUser.getUserid(), true);
         admin.save();
         Destination testPrivateDestination = new Destination("Rotherham",
                 "Town", "North Canterbury", "New Zealand",
@@ -295,7 +295,7 @@ public class DestinationFactoryTest extends BaseTestWithApplicationAndDatabase {
         List<Destination> matchingDests = destinationFactory
                 .getOtherUsersMatchingPrivateDestinations(privateUser2.getUserid(), testPrivateDestination2);
         destinationFactory.mergeDestinations(matchingDests, testPrivateDestination2);
-        List<Destination> destinationsWithSameName = Destination.find.query().where()
+        List<Destination> destinationsWithSameName = Destination.find().query().where()
                 .eq("destName", "Rotherham").findList();
         assertEquals(1, destinationsWithSameName.size());
     }

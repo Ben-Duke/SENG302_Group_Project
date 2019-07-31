@@ -15,6 +15,9 @@ import views.html.users.profile.*;
 import javax.inject.Inject;
 import java.util.List;
 
+/**
+ * A controller class for handing admin users actions.
+ */
 public class AdminController extends Controller {
 
     @Inject
@@ -34,10 +37,10 @@ public class AdminController extends Controller {
         if (!userList.isEmpty()) {
             User currentUser = userList.get(0);
             if (currentUser != null) {
-                Admin currentAdmin = Admin.find.query().where().eq("userId", currentUser.userid).findOne();
+                Admin currentAdmin = Admin.find().query().where().eq("userId", currentUser.getUserid()).findOne();
                 if (currentAdmin != null) {
-                    List<User> users = User.find.all();
-                    List<DestinationModificationRequest> allReqs = DestinationModificationRequest.find.all();
+                    List<User> users = User.find().all();
+                    List<DestinationModificationRequest> allReqs = DestinationModificationRequest.find().all();
                     return ok(indexAdmin.render(currentUser, userList.get(1), users,allReqs));
                 }
             } else {
@@ -58,9 +61,9 @@ public class AdminController extends Controller {
     public Result adminToUser(Http.Request request, Integer requestedUserId) {
         User currentUser = User.getCurrentUser(request);
         if (currentUser != null) {
-            Admin currentAdmin = Admin.find.query().where().eq("userId", currentUser.userid).findOne();
-            if (currentAdmin != null && !currentAdmin.userId.equals(requestedUserId)) {
-                Admin admin1 = Admin.find.query().where().eq("userId", requestedUserId).findOne();
+            Admin currentAdmin = Admin.find().query().where().eq("userId", currentUser.getUserid()).findOne();
+            if (currentAdmin != null && !currentAdmin.getUserId().equals(requestedUserId)) {
+                Admin admin1 = Admin.find().query().where().eq("userId", requestedUserId).findOne();
                 if (admin1 != null && !admin1.isDefault()) {
                     admin1.delete();
                     return redirect(routes.AdminController.indexAdmin());
@@ -83,8 +86,8 @@ public class AdminController extends Controller {
     public Result userToAdmin(Http.Request request, Integer requestedUserId) {
         User currentUser = User.getCurrentUser(request);
         if (currentUser != null) {
-            Admin currentAdmin = Admin.find.query().where().eq("userId", currentUser.userid).findOne();
-            if (currentAdmin != null && !currentAdmin.userId.equals(requestedUserId)) {
+            Admin currentAdmin = Admin.find().query().where().eq("userId", currentUser.getUserid()).findOne();
+            if (currentAdmin != null && !currentAdmin.getUserId().equals(requestedUserId)) {
                 Admin admin = new Admin(requestedUserId, false);
                 admin.insert();
                 return redirect(routes.AdminController.indexAdmin());
@@ -93,14 +96,22 @@ public class AdminController extends Controller {
         return redirect(routes.UserController.userindex());
     }
 
+    /**
+     *  The method to view a destination modification request as an admin and render the view destModReq page.
+     *
+     * @param request The http request
+     * @param destModReqId The destination modification request id of the destination being changed
+     * @return the destModReq page for the given destination modification request.
+     * or an unauthorized message is "Oops, you are not authorised.".
+     */
     public Result viewDestinationModificationRequest(Http.Request request, Integer destModReqId) {
         User currentUser = User.getCurrentUser(request);
         if (currentUser != null) {
-            Admin currentAdmin = Admin.find.query().where().eq("userId", currentUser.userid).findOne();
+            Admin currentAdmin = Admin.find().query().where().eq("userId", currentUser.getUserid()).findOne();
             if (currentAdmin != null) {
-                DestinationModificationRequest modReq = DestinationModificationRequest.find.query().where().eq("id", destModReqId).findOne();
+                DestinationModificationRequest modReq = DestinationModificationRequest.find().query().where().eq("id", destModReqId).findOne();
                 if (modReq != null) {
-                    User user = User.find.byId(currentAdmin.getUserId());
+                    User user = User.find().byId(currentAdmin.getUserId());
                     return ok(viewDestinationModificationRequest.render(modReq, user));
                 } else {
                     return notFound("Destination Modification Request does not exist");
@@ -123,8 +134,8 @@ public class AdminController extends Controller {
     public Result setUserToActAs(Http.Request request, Integer userId) {
         User currentUser = User.getCurrentUser(request);
         if (currentUser != null && currentUser.userIsAdmin()) {
-            User userToEdit = User.find.byId(userId);
-            List<Admin> adminList = Admin.find.query().where()
+            User userToEdit = User.find().byId(userId);
+            List<Admin> adminList = Admin.find().query().where()
                     .eq("userId", currentUser.getUserid()).findList();
             if(adminList.size() == 1) {
                 Admin admin = adminList.get(0);
@@ -153,8 +164,8 @@ public class AdminController extends Controller {
         User currentUser = users.get(1);
 
         if (currentUser != null && currentUser.userIsAdmin() && currentUser.getUserid() == adminsUserId) {
-            User adminUser = User.find.byId(adminsUserId);
-            List<Admin> adminList = Admin.find.query().where()
+            User adminUser = User.find().byId(adminsUserId);
+            List<Admin> adminList = Admin.find().query().where()
                     .eq("userId", adminUser.getUserid()).findList();
             if(adminList.size() == 1) {
                 Admin admin = adminList.get(0);

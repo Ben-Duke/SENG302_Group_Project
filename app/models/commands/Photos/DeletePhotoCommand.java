@@ -9,6 +9,7 @@ import models.Destination;
 import models.UserPhoto;
 import models.Visit;
 import models.commands.Destinations.UnlinkPhotoDestinationCommand;
+import models.commands.General.CommandPage;
 import models.commands.General.UndoableCommand;
 
 import java.util.ArrayList;
@@ -27,15 +28,12 @@ public class DeletePhotoCommand extends UndoableCommand {
      * @param userPhoto the UserPhoto to delete
      */
     public DeletePhotoCommand(UserPhoto userPhoto) {
+        super(CommandPage.HOME);
 
         this.userPhoto = userPhoto;
 
-        for (Destination destination : userPhoto.getDestinations()) {
-            refToDestinations.add(destination);
-        }
-        for (Destination destination : userPhoto.getPrimaryPhotoDestinations()) {
-            refToPrimaryPhotoDestinations.add(destination);
-        }
+        refToDestinations.addAll(userPhoto.getDestinations());
+        refToPrimaryPhotoDestinations.addAll(userPhoto.getPrimaryPhotoDestinations());
 
     }
 
@@ -65,17 +63,16 @@ public class DeletePhotoCommand extends UndoableCommand {
      * Undoes the deletion of the UserPhoto and relinks the photo to destinations
      */
     public void undo() {
-        UserPhoto userPhoto = new UserPhoto(this.userPhoto);
+        UserPhoto photo = new UserPhoto(this.userPhoto);
         for(Destination destination: refToDestinations){
-            userPhoto.addDestination(destination);
+            photo.addDestination(destination);
         }
-        System.out.println("Userphoto is " + userPhoto.toString());
 
-        UserPhotoAccessor.insert(userPhoto);
-        savedUserPhoto = UserPhotoAccessor.getUserPhotoById(userPhoto.getPhotoId());
+        UserPhotoAccessor.insert(photo);
+        savedUserPhoto = UserPhotoAccessor.getUserPhotoById(photo.getPhotoId());
 
         for (Destination destination : refToPrimaryPhotoDestinations) {
-            destination.setPrimaryPhoto(userPhoto);
+            destination.setPrimaryPhoto(photo);
             DestinationAccessor.update(destination);
         }
 
@@ -101,6 +98,10 @@ public class DeletePhotoCommand extends UndoableCommand {
         factory.deletePhoto(savedUserPhoto.getPhotoId());
     }
 
+    /**
+     * Returns result from the undo/redo command as a string
+     * @return String result of command
+     */
     public String toString() {
         return this.userPhoto.getUrl() + "Deleting";
     }

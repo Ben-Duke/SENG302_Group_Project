@@ -24,11 +24,11 @@ function initIndexDestinationMap() {
         zoom: 5
     });
 
+    initPlacesAutocomplete();
+
     initDestinationMarkers();
     initMapLegend();
 }
-
-
 
 
 /**
@@ -94,8 +94,50 @@ function initCreateDestinationMap() {
         document.getElementById("longitude").value = event.latLng.lng();
     });
 
+    initPlacesAutocomplete();
+
     initDestinationMarkers();
     initMapLegend();
+}
+
+/**
+ * Initialises the google places api auto-complete box
+ */
+function initPlacesAutocomplete() {
+    const input = document.getElementById('placesAutocomplete');
+    const autocomplete = new google.maps.places.Autocomplete(input);
+
+    // Bind the map's bounds (viewport) property to the autocomplete object,
+    // so that the autocomplete requests use the current map bounds for the
+    // bounds option in the request.
+    autocomplete.bindTo('bounds', window.globalMap);
+
+    // Set the data fields to return when the user selects a place.
+    autocomplete.setFields(
+        ['address_components', 'geometry', 'icon', 'name']);
+
+    autocomplete.addListener('place_changed', function() {
+        const place = autocomplete.getPlace();
+
+        const coordinates = place.geometry.location;
+        const address = place.address_components;
+
+        document.getElementById("destName").value = place.name;
+
+        address.forEach((addressItem) => {
+            if (addressItem.types.includes("country")) {
+                document.getElementById("country").value = addressItem.long_name;
+
+            } else if (addressItem.types.includes("administrative_area_level_1")
+                || addressItem.types.includes("administrative_area_level_2")) {
+                document.getElementById("district").value = addressItem.long_name;
+            }
+        });
+
+
+        document.getElementById("latitude").value = coordinates.lat();
+        document.getElementById("longitude").value = coordinates.lng();
+    });
 }
 
 /**
@@ -320,7 +362,7 @@ function isLatLongValid(latitude, longitude) {
 window.onload = function() {
     const images = document.getElementsByClassName("flyToImage");
 
-    for (image of images) {
+    for (let image of images) {
         image.addEventListener('click', (event) => {
             const targetIMG = event.target;
 

@@ -29,8 +29,8 @@ public class EditVisitCommandTest extends BaseTestWithApplicationAndDatabase {
     public void populateDatabase() {
         TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
         testDatabaseManager.populateDatabase();
-        visit = Visit.find.byId(1);
-        user = User.find.byId(1);
+        visit = Visit.find().byId(1);
+        user = User.find().byId(1);
 
 
     }
@@ -45,7 +45,7 @@ public class EditVisitCommandTest extends BaseTestWithApplicationAndDatabase {
         visit.setDeparture("2018-06-06");
         editVisitCommand = new EditVisitCommand(visit);
         user.getCommandManager().executeCommand(editVisitCommand);
-        Visit updatedVisit = Visit.find.byId(1);
+        Visit updatedVisit = Visit.find().byId(1);
         assertEquals("2018-06-04", updatedVisit.getArrival());
         assertEquals("2018-06-06", updatedVisit.getDeparture());
     }
@@ -57,7 +57,7 @@ public class EditVisitCommandTest extends BaseTestWithApplicationAndDatabase {
         editVisitCommand = new EditVisitCommand(visit);
         user.getCommandManager().executeCommand(editVisitCommand);
         user.getCommandManager().undo();
-        Visit undoneVisit = Visit.find.byId(1);
+        Visit undoneVisit = Visit.find().byId(1);
         assertEquals("2018-05-04", undoneVisit.getArrival());
         assertEquals("2018-05-06", undoneVisit.getDeparture());
     }
@@ -70,7 +70,7 @@ public class EditVisitCommandTest extends BaseTestWithApplicationAndDatabase {
         user.getCommandManager().executeCommand(editVisitCommand);
         user.getCommandManager().undo();
         user.getCommandManager().redo();
-        Visit redoneVisit = Visit.find.byId(1);
+        Visit redoneVisit = Visit.find().byId(1);
         assertEquals("2018-06-04", redoneVisit.getArrival());
         assertEquals("2018-06-06", redoneVisit.getDeparture());
     }

@@ -10,12 +10,12 @@
 
 
             <div class ="row">
-            @for(travellerType <- destination.travellerTypes) {
+            @for(travellerType <- destination.getTravellerTypes) {
                 <div class="container">
                 @form(action = helper.CSRF(routes.TravellerTypeController.deleteUpdateDestinationTravellerType(destination.getDestId(),travellerType.getTtypeid()))) {
                     <ul class="list-group">
                         <li class="list-group-item" style = "width: 220px;">
-                            @travellerType.travellerTypeName <button type="submit" style="position: absolute;
+                            @travellerType.getTravellerTypeName <button type="submit" style="position: absolute;
                             top: 5px;
                             bottom: 5px;
                             right: 5px;
@@ -39,7 +39,7 @@
             @form(action = helper.CSRF(routes.TravellerTypeController.submitUpdateDestinationTravellerType(destination.getDestId())), 'id -> "myForm") {
                 @select(
                     field = destForm("travellertypes"),
-                    options = travellerTypes.map(travellerType => travellerType.ttypeid.toString -> travellerType.travellerTypeName),
+                    options = travellerTypes.map(travellerType => travellerType.getTtypeid.toString -> travellerType.getTravellerTypeName),
                     '_label -> "Select new type to add:"
                 )
             }

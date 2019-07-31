@@ -71,10 +71,10 @@ public class UserAccessorTest extends BaseTestWithApplicationAndDatabase {
     public void getProfilePhoto_withProfilePhoto_checkURL() {
         String photoURL = "/test/url";
         UserPhoto profilePic = new UserPhoto(photoURL, true,
-                                            true, User.find.byId(1));
+                                            true, User.find().byId(1));
         profilePic.save();
 
-        UserPhoto photo = UserAccessor.getProfilePhoto(User.find.byId(1));
+        UserPhoto photo = UserAccessor.getProfilePhoto(User.find().byId(1));
         assertTrue(photo.getUrl().equals(photoURL));
     }
 
@@ -86,18 +86,18 @@ public class UserAccessorTest extends BaseTestWithApplicationAndDatabase {
     public void getProfilePhoto_withProfilePhotoAndOtherPhotos_checkURL() {
         String profilePhotoURL = "/test/url";
         UserPhoto profilePic = new UserPhoto(profilePhotoURL, true,
-                true, User.find.byId(1));
+                true, User.find().byId(1));
         profilePic.save();
 
         UserPhoto nonProfilePic = new UserPhoto("/not/profile/pic", true,
-                false, User.find.byId(1));
+                false, User.find().byId(1));
         nonProfilePic.save();
 
         UserPhoto nonProfilePicPrivate = new UserPhoto("/not/profile/pic/2",
-                false, false, User.find.byId(1));
+                false, false, User.find().byId(1));
         nonProfilePicPrivate.save();
 
-        UserPhoto photo = UserAccessor.getProfilePhoto(User.find.byId(1));
+        UserPhoto photo = UserAccessor.getProfilePhoto(User.find().byId(1));
         assertTrue(photo.getUrl().equals(profilePhotoURL));
     }
 
@@ -108,14 +108,14 @@ public class UserAccessorTest extends BaseTestWithApplicationAndDatabase {
     @Test
     public void getProfilePhoto_withNoProfilePicButOtherPhotos_checkIsNull() {
         UserPhoto nonProfilePic = new UserPhoto("/not/profile/pic", true,
-                false, User.find.byId(1));
+                false, User.find().byId(1));
         nonProfilePic.save();
 
         UserPhoto nonProfilePicPrivate = new UserPhoto("/not/profile/pic/2",
-                false, false, User.find.byId(1));
+                false, false, User.find().byId(1));
         nonProfilePicPrivate.save();
 
-        UserPhoto photo = UserAccessor.getProfilePhoto(User.find.byId(1));
+        UserPhoto photo = UserAccessor.getProfilePhoto(User.find().byId(1));
         assertNull(photo);
     }
 
@@ -125,7 +125,7 @@ public class UserAccessorTest extends BaseTestWithApplicationAndDatabase {
      */
     @Test
     public void getProfilePhoto_without_checkIsNull() {
-        UserPhoto photo = UserAccessor.getProfilePhoto(User.find.byId(1));
+        UserPhoto photo = UserAccessor.getProfilePhoto(User.find().byId(1));
         assertNull(photo);
     }
 }

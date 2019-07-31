@@ -18,6 +18,11 @@ enum DatabaseName {
  */
 public class ApplicationManager {
 
+    // Private constructor to hide the implicit public one
+    private ApplicationManager() {
+        throw new IllegalStateException("Utility class");
+    }
+
     private static final Logger logger = UtilityFunctions.getLogger();
 
     private static String userPhotoPath;
@@ -58,6 +63,10 @@ public class ApplicationManager {
         ApplicationManager.userPhotoPath = userPhotoPath;
     }
 
+    /**
+     * Method to check what environment the application is needed to bne run on
+     * @retun isTest A boolean representing the environment
+     */
     public static boolean isIsTest() {
         return isTest;
     }

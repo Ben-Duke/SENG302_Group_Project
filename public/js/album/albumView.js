@@ -168,10 +168,11 @@ function setSlideListeners(i) {
             setMakeProfilePictureListener(albumData, i);
             const mediaId = albumData[i]["mediaId"];
             const caption = albumData[i]["caption"];
-            if (caption != null) {
+            if (caption != "") {
                 document.querySelector('div[data-mediaId="'+mediaId+'"] [contenteditable]').innerHTML = caption.toString();
             } else {
-                document.querySelector('div[data-mediaId="'+mediaId+'"] [contenteditable]').innerHTML = "Click to add caption, press enter to save.";
+                document.querySelector('div[data-mediaId="'+mediaId+'"] [contenteditable]').innerHTML =
+                "Click to add caption, press enter to save.";
             }
 
             if(albumData[i]["isMediaPublic"]) {setPrivacy=0;}

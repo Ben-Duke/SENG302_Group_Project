@@ -20,7 +20,7 @@ public class TreasureHuntFactory {
      * @param user The user who is the creator of this treasure hunt
      */
     public void createTreasureHunt(TreasureHuntFormData treasureHuntFormData, User user) {
-        List<Destination> destinations = Destination.find.all();
+        List<Destination> destinations = Destination.find().all();
         for (Destination destination: destinations) {
             if (destination.getIsPublic() && destination.getDestName().equals(treasureHuntFormData.destination)) {
                 TreasureHunt treasureHunt = new TreasureHunt(treasureHuntFormData.title, treasureHuntFormData.riddle,
@@ -37,11 +37,11 @@ public class TreasureHuntFactory {
      * @param treasureHuntFormData TreasureHuntFormData
      */
     public void editTreasureHunt(User user, Integer treasureHuntId, TreasureHuntFormData treasureHuntFormData) {
-        TreasureHunt treasureHunt = TreasureHunt.find.byId(treasureHuntId);
+        TreasureHunt treasureHunt = TreasureHunt.find().byId(treasureHuntId);
         if (treasureHunt != null) {
             treasureHunt.setTitle(treasureHuntFormData.title);
             treasureHunt.setRiddle(treasureHuntFormData.riddle);
-            List<Destination> destinations = Destination.find.query().where().eq("is_public", true).findList();
+            List<Destination> destinations = Destination.find().query().where().eq("is_public", true).findList();
             for (Destination destination: destinations) {
                 if (destination.getDestName().equals(treasureHuntFormData.destination)) {
                     treasureHunt.setDestination(destination);

@@ -4,19 +4,21 @@ import accessors.DestinationAccessor;
 import accessors.UserPhotoAccessor;
 import models.Destination;
 import models.UserPhoto;
+import models.commands.General.CommandPage;
 import models.commands.General.UndoableCommand;
 
-public class LinkPhotoDestinationCommand extends DestinationPageCommand  {
+public class LinkPhotoDestinationCommand extends UndoableCommand {
 
     private UserPhoto photo;
     private Destination destination;
 
     /**
      * A user photo and a destination is needed to link the two together
-     * @param photo
-     * @param destination
+     * @param photo The photo being linked
+     * @param destination The destination being linked
      */
     public LinkPhotoDestinationCommand(UserPhoto photo, Destination destination) {
+        super(CommandPage.DESTINATION);
         this.photo = photo;
         this.destination = destination;
     }
@@ -56,6 +58,6 @@ public class LinkPhotoDestinationCommand extends DestinationPageCommand  {
      * @return String result of command
      */
     public String toString() {
-        return "Photo" + this.photo.getUrl() + " unlinked to" + this.destination.destName;
+        return "Photo" + this.photo.getUrl() + " unlinked to" + this.destination.getDestName();
     }
 }

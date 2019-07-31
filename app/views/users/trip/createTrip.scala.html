@@ -35,11 +35,6 @@
             background-color: white;
         }
 </style>
-<div id="map"></div>
-<div id="control">
-    <h2>Hello</h2>
-    <div id="controlContent"></div>
-</div>
 @main(user, "Trips") {
     @helper.form(action = helper.CSRF(routes.TripController.savetrip())) {
         <fieldset>

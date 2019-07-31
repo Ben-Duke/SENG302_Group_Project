@@ -13,26 +13,31 @@
             height: 100%;
             text-align: center;
         }
-        #tripsTab {
-            height: calc(100% - 50px)%;
-        }
+        #destinationsTab {
 
-        .singleTrip {
-            height: 55%;
-            overflow-y: auto;
         }
-        #tripList {
-            height: 30%;
-            overflow-y: auto;
-        }
-
         #singleDestinationContainer {
             height: 50%;
         }
-
         .singleDestination {
             height: 45%;
             display: none;
+        }
+
+        #tripsTab {
+            height: calc(100% - 50px)%;
+        }
+        #singleTripContainer {
+            height: 55%;
+            overflow-y: auto;
+        }
+        .singleTrip {
+            display: none;
+        }
+
+        #tripList {
+            height: 30%;
+            overflow-y: auto;
         }
 
         .tripDateInput {
@@ -163,10 +168,8 @@
 
             <div id="tripsTab" class="tab-content tab-pane fade in active">
 
-                <div id="singleTrip" class="singleTrip">
-
-
-                    <table class="table table-hover" id="tripTable">
+                <div id="singleTripContainer">
+                    <table class="table table-hover" id="placeholderTripTable">
                         <thead>
                             <tr>
                                 <th scope="col">Name</th>
@@ -176,31 +179,54 @@
                                 <th scope="col"></th>
                             </tr>
                         </thead>
-                        @for(trip <- trips) {
-
-                        <tbody id="tripTable_@trip.getTripid()" style="display: none;">
-                        @for(visit <- trip.getOrderedVisits()){
-                            <tr id="visit_row_@visit.getVisitid()">
-                                <th scope ="row">@visit.getDestination().getDestName()</th>
-                                <td>@visit.getDestination().getDestType()</td>
-                                <td><input id="arrival_@visit.getVisitid()" class="tripDateInput" type="date"
-                                onblur="updateVisitDate(@visit.getVisitid())" value="@visit.getArrival()"></td>
-                                <td><input id="departure_@visit.getVisitid()" class="tripDateInput" type="date"
-                                onblur="updateVisitDate(@visit.getVisitid())" value="@visit.getDeparture()"></td>
-                                <td onclick="sendDeleteVisitRequest(
-                                '@routes.TripController.deletevisit(visit.getVisitid())',
-                                '@visit.getVisitid()')"><a class="deleteButton">&#10060</a></td>
-                            </tr>
-                            }
-                        </tbody>
-
-                        }
-
                     </table>
 
-            </div>
-            <hr>
-            <div id="tripList">
+                    @for(trip <- trips) {
+
+                    <div id="singleTrip_@trip.getTripid()" class="singleTrip">
+
+                        <div style="margin-top: 15px; height: 30px;">
+                            <h4 id="tripName_@trip.getTripid()" style="cursor: pointer;" onclick="toggleEditTripName(true)">
+                            @trip.getTripName()</h4>
+                            <input style="display: none;" type="text" id="tripNameInput_@trip.getTripid()" value="@trip.getTripName()" onblur="updateTripName(this.value)">
+                        </div>
+
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Type</th>
+                                    <th scope="col">Arrival</th>
+                                    <th scope="col">Departure</th>
+                                    <th scope="col"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="tripTableBody_@trip.getTripid()">
+                            @for(visit <- trip.getOrderedVisits()){
+                                <tr id="@visit.getVisitid()">
+                                    <th scope ="row">@visit.getDestination().getDestName()</th>
+                                    <td>@visit.getDestination().getDestType()</td>
+                                    <td><input id="arrival_@visit.getVisitid()" class="tripDateInput" type="date"
+                                    onblur="updateVisitDate(@visit.getVisitid())" value="@visit.getArrival()"></td>
+                                    <td><input id="departure_@visit.getVisitid()" class="tripDateInput" type="date"
+                                    onblur="updateVisitDate(@visit.getVisitid())" value="@visit.getDeparture()" onsubmit="updateVisitDate(@visit.getVisitid())"></td>
+                                    <td><a onclick="sendDeleteVisitRequest(
+                                            '@routes.TripController.deletevisit(visit.getVisitid())',
+                                            '@visit.getVisitid()')" style="text-decoration: none;" class="deleteButton">
+                                        &#10060</a>
+                                    </td>
+                                </tr>
+                                }
+                            </tbody>
+                        </table>
+
+                        <button class="btn btn-danger" onclick="deleteTripRequest(@trip.getTripid(), '@routes.HomeController.mainMapPage()')">Delete trip</button>
+
+                    </div>
+                    }
+                </div>
+                <hr>
+                <div id="tripList">
 
                 <div id="trip-list-group"class="list-group">
                     @for(trip <- trips) {
@@ -214,6 +240,10 @@
                             } else{
                                 @trip.getTripName | No arrival dates
                             }
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id=@trip.getTripid() onclick="toggleTrips(@trip.getTripid())" checked="true">
+                                <label class="form-check-label" for="toggleMap">Show on map</label>
+                            </div>
                             </a>
                         }
                         <a></a>

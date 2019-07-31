@@ -1,5 +1,9 @@
 var visitArray = [];
 const updateVisitDateUrl = "/user/trips/visit/dates/";
+const colors = ['6b5b95', 'feb236', 'd64161', 'ff7b25',
+    '6b5b95', '86af49', '3e4444', 'eca1a6', 'ffef96', 'bc5a45', 'c1946a'];
+
+
 let tripFlightPaths = {};
 
 /**
@@ -148,6 +152,8 @@ function addSelectedToVisitToTrip(destId){
     }
 }
 
+
+
 function initMap() {
 
     window.globalMap = new google.maps.Map(document.getElementById('map'), {
@@ -158,8 +164,6 @@ function initMap() {
     // initPlacesAutocomplete();
     initDestinationMarkers();
     // initMapLegend();
-    initTripRoutes();
-
     initTripRoutes();
 
 
@@ -200,20 +204,37 @@ function tripVisittableRefresh(data){
 
 var tripRoutes = [];
 
+let tripFlightPaths = {};
+
+/**
+ * Will toggle the flight path of the trip on the map
+ * according to the value of the checkbox
+ * @param tripid The id of the trip on the map
+ */
+function toggleTrips(tripid) {
+    var checkBox = document.getElementById(tripid);
+    if (checkBox.checked === false) {
+        tripFlightPaths[tripid].setMap(null);
+    } else {
+        tripFlightPaths[tripid].setMap(window.globalMap);
+    }
+}
+
 function initTripRoutes() {
 
     fetch('/users/trips/fetch/trips_routes_json', {
         method: 'GET'})
         .then(res => res.json())
         .then(tripRoutes => {
+            let color;
 
         for (let tripId in tripRoutes) {
-            // console.log(tripRoutes[tripId]);
+            color = colors[Math.floor(Math.random()*colors.length)];
 
             let flightPath = new google.maps.Polyline({
                 path: tripRoutes[tripId],
                 geodesic: true,
-                strokeColor: '#'+(Math.random()*0xFFFFFF<<0).toString(16),
+                strokeColor: '#' + color,
                 strokeOpacity: 1.0,
                 strokeWeight: 2
             });
@@ -238,22 +259,26 @@ var currentlyDisplayedTripId;
  * @param startLng the longitude to zoom to
  */
 function displayTrip(tripId, startLat, startLng) {
+    var checkBox = document.getElementById(tripId);
+    if (checkBox.checked === true) {
+        if (currentlyDisplayedTripId !== undefined) {
+            document.getElementById("singleTrip_" + currentlyDisplayedTripId).style.display = "none";
+        } else {
+            document.getElementById("placeholderTripTable").style.display = "none";
+        }
 
-    if (currentlyDisplayedTripId !== undefined) {
-        document.getElementById("tripTable_"+currentlyDisplayedTripId).style.display = "none";
+        currentlyDisplayedTripId = tripId;
+
+        document.getElementById("singleTrip_" + tripId).style.display = "block";
+
+
+        var tripStartLatLng = new google.maps.LatLng(
+            startLat, startLng
+        );
+
+        window.globalMap.setCenter(tripStartLatLng);
+        window.globalMap.setZoom(9);
     }
-
-    currentlyDisplayedTripId = tripId;
-
-    document.getElementById("tripTable_"+tripId).style.display = "table-row-group";
-
-
-    var tripStartLatLng = new google.maps.LatLng(
-        startLat, startLng
-    );
-
-    window.globalMap.setCenter(tripStartLatLng);
-    window.globalMap.setZoom(9);
 
 }
 
@@ -262,19 +287,19 @@ function displayTrip(tripId, startLat, startLng) {
 $('tbody').sortable({
     axis: 'y',
     update: function (event, ui) {
-        var token =  $('input[name="csrfToken"]').attr('value')
+        var token =  $('input[name="csrfToken"]').attr('value');
         $.ajaxSetup({
             beforeSend: function(xhr) {
                 xhr.setRequestHeader('Csrf-Token', token);
             }
         });
-        var data = jQuery('#tripTable_'+currentlyDisplayedTripId+' tr').map(function(){
+        var data = jQuery('#tripTableBody_'+currentlyDisplayedTripId+' tr').map(function(){
             return jQuery (this).attr("id");
         }).get();
         var url = '/users/trips/edit/' + currentlyDisplayedTripId;
         // POST to server using $.post or $.ajax
 
-        console.log(data);
+        // console.log(data);
 
         $.ajax({
             data : JSON.stringify(data),
@@ -348,7 +373,6 @@ function initPlacesAutocomplete() {
     });
 }
 
-
 /**
  * Creates the destination map legend.
  *
@@ -370,6 +394,71 @@ function initMapLegend() {
 
     window.globalMap.controls[google.maps.ControlPosition.LEFT_BOTTOM].push(legend);
 }
+
+function toggleEditTripName(toEdit) {
+    if (toEdit) {
+        document.getElementById("tripName_"+currentlyDisplayedTripId).style.display = 'none';
+        document.getElementById("tripNameInput_"+currentlyDisplayedTripId).style.display = 'inline';
+        document.getElementById("tripNameInput_"+currentlyDisplayedTripId).focus();
+    } else {
+        document.getElementById("tripName_"+currentlyDisplayedTripId).style.display = 'inline';
+        document.getElementById("tripNameInput_"+currentlyDisplayedTripId).style.display = 'none'
+    }
+}
+
+function updateTripName(newName) {
+
+    let token =  $('input[name="csrfToken"]').attr('value');
+    $.ajaxSetup({
+        beforeSend: function(xhr) {
+            xhr.setRequestHeader('Csrf-Token', token);
+        }
+    });
+    $.ajax({
+        url: '/user/trips/edit/'+currentlyDisplayedTripId,
+        method: "PATCH",
+        data: JSON.stringify(newName),
+        contentType : 'application/json',
+        success: function(data, textStatus, xhr){
+            if(xhr.status == 200) {
+                document.getElementById("tripName_"+currentlyDisplayedTripId).innerText = newName;
+                toggleEditTripName(false);
+            }
+            else{
+
+            }
+        },
+        error: function(xhr, settings){
+            if(xhr.status == 400) {
+                document.getElementById("tripNameInput_"+currentlyDisplayedTripId).value =
+                    document.getElementById("tripName_"+currentlyDisplayedTripId).innerText;
+            }
+            else if(xhr.status == 403){
+            }
+            else{
+            }
+        }
+    });
+
+
+
+
+    function deleteTripRequest(tripId, url){
+        let token =  $('input[name="csrfToken"]').attr('value');
+        $.ajaxSetup({
+            beforeSend: function(xhr) {
+                xhr.setRequestHeader('Csrf-Token', token);
+            }
+        });
+        $.ajax({
+            url: '/users/trips/' + tripId,
+            method: "DELETE",
+            success: function(res) {
+                window.location = url;
+            }
+        });
+    }
+
 
 function sendDeleteVisitRequest(url, visitId) {
     console.log(url);
@@ -396,7 +485,7 @@ function sendDeleteVisitRequest(url, visitId) {
                 console.log("400 error");
             }
             else if(xhr.status == 403){
-                console.log("400 error");
+                console.log("403 error");
             }
             else{
             }
@@ -407,7 +496,6 @@ function sendDeleteVisitRequest(url, visitId) {
 
 
 function updateVisitDate(visitId) {
-
     let arrival = document.getElementById("arrival_"+visitId).value;
     let departure = document.getElementById("departure_"+visitId).value;
 

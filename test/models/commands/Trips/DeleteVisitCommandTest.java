@@ -38,10 +38,9 @@ public class DeleteVisitCommandTest extends BaseTestWithApplicationAndDatabase {
                 "create table test (id bigint not null, name varchar(255));",
                 "drop table test;"
         )));
-        TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
-        testDatabaseManager.populateDatabase();
+        TestDatabaseManager.populateDatabase();
         trip = TripAccessor.getTripById(2);
-        user = User.find.byId(1);
+        user = User.find().byId(1);
 
 
     }

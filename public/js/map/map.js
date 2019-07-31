@@ -171,12 +171,17 @@ function initMap() {
 
     window.globalMap = new google.maps.Map(document.getElementById('map'), {
         center: {lat: -43.522057156877615, lng: 172.62360347218828},
-        zoom: 5
+        zoom: 5,
+        mapTypeControl: true,
+        mapTypeControlOptions: {
+            style: google.maps.MapTypeControlStyle.HORIZONTAL_BAR,
+            position: google.maps.ControlPosition.TOP_RIGHT
+        }
     });
 
-    // initPlacesAutocomplete();
+    initPlacesAutocompleteSearch();
     initDestinationMarkers();
-    // initMapLegend();
+    initMapLegend();
     initTripRoutes();
 
 
@@ -403,13 +408,14 @@ function displayDestination(destId, startLat, startLng) {
     if (currentlyDisplayedDestId !== undefined) {
         document.getElementById("singleDestination_"+currentlyDisplayedDestId).style.display = "none";
     }
+    document.getElementById("createDestination").style.display = "none";
 
     currentlyDisplayedDestId = destId;
 
     document.getElementById("singleDestination_"+destId).style.display = "block";
 
 
-    var tripStartLatLng = new google.maps.LatLng(
+    let tripStartLatLng = new google.maps.LatLng(
         startLat, startLng
     );
 
@@ -597,4 +603,99 @@ function updateTripName(newName) {
             }
         });
 
+}
+
+/**
+ * Initialises the google places api auto-complete box
+ */
+function initPlacesAutocompleteSearch() {
+    const input = document.getElementById('placesAutocomplete');
+    const autocomplete = new google.maps.places.Autocomplete(input);
+
+    // Bind the map's bounds (viewport) property to the autocomplete object,
+    // so that the autocomplete requests use the current map bounds for the
+    // bounds option in the request.
+    autocomplete.bindTo('bounds', window.globalMap);
+
+    // Set the data fields to return when the user selects a place.
+    autocomplete.setFields(
+        ['address_components', 'geometry', 'icon', 'name']);
+
+    autocomplete.addListener('place_changed', function() {
+        const place = autocomplete.getPlace();
+
+        const coordinates = place.geometry.location;
+        const address = place.address_components;
+
+        let data = {
+            name: place.name,
+            country: '',
+            district: '',
+            latitude: coordinates.lat(),
+            longitude: coordinates.lng(),
+        };
+
+        address.forEach((addressItem) => {
+            if (addressItem.types.includes("country")) {
+                data.country = addressItem.long_name;
+
+            } else if (addressItem.types.includes("administrative_area_level_1")
+                || addressItem.types.includes("administrative_area_level_2")) {
+                data.district = addressItem.long_name;
+            }
+        });
+
+        let token =  $('input[name="csrfToken"]').attr('value');
+        $.ajaxSetup({
+            beforeSend: function(xhr) {
+                xhr.setRequestHeader('Csrf-Token', token);
+            }
+        });
+        $.ajax({
+            url: '/users/destination/exists',
+            method: "POST",
+            data: JSON.stringify(data),
+            contentType : 'application/json',
+            success: function(data, textStatus, xhr){
+                if(xhr.status == 200) {
+                    let destLatLng = new google.maps.LatLng(
+                        coordinates.lat(), coordinates.lng()
+                    );
+
+                    window.globalMap.setCenter(destLatLng);
+                    window.globalMap.setZoom(10);
+                }
+                else if (xhr.status == 201) {
+                    $('[href="#destinationsTab"]').tab('show');
+                    document.getElementById('createDestination').style.display = 'block';
+
+                    document.getElementById("destName").value = place.name;
+
+                    address.forEach((addressItem) => {
+                        if (addressItem.types.includes("country")) {
+                            document.getElementById("country").value = addressItem.long_name;
+
+                        } else if (addressItem.types.includes("administrative_area_level_1")
+                            || addressItem.types.includes("administrative_area_level_2")) {
+                            document.getElementById("district").value = addressItem.long_name;
+                        }
+                    });
+
+                    document.getElementById("latitude").value = coordinates.lat();
+                    document.getElementById("longitude").value = coordinates.lng();
+                }
+            },
+            error: function(xhr, settings){
+                if(xhr.status == 400) {
+                }
+                else if(xhr.status == 404){
+
+                }
+                else{
+                }
+            }
+        });
+
+
+    });
 }

@@ -1,4 +1,6 @@
-@(user : User, trips : List[Trip], destinations : List[Destination])
+@import formdata.DestinationFormData
+@import views.html.bootstrap3._
+@(user : User, trips : List[Trip], destinations : List[Destination], destForm : Form[DestinationFormData], countryMap: Map[String, Boolean], typeMap: Map[String, Boolean])
 
 <style>
         #map {
@@ -50,12 +52,47 @@
             cursor: pointer;
         }
 
+        #legend {
+            font-family: Arial, sans-serif;
+            background: hsla(120, 100%, 75%, 0.3);
+            padding: 10px;
+            margin: 10px;
+            border: 1px solid #000;
+        }
+        #legend h3 {
+            margin-top: 0;
+        }
+        #legend img {
+            vertical-align: middle;
+        }
+
+        #placesContainer {
+            position: absolute;
+            z-index: 2;
+            left: 10px;
+            top: 70px;
+            width: 30%;
+            max-width: 500px;
+            min-width: 250px;
+            font-family: Roboto;
+
+        }
+        #placesAutocomplete {
+            width: 100%;
+            font-size: 16px;
+            padding: 12px 20px 12px 40px; /* Add some padding */
+            border: 1px solid #ddd; /* Add a grey border */
+        }
+
 </style>
 
 
 @main(user, "Map") {
 
-
+    <div id="placesContainer">
+        <input id="placesAutocomplete" type="text" class="searchDestinations" placeholder="Search"/>
+    </div>
+    <div id="legend"><h3>Legend</h3></div>
     <div id="map" class="col-md-8"></div>
     <div id="control" class="col-md-4">
 
@@ -128,11 +165,23 @@
                                 </div>
                             </div>
 
+                            <a class="btn btn-primary" id="setPrimaryPicture" href="@routes.DestinationController.viewDestination(destination.getDestId())">
+                            View Destination</a>
+
+
                         </div>
 
                     }
+                    <div class="singleDestination" id="createDestination" style="margin-top: 20px">
+                        @helper.form(action = helper.CSRF(routes.DestinationController.saveDestinationFromRequest())) {
+                            @formBody()
+                        }
+                    </div>
 
                 </div>
+
+
+
                 <hr>
                 <div id="destinationList">
                     <h4 style="text-align: left">My Destinations</h4>
@@ -263,6 +312,48 @@
     <script src="https://maps.googleapis.com/maps/api/js?key=&callback=initMap&libraries=drawing,places"
     async defer></script>
 
+}
+
+@formBody()= {
+    <fieldset>
+            <!-- Name -->
+        @text(destForm("destName"),
+            label = "Destination Name",
+            placeholder = "Destination name",
+            help = "Please enter the Destination name. (required)")
+
+        @views.html.bootstrap3.select(destForm("country"),
+            label = "Country",
+            optionMap = countryMap,
+            isMultiple = false,
+            help= "Select a country",
+        )
+
+        @text(destForm("district"),
+            label = "District",
+            placeholder = "district",
+        )
+
+        @text(destForm("latitude"),
+            label = "Latitude",
+            placeholder = "latitude (click on map)"
+        )
+
+        @text(destForm("longitude"),
+            label = "Longitude",
+            placeholder = "longitude (click on map)"
+        )
+
+        @views.html.bootstrap3.select(destForm("destType"),
+            label = "Type",
+            optionMap = typeMap,
+            isMultiple = false
+        )
+    </fieldset>
+
+    <div class="form-group actions">
+        <input id="submit" type="submit" value="Create" class="btn btn-primary"/>
+    </div>
 
 
 }

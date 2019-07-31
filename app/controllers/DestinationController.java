@@ -5,6 +5,7 @@ import accessors.TreasureHuntAccessor;
 import accessors.UserPhotoAccessor;
 import com.fasterxml.jackson.databind.JsonNode;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import factories.DestinationFactory;
 import factories.TravellerTypeFactory;
 import factories.UserFactory;
@@ -453,14 +454,6 @@ public class DestinationController extends Controller {
 
     }
 
-
-
-
-
-
-
-
-
     /**
      * This method renders a page where a user can create a destination.
      *
@@ -506,12 +499,48 @@ public class DestinationController extends Controller {
                 newDestination.save();
 
 
-                return redirect(routes.DestinationController.indexDestination());
+                return redirect(routes.HomeController.mainMapPage());
             }
 
         } else {
             return redirect(routes.UserController.userindex());
         }
+    }
+
+
+    public Result doesDestinationExist(Http.Request request) {
+        User user = User.getCurrentUser(request);
+        if (user == null) { return redirect(routes.UserController.userindex()); }
+
+        String name = new ObjectMapper().convertValue(request.body().asJson().get("name"), String.class);
+        String country = new ObjectMapper().convertValue(request.body().asJson().get("country"), String.class);
+        String district = new ObjectMapper().convertValue(request.body().asJson().get("district"), String.class);
+        Double latitude = new ObjectMapper().convertValue(request.body().asJson().get("latitude"), Double.class);
+        Double longitude = new ObjectMapper().convertValue(request.body().asJson().get("longitude"), Double.class);
+
+        Destination destination = new Destination();
+        destination.setDestName(name);
+        destination.setCountry(country);
+        destination.setDistrict(district);
+        destination.setLatitude(latitude);
+        destination.setLongitude(longitude);
+
+        List<Destination> allDestinations = DestinationAccessor.getAllDestinations();
+        List<Destination> userAccessibleDestinations = new ArrayList<>();
+
+        for (Destination existingDestination : allDestinations) {
+            if (existingDestination.getUser().getUserid() == user.getUserid() ||
+                    destination.getIsPublic()) {
+                userAccessibleDestinations.add(existingDestination);
+            }
+        }
+
+        for (Destination existingDestination : userAccessibleDestinations) {
+            if (destination.isSimilar(existingDestination)) {
+                return ok();
+            }
+        }
+        return created();
     }
 
 
@@ -653,11 +682,6 @@ public class DestinationController extends Controller {
             return redirect(routes.UserController.userindex());
         }
     }
-
-
-
-
-
 
 
 

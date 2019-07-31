@@ -3,6 +3,7 @@ package controllers;
 import accessors.DestinationAccessor;
 import accessors.UserAccessor;
 import factories.UserFactory;
+import formdata.DestinationFormData;
 import io.ebean.DuplicateKeyException;
 import models.Destination;
 import models.Trip;
@@ -11,6 +12,7 @@ import models.UserPhoto;
 import models.commands.General.CommandPage;
 import models.commands.Photos.UploadPhotoCommand;
 import org.slf4j.Logger;
+import play.data.Form;
 import play.data.FormFactory;
 import play.libs.Files;
 import play.libs.Json;
@@ -42,7 +44,6 @@ public class HomeController {
 
     public Result mainMapPage(Http.Request request) {
         User user = User.getCurrentUser(request);
-
         if (user == null) { return redirect(routes.UserController.userindex()); }
 
         List<Trip> trips = user.getTripsSorted();
@@ -60,7 +61,12 @@ public class HomeController {
             }
         }
 
-        return ok(mapHome.render(user, trips, userAccessibleDestinations));
+        Form<DestinationFormData> destFormData;
+        destFormData = formFactory.form(DestinationFormData.class);
+
+        Map<String, Boolean> countryList = CountryUtils.getCountriesMap();
+
+        return ok(mapHome.render(user, trips, userAccessibleDestinations, destFormData, countryList, Destination.getTypeList()));
 
     }
 

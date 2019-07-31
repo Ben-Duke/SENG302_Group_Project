@@ -506,7 +506,7 @@ public class DestinationController extends Controller {
                 newDestination.save();
 
 
-                return redirect(routes.DestinationController.indexDestination());
+                return redirect(routes.HomeController.mainMapPage());
             }
 
         } else {
@@ -653,11 +653,6 @@ public class DestinationController extends Controller {
             return redirect(routes.UserController.userindex());
         }
     }
-
-
-
-
-
 
 
 

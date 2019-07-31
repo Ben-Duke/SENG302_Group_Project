@@ -17,7 +17,7 @@ function initMap() {
         }
     });
 
-    // initPlacesAutocomplete();
+    initPlacesAutocompleteSearch();
     initDestinationMarkers();
     initMapLegend();
     initTripRoutes();
@@ -331,5 +331,53 @@ function updateVisitDate(visitId) {
             else{
             }
         }
+    });
+}
+
+/**
+ * Initialises the google places api auto-complete box
+ */
+function initPlacesAutocompleteSearch() {
+    const input = document.getElementById('placesAutocomplete');
+    const autocomplete = new google.maps.places.Autocomplete(input);
+
+    // Bind the map's bounds (viewport) property to the autocomplete object,
+    // so that the autocomplete requests use the current map bounds for the
+    // bounds option in the request.
+    autocomplete.bindTo('bounds', window.globalMap);
+
+    // Set the data fields to return when the user selects a place.
+    autocomplete.setFields(
+        ['address_components', 'geometry', 'icon', 'name']);
+
+    autocomplete.addListener('place_changed', function() {
+        const place = autocomplete.getPlace();
+
+        const coordinates = place.geometry.location;
+        const address = place.address_components;
+
+        console.log(coordinates);
+        console.log(address);
+
+        $('[href="#destinationsTab"]').tab('show');
+        // document.getElementById('tripsTab').classList.remove('active');
+        // document.getElementById('destinationsTab').classList.add('active');
+        document.getElementById('createDestination').style.display = 'block';
+
+        document.getElementById("destName").value = place.name;
+
+        address.forEach((addressItem) => {
+            if (addressItem.types.includes("country")) {
+                document.getElementById("country").value = addressItem.long_name;
+
+            } else if (addressItem.types.includes("administrative_area_level_1")
+                || addressItem.types.includes("administrative_area_level_2")) {
+                document.getElementById("district").value = addressItem.long_name;
+            }
+        });
+
+
+        document.getElementById("latitude").value = coordinates.lat();
+        document.getElementById("longitude").value = coordinates.lng();
     });
 }

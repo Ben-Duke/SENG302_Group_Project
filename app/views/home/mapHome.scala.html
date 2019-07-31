@@ -1,4 +1,6 @@
-@(user : User, trips : List[Trip], destinations : List[Destination])
+@import formdata.DestinationFormData
+@import views.html.bootstrap3._
+@(user : User, trips : List[Trip], destinations : List[Destination], destForm : Form[DestinationFormData], countryMap: Map[String, Boolean], typeMap: Map[String, Boolean])
 
 <style>
         #map {
@@ -69,6 +71,9 @@
             z-index: 2;
             left: 10px;
             top: 70px;
+            width: 30%;
+            max-width: 500px;
+            min-width: 250px;
             font-family: Roboto;
 
         }
@@ -167,8 +172,16 @@
                         </div>
 
                     }
+                    <div class="singleDestination" id="createDestination" style="margin-top: 20px">
+                        @helper.form(action = helper.CSRF(routes.DestinationController.saveDestinationFromRequest())) {
+                            @formBody()
+                        }
+                    </div>
 
                 </div>
+
+
+
                 <hr>
                 <div id="destinationList">
                     <h4 style="text-align: left">My Destinations</h4>
@@ -296,9 +309,51 @@
 
     <script src="@routes.Assets.at("js/map/map.js")"></script>
     <script src="@routes.Assets.at("js/destination/destinationMap.js")"></script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC9Z1g5p2rQtS0nHgDudzCCXVl2HJl3NPI&callback=initMap&libraries=drawing,places"
+    <script src="https://maps.googleapis.com/maps/api/js?key=&callback=initMap&libraries=drawing,places"
     async defer></script>
 
+}
+
+@formBody()= {
+    <fieldset>
+            <!-- Name -->
+        @text(destForm("destName"),
+            label = "Destination Name",
+            placeholder = "Destination name",
+            help = "Please enter the Destination name. (required)")
+
+        @views.html.bootstrap3.select(destForm("country"),
+            label = "Country",
+            optionMap = countryMap,
+            isMultiple = false,
+            help= "Select a country",
+        )
+
+        @text(destForm("district"),
+            label = "District",
+            placeholder = "district",
+        )
+
+        @text(destForm("latitude"),
+            label = "Latitude",
+            placeholder = "latitude (click on map)"
+        )
+
+        @text(destForm("longitude"),
+            label = "Longitude",
+            placeholder = "longitude (click on map)"
+        )
+
+        @views.html.bootstrap3.select(destForm("destType"),
+            label = "Type",
+            optionMap = typeMap,
+            isMultiple = false
+        )
+    </fieldset>
+
+    <div class="form-group actions">
+        <input id="submit" type="submit" value="Create" class="btn btn-primary"/>
+    </div>
 
 
 }

@@ -1,6 +1,7 @@
 package utilities;
 
 import accessors.AlbumAccessor;
+import accessors.UserAccessor;
 import controllers.ApplicationManager;
 import models.*;
 import models.commands.Albums.CreateAlbumCommand;
@@ -195,6 +196,8 @@ public class TestDatabaseManager {
                 isInSuccessState = false;
                 logger.error(err.getMessage(), err);
             }
+            Album album1 = new Album(user, "Default", true);
+            album1.save();
 
 //            addAlbums();
             user2.getTravellerTypes().add(travellerType2);
@@ -209,6 +212,9 @@ public class TestDatabaseManager {
                 isInSuccessState = false;
                 logger.error("User2 failed", err);
             }
+            Album album2 = new Album(user2, "Default", true);
+            album2.save();
+
             user3.getTravellerTypes().add(travellerType1);
             user3.getTravellerTypes().add(travellerType2);
 
@@ -220,6 +226,8 @@ public class TestDatabaseManager {
                 isInSuccessState = false;
                 logger.error("User1 failed", err);
             }
+            Album album3 = new Album(user3, "Default", true);
+            album3.save();
 
 
         } catch (Exception e) {
@@ -239,12 +247,14 @@ public class TestDatabaseManager {
         boolean isInSuccessState = true;
 
         User user = new User("admin@admin.com", "admin", "admin", "admin", LocalDate.now(), "male");
+        Album album = new Album(user, "Default", true);
         user.setDateOfBirth(LocalDate.of(2019, 2, 18));
         user.setTravellerTypes(TravellerType.find().all().subList(5, 6)); // Business Traveller
         user.setNationality(Nationality.find().all().subList(0, 2)); // First two countries alphabetically
 
         try {
             user.save();
+            album.save();
         } catch (Exception e) {
             isInSuccessState = false;
             logger.error("Error making admin: User is already in db", e);
@@ -510,7 +520,7 @@ public class TestDatabaseManager {
     public static void addAlbums(){
         UserPhoto userPhoto1 = new UserPhoto("card.PNG", true, false, User.find().byId(1));
         UserPhoto userPhoto2 = new UserPhoto("Capture.PNG", false, false, User.find().byId(1));
-        Album album1 = new Album(User.find().byId(1), "myAlbum");
+        Album album1 = new Album(User.find().byId(1), "myAlbum", false);
         try {
             userPhoto1.save();
             userPhoto2.save();

@@ -26,7 +26,6 @@ public class AlbumTest extends BaseTestWithApplicationAndDatabase {
 
 
         Media media = MediaAccessor.getMediaById(photo.getMediaId());
-        System.out.println(media);
 
 
 //        Album album = new Album(photo, null, "title");
@@ -48,7 +47,7 @@ public class AlbumTest extends BaseTestWithApplicationAndDatabase {
         User user = new User();
         UserAccessor.insert(user);
 
-        Album album = new Album(user, "testTitle");
+        Album album = new Album(user, "testTitle", false);
         AlbumAccessor.insert(album);
 
         Media media1 = new UserPhoto("/test", false, false, user);
@@ -76,7 +75,7 @@ public class AlbumTest extends BaseTestWithApplicationAndDatabase {
         User user = new User();
         UserAccessor.insert(user);
 
-        Album album = new Album(user, "testTitle");
+        Album album = new Album(user, "testTitle", false);
         AlbumAccessor.insert(album);
 
         Media media1 = new UserPhoto("/test", false, false, user);
@@ -104,7 +103,7 @@ public class AlbumTest extends BaseTestWithApplicationAndDatabase {
         User user = new User();
         UserAccessor.insert(user);
 
-        Album album = new Album(user, "testTitle");
+        Album album = new Album(user, "testTitle", false);
         AlbumAccessor.insert(album);
 
         Media media1 = new UserPhoto("/test", false, false, user);

@@ -132,7 +132,7 @@ public class AlbumControllerTest extends BaseTestWithApplicationAndDatabase {
 
         User user = UserAccessor.getById(1);
 
-        Album album = new Album(user, "testTitle");
+        Album album = new Album(user, "testTitle", false);
         AlbumAccessor.insert(album);
 
         Http.RequestBuilder request = Helpers.fakeRequest()
@@ -173,7 +173,7 @@ public class AlbumControllerTest extends BaseTestWithApplicationAndDatabase {
 
         User user = UserAccessor.getById(1);
 
-        Album album = new Album(user, "testTitle");
+        Album album = new Album(user, "testTitle", false);
         AlbumAccessor.insert(album);
 
         Http.RequestBuilder request = Helpers.fakeRequest()
@@ -200,7 +200,7 @@ public class AlbumControllerTest extends BaseTestWithApplicationAndDatabase {
         User user = new User("email");
         UserAccessor.insert(user);
 
-        Album album = new Album(user, "testTitle");
+        Album album = new Album(user, "testTitle", false);
         AlbumAccessor.insert(album);
 
         Media media1 = new UserPhoto("/test", false, false, user);
@@ -237,7 +237,7 @@ public class AlbumControllerTest extends BaseTestWithApplicationAndDatabase {
 
         User otherUser = UserAccessor.getById(1);
 
-        Album album = new Album(user, "testTitle");
+        Album album = new Album(user, "testTitle", false);
         AlbumAccessor.insert(album);
 
         Media media1 = new UserPhoto("/test", false, false, user);
@@ -272,7 +272,7 @@ public class AlbumControllerTest extends BaseTestWithApplicationAndDatabase {
         User user = new User("email");
         UserAccessor.insert(user);
 
-        Album album = new Album(user, "testTitle");
+        Album album = new Album(user, "testTitle", false);
         AlbumAccessor.insert(album);
 
         Media media1 = new UserPhoto("/test", false, false, user);
@@ -305,7 +305,7 @@ public class AlbumControllerTest extends BaseTestWithApplicationAndDatabase {
         User user = new User("email");
         UserAccessor.insert(user);
 
-        Album album = new Album(user, "testTitle");
+        Album album = new Album(user, "testTitle", false);
 
         Media media1 = new UserPhoto("/test", false, false, user);
         MediaAccessor.insert(media1);
@@ -347,7 +347,7 @@ public class AlbumControllerTest extends BaseTestWithApplicationAndDatabase {
 
         User otherUser = UserAccessor.getById(1);
 
-        Album album = new Album(user, "testTitle");
+        Album album = new Album(user, "testTitle", false);
 
         Media media1 = new UserPhoto("/test", false, false, user);
         MediaAccessor.insert(media1);
@@ -386,7 +386,7 @@ public class AlbumControllerTest extends BaseTestWithApplicationAndDatabase {
         User user = new User("email");
         UserAccessor.insert(user);
 
-        Album album = new Album(user, "testTitle");
+        Album album = new Album(user, "testTitle", false);
 
         Media media1 = new UserPhoto("/test", false, false, user);
         MediaAccessor.insert(media1);
@@ -424,7 +424,7 @@ public class AlbumControllerTest extends BaseTestWithApplicationAndDatabase {
 
         User otherUser = UserAccessor.getById(1);
 
-        Album album = new Album(user, "testTitle");
+        Album album = new Album(user, "testTitle", false);
 
         Media media1 = new UserPhoto("/test", false, false, user);
         MediaAccessor.insert(media1);
@@ -463,7 +463,7 @@ public class AlbumControllerTest extends BaseTestWithApplicationAndDatabase {
         User user = new User("email");
         UserAccessor.insert(user);
 
-        Album album = new Album(user, "testTitle");
+        Album album = new Album(user, "testTitle", false);
 
         Media media1 = new UserPhoto("/test", false, false, user);
         MediaAccessor.insert(media1);
@@ -475,7 +475,7 @@ public class AlbumControllerTest extends BaseTestWithApplicationAndDatabase {
 
         AlbumAccessor.insert(album);
 
-        Album targetAlbum = new Album(user, "testTitleTarget");
+        Album targetAlbum = new Album(user, "testTitleTarget", false);
         AlbumAccessor.insert(targetAlbum);
 
         Http.RequestBuilder request = Helpers.fakeRequest()
@@ -509,7 +509,7 @@ public class AlbumControllerTest extends BaseTestWithApplicationAndDatabase {
         User user = new User("email");
         UserAccessor.insert(user);
 
-        Album album = new Album(user, "testTitle");
+        Album album = new Album(user, "testTitle", false);
 
         Media media1 = new UserPhoto("/test", false, false, user);
         MediaAccessor.insert(media1);
@@ -518,7 +518,7 @@ public class AlbumControllerTest extends BaseTestWithApplicationAndDatabase {
 
         AlbumAccessor.insert(album);
 
-        Album targetAlbum = new Album(user, "testTitleTarget");
+        Album targetAlbum = new Album(user, "testTitleTarget", false);
         AlbumAccessor.insert(targetAlbum);
 
         Http.RequestBuilder request = Helpers.fakeRequest()
@@ -553,7 +553,7 @@ public class AlbumControllerTest extends BaseTestWithApplicationAndDatabase {
 
         User otherUser = UserAccessor.getById(1);
 
-        Album album = new Album(user, "testTitle");
+        Album album = new Album(user, "testTitle", false);
 
         Media media1 = new UserPhoto("/test", false, false, user);
         MediaAccessor.insert(media1);
@@ -565,7 +565,7 @@ public class AlbumControllerTest extends BaseTestWithApplicationAndDatabase {
 
         AlbumAccessor.insert(album);
 
-        Album targetAlbum = new Album(user, "testTitleTarget");
+        Album targetAlbum = new Album(user, "testTitleTarget", false);
         AlbumAccessor.insert(targetAlbum);
 
         Http.RequestBuilder request = Helpers.fakeRequest()
@@ -598,7 +598,7 @@ public class AlbumControllerTest extends BaseTestWithApplicationAndDatabase {
         User user = new User("email12345");
         UserAccessor.insert(user);
 
-        Album album = new Album(user, "testTitle");
+        Album album = new Album(user, "testTitle", false);
         AlbumAccessor.insert(album);
 
         Http.RequestBuilder request = Helpers.fakeRequest()
@@ -645,7 +645,7 @@ public class AlbumControllerTest extends BaseTestWithApplicationAndDatabase {
         User otherUser = new User("email12");
         UserAccessor.insert(otherUser);
 
-        Album album = new Album(user, "testTitle");
+        Album album = new Album(user, "testTitle", false);
         AlbumAccessor.insert(album);
 
         Http.RequestBuilder request = Helpers.fakeRequest()
@@ -669,12 +669,12 @@ public class AlbumControllerTest extends BaseTestWithApplicationAndDatabase {
 
         Media media = new UserPhoto("/test", false, false, user);
         MediaAccessor.insert(media);
-        Album album = new Album(media, user, "newAlbum");
+        Album album = new Album(media, user, "newAlbum", false);
         AlbumAccessor.insert(album);
 
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(Helpers.GET)
-                .uri("/users/albums/getFromTitle/newAlbum").session("connected", Integer.toString(user.getUserid()));
+                .uri("/users/1/albums/getFromTitle/newAlbum").session("connected", Integer.toString(user.getUserid()));
 
         Result result = route(app, request);
         assert (result.status() == OK);

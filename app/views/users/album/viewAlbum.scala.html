@@ -11,7 +11,9 @@
 </head>
 
 <body onpageshow="getAlbum(@user.getUserid, @album.getAlbumId, @album.userIsOwner(user))">
-    <h2 style="text-align: center;">@album.getTitle</h2>
+    <div>
+        <h2 style="text-align: center;"> @album.getTitle <a id="deleteAlbumButton" onclick= "showDeleteAlbumModal(@album.getDefault)">&#10060</a></h2>
+    </div>
 
     <div class="container">
         @if(album.getMedia.size()==0) {
@@ -45,40 +47,33 @@
 
 
             <div id="existingAlbumId" class="hidden">@album.albumId</div>
-            <!-- Caption text -->
-            <div class="caption-container">
-                <div>
-                    <p id="img-caption"></p>
-                    @if(album.getOwner == user || user.userIsAdmin) {
-                        <li>
-                            <div>
-                                <p>
-                                    Move to Album
-                                    <input style="color: #000000;" id="album-search-move" list="album-results-move" name="Album Move" title="Move Album" placeholder="Search for Album">
-                                    <datalist  id="album-results-move">
-                                    @for(userAlbum <- user.getAlbums()){
-                                        @if(userAlbum.albumId != album.albumId) {
-                                            <option value=@userAlbum.getTitle()></option>
-                                        }
-                                    }
-                                    </datalist>
-                                </p>
-                            </div>
-                        </li>
-                        <a class="btn btn-link" id="profilePictureBtn">Set Profile Picture</a>
-                        <a class="btn btn-link" id="deletePhotoBtn">Delete</a>
-                        <a class="btn btn-link" id="privacyBtn">Make Public/Private</a>
-                        <a class="btn btn-link" id="linkDestinationBtn">Link Destination</a>
-                    }
+            @if(album.getOwner == user || user.userIsAdmin) {
+                <!-- Caption text -->
+                <div class="caption-container">
+                    <div>
+                        <a class="btn btn-link" id="profilePictureBtn" style="color: white; padding: 5px;">Set Profile Picture</a>
+                        <a class="btn btn-link" id="deletePhotoBtn" style="color: white; padding: 5px;">Delete</a>
+                        <a class="btn btn-link" id="privacyBtn" style="color: white; padding: 5px;">Make Public/Private</a>
+                        <a class="btn btn-link" id="linkDestinationBtn" style="color: white; padding: 5px;">Link Destination</a>
+                        <label for="album-search-move" style="color: white; padding: 5px;">Move to Album: </label>
+                        <input style="color: #000000;" id="album-search-move" list="album-results-move"
+                        name="Album Move" title="Move Album" placeholder="Search for Album">
+                        <datalist  id="album-results-move">
+                        @for(userAlbum <- user.getAlbums()){
+                            @if(userAlbum.albumId != album.albumId) {
+                                <option value=@userAlbum.getTitle()></option>
+                            }
+                        }
+                        </datalist>
+                    </div>
+                    <div>
+                        <div id="imageModalAlert" class="alert alert-danger alert-dismissible hiddenDiv" role="alert">
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <strong>SERVER ERROR:</strong> Failed to fetch unlinkable destinations.
+                            Try refreshing the page and try again.
+                        </div>
                 </div>
-                <div>
-                    <div id="imageModalAlert" class="alert alert-danger alert-dismissible hiddenDiv" role="alert">
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <strong>SERVER ERROR:</strong> Failed to fetch unlinkable destinations.
-                    Try refreshing the page and try again.
-                </div>
-                </div>
-            </div>
+            }
         </div>
     </div>
 
@@ -133,6 +128,46 @@
                 <div class="modal-footer">
                     <button id="yesDeleteProfilePhoto" class="btn btn-danger" data-dismiss="modal">Yes</button>
                     <button id="noCloseDeleteProfilePhotoButton" class="btn btn-primary" data-dismiss="modal">No</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="confirmDeleteAlbumModal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+                <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title" id="deleteTitle">About to delete album</h4>
+                </div>
+                <div class="modal-body">
+                    <p id="message">Deleting this album will move all media into the default album, are you sure?</p>
+                </div>
+                <div class="modal-footer">
+                    <button id="yesDeleteAlbum" onclick="deleteAlbum(@album.getAlbumId)"class="btn btn-danger" data-dismiss="modal">Yes</button>
+                    <button id="noCloseDeleteAlbumButton" class="btn btn-primary" data-dismiss="modal">No</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+    <div id="defaultAlbum" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+                <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title" id="deleteTitle">About to delete album</h4>
+                </div>
+                <div class="modal-body">
+                    <p id="message">The default album cannot be deleted</p>
+                </div>
+                <div class="modal-footer">
+                    <button id="okdefaultAlbum" onclick="okDefault()"class="btn btn-danger" data-dismiss="modal">Ok</button>
                 </div>
             </div>
 

@@ -16,6 +16,7 @@ create table album (
   user                          integer,
   destination                   integer,
   primary_photo_media_id        integer,
+  is_default                    boolean,
   title                         varchar(255),
   constraint pk_album primary key (album_id)
 );

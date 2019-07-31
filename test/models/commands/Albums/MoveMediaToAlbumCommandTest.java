@@ -21,11 +21,11 @@ public class MoveMediaToAlbumCommandTest extends BaseTestWithApplicationAndDatab
         User user = new User("email1234");
         UserAccessor.insert(user);
 
-        Album album = new Album(user, "testAlbum");
+        Album album = new Album(user, "testAlbum", false);
         AlbumAccessor.insert(album);
-        Album album2 = new Album(user, "testAlbum2");
+        Album album2 = new Album(user, "testAlbum2", false);
         AlbumAccessor.insert(album2);
-        Album album3 = new Album(user, "testAlbum3");
+        Album album3 = new Album(user, "testAlbum3", false);
         AlbumAccessor.insert(album3);
 
         Media media1 = new UserPhoto("/test", false, false, user);
@@ -81,11 +81,11 @@ public class MoveMediaToAlbumCommandTest extends BaseTestWithApplicationAndDatab
         User user = new User("email1234");
         UserAccessor.insert(user);
 
-        Album album = new Album(user, "testAlbum");
+        Album album = new Album(user, "testAlbum", false);
         AlbumAccessor.insert(album);
-        Album album2 = new Album(user, "testAlbum2");
+        Album album2 = new Album(user, "testAlbum2", false);
         AlbumAccessor.insert(album2);
-        Album album3 = new Album(user, "testAlbum3");
+        Album album3 = new Album(user, "testAlbum3", false);
         AlbumAccessor.insert(album3);
 
         Media media1 = new UserPhoto("/test", false, false, user);
@@ -142,11 +142,11 @@ public class MoveMediaToAlbumCommandTest extends BaseTestWithApplicationAndDatab
         User user = new User("email1234");
         UserAccessor.insert(user);
 
-        Album album = new Album(user, "testAlbum");
+        Album album = new Album(user, "testAlbum", false);
         AlbumAccessor.insert(album);
-        Album album2 = new Album(user, "testAlbum2");
+        Album album2 = new Album(user, "testAlbum2", false);
         AlbumAccessor.insert(album2);
-        Album album3 = new Album(user, "testAlbum3");
+        Album album3 = new Album(user, "testAlbum3", false);
         AlbumAccessor.insert(album3);
 
         Media media1 = new UserPhoto("/test", false, false, user);
@@ -205,11 +205,11 @@ public class MoveMediaToAlbumCommandTest extends BaseTestWithApplicationAndDatab
         User user = new User("email1234");
         UserAccessor.insert(user);
 
-        Album album = new Album(user, "testAlbum");
+        Album album = new Album(user, "testAlbum", false);
         AlbumAccessor.insert(album);
-        Album album2 = new Album(user, "testAlbum2");
+        Album album2 = new Album(user, "testAlbum2", false);
         AlbumAccessor.insert(album2);
-        Album album3 = new Album(user, "testAlbum3");
+        Album album3 = new Album(user, "testAlbum3", false);
         AlbumAccessor.insert(album3);
 
         Media media1 = new UserPhoto("/test", false, false, user);

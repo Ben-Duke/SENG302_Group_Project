@@ -675,7 +675,7 @@ public class AlbumControllerTest extends BaseTestWithApplicationAndDatabase {
 
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(Helpers.GET)
-                .uri("/users/albums/getFromTitle/newAlbum").session("connected", Integer.toString(user.getUserid()));
+                .uri("/users/1/albums/getFromTitle/newAlbum").session("connected", Integer.toString(user.getUserid()));
 
         Result result = route(app, request);
         assert (result.status() == OK);

@@ -57,11 +57,13 @@ public class BaseTestWithApplicationAndDatabase extends WithApplication {
         ApplicationManager.setTesting();    // set the app in a testing state
 
         Map<String, String> configuration = new HashMap<>();
+        configuration.put("play.db.config", "db");
+        configuration.put("play.db.default", "default");
         configuration.put("db.default.driver", "org.h2.Driver");
-        configuration.put("db.default.url", "jdbc:h2:mem:play;;DB_CLOSE_DELAY=-1;");
+        configuration.put("db.default.url", "jdbc:h2:mem:testDB");
         configuration.put("ebean.default", "models.*");
         configuration.put("play.evolutions.db.default.enabled", "true");
-//        configuration.put("play.evolutions.db.default.autoApply", "false");
+        configuration.put("play.evolutions.autoApply", "false");
 //        configuration.put("play.evolutions.db.default.autoApplyDowns", "false");
 
 

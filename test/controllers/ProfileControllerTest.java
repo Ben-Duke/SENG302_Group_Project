@@ -5,6 +5,7 @@ import models.*;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
 import play.Application;
 import play.api.test.CSRFTokenHelper;
 import play.db.Database;
@@ -18,11 +19,13 @@ import play.mvc.Result;
 import play.test.Helpers;
 import play.test.WithApplication;
 import testhelpers.BaseTestWithApplicationAndDatabase;
+import utilities.TestDatabaseManager;
 import utilities.UtilityFunctions;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
@@ -34,15 +37,23 @@ import static play.test.Helpers.route;
 
 public class ProfileControllerTest extends BaseTestWithApplicationAndDatabase {
 
+    private final Logger logger = UtilityFunctions.getLogger();
+
     @Override
     /*
      * Setup the data for this test class
      * Runs before each test and cleared afterwards
      */
     public void populateDatabase() {
-        UtilityFunctions.addTravellerTypes();
-        UtilityFunctions.addAllNationalities();
-        UtilityFunctions.addAllPassports();
+        TestDatabaseManager.clearAllData();
+
+        List<User> users = User.find.all();
+        logger.debug("After clear");
+        logger.debug(users.toString());
+
+//        UtilityFunctions.addTravellerTypes();
+//        UtilityFunctions.addAllNationalities();
+//        UtilityFunctions.addAllPassports();
         TravellerType travellerType1 = TravellerType.find.byId(1);
         TravellerType travellerType2 = TravellerType.find.byId(2);
         Nationality nationality1 = Nationality.find.byId(1);
@@ -73,6 +84,13 @@ public class ProfileControllerTest extends BaseTestWithApplicationAndDatabase {
         user3.getNationality().add(nationality1);
         user3.getNationality().add(nationality2);
         user3.save();
+
+        users = User.find.all();
+        logger.debug("after setup");
+        for (User userItem : users) {
+            logger.debug(userItem.getEmail());
+            logger.debug(userItem.nationality.toString());
+        }
     }
 
     @Test

@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import play.db.ebean.EbeanConfig;
 import play.db.ebean.EbeanDynamicEvolutions;
 import testhelpers.BaseTestWithApplicationAndDatabase;
+import utilities.TestDatabaseManager;
 import utilities.UtilityFunctions;
 
 import javax.inject.Inject;
@@ -17,6 +18,11 @@ public class DatabaseTest extends BaseTestWithApplicationAndDatabase {
 
     private final Logger logger = UtilityFunctions.getLogger();
 
+
+    @Override
+    public void populateDatabase() {
+        TestDatabaseManager.clearAllData();
+    }
 
     @Test
     public void test() {

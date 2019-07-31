@@ -5,6 +5,7 @@ import models.User;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
 import play.Application;
 import play.db.Database;
 import play.db.Databases;
@@ -17,9 +18,11 @@ import play.test.Helpers;
 import play.test.WithApplication;
 import testhelpers.BaseTestWithApplicationAndDatabase;
 import utilities.TestDatabaseManager;
+import utilities.UtilityFunctions;
 
 
 import java.sql.SQLOutput;
+import java.util.List;
 
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertEquals;
@@ -29,22 +32,47 @@ import static play.test.Helpers.route;
 
 public class AdminControllerTest extends BaseTestWithApplicationAndDatabase {
 
+    private final Logger logger = UtilityFunctions.getLogger();
+
     /**
      * Populate custom data
      */
     @Override
     public void populateDatabase() {
-        TestDatabaseManager.clearAllData();
+        List<User> users = User.find.all();
+        logger.debug("Initial users");
+        logger.debug(users.toString());
+
+        //TestDatabaseManager.clearAllData();
+
+        users = User.find.all();
+        logger.debug("after clear");
+        logger.debug(users.toString());
 
         //Initialises test users and default admin and saves it to the database.
         User user = new User("testAdmin");
         user.save();
+
+        // make user id=1 an admin
         Admin admin = new Admin(1, true);
         admin.save();
+
         User user1 = new User("testUser1");
         user1.save();
         User user2 = new User("testUser2");
         user2.save();
+
+        users = User.find.all();
+        logger.debug("after setup");
+        for (User userItem : users) {
+            logger.debug(userItem.getEmail());
+            logger.debug(Boolean.toString(userItem.userIsAdmin()));
+        }
+
+        List<Admin> admins = Admin.find.all();
+        for (Admin adminItem : admins) {
+            logger.debug(adminItem.toString());
+        }
     }
 
     /**

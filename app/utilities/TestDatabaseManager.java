@@ -70,12 +70,25 @@ public class TestDatabaseManager {
     /**
      * Removes all data from the database while keeping the structure
      * Resets auto_increment (e.g. id)
-     * <p>
+     *
+     * Uses h2 syntax so will not work on mysql
+     *
      * Always runs on DEFAULT database not a database with a different name which
      * the application is connected to
      */
     public static void clearAllData() {
+        logger.info("Clearing database data");
+
+        List<TableName> persisted = Arrays.asList(TableName.nationality,
+                TableName.passport, TableName.traveller_type);
+
         for (TableName tableName : TableName.values()) {
+            if (persisted.contains(tableName)) {
+                continue;   // do not clear tables in persisted
+            }
+
+            logger.debug("clearing table " + tableName);
+
             String sql = String.format("DELETE FROM %s", tableName);
             Ebean.createSqlUpdate(sql).execute();
 

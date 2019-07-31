@@ -26,13 +26,13 @@ function getInfoWindowHTML(destination) {
     let infoWindowHTML;
     // uses a ES6 template string
     infoWindowHTML = `<style>.basicLink {text-underline: #0000EE;}</style>
-                      <a class="basicLink" href="javascript:;" onclick="viewDestination(${destination.destid})">
+                      <a class="basicLink" href="javascript:;" onclick="viewDestination(${destination.destId})">
                         ${destinationName}
                       </a>
                       <div>${destinationType}</div>
                       <div>District: ${destinationDistrict}</div>
                       <div>${destinationCountry}</div>
-                      <div><button id="addToTripButton" onclick="addSelectedToVisitToTrip(${destination.destid})">Add to trip</button></div>
+                      <div><button id="addToTripButton" onclick="addSelectedToVisitToTrip(${destination.destId})">Add to trip</button></div>
                       <script src="indexDestination.js"></script>`;
 
     return infoWindowHTML;
@@ -53,7 +53,7 @@ function addSelectedToVisitToTrip(destId){
             success: function(data){
                 console.log(data);
 
-                currentlyDisplayedTripId = data.tripId;
+                //currentlyDisplayedTripId = data.tripId;
                 let destTab = document.getElementById("destinationsTabListItem");
                 let tripsTab = document.getElementById("tripsTabListItem");
                 let tripsDiv = document.getElementById("tripsTab");
@@ -65,12 +65,12 @@ function addSelectedToVisitToTrip(destId){
 
 
 
-                let targetTable = document.getElementById("tripTable");
+                let targetTable = document.getElementById("placeholderTripTable");
                 let tableBody = document.createElement("tbody");
-                tableBody.setAttribute("id", "tripTable_"+ data.tripId);
+                tableBody.setAttribute("id", "tripTableBody_"+ data.tripId);
                 tableBody.style.display = "none";
                 let newRow = document.createElement('tr');
-                newRow.setAttribute('id', "visit_row_" + 19);//data.visitId);
+                newRow.setAttribute('id', "visit_row_" + data.visitId);
                 let tableHeader = document.createElement('th');
                 tableHeader.setAttribute('scope', 'row');
                 tableHeader.innerText = data.visitName;
@@ -93,9 +93,9 @@ function addSelectedToVisitToTrip(destId){
                 let deleteButtonText = document.createElement('a');
                 deleteButtonText.innerText = '❌';
                 deleteButtonText.setAttribute('style', 'deleteButton');
-                let urlForDelete = '/users/trips/edit/' + 2;//data.tripId;
+                let urlForDelete = '/users/trips/edit/' + data.visitId;//data.tripId;
                 deleteButtonText.setAttribute('onclick', 'sendDeleteVisitRequest(' + '"' + urlForDelete + '"' + ','
-                    + data.tripId + ')');
+                    + data.visitId + ')');
                 deleteButton.appendChild(deleteButtonText);
                 tableDataDeparture.appendChild(departureDateInput);
                 newRow.appendChild(tableHeader);
@@ -103,15 +103,31 @@ function addSelectedToVisitToTrip(destId){
                 newRow.appendChild(tableDataArrival);
                 newRow.appendChild(tableDataDeparture);
                 newRow.appendChild(deleteButton);
-                tableBody.appendChild(newRow);
-                targetTable.appendChild(tableBody);
+                //tableBody.appendChild(newRow);
+                targetTable.appendChild(newRow);
 
                 let listGroup = document.getElementById('trip-list-group');
+                let groupDiv = document.createElement('div');
+
                 let tripLink = document.createElement('a');
+                let tripCheckBox = document.createElement('input');
+                tripCheckBox.setAttribute('type', 'checkbox');
+                tripCheckBox.setAttribute('id',"Toggle"+data.tripId);
+                tripCheckBox.setAttribute('checked', 'true');
+                tripCheckBox.setAttribute('onclick', 'toggleTrips(' + data.tripId + ')');
+                tripCheckBox.setAttribute('class', 'form-check-label');
+                let mapLabel = document.createElement('label');
+                mapLabel.setAttribute('class', 'form-check-label');
+                mapLabel.setAttribute('for', "toggleMap");
+                mapLabel.innerText = 'Show on map';
+
                 tripLink.setAttribute('class', "list-group-item list-group-item-action");
                 tripLink.innerText = data.tripName + ' | No arrival dates';
                 tripLink.setAttribute("onclick", "displayTrip(" + currentlyDisplayedTripId + ", " + data.latitude+ ", "+ data.longitude + ")");
                 listGroup.appendChild(tripLink);
+                listGroup.appendChild(groupDiv);
+                groupDiv.appendChild(tripCheckBox);
+                groupDiv.appendChild(mapLabel);
                 displayTrip(currentlyDisplayedTripId, data.latitude, data.longitude);
 
 
@@ -133,12 +149,12 @@ function addSelectedToVisitToTrip(destId){
             contentType : 'application/json',
             type: 'POST',
             url: url,
-            success: function(data, textStatus, xhr){
+            success: function(data){
                 console.log(data);
                 tripVisittableRefresh(data);
 
 
-                for (var i in tripRoutes) {
+                for (let i in tripRoutes) {
                     tripRoutes[i].setMap(null);
                 }
                 tripRoutes =[];
@@ -171,7 +187,8 @@ function initMap() {
 }
 
 function tripVisittableRefresh(data){
-    let targetTable = document.getElementById("tripTable_"+ currentlyDisplayedTripId);
+    console.log("refresh called ");
+    let targetTable = document.getElementById("placeholderTripTable");
     let newRow = document.createElement('tr');
     newRow.setAttribute('id', data[0]);
     let tableHeader = document.createElement('th');
@@ -204,7 +221,6 @@ function tripVisittableRefresh(data){
 
 var tripRoutes = [];
 
-let tripFlightPaths = {};
 
 /**
  * Will toggle the flight path of the trip on the map
@@ -212,7 +228,8 @@ let tripFlightPaths = {};
  * @param tripid The id of the trip on the map
  */
 function toggleTrips(tripid) {
-    var checkBox = document.getElementById(tripid);
+    console.log(tripid)
+    var checkBox = document.getElementById("Toggle" + tripid);
     if (checkBox.checked === false) {
         tripFlightPaths[tripid].setMap(null);
     } else {
@@ -251,7 +268,7 @@ function initTripRoutes() {
 
 
 
-var currentlyDisplayedTripId;
+let currentlyDisplayedTripId;
 /**
  * Displays the given trip in the table and centers on map.
  * @param tripId The id of the trip to be displayed
@@ -259,7 +276,10 @@ var currentlyDisplayedTripId;
  * @param startLng the longitude to zoom to
  */
 function displayTrip(tripId, startLat, startLng) {
-    var checkBox = document.getElementById(tripId);
+    console.log(currentlyDisplayedTripId);
+    console.log(tripId)
+    let checkBox = document.getElementById("Toggle" + tripId);
+    console.log(checkBox);
     if (checkBox.checked === true) {
         if (currentlyDisplayedTripId !== undefined) {
             document.getElementById("singleTrip_" + currentlyDisplayedTripId).style.display = "none";
@@ -270,6 +290,7 @@ function displayTrip(tripId, startLat, startLng) {
         currentlyDisplayedTripId = tripId;
 
         document.getElementById("singleTrip_" + tripId).style.display = "block";
+        console.log("got here");
 
 
         var tripStartLatLng = new google.maps.LatLng(
@@ -408,128 +429,129 @@ function toggleEditTripName(toEdit) {
 
 function updateTripName(newName) {
 
-    let token =  $('input[name="csrfToken"]').attr('value');
+    let token = $('input[name="csrfToken"]').attr('value');
     $.ajaxSetup({
-        beforeSend: function(xhr) {
+        beforeSend: function (xhr) {
             xhr.setRequestHeader('Csrf-Token', token);
         }
     });
     $.ajax({
-        url: '/user/trips/edit/'+currentlyDisplayedTripId,
+        url: '/user/trips/edit/' + currentlyDisplayedTripId,
         method: "PATCH",
         data: JSON.stringify(newName),
-        contentType : 'application/json',
-        success: function(data, textStatus, xhr){
-            if(xhr.status == 200) {
-                document.getElementById("tripName_"+currentlyDisplayedTripId).innerText = newName;
+        contentType: 'application/json',
+        success: function (data, textStatus, xhr) {
+            if (xhr.status == 200) {
+                document.getElementById("tripName_" + currentlyDisplayedTripId).innerText = newName;
                 toggleEditTripName(false);
             }
-            else{
+            else {
 
             }
         },
-        error: function(xhr, settings){
-            if(xhr.status == 400) {
-                document.getElementById("tripNameInput_"+currentlyDisplayedTripId).value =
-                    document.getElementById("tripName_"+currentlyDisplayedTripId).innerText;
+        error: function (xhr, settings) {
+            if (xhr.status == 400) {
+                document.getElementById("tripNameInput_" + currentlyDisplayedTripId).value =
+                    document.getElementById("tripName_" + currentlyDisplayedTripId).innerText;
             }
-            else if(xhr.status == 403){
+            else if (xhr.status == 403) {
             }
-            else{
+            else {
             }
         }
     });
 
-
-
-
-    function deleteTripRequest(tripId, url){
-        let token =  $('input[name="csrfToken"]').attr('value');
+}
+    function deleteTripRequest(tripId, url) {
+        let token = $('input[name="csrfToken"]').attr('value');
         $.ajaxSetup({
-            beforeSend: function(xhr) {
+            beforeSend: function (xhr) {
                 xhr.setRequestHeader('Csrf-Token', token);
             }
         });
         $.ajax({
             url: '/users/trips/' + tripId,
             method: "DELETE",
-            success: function(res) {
+            success: function (res) {
                 window.location = url;
             }
         });
     }
 
 
-function sendDeleteVisitRequest(url, visitId) {
-    console.log(url);
-    let token =  $('input[name="csrfToken"]').attr('value');
-    $.ajaxSetup({
-        beforeSend: function(xhr) {
-            xhr.setRequestHeader('Csrf-Token', token);
-        }
-    });
-    $.ajax({
-        url: url,
-        method: "DELETE",
-        contentType : 'application/json',
-        success: function(data, textStatus, xhr){
-            if(xhr.status == 200) {
-                document.getElementById("visit_row_" + visitId).remove();
+    function sendDeleteVisitRequest(url, visitId) {
+        console.log(url);
+        let token = $('input[name="csrfToken"]').attr('value');
+        $.ajaxSetup({
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader('Csrf-Token', token);
             }
-            else{
-                console.log("error in success function");
+        });
+        $.ajax({
+            url: url,
+            method: "DELETE",
+            contentType: 'application/json',
+            success: function (data, textStatus, xhr) {
+                if (xhr.status == 200) {
+                    console.log("t1")
+                    console.log("visit_row_" + visitId);
+                    document.getElementById("visit_row_" + visitId).remove();
+                    console.log("t2")
+                }
+                else {
+                    console.log("error in success function");
+                }
+            },
+            error: function (xhr, settings) {
+                if (xhr.status == 400) {
+                    console.log("400 error");
+                }
+                else if (xhr.status == 403) {
+                    console.log("403 error");
+                }
+                else {
+                }
             }
-        },
-        error: function(xhr, settings){
-            if(xhr.status == 400) {
-                console.log("400 error");
-            }
-            else if(xhr.status == 403){
-                console.log("403 error");
-            }
-            else{
-            }
-        }
-    });
-}
+        });
+    }
 
 
+    function updateVisitDate(visitId) {
+        let arrival = document.getElementById("arrival_" + visitId).value;
+        let departure = document.getElementById("departure_" + visitId).value;
 
-function updateVisitDate(visitId) {
-    let arrival = document.getElementById("arrival_"+visitId).value;
-    let departure = document.getElementById("departure_"+visitId).value;
+        let data = {
+            arrival: arrival,
+            departure: departure
+        };
 
-    let data = {
-        arrival: arrival,
-        departure: departure
-    };
+        let token = $('input[name="csrfToken"]').attr('value');
+        $.ajaxSetup({
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader('Csrf-Token', token);
+            }
+        });
+        $.ajax({
+            url: updateVisitDateUrl + visitId,
+            method: "PATCH",
+            data: JSON.stringify(data),
+            contentType: 'application/json',
+            success: function (data, textStatus, xhr) {
+                if (xhr.status == 200) {
 
-    let token =  $('input[name="csrfToken"]').attr('value');
-    $.ajaxSetup({
-        beforeSend: function(xhr) {
-            xhr.setRequestHeader('Csrf-Token', token);
-        }
-    });
-    $.ajax({
-        url: updateVisitDateUrl + visitId,
-        method: "PATCH",
-        data: JSON.stringify(data),
-        contentType : 'application/json',
-        success: function(data, textStatus, xhr){
-            if(xhr.status == 200) {
+                }
+                else {
 
+                }
+            },
+            error: function (xhr, settings) {
+                if (xhr.status == 400) {
+                }
+                else if (xhr.status == 403) {
+                }
+                else {
+                }
             }
-            else{
+        });
 
-            }
-        },
-        error: function(xhr, settings){
-            if(xhr.status == 400) {
-            }
-            else if(xhr.status == 403){
-            }
-            else{
-            }
-        }
-    });
 }

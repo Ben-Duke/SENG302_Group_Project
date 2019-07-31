@@ -51,11 +51,11 @@ public class VisitFactory {
      */
     public Visit createVisitByJSRequest(Destination destination, Trip trip) {
         Visit visit = new Visit();
-        visit.trip = trip;
-        visit.destination = destination;
-        visit.visitName = destination.destName;
+        visit.setTrip(trip);
+        visit.setDestination(destination);
+        visit.setVisitName(destination.getDestName());
         Integer visitSize = trip.getVisits().size();
-        visit.visitorder = visitSize + 1;
+        visit.setVisitorder(visitSize + 1);
         return visit;
     }
 }

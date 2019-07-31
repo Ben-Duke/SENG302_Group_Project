@@ -362,8 +362,8 @@ public class TripController extends Controller {
     public Result addVisitToTripJSRequest(Http.Request request, Integer tripId, Integer destId){
         User user = User.getCurrentUser(request);
         if(user != null) {
-            Trip trip = Trip.find.byId(tripId);
-            Destination destination = Destination.find.byId(destId);
+            Trip trip = Trip.find().byId(tripId);
+            Destination destination = Destination.find().byId(destId);
             if (trip == null) {
                 return notFound();
             }
@@ -402,7 +402,7 @@ public class TripController extends Controller {
         User user = User.getCurrentUser(request);
         System.out.println("creating trip with the user id being " + user.getUserid());
         if(user != null) {
-            Destination destination = Destination.find.byId(destid);
+            Destination destination = Destination.find().byId(destid);
             if(destination == null) {
                 return notFound();
             }
@@ -454,7 +454,7 @@ public class TripController extends Controller {
 
         User user = User.getCurrentUser(request);
         if (user == null) { return redirect(routes.UserController.userindex()); }
-
+        System.out.println("visit id is " + visitid);
         Visit visit = VisitAccessor.getById(visitid);
         System.out.println(visit.isTripOwner(user.getUserid()));
         if (visit == null) { return redirect(routes.UserController.userindex()); }

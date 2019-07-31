@@ -45,7 +45,7 @@ And open <http://localhost:9000/>
 
         Email: testuser1@uclive.ac.nz
 
-        Password: TinyHuman57
+        Password: TinyHumans57
         
 ## How to use
 A detailed guide exists here: <https://eng-git.canterbury.ac.nz/seng302-2019/team-800/wikis/user-guide>

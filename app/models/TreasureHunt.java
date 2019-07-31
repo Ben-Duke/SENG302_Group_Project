@@ -1,6 +1,7 @@
 package models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import controllers.ApplicationManager;
 import io.ebean.Finder;
 import io.ebean.Model;
 
@@ -11,7 +12,7 @@ import java.util.List;
 
 /** Model class for treasure hunt construction */
 @Entity
-public class TreasureHunt extends Model {
+public class TreasureHunt extends BaseModel {
 
     /**
      * The id of the treasure hunt
@@ -61,8 +62,8 @@ public class TreasureHunt extends Model {
     @ManyToMany(mappedBy = "guessedTHunts")
     private List<User> users;
 
-    private static Finder<Integer,TreasureHunt> find = new Finder<>(TreasureHunt.class);
-
+    private static Finder<Integer,TreasureHunt> find = new Finder<>(TreasureHunt.class,
+            ApplicationManager.getDatabaseName());
 
 
     /**

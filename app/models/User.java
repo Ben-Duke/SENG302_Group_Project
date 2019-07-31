@@ -2,6 +2,7 @@ package models;
 
 import accessors.CommandManagerAccessor;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import controllers.ApplicationManager;
 import io.ebean.ExpressionList;
 import io.ebean.Finder;
 import io.ebean.Model;
@@ -23,7 +24,7 @@ import java.util.*;
 @Table(name = "user",
         uniqueConstraints = @UniqueConstraint(columnNames = "email")
 )
-public class User extends Model implements Comparable<User> {
+public class User extends BaseModel implements Comparable<User> {
 
     @Column(name="email")
     private String email; // The email of the User
@@ -101,7 +102,8 @@ public class User extends Model implements Comparable<User> {
     @OneToMany(mappedBy = "user")
     private List<UserPhoto> userPhotos;
 
-    private static Finder<Integer,User> find = new Finder<>(User.class);
+    private static Finder<Integer,User> find = new Finder<>(User.class,
+            ApplicationManager.getDatabaseName());
 
     @Deprecated
     private Boolean isAdmin = false;
@@ -110,6 +112,7 @@ public class User extends Model implements Comparable<User> {
     // ^^^^^ Class attributes ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     //==========================================================================
     //       Class methods below
+
 
     /**
      * Constructor with just two attributes, email and plaintextPassword.

@@ -1,5 +1,6 @@
 package models;
 
+import controllers.ApplicationManager;
 import io.ebean.Finder;
 import io.ebean.Model;
 import io.ebean.annotation.CreatedTimestamp;
@@ -10,7 +11,7 @@ import java.util.*;
 
 /** The model class for the destination modification request */
 @Entity
-public class DestinationModificationRequest extends Model {
+public class DestinationModificationRequest extends BaseModel {
 
     @Id
     private Integer id;
@@ -35,8 +36,8 @@ public class DestinationModificationRequest extends Model {
 
     @ManyToOne
     private User requestAuthor;
-    private static Finder<Integer, DestinationModificationRequest> find = new Finder<>(DestinationModificationRequest.class);
-
+    private static Finder<Integer, DestinationModificationRequest> find = new Finder<>(
+            DestinationModificationRequest.class, ApplicationManager.getDatabaseName());
 
     /**
      * Constructor for the destination modification request

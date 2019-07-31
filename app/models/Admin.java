@@ -1,5 +1,6 @@
 package models;
 
+import controllers.ApplicationManager;
 import io.ebean.Finder;
 import io.ebean.Model;
 import org.checkerframework.common.aliasing.qual.Unique;
@@ -17,6 +18,7 @@ public class Admin extends BaseModel {
     /**
      * The ID of the user. This is the foreign key to user.
      */
+    @Id
     @Unique
     @OneToOne(mappedBy = "userid")
     private Integer userId;
@@ -32,8 +34,8 @@ public class Admin extends BaseModel {
      */
     private boolean isDefault;
 
-    private static Finder<Integer, Admin> find = new Finder<>(Admin.class);
-
+    private static Finder<Integer, Admin> find = new Finder<>(
+            Admin.class, ApplicationManager.getDatabaseName());
 
     /**
      * The constructor for the Admin that takes the parameters, userId, isDefault.

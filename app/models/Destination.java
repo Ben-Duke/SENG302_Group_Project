@@ -2,6 +2,7 @@ package models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import controllers.ApplicationManager;
 import io.ebean.Finder;
 import io.ebean.Model;
 import utilities.UtilityFunctions;
@@ -10,7 +11,7 @@ import javax.persistence.*;
 import java.util.*;
 
 @Entity
-public class Destination extends Model {
+public class Destination extends BaseModel {
 
     @Id
     private Integer destid;
@@ -44,7 +45,8 @@ public class Destination extends Model {
     @ManyToMany(cascade = CascadeType.ALL)
     private Set<TravellerType> travellerTypes;
 
-    private static Finder<Integer,Destination> find = new Finder<>(Destination.class);
+
+    private static Finder<Integer,Destination> find = new Finder<>(Destination.class, ApplicationManager.getDatabaseName());
 
     /**
      * Destination constructor with isPublic method

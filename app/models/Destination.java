@@ -303,6 +303,26 @@ public class Destination extends Model {
         return true;
     }
 
+    public boolean isSimilar(Destination other) {
+        if (!this.destName.equals(other.getDestName())) {
+            return false;
+        }
+        if (!this.country.equals(other.getCountry())) {
+            return false;
+        }
+        if (!this.district.equals(other.getDistrict())) {
+            return false;
+        }
+        if (Math.round(this.latitude*1000) != Math.round(other.getLatitude()*1000)) {
+            return false;
+        }
+        if (Math.round(this.longitude*1000) != Math.round(other.getLongitude()*1000)) {
+            return false;
+        }
+
+        return true;
+    }
+
     /**
      *The unique hashcode of a destination given it's attributes
      *

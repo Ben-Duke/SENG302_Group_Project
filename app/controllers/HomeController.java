@@ -44,7 +44,6 @@ public class HomeController {
 
     public Result mainMapPage(Http.Request request) {
         User user = User.getCurrentUser(request);
-
         if (user == null) { return redirect(routes.UserController.userindex()); }
 
         List<Trip> trips = user.getTripsSorted();

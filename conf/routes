@@ -193,6 +193,8 @@ GET     /assets/*file               controllers.Assets.at(path="/public", file)
 #Renders index page for destinations
 GET     /users/destinations             controllers.DestinationController.indexDestination(request : Request)
 
+POST     /users/destination/exists       controllers.DestinationController.doesDestinationExist(request: Request)
+
 #*************_*_*_*_*_*_*_*_*_*
 GET     /users/destinations/getprimaryphoto  controllers.DestinationController.servePrimaryPicture(request : Request, destId : Integer)
 

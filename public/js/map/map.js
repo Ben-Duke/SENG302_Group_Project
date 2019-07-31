@@ -76,7 +76,8 @@ var currentlyDisplayedTripId;
  * @param startLng the longitude to zoom to
  */
 function displayTrip(tripId, startLat, startLng) {
-    var checkBox = document.getElementById(tripId);
+
+    var checkBox = document.getElementById("showTripInput_"+tripId);
     if (checkBox.checked === true) {
         if (currentlyDisplayedTripId !== undefined) {
             document.getElementById("singleTrip_" + currentlyDisplayedTripId).style.display = "none";
@@ -86,7 +87,11 @@ function displayTrip(tripId, startLat, startLng) {
 
         currentlyDisplayedTripId = tripId;
 
+        console.log(document.getElementById("singleTrip_" + tripId));
+
         document.getElementById("singleTrip_" + tripId).style.display = "block";
+
+        console.log(document.getElementById("singleTrip_" + tripId));
 
 
         var tripStartLatLng = new google.maps.LatLng(

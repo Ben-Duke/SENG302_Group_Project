@@ -176,4 +176,8 @@ public class UserPhoto extends Media {
     }
 
 
+
+    public boolean isUserOwner(User user) {
+        return this.getUser().getUserid() == user.getUserid();
+    }
 }

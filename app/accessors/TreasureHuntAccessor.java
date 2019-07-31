@@ -30,6 +30,11 @@ public class TreasureHuntAccessor {
         return TreasureHunt.find().all();
     }
 
+    public static List<TreasureHunt> getAllByDestination(Destination destination) {
+        return TreasureHunt.find().query().where().eq("destination", destination).findList();
+    }
+
+    /** Insert the TreasureHunt  */
     /** Insert a TreasureHunt
      * @param treasureHunt Treasure Hunt to insert into database
      */

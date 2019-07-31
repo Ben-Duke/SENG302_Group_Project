@@ -3,9 +3,13 @@ package controllers;
 import accessors.AlbumAccessor;
 import accessors.DestinationAccessor;
 import accessors.UserPhotoAccessor;
+import accessors.TreasureHuntAccessor;
+import accessors.UserPhotoAccessor;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import factories.DestinationFactory;
+import factories.TravellerTypeFactory;
+import factories.UserFactory;
 import formdata.DestinationFormData;
 import models.*;
 
@@ -135,14 +139,330 @@ public class DestinationController extends Controller {
      */
     public Result viewDestination(Http.Request request, Integer destId) {
         User user = User.getCurrentUser(request);
+        if (user == null) { return redirect(routes.UserController.userindex()); }
 
-        if (user != null) {
+        Destination destination = DestinationAccessor.getDestinationById(destId);
+        if (destination == null) { return notFound("Destination does not exist"); }
 
-            Destination destination = Destination.find().byId(destId);
-            return ok(viewDestination.render(destination));
+        if (!destination.isUserOwner(user) && !user.userIsAdmin()) {
+            if (!destination.getIsPublic()) {
+                return unauthorized("Not your destination");
+            }
         }
-        return redirect(routes.UserController.userindex());
+
+//        user.getCommandManager().setAllowedPage(DestinationPageCommand.class);
+
+        boolean inEditMode = false;
+
+        return ok(destinationPage.render(user, destination, inEditMode,
+                null, null, null, null));
     }
+
+    /**
+     * Takes in the id of a given destination, retrieves that destination from the database.
+     * A page is rendered with the information of the destination loaded ready for editing.
+     *
+     * @param request the http request
+     * @param destId  the id of the given destination
+     * @return renders the edit destination page, or an unauthorized message is no user is logged in, or
+     * a not found error, or an unauthorized message if the destination does not belong to the user.
+     */
+    public Result editDestination(Http.Request request, Integer destId) {
+        User user = User.getCurrentUser(request);
+        if (user == null) { return redirect(routes.UserController.userindex()); }
+
+        Destination destination = DestinationAccessor.getDestinationById(destId);
+        if (destination == null) { return notFound("Destination does not exist"); }
+
+
+        if (!destination.isUserOwner(user) && !user.userIsAdmin()) {
+            if (!destination.getIsPublic()) {
+                return unauthorized("Not your destination");
+            }
+        }
+
+        DestinationFormData formData = destFactory.makeDestinationFormData(destination);
+
+        Form<DestinationFormData> destForm = formFactory.form(
+                DestinationFormData.class).fill(formData);
+
+        return renderEditDestination(user, destination, destForm);
+    }
+
+    /**
+     * Creates maps for country, type, traveller types present in the given
+     * destination. Renders the edit destination page.
+     * @param user
+     * @param destination
+     * @param destForm
+     * @return
+     */
+    private Result renderEditDestination(User user, Destination destination, Form<DestinationFormData> destForm) {
+
+        boolean inEditMode = true;
+
+        Map<String, Boolean> countries = CountryUtils.getCountriesMap();
+        countries.replace(destination.getCountry(), true);
+
+        Map<String, Boolean> types = Destination.getTypeList();
+        types.replace(destination.getDestType(), true);
+
+        Map<String, Boolean> travellerTypes = TravellerType.getTravellerTypeMap();
+        for (TravellerType travellerType : destination.getTravellerTypes()) {
+            String travellerTypeName = travellerType.getTravellerTypeName();
+            if (travellerTypes.containsKey(travellerTypeName)) {
+                travellerTypes.replace(travellerTypeName, true);
+            }
+        }
+
+        return ok(destinationPage.render(user, destination, inEditMode,
+                destForm, countries, types, travellerTypes));
+    }
+
+    /**
+     * Creates a new destination object from the edit page form, checks if inputs make a valid destination.
+     * then using the given destination, all the attributes of the old destination are updated with the new attributes.
+     * The old destination is then updated in the database.
+     *
+     * @param request http request
+     * @param destId the id of the destination that is being updated
+     * @return redirects to view the updated destination if successful, or
+     * a not found error, or an unauthorized message if the destination does not belong to the user.
+     */
+    public Result updateDestination(Http.Request request, Integer destId) {
+        User user = User.getCurrentUser(request);
+        if (user == null) { return redirect(routes.UserController.userindex()); }
+
+        Destination oldDestination = DestinationAccessor.getDestinationById(destId);
+        if (oldDestination == null) { return notFound("Destination not found"); }
+
+        if (!oldDestination.isUserOwner(user) && !user.userIsAdmin()) {
+            return unauthorized("Not your destination. You cant edit.");
+        }
+
+        // Validate form
+        Result errorForm = validateDestinationEdit(request, user, destId);
+        if (errorForm != null) {
+            return errorForm;
+        }
+
+        Destination newDestination = getDestinationFromRequest(request);
+        oldDestination.applyEditChanges(newDestination);
+
+        EditDestinationCommand editDestinationCommand =
+                new EditDestinationCommand(oldDestination);
+        user.getCommandManager().executeCommand(editDestinationCommand);
+
+
+        return redirect(routes.DestinationController.viewDestination(destId));
+    }
+
+    /**
+     * Creates a new destination object from the edit page form, checks if inputs make a valid destination.
+     * then using the given destination, checks if any changes have been made. If so, a request to the admins is
+     * sent with the info of the old and new destinations awaiting their acceptance of the modification.
+     *
+     * @param request http request
+     * @param destId the id of the destination that is being updated
+     * @return redirects to view the updated destination if successful, or
+     * a not found error.
+     */
+
+    public Result updatePublicDestination(Http.Request request, Integer destId) {
+        User user = User.getCurrentUser(request);
+        if (user == null) { return redirect(routes.UserController.userindex()); }
+
+        Destination destination = DestinationAccessor.getDestinationById(destId);
+        if (destination == null) { return notFound("Destination not found"); }
+
+        if (!destination.getIsPublic()) {
+            return unauthorized("Not your destination. You cant edit.");
+        }
+
+        // Validate form
+        Result errorForm = validateDestinationEdit(request, user, destId);
+        if (errorForm != null) {
+            return errorForm;
+        }
+
+        Destination newDestination = getDestinationFromRequest(request);
+
+        if (newDestination.isSame(destination)) {
+            return badRequest("No changes suggested");
+        }
+
+        DestinationModificationRequest newModReq = new DestinationModificationRequest(destination, newDestination, user);
+        newModReq.save();
+
+        boolean inEditMode = false;
+
+        return ok(destinationPage.render(user, destination, inEditMode,
+                null, null, null, null));
+    }
+
+    /**
+     *
+     * @param request
+     * @param user
+     * @param destId
+     * @return
+     */
+    private Result validateDestinationEdit(Http.Request request, User user, Integer destId) {
+        Form<DestinationFormData> destForm;
+        destForm = formFactory.form(DestinationFormData.class).bindFromRequest(request);
+
+        if (destForm.hasErrors()) {
+
+            Destination destination = DestinationAccessor.getDestinationById(destId);
+
+            return renderEditDestination(user, destination, destForm);
+        }
+
+        return null;
+    }
+
+    /**
+     * Given an request creates a destination from the form.
+     * @param request
+     * @return
+     */
+    private Destination getDestinationFromRequest(Http.Request request) {
+        Map<String, String> map = new HashMap<>();
+        fillDataWith(map, request.body().asFormUrlEncoded());
+
+        Destination destination = formFactory.form(Destination.class).bind(map).get();
+
+        Set<TravellerType> travellerTypes = TravellerTypeFactory
+                .formNewTravellerTypes(destination.getTravellerTypes());
+
+        destination.setTravellerTypes(travellerTypes);
+
+        return destination;
+    }
+
+    /**
+     * Taken from Play framework
+     * Takes an empty Map to fill with data from http body, this method helps replace the default way
+     * of binding from request, which does not deal with sets, only lists
+     * @param data The data map to add data from the http body to. Contains info about 1 Object
+     * @param urlFormEncoded the data from the http request body, with details about the Object to bind
+     */
+    private void fillDataWith(Map<String, String> data, Map<String, String[]> urlFormEncoded) {
+        urlFormEncoded.forEach((key, values) -> {
+            if (key.endsWith("[]")) {
+                String k = key.substring(0, key.length() - 2);
+                Set<String> subData = new HashSet<>(Arrays.asList(values));
+                data.put(k, subData.toString());
+            } else if (values.length > 0) {
+                data.put(key, values[0]);
+            }
+        });
+    }
+
+
+    /**
+     * Deletes a destination from the database given its id.
+     *
+     * @param request the http request
+     * @param destId the id of the destination that is being deleted
+     * @return redirects to the index page if successful, or a not found error,
+     * or an unauthorized message if the destination does not belong to the user.
+     */
+    public Result deleteDestination(Http.Request request, Integer destId) {
+        User user = User.getCurrentUser(request);
+        if (user == null) { return redirect(routes.UserController.userindex()); }
+
+        Destination destination = DestinationAccessor.getDestinationById(destId);
+        if (destination == null) { return notFound("Destination not found"); }
+
+        if (!destination.isUserOwner(user) && !user.userIsAdmin()) {
+            return unauthorized("Not your destination. You cant Delete.");
+        }
+
+        if (user.userIsAdmin()) {
+
+            DeleteDestinationCommand cmd = new DeleteDestinationCommand(
+                    destination, true);
+            user.getCommandManager().executeCommand(cmd);
+
+        } else {
+
+            if (!destination.getVisits().isEmpty()) {
+                return preconditionRequired("You cannot delete destinations " +
+                        "while you're using them for your trips. Delete them from" +
+                        " your trip first!");
+            }
+
+            if (!TreasureHuntAccessor.getAllByDestination(destination).isEmpty()) {
+                return preconditionRequired("You cannot delete destinations" +
+                        " while they are being used by the treasure hunts.");
+            }
+
+            DeleteDestinationCommand cmd = new DeleteDestinationCommand(
+                    destination, false);
+            user.getCommandManager().executeCommand(cmd);
+
+        }
+
+        return redirect(routes.DestinationController.indexDestination());
+
+    }
+
+
+    /**
+     * Makes a private destination from the database public, given its id.
+     * Will merge other matching private destinations.
+     *
+     * @param request the http request
+     * @param destId the id of the destination that is being made public
+     * @return redirects to the index page if successful, or a not found error,
+     * or an unauthorized message if the destination does not belong to the user.
+     */
+    public Result makeDestinationPublic(Http.Request request, Integer destId) {
+        User user = User.getCurrentUser(request);
+        if (user == null) { return redirect(routes.UserController.userindex()); }
+
+        Destination destination = DestinationAccessor.getDestinationById(destId);
+        if (destination == null) {
+            return notFound("Destination not found");
+        }
+        if (!destination.isUserOwner(user) && !user.userIsAdmin()) {
+            return unauthorized("Not your destination to make public.");
+        }
+        if (destination.getIsPublic()) {
+            return badRequest("Destination is already public");
+        }
+        if (!destination.getIsCountryValid()) {
+            return badRequest("The country for this destination is not valid. " +
+                    "The destination can not be made public");
+        }
+
+
+        DestinationFactory destFactory = new DestinationFactory();
+
+        List<Destination> matchingDestinations = destFactory
+                .getOtherUsersMatchingPrivateDestinations(user.getUserid(), destination);
+
+        if (matchingDestinations.size() == 0) {
+            destination.setIsPublic(true);
+            DestinationAccessor.update(destination);
+
+        } else {
+            destFactory.mergeDestinations(matchingDestinations, destination);
+        }
+
+        return ok(destinationPage.render(user, destination, false,
+                null, null, null, null));
+
+    }
+
+
+
+
+
+
+
+
 
     /**
      * This method renders a page where a user can create a destination.
@@ -178,130 +498,32 @@ public class DestinationController extends Controller {
         User user = User.getCurrentUser(request);
 
         if (user != null) { // checks if a user is logged in
-                Result errorForm = validateEditCreateForm(request, user, null);
-                if (errorForm != null) {
-                    return errorForm;
-                } else {
-                    Destination newDestination = formFactory.form(Destination.class)
-                            .bindFromRequest(request).get();
-                    newDestination.setUser(user);
-                    newDestination.setCountryValid(true);
-                    newDestination.save();
-                    CreateAlbumCommand cmd = new CreateAlbumCommand(
-                            newDestination.getDestName(),
-                            newDestination,
-                            null);
-                    cmd.execute();
-                    return redirect(routes.DestinationController.indexDestination());
-                }
-        } else {
-            return redirect(routes.UserController.userindex());
-        }
-    }
-
-    /**
-     * Takes in the id of a given destination, retrieves that destination from the database.
-     * A page is rendered with the information of the destination loaded ready for editing.
-     *
-     * @param request the http request
-     * @param destId  the id of the given destination
-     * @return renders the edit destination page, or an unauthorized message is no user is logged in, or
-     * a not found error, or an unauthorized message if the destination does not belong to the user.
-     */
-    public Result editDestination(Http.Request request, Integer destId) {
-        Result unauthorised = UtilityFunctions.checkLoggedIn(request);
-        if (unauthorised != null) {
-            return unauthorised;
-        }
-
-        User user = User.getCurrentUser(request);
-        Destination destination = DestinationAccessor.getDestinationById(destId);
-        if (destination == null) {
-            return notFound("Destination does not exist");
-        } else if (!(user != null && (destination.isUserOwner(user.getUserid()) || user.userIsAdmin()))) {
-            return unauthorized("Not your destination. You can't edit.");
-        }
-
-        return renderDestinationForm(user, destination, destId);
-    }
-
-    /** Render the destination form
-     * @param destId the id of the given destination
-     * @param destination the destination object
-     * @param user the id of the user
-     * @return renders the destination form page from a given destination
-     */
-    private Result renderDestinationForm(User user, Destination destination, Integer destId) {
-        DestinationFormData formData = destFactory.makeDestinationFormData(destination);
-
-        Form<DestinationFormData> destForm = formFactory.form(
-                DestinationFormData.class).fill(formData);
-
-        // Select the dropdown values which were selected at form submission
-        Map<String, Boolean> typeList = Destination.getTypeList();
-        typeList.replace(destination.getDestType(), true);
-
-
-        Map<String, Boolean> countryList = CountryUtils.getCountriesMap();
-        countryList.replace(destination.getCountry(), true);
-
-
-        if (!destination.getIsCountryValid()) {
-            flash("countryInvalid",
-                    "This Destination has an invalid country!");
-            if (countryList != null) {
-                countryList.put(destination.getCountry(), true);
-            }
-        }
-        return ok(createEditDestination.render(destForm, destId, countryList, typeList, user));
-    }
-
-    /**
-     * Creates a new destination object from the edit page form, checks if inputs make a valid destination.
-     * then using the given destination, all the attributes of the old destination are updated with the new attributes.
-     * The old destination is then updated in the database.
-     *
-     * @param request http request
-     * @param destId the id of the destination that is being updated
-     * @return redirects to view the updated destination if successful, or
-     * a not found error, or an unauthorized message if the destination does not belong to the user.
-     */
-    public Result updateDestination(Http.Request request, Integer destId) {
-        User user = User.getCurrentUser(request);
-
-        if (user != null) {
-
-            // Validate form
-            Result errorForm = validateEditCreateForm(request, user, destId);
+            Result errorForm = validateEditCreateForm(request, user, null);
             if (errorForm != null) {
                 return errorForm;
-            }
-
-            // Save form
-            Destination newDestination = formFactory.form(Destination.class).
-                    bindFromRequest(request).get();
-            Destination oldDestination = DestinationAccessor.getDestinationById(destId);
-
-            if (oldDestination != null) {
-                if (oldDestination.isUserOwner(user.getUserid()) || user.userIsAdmin()) {
-                    oldDestination.applyEditChanges(newDestination);
-                    EditDestinationCommand editDestinationCommand =
-                            new EditDestinationCommand(oldDestination);
-                    user.getCommandManager().executeCommand(editDestinationCommand);
-
-                    return redirect(routes.DestinationController.indexDestination());
-
-                } else {
-                    return unauthorized("Not your destination. You cant edit.");
-                }
             } else {
-                return notFound("The destination you are trying to update no longer exists");
+                Destination newDestination = formFactory.form(Destination.class)
+                        .bindFromRequest(request).get();
+                newDestination.setUser(user);
+                newDestination.setCountryValid(true);
+                newDestination.save();
+                CreateAlbumCommand cmd = new CreateAlbumCommand(
+                        newDestination.getDestName(),
+                        newDestination,
+                        null);
+                cmd.execute();
+
+                return redirect(routes.DestinationController.indexDestination());
             }
 
         } else {
             return redirect(routes.UserController.userindex());
         }
     }
+
+
+
+
 
     /** Perform form validation for the edit/create destination form
      *  Returns a request containing the form with errors if errors found,
@@ -360,99 +582,6 @@ public class DestinationController extends Controller {
         }
     }
 
-    /**
-     * Takes in the id of a given public destination, retrieves that destination from the database.
-     * A page is rendered with the information of the destination loaded ready for editing.
-     *
-     * @param request the http request
-     * @param destId the id of the destination that is to be edited
-     * @return renders the editPublicDestination page, or an unauthorized message is no user is logged in, or
-     * a not found error.
-     */
-    public Result editPublicDestination(Http.Request request, Integer destId) {
-        User user = User.getCurrentUser(request);
-
-        if (user != null) {
-            Destination destination = Destination.find().query().where().eq("destid", destId).findOne();
-
-            if (destination != null) {
-                Form<Destination> destForm = formFactory.form(Destination.class).fill(destination);
-
-                Map<String, Boolean> typeList = Destination.getTypeList();
-                typeList.replace(destination.getDestType(), true);
-
-                Map<String, Boolean> countryList = CountryUtils.getCountriesMap();
-                countryList.replace(destination.getCountry(), true);
-
-                List<TravellerType> travellerTypes = TravellerType.find().all();
-                Map<String, Boolean> travellerTypesMap = new TreeMap<>();
-                for (TravellerType travellerType : travellerTypes) {
-                    if (destination.getTravellerTypes().contains(travellerType)) {
-                        travellerTypesMap.put(travellerType.getTravellerTypeName(), true);
-                    } else {
-                        travellerTypesMap.put(travellerType.getTravellerTypeName(), false);
-                    }
-                }
-
-                return ok(editPublicDestination.render(destForm, destination, countryList, typeList, travellerTypesMap, user));
-
-            } else {
-                return notFound("Destination does not exist");
-            }
-        } else {
-            return redirect(routes.UserController.userindex());
-        }
-    }
-
-    /**
-     * Creates a new destination object from the edit page form, checks if inputs make a valid destination.
-     * then using the given destination, checks if any changes have been made. If so, a request to the admins is
-     * sent with the info of the old and new destinations awaiting their acceptance of the modification.
-     *
-     * @param request http request
-     * @param destId the id of the destination that is being updated
-     * @return redirects to view the updated destination if successful, or
-     * a not found error.
-     */
-    public Result updatePublicDestination(Http.Request request, Integer destId) {
-        User user = User.getCurrentUser(request);
-
-        if (user != null) {
-            DynamicForm destForm = formFactory.form().bindFromRequest();
-            Result validationResult = validateDestination(destForm);
-
-            if (validationResult != null) {
-                return validationResult;
-            }
-            //If program gets past this point then inputted destination is valid
-
-            //Takes the request body and forms a custom map for binding, gets past Play not liking sets
-            Map<String, String> map = new HashMap<>();
-            fillDataWith(map, request.body().asFormUrlEncoded());
-            Destination newDestination = formFactory.form(Destination.class).bind(map).get();
-            if (newDestination.getTravellerTypes().isEmpty()) {
-                newDestination.setTravellerTypes(new HashSet<>());
-            }
-
-            Destination oldDestination = Destination.find().query().where().eq("destid", destId).findOne();
-            if (oldDestination != null) {
-                if (newDestination.equals(oldDestination)) {
-
-                    return badRequest("No changes suggested");
-                } else {
-                    DestinationModificationRequest newModReq = new DestinationModificationRequest(oldDestination, newDestination, user);
-                    newModReq.save();
-
-                    return redirect(routes.DestinationController.indexDestination());
-                }
-
-            } else {
-                return notFound("The destination you are trying to update no longer exists");
-            }
-        } else {
-            return redirect(routes.UserController.userindex());
-        }
-    }
 
     /**
      * This method handles when an admin rejects a destination modification request
@@ -532,126 +661,11 @@ public class DestinationController extends Controller {
         }
     }
 
-    /**
-     * Deletes a destination from the database given its id.
-     *
-     * @param request the http request
-     * @param destId the id of the destination that is being deleted
-     * @return redirects to the index page if successful, or a not found error,
-     * or an unauthorized message if the destination does not belong to the user.
-     */
-    public Result deleteDestination(Http.Request request, Integer destId) {
-        User user = User.getCurrentUser(request);
-        Destination destination = Destination.find().query().where().eq("destid", destId).findOne();
 
-        if (user == null) {
-            return redirect(routes.UserController.userindex());
-        }
-        if (destination == null) {
-            return notFound("Destination does not exist");
-        }
 
-        if(user.userIsAdmin()){
 
-            DeleteDestinationCommand cmd = new DeleteDestinationCommand(
-                    destination, true);
-            user.getCommandManager().executeCommand(cmd);
 
-            return redirect(routes.DestinationController.indexDestination());
-        }
-        else if (destination.isUserOwner(user.getUserid())) {
-            if(!destination.getVisits().isEmpty()) {
-                return preconditionRequired("You cannot delete destinations while you're using them for your trips. Delete them from your trip first!");
-            }
-            List<TreasureHunt> treasureHunts = TreasureHunt.find().query().where().eq("destination", destination).findList();
-            if(!treasureHunts.isEmpty()) {
-                return preconditionRequired("You cannot delete destinations while they are being used by the treasure hunts.");
-            }
 
-            DeleteDestinationCommand cmd = new DeleteDestinationCommand(
-                    destination, false);
-            user.getCommandManager().executeCommand(cmd);
-
-            return redirect(routes.DestinationController.indexDestination());
-        } else {
-            return unauthorized("HEY!, not yours. You cant delete. How you get access to that anyway?... FBI!!! OPEN UP!");
-        }
-
-    }
-
-    /**
-     * Makes a private destination from the database public, given its id.
-     *
-     * @param request the http request
-     * @param destId the id of the destination that is being made public
-     * @return redirects to the index page if successful, or a not found error,
-     * or an unauthorized message if the destination does not belong to the user.
-     */
-    public Result makeDestinationPublic(Http.Request request, Integer destId) {
-        User user = User.getCurrentUser(request);
-
-        if (user == null) {
-            return redirect(routes.UserController.userindex());
-        }
-        Destination destination = Destination.find().query().where().eq("destid", destId).findOne();
-        if (destination == null) {
-            return notFound("Destination does not exist");
-        }
-        if (!destination.isUserOwner(user.getUserid())) {
-            return unauthorized("HEY!, not yours. You cant make public. How you get access to that anyway?... FBI!!! OPEN UP!");
-        }
-        if (!destination.getIsCountryValid()) {
-            return badRequest("The country for this destination is not valid. The destination can not be made public");
-        }
-        //-----------checking if a public destination equivalent
-        // ----------already exists
-        DestinationFactory destFactory = new DestinationFactory();
-        if (destFactory.doesPublicDestinationExist(destination)) {
-            // public matching destination already exists
-            // show error
-            destination.setIsPublic(true);
-            destination.update();
-            return redirect(routes.DestinationController.indexDestination());
-        } else {
-            //no matching pub destination exists, making public now
-            //sets the destination to public, sets the owner to the default admin and updates the destination
-            List<Destination> matchingDests = destFactory.getOtherUsersMatchingPrivateDestinations(user.getUserid(), destination);
-            if (matchingDests.size() == 0) {
-                destination.setIsPublic(true);
-                destination.update();
-            }
-            return redirect(routes.DestinationController.indexDestination());
-        }
-    }
-
-    /**
-     * Merges private destinations to form a single public destination,
-     * given its id, if the private destination are matching.
-     *
-     * @param request the http request
-     * @param destId the id of the destination that is being made public
-     * @return redirects to the index page if successful, or a not found error,
-     * or an unauthorized message if the destination does not belong to the user.
-     */
-    public Result makeDestinationsMerge(Http.Request request, int destId) {
-        User user = User.getCurrentUser(request);
-        if (user != null) {
-            Destination destination = Destination.find().query().where().eq("destid", destId).findOne();
-            if (destination != null) {
-                List<Destination> matchingDests = destFactory.getOtherUsersMatchingPrivateDestinations(user.getUserid(), destination);
-                if (destination.isUserOwner(user.getUserid()) || user.userIsAdmin()) {
-                    destFactory.mergeDestinations(matchingDests, destination);
-                    return redirect(routes.DestinationController.indexDestination());
-                } else {
-                    return unauthorized("HEY!, not yours. You cant delete. How you get access to that anyway?... FBI!!! OPEN UP!");
-                }
-            } else {
-                return notFound("Destination does not exist");
-            }
-        } else {
-            return redirect(routes.UserController.userindex());
-        }
-    }
 
 
     /**
@@ -761,7 +775,7 @@ public class DestinationController extends Controller {
         UnlinkPhotoDestinationCommand cmd = new UnlinkPhotoDestinationCommand(photo, destination);
         user.getCommandManager().executeCommand(cmd);
 
-        return ok();
+        return redirect(routes.DestinationController.viewDestination(destId));
     }
 
     /**
@@ -868,31 +882,29 @@ public class DestinationController extends Controller {
      * @param destId the id of the destination to be updated
      * @return success if it worked, error otherwise
      */
-    public Result setPrimaryPhoto(Http.Request request, Integer destId) {
+    public Result setPrimaryPhoto(Http.Request request, Integer photoId, Integer destId) {
         User user = User.getCurrentUser(request);
-        if (user != null) {
-            JsonNode node = request.body().asJson().get("photoid");
-            String photoid = node.textValue();
-            photoid = photoid.replace("\"", "");
-            UserPhoto photo = UserPhoto.find().byId(Integer.parseInt(photoid));
-            Destination destination = Destination.find().byId(destId);
-            if (destination != null || photo != null) {
-                if ((destination.getUser().getUserid() == user.getUserid() && destination.getAlbums()
-                        .get(0).getMedia().contains(photo)) || user.userIsAdmin()) {
-                    //add checks for private destinations here once destinations have been merged in.
-                    //You can only link a photo to a private destination if you own the private destination.
-                    destination.getPrimaryAlbum().setPrimaryPhoto(photo);
-                    AlbumAccessor.update(destination.getPrimaryAlbum());
-                } else {
-                    return unauthorized("Oops, this is not your photo!");
-                }
-            } else {
-                return notFound();
-            }
-        } else {
-            return redirect(routes.UserController.userindex());
+        if (user == null) { return redirect(routes.UserController.userindex()); }
+
+        Destination destination = DestinationAccessor.getDestinationById(destId);
+        if (destination == null) { return notFound("Destination not found"); }
+
+        UserPhoto photo = UserPhotoAccessor.getUserPhotoById(photoId);
+        if (photo == null) { return notFound("Photo not found"); }
+
+        if (!destination.getAlbums().get(0).getMedia().contains(photo)) {
+            return badRequest("Photo not linked to destination");
         }
-        return ok();
+
+        if (!destination.isUserOwner(user) && !user.userIsAdmin()) {
+            return unauthorized("Not your destination");
+        }
+
+        destination.getPrimaryAlbum().setPrimaryPhoto(photo);
+        AlbumAccessor.update(destination.getPrimaryAlbum());
+
+
+        return redirect(routes.DestinationController.viewDestination(destId));
     }
 
     /**
@@ -933,33 +945,29 @@ public class DestinationController extends Controller {
      * @param destId the destination that the photo should be linked to
      * @return success if the linking was successful, not found if destination or photo not found, unauthorized otherwise.
      */
-    public Result addPhotoToDestination(Http.Request request, Integer photoId, Integer destId){
+    public Result addPhotoToDestination(Http.Request request, Integer photoId, Integer destId) {
         User user = User.getCurrentUser(request);
-        if(user != null) {
-            UserPhoto photo = UserPhoto.find().byId(photoId);
-            Destination destination = Destination.find().byId(destId);
-            if(destination != null && photo != null) {
-                if (photo.getUser().getUserid() == user.getUserid()) {
-                    //add checks for private destinations here once destinations have been merged in.
-                    //You can only link a photo to a private destination if you own the private destination.
-                    if (!photo.getAlbums().contains(destination.getPrimaryAlbum())) {
-                        LinkPhotoDestinationCommand cmd = new LinkPhotoDestinationCommand(photo, destination);
-                        user.getCommandManager().executeCommand(cmd);
+        if (user == null) { return redirect(routes.UserController.userindex()); }
 
-                        return redirect(routes.DestinationController.indexDestination());
-                    }
-                    else{
-                        return badRequest("You have already linked the photo to this destination.");
-                    }
-                } else {
-                    return unauthorized("Oops, this is not your photo!");
-                }
-            } else {
-                return notFound();
-            }
-        } else {
-            return redirect(routes.UserController.userindex());
+        UserPhoto photo = UserPhotoAccessor.getUserPhotoById(photoId);
+        if (photo == null) { return notFound("Photo not found"); }
+
+        Destination destination = DestinationAccessor.getDestinationById(destId);
+        if (destination == null) { return notFound("Destination not found"); }
+
+        if (photo.getUser().getUserid() != user.getUserid()) {
+            return unauthorized("Not your photo.");
         }
+
+        if (photo.getAlbums().contains(destination.getPrimaryAlbum())) {
+            return badRequest("You have already linked the photo to this destination.");
+        }
+
+
+        LinkPhotoDestinationCommand cmd = new LinkPhotoDestinationCommand(photo, destination);
+        user.getCommandManager().executeCommand(cmd);
+
+        return redirect(routes.DestinationController.viewDestination(destId));
     }
 
 
@@ -985,23 +993,13 @@ public class DestinationController extends Controller {
     }
 
 
-    /**
-     * Taken from Play framework
-     * Takes an empty Map to fill with data from http body, this method helps replace the default way
-     * of binding from request, which does not deal with sets, only lists
-     * @param data The data map to add data from the http body to. Contains info about 1 Object
-     * @param urlFormEncoded the data from the http request body, with details about the Object to bind
-     */
-    private void fillDataWith(Map<String, String> data, Map<String, String[]> urlFormEncoded) {
-        urlFormEncoded.forEach((key, values) -> {
-            if (key.endsWith("[]")) {
-                String k = key.substring(0, key.length() - 2);
-                Set<String> subData = new HashSet<>(Arrays.asList(values));
-                data.put(k, subData.toString());
-            } else if (values.length > 0) {
-                data.put(key, values[0]);
-            }
-        });
+
+
+
+    public Result renderMap(Http.Request request) {
+        User user = User.getCurrentUser(request);
+//        return ok(googlePlacesMapDocumentationExample.render(user));
+        return ok(googlePlacesMapDocumentationExample.render(user));
     }
 
 }

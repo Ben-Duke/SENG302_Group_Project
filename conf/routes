@@ -187,7 +187,19 @@ GET     /users/destinations/getprimaryphoto  controllers.DestinationController.s
 GET     /users/destinations/getalljson         controllers.DestinationController.getVisibleDestinationMarkersJSON(request : Request)
 
 #Renders page for displaying a given destination
-GET     /users/destinations/:id         controllers.DestinationController.viewDestination(request : Request, id : Integer)
+GET     /users/destinations/view/:id         controllers.DestinationController.viewDestination(request : Request, id : Integer)
+
+#Renders page for editing destinations
+GET     /users/destinations/edit/:id    controllers.DestinationController.editDestination(request : Request, id : Integer)
+
+#Handles updating a destination
+POST    /users/destinations/update/:id  controllers.DestinationController.updateDestination(request : Request, id : Integer)
+
+#Handles updating a public destination
+POST    /users/destinations/update/public/:id  controllers.DestinationController.updatePublicDestination(request : Request, id : Integer)
+
+#Handles making a destination public
+GET     /users/destinations/update/make_public/:id         controllers.DestinationController.makeDestinationPublic(request : Request, id : Integer)
 
 #Handles AJAX request to get a given destination (maybe change ^ to /users/destinations/display/:id and this one to /users/destinations/:id
 GET     /users/destinations/get/:id         controllers.DestinationController.getDestination(request : Request, id : Integer)
@@ -195,8 +207,6 @@ GET     /users/destinations/get/:id         controllers.DestinationController.ge
 #Renders page for creating destinations
 GET     /users/destinations/create/     controllers.DestinationController.createDestination(request : Request)
 
-#Renders page for editing destinations
-GET     /users/destinations/edit/:id    controllers.DestinationController.editDestination(request : Request, id : Integer)
 
 #Renders request for displaying the page for updating destination traveller types
 GET     /users/destinations/ttypes/display/:id    controllers.TravellerTypeController.updateDestinationTravellerType(request : Request, id : Integer)
@@ -222,35 +232,25 @@ PUT     /users/photos/:photoId/caption           controllers.UserController.edit
 #Renders request for destination traveller types
 POST    /users/destinations/ttypes/:id    controllers.TravellerTypeController.submitUpdateDestinationTravellerType(request : Request, id : Integer)
 
-#Handles making a destination public
-GET     /users/destinations/public/:id         controllers.DestinationController.makeDestinationPublic(request : Request, id : Integer)
 
-GET     /users/destination/merge/:id           controllers.DestinationController.makeDestinationsMerge(request : Request, id : Integer)
 
-#Renders page for editing public destinations
-GET     /users/destinations/edit/public/:id     controllers.DestinationController.editPublicDestination(request : Request, id : Integer)
 
 #Gets the user id of the owner of the destination
 GET     /users/destinations/owner/:id         controllers.DestinationController.getDestinationOwner(request : Request, id : Integer)
 
-#Handles updating a destination
-POST    /users/destinations/update/:id  controllers.DestinationController.updateDestination(request : Request, id : Integer)
 
-#Handles sending modification request to admins for editing public destinations
-POST    /users/destinations/update/public/:id  controllers.DestinationController.updatePublicDestination(request : Request, id : Integer)
-
-#Handles setting a photo to a primary photo (for some reason this route throws some csrf failed thing so i added a +nocsrf)... raise an issue in the future
-+nocsrf
-PUT     /users/destinations/primary/:id     controllers.DestinationController.setPrimaryPhoto(request : Request, id : Integer)
+#Handles setting a photo to the primary photo for a destination
+GET     /users/destinations/:destId/set_primary/:photoId     controllers.DestinationController.setPrimaryPhoto(request : Request, photoId : Integer, destId : Integer)
 
 #Handles linking a photo to a destination
 PUT     /users/destinations/:id         controllers.DestinationController.linkPhotoToDestination(request : Request, id : Integer)
 
 #Handles linking a photo to a destination
-+nocsrf
-POST     /users/destinations/:destId/:photoId         controllers.DestinationController.addPhotoToDestination(request : Request, photoId : Integer, destId : Integer)
+GET /users/destinations/:destId/add_photo/:photoId     controllers.DestinationController.addPhotoToDestination(request : Request, photoId : Integer, destId : Integer)
 
 #Handles unlinking a destination from a photo
+GET /users/destinations/:destId/remove_photo/:photoId   controllers.DestinationController.unlinkPhotoFromDestination(request : Request, photoId : Integer, destId : Integer)
+
 +nocsrf
 DELETE  /users/destinations/:photoId/:destId                   controllers.DestinationController.unlinkPhotoFromDestination(request : Request, photoId : Integer, destId: Integer)
 
@@ -314,6 +314,10 @@ PUT     /users/albums/remove_media/:id     controllers.AlbumController.removeMed
 #Move multiple media to one album
 PUT     /users/albums/move_media/:id     controllers.AlbumController.moveMediaToAlbum(request : Request, id : Integer)
 
+
+
+
+GET /googlemap  controllers.DestinationController.renderMap(request : Request)
 
 
 # Undo

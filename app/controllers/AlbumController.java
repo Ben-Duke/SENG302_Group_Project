@@ -365,8 +365,6 @@ public class AlbumController extends Controller {
         photo.user = null;
         UserPhotoAccessor.update(photo);
 
-        List<Album> albumsToRemoveMediaFrom = new ArrayList<Album>();
-
         for (Album album: user.getAlbums()) {
             if (album.containsMedia(photo)) {
                 System.out.println("album size start: " + album.getMedia().size());

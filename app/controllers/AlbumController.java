@@ -406,18 +406,14 @@ public class AlbumController extends Controller {
 
             for (Album album: user.getAlbums()) {
                 if (album.containsMedia(photo)) {
-                    System.out.println("album size start: " + album.getMedia().size());
                     album.removeMedia(photo);
-                    System.out.println("album size end: " + album.getMedia().size());
                     AlbumAccessor.update(album);
                 }
             }
 
             if (user.getUserPhotos().contains(photo)) {
-                System.out.println("album size start: " + user.getUserPhotos().size());
                 user.getUserPhotos().remove(photo);
                 UserAccessor.update(user);
-                System.out.println("album size end: " + user.getUserPhotos().size());
             }
 
             Ebean.commitTransaction();

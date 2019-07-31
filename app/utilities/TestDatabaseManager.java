@@ -133,7 +133,7 @@ public class TestDatabaseManager {
         CountryUtils.updateCountries();
         CountryUtils.validateUsedCountries();
 
-        System.out.println("Populate database success: " + isInSuccessState);
+        logger.info("Populate database success: " + isInSuccessState);
     }
 
     /**

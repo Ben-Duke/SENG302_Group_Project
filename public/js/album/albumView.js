@@ -1006,7 +1006,6 @@ function deleteAndUnlinkPhoto() {
         }
     }
 
-    console.log(deleteReqestJSON);
 
     $.ajax({
         type: 'DELETE',
@@ -1014,7 +1013,10 @@ function deleteAndUnlinkPhoto() {
         contentType: 'application/json',
         data: JSON.stringify(deleteReqestJSON),
         success: () => {
-            console.log("yay");
+            location.reload();
+        },
+        error: function(xhr, textStatus, errorThrown) {
+            showImageUnlinkalert();
         }
     });
 

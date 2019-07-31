@@ -92,9 +92,9 @@ public class TestDatabaseManager {
         List<User> users = UserAccessor.getAll();
         for (User user : users) {
             if (user.userIsAdmin()) {
-                user.hashAndSetPassword("admin");
+                user.hashAndSetPassword("FancyRock08");
             } else {
-                user.hashAndSetPassword("test");
+                user.hashAndSetPassword("TinyHumans57");
             }
 
             user.update();

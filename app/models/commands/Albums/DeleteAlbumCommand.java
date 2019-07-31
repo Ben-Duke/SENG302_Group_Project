@@ -46,8 +46,9 @@ public class DeleteAlbumCommand extends UndoableCommand {
         }
         for (Media media : albumsMedia) {
             defaultAlbum.addMedia(media);
+            MediaAccessor.update(media);
         }
-        AlbumAccessor.update(defaultAlbum);
+//        AlbumAccessor.update(defaultAlbum);
 
     }
 

@@ -34,7 +34,7 @@ public enum TableName {
 
     TableName(String columnName) {
         this.columnName = columnName;
-        this.autoIncremented = false;
+        this.autoIncremented = true;
     }
 
     TableName(String columnName, boolean autoIncremented) {

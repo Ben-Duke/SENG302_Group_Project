@@ -43,7 +43,7 @@ public class AdminControllerTest extends BaseTestWithApplicationAndDatabase {
         logger.debug("Initial users");
         logger.debug(users.toString());
 
-        //TestDatabaseManager.clearAllData();
+        TestDatabaseManager.clearAllData();
 
         users = User.find.all();
         logger.debug("after clear");
@@ -116,6 +116,12 @@ public class AdminControllerTest extends BaseTestWithApplicationAndDatabase {
      */
     @Test
     public void userToAdminWithLoginSession() {
+        logger.debug("Running the test");
+
+        User user = User.find.byId(2);
+        logger.debug(user.toString());
+
+
         assertEquals(1, Admin.find.all().size());
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(GET).uri("/users/admin/make/2")

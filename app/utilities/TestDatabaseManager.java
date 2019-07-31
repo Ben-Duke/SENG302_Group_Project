@@ -79,8 +79,10 @@ public class TestDatabaseManager {
     public static void clearAllData() {
         logger.info("Clearing database data");
 
-        List<TableName> persisted = Arrays.asList(TableName.nationality,
-                TableName.passport, TableName.traveller_type);
+        List<TableName> persisted = Arrays.asList(
+                TableName.nationality,
+                TableName.passport,
+                TableName.traveller_type);
 
         for (TableName tableName : TableName.values()) {
             if (persisted.contains(tableName)) {

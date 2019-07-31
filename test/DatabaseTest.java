@@ -27,7 +27,7 @@ public class DatabaseTest extends BaseTestWithApplicationAndDatabase {
         user.save();
 
         List<User> users = User.find.all();
-        logger.debug(users.get(0).toString());
+        logger.debug(Integer.toString(users.get(0).getUserid()));
     }
 
     @Test

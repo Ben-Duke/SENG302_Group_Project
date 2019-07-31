@@ -3,10 +3,12 @@ package controllers;
 import models.Admin;
 import models.DestinationModificationRequest;
 import models.User;
+import org.slf4j.Logger;
 import play.data.FormFactory;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
+import utilities.UtilityFunctions;
 import views.html.users.destination.*;
 import views.html.users.profile.*;
 
@@ -18,6 +20,7 @@ public class AdminController extends Controller {
     @Inject
     FormFactory formFactory;
 
+    Logger logger = UtilityFunctions.getLogger();
 
     /**
      * Gets all the users and admins renders the index Admin page displaying them.

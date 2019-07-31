@@ -725,12 +725,12 @@ $('#save-profile').click(function (eve){
     });
 });
 
-function showMessage(message) {
+function showMessage(message, action) {
     const x = document.getElementById("snackbar");
 
     // Add the "show" class to DIV
     x.className = "show";
-    x.innerText = message;
+    x.innerText = message + action;
     // After 3 seconds, remove the show class from DIV
     setTimeout(function(){
         x.className = x.className.replace("show", "");
@@ -758,7 +758,7 @@ function deletePhotoFromUI(mediaId) {
         wellStyle += "display: block;"
         document.getElementById('emptyAlbumMessage').setAttribute("style", wellStyle);
     }
-    showMessage("Deleted the photo successfully!");
+    showMessage("Deleted the photo successfully!", "");
 }
 
 /**

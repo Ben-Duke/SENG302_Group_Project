@@ -28,47 +28,6 @@ $('#redoButton').click( function() {
     undoRedoRequest("redo")
 });
 
-addCaptionInputListeners();
-
-/**
- * Adds listeners to each caption input such that when they lose focus the caption is saved
- */
-function addCaptionInputListeners() {
-    const captionInputs = document.getElementsByClassName("captionInput");
-    for (let i=0; i < captionInputs.length; i++) {
-        const input = captionInputs.item(i);
-        input.addEventListener('blur', function() {
-            const photoId = input.id.split("-")[1];
-            const caption = input.value;
-            submitEditCaption(caption, photoId)
-        });
-        input.addEventListener('keydown', function (e) {
-            if (e.key === 'Enter') {
-                input.blur();
-            }
-        });
-    }
-}
-
-hideEditButtons();
-
-/**
- * Hides the add caption buttons tha should not be displayed on load page.
- * The buttons are only shown if the caption is empty
- */
-function hideEditButtons() {
-    const editButtons = document.getElementsByClassName("captionButton");
-    for (let i=0; i < editButtons.length; i++) {
-        const button = editButtons.item(i);
-        const photoId = button.id.split("-")[1];
-        getPhotoCaption(photoId);
-        const caption = document.getElementById("caption-" + photoId).innerText;
-        if(caption){
-            button.style.display = "none";
-        }
-    }
-}
-
 
 /**
  * Sends request to UndoRedoController which completes the given undo/redo request

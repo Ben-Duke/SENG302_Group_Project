@@ -54,8 +54,16 @@ public class VisitFactory {
         visit.setTrip(trip);
         visit.setDestination(destination);
         visit.setVisitName(destination.getDestName());
-        Integer visitSize = trip.getVisits().size();
-        visit.setVisitorder(visitSize + 1);
+        Integer visitSize = 0;
+        if (trip.getVisits() != null) {
+            visitSize = trip.getVisits().size();
+        }
+        Integer removedVisits = 0;
+        if(trip.getRemovedVisits() != null) {
+            removedVisits = trip.getRemovedVisits();
+        }
+        Integer visitOrder = visitSize + 1 + removedVisits;
+        visit.setVisitorder(visitOrder);
         return visit;
     }
 }

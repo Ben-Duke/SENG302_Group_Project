@@ -5,6 +5,7 @@ const colors = ['6b5b95', 'feb236', 'd64161', 'ff7b25',
 
 
 let tripFlightPaths = {};
+let isNewTrip = false;
 
 /**
  * Gets the HTML for a Destinations infoWindow, for the google map.
@@ -41,7 +42,7 @@ function getInfoWindowHTML(destination) {
 function addSelectedToVisitToTrip(destId){
     if(currentlyDisplayedTripId == null){
         //Start a new trip
-        console.log("No trip, creating a new one");
+        isNewTrip = true;
         let data = '';
         let url = "/users/trips/createFromJS/" + destId;
         // POST to server using $.post or $.ajax
@@ -51,7 +52,6 @@ function addSelectedToVisitToTrip(destId){
             type: 'POST',
             url: url,
             success: function(data){
-                console.log(data);
 
                 //currentlyDisplayedTripId = data.tripId;
                 let destTab = document.getElementById("destinationsTabListItem");
@@ -110,27 +110,26 @@ function addSelectedToVisitToTrip(destId){
                 let groupDiv = document.createElement('div');
 
                 let tripLink = document.createElement('a');
-                let tripCheckBox = document.createElement('input');
-                tripCheckBox.setAttribute('type', 'checkbox');
-                tripCheckBox.setAttribute('id',"Toggle"+data.tripId);
-                tripCheckBox.setAttribute('checked', 'true');
-                tripCheckBox.setAttribute('onclick', 'toggleTrips(' + data.tripId + ')');
-                tripCheckBox.setAttribute('class', 'form-check-label');
-                let mapLabel = document.createElement('label');
-                mapLabel.setAttribute('class', 'form-check-label');
-                mapLabel.setAttribute('for', "toggleMap");
-                mapLabel.innerText = 'Show on map';
+                //let tripCheckBox = document.createElement('input');
+                //tripCheckBox.setAttribute('type', 'checkbox');
+                //tripCheckBox.setAttribute('id',"Toggle"+data.tripId);
+                //tripCheckBox.setAttribute('checked', 'true');
+                //tripCheckBox.setAttribute('onclick', 'toggleTrips(' + data.tripId + ')');
+                //tripCheckBox.setAttribute('class', 'form-check-label');
+                //let mapLabel = document.createElement('label');
+                //mapLabel.setAttribute('class', 'form-check-label');
+                //mapLabel.setAttribute('for', "toggleMap");
+                //mapLabel.innerText = 'Show on map';
 
                 tripLink.setAttribute('class', "list-group-item list-group-item-action");
                 tripLink.innerText = data.tripName + ' | No arrival dates';
                 tripLink.setAttribute("onclick", "displayTrip(" + currentlyDisplayedTripId + ", " + data.latitude+ ", "+ data.longitude + ")");
                 listGroup.appendChild(tripLink);
                 listGroup.appendChild(groupDiv);
-                groupDiv.appendChild(tripCheckBox);
-                groupDiv.appendChild(mapLabel);
-                displayTrip(currentlyDisplayedTripId, data.latitude, data.longitude);
-
-
+                //groupDiv.appendChild(tripCheckBox);
+                //groupDiv.appendChild(mapLabel);
+                addTripRoutes(data.tripId);
+                displayTrip(data.tripId, data.latitude, data.longitude);
 
 
             },
@@ -140,7 +139,6 @@ function addSelectedToVisitToTrip(destId){
         });
     }
     else {
-        console.log("DestId is " + destId);
         let data = '';
         let url = '/users/trips/' + currentlyDisplayedTripId + '/addVisit/' + destId;
         // POST to server using $.post or $.ajax
@@ -150,7 +148,6 @@ function addSelectedToVisitToTrip(destId){
             type: 'POST',
             url: url,
             success: function(data){
-                console.log(data);
                 tripVisittableRefresh(data);
 
 
@@ -187,10 +184,10 @@ function initMap() {
 }
 
 function tripVisittableRefresh(data){
-    console.log("refresh called ");
     let targetTable = document.getElementById("placeholderTripTable");
+    let targetTrip = document.getElementById("tripTable_" + currentlyDisplayedTripId);
     let newRow = document.createElement('tr');
-    newRow.setAttribute('id', data[0]);
+    newRow.setAttribute('id', "visit_row_" + data[0]);
     let tableHeader = document.createElement('th');
     tableHeader.setAttribute('scope', 'row');
     tableHeader.innerText = data[1];
@@ -210,12 +207,28 @@ function tripVisittableRefresh(data){
     departureDateInput.setAttribute('class', 'tripDateInput');
     departureDateInput.setAttribute('onblur', "updateVisitDate(" + data[0]+")");
     tableDataDeparture.appendChild(departureDateInput);
+    let deleteButton = document.createElement('td');
+    let deleteButtonText = document.createElement('a');
+    deleteButtonText.innerText = '❌';
+    deleteButtonText.setAttribute('style', 'deleteButton');
+    let urlForDelete = '/users/trips/edit/' + data[0];//data.tripId;
+    deleteButtonText.setAttribute('onclick', 'sendDeleteVisitRequest(' + '"' + urlForDelete + '"' + ','
+        + data[0] + ')');
+    deleteButton.appendChild(deleteButtonText);
+    tableDataDeparture.appendChild(departureDateInput);
 
     newRow.appendChild(tableHeader);
     newRow.appendChild(tableDataDestType);
     newRow.appendChild(tableDataArrival);
     newRow.appendChild(tableDataDeparture);
-    targetTable.appendChild(newRow);
+    newRow.appendChild(deleteButton);
+    if(isNewTrip === false) {
+        targetTrip.appendChild(newRow);
+    }
+    else{
+        targetTable.appendChild(newRow);
+    }
+    displayTrip(currentlyDisplayedTripId, data.latitude, data.longitude);
 }
 
 
@@ -228,7 +241,6 @@ var tripRoutes = [];
  * @param tripid The id of the trip on the map
  */
 function toggleTrips(tripid) {
-    console.log(tripid)
     var checkBox = document.getElementById("Toggle" + tripid);
     if (checkBox.checked === false) {
         tripFlightPaths[tripid].setMap(null);
@@ -266,6 +278,35 @@ function initTripRoutes() {
     });
 }
 
+function addTripRoutes(newTripId) {
+
+    fetch('/users/trips/fetch/trips_routes_json', {
+        method: 'GET'})
+        .then(res => res.json())
+        .then(tripRoutes => {
+            let color;
+
+            for (let tripId in tripRoutes) {
+                if(tripId == newTripId) {
+                    color = colors[Math.floor(Math.random() * colors.length)];
+
+                    let flightPath = new google.maps.Polyline({
+                        path: tripRoutes[tripId],
+                        geodesic: true,
+                        strokeColor: '#' + color,
+                        strokeOpacity: 1.0,
+                        strokeWeight: 2
+                    });
+                    tripFlightPaths[tripId] = flightPath;
+
+                    // tripFlightPaths.push({'tripId': flightPath});
+
+                    flightPath.setMap(window.globalMap);
+                }
+            }
+        });
+}
+
 
 
 let currentlyDisplayedTripId;
@@ -276,10 +317,14 @@ let currentlyDisplayedTripId;
  * @param startLng the longitude to zoom to
  */
 function displayTrip(tripId, startLat, startLng) {
-    console.log(currentlyDisplayedTripId);
-    console.log(tripId)
+    if(tripId !== currentlyDisplayedTripId && currentlyDisplayedTripId !== undefined) {
+        if(document.getElementById("singleTrip_" + currentlyDisplayedTripId) != null) {
+            document.getElementById("singleTrip_" + currentlyDisplayedTripId).style.display = "none";
+        }
+        isNewTrip = false;
+        currentlyDisplayedTripId = undefined;
+    }
     let checkBox = document.getElementById("Toggle" + tripId);
-    console.log(checkBox);
     if (checkBox.checked === true) {
         if (currentlyDisplayedTripId !== undefined) {
             document.getElementById("singleTrip_" + currentlyDisplayedTripId).style.display = "none";
@@ -288,10 +333,15 @@ function displayTrip(tripId, startLat, startLng) {
         }
 
         currentlyDisplayedTripId = tripId;
-
-        document.getElementById("singleTrip_" + tripId).style.display = "block";
-        console.log("got here");
-
+        if(isNewTrip === false) {
+            if(document.getElementById("placeholderTripTable").style.display != "none") {
+                document.getElementById("placeholderTripTable").style.display = "none";
+            }
+            document.getElementById("singleTrip_" + tripId).style.display = "block";
+        }
+        else{
+            document.getElementById("placeholderTripTable").style.display = "block";
+        }
 
         var tripStartLatLng = new google.maps.LatLng(
             startLat, startLng
@@ -300,7 +350,6 @@ function displayTrip(tripId, startLat, startLng) {
         window.globalMap.setCenter(tripStartLatLng);
         window.globalMap.setZoom(9);
     }
-
 }
 
 
@@ -320,7 +369,6 @@ $('tbody').sortable({
         var url = '/users/trips/edit/' + currentlyDisplayedTripId;
         // POST to server using $.post or $.ajax
 
-        // console.log(data);
 
         $.ajax({
             data : JSON.stringify(data),
@@ -389,7 +437,6 @@ function initPlacesAutocomplete() {
     autocomplete.addListener('place_changed', function() {
         var place = autocomplete.getPlace();
 
-        console.log(place);
 
     });
 }
@@ -480,7 +527,6 @@ function updateTripName(newName) {
 
 
     function sendDeleteVisitRequest(url, visitId) {
-        console.log(url);
         let token = $('input[name="csrfToken"]').attr('value');
         $.ajaxSetup({
             beforeSend: function (xhr) {
@@ -493,10 +539,7 @@ function updateTripName(newName) {
             contentType: 'application/json',
             success: function (data, textStatus, xhr) {
                 if (xhr.status == 200) {
-                    console.log("t1")
-                    console.log("visit_row_" + visitId);
                     document.getElementById("visit_row_" + visitId).remove();
-                    console.log("t2")
                 }
                 else {
                     console.log("error in success function");

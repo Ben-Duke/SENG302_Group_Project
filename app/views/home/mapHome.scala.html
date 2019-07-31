@@ -191,7 +191,7 @@
                             <input style="display: none;" type="text" id="tripNameInput_@trip.getTripid()" value="@trip.getTripName()" onblur="updateTripName(this.value)">
                         </div>
 
-                        <table class="table table-hover">
+                        <table class="table table-hover" id="tripTable_@trip.getTripid()">
                             <thead>
                                 <tr>
                                     <th scope="col">Name</th>
@@ -203,7 +203,7 @@
                             </thead>
                             <tbody id="tripTableBody_@trip.getTripid()">
                             @for(visit <- trip.getOrderedVisits()){
-                                <tr id="@visit.getVisitid()">
+                                <tr id="visit_row_@visit.getVisitid()">
                                     <th scope ="row">@visit.getDestination().getDestName()</th>
                                     <td>@visit.getDestination().getDestType()</td>
                                     <td><input id="arrival_@visit.getVisitid()" class="tripDateInput" type="date"

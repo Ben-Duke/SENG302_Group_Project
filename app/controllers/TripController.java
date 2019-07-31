@@ -377,22 +377,31 @@ public class TripController extends Controller {
                 return forbidden("2");
 
             }
+
+
             VisitFactory visitFactory = new VisitFactory();
             Visit newVisit = visitFactory.createVisitByJSRequest(destination, trip);
-            VisitAccessor.insert(newVisit);
+            System.out.println(newVisit);
+            System.out.println(trip.getVisits());
+            System.out.println(newVisit.getVisitOrder());
+            if (tripFactory.hasRepeatDest(trip.getVisits(), newVisit, "ADD")) {
+                return badRequest();
+            }
+            else {
+                VisitAccessor.insert(newVisit);
 
-            trip.addVisit(newVisit);
-            TripAccessor.update(trip);
-            VisitAccessor.update(newVisit);
-            ArrayList<String> visitInformation = new ArrayList<>();
-            visitInformation.add(newVisit.getVisitid().toString());
-            visitInformation.add(newVisit.getVisitName());
-            visitInformation.add(newVisit.getDestination().getDestType());
-            visitInformation.add(newVisit.getArrival());
-            visitInformation.add(newVisit.getDeparture());
+                trip.addVisit(newVisit);
+                TripAccessor.update(trip);
+                VisitAccessor.update(newVisit);
+                ArrayList<String> visitInformation = new ArrayList<>();
+                visitInformation.add(newVisit.getVisitid().toString());
+                visitInformation.add(newVisit.getVisitName());
+                visitInformation.add(newVisit.getDestination().getDestType());
+                visitInformation.add(newVisit.getArrival());
+                visitInformation.add(newVisit.getDeparture());
 
-            return ok(Json.toJson(visitInformation));
-
+                return ok(Json.toJson(visitInformation));
+            }
 
         }
         return unauthorized();

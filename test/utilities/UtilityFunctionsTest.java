@@ -23,6 +23,8 @@ public class UtilityFunctionsTest extends BaseTestWithApplicationAndDatabase {
     public void populateDatabase() {
         // Do not populate the database with any data
         // addTravelTypes test needs empty Traveller Types table
+
+        TestDatabaseManager.clearAllData();
     }
 
     /**

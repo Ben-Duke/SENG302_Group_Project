@@ -19,6 +19,7 @@ import play.mvc.Result;
 import play.test.Helpers;
 import play.test.WithApplication;
 import testhelpers.BaseTestWithApplicationAndDatabase;
+import utilities.TestDatabaseManager;
 import utilities.UtilityFunctions;
 
 import java.time.LocalDate;
@@ -42,9 +43,8 @@ public class TravelPartnerControllerTest extends BaseTestWithApplicationAndDatab
      * Populate the test data
      */
     public void populateDatabase() {
-        UtilityFunctions.addAllNationalities();
-        UtilityFunctions.addAllPassports();
-        UtilityFunctions.addTravellerTypes();
+        TestDatabaseManager.clearMostData();    // keep nats/pass/ttypes
+
         TravellerType travellerType1 = TravellerType.find.byId(1);
         TravellerType travellerType2 = TravellerType.find.byId(2);
         TravellerType travellerType3 = TravellerType.find.byId(3);

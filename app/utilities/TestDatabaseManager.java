@@ -8,6 +8,7 @@ import io.ebean.Transaction;
 import models.*;
 import org.slf4j.Logger;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -42,8 +43,7 @@ public class TestDatabaseManager {
      * Completes the database population that is done by the sql evolutions
      */
     public void populateDatabase() {
-        logger.info("attempting to populate database");
-        logger.info("PopulationDatabase is " + ApplicationManager.getDatabaseName());
+        logger.info("Making programmatic database population changes");
 
         CountryUtils.updateCountries();
         CountryUtils.validateUsedCountries();
@@ -67,6 +67,21 @@ public class TestDatabaseManager {
         }
     }
 
+    /** Clear data from all tables except nationality, passport and traveller type */
+    public static void clearMostData() {
+        List<TableName> persisted = Arrays.asList(
+                TableName.nationality,
+                TableName.passport,
+                TableName.traveller_type);
+
+        clearData(persisted);
+    }
+
+    /** Clear all data from the database */
+    public static void clearAllData() {
+        clearData(new ArrayList<TableName>());  // pass an empty list
+    }
+
     /**
      * Removes all data from the database while keeping the structure
      * Resets auto_increment (e.g. id)
@@ -76,20 +91,13 @@ public class TestDatabaseManager {
      * Always runs on DEFAULT database not a database with a different name which
      * the application is connected to
      */
-    public static void clearAllData() {
+    private static void clearData(List<TableName> persisted) {
         logger.info("Clearing database data");
-
-        List<TableName> persisted = Arrays.asList(
-                TableName.nationality,
-                TableName.passport,
-                TableName.traveller_type);
 
         for (TableName tableName : TableName.values()) {
             if (persisted.contains(tableName)) {
                 continue;   // do not clear tables in persisted
             }
-
-            logger.debug("clearing table " + tableName);
 
             String sql = String.format("DELETE FROM %s", tableName);
             Ebean.createSqlUpdate(sql).execute();

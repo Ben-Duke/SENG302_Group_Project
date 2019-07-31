@@ -12,6 +12,7 @@ import play.db.evolutions.Evolutions;
 import play.inject.guice.GuiceApplicationBuilder;
 import play.test.WithApplication;
 import testhelpers.BaseTestWithApplicationAndDatabase;
+import utilities.TestDatabaseManager;
 
 import static org.junit.Assert.*;
 
@@ -23,6 +24,8 @@ public class LoginFactoryTest extends BaseTestWithApplicationAndDatabase {
 
     @Override
     public void populateDatabase() {
+        TestDatabaseManager.clearAllData();
+
         //Initialises a test user with name "testUser" and saves it to the database.
         User user = new User("gon12@uclive.ac.nz", "hunter22");
         user.save();

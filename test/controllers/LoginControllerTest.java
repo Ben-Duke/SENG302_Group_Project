@@ -16,6 +16,7 @@ import play.mvc.Result;
 import play.test.Helpers;
 import play.test.WithApplication;
 import testhelpers.BaseTestWithApplicationAndDatabase;
+import utilities.TestDatabaseManager;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -32,6 +33,8 @@ public class LoginControllerTest extends BaseTestWithApplicationAndDatabase {
      * Populate test data
      */
     public void populateDatabase() {
+        TestDatabaseManager.clearAllData();
+
         User user = new User("gon12@uclive.ac.nz", "hunter22");
         user.save();
     }

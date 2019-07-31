@@ -11,7 +11,6 @@ import static org.junit.Assert.*;
 
 public class DeletePhotoCommandTest  extends BaseTestWithApplicationAndDatabase {
 
-
     @Test
     public void execute() {
         UserPhoto userPhoto = UserPhoto.find.byId(1);

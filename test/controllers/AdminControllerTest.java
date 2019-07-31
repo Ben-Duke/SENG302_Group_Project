@@ -39,15 +39,7 @@ public class AdminControllerTest extends BaseTestWithApplicationAndDatabase {
      */
     @Override
     public void populateDatabase() {
-        List<User> users = User.find.all();
-        logger.debug("Initial users");
-        logger.debug(users.toString());
-
         TestDatabaseManager.clearAllData();
-
-        users = User.find.all();
-        logger.debug("after clear");
-        logger.debug(users.toString());
 
         //Initialises test users and default admin and saves it to the database.
         User user = new User("testAdmin");
@@ -61,18 +53,6 @@ public class AdminControllerTest extends BaseTestWithApplicationAndDatabase {
         user1.save();
         User user2 = new User("testUser2");
         user2.save();
-
-        users = User.find.all();
-        logger.debug("after setup");
-        for (User userItem : users) {
-            logger.debug(userItem.getEmail());
-            logger.debug(Boolean.toString(userItem.userIsAdmin()));
-        }
-
-        List<Admin> admins = Admin.find.all();
-        for (Admin adminItem : admins) {
-            logger.debug(adminItem.toString());
-        }
     }
 
     /**

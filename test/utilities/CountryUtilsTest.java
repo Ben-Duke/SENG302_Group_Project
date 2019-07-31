@@ -23,8 +23,10 @@ public class CountryUtilsTest extends BaseTestWithApplicationAndDatabase {
 
     @Override
     public void populateDatabase() {
-        // Do not populate the database
+        // Clear the database of all data
         // validateValidPassportCountry requires passport table being empty
+
+        TestDatabaseManager.clearAllData();
     }
 
     @Test

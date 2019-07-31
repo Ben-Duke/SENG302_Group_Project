@@ -45,15 +45,8 @@ public class ProfileControllerTest extends BaseTestWithApplicationAndDatabase {
      * Runs before each test and cleared afterwards
      */
     public void populateDatabase() {
-        TestDatabaseManager.clearAllData();
+        TestDatabaseManager.clearMostData();    // keep nats/pass/ttypes
 
-        List<User> users = User.find.all();
-        logger.debug("After clear");
-        logger.debug(users.toString());
-
-//        UtilityFunctions.addTravellerTypes();
-//        UtilityFunctions.addAllNationalities();
-//        UtilityFunctions.addAllPassports();
         TravellerType travellerType1 = TravellerType.find.byId(1);
         TravellerType travellerType2 = TravellerType.find.byId(2);
         Nationality nationality1 = Nationality.find.byId(1);
@@ -84,13 +77,6 @@ public class ProfileControllerTest extends BaseTestWithApplicationAndDatabase {
         user3.getNationality().add(nationality1);
         user3.getNationality().add(nationality2);
         user3.save();
-
-        users = User.find.all();
-        logger.debug("after setup");
-        for (User userItem : users) {
-            logger.debug(userItem.getEmail());
-            logger.debug(userItem.nationality.toString());
-        }
     }
 
     @Test

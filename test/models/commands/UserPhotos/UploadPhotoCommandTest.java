@@ -39,6 +39,7 @@ public class UploadPhotoCommandTest extends BaseTestWithApplicationAndDatabase {
     public void populateDatabase() {
         TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
         testDatabaseManager.populateDatabase();
+
         user = User.find.byId(1);
         userPhoto =  new UserPhoto("imagetest.png", false, false, user);
         String unusedPhotoUrl = userPhoto.getUnusedUserPhotoFileName();

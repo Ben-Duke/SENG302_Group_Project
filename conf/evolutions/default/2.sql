@@ -393,10 +393,7 @@ INSERT INTO `user_traveller_type` (`user_userid`, `traveller_type_ttypeid`) VALU
 
 
 -- user_photo
-INSERT INTO `user_photo` (`photo_id`, `url`, `is_public`, `is_profile`, `caption`,
-`user`) VALUES
-(1, 'shrek.jpeg', 1, 1, 'Get out of my swamp', 2),
-(2, 'placeholder.png', 0, 0, '', 2);
+-- set in code
 
 
 -- user_photo_destination

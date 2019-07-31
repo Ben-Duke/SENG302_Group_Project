@@ -7,6 +7,7 @@ import io.ebean.SqlUpdate;
 import io.ebean.Transaction;
 import models.*;
 import org.slf4j.Logger;
+import play.ApplicationLoader;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,7 +37,7 @@ public class TestDatabaseManager {
      * @param initCompleteLatch A CountDownLatch to call back and unlock when the
      *                          database has been populated.
      */
-    public void populateDatabase(CountDownLatch initCompleteLatch) {
+    public static void populateDatabase(CountDownLatch initCompleteLatch) {
         populateDatabase();
         initCompleteLatch.countDown();
     }
@@ -44,19 +45,50 @@ public class TestDatabaseManager {
     /**
      * Completes the database population that is done by the sql evolutions
      */
-    public void populateDatabase() {
+    public static void populateDatabase() {
         logger.info("Making programmatic database population changes");
 
         CountryUtils.updateCountries();
         CountryUtils.validateUsedCountries();
 
         setUserPasswords();
+
+        addUserPhotos();
+    }
+
+    /** Add in test user photos - only occurs during testing
+     */
+    private static void addUserPhotos() {
+        // only populate photos for the tests
+        if (!ApplicationManager.isIsTest()) {
+            return;
+        }
+
+        UserPhoto userPhoto1 = new UserPhoto("shrek.jpeg", true, true,
+                User.find().byId(2));
+        userPhoto1.setCaption("Get out of my swamp");
+
+        UserPhoto userPhoto2 = new UserPhoto("placeholder.png", false, false,
+                User.find().byId(2));
+
+        try {
+            userPhoto1.save();
+        } catch (Exception e) {
+            logger.error("Failed to add user1 photos", e);
+        }
+
+        try {
+            userPhoto2.save();
+        } catch (Exception e) {
+            logger.error("Failed to add user2 photos", e);
+        }
+
     }
 
     /**
      * Sets the passwords of all test users and admins
      */
-    private void setUserPasswords() {
+    private static void setUserPasswords() {
         List<User> users = UserAccessor.getAll();
         for (User user : users) {
             if (user.userIsAdmin()) {

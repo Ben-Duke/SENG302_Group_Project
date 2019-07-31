@@ -13,6 +13,8 @@ import play.test.Helpers;
 import testhelpers.BaseTestWithApplicationAndDatabase;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static play.mvc.Http.Status.*;
@@ -823,6 +825,7 @@ public class AlbumControllerTest extends BaseTestWithApplicationAndDatabase {
         ArrayList<Album> albums = new ArrayList<Album>();
         albums.add(album);
 
+        /*
         Destination destination2 = new Destination(
                 "testtestmctest", "Town", "Wellington",
                 "New Zealand", -41.26, 174.6,
@@ -831,8 +834,20 @@ public class AlbumControllerTest extends BaseTestWithApplicationAndDatabase {
 
         Album destAlbum = new Album(destination2, "default");
         AlbumAccessor.insert(destAlbum);
+        */
 
-
+        Map<String, String> formData = new HashMap<>();
+        formData.put("destName", "testtestmctest");
+        formData.put("destType", "Town");
+        formData.put("district", "Wellington");
+        formData.put("country", "New Zealand");
+        formData.put("latitude", "-41.26");
+        formData.put("longitude", "174.6");
+        Http.RequestBuilder request = Helpers.fakeRequest().bodyForm(formData)
+                .method(POST).uri("/users/destinations/save").session("connected", "2");
+        route(app, request);
+        Destination destination2 = DestinationAccessor
+                .getDestinationsbyName("testtestmctest").get(0);
         UserPhoto photo = new UserPhoto(photoURL,
                 true,
                 false,
@@ -849,7 +864,7 @@ public class AlbumControllerTest extends BaseTestWithApplicationAndDatabase {
 
 
 
-        Http.RequestBuilder request = Helpers.fakeRequest()
+        request = Helpers.fakeRequest()
                 .method(GET)
                 .uri("/users/albums/photos/get_linked_destinations/" + photoId)
                 .session("connected", Integer.toString(user.getUserid()));
@@ -880,17 +895,31 @@ public class AlbumControllerTest extends BaseTestWithApplicationAndDatabase {
 
         ArrayList<Album> primaryPhotoDestinations = new ArrayList<Album>();
 
-        Destination destination2 = new Destination(
-                "testtestmctest2222", "Town", "Wellington",
-                "New Zealand", -41.26, 174.6,
-                user);
-        DestinationAccessor.insert(destination2);
+        Map<String, String> formData = new HashMap<>();
+        formData.put("destName", "testtestmctest2222");
+        formData.put("destType", "Town");
+        formData.put("district", "Wellington");
+        formData.put("country", "New Zealand");
+        formData.put("latitude", "-41.26");
+        formData.put("longitude", "174.6");
+        Http.RequestBuilder request = Helpers.fakeRequest().bodyForm(formData)
+                .method(POST).uri("/users/destinations/save").session("connected", "2");
+        route(app, request);
+        Destination destination2 = DestinationAccessor
+                .getDestinationsbyName("testtestmctest2222").get(0);
 
-        Destination destination3 = new Destination(
-                "testtestmctest333", "Town", "Wellington",
-                "New Zealand", -41.26, 174.6,
-                user);
-        DestinationAccessor.insert(destination3);
+        formData = new HashMap<>();
+        formData.put("destName", "testtestmctest333");
+        formData.put("destType", "Town");
+        formData.put("district", "Wellington");
+        formData.put("country", "New Zealand");
+        formData.put("latitude", "-41.26");
+        formData.put("longitude", "174.6");
+        request = Helpers.fakeRequest().bodyForm(formData)
+                .method(POST).uri("/users/destinations/save").session("connected", "2");
+        route(app, request);
+        Destination destination3 = DestinationAccessor
+                .getDestinationsbyName("testtestmctest333").get(0);
 
         UserPhoto photo = new UserPhoto(photoURL,
                 true,
@@ -909,14 +938,13 @@ public class AlbumControllerTest extends BaseTestWithApplicationAndDatabase {
 
 
 
-        Http.RequestBuilder request = Helpers.fakeRequest()
+        request = Helpers.fakeRequest()
                 .method(GET)
                 .uri("/users/albums/photos/get_linked_destinations/" + photoId)
                 .session("connected", Integer.toString(user.getUserid()));
         Result result = route(app, request);
 
         JsonNode jsonJacksonArray = play.libs.Json.parse(contentAsString(result));
-        System.out.println(jsonJacksonArray);
         assertEquals(2, jsonJacksonArray.size());
     }
 

@@ -749,7 +749,7 @@ public class AlbumControllerTest extends BaseTestWithApplicationAndDatabase {
         UserAccessor.insert(user);
 
 
-        Album album = new Album(user, userAlbumName);
+        Album album = new Album(user, userAlbumName, false);
         AlbumAccessor.insert(album);
         ArrayList<Album> albums = new ArrayList<Album>();
         albums.add(album);
@@ -820,7 +820,7 @@ public class AlbumControllerTest extends BaseTestWithApplicationAndDatabase {
         User user = new User(userEmail);
         UserAccessor.insert(user);
 
-        Album album = new Album(user, userAlbumName);
+        Album album = new Album(user, userAlbumName, false);
         AlbumAccessor.insert(album);
         ArrayList<Album> albums = new ArrayList<Album>();
         albums.add(album);
@@ -888,7 +888,7 @@ public class AlbumControllerTest extends BaseTestWithApplicationAndDatabase {
         User user = new User(userEmail);
         UserAccessor.insert(user);
 
-        Album album = new Album(user, userAlbumName);
+        Album album = new Album(user, userAlbumName, false);
         AlbumAccessor.insert(album);
         ArrayList<Album> albums = new ArrayList<Album>();
         albums.add(album);
@@ -964,7 +964,7 @@ public class AlbumControllerTest extends BaseTestWithApplicationAndDatabase {
         User user = new User(userEmail);
         UserAccessor.insert(user);
 
-        Album album = new Album(user, userAlbumName);
+        Album album = new Album(user, userAlbumName, false);
         AlbumAccessor.insert(album);
         ArrayList<Album> albums = new ArrayList<Album>();
         albums.add(album);

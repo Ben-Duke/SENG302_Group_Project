@@ -99,7 +99,11 @@ public class UserAccessor {
         if (userProfilePhotoList.isEmpty()) {
             return null;
         } else if (1 == userProfilePhotoList.size()) {
-            return userProfilePhotoList.get(0);
+            if (userProfilePhotoList.get(0).getUser() != null) {
+                return userProfilePhotoList.get(0);
+            } else {
+                return null;
+            }
         } else {
             throw new io.ebean.DuplicateKeyException("Multiple profile photos.",
                     new Throwable("Multiple profile photos."));

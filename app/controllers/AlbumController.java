@@ -3,9 +3,11 @@ package controllers;
 import accessors.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import gherkin.deps.com.google.gson.JsonArray;
+import io.ebean.Ebean;
 import models.*;
 import models.commands.Albums.*;
 import models.commands.General.CommandPage;
+import play.db.ebean.Transactional;
 import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Http;
@@ -310,6 +312,14 @@ public class AlbumController extends Controller {
     }
 
 
+    /**
+     * Method to handle AJAX request for deleting a user photo and unlinking
+     * the photo from selected destinations.
+     *
+     * @param request The http request
+     * @return The Result, uses http status 200 for success and error codes
+     * otherwise.
+     */
     public Result deleteUserPhotoAndUnlinkFromSelectDests(Http.Request request) {
         User user = User.getCurrentUser(request);
         if (user == null) {
@@ -348,33 +358,79 @@ public class AlbumController extends Controller {
         }
 
 
+        try {
+            deleteUserPhotoAndUnlinkTransaction(user, jsonArray, photo);
+            return new Result((Http.Status.OK));
+
+        } catch (Exception e) {
+            return new Result(Http.Status.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
+     * Method to handle the Ebeans transaction to delete a users photo and unlink
+     * photo from selected destinations.
+     *
+     * User for deleteUserPhotoAndUnlinkFromSelectDests() method
+     *
+     * @param user The User who owns the photo.
+     * @param jsonArray A JsonNode object containing the destid's of all destinations
+     *                  to unlink from the photo.
+     * @param photo The UserPhoto
+     * @throws Exception Some error with ebeans, show user an error if this occurs.
+     * No changes will be committed if the exception is thrown.
+     */
+    private void deleteUserPhotoAndUnlinkTransaction(User user, JsonNode jsonArray, UserPhoto photo) throws Exception {
+        Ebean.beginTransaction();
         // TRANSACTION START
-        for (int i = 0; i < jsonArray.size(); i++) {
-            int destId = jsonArray.get(i).asInt();
-            Destination destination = DestinationAccessor.getDestinationById(destId);
-            destination.getPrimaryAlbum().removeMedia(photo);
-            AlbumAccessor.update(destination.getPrimaryAlbum());
-            if ((destination.getPrimaryAlbum().getPrimaryPhoto() != null) &&
-                    (photo.getMediaId() ==
-                            destination.getPrimaryAlbum().getPrimaryPhoto().getMediaId())) {
-                destination.getPrimaryAlbum().setPrimaryPhoto(null);
+
+        boolean success = false;
+        try {
+            for (int i = 0; i < jsonArray.size(); i++) {
+                int destId = jsonArray.get(i).asInt();
+                Destination destination = DestinationAccessor.getDestinationById(destId);
+                destination.getPrimaryAlbum().removeMedia(photo);
                 AlbumAccessor.update(destination.getPrimaryAlbum());
+                if ((destination.getPrimaryAlbum().getPrimaryPhoto() != null) &&
+                        (photo.getMediaId() ==
+                                destination.getPrimaryAlbum().getPrimaryPhoto().getMediaId())) {
+                    destination.getPrimaryAlbum().setPrimaryPhoto(null);
+                    AlbumAccessor.update(destination.getPrimaryAlbum());
+                }
             }
+
+            photo.user = null;
+            photo.setProfile(false);
+            UserPhotoAccessor.update(photo);
+
+            for (Album album: user.getAlbums()) {
+                if (album.containsMedia(photo)) {
+                    System.out.println("album size start: " + album.getMedia().size());
+                    album.removeMedia(photo);
+                    System.out.println("album size end: " + album.getMedia().size());
+                    AlbumAccessor.update(album);
+                }
+            }
+
+            if (user.getUserPhotos().contains(photo)) {
+                System.out.println("album size start: " + user.getUserPhotos().size());
+                user.getUserPhotos().remove(photo);
+                UserAccessor.update(user);
+                System.out.println("album size end: " + user.getUserPhotos().size());
+            }
+
+            Ebean.commitTransaction();
+            success = true;
+            //TRANSACTION END
+        } catch (Exception e) {
+            Ebean.rollbackTransaction();
+        } finally {
+            Ebean.endTransaction();
         }
 
-        photo.user = null;
-        UserPhotoAccessor.update(photo);
-
-        for (Album album: user.getAlbums()) {
-            if (album.containsMedia(photo)) {
-                System.out.println("album size start: " + album.getMedia().size());
-                album.removeMedia(photo);
-                System.out.println("album size end: " + album.getMedia().size());
-                AlbumAccessor.update(album);
-            }
+        if (! success) {
+            throw new Exception("Error occurred deleting user photo and unlinking " +
+                    "from destinations.");
         }
-
-
-        return new Result(Http.Status.NOT_IMPLEMENTED);
     }
 }

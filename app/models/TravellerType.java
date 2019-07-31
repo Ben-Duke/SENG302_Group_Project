@@ -2,6 +2,7 @@ package models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import controllers.ApplicationManager;
 import io.ebean.Finder;
 import io.ebean.Model;
 
@@ -17,7 +18,7 @@ import java.util.TreeMap;
                 @UniqueConstraint(columnNames={"traveller_type_name"})
 )
 @Entity
-public class TravellerType extends Model implements Comparable<TravellerType> {
+public class TravellerType extends BaseModel implements Comparable<TravellerType> {
 
     /**
      * Constructor for traveller types
@@ -41,7 +42,8 @@ public class TravellerType extends Model implements Comparable<TravellerType> {
     @ManyToMany(mappedBy = "travellerTypes")
     private Set<Destination> destinations;
 
-    private static Finder<Integer,TravellerType> find = new Finder<>(TravellerType.class);
+    private static Finder<Integer,TravellerType> find = new Finder<>(TravellerType.class,
+            ApplicationManager.getDatabaseName());
 
 
 

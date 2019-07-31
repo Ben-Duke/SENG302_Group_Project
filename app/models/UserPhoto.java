@@ -15,7 +15,7 @@ import java.util.List;
 @Entity
 
 @Table(uniqueConstraints={@UniqueConstraint(columnNames={"url"})})
-public class UserPhoto extends Model {
+public class UserPhoto extends BaseModel {
 
     @Id //The photos primary key
     private int photoId;
@@ -43,7 +43,7 @@ public class UserPhoto extends Model {
     @OneToMany(mappedBy = "primaryPhoto")
     private List<Destination> primaryPhotoDestinations;
 
-    private static final Finder<Integer,UserPhoto> find = new Finder<>(UserPhoto.class);
+    private static final Finder<Integer,UserPhoto> find = new Finder<>(UserPhoto.class, ApplicationManager.getDatabaseName());
 
     /**
      * Default constructor for caption edit commands

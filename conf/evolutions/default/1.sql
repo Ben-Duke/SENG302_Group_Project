@@ -1,5 +1,8 @@
-# --- Created by Ebean DDL
-# To stop Ebean DDL generation, remove this comment and start using Evolutions
+-- SQL file for mysql databases
+-- Differences from test sql files
+--   1. Uses '#' for Ups/Downs
+--   2. WILL NOT WORK if varchars are > 191
+
 
 # --- !Ups
 
@@ -13,10 +16,10 @@ create table admin (
 
 create table destination (
   destid                        integer auto_increment not null,
-  dest_name                     varchar(255),
-  dest_type                     varchar(255),
-  district                      varchar(255),
-  country                       varchar(255),
+  dest_name                     varchar(191),
+  dest_type                     varchar(191),
+  district                      varchar(191),
+  country                       varchar(191),
   is_country_valid              boolean default false not null,
   latitude                      double not null,
   longitude                     double not null,
@@ -35,10 +38,10 @@ create table destination_traveller_type (
 create table destination_modification_request (
   id                            integer auto_increment not null,
   old_destination_destid        integer,
-  new_dest_name                 varchar(255),
-  new_dest_type                 varchar(255),
-  new_dest_country              varchar(255),
-  new_dest_district             varchar(255),
+  new_dest_name                 varchar(191),
+  new_dest_type                 varchar(191),
+  new_dest_country              varchar(191),
+  new_dest_district             varchar(191),
   new_dest_latitude             double not null,
   new_dest_longitude            double not null,
   request_author_userid         integer,
@@ -55,7 +58,7 @@ create table destination_modification_request_traveller_type (
 create table nationality (
   natid                         integer auto_increment not null,
   country_valid                 boolean,
-  nationality_name              varchar(255),
+  nationality_name              varchar(191),
   constraint uq_nationality_nationality_name unique (nationality_name),
   constraint pk_nationality primary key (natid)
 );
@@ -63,32 +66,32 @@ create table nationality (
 create table passport (
   passid                        integer auto_increment not null,
   country_valid                 boolean,
-  passport_name                 varchar(255),
+  passport_name                 varchar(191),
   constraint uq_passport_passport_name unique (passport_name),
   constraint pk_passport primary key (passid)
 );
 
 create table traveller_type (
   ttypeid                       integer auto_increment not null,
-  traveller_type_name           varchar(255),
+  traveller_type_name           varchar(191),
   constraint uq_traveller_type_traveller_type_name unique (traveller_type_name),
   constraint pk_traveller_type primary key (ttypeid)
 );
 
 create table treasure_hunt (
   thuntid                       integer auto_increment not null,
-  title                         varchar(255),
-  riddle                        varchar(255),
+  title                         varchar(191),
+  riddle                        varchar(191),
   destination_destid            integer,
-  start_date                    varchar(255),
-  end_date                      varchar(255),
+  start_date                    varchar(191),
+  end_date                      varchar(191),
   user                          integer,
   constraint pk_treasure_hunt primary key (thuntid)
 );
 
 create table trip (
   tripid                        integer auto_increment not null,
-  trip_name                     varchar(255),
+  trip_name                     varchar(191),
   removed_visits                integer default 0,
   is_public                     boolean default false not null,
   user                          integer,
@@ -97,12 +100,12 @@ create table trip (
 
 create table user (
   userid                        integer auto_increment not null,
-  email                         varchar(255),
-  password_hash                 varchar(255),
+  email                         varchar(191),
+  password_hash                 varchar(191),
   date_of_birth                 date,
-  gender                        varchar(255),
-  f_name                        varchar(255),
-  l_name                        varchar(255),
+  gender                        varchar(191),
+  f_name                        varchar(191),
+  l_name                        varchar(191),
   undo_redo_error               boolean default false not null,
   is_admin                      boolean,
   creation_date                 timestamp not null,
@@ -136,10 +139,10 @@ create table user_treasure_hunt (
 
 create table user_photo (
   photo_id                      integer auto_increment not null,
-  url                           varchar(255),
+  url                           varchar(191),
   is_public                     boolean default false not null,
   is_profile                    boolean default false not null,
-  caption                       varchar(255),
+  caption                       varchar(191),
   user                          integer,
   constraint uq_user_photo_url unique (url),
   constraint pk_user_photo primary key (photo_id)
@@ -156,9 +159,9 @@ create table visit (
   visitorder                    integer,
   destination                   integer,
   trip                          integer,
-  arrival                       varchar(255),
-  departure                     varchar(255),
-  visit_name                    varchar(255),
+  arrival                       varchar(191),
+  departure                     varchar(191),
+  visit_name                    varchar(191),
   constraint pk_visit primary key (visitid)
 );
 
@@ -344,4 +347,6 @@ drop table if exists user_photo;
 drop table if exists user_photo_destination;
 
 drop table if exists visit;
+
+
 

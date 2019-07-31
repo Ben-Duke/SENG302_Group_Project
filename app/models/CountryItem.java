@@ -8,7 +8,7 @@ import javax.persistence.MappedSuperclass;
 
 /** Parent class for Nationality and Passport giving them isValidContry property */
 @MappedSuperclass
-public abstract class CountryItem  extends Model {
+public abstract class CountryItem  extends BaseModel {
 
     @Column
     private Boolean countryValid;

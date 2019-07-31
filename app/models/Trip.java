@@ -3,6 +3,7 @@ package models;
 import accessors.VisitAccessor;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import controllers.ApplicationManager;
 import formdata.TripFormData;
 import io.ebean.Ebean;
 import io.ebean.Finder;
@@ -14,7 +15,7 @@ import java.util.Comparator;
 import java.util.List;
 
 @Entity
-public class Trip extends Model {
+public class Trip extends BaseModel {
 
     @Id
     private Integer tripid;
@@ -28,7 +29,8 @@ public class Trip extends Model {
     @OneToMany(mappedBy = "trip")
     private List<Visit> visits;
 
-    private static Finder<Integer,Trip> find = new Finder<>(Trip.class);
+    private static Finder<Integer,Trip> find = new Finder<>(Trip.class,
+            ApplicationManager.getDatabaseName());
 
     private boolean isPublic = true;
 
@@ -134,7 +136,7 @@ public class Trip extends Model {
             return null;
         }
         else {
-            String startDate = Ebean.find(Visit.class).where().eq("trip", this).orderBy("arrival DESC").findList().get(0).getArrival();
+            String startDate = Visit.find().query().where().eq("trip", this).orderBy("arrival DESC").findList().get(0).getArrival();
             return startDate;
         }
     }
@@ -144,7 +146,7 @@ public class Trip extends Model {
      * @return The date of the end of the trip as a string
      */
     public String getTripEnd(){
-        String endDate = Ebean.find(Visit.class).where().eq("trip", this).orderBy("departure ASC").findList().get(0).getDeparture();
+        String endDate = Visit.find().query().where().eq("trip", this).orderBy("departure ASC").findList().get(0).getDeparture();
         return endDate;
     }
 

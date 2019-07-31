@@ -2,6 +2,7 @@ package models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import controllers.ApplicationManager;
 import io.ebean.Finder;
 import io.ebean.Model;
 
@@ -34,7 +35,8 @@ public class Passport extends CountryItem {
     @ManyToMany(mappedBy = "passports")
     private List<User> users;
 
-    private final static Finder<Integer,Passport> find = new Finder<>(Passport.class);
+    private static final Finder<Integer,Passport> find = new Finder<>(Passport.class,
+            ApplicationManager.getDatabaseName());
 
 
     /**

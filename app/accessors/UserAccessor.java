@@ -21,6 +21,10 @@ public class UserAccessor {
         throw new UnsupportedOperationException();
     }
 
+    public static List<User> getAll() {
+        return User.find().all();
+    }
+
     public static Passport getPassport(int id) {
         return Passport.find().query().where().eq("passid", id).findOne();
     }

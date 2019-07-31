@@ -5,6 +5,7 @@ import models.*;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
 import play.Application;
 import play.api.test.CSRFTokenHelper;
 import play.db.Database;
@@ -17,11 +18,14 @@ import play.mvc.Http;
 import play.mvc.Result;
 import play.test.Helpers;
 import play.test.WithApplication;
+import testhelpers.BaseTestWithApplicationAndDatabase;
+import utilities.TestDatabaseManager;
 import utilities.UtilityFunctions;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
@@ -31,40 +35,48 @@ import static play.test.Helpers.GET;
 import static play.test.Helpers.contentAsString;
 import static play.test.Helpers.route;
 
-public class ProfileControllerTest extends WithApplication {
+public class ProfileControllerTest extends BaseTestWithApplicationAndDatabase {
 
-    /**
-     * The fake databasee
-     */
-    Database database;
+    private final Logger logger = UtilityFunctions.getLogger();
 
     @Override
-    protected Application provideApplication() {
-        return new GuiceApplicationBuilder().build();
-    }
-
-
-    /**
-     * Sets up the fake database before each test
+    /*
+     * Setup the data for this test class
+     * Runs before each test and cleared afterwards
      */
-    @Before
-    public void setUpDatabase() {
-        database = Databases.inMemory();
-        Evolutions.applyEvolutions(database, Evolutions.forDefault(new Evolution(
-                1,
-                "create table test (id bigint not null, name varchar(255));",
-                "drop table test;"
-        )));
-        createUser();
-    }
+    public void populateDatabase() {
+        TestDatabaseManager.clearMostData();    // keep nats/pass/ttypes
 
-    /**
-     * Clears the fake database after each test
-     */
-    @After
-    public void shutdownDatabase() {
-        Evolutions.cleanupEvolutions(database);
-        database.shutdown();
+        TravellerType travellerType1 = TravellerType.find().byId(1);
+        TravellerType travellerType2 = TravellerType.find().byId(2);
+        Nationality nationality1 = Nationality.find().byId(1);
+        Nationality nationality2 = Nationality.find().byId(2);
+        Passport passport1 = Passport.find().byId(1);
+        Passport passport2 = Passport.find().byId(2);
+        //Initialises a test user with name "testUser" and saves it to the database.
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        //convert String to LocalDate
+        LocalDate birthDate = LocalDate.parse("1998-08-23", formatter);
+        User user = new User("gon12@uclive.ac.nz", "hunter22", "Gavin", "Ong", birthDate, "Male");
+        User user2 = new User("gon23@uclive.ac.nz", "hunter22", "Gavin", "Ong", birthDate, "Male");
+        User user3 = new User("gon34@uclive.ac.nz", "hunter22", "Gavin", "Ong", birthDate, "Male");
+        user.getNationality().add(nationality1);
+        user.getNationality().add(nationality2);
+        user.getPassport().add(passport1);
+        user.getPassport().add(passport2);
+        user.save();
+        user2.getTravellerTypes().add(travellerType1);
+        user2.getTravellerTypes().add(travellerType2);
+        user2.getPassport().add(passport1);
+        user2.getPassport().add(passport2);
+        user2.save();
+        user3.getTravellerTypes().add(travellerType1);
+        user3.getTravellerTypes().add(travellerType2);
+        user3.getPassport().add(passport1);
+        user3.getPassport().add(passport2);
+        user3.getNationality().add(nationality1);
+        user3.getNationality().add(nationality2);
+        user3.save();
     }
 
     @Test
@@ -216,42 +228,6 @@ public class ProfileControllerTest extends WithApplication {
         assertEquals(SEE_OTHER, result.status());
         user = User.find().byId(1);
         assertEquals(1, user.getPassports().size());
-    }
-
-    public void createUser(){
-        UtilityFunctions.addTravellerTypes();
-        UtilityFunctions.addAllNationalities();
-        UtilityFunctions.addAllPassports();
-        TravellerType travellerType1 = TravellerType.find().byId(1);
-        TravellerType travellerType2 = TravellerType.find().byId(2);
-        Nationality nationality1 = Nationality.find().byId(1);
-        Nationality nationality2 = Nationality.find().byId(2);
-        Passport passport1 = Passport.find().byId(1);
-        Passport passport2 = Passport.find().byId(2);
-        //Initialises a test user with name "testUser" and saves it to the database.
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        //convert String to LocalDate
-        LocalDate birthDate = LocalDate.parse("1998-08-23", formatter);
-        User user = new User("gon12@uclive.ac.nz", "hunter22", "Gavin", "Ong", birthDate, "Male");
-        User user2 = new User("gon23@uclive.ac.nz", "hunter22", "Gavin", "Ong", birthDate, "Male");
-        User user3 = new User("gon34@uclive.ac.nz", "hunter22", "Gavin", "Ong", birthDate, "Male");
-        user.getNationality().add(nationality1);
-        user.getNationality().add(nationality2);
-        user.getPassport().add(passport1);
-        user.getPassport().add(passport2);
-        user.save();
-        user2.getTravellerTypes().add(travellerType1);
-        user2.getTravellerTypes().add(travellerType2);
-        user2.getPassport().add(passport1);
-        user2.getPassport().add(passport2);
-        user2.save();
-        user3.getTravellerTypes().add(travellerType1);
-        user3.getTravellerTypes().add(travellerType2);
-        user3.getPassport().add(passport1);
-        user3.getPassport().add(passport2);
-        user3.getNationality().add(nationality1);
-        user3.getNationality().add(nationality2);
-        user3.save();
     }
 
     /**

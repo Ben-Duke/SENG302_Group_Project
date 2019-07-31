@@ -114,7 +114,6 @@ public abstract class Media extends Model {
     public String getUrlWithPath() {
         return Paths.get(".").toAbsolutePath().normalize().toString()
                 + ApplicationManager.getMediaPath()
-                + this.getUser().getUserid()
                 + "/"
                 + this.getUrl();
     }

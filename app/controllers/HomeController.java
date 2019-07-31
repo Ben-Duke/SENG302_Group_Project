@@ -163,14 +163,14 @@ public class HomeController {
                     newPhoto.setUrl(unusedPhotoUrl);
                     //Add the path to the filename given by the uploaded picture
 
-                    String unusedAbsoluteFilePath = Paths.get(".").toAbsolutePath().normalize().toString() + ApplicationManager.getMediaPath() + user.getUserid() + "/" + unusedPhotoUrl;
+                    String unusedAbsoluteFilePath = Paths.get(".").toAbsolutePath().normalize().toString() + ApplicationManager.getMediaPath() + "/" + unusedPhotoUrl;
                     //Save the file, replacing the existing one if the name is taken
                     try {
-                        java.nio.file.Files.createDirectories(Paths.get(Paths.get(".").toAbsolutePath().normalize().toString() + ApplicationManager.getMediaPath() + user.getUserid() + "/"));
+                        java.nio.file.Files.createDirectories(Paths.get(Paths.get(".").toAbsolutePath().normalize().toString() + ApplicationManager.getMediaPath() + "/"));
                         file.copyTo(Paths.get(unusedAbsoluteFilePath), true);
 
                         BufferedImage thumbnailImage = UtilityFunctions.resizeImage(unusedAbsoluteFilePath);
-                        ImageIO.write(thumbnailImage, "png", new File(Paths.get(".").toAbsolutePath().normalize().toString() + ApplicationManager.getMediaPath() + user.getUserid() + "/profilethumbnail.png"));
+                        ImageIO.write(thumbnailImage, "png", new File(Paths.get(".").toAbsolutePath().normalize().toString() + ApplicationManager.getMediaPath() + "/profilethumbnail.png"));
                     } catch (IOException e) {
                         logger.error("Something went wrong", e);
                         return internalServerError("Oops, something went wrong.");

@@ -46,6 +46,8 @@ public class UserController {
     public Result userindex(Http.Request request){
         if (!wasRun.getAndSet(true)) {
             ApplicationManager.setMediaPath("/../media_");
+//            ApplicationManager.getMediaPath()
+
             TestDatabaseManager.populateDatabase(initCompleteLatch);
             logger.info("populating database");
 

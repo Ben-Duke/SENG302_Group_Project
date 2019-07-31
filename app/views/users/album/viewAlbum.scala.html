@@ -50,28 +50,25 @@
             @if(album.getOwner == user || user.userIsAdmin) {
                 <!-- Caption text -->
                 <div class="caption-container">
-                    <div>
-                        <a class="btn btn-link" id="profilePictureBtn" style="color: white; padding: 5px;">Set Profile Picture</a>
-                        <a class="btn btn-link" id="deletePhotoBtn" style="color: white; padding: 5px;">Delete</a>
-                        <a class="btn btn-link" id="privacyBtn" style="color: white; padding: 5px;">Make Public/Private</a>
-                        <a class="btn btn-link" id="linkDestinationBtn" style="color: white; padding: 5px;">Link Destination</a>
-                        <label for="album-search-move" style="color: white; padding: 5px;">Move to Album: </label>
-                        <input style="color: #000000;" id="album-search-move" list="album-results-move"
-                        name="Album Move" title="Move Album" placeholder="Search for Album">
-                        <datalist  id="album-results-move">
-                        @for(userAlbum <- user.getAlbums()){
-                            @if(userAlbum.albumId != album.albumId) {
-                                <option value=@userAlbum.getTitle()></option>
-                            }
+                    <a class="btn btn-link" id="profilePictureBtn" style="color: white; padding: 5px;">Set Profile Picture</a>
+                    <a class="btn btn-link" id="deletePhotoBtn" style="color: white; padding: 5px;">Delete</a>
+                    <a class="btn btn-link" id="privacyBtn" style="color: white; padding: 5px;">Make Public/Private</a>
+                    <a class="btn btn-link" id="linkDestinationBtn" style="color: white; padding: 5px;">Link Destination</a>
+                    <label for="album-search-move" style="color: white; padding: 5px;">Move to Album: </label>
+                    <input style="color: #000000;" id="album-search-move" list="album-results-move"
+                    name="Album Move" title="Move Album" placeholder="Search for Album">
+                    <datalist  id="album-results-move">
+                    @for(userAlbum <- user.getAlbums()){
+                        @if(userAlbum.albumId != album.albumId) {
+                            <option value=@userAlbum.getTitle()></option>
                         }
-                        </datalist>
+                    }
+                    </datalist>
+                    <div id="imageModalAlert" class="alert alert-danger alert-dismissible hiddenDiv" role="alert">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <strong>SERVER ERROR:</strong> Failed to fetch unlinkable destinations.
+                        Try refreshing the page and try again.
                     </div>
-                    <div>
-                        <div id="imageModalAlert" class="alert alert-danger alert-dismissible hiddenDiv" role="alert">
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                            <strong>SERVER ERROR:</strong> Failed to fetch unlinkable destinations.
-                            Try refreshing the page and try again.
-                        </div>
                 </div>
             }
         </div>

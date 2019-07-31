@@ -163,7 +163,7 @@
     <div class="row" style="margin-bottom: 50px;">
 
         @for(photo <- destination.getPrimaryAlbum().getMedia()) {
-             @if(photo.userIsOwner(user) || photo.getIsPublic()) {
+             @if(photo.isOwner(user) || photo.getIsPublic()) {
 
                 <a href="#" data-toggle="modal" data-target="#photo-carousel" onclick="displayPhoto(@photo.getMediaId())">
                     <img id=@{photo.getUrl} height="150"
@@ -223,7 +223,7 @@
             <div class="carousel slide" id="myslider" data-ride="carousel" data-interval="false">
                 <div id="carousel-inner" class="carousel-inner" style="text-align: center;">
                 @for(photo <- destination.getPrimaryAlbum().getMedia()) {
-                    @if(photo.userIsOwner(user) || photo.getIsPublic()) {
+                    @if(photo.isOwner(user) || photo.getIsPublic()) {
                         <div id="caro-@photo.getMediaId" class="item">
 
                             <img class="center" id="carouselImage@photo.getMediaId()" src="@{routes.HomeController.index(photo.getUrlWithPath)}" style="height: 75%; margin: auto;">

@@ -75,8 +75,8 @@ public class DeleteAlbumCommandTest extends BaseTestWithApplicationAndDatabase {
 
         assert (album == null);
 
-        assert (media1 == null);
-        assert (media2 == null);
+        assert (media1 != null);
+        assert (media2 != null);
         assert (media3 != null);
 
     }

@@ -9,12 +9,17 @@ function initMap() {
 
     window.globalMap = new google.maps.Map(document.getElementById('map'), {
         center: {lat: -43.522057156877615, lng: 172.62360347218828},
-        zoom: 5
+        zoom: 5,
+        mapTypeControl: true,
+        mapTypeControlOptions: {
+            style: google.maps.MapTypeControlStyle.HORIZONTAL_BAR,
+            position: google.maps.ControlPosition.TOP_RIGHT
+        }
     });
 
     // initPlacesAutocomplete();
     initDestinationMarkers();
-    // initMapLegend();
+    initMapLegend();
     initTripRoutes();
 
 
@@ -87,11 +92,7 @@ function displayTrip(tripId, startLat, startLng) {
 
         currentlyDisplayedTripId = tripId;
 
-        console.log(document.getElementById("singleTrip_" + tripId));
-
         document.getElementById("singleTrip_" + tripId).style.display = "block";
-
-        console.log(document.getElementById("singleTrip_" + tripId));
 
 
         var tripStartLatLng = new google.maps.LatLng(

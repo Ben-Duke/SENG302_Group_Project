@@ -50,12 +50,44 @@
             cursor: pointer;
         }
 
+        #legend {
+            font-family: Arial, sans-serif;
+            background: hsla(120, 100%, 75%, 0.3);
+            padding: 10px;
+            margin: 10px;
+            border: 1px solid #000;
+        }
+        #legend h3 {
+            margin-top: 0;
+        }
+        #legend img {
+            vertical-align: middle;
+        }
+
+        #placesContainer {
+            position: absolute;
+            z-index: 2;
+            left: 10px;
+            top: 70px;
+            font-family: Roboto;
+
+        }
+        #placesAutocomplete {
+            width: 100%;
+            font-size: 16px;
+            padding: 12px 20px 12px 40px; /* Add some padding */
+            border: 1px solid #ddd; /* Add a grey border */
+        }
+
 </style>
 
 
 @main(user, "Map") {
 
-
+    <div id="placesContainer">
+        <input id="placesAutocomplete" type="text" class="searchDestinations" placeholder="Search"/>
+    </div>
+    <div id="legend"><h3>Legend</h3></div>
     <div id="map" class="col-md-8"></div>
     <div id="control" class="col-md-4">
 
@@ -127,6 +159,10 @@
                                     <span>@destination.getLongitude()</span>
                                 </div>
                             </div>
+
+                            <a class="btn btn-primary" id="setPrimaryPicture" href="@routes.DestinationController.viewDestination(destination.getDestId())">
+                            View Destination</a>
+
 
                         </div>
 

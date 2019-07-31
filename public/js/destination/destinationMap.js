@@ -209,6 +209,7 @@ function initInforWindowEventHandlers(markerIndex) {
     });
 }
 
+
 /**
  * Gets the HTML for a Destinations infoWindow, for the google map.
  *
@@ -220,16 +221,16 @@ function initInforWindowEventHandlers(markerIndex) {
  */
 function getInfoWindowHTML(destination) {
 // create the destinations info window
+    const destinationId = destination.destId;
     const destinationName = destination.destName;
     const destinationType = destination.destType;
     const destinationCountry = destination.country;
     const destinationDistrict = destination.district;
 
-
     let infoWindowHTML;
     // uses a ES6 template string
     infoWindowHTML = `<style>.basicLink {text-underline: #0000EE;}</style>
-                      <a class="basicLink" href="javascript:;" onclick="viewDestination(${destination.destid})">
+                      <a class="basicLink" href="/users/destinations/view/${destinationId}">
                         ${destinationName}
                       </a>
                       <div>${destinationType}</div>

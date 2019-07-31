@@ -70,9 +70,12 @@ public class Visit extends BaseModel {
         setDestination(destination);
     }
 
-    /**
-     * Empty visit constructor
-     */
+    public Visit(String arrival, String departure, Destination destination) {
+        this.arrival = arrival;
+        this.departure = departure;
+        setDestination(destination);
+    }
+
     public Visit() {
     }
 

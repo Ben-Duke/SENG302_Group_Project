@@ -83,6 +83,15 @@ POST    /users/profile/search       controllers.TravelPartnerController.searchBy
 GET     /users/profilepicture/isSet     controllers.ProfileController.isProfilePictureSet(request: Request)
 
 
+
+GET     /users/map_home     controllers.HomeController.mainMapPage(request : Request)
+
+
+
+#Add route for adding a trip with AJAX
+
+#Add destination to a trip using AJAX
+
 #Renders page for creating trips
 GET     /users/trips/create         controllers.TripController.createtrip(request: Request)
 
@@ -98,6 +107,10 @@ GET     /users/trips/addDestinations/:id    controllers.TripController.addTripDe
 
 #Handles creating trips
 POST    /users/trips/create         controllers.TripController.savetrip(request: Request)
+
+POST /users/trips/createFromJS/:destId  controllers.TripController.CreateTripFromJSRequest(request: Request, destId:Integer)
+
+PATCH /user/trips/edit/:id      controllers.TripController.updateTripName(request: Request, id: Integer)
 
 #Handles deleting visits from a trip
 DELETE    /users/trips/edit/:id    controllers.TripController.deletevisit(request: Request, id:Integer)
@@ -116,6 +129,8 @@ GET    /users/trips/table/edit/:tripid/:destid       controllers.TripController.
 
 #Renders page for editing a visit of a trip
 GET    /users/trips/visit/edit/:id       controllers.TripController.editvisit(request: Request, id:Integer)
+
+PATCH     /user/trips/visit/dates/:id      controllers.TripController.updateVisitDates(request: Request, id: Integer)
 
 #Handles editing a visit of a trip
 POST    /users/trips/visit/edit/:id       controllers.TripController.updateVisit(request: Request, id:Integer)
@@ -179,6 +194,8 @@ GET     /assets/*file               controllers.Assets.at(path="/public", file)
 
 #Renders index page for destinations
 GET     /users/destinations             controllers.DestinationController.indexDestination(request : Request)
+
+POST     /users/destination/exists       controllers.DestinationController.doesDestinationExist(request: Request)
 
 #*************_*_*_*_*_*_*_*_*_*
 GET     /users/destinations/getprimaryphoto  controllers.DestinationController.servePrimaryPicture(request : Request, destId : Integer)
@@ -278,6 +295,12 @@ POST     /users/treasurehunts/edit/save/:id                    controllers.Treas
 
 #Delete treasure hunt
 GET     /users/treasurehunts/delete/:id                    controllers.TreasureHuntController.deleteTreasureHunt(request : Request, id : Integer)
+
+
+
+GET /users/trips/fetch/trips_routes_json  controllers.TripController.getTripsRoutesJson(request : Request)
+
+POST /users/trips/:tripId/addVisit/:destId   controllers.TripController.addVisitToTripJSRequest(request : Request, tripId:Integer, destId:Integer)
 
 
 GET /googlemap  controllers.DestinationController.renderMap(request : Request)

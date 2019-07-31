@@ -1,6 +1,11 @@
 package controllers;
 
+import accessors.TripAccessor;
+import accessors.VisitAccessor;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import factories.TripFactory;
 import factories.VisitFactory;
 import formdata.TripFormData;
@@ -12,6 +17,8 @@ import models.Visit;
 import models.commands.General.CommandPage;
 import models.commands.Visits.EditVisitCommand;
 import models.commands.Trips.DeleteTripCommand;
+import models.commands.Trips.CreateTripFromVisitsCommand;
+import models.commands.Visits.DeleteVisitCommand;
 import org.slf4j.Logger;
 import play.data.Form;
 import play.data.FormFactory;
@@ -20,9 +27,14 @@ import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
 import utilities.UtilityFunctions;
+import views.html.home.mapHome;
 import views.html.users.trip.*;
 
 import javax.inject.Inject;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
@@ -60,6 +72,23 @@ public class TripController extends Controller {
             return redirect(routes.UserController.userindex());
         }
     }
+
+
+    /**
+     * Create trips from a list of visits. To be used for the save trip button for the map trips story.
+     * @param visits a list of visits which are not linked a trip
+     * @param name the name of the trip
+     * @param user the user that's creating the trip
+     * @return created status code
+     */
+    public Result createTripFromVisits(List<Visit> visits, String name, User user) {
+
+        CreateTripFromVisitsCommand command = new CreateTripFromVisitsCommand(visits, name, user);
+        user.getCommandManager().executeCommand(command);
+        return created();
+
+    }
+
 
     /**
      * Renders the page to display visits of a trip given by the trip id.
@@ -255,7 +284,7 @@ public class TripController extends Controller {
                 if (trip.getUser().getUserid() == user.getUserid() || user.userIsAdmin()) {
                     DeleteTripCommand deleteTripCommand = new DeleteTripCommand(trip);
                     user.getCommandManager().executeCommand(deleteTripCommand);
-                    return redirect(routes.HomeController.showhome());
+                    return redirect(routes.HomeController.mainMapPage());
                 } else {
                     return unauthorized("Oops, this is not your trip.");
                 }
@@ -327,6 +356,101 @@ public class TripController extends Controller {
     }
 
     /**
+     * Add visit based off destination Id to a trip
+     * @return
+     */
+    public Result addVisitToTripJSRequest(Http.Request request, Integer tripId, Integer destId){
+        User user = User.getCurrentUser(request);
+        if(user != null) {
+            Trip trip = Trip.find().byId(tripId);
+            Destination destination = Destination.find().byId(destId);
+            if (trip == null) {
+                return notFound();
+            }
+            if (!trip.isUserOwner(user.getUserid())) {
+                return forbidden("1");
+            }
+            if(destination == null) {
+                return notFound();
+            }
+            if (!destination.getIsPublic() && destination.getUser().getUserid() != user.getUserid()) {
+                return forbidden("2");
+
+            }
+
+
+            VisitFactory visitFactory = new VisitFactory();
+            Visit newVisit = visitFactory.createVisitByJSRequest(destination, trip);
+            System.out.println(newVisit);
+            System.out.println(trip.getVisits());
+            System.out.println(newVisit.getVisitOrder());
+            if (tripFactory.hasRepeatDest(trip.getVisits(), newVisit, "ADD")) {
+                return badRequest();
+            }
+            else {
+                VisitAccessor.insert(newVisit);
+
+                trip.addVisit(newVisit);
+                TripAccessor.update(trip);
+                VisitAccessor.update(newVisit);
+                ArrayList<String> visitInformation = new ArrayList<>();
+                visitInformation.add(newVisit.getVisitid().toString());
+                visitInformation.add(newVisit.getVisitName());
+                visitInformation.add(newVisit.getDestination().getDestType());
+                visitInformation.add(newVisit.getArrival());
+                visitInformation.add(newVisit.getDeparture());
+
+                return ok(Json.toJson(visitInformation));
+            }
+
+        }
+        return unauthorized();
+    }
+
+    public Result CreateTripFromJSRequest(Http.Request request, Integer destid) {
+        User user = User.getCurrentUser(request);
+        System.out.println("creating trip with the user id being " + user.getUserid());
+        if(user != null) {
+            Destination destination = Destination.find().byId(destid);
+            if(destination == null) {
+                return notFound();
+            }
+            System.out.println("Destination is public :" + destination.getIsPublic());
+            if (!destination.getIsPublic() && destination.getUser().getUserid() != user.getUserid()) {
+                System.out.println("Dest forbid");
+                return forbidden("2");
+
+            }
+            Trip trip = new Trip("Trip to " + destination.getDestName(),false, user);
+            System.out.println("Trip user id is " + trip.getUser().getUserid());
+            Visit visit = new Visit(null, null, trip, destination);
+
+            TripAccessor.insert(trip);
+            VisitAccessor.insert(visit);
+            visit.setVisitorder(0);
+            TripAccessor.update(trip);
+            VisitAccessor.update(visit);
+
+            ObjectNode data =  (ObjectNode) Json.toJson(trip);
+            data.put("latitude", destination.getLatitude());
+            data.put("longitude", destination.getLongitude());
+            data.put("visitName", visit.getVisitName());
+            data.put("visitId", visit.getVisitid());
+            data.put("destType", destination.getDestType());
+            data.put("arrival", visit.getArrival());
+            data.put("departure", visit.getDeparture());
+            data.put("tripName", trip.getTripName());
+            data.put("tripId", trip.getTripid());
+            System.out.println("Visit trip id is " +  visit.getTrip().getUser().getUserid());
+            System.out.println("***********************************************");
+            return ok(data);
+
+        }
+
+        return unauthorized();
+    }
+
+    /**
      * Handles the request to remove destinations from a trip. Removes the destination (which gets converted into a
      * visit) from the trip that the user is editing, then redirects the user to the edit trip page. Displays an error
      * if the user is not logged in.
@@ -336,31 +460,149 @@ public class TripController extends Controller {
      * @return Result edit trip page or error page
      */
     public Result deletevisit(Http.Request request, Integer visitid){
-        Visit visit = Visit.find().byId(visitid);
+
         User user = User.getCurrentUser(request);
-        //change later
-        if (user != null && visit != null) {
-            Trip trip = visit.getTrip();
-            if(trip.isUserOwner(user.getUserid())) {
-                List<Visit> visits = trip.getVisits();
-                if(tripFactory.hasRepeatDest(visits, visit, "DELETE")){
-                    return badRequest();
-                }
-                visit.delete();
-                Integer removedVisits = 0;
-                if (trip.getRemovedVisits() != null) {
-                    removedVisits = trip.getRemovedVisits();
-                }
-                trip.setRemovedVisits(removedVisits + 1);
-                trip.update();
-            }
-            else{
-                return unauthorized();
-            }
+        if (user == null) { return redirect(routes.UserController.userindex()); }
+        System.out.println("visit id is " + visitid);
+        Visit visit = VisitAccessor.getById(visitid);
+        System.out.println(visit.isTripOwner(user.getUserid()));
+        if (visit == null) { return redirect(routes.UserController.userindex()); }
+
+        Trip trip = visit.getTrip();
+
+        System.out.println("User id from the visit trip|" + visit.getTrip().getUser().getUserid());
+
+        System.out.println("User id from request|" + user.getUserid());
+        System.out.println("User id from the trip|" +trip.getUser().getUserid());
+
+        if (!trip.isUserOwner(user.getUserid())) { return unauthorized(); }
+
+        List<Visit> visits = trip.getVisits();
+
+        if (tripFactory.hasRepeatDest(visits, visit, "DELETE")) {
+            return badRequest();
         }
-        else{
-            return redirect(routes.UserController.userindex());
+
+        DeleteVisitCommand command = new DeleteVisitCommand(visit);
+        user.getCommandManager().executeCommand(command);
+
+        return ok();
+
+    }
+
+
+    /**
+     * Gets new dates from request. Validates the dates. Updates the dates using the command.
+     * @param request
+     * @param visitId the id of the visit that is being editted
+     * @return
+     */
+    public Result updateVisitDates(Http.Request request, Integer visitId) {
+        User user = User.getCurrentUser(request);
+        if (user == null) { return redirect(routes.UserController.userindex()); }
+
+        Visit visit = VisitAccessor.getById(visitId);
+        if (visit == null) { return badRequest("Visit does not exits"); }
+
+        Trip trip = visit.getTrip();
+        if (!trip.isUserOwner(user.getUserid())) { return unauthorized(); }
+
+        String arrivalDateString = new ObjectMapper().convertValue(request.body().asJson().get("arrival"), String.class);
+        String departureDateString = new ObjectMapper().convertValue(request.body().asJson().get("departure"), String.class);
+
+
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        Date arrivalDate = null;
+        Date departureDate = null;
+        Date existingArrivalDate;
+        Date existingDepartureDate;
+
+        try {
+            if (!arrivalDateString.isEmpty()) {
+                arrivalDate = format.parse(arrivalDateString);
+            }
+            if (!departureDateString.isEmpty()) {
+                departureDate = format.parse(departureDateString);
+            }
+
+            if (visit.getArrival() != null) {
+                existingArrivalDate = format.parse(visit.getArrival());
+            }
+            else {
+                existingArrivalDate = format.parse("0000-01-01");
+            }
+            if (visit.getDeparture() != null) {
+                existingDepartureDate = format.parse(visit.getDeparture());
+            } else {
+                existingDepartureDate = format.parse("9999-12-31");
+            }
+
+        } catch (ParseException e) {
+            return badRequest();
         }
+
+
+
+        if (!arrivalDateString.isEmpty() && !departureDateString.isEmpty()) {
+            if ((arrivalDate.compareTo(departureDate) <= 0)) {
+
+                visit.setArrival(arrivalDateString);
+                visit.setDeparture(departureDateString);
+
+                EditVisitCommand command = new EditVisitCommand(visit);
+                user.getCommandManager().executeCommand(command);
+
+            }
+
+
+        } else if (!arrivalDateString.isEmpty()) {
+
+            if ((arrivalDate.compareTo(existingDepartureDate) <= 0)) {
+
+                visit.setArrival(arrivalDateString);
+
+                EditVisitCommand command = new EditVisitCommand(visit);
+                user.getCommandManager().executeCommand(command);
+
+            }
+
+        } else if (!departureDateString.isEmpty()) {
+            if ((existingArrivalDate.compareTo(departureDate)) <= 0) {
+
+                visit.setArrival(arrivalDateString);
+
+                EditVisitCommand command = new EditVisitCommand(visit);
+                user.getCommandManager().executeCommand(command);
+
+            }
+
+        }
+
+        return ok();
+    }
+
+    public Result updateTripName(Http.Request request, Integer tripId) {
+        User user = User.getCurrentUser(request);
+        if (user == null) { return redirect(routes.UserController.userindex()); }
+
+        Trip trip = TripAccessor.getTripById(tripId);
+        if (trip == null) { return badRequest("Trip does not exits"); }
+
+        if (!trip.isUserOwner(user.getUserid())) { return unauthorized(); }
+
+        String newTripName = new ObjectMapper().convertValue(request.body().asJson(), String.class);
+
+        if (trip.getTripName().equals(newTripName)) {
+            return ok();
+        }
+
+        if (newTripName.isEmpty() || newTripName.equals(" ")) {
+            return badRequest();
+        }
+
+        trip.setTripName(newTripName);
+        TripAccessor.update(trip);
+
         return ok();
     }
 
@@ -416,4 +658,51 @@ public class TripController extends Controller {
     }
 
 
+
+    /**
+     * Turns a users trips into and array of json node with each destinations
+     * coordinates
+     * @param request
+     * @return an ArrayNode of ArrayNodes of JsonNodes with lat and lng coordinates
+     */
+    public Result getTripsRoutesJson(Http.Request request) {
+        User user = User.getCurrentUser(request);
+        if (user == null) { return redirect(routes.UserController.userindex()); }
+
+        List<Trip> trips = user.getTrips();
+
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        ObjectNode tripNodes = objectMapper.createObjectNode();
+
+        for (Trip trip : trips) {
+
+//            ObjectNode tripNode = objectMapper.createObjectNode();
+
+            ArrayNode destinationNodes = objectMapper.createArrayNode();
+
+            for (Visit visit : trip.getOrderedVisits()) {
+                ObjectNode destinationNode = objectMapper.createObjectNode();
+
+                Destination destination = visit.getDestination();
+
+                destinationNode.put("lat", destination.getLatitude());
+                destinationNode.put("lng", destination.getLongitude());
+
+                destinationNodes.add(destinationNode);
+            }
+
+            tripNodes.put(trip.getTripid().toString(), destinationNodes);
+
+
+
+//            tripNodes.add(tripNode);
+        }
+
+        return ok(tripNodes);
+
+    }
+
+
 }
+

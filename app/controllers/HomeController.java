@@ -1,13 +1,18 @@
 package controllers;
 
+import accessors.DestinationAccessor;
 import accessors.UserAccessor;
 import factories.UserFactory;
+import formdata.DestinationFormData;
 import io.ebean.DuplicateKeyException;
+import models.Destination;
+import models.Trip;
 import models.User;
 import models.UserPhoto;
 import models.commands.General.CommandPage;
 import models.commands.Photos.UploadPhotoCommand;
 import org.slf4j.Logger;
+import play.data.Form;
 import play.data.FormFactory;
 import play.libs.Files;
 import play.libs.Json;
@@ -16,6 +21,7 @@ import play.mvc.Result;
 import utilities.CountryUtils;
 import utilities.UtilityFunctions;
 import views.html.home.home;
+import views.html.home.mapHome;
 
 import javax.imageio.ImageIO;
 import javax.inject.Inject;
@@ -23,6 +29,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -33,6 +40,36 @@ public class HomeController {
 
     @Inject
     FormFactory formFactory;
+
+
+    public Result mainMapPage(Http.Request request) {
+        User user = User.getCurrentUser(request);
+        if (user == null) { return redirect(routes.UserController.userindex()); }
+
+        List<Trip> trips = user.getTripsSorted();
+
+        List<Destination> allDestinations = DestinationAccessor.getAllDestinations();
+
+        List<Destination> userAccessibleDestinations = new ArrayList<>();
+
+        for (Destination destination : allDestinations) {
+            if (destination.getUser().getUserid() == user.getUserid() ||
+            destination.getIsPublic()) {
+
+                userAccessibleDestinations.add(destination);
+
+            }
+        }
+
+        Form<DestinationFormData> destFormData;
+        destFormData = formFactory.form(DestinationFormData.class);
+
+        Map<String, Boolean> countryList = CountryUtils.getCountriesMap();
+
+        return ok(mapHome.render(user, trips, userAccessibleDestinations, destFormData, countryList, Destination.getTypeList()));
+
+    }
+
 
     /**
      * The home page where currently users can access other creation pages (also displays their profile).

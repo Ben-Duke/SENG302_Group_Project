@@ -1,0 +1,359 @@
+@import formdata.DestinationFormData
+@import views.html.bootstrap3._
+@(user : User, trips : List[Trip], destinations : List[Destination], destForm : Form[DestinationFormData], countryMap: Map[String, Boolean], typeMap: Map[String, Boolean])
+
+<style>
+        #map {
+            /*height: calc(100% - 50px);*/
+            height: 100%;
+            /*position: relative;*/
+            /*z-index: 1;*/
+
+        }
+        #control {
+            /*height: calc(100% - 50px)%;*/
+            height: 100%;
+            text-align: center;
+        }
+        #destinationsTab {
+
+        }
+        #singleDestinationContainer {
+            height: 50%;
+        }
+        .singleDestination {
+            height: 45%;
+            display: none;
+        }
+
+        #tripsTab {
+            height: calc(100% - 50px)%;
+        }
+        #singleTripContainer {
+            height: 55%;
+            overflow-y: auto;
+        }
+        .singleTrip {
+            display: none;
+        }
+
+        #tripList {
+            height: 30%;
+            overflow-y: auto;
+        }
+
+        .tripDateInput {
+            height: 25px;
+            width: 120px;
+            font-size: 12px;
+        }
+
+        a {
+            cursor: pointer;
+        }
+
+        #legend {
+            font-family: Arial, sans-serif;
+            background: hsla(120, 100%, 75%, 0.3);
+            padding: 10px;
+            margin: 10px;
+            border: 1px solid #000;
+        }
+        #legend h3 {
+            margin-top: 0;
+        }
+        #legend img {
+            vertical-align: middle;
+        }
+
+        #placesContainer {
+            position: absolute;
+            z-index: 2;
+            left: 10px;
+            top: 70px;
+            width: 30%;
+            max-width: 500px;
+            min-width: 250px;
+            font-family: Roboto;
+
+        }
+        #placesAutocomplete {
+            width: 100%;
+            font-size: 16px;
+            padding: 12px 20px 12px 40px; /* Add some padding */
+            border: 1px solid #ddd; /* Add a grey border */
+        }
+
+</style>
+
+
+@main(user, "Map") {
+
+    <div id="placesContainer">
+        <input id="placesAutocomplete" type="text" class="searchDestinations" placeholder="Search"/>
+    </div>
+    <div id="legend"><h3>Legend</h3></div>
+    <div id="map" class="col-md-8"></div>
+    <div id="control" class="col-md-4">
+
+        <ul class="nav nav-tabs nav-justified">
+            <li class="active" id="destinationsTabListItem"><a data-toggle="tab" href="#destinationsTab">Destinations</a></li>
+            <li id="tripsTabListItem"><a data-toggle="tab" href="#tripsTab">Trips</a></li>
+        </ul>
+
+        <div class="tab-content">
+
+            <div id="destinationsTab" class="tab-content tab-pane fade">
+
+                <div id="singleDestinationContainer">
+
+                    @for(destination <- destinations) {
+
+                        <div id="singleDestination_@destination.getDestId()" class="singleDestination">
+
+                            <div class="row">
+                                <label class="col-sm-3 control-label">Name</label>
+                                <div class="col-sm-9">
+                                    <span>@destination.getDestName()</span>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <label class="col-sm-3 control-label">Type</label>
+                                <div class="col-sm-9">
+                                    <span>@destination.getDestType()</span>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <label class="col-sm-3 control-label">Traveller Types</label>
+                                <div class="col-sm-9">
+                                @for(travellerType <- destination.getTravellerTypes()) {
+                                    <span style="margin-right: 6px;">@travellerType</span>
+                                }
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <label class="col-sm-3 control-label">Country</label>
+                                <div class="col-sm-9">
+                                    <span>@destination.getCountry()</span>
+                                    @if(!destination.getIsCountryValid()) {
+                                        <span class="text-danger"> Invalid country</span>
+                                    }
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <label class="col-sm-3 control-label">District</label>
+                                <div class="col-sm-9">
+                                    <span>@destination.getDistrict()</span>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <label class="col-sm-3 control-label">Latitude</label>
+                                <div class="col-sm-9">
+                                    <span>@destination.getLatitude()</span>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <label class="col-sm-3 control-label">Longitude</label>
+                                <div class="col-sm-9">
+                                    <span>@destination.getLongitude()</span>
+                                </div>
+                            </div>
+
+                            <a class="btn btn-primary" id="setPrimaryPicture" href="@routes.DestinationController.viewDestination(destination.getDestId())">
+                            View Destination</a>
+
+
+                        </div>
+
+                    }
+                    <div class="singleDestination" id="createDestination" style="margin-top: 20px">
+                        @helper.form(action = helper.CSRF(routes.DestinationController.saveDestinationFromRequest())) {
+                            @formBody()
+                        }
+                    </div>
+
+                </div>
+
+
+
+                <hr>
+                <div id="destinationList">
+                    <h4 style="text-align: left">My Destinations</h4>
+                    <div class="list-group">
+                        @for(destination <- destinations) {
+                            @if(!destination.getIsPublic()) {
+                                <a onclick="displayDestination(@destination.getDestId(),
+                                        @destination.getLatitude(),
+                                        @destination.getLongitude())"
+                                class="list-group-item list-group-item-action">
+                                @destination.getDestName()
+                                </a>
+                            }
+                        }
+                    </div>
+                    <h4 style="text-align: left">Public Destinations</h4>
+                    <div class="list-group">
+                        @for(destination <- destinations) {
+                            @if(destination.getIsPublic()) {
+                                <a onclick="displayDestination(@destination.getDestId(),
+                                        @destination.getLatitude(),
+                                        @destination.getLongitude())"
+                                    class="list-group-item list-group-item-action">
+                                @destination.getDestName() | @destination.getDestType() | @destination.getCountry()
+                                </a>
+                            }
+                        }
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div id="tripsTab" class="tab-content tab-pane fade in active">
+
+                <div id="singleTripContainer">
+                    <table class="table table-hover" id="placeholderTripTable">
+                        <thead>
+                            <tr>
+                                <th scope="col">Name</th>
+                                <th scope="col">Type</th>
+                                <th scope="col">Arrival</th>
+                                <th scope="col">Departure</th>
+                                <th scope="col"></th>
+                            </tr>
+                        </thead>
+                    </table>
+
+                    @for(trip <- trips) {
+
+                    <div id="singleTrip_@trip.getTripid()" class="singleTrip">
+
+                        <div style="margin-top: 15px; height: 30px;">
+                            <h4 id="tripName_@trip.getTripid()" style="cursor: pointer;" onclick="toggleEditTripName(true)">
+                            @trip.getTripName()</h4>
+                            <input style="display: none;" type="text" id="tripNameInput_@trip.getTripid()" value="@trip.getTripName()" onblur="updateTripName(this.value)">
+                        </div>
+
+                        <table class="table table-hover" id="tripTable_@trip.getTripid()">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Type</th>
+                                    <th scope="col">Arrival</th>
+                                    <th scope="col">Departure</th>
+                                    <th scope="col"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="tripTableBody_@trip.getTripid()">
+                            @for(visit <- trip.getOrderedVisits()){
+                                <tr id="visit_row_@visit.getVisitid()">
+                                    <th scope ="row">@visit.getDestination().getDestName()</th>
+                                    <td>@visit.getDestination().getDestType()</td>
+                                    <td><input id="arrival_@visit.getVisitid()" class="tripDateInput" type="date"
+                                    onblur="updateVisitDate(@visit.getVisitid())" value="@visit.getArrival()"></td>
+                                    <td><input id="departure_@visit.getVisitid()" class="tripDateInput" type="date"
+                                    onblur="updateVisitDate(@visit.getVisitid())" value="@visit.getDeparture()" onsubmit="updateVisitDate(@visit.getVisitid())"></td>
+                                    <td><a onclick="sendDeleteVisitRequest(
+                                            '@routes.TripController.deletevisit(visit.getVisitid())',
+                                            '@visit.getVisitid()')" style="text-decoration: none;" class="deleteButton">
+                                        &#10060</a>
+                                    </td>
+                                </tr>
+                                }
+                            </tbody>
+                        </table>
+
+                        <button class="btn btn-danger" onclick="deleteTripRequest(@trip.getTripid(), '@routes.HomeController.mainMapPage()')">Delete trip</button>
+
+                    </div>
+                    }
+                </div>
+                <hr>
+                <div id="tripList">
+
+                <div id="trip-list-group"class="list-group">
+                    @for(trip <- trips) {
+
+                            <a onclick="displayTrip(@trip.getTripid(),
+                            @trip.getOrderedVisits().get(0).getDestination().getLatitude(),
+                                @trip.getOrderedVisits().get(0).getDestination().getLongitude())"
+                            class="list-group-item list-group-item-action">
+                            @if(trip.getTripStart() != null){
+                                @trip.getTripName() | Arrival date: @trip.getTripStart()
+                            } else{
+                                @trip.getTripName | No arrival dates
+                            }
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="Toggle@trip.getTripid()" onclick="toggleTrips(@trip.getTripid())" checked="true">
+                                <label class="form-check-label" for="toggleMap">Show on map</label>
+                            </div>
+                            </a>
+                        }
+                        <a></a>
+                    </div>
+
+                </div>
+
+
+            </div>
+        </div>
+
+    </div>
+
+
+    <script src="@routes.Assets.at("js/map/map.js")"></script>
+    <script src="@routes.Assets.at("js/destination/destinationMap.js")"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=&callback=initMap&libraries=drawing,places"
+    async defer></script>
+
+}
+
+@formBody()= {
+    <fieldset>
+            <!-- Name -->
+        @text(destForm("destName"),
+            label = "Destination Name",
+            placeholder = "Destination name",
+            help = "Please enter the Destination name. (required)")
+
+        @views.html.bootstrap3.select(destForm("country"),
+            label = "Country",
+            optionMap = countryMap,
+            isMultiple = false,
+            help= "Select a country",
+        )
+
+        @text(destForm("district"),
+            label = "District",
+            placeholder = "district",
+        )
+
+        @text(destForm("latitude"),
+            label = "Latitude",
+            placeholder = "latitude (click on map)"
+        )
+
+        @text(destForm("longitude"),
+            label = "Longitude",
+            placeholder = "longitude (click on map)"
+        )
+
+        @views.html.bootstrap3.select(destForm("destType"),
+            label = "Type",
+            optionMap = typeMap,
+            isMultiple = false
+        )
+    </fieldset>
+
+    <div class="form-group actions">
+        <input id="submit" type="submit" value="Create" class="btn btn-primary"/>
+    </div>
+
+
+}

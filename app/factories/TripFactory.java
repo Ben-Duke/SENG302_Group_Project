@@ -33,6 +33,7 @@ public class TripFactory {
      * True if visit swapping is valid
      */
     public boolean swapVisitsList(ArrayList<String> list, Integer userid) {
+
         try (Transaction transaction = Visit.db().beginTransaction()) {
             int size = list.size();
             for (int i = 0; i < size; i++) {

@@ -1,5 +1,6 @@
 package models;
 
+import accessors.VisitAccessor;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import controllers.ApplicationManager;
@@ -156,6 +157,12 @@ public class Trip extends BaseModel {
     public void setRemovedVisits(Integer removedVisits) {
         this.removedVisits = removedVisits;
     }
+
+    public void removeAllVisits() {
+        visits = new ArrayList<>();
+    }
+
+
 
     public boolean hasVisit(){
         return (visits != null) && (!visits.isEmpty());

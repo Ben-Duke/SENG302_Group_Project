@@ -1,4 +1,5 @@
 import models.Nationality;
+import models.User;
 import org.junit.Test;
 import org.slf4j.Logger;
 import play.db.ebean.EbeanConfig;
@@ -22,6 +23,11 @@ public class DatabaseTest extends BaseTestWithApplicationAndDatabase {
     @Override
     public void populateDatabase() {
         TestDatabaseManager.clearAllData();
+        User user = new User("Noel");
+        user.save();
+
+        List<User> users = User.find.all();
+        logger.debug(users.get(0).toString());
     }
 
     @Test

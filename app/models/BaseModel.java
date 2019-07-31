@@ -3,10 +3,6 @@ package models;
 import controllers.ApplicationManager;
 import io.ebean.Ebean;
 import io.ebean.Model;
-import javafx.application.Application;
-import scala.App;
-
-import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 
 /**

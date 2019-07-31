@@ -22,7 +22,7 @@ public class UserAccessor {
     }
 
     public static List<User> getAll() {
-        return User.find.all();
+        return User.find().all();
     }
 
     public static Passport getPassport(int id) {

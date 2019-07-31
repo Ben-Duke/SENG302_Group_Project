@@ -32,11 +32,11 @@ public class UtilityFunctionsTest extends BaseTestWithApplicationAndDatabase {
      */
     @Test
     public void addTravelTypes() {
-        assertEquals(0, TravellerType.find.all().size());
+        assertEquals(0, TravellerType.find().all().size());
 
         //Add travel types
         UtilityFunctions.addTravellerTypes();
-        assertEquals(7, TravellerType.find.all().size());
+        assertEquals(7, TravellerType.find().all().size());
     }
 
     //

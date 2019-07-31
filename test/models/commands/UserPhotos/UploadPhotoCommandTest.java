@@ -37,8 +37,7 @@ public class UploadPhotoCommandTest extends BaseTestWithApplicationAndDatabase {
 
     @Override
     public void populateDatabase() {
-        TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
-        testDatabaseManager.populateDatabase();
+        TestDatabaseManager.populateDatabase();
 
         user = User.find().byId(1);
         userPhoto =  new UserPhoto("imagetest.png", false, false, user);

@@ -27,8 +27,7 @@ public class LinkingPhotosToDestinationsCommandTest extends BaseTestWithApplicat
 
     @Override
     public void populateDatabase() {
-        TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
-        testDatabaseManager.populateDatabase();
+        TestDatabaseManager.populateDatabase();
 
         user = User.find().byId(1);
 

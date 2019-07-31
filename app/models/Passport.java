@@ -35,7 +35,7 @@ public class Passport extends CountryItem {
     @ManyToMany(mappedBy = "passports")
     private List<User> users;
 
-    private final static Finder<Integer,Passport> find = new Finder<>(Passport.class,
+    private static final Finder<Integer,Passport> find = new Finder<>(Passport.class,
             ApplicationManager.getDatabaseName());
 
 

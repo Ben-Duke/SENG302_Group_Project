@@ -92,8 +92,7 @@ public class BaseTestWithApplicationAndDatabase extends WithApplication {
      * Can be overridden in subclasses if they want to provide their own test data
      */
     public void populateDatabase() {
-        TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
-        testDatabaseManager.populateDatabase();
+        TestDatabaseManager.populateDatabase();
     }
 
     /**

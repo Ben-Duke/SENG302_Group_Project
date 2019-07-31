@@ -27,8 +27,7 @@ public class EditVisitCommandTest extends BaseTestWithApplicationAndDatabase {
 
     @Override
     public void populateDatabase() {
-        TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
-        testDatabaseManager.populateDatabase();
+        TestDatabaseManager.populateDatabase();
         visit = Visit.find().byId(1);
         user = User.find().byId(1);
 

@@ -48,8 +48,7 @@ public class UserController {
 
         if (!wasRun.getAndSet(true)) {
             ApplicationManager.setUserPhotoPath("/../user_photos/user_");
-            TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
-            testDatabaseManager.populateDatabase(initCompleteLatch);
+            TestDatabaseManager.populateDatabase(initCompleteLatch);
         } else {
             try {
                 initCompleteLatch.await();

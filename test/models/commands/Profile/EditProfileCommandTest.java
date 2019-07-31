@@ -28,8 +28,7 @@ public class EditProfileCommandTest extends BaseTestWithApplicationAndDatabase {
     @Override
     /* Populate the database */
     public void populateDatabase() {
-        TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
-        testDatabaseManager.populateDatabase();
+        TestDatabaseManager.populateDatabase();
 
         User user = User.find().byId(2);
         user.setFName("Logan");

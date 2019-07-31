@@ -21,10 +21,9 @@ public class EditDestinationCommandTest extends BaseTestWithApplicationAndDataba
     @Override
     /* Populate the database */
     public void populateDatabase() {
-        TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
-        testDatabaseManager.populateDatabase();
+        TestDatabaseManager.populateDatabase();
 
-        Destination christchurch = Destination.find.byId(1);
+        Destination christchurch = Destination.find().byId(1);
         christchurch.setDestName("Auckland");
         christchurch.setDistrict("District 12");
         christchurch.setCountry("New Zealand");

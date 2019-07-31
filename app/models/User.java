@@ -102,7 +102,8 @@ public class User extends BaseModel implements Comparable<User> {
     @OneToMany(mappedBy = "user")
     private List<UserPhoto> userPhotos;
 
-    private static Finder<Integer,User> find = new Finder<>(User.class, ApplicationManager.getDatabaseName());
+    private static Finder<Integer,User> find = new Finder<>(User.class,
+            ApplicationManager.getDatabaseName());
 
     @Deprecated
     private Boolean isAdmin = false;
@@ -111,6 +112,7 @@ public class User extends BaseModel implements Comparable<User> {
     // ^^^^^ Class attributes ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     //==========================================================================
     //       Class methods below
+
 
     /**
      * Constructor with just two attributes, email and plaintextPassword.

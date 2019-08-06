@@ -38,6 +38,7 @@ testOptions in Test += Tests.Argument(TestFrameworks.JUnit, "-a", "-v")
 
 
 javacOptions ++= Seq("-Xlint:unchecked", "-Xlint:deprecation")
+javacOptions ++= Seq("-source", "1.8", "-target", "1.8")
 configs(IntegrationTest)
 Defaults.itSettings
 

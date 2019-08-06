@@ -7,7 +7,7 @@ scalaVersion := "2.12.8"
 maintainer := "s302team800@cosc.canterbury.ac.nz"
 
 
-lazy val myProject = (project in file(".")).enablePlugins(PlayJava, PlayEbean)
+lazy val myProject = (project in file(".")).enablePlugins(PlayJava, PlayEbean, LauncherJarPlugin)
 
 libraryDependencies += guice
 libraryDependencies += jdbc

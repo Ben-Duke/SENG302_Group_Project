@@ -56,7 +56,9 @@ public class TestDatabaseManager {
         addUserPhotos();
     }
 
-    /** Add in test user photos - only occurs during testing
+    /**
+     *  Add in test user photos - only occurs during testing.
+     *  Only adds file paths not actual photo files
      */
     private static void addUserPhotos() {
         // only populate photos for the tests

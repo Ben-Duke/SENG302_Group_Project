@@ -29,11 +29,10 @@
 
             <div class="container-fluid">
                 <div class="navbar-header">
-                    <a class="navbar-brand" href="@routes.HomeController.showhome()">TravelEA</a>
+                    <a class="navbar-brand" href="@routes.HomeController.mainMapPage()">TravelEA</a>
                 </div>
                 <ul class="nav navbar-nav">
-                    <li><a href="@routes.HomeController.mainMapPage()">Map</a></li>
-                    <li><a href="@routes.HomeController.showhome()">Home</a></li>
+                    <li><a href="@routes.HomeController.mainMapPage()">Home</a></li>
                     @if(user != null) {
                         @if(user.isUndoRedoError()) {
                             <script>

@@ -110,24 +110,24 @@ function addSelectedToVisitToTrip(destId){
                 let groupDiv = document.createElement('div');
 
                 let tripLink = document.createElement('a');
-                //let tripCheckBox = document.createElement('input');
-                //tripCheckBox.setAttribute('type', 'checkbox');
-                //tripCheckBox.setAttribute('id',"Toggle"+data.tripId);
-                //tripCheckBox.setAttribute('checked', 'true');
-                //tripCheckBox.setAttribute('onclick', 'toggleTrips(' + data.tripId + ')');
-                //tripCheckBox.setAttribute('class', 'form-check-label');
-                //let mapLabel = document.createElement('label');
-                //mapLabel.setAttribute('class', 'form-check-label');
-                //mapLabel.setAttribute('for', "toggleMap");
-                //mapLabel.innerText = 'Show on map';
+                let tripCheckBox = document.createElement('input');
+                tripCheckBox.setAttribute('type', 'checkbox');
+                tripCheckBox.setAttribute('id',"Toggle"+data.tripId);
+                tripCheckBox.setAttribute('checked', 'true');
+                tripCheckBox.setAttribute('onclick', 'toggleTrips(' + data.tripId + ')');
+                tripCheckBox.setAttribute('class', 'form-check-label');
+                let mapLabel = document.createElement('label');
+                mapLabel.setAttribute('class', 'form-check-label');
+                mapLabel.setAttribute('for', "toggleMap");
+                mapLabel.innerText = 'Show on map';
 
                 tripLink.setAttribute('class', "list-group-item list-group-item-action");
                 tripLink.innerText = data.tripName + ' | No arrival dates';
                 tripLink.setAttribute("onclick", "displayTrip(" + currentlyDisplayedTripId + ", " + data.latitude+ ", "+ data.longitude + ")");
                 listGroup.appendChild(tripLink);
                 listGroup.appendChild(groupDiv);
-                //groupDiv.appendChild(tripCheckBox);
-                //groupDiv.appendChild(mapLabel);
+                groupDiv.appendChild(tripCheckBox);
+                groupDiv.appendChild(mapLabel);
                 addTripRoutes(data.tripId);
                 displayTrip(data.tripId, data.latitude, data.longitude);
 

@@ -62,6 +62,57 @@ A detailed guide exists here: <https://eng-git.canterbury.ac.nz/seng302-2019/tea
   of the navigation bar. 
 * Alternatively to undo use the ctrl + z keyboard shortcut and ctrl + shift + z for redo.
 
+## Changing the database you are connected to for manual testing
+### Connect to mysql
+1. Open application.conf
+2. Comment in the block (around line 12)
+```//  default.url="jdbc:mysql://mysql2.csse.canterbury.ac.nz/seng302-2019-team800-prod"```
+  ```default.url="jdbc:mysql://mysql2.csse.canterbury.ac.nz/seng302-2019-team800-test"```
+  ```default.username=seng302-team800```
+  ```default.password="ChampHails8911"```
+
+
+3. comment in the line ending with 'test' to use the dev database or the line ending with 'prod' to use the production database
+
+4. Check evolutions are disabled (=false) on the line 
+```play.evolutions {```
+```db.default.enabled = false```
+near line 31
+
+### Connect to h2
+1. Open Application.conf
+2. Comment out the block 
+```//  default.url="jdbc:mysql://mysql2.csse.canterbury.ac.nz/seng302-2019-team800-prod"```
+  ```default.url="jdbc:mysql://mysql2.csse.canterbury.ac.nz/seng302-2019-team800-test"```
+  ```default.username=seng302-team800```
+  ```default.password="ChampHails8911"```
+
+3. Uncomment the block (around line 8)
+```//  default.driver=org.h2.Driver```
+```//  default.url="jdbc:h2:mem:play"```
+
+4. Ensure evolutions are enabled (=true) on the line
+```play.evolutions {```
+```db.default.enabled = true```
+near line 31
+
+### Reset/resample db
+##### mysql
+1. Enable evolutions (=true) near line 31
+```play.evolutions {```
+```db.default.enabled = true```
+
+2. Change the password of testuser1 (this will be overriden by TestdDatabaseManager so their actual passowrd will not be affected)
+Refresh the app
+
+##### h2 
+As long as you have enabled evolutions as per the instructions related to using h2 above the db will be reset and resampled
+when you start the application
+
+
+### Further information
+See wiki page https://eng-git.canterbury.ac.nz/seng302-2019/team-800/wikis/design-decisions/Story-8c-Connect-to-MySql-database
+
 ## How to run tests
 Clone the repository as above
 ```bash
@@ -72,7 +123,7 @@ Navigate to the root of the cloned repository and execute the test command
 ```bash
 sbt test
 ```
-All tests will run and a summary will be displayed. This will take a few minutes
+All tests will run and a summary will be displayed. This will take a few minutes.
 
 ## Contributors
 * Benjamin Duke

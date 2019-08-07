@@ -35,10 +35,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 public class TripController extends Controller {
 
@@ -652,6 +649,26 @@ public class TripController extends Controller {
             } else {
                 return unauthorized("Oops, this is a private trip and you don't own it.");
             }
+        } else {
+            return redirect(routes.UserController.userindex());
+        }
+    }
+
+    /**
+     * Returns a map of th legnth of each of the user's trip and their is as a json
+     *
+     * @param request the HTTP request
+     * @return Map of the length user's trips and trip id
+     */
+    public Result getLengthUserTrips(Http.Request request){
+        User user = User.getCurrentUser(request);
+        if (user != null) {
+            Map<Integer, Integer> visitList = new HashMap<>();
+            for (Trip trip: user.getTrips()) {
+                visitList.put(trip.getTripid(), trip.getVisits().size());
+            }
+
+            return ok(Json.toJson(visitList));
         } else {
             return redirect(routes.UserController.userindex());
         }

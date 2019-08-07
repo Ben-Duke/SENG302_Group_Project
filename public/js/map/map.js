@@ -64,16 +64,19 @@ function addSelectedToVisitToTrip(destId){
                 tripsTab.setAttribute('class', "active");
 
                 //Handle outer div
+                let singleTripContainer = document.getElementById("singleTripContainer");
                 let outerTripDiv = document.createElement("div");
                 outerTripDiv.setAttribute("id", "singleTrip_" + data.tripId);
                 outerTripDiv.setAttribute("class", "singleTrip");
+                outerTripDiv.setAttribute("style", "display: block;");
 
                 //Handle title div
                 let titleDiv = document.createElement("div");
-                titleDiv.setAttribute("style", "margin-top: 15px; height: 30px;")
+                titleDiv.setAttribute("style", "margin-top: 15px; height: 30px;");
                 let titleText = document.createElement("h4");
+                titleText.setAttribute("id", "tripName_" + data.tripId);
                 titleText.setAttribute("style","cursor: pointer;");
-                titleText.setAttribute("onclick", onclick="toggleEditTripName(true)")
+                titleText.setAttribute("onclick", onclick="toggleEditTripName(true)");
                 titleText.innerText = data.tripName;
                 let titleInput = document.createElement("input");
                 titleInput.setAttribute("style", "display: none;");
@@ -87,7 +90,10 @@ function addSelectedToVisitToTrip(destId){
 
 
                 //Handle Table
-                let targetTable = document.getElementById("placeholderTripTable");
+                let newTable = document.createElement("div");
+                newTable.setAttribute("id", "tripTable_" + data.tripId);
+                newTable.setAttribute("class", "table table-hover");
+
                 let tableBody = document.createElement("tbody");
                 tableBody.setAttribute("id", "tripTableBody_"+ data.tripId);
                 tableBody.style.display = "none";
@@ -126,7 +132,12 @@ function addSelectedToVisitToTrip(destId){
                 newRow.appendChild(tableDataDeparture);
                 newRow.appendChild(deleteButton);
                 //tableBody.appendChild(newRow);
-                targetTable.appendChild(newRow);
+                //targetTable.appendChild(newRow);
+
+                //Add outer div to single trip view
+                singleTripContainer.appendChild(outerTripDiv);
+
+
 
                 //Handle List Group
                 let listGroup = document.getElementById('trip-list-group');

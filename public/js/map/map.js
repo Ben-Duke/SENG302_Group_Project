@@ -53,6 +53,7 @@ function addSelectedToVisitToTrip(destId){
             url: url,
             success: function(data){
 
+                //Get outer divs to set to correct tab and view
                 currentlyDisplayedTripId = data.tripId;
                 let destTab = document.getElementById("destinationsTabListItem");
                 let tripsTab = document.getElementById("tripsTabListItem");
@@ -71,68 +72,22 @@ function addSelectedToVisitToTrip(destId){
                 outerTripDiv.setAttribute("style", "display: block;");
 
                 //Handle title div
-                let titleDiv = document.createElement("div");
-                titleDiv.setAttribute("style", "margin-top: 15px; height: 30px;");
-                let titleText = document.createElement("h4");
-                titleText.setAttribute("id", "tripName_" + data.tripId);
-                titleText.setAttribute("style","cursor: pointer;");
-                titleText.setAttribute("onclick", onclick="toggleEditTripName(true)");
-                titleText.innerText = data.tripName;
-                let titleInput = document.createElement("input");
-                titleInput.setAttribute("style", "display: none;");
-                titleInput.setAttribute("type", "text");
-                titleInput.setAttribute("id", "tripNameInput_" + data.tripId);
-                titleInput.setAttribute("value", data.tripName);
-                titleInput.setAttribute("onblur", "updateTripName(this.value)");
-                titleDiv.appendChild(titleText);
-                titleDiv.appendChild(titleInput);
+                let titleDiv = createTripTitleDiv(data);
                 outerTripDiv.appendChild(titleDiv);
 
 
                 //Handle Table
-                let newTable = document.createElement("div");
-                newTable.setAttribute("id", "tripTable_" + data.tripId);
-                newTable.setAttribute("class", "table table-hover");
+                let newTable = createTripTable(data);
+                outerTripDiv.appendChild(newTable);
 
-                let tableBody = document.createElement("tbody");
-                tableBody.setAttribute("id", "tripTableBody_"+ data.tripId);
-                tableBody.style.display = "none";
-                let newRow = document.createElement('tr');
-                newRow.setAttribute('id', "visit_row_" + data.visitId);
-                let tableHeader = document.createElement('th');
-                tableHeader.setAttribute('scope', 'row');
-                tableHeader.innerText = data.visitName;
-                let tableDataDestType = document.createElement('td');
-                tableDataDestType.innerText = data.destType;
-                let tableDataArrival = document.createElement('td');
-                let arrivalDateInput = document.createElement('input');
-                arrivalDateInput.setAttribute('type', 'date');
-                arrivalDateInput.setAttribute('class', 'tripDateInput');
-                arrivalDateInput.setAttribute('onblur', "updateVisitDate(" + data[0]+")");
-                arrivalDateInput.setAttribute('id', 'arrival_'+data[0]);
-                tableDataArrival.appendChild(arrivalDateInput);
-                let tableDataDeparture = document.createElement('td');
-                let departureDateInput = document.createElement('input');
-                departureDateInput.setAttribute('id', 'departure_'+data[0]);
-                departureDateInput.setAttribute('type', 'date');
-                departureDateInput.setAttribute('class', 'tripDateInput');
-                departureDateInput.setAttribute('onblur', "updateVisitDate(" + data[0]+")");
-                let deleteButton = document.createElement('td');
-                let deleteButtonText = document.createElement('a');
-                deleteButtonText.innerText = '❌';
-                deleteButtonText.setAttribute('style', 'deleteButton');
-                let urlForDelete = '/users/trips/edit/' + data.visitId;//data.tripId;
-                deleteButtonText.setAttribute('onclick', 'sendDeleteVisitRequest(' + '"' + urlForDelete + '"' + ','
-                    + data.visitId + ')');
-                deleteButton.appendChild(deleteButtonText);
-                tableDataDeparture.appendChild(departureDateInput);
-                newRow.appendChild(tableHeader);
-                newRow.appendChild(tableDataDestType);
-                newRow.appendChild(tableDataArrival);
-                newRow.appendChild(tableDataDeparture);
-                newRow.appendChild(deleteButton);
-                //tableBody.appendChild(newRow);
-                //targetTable.appendChild(newRow);
+                //Handle delete button
+                let deleteButton = document.createElement("button");
+                deleteButton.setAttribute("class", "btn btn-danger");
+                deleteButton.setAttribute("onclick", "deleteTripRequest(" + data.tripId + ", 'map_home')");
+                deleteButton.innerText = "Delete trip";
+                outerTripDiv.appendChild(deleteButton);
+
+
 
                 //Add outer div to single trip view
                 singleTripContainer.appendChild(outerTripDiv);
@@ -141,29 +96,37 @@ function addSelectedToVisitToTrip(destId){
 
                 //Handle List Group
                 let listGroup = document.getElementById('trip-list-group');
-                let groupDiv = document.createElement('div');
-
                 let tripLink = document.createElement('a');
-                //let tripCheckBox = document.createElement('input');
-                //tripCheckBox.setAttribute('type', 'checkbox');
-                //tripCheckBox.setAttribute('id',"Toggle"+data.tripId);
-                //tripCheckBox.setAttribute('checked', 'true');
-                //tripCheckBox.setAttribute('onclick', 'toggleTrips(' + data.tripId + ')');
-                //tripCheckBox.setAttribute('class', 'form-check-label');
-                //let mapLabel = document.createElement('label');
-                //mapLabel.setAttribute('class', 'form-check-label');
-                //mapLabel.setAttribute('for', "toggleMap");
-                //mapLabel.innerText = 'Show on map';
-
                 tripLink.setAttribute('class', "list-group-item list-group-item-action");
                 tripLink.innerText = data.tripName + ' | No arrival dates';
                 tripLink.setAttribute("onclick", "displayTrip(" + currentlyDisplayedTripId + ", " + data.latitude+ ", "+ data.longitude + ")");
+
+                let formCheckDiv = document.createElement("div");
+                formCheckDiv.setAttribute("class", "form-check");
+
+                let tripCheckBox = document.createElement('input');
+                tripCheckBox.setAttribute('type', 'checkbox');
+                tripCheckBox.setAttribute('id',"Toggle"+data.tripId);
+                tripCheckBox.setAttribute('checked', 'true');
+                tripCheckBox.setAttribute('onclick', 'toggleTrips(' + data.tripId + ')');
+                tripCheckBox.setAttribute('class', 'form-check-input');
+                let mapLabel = document.createElement('label');
+                mapLabel.setAttribute('class', 'form-check-label');
+                mapLabel.setAttribute('for', "toggleMap");
+                mapLabel.innerText = 'Show on map';
+                formCheckDiv.appendChild(tripCheckBox);
+                formCheckDiv.appendChild(mapLabel);
+                tripLink.appendChild(formCheckDiv);
                 listGroup.appendChild(tripLink);
-                listGroup.appendChild(groupDiv);
-                //groupDiv.appendChild(tripCheckBox);
-                //groupDiv.appendChild(mapLabel);
+
                 addTripRoutes(data.tripId);
-                //displayTrip(data.tripId, data.latitude, data.longitude);
+
+                var tripStartLatLng = new google.maps.LatLng(
+                    data.latitude, data.longitude
+                );
+
+                window.globalMap.setCenter(tripStartLatLng);
+                window.globalMap.setZoom(9);
 
 
             },
@@ -199,6 +162,103 @@ function addSelectedToVisitToTrip(destId){
     }
 }
 
+function createTripTitleDiv(data) {
+    let titleDiv = document.createElement("div");
+    titleDiv.setAttribute("style", "margin-top: 15px; height: 30px;");
+    let titleText = document.createElement("h4");
+    titleText.setAttribute("id", "tripName_" + data.tripId);
+    titleText.setAttribute("style","cursor: pointer;");
+    titleText.setAttribute("onclick", onclick="toggleEditTripName(true)");
+    titleText.innerText = data.tripName;
+    let titleInput = document.createElement("input");
+    titleInput.setAttribute("style", "display: none;");
+    titleInput.setAttribute("type", "text");
+    titleInput.setAttribute("id", "tripNameInput_" + data.tripId);
+    titleInput.setAttribute("value", data.tripName);
+    titleInput.setAttribute("onblur", "updateTripName(this.value)");
+    titleDiv.appendChild(titleText);
+    titleDiv.appendChild(titleInput);
+    return titleDiv;
+}
+
+function createTripTable(data) {
+    let newTable = document.createElement("div");
+    newTable.setAttribute("id", "tripTable_" + data.tripId);
+    newTable.setAttribute("class", "table table-hover");
+
+
+    //Handle Table Head
+    let tableHead = document.createElement("thead");
+    let tableRowHeaders = document.createElement("tr");
+    let nameHeader = document.createElement("th");
+    nameHeader.setAttribute("scope", "col");
+    nameHeader.innerText = "Name";
+    let typeHeader = document.createElement("th");
+    typeHeader.setAttribute("scope", "col");
+    typeHeader.innerText = "Type";
+    let arrivalHeader = document.createElement("th");
+    arrivalHeader.setAttribute("scope", "col");
+    arrivalHeader.innerText = "Arrival";
+    let departureHeader = document.createElement("th");
+    departureHeader.setAttribute("scope", "col");
+    departureHeader.innerText = "Departure";
+    let deleteHeader = document.createElement("th");
+    deleteHeader.setAttribute("scope", "col");
+    tableRowHeaders.appendChild(nameHeader);
+    tableRowHeaders.appendChild(typeHeader);
+    tableRowHeaders.appendChild(arrivalHeader);
+    tableRowHeaders.appendChild(departureHeader);
+    tableRowHeaders.appendChild(deleteHeader);
+    tableHead.appendChild(tableRowHeaders);
+    newTable.appendChild(tableHead);
+
+
+
+    //Handle table body
+    let tableBody = document.createElement("tbody");
+    tableBody.setAttribute("id", "tripTableBody_"+ data.tripId);
+    tableBody.setAttribute("class", "table table-hover");
+    let newRow = document.createElement('tr');
+    newRow.setAttribute('id', "visit_row_" + data.visitId);
+    let tableHeader = document.createElement('th');
+    tableHeader.setAttribute('scope', 'row');
+    tableHeader.innerText = data.visitName;
+    let tableDataDestType = document.createElement('td');
+    tableDataDestType.innerText = data.destType;
+    let tableDataArrival = document.createElement('td');
+    let arrivalDateInput = document.createElement('input');
+    arrivalDateInput.setAttribute('type', 'date');
+    arrivalDateInput.setAttribute('class', 'tripDateInput');
+    arrivalDateInput.setAttribute('onblur', "updateVisitDate(" + data[0]+")");
+    arrivalDateInput.setAttribute('id', 'arrival_'+data[0]);
+    tableDataArrival.appendChild(arrivalDateInput);
+    let tableDataDeparture = document.createElement('td');
+    let departureDateInput = document.createElement('input');
+    departureDateInput.setAttribute('id', 'departure_'+data[0]);
+    departureDateInput.setAttribute('type', 'date');
+    departureDateInput.setAttribute('class', 'tripDateInput');
+    departureDateInput.setAttribute('onblur', "updateVisitDate(" + data[0]+")");
+    let deleteButton = document.createElement('td');
+    let deleteButtonText = document.createElement('a');
+    deleteButtonText.innerText = '❌';
+    deleteButtonText.setAttribute('style', 'deleteButton');
+    let urlForDelete = '/users/trips/edit/' + data.visitId;//data.tripId;
+    deleteButtonText.setAttribute('onclick', 'sendDeleteVisitRequest(' + '"' + urlForDelete + '"' + ','
+        + data.visitId + ')');
+    deleteButton.appendChild(deleteButtonText);
+    tableDataDeparture.appendChild(departureDateInput);
+    newRow.appendChild(tableHeader);
+    newRow.appendChild(tableDataDestType);
+    newRow.appendChild(tableDataArrival);
+    newRow.appendChild(tableDataDeparture);
+    newRow.appendChild(deleteButton);
+    tableBody.appendChild(newRow);
+    newTable.appendChild(tableBody);
+
+    return newTable;
+
+}
+
 
 
 function initMap() {
@@ -226,31 +286,31 @@ function tripVisitTableRefresh(data){
     let targetTable = document.getElementById("placeholderTripTable");
     let targetTripBody = document.getElementById("tripTableBody_" + currentlyDisplayedTripId);
     let newRow = document.createElement('tr');
-    newRow.setAttribute('id', "visit_row_" + data[0]);
+    newRow.setAttribute('id', "visit_row_" + data.visitId);
     let tableHeader = document.createElement('th');
     tableHeader.setAttribute('scope', 'row');
-    tableHeader.innerText = data[1];
+    tableHeader.innerText = data.visitName;
     let tableDataDestType = document.createElement('td');
-    tableDataDestType.innerText = data[2];
+    tableDataDestType.innerText = data.destType;
     let tableDataArrival = document.createElement('td');
     let arrivalDateInput = document.createElement('input');
     arrivalDateInput.setAttribute('type', 'date');
     arrivalDateInput.setAttribute('class', 'tripDateInput');
-    arrivalDateInput.setAttribute('onblur', "updateVisitDate(" + data[0]+")");
-    arrivalDateInput.setAttribute('id', 'arrival_'+data[0]);
+    arrivalDateInput.setAttribute('onblur', "updateVisitDate(" + data.visitId+")");
+    arrivalDateInput.setAttribute('id', 'arrival_'+data.visitId);
     tableDataArrival.appendChild(arrivalDateInput);
     let tableDataDeparture = document.createElement('td');
     let departureDateInput = document.createElement('input');
-    departureDateInput.setAttribute('id', 'departure_'+data[0]);
+    departureDateInput.setAttribute('id', 'departure_'+data.visitId);
     departureDateInput.setAttribute('type', 'date');
     departureDateInput.setAttribute('class', 'tripDateInput');
-    departureDateInput.setAttribute('onblur', "updateVisitDate(" + data[0]+")");
+    departureDateInput.setAttribute('onblur', "updateVisitDate(" + data.visitId+")");
     tableDataDeparture.appendChild(departureDateInput);
     let deleteButton = document.createElement('td');
     let deleteButtonText = document.createElement('a');
     deleteButtonText.innerText = '❌';
     deleteButtonText.setAttribute('style', 'deleteButton');
-    let urlForDelete = '/users/trips/edit/' + data[0];//data.tripId;
+    let urlForDelete = '/users/trips/edit/' + data.visitId;
     deleteButtonText.setAttribute('onclick', 'sendDeleteVisitRequest(' + '"' + urlForDelete + '"' + ','
         + data[0] + ')');
     deleteButton.appendChild(deleteButtonText);
@@ -262,7 +322,13 @@ function tripVisitTableRefresh(data){
     newRow.appendChild(tableDataDeparture);
     newRow.appendChild(deleteButton);
     targetTripBody.appendChild(newRow);
-    displayTrip(currentlyDisplayedTripId, data.latitude, data.longitude);
+
+    var tripStartLatLng = new google.maps.LatLng(
+        data.latitude, data.longitude
+    );
+
+    window.globalMap.setCenter(tripStartLatLng);
+    window.globalMap.setZoom(9);
 }
 
 

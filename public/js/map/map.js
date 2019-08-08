@@ -374,6 +374,13 @@ function initTripRoutes() {
                 strokeWeight: 2
             });
             flightPath.path = tripRoutes[tripId];
+
+            tripFlightPaths[tripId] = flightPath;
+            google.maps.event.addListener(flightPath, 'click', function(e) {
+
+                displayTrip(tripId, tripRoutes[tripId][0]['lat'], tripRoutes[tripId][0]['lng'])
+            });
+
             if (tripFlightPaths[tripId] != null) {
                 if (tripFlightPaths[tripId].path.length !== flightPath.path.length) {
                     tripFlightPaths[tripId].setMap(null);

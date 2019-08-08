@@ -385,7 +385,7 @@ public class TripController extends Controller {
             System.out.println(trip.getVisits());
             System.out.println(newVisit.getVisitOrder());
             if (tripFactory.hasRepeatDest(trip.getVisits(), newVisit, "ADD")) {
-                return badRequest();
+                return badRequest("Trip cannot have two destinations in a row!");
             }
             else {
                 VisitAccessor.insert(newVisit);

@@ -5,6 +5,7 @@ import accessors.VisitAccessor;
 
 import models.Trip;
 
+import models.User;
 import models.Visit;
 import models.commands.Visits.DeleteVisitCommand;
 
@@ -19,6 +20,13 @@ import static org.junit.Assert.assertNull;
 public class DeleteVisitCommandTest extends BaseTestWithApplicationAndDatabase {
 
     private Trip trip;
+
+
+    @Override
+    public void populateDatabase() {
+        super.populateDatabase();
+        trip = TripAccessor.getTripById(2);
+    }
 
     @Test
     public void testExecute() {

@@ -14,7 +14,7 @@ import java.util.List;
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @Table(uniqueConstraints={@UniqueConstraint(columnNames={"url"})})
-public abstract class Media extends Model {
+public abstract class Media extends BaseModel {
 
     @Id
     public Integer mediaId;
@@ -54,7 +54,8 @@ public abstract class Media extends Model {
         this.user = user;
     }
 
-    public static Finder<Integer,Media> find = new Finder<>(Media.class);
+    public static Finder<Integer,Media> find = new
+            Finder<>(Media.class, ApplicationManager.getDatabaseName());
 
     /**
      * Default constructor for caption edit commands

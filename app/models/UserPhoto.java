@@ -13,12 +13,8 @@ import java.util.List;
  * A class to hold information a user photograph.
  */
 @Entity
-
-@Table(uniqueConstraints={@UniqueConstraint(columnNames={"url"})})
 public class UserPhoto extends Media {
 
-    @Id //The photos primary key
-    private int photoId;
 
     private boolean isProfile;
 

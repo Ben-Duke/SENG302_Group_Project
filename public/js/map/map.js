@@ -432,7 +432,6 @@ function displayTrip(tripId, startLat, startLng) {
         isNewTrip = false;
         currentlyDisplayedTripId = undefined;
     }
-    console.log(tripId);
     let checkBox = document.getElementById("Toggle" + tripId);
     if (checkBox.checked === true) {
         if (currentlyDisplayedTripId !== undefined) {
@@ -938,7 +937,7 @@ function checkTripVisits() {
         method: 'GET'})
         .then(res => res.json())
         .then(data => {
-            for (let trip in data) {
+            for (let trip in tripFlightPaths) {
                 if (data[trip] < 2) {
                     let token = $('input[name="csrfToken"]').attr('value');
                     $.ajaxSetup({
@@ -949,7 +948,9 @@ function checkTripVisits() {
                     $.ajax({
                         url: '/users/trips/' + trip,
                         method: "DELETE",
-                        success: function (res) {
+                        success: function () {
+                            let element = document.getElementById("Button" + trip);
+                            element.parentNode.removeChild(element);
                         }
                     });
                 }
@@ -957,13 +958,9 @@ function checkTripVisits() {
         })
 }
 
-var myEvent = window.attachEvent || window.addEventListener;
-var chkevent = window.attachEvent ? 'onbeforeunload' : 'beforeunload'; /// make IE7, IE8 compitable
 
-myEvent(chkevent, function(e) { // For >=IE7, Chrome, Firefox
-    var confirmationMessage = 'Are you sure to leave the page?';
-    (e || window.event).returnValue = confirmationMessage;
+window.onload = function() {
     checkTripVisits();
-    return confirmationMessage;
-});
+};
+
 

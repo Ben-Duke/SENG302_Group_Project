@@ -48,13 +48,19 @@ public class DeleteTripCommand extends UndoableCommand {
      * Undoes the deletion of the trip
      */
     public void undo() {
-        Trip undoTrip = new Trip(this.trip, deletedVisits);
-        undoTrip.save();
-        savedTrip = undoTrip;
-        for (Visit visit : deletedVisits) {
-            visit.setTrip(undoTrip);
-            VisitAccessor.insert(visit);
+        deletedVisits = new ArrayList<>();
+        for (Visit visit : trip.getVisits()) {
+            deletedVisits.add(new Visit(visit));
         }
+        savedTrip = new Trip(this.trip, deletedVisits);
+        TripAccessor.insert(savedTrip);
+        for (Visit visit : deletedVisits) {
+            visit.setTrip(savedTrip);
+            VisitAccessor.insert(visit);
+            TripAccessor.update(savedTrip);
+        }
+
+
     }
 
     /**

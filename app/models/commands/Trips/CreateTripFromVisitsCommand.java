@@ -51,6 +51,7 @@ public class CreateTripFromVisitsCommand extends UndoableCommand {
             cleanVisits.add(new Visit(visit.getArrival(),visit.getDeparture(), visit.getDestination()));
             visit.setTrip(trip);
             VisitAccessor.insert(visit);
+            TripAccessor.update(trip);
         }
 
     }
@@ -79,6 +80,14 @@ public class CreateTripFromVisitsCommand extends UndoableCommand {
         visits = new ArrayList<>(cleanVisits);
         cleanVisits = new ArrayList<>();
         execute();
+    }
+
+    /**
+     * Returns result from the undo/redo command as a string
+     * @return String result of command
+     */
+    public String toString() {
+        return "Trip: " + trip.getTripName() + " Creation" ;
     }
 
 }

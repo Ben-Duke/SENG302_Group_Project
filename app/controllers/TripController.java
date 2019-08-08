@@ -426,15 +426,15 @@ public class TripController extends Controller {
                 return forbidden("2");
 
             }
-            Trip trip = new Trip("Trip to " + destination.getDestName(),false, user);
-            System.out.println("Trip user id is " + trip.getUser().getUserid());
-            Visit visit = new Visit(null, null, trip, destination);
+            Visit visit = new Visit(null, null, null, destination);
+            visit.setVisitorder(1);
+            ArrayList<Visit> visits = new ArrayList<>();
+            visits.add(visit);
+            CreateTripFromVisitsCommand createTripFromVisitsCommand = new CreateTripFromVisitsCommand(visits, "Trip to " + destination.getDestName(), user);
+            user.getCommandManager().executeCommand(createTripFromVisitsCommand);
 
-            TripAccessor.insert(trip);
-            VisitAccessor.insert(visit);
-            visit.setVisitorder(0);
-            TripAccessor.update(trip);
-            VisitAccessor.update(visit);
+            visit = VisitAccessor.getById(visit.getVisitid());
+            Trip trip = visit.getTrip();
 
             ObjectNode data =  (ObjectNode) Json.toJson(trip);
             data.put("latitude", destination.getLatitude());

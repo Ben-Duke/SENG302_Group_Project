@@ -119,14 +119,12 @@ function addSelectedToVisitToTrip(destId){
                 tripLink.appendChild(formCheckDiv);
                 listGroup.appendChild(tripLink);
 
-                addTripRoutes(data.tripId);
 
-                var tripStartLatLng = new google.maps.LatLng(
-                    data.latitude, data.longitude
-                );
-
-                window.globalMap.setCenter(tripStartLatLng);
-                window.globalMap.setZoom(9);
+                for (let i in tripRoutes) {
+                    tripRoutes[i].setMap(null);
+                }
+                tripRoutes =[];
+                initTripRoutes();
 
 
             },
@@ -375,13 +373,24 @@ function initTripRoutes() {
                 strokeOpacity: 1.0,
                 strokeWeight: 2
             });
-
-            tripFlightPaths[tripId] = flightPath;
-
-            // tripFlightPaths.push({'tripId': flightPath});
-
-            flightPath.setMap(window.globalMap);
-
+            flightPath.path = tripRoutes[tripId];
+            if (tripFlightPaths[tripId] != null) {
+                if (tripFlightPaths[tripId].path.length !== flightPath.path.length) {
+                    tripFlightPaths[tripId].setMap(null);
+                    tripFlightPaths[tripId] = flightPath;
+                }
+            }
+            else{
+                tripFlightPaths[tripId] = flightPath;
+            }
+            const checkBox = document.getElementById("Toggle" + tripId);
+            if (checkBox.checked === false) {
+                tripFlightPaths[tripId].setMap(null);
+            } else {
+                if (tripFlightPaths[tripId].getMap() == null) {
+                    tripFlightPaths[tripId].setMap(window.globalMap);
+                }
+            }
         }
     });
 }
@@ -432,7 +441,6 @@ function displayTrip(tripId, startLat, startLng) {
         isNewTrip = false;
         currentlyDisplayedTripId = undefined;
     }
-    console.log(tripId);
     let checkBox = document.getElementById("Toggle" + tripId);
     if (checkBox.checked === true) {
         if (currentlyDisplayedTripId !== undefined) {
@@ -815,7 +823,6 @@ function initDestinationMarkers() {
         .then(destinations => {
             let marker;
             let infoWindow;
-            // console.log(destinations);
             for (let index = 0; index < destinations.length; index++) {
                 marker = new google.maps.Marker({
                     position: {

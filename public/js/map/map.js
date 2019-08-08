@@ -929,3 +929,41 @@ function initInforWindowEventHandlers(markerIndex) {
                                     window.globalMarkers[markerIndex].marker);
     });
 }
+
+/**
+ * Used to check invalid trips with less than two visits and deletes them on reload
+ */
+function checkTripVisits() {
+    fetch('/users/trips/userTrips', {
+        method: 'GET'})
+        .then(res => res.json())
+        .then(data => {
+            for (let trip in data) {
+                if (data[trip] < 2) {
+                    let token = $('input[name="csrfToken"]').attr('value');
+                    $.ajaxSetup({
+                        beforeSend: function (xhr) {
+                            xhr.setRequestHeader('Csrf-Token', token);
+                        }
+                    });
+                    $.ajax({
+                        url: '/users/trips/' + trip,
+                        method: "DELETE",
+                        success: function (res) {
+                        }
+                    });
+                }
+            }
+        })
+}
+
+var myEvent = window.attachEvent || window.addEventListener;
+var chkevent = window.attachEvent ? 'onbeforeunload' : 'beforeunload'; /// make IE7, IE8 compitable
+
+myEvent(chkevent, function(e) { // For >=IE7, Chrome, Firefox
+    var confirmationMessage = 'Are you sure to leave the page?';
+    (e || window.event).returnValue = confirmationMessage;
+    checkTripVisits();
+    return confirmationMessage;
+});
+

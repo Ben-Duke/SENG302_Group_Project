@@ -274,6 +274,11 @@ function initTripRoutes() {
             });
 
             tripFlightPaths[tripId] = flightPath;
+            google.maps.event.addListener(flightPath, 'click', function(e) {
+
+                displayTrip(tripId, tripRoutes[tripId][0]['lat'], tripRoutes[tripId][0]['lng'])
+            });
+
 
             // tripFlightPaths.push({'tripId': flightPath});
 

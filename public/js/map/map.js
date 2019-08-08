@@ -3,7 +3,7 @@ const updateVisitDateUrl = "/user/trips/visit/dates/";
 const colors = ['6b5b95', 'feb236', 'd64161', 'ff7b25',
     '6b5b95', '86af49', '3e4444', 'eca1a6', 'ffef96', 'bc5a45', 'c1946a'];
 
-
+let map;
 let tripFlightPaths = {};
 let isNewTrip = false;
 
@@ -169,7 +169,7 @@ function addSelectedToVisitToTrip(destId){
 
 function initMap() {
 
-    window.globalMap = new google.maps.Map(document.getElementById('map'), {
+    map = window.globalMap = new google.maps.Map(document.getElementById('map'), {
         center: {lat: -43.522057156877615, lng: 172.62360347218828},
         zoom: 5,
         mapTypeControl: true,
@@ -683,6 +683,10 @@ function initPlacesAutocompleteSearch() {
 
                     document.getElementById("latitude").value = coordinates.lat();
                     document.getElementById("longitude").value = coordinates.lng();
+                    console.log("Done the request for search")
+                    moveTo = new google.maps.LatLng(coordinates.lat(), coordinates.lng());
+                    map.panTo(moveTo)
+                    map.setZoom(14);
                 }
             },
             error: function(xhr, settings){

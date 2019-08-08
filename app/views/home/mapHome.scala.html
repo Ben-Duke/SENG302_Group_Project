@@ -3,11 +3,13 @@
 @(user : User, trips : List[Trip], destinations : List[Destination], destForm : Form[DestinationFormData], countryMap: Map[String, Boolean], typeMap: Map[String, Boolean])
 
 <style>
+
+        body{
+            overflow-y: hidden;
+        }
         #map {
-            /*height: calc(100% - 50px);*/
-            height: 100%;
-            /*position: relative;*/
-            /*z-index: 1;*/
+            top: -10px;
+            height: calc(100% + 10px);
 
         }
         #control {
@@ -97,8 +99,8 @@
     <div id="control" class="col-md-4">
 
         <ul class="nav nav-tabs nav-justified">
-            <li class="active" id="destinationsTabListItem"><a data-toggle="tab" href="#destinationsTab">Destinations</a></li>
-            <li id="tripsTabListItem"><a data-toggle="tab" href="#tripsTab">Trips</a></li>
+            <li class="active" id="tripsTabListItem"><a data-toggle="tab" href="#tripsTab">Trips</a></li>
+            <li id="destinationsTabListItem"><a data-toggle="tab" href="#destinationsTab">Destinations</a></li>
         </ul>
 
         <div class="tab-content">
@@ -252,7 +254,7 @@
                             </thead>
                             <tbody id="tripTableBody_@trip.getTripid()">
                             @for(visit <- trip.getOrderedVisits()){
-                                <tr id="visit_row_@visit.getVisitid()">
+                                <tr id="@visit.getVisitid()">
                                     <th scope ="row">@visit.getDestination().getDestName()</th>
                                     <td>@visit.getDestination().getDestType()</td>
                                     <td><input id="arrival_@visit.getVisitid()" class="tripDateInput" type="date"

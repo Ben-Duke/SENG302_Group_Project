@@ -464,7 +464,7 @@ $('tbody').sortable({
                 xhr.setRequestHeader('Csrf-Token', token);
             }
         });
-        var data = jQuery('#tripTableBody_'+currentlyDisplayedTripId+' tr').map(function(){
+        var data = jQuery('#tripTableBody_'+currentlyDisplayedTripId+' tr').map(function() {
             return jQuery (this).attr("id");
         }).get();
         var url = '/users/trips/edit/' + currentlyDisplayedTripId;

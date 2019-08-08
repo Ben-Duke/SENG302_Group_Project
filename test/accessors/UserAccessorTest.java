@@ -13,6 +13,7 @@ import play.db.evolutions.Evolutions;
 import play.inject.guice.GuiceApplicationBuilder;
 import play.test.WithApplication;
 import testhelpers.BaseTestWithApplicationAndDatabase;
+import utilities.TestDatabaseManager;
 
 import java.util.List;
 
@@ -27,6 +28,8 @@ public class UserAccessorTest extends BaseTestWithApplicationAndDatabase {
 
     @Before
     public void setup() {
+        TestDatabaseManager.clearAllData();
+
         User user = new User("gon12_2@uclive.ac.nz", "hunter22");
         user.save();
     }

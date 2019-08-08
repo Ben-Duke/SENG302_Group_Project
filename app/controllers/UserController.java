@@ -30,6 +30,7 @@ public class UserController {
     // A countdownlatch which frees when the database has been populated.
     private CountDownLatch initCompleteLatch = new CountDownLatch(1);
 
+
     /**
      * Renders the index page and populates the in memory database
      *
@@ -44,15 +45,12 @@ public class UserController {
      * @return the user index page
      */
     public Result userindex(Http.Request request){
+
         if (!wasRun.getAndSet(true)) {
             ApplicationManager.setMediaPath("/../media_");
 //            ApplicationManager.getMediaPath()
 
             TestDatabaseManager.populateDatabase(initCompleteLatch);
-            logger.info("populating database");
-
-            CountryUtils.updateCountries();
-
         } else {
             try {
                 initCompleteLatch.await();

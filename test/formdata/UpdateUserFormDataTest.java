@@ -34,8 +34,6 @@ import static org.junit.Assert.assertEquals;
  */
 public class UpdateUserFormDataTest extends BaseTestWithApplicationAndDatabase {
 
-
-
     @Test
     public void validateNoErrorsMale() {
         LocalDate localDateNow = LocalDate.now().minusYears(10);

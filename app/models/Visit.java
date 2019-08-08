@@ -2,6 +2,7 @@ package models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import controllers.ApplicationManager;
 import formdata.VisitFormData;
 import io.ebean.Finder;
 import io.ebean.Model;
@@ -13,7 +14,7 @@ import javax.persistence.ManyToOne;
 
 /** The model class for visit construction */
 @Entity
-public class Visit extends Model {
+public class Visit extends BaseModel {
 
     private Integer visitorder;
 
@@ -35,8 +36,8 @@ public class Visit extends Model {
     private String arrival;
     private String departure;
     private String visitName;
-    private static Finder<Integer,Visit> find = new Finder<>(Visit.class);
-
+    private static Finder<Integer,Visit> find = new Finder<>(Visit.class,
+            ApplicationManager.getDatabaseName());
 
 
     /**
@@ -69,9 +70,12 @@ public class Visit extends Model {
         setDestination(destination);
     }
 
-    /**
-     * Empty visit constructor
-     */
+    public Visit(String arrival, String departure, Destination destination) {
+        this.arrival = arrival;
+        this.departure = departure;
+        setDestination(destination);
+    }
+
     public Visit() {
     }
 

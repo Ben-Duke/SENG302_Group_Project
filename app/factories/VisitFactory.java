@@ -42,4 +42,28 @@ public class VisitFactory {
         Visit visit = new Visit(null, null, trip, destination, visitOrder);
         return visit;
     }
+
+    /**
+     * Create a visit for a given trip from a destination
+     * @param destination the destination that is to be a visit
+     * @param trip the trip the visit is to be added to
+     * @return the new visit
+     */
+    public Visit createVisitByJSRequest(Destination destination, Trip trip) {
+        Visit visit = new Visit();
+        visit.setTrip(trip);
+        visit.setDestination(destination);
+        visit.setVisitName(destination.getDestName());
+        Integer visitSize = 0;
+        if (trip.getVisits() != null) {
+            visitSize = trip.getVisits().size();
+        }
+        Integer removedVisits = 0;
+        if(trip.getRemovedVisits() != null) {
+            removedVisits = trip.getRemovedVisits();
+        }
+        Integer visitOrder = visitSize + 1 + removedVisits;
+        visit.setVisitorder(visitOrder);
+        return visit;
+    }
 }

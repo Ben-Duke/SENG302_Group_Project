@@ -5,6 +5,7 @@ import models.User;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
 import play.Application;
 import play.db.Database;
 import play.db.Databases;
@@ -15,7 +16,13 @@ import play.mvc.Http;
 import play.mvc.Result;
 import play.test.Helpers;
 import play.test.WithApplication;
+import testhelpers.BaseTestWithApplicationAndDatabase;
+import utilities.TestDatabaseManager;
+import utilities.UtilityFunctions;
 
+
+import java.sql.SQLOutput;
+import java.util.List;
 
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertEquals;
@@ -23,50 +30,29 @@ import static play.mvc.Http.Status.*;
 import static play.test.Helpers.GET;
 import static play.test.Helpers.route;
 
-public class AdminControllerTest extends WithApplication {
+public class AdminControllerTest extends BaseTestWithApplicationAndDatabase {
+
+    private final Logger logger = UtilityFunctions.getLogger();
 
     /**
-     * The fake database.
+     * Populate custom data
      */
-    Database database;
-
     @Override
-    protected Application provideApplication() {
-        return new GuiceApplicationBuilder().build();
-    }
-
-
-    /**
-     * Sets up the fake database before each test.
-     */
-    @Before
-    public void setUpDatabase() {
-        database = Databases.inMemory();
-        Evolutions.applyEvolutions(database, Evolutions.forDefault(new Evolution(
-                1,
-                "create table test (id bigint not null, name varchar(255));",
-                "drop table test;"
-        )));
-
+    public void populateDatabase() {
+        TestDatabaseManager.clearAllData();
 
         //Initialises test users and default admin and saves it to the database.
         User user = new User("testAdmin");
         user.save();
+
+        // make user id=1 an admin
         Admin admin = new Admin(1, true);
         admin.save();
+
         User user1 = new User("testUser1");
         user1.save();
         User user2 = new User("testUser2");
         user2.save();
-    }
-
-    /**
-     * Clears the fake database after each test.
-     */
-    @After
-    public void shutdownDatabase() {
-        Evolutions.cleanupEvolutions(database);
-        database.shutdown();
     }
 
     /**

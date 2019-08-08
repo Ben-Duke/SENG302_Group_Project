@@ -14,7 +14,11 @@ import java.util.List;
  */
 @Entity
 
+@Table(uniqueConstraints={@UniqueConstraint(columnNames={"url"})})
 public class UserPhoto extends Media {
+
+    @Id //The photos primary key
+    private int photoId;
 
     private boolean isProfile;
 
@@ -25,7 +29,7 @@ public class UserPhoto extends Media {
     @OneToMany(mappedBy = "primaryPhoto")
     public List<Album> primaryPhotoDestinations;
 
-    private static final Finder<Integer,UserPhoto> find = new Finder<>(UserPhoto.class);
+    private static final Finder<Integer,UserPhoto> find = new Finder<>(UserPhoto.class, ApplicationManager.getDatabaseName());
 
     /**
      * Default constructor for caption edit commands
@@ -173,5 +177,9 @@ public class UserPhoto extends Media {
         setUser(editedPhoto.getUser());
         this.albums = editedPhoto.getAlbums();
         this.primaryPhotoDestinations = editedPhoto.getPrimaryPhotoDestinations();
+    }
+
+    public boolean isUserOwner(User user) {
+        return this.getUser().getUserid() == user.getUserid();
     }
 }

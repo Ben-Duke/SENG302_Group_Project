@@ -26,16 +26,7 @@ public class LinkingPhotosToDestinationsCommandTest extends BaseTestWithApplicat
     private Destination destination;
 
     @Override
-    @Before
-    public void setUpDatabase() {
-        ApplicationManager.setMediaPath("/test/resources/test_photos/user_");
-        ApplicationManager.setIsTest(true);
-        database = Databases.inMemory();
-        Evolutions.applyEvolutions(database, Evolutions.forDefault(new Evolution(
-                1,
-                "create table test (id bigint not null, name varchar(255));",
-                "drop table test;"
-        )));
+    public void populateDatabase() {
         TestDatabaseManager.populateDatabase();
 
         user = User.find().byId(1);
@@ -49,13 +40,6 @@ public class LinkingPhotosToDestinationsCommandTest extends BaseTestWithApplicat
         destination = DestinationAccessor.getDestinationById(1);
 
         linkCmd = new LinkPhotoDestinationCommand(photo, destination);
-    }
-
-    @Override
-    @After
-    public void shutdownDatabase() {
-        Evolutions.cleanupEvolutions(database);
-        database.shutdown();
     }
 
     @Test

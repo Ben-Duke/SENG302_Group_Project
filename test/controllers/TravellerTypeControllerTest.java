@@ -4,11 +4,15 @@ import models.Destination;
 import models.TravellerType;
 import models.User;
 import org.junit.Test;
+import org.slf4j.Logger;
 import play.mvc.Http;
 import play.mvc.Result;
 import play.test.Helpers;
 import testhelpers.BaseTestWithApplicationAndDatabase;
+import utilities.UtilityFunctions;
+
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
@@ -17,6 +21,8 @@ import static play.test.Helpers.GET;
 import static play.test.Helpers.route;
 
 public class TravellerTypeControllerTest extends BaseTestWithApplicationAndDatabase {
+
+    Logger logger = UtilityFunctions.getLogger();
 
     /**
      * Unit test for rendering the traveller type page

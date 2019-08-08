@@ -1,6 +1,8 @@
 package models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import controllers.ApplicationManager;
 import io.ebean.Finder;
 import io.ebean.Model;
 import models.media.MediaOwner;
@@ -9,7 +11,7 @@ import javax.persistence.*;
 import java.util.*;
 
 @Entity
-public class Destination extends Model implements AlbumOwner, MediaOwner {
+public class Destination extends BaseModel implements AlbumOwner, MediaOwner  {
 
     @Id
     private Integer destid;
@@ -46,7 +48,8 @@ public class Destination extends Model implements AlbumOwner, MediaOwner {
     @ManyToMany(cascade = CascadeType.ALL)
     private Set<TravellerType> travellerTypes;
 
-    private static Finder<Integer,Destination> find = new Finder<>(Destination.class);
+
+    private static Finder<Integer,Destination> find = new Finder<>(Destination.class, ApplicationManager.getDatabaseName());
 
     /**
      * Destination constructor with destIsPublic method
@@ -295,6 +298,26 @@ public class Destination extends Model implements AlbumOwner, MediaOwner {
             return false;
         }
         if (!this.getTravellerTypes().equals(other.getTravellerTypes())) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public boolean isSimilar(Destination other) {
+        if (!this.destName.equals(other.getDestName())) {
+            return false;
+        }
+        if (!this.country.equals(other.getCountry())) {
+            return false;
+        }
+        if (!this.district.equals(other.getDistrict())) {
+            return false;
+        }
+        if (Math.round(this.latitude*1000) != Math.round(other.getLatitude()*1000)) {
+            return false;
+        }
+        if (Math.round(this.longitude*1000) != Math.round(other.getLongitude()*1000)) {
             return false;
         }
 

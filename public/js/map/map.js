@@ -347,12 +347,40 @@ var tripRoutes = [];
  * @param tripid The id of the trip on the map
  */
 function toggleTrips(tripid) {
-    var checkBox = document.getElementById("Toggle" + tripid);
+    const checkBox = document.getElementById("Toggle" + tripid);
     if (checkBox.checked === false) {
         tripFlightPaths[tripid].setMap(null);
     } else {
         tripFlightPaths[tripid].setMap(window.globalMap);
     }
+    const checkboxes = document.getElementsByClassName("map-check");
+    const showHideAllButton = document.getElementById("show-hide-all-btn");
+    // === true is important here
+    const showHideResult = getAllChecksChecked(checkboxes);
+    if (showHideResult === "Checked") {
+        showHideAllButton.innerText = "Hide all"
+    } else if (showHideResult === "Unchecked") {
+        showHideAllButton.innerText = "Show all"
+    }
+}
+
+/**
+ * Finds if ALL checkboxes in a list of checkboxes are checked or unchecked or mixed
+ * @param checkboxes list of checkboxes
+ * @returns string  "Checked" if all checkboxes are checked,
+ *                  "Unchecked" if all checkboxes are unchecked
+ *                   and "Do not all match" otherwise
+ */
+function getAllChecksChecked(checkboxes) {
+    let currentStates = null;
+    for (let check of checkboxes) {
+        if (currentStates == null) {
+            currentStates = check.checked;
+        } else if (currentStates !== check.checked) {
+            return "Do not all match";
+        }
+    }
+    return currentStates ? "Checked" : "Unchecked";
 }
 
 function initTripRoutes() {
@@ -633,6 +661,32 @@ function updateTripName(newName) {
     });
 
 }
+
+/**
+ * Changes all checkboxes for showing routes to either true or false and dispatches events for the routes on map
+ */
+function showHideMapTrips() {
+    const button = document.getElementById("show-hide-all-btn");
+    const checkboxes = document.getElementsByClassName('map-check');
+    if (button.innerText === "Hide all") {
+        button.innerText = "Show all";
+        for (let check of checkboxes) {
+            check.checked = false;
+            // Dispatch an event to fire the listener on the checkbox
+            const event = new Event('change');
+            check.dispatchEvent(event);
+        }
+    } else {
+        button.innerText = "Hide all";
+        for (let check of checkboxes) {
+            check.checked = true;
+            // Dispatch an event to fire the listener on the checkbox
+            const event = new Event('change');
+            check.dispatchEvent(event);
+        }
+    }
+}
+
     function deleteTripRequest(tripId, url) {
         let token = $('input[name="csrfToken"]').attr('value');
         $.ajaxSetup({

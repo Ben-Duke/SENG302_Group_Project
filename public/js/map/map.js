@@ -167,6 +167,10 @@ function addSelectedToVisitToTrip(destId){
 
 
 
+
+
+
+
 function initMap() {
 
     window.globalMap = new google.maps.Map(document.getElementById('map'), {
@@ -183,8 +187,6 @@ function initMap() {
     initDestinationMarkers();
     initMapLegend();
     initTripRoutes();
-
-
 
 }
 
@@ -699,3 +701,5 @@ function initPlacesAutocompleteSearch() {
 
     });
 }
+
+

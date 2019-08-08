@@ -9,11 +9,21 @@
             /*position: relative;*/
             /*z-index: 1;*/
 
+            -webkit-transition: width 0.3s ease, height 0.3s ease, margin 0.3s ease, padding 0.3s ease, opacity 0.3s ease;
+            -moz-transition: width 0.3s ease, height 0.3s ease, margin 0.3s ease, padding 0.3s ease, opacity 0.3s ease;
+            -o-transition: width 0.3s ease, height 0.3s ease, margin 0.3s ease, padding 0.3s ease, opacity 0.3s ease;
+            transition: width 0.3s ease, height 0.3s ease, margin 0.3s ease, padding 0.3s ease, opacity 0.3s ease;
+
         }
         #control {
             /*height: calc(100% - 50px)%;*/
             height: 100%;
             text-align: center;
+
+            -webkit-transition: width 0.3s ease, height 0.3s ease, margin 0.3s ease, padding 0.3s ease, opacity 0.3s ease;
+            -moz-transition: width 0.3s ease, height 0.3s ease, margin 0.3s ease, padding 0.3s ease, opacity 0.3s ease;
+            -o-transition: width 0.3s ease, height 0.3s ease, margin 0.3s ease, padding 0.3s ease, opacity 0.3s ease;
+            transition: width 0.3s ease, height 0.3s ease, margin 0.3s ease, padding 0.3s ease, opacity 0.3s ease;
         }
         #destinationsTab {
 
@@ -95,6 +105,9 @@
     <div id="legend"><h3>Legend</h3></div>
     <div id="map" class="col-md-8"></div>
     <div id="control" class="col-md-4">
+
+        <button type="button" id="resizeLeft" class="btn">left</button>
+        <button type="button" id="resizeRight" class="btn">right</button>
 
         <ul class="nav nav-tabs nav-justified">
             <li class="active" id="destinationsTabListItem"><a data-toggle="tab" href="#destinationsTab">Destinations</a></li>
@@ -308,6 +321,7 @@
 
 
     <script src="@routes.Assets.at("js/map/map.js")"></script>
+    <script src="@routes.Assets.at("js/map/mapStyle.js")"></script>
     <script src="@routes.Assets.at("js/destination/destinationMap.js")"></script>
     <script src="https://maps.googleapis.com/maps/api/js?key=&callback=initMap&libraries=drawing,places"
     async defer></script>

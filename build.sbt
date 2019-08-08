@@ -7,7 +7,7 @@ scalaVersion := "2.12.8"
 maintainer := "s302team800@cosc.canterbury.ac.nz"
 
 
-lazy val myProject = (project in file(".")).enablePlugins(PlayJava, PlayEbean)
+lazy val myProject = (project in file(".")).enablePlugins(PlayJava, PlayEbean, LauncherJarPlugin)
 
 libraryDependencies += guice
 libraryDependencies += jdbc
@@ -38,6 +38,7 @@ testOptions in Test += Tests.Argument(TestFrameworks.JUnit, "-a", "-v")
 
 
 javacOptions ++= Seq("-Xlint:unchecked", "-Xlint:deprecation")
+javacOptions ++= Seq("-source", "1.8", "-target", "1.8")
 configs(IntegrationTest)
 Defaults.itSettings
 

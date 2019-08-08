@@ -989,6 +989,27 @@ public class AlbumControllerTest extends BaseTestWithApplicationAndDatabase {
 
     @Test
     /**
+     * Tests that an authenticated, valid request gets an ok HTTP response.
+     */
+    public void deleteUserPhotoAndUnlinkFromSelectDests_is200HTTPStatus() {
+        User user = UserAccessor.getUserByEmail("testuser1@uclive.ac.nz");
+        String userId = Integer.toString(user.getUserid());
+
+        Destination destination = DestinationAccessor.getPublicDestinationbyName("Christchurch");
+        int destId = destination.getDestid();
+
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .bodyJson(Json.parse("{\"mediaId\": " + destId + ", \"destinationsToUnlink\": [5]}"))
+                .method(DELETE)
+                .uri("/users/albums/delete/photo_and_unlink_selected_destinations")
+                .session("connected", userId);
+        Result result = route(app, request);
+
+        assertEquals(OK, result.status());
+    }
+
+    @Test
+    /**
      * Tests that an unauthenticated request gets a unaccepted HTTP response.
      */
     public void deleteUserPhotoAndUnlinkFromSelectDests_is401HTTPStatus_noActiveSession() {

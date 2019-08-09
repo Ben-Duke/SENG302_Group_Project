@@ -1,7 +1,3 @@
-const BORDER_SIZE = 4;
-const panel = document.getElementById("control");
-
-
 $("#resizeLeft").on("click", function() {
     resize('left');
 });
@@ -10,8 +6,13 @@ $("#resizeRight").on("click", function() {
     resize('right');
 });
 
-
-
+/**
+ * Changed widths of the map and control panel depending on input.
+ * It does this by changing the classes of the map and control.
+ * Min width of control is 3.
+ * Min width of map is 5.
+ * @param direction either value 'left' or 'right'
+ */
 function resize(direction) {
 
     let $colLeft = $("#map");
@@ -44,15 +45,3 @@ function resize(direction) {
 
 
 }
-
-// panel.addEventListener("mousedown", function(e){
-//     console.log(e.offsetX);
-//     if (e.offsetX < BORDER_SIZE) {
-//         m_pos = e.x;
-//         document.addEventListener("mousemove", resize, false);
-//     }
-// }, false);
-//
-// document.addEventListener("mouseup", function(){
-//     document.removeEventListener("mousemove", resize, false);
-// }, false);

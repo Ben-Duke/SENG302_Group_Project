@@ -3,96 +3,113 @@
 @(user : User, trips : List[Trip], destinations : List[Destination], destForm : Form[DestinationFormData], countryMap: Map[String, Boolean], typeMap: Map[String, Boolean])
 
 <style>
-        #map {
-            /*height: calc(100% - 50px);*/
-            height: 100%;
-            /*position: relative;*/
-            /*z-index: 1;*/
+    #map {
+        height: 100%;
 
-            -webkit-transition: width 0.3s ease, height 0.3s ease, margin 0.3s ease, padding 0.3s ease, opacity 0.3s ease;
-            -moz-transition: width 0.3s ease, height 0.3s ease, margin 0.3s ease, padding 0.3s ease, opacity 0.3s ease;
-            -o-transition: width 0.3s ease, height 0.3s ease, margin 0.3s ease, padding 0.3s ease, opacity 0.3s ease;
-            transition: width 0.3s ease, height 0.3s ease, margin 0.3s ease, padding 0.3s ease, opacity 0.3s ease;
+        -webkit-transition: width 0.3s ease, height 0.3s ease, margin 0.3s ease, padding 0.3s ease, opacity 0.3s ease;
+        -moz-transition: width 0.3s ease, height 0.3s ease, margin 0.3s ease, padding 0.3s ease, opacity 0.3s ease;
+        -o-transition: width 0.3s ease, height 0.3s ease, margin 0.3s ease, padding 0.3s ease, opacity 0.3s ease;
+        transition: width 0.3s ease, height 0.3s ease, margin 0.3s ease, padding 0.3s ease, opacity 0.3s ease;
+    }
+    #control {
+        height: 100%;
+        text-align: center;
+        position: relative;
+        padding-left: 28px;
 
-        }
-        #control {
-            /*height: calc(100% - 50px)%;*/
-            height: 100%;
-            text-align: center;
+        -webkit-transition: width 0.3s ease, height 0.3s ease, margin 0.3s ease, padding 0.3s ease, opacity 0.3s ease;
+        -moz-transition: width 0.3s ease, height 0.3s ease, margin 0.3s ease, padding 0.3s ease, opacity 0.3s ease;
+        -o-transition: width 0.3s ease, height 0.3s ease, margin 0.3s ease, padding 0.3s ease, opacity 0.3s ease;
+        transition: width 0.3s ease, height 0.3s ease, margin 0.3s ease, padding 0.3s ease, opacity 0.3s ease;
+    }
+    #destinationsTab {
 
-            -webkit-transition: width 0.3s ease, height 0.3s ease, margin 0.3s ease, padding 0.3s ease, opacity 0.3s ease;
-            -moz-transition: width 0.3s ease, height 0.3s ease, margin 0.3s ease, padding 0.3s ease, opacity 0.3s ease;
-            -o-transition: width 0.3s ease, height 0.3s ease, margin 0.3s ease, padding 0.3s ease, opacity 0.3s ease;
-            transition: width 0.3s ease, height 0.3s ease, margin 0.3s ease, padding 0.3s ease, opacity 0.3s ease;
-        }
-        #destinationsTab {
+    }
+    #singleDestinationContainer {
+        height: 50%;
+    }
+    .singleDestination {
+        height: 45%;
+        display: none;
+    }
 
-        }
-        #singleDestinationContainer {
-            height: 50%;
-        }
-        .singleDestination {
-            height: 45%;
-            display: none;
-        }
+    #tripsTab {
+        height: calc(100% - 50px)%;
+    }
+    #singleTripContainer {
+        height: 55%;
+        overflow-y: auto;
+    }
+    .singleTrip {
+        display: none;
+    }
 
-        #tripsTab {
-            height: calc(100% - 50px)%;
-        }
-        #singleTripContainer {
-            height: 55%;
-            overflow-y: auto;
-        }
-        .singleTrip {
-            display: none;
-        }
+    #tripList {
+        height: 30%;
+        overflow-y: auto;
+    }
 
-        #tripList {
-            height: 30%;
-            overflow-y: auto;
-        }
+    .tripDateInput {
+        height: 25px;
+        width: 120px;
+        font-size: 12px;
+    }
 
-        .tripDateInput {
-            height: 25px;
-            width: 120px;
-            font-size: 12px;
-        }
+    a {
+        cursor: pointer;
+    }
 
-        a {
-            cursor: pointer;
-        }
+    #legend {
+        font-family: Arial, sans-serif;
+        background: hsla(120, 100%, 75%, 0.3);
+        padding: 10px;
+        margin: 10px;
+        border: 1px solid #000;
+    }
+    #legend h3 {
+        margin-top: 0;
+    }
+    #legend img {
+        vertical-align: middle;
+    }
 
-        #legend {
-            font-family: Arial, sans-serif;
-            background: hsla(120, 100%, 75%, 0.3);
-            padding: 10px;
-            margin: 10px;
-            border: 1px solid #000;
-        }
-        #legend h3 {
-            margin-top: 0;
-        }
-        #legend img {
-            vertical-align: middle;
-        }
+    #placesContainer {
+        position: absolute;
+        z-index: 2;
+        left: 10px;
+        top: 70px;
+        width: 30%;
+        max-width: 500px;
+        min-width: 250px;
+        font-family: Roboto;
 
-        #placesContainer {
-            position: absolute;
-            z-index: 2;
-            left: 10px;
-            top: 70px;
-            width: 30%;
-            max-width: 500px;
-            min-width: 250px;
-            font-family: Roboto;
+    }
+    #placesAutocomplete {
+        width: 100%;
+        font-size: 16px;
+        padding: 12px 20px 12px 40px; /* Add some padding */
+        border: 1px solid #ddd; /* Add a grey border */
+    }
+    .resizeBtn {
+        position: absolute;
+        height: 100%;
 
-        }
-        #placesAutocomplete {
-            width: 100%;
-            font-size: 16px;
-            padding: 12px 20px 12px 40px; /* Add some padding */
-            border: 1px solid #ddd; /* Add a grey border */
-        }
+        width: 8px;
+        padding: 0;
+
+        border: none;
+        border-radius: 2px;
+
+        font-size: 8px;
+        color: #8f8f8f;
+        background-color: #e5e5e5;
+    }
+    #resizeLeft {
+        left: 1px;
+    }
+    #resizeRight {
+        left: 10px;
+    }
 
 </style>
 
@@ -106,8 +123,9 @@
     <div id="map" class="col-md-8"></div>
     <div id="control" class="col-md-4">
 
-        <button type="button" id="resizeLeft" class="btn">left</button>
-        <button type="button" id="resizeRight" class="btn">right</button>
+        <button type="button" id="resizeLeft" class="resizeBtn">&#9668</button>
+        <button type="button" id="resizeRight" class="resizeBtn">&#9658</button>
+
 
         <ul class="nav nav-tabs nav-justified">
             <li class="active" id="destinationsTabListItem"><a data-toggle="tab" href="#destinationsTab">Destinations</a></li>

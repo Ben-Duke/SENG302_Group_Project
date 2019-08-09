@@ -26,7 +26,7 @@
 
     }
     #singleDestinationContainer {
-        min-height: 320px;
+        min-height: 360px;
         height: 35%;
         position: relative;
     }
@@ -37,14 +37,19 @@
     }
     .destBtnContainer {
         position: absolute;
-        padding: 10px;
-        padding-left: 20px;
+        padding: 10px 10px 10px 20px;
         bottom: 0;
         text-align: left;
     }
+    #destinationList {
+        margin-top: 10px;
+        position: relative;
+    }
     .createDestBtn {
         color: white;
-        font-size: 15px;
+        position: absolute;
+        top: -8px;
+        right: 0;
     }
 
     #tripsTab {
@@ -234,7 +239,7 @@
                 <hr>
                 <div id="destinationList">
                     <h4 style="text-align: left">My Destinations</h4>
-                    <a class="btn btn-primary createDestBtn">
+                    <a class="btn btn-primary createDestBtn" onclick="viewCreatePanel()">
                         &#10133</a>
                     <div class="list-group">
                         @for(destination <- destinations) {

@@ -7,6 +7,29 @@ const colors = ['6b5b95', 'feb236', 'd64161', 'ff7b25',
 let tripFlightPaths = {};
 let isNewTrip = false;
 
+
+
+function initMap() {
+
+    window.globalMap = new google.maps.Map(document.getElementById('map'), {
+        center: {lat: -43.522057156877615, lng: 172.62360347218828},
+        zoom: 5,
+        mapTypeControl: true,
+        mapTypeControlOptions: {
+            style: google.maps.MapTypeControlStyle.HORIZONTAL_BAR,
+            position: google.maps.ControlPosition.TOP_RIGHT
+        }
+    });
+
+    initPlacesAutocompleteSearch();
+    initDestinationMarkers();
+    initMapLegend();
+    initTripRoutes();
+    initMapPositionListeners();
+
+}
+
+
 /**
  * Gets the HTML for a Destinations infoWindow, for the google map.
  *
@@ -171,24 +194,7 @@ function addSelectedToVisitToTrip(destId){
 
 
 
-function initMap() {
 
-    window.globalMap = new google.maps.Map(document.getElementById('map'), {
-        center: {lat: -43.522057156877615, lng: 172.62360347218828},
-        zoom: 5,
-        mapTypeControl: true,
-        mapTypeControlOptions: {
-            style: google.maps.MapTypeControlStyle.HORIZONTAL_BAR,
-            position: google.maps.ControlPosition.TOP_RIGHT
-        }
-    });
-
-    initPlacesAutocompleteSearch();
-    initDestinationMarkers();
-    initMapLegend();
-    initTripRoutes();
-
-}
 
 function tripVisittableRefresh(data){
     let targetTable = document.getElementById("placeholderTripTable");
@@ -517,93 +523,94 @@ function updateTripName(newName) {
     });
 
 }
-    function deleteTripRequest(tripId, url) {
-        let token = $('input[name="csrfToken"]').attr('value');
-        $.ajaxSetup({
-            beforeSend: function (xhr) {
-                xhr.setRequestHeader('Csrf-Token', token);
+
+function deleteTripRequest(tripId, url) {
+    let token = $('input[name="csrfToken"]').attr('value');
+    $.ajaxSetup({
+        beforeSend: function (xhr) {
+            xhr.setRequestHeader('Csrf-Token', token);
+        }
+    });
+    $.ajax({
+        url: '/users/trips/' + tripId,
+        method: "DELETE",
+        success: function (res) {
+            window.location = url;
+        }
+    });
+}
+
+
+function sendDeleteVisitRequest(url, visitId) {
+    let token = $('input[name="csrfToken"]').attr('value');
+    $.ajaxSetup({
+        beforeSend: function (xhr) {
+            xhr.setRequestHeader('Csrf-Token', token);
+        }
+    });
+    $.ajax({
+        url: url,
+        method: "DELETE",
+        contentType: 'application/json',
+        success: function (data, textStatus, xhr) {
+            if (xhr.status == 200) {
+                document.getElementById("visit_row_" + visitId).remove();
             }
-        });
-        $.ajax({
-            url: '/users/trips/' + tripId,
-            method: "DELETE",
-            success: function (res) {
-                window.location = url;
+            else {
+                console.log("error in success function");
             }
-        });
-    }
-
-
-    function sendDeleteVisitRequest(url, visitId) {
-        let token = $('input[name="csrfToken"]').attr('value');
-        $.ajaxSetup({
-            beforeSend: function (xhr) {
-                xhr.setRequestHeader('Csrf-Token', token);
+        },
+        error: function (xhr, settings) {
+            if (xhr.status == 400) {
+                console.log("400 error");
             }
-        });
-        $.ajax({
-            url: url,
-            method: "DELETE",
-            contentType: 'application/json',
-            success: function (data, textStatus, xhr) {
-                if (xhr.status == 200) {
-                    document.getElementById("visit_row_" + visitId).remove();
-                }
-                else {
-                    console.log("error in success function");
-                }
-            },
-            error: function (xhr, settings) {
-                if (xhr.status == 400) {
-                    console.log("400 error");
-                }
-                else if (xhr.status == 403) {
-                    console.log("403 error");
-                }
-                else {
-                }
+            else if (xhr.status == 403) {
+                console.log("403 error");
             }
-        });
-    }
-
-
-    function updateVisitDate(visitId) {
-        let arrival = document.getElementById("arrival_" + visitId).value;
-        let departure = document.getElementById("departure_" + visitId).value;
-
-        let data = {
-            arrival: arrival,
-            departure: departure
-        };
-
-        let token = $('input[name="csrfToken"]').attr('value');
-        $.ajaxSetup({
-            beforeSend: function (xhr) {
-                xhr.setRequestHeader('Csrf-Token', token);
+            else {
             }
-        });
-        $.ajax({
-            url: updateVisitDateUrl + visitId,
-            method: "PATCH",
-            data: JSON.stringify(data),
-            contentType: 'application/json',
-            success: function (data, textStatus, xhr) {
-                if (xhr.status == 200) {
+        }
+    });
+}
 
-                }
-                else {
 
-                }
-            },
-            error: function (xhr, settings) {
-                if (xhr.status == 400) {
-                }
-                else if (xhr.status == 403) {
-                }
-                else {
-                }
+function updateVisitDate(visitId) {
+    let arrival = document.getElementById("arrival_" + visitId).value;
+    let departure = document.getElementById("departure_" + visitId).value;
+
+    let data = {
+        arrival: arrival,
+        departure: departure
+    };
+
+    let token = $('input[name="csrfToken"]').attr('value');
+    $.ajaxSetup({
+        beforeSend: function (xhr) {
+            xhr.setRequestHeader('Csrf-Token', token);
+        }
+    });
+    $.ajax({
+        url: updateVisitDateUrl + visitId,
+        method: "PATCH",
+        data: JSON.stringify(data),
+        contentType: 'application/json',
+        success: function (data, textStatus, xhr) {
+            if (xhr.status == 200) {
+
             }
-        });
+            else {
+
+            }
+        },
+        error: function (xhr, settings) {
+            if (xhr.status == 400) {
+            }
+            else if (xhr.status == 403) {
+            }
+            else {
+            }
+        }
+    });
 
 }
 
@@ -700,6 +707,60 @@ function initPlacesAutocompleteSearch() {
 
 
     });
+}
+
+function viewCreatePanel() {
+
+    if (currentlyDisplayedDestId !== undefined) {
+        document.getElementById('singleDestination_'+currentlyDisplayedDestId).style.display = 'none';
+    }
+    document.getElementById("latitude").value = '';
+    document.getElementById("longitude").value = '';
+    document.getElementById('createDestination').style.display = 'block';
+}
+
+/**
+ * If in edit mode then listeners will
+ * be added to the latitude and longitude
+ * fields so they will update the maps center.
+ * A listener is added to the map so clicking
+ * will update the latitude and longitude fields.
+ */
+function initMapPositionListeners() {
+
+    if (document.getElementById("latitude") !== null
+        && document.getElementById("longitude") !== null) {
+
+        document.getElementById("latitude").addEventListener('input', function (event) {
+
+            if (!isNaN(document.getElementById("latitude").value)) {
+                var latlng = new google.maps.LatLng(
+                    document.getElementById("latitude").value,
+                    window.globalMap.center.lng());
+
+                window.globalMap.setCenter(latlng);
+
+            }
+        });
+
+        document.getElementById("longitude").addEventListener('input', function (event) {
+
+            if (!isNaN(document.getElementById("longitude").value)) {
+
+                var latlng = new google.maps.LatLng(
+                    window.globalMap.center.lat(),
+                    document.getElementById("longitude").value);
+
+                window.globalMap.setCenter(latlng);
+            }
+        });
+
+        window.globalMap.addListener('click', function (event) {
+            document.getElementById("latitude").value = event.latLng.lat();
+            document.getElementById("longitude").value = event.latLng.lng();
+        });
+
+    }
 }
 
 

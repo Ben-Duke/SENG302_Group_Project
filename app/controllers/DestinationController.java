@@ -120,7 +120,7 @@ public class DestinationController extends Controller {
 
             List<Destination> allDestinations = Destination.find().all();
 
-            return ok(indexDestination.render(destinations, allDestinations, destFactory, user));
+            return ok();
 
 
         }
@@ -469,7 +469,7 @@ public class DestinationController extends Controller {
 
             Map<String, Boolean> countryList = CountryUtils.getCountriesMap();
 
-            return ok(createEditDestination.render(destFormData, null, countryList , Destination.getTypeList(),user));
+            return ok();
         }
         return redirect(routes.UserController.userindex());
     }
@@ -597,8 +597,7 @@ public class DestinationController extends Controller {
                 countryList.replace(dynamicDestForm.get("country"), true);
             }
 
-            return badRequest(createEditDestination.render(destForm, destId, countryList,
-                    typeList, user));
+            return badRequest();
         } else {
             return null;    // no errors
         }
@@ -1012,13 +1011,5 @@ public class DestinationController extends Controller {
     }
 
 
-
-
-
-    public Result renderMap(Http.Request request) {
-        User user = User.getCurrentUser(request);
-//        return ok(googlePlacesMapDocumentationExample.render(user));
-        return ok(googlePlacesMapDocumentationExample.render(user));
-    }
 
 }

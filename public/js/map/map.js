@@ -160,7 +160,7 @@ function addSelectedToVisitToTrip(destId){
                 tripCheckBox.setAttribute('id',"Toggle"+data.tripId);
                 tripCheckBox.setAttribute('checked', 'true');
                 tripCheckBox.setAttribute('onclick', 'toggleTrips(' + data.tripId + ')');
-                tripCheckBox.setAttribute('class', 'form-check-input');
+                tripCheckBox.setAttribute('class', 'form-check-input map-check');
                 let mapLabel = document.createElement('label');
                 mapLabel.setAttribute('class', 'form-check-label');
                 mapLabel.setAttribute('for', "toggleMap");

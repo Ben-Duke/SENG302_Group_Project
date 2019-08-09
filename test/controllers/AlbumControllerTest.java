@@ -987,10 +987,11 @@ public class AlbumControllerTest extends BaseTestWithApplicationAndDatabase {
         return route(app, request);
     }
 
-    @Test
+
     /**
      * Tests that an authenticated, valid request gets an ok HTTP response.
      */
+    @Test
     public void deleteUserPhotoAndUnlinkFromSelectDests_is200HTTPStatus() {
         User user = UserAccessor.getUserByEmail("testuser1@uclive.ac.nz");
         String userId = Integer.toString(user.getUserid());
@@ -998,8 +999,33 @@ public class AlbumControllerTest extends BaseTestWithApplicationAndDatabase {
         Destination destination = DestinationAccessor.getPublicDestinationbyName("Christchurch");
         int destId = destination.getDestid();
 
+        int mediaId = MediaAccessor.getMediaById(1).getMediaId();
+
         Http.RequestBuilder request = Helpers.fakeRequest()
-                .bodyJson(Json.parse("{\"mediaId\": " + destId + ", \"destinationsToUnlink\": [5]}"))
+                .bodyJson(Json.parse("{\"mediaId\": " + mediaId + ", \"destinationsToUnlink\": [" + destId + "]}"))
+                .method(DELETE)
+                .uri("/users/albums/delete/photo_and_unlink_selected_destinations")
+                .session("connected", userId);
+        Result result = route(app, request);
+
+        assertEquals(OK, result.status());
+    }
+
+    /**
+     * Tests that the photo is unlinked and returns an ok response if initiated by an admin that does not own the photo
+     */
+    @Test
+    public void deleteUserPhotoAndUnlinkFromSelectDests_is200HTTPStatus_asAdmin() {
+        User user = UserAccessor.getUserByEmail("admin@admin.com");
+        String userId = Integer.toString(user.getUserid());
+
+        Destination destination = DestinationAccessor.getPublicDestinationbyName("Christchurch");
+        int destId = destination.getDestid();
+
+        int mediaId = MediaAccessor.getMediaById(1).getMediaId();
+
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .bodyJson(Json.parse("{\"mediaId\": " + mediaId + ", \"destinationsToUnlink\": [" + destId + "]}"))
                 .method(DELETE)
                 .uri("/users/albums/delete/photo_and_unlink_selected_destinations")
                 .session("connected", userId);

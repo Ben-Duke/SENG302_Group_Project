@@ -26,11 +26,25 @@
 
     }
     #singleDestinationContainer {
-        height: 50%;
+        min-height: 320px;
+        height: 35%;
+        position: relative;
     }
     .singleDestination {
-        height: 45%;
+        margin-top: 20px;
+        /*height: 45%;*/
         display: none;
+    }
+    .destBtnContainer {
+        position: absolute;
+        padding: 10px;
+        padding-left: 20px;
+        bottom: 0;
+        text-align: left;
+    }
+    .createDestBtn {
+        color: white;
+        font-size: 15px;
     }
 
     #tripsTab {
@@ -110,6 +124,7 @@
     #resizeRight {
         left: 10px;
     }
+
 
 </style>
 
@@ -195,9 +210,12 @@
                                     <span>@destination.getLongitude()</span>
                                 </div>
                             </div>
-
-                            <a class="btn btn-primary" id="setPrimaryPicture" href="@routes.DestinationController.viewDestination(destination.getDestId())">
-                            View Destination</a>
+                            <div class="destBtnContainer">
+                                <a class="btn btn-primary" href="@routes.DestinationController.viewDestination(destination.getDestId())">
+                                View</a>
+                                <a class="btn btn-primary" href="@routes.DestinationController.editDestination(destination.getDestId())">
+                                Edit</a>
+                            </div>
 
 
                         </div>
@@ -216,6 +234,8 @@
                 <hr>
                 <div id="destinationList">
                     <h4 style="text-align: left">My Destinations</h4>
+                    <a class="btn btn-primary createDestBtn">
+                        &#10133</a>
                     <div class="list-group">
                         @for(destination <- destinations) {
                             @if(!destination.getIsPublic()) {

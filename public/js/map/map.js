@@ -148,7 +148,8 @@ function addSelectedToVisitToTrip(destId, startTrip){
                 deleteButton.innerText = "Delete trip";
                 outerTripDiv.appendChild(deleteButton);
 
-
+                // Handle checking the show/hide all button
+                document.getElementById('show-hide-all-btn').style.display = 'block';
 
                 //Add outer div to single trip view
                 singleTripContainer.appendChild(outerTripDiv);

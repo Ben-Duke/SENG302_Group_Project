@@ -354,7 +354,7 @@ public class AlbumController extends Controller {
         }
 
         int mediaUserId = photo.getUser().getUserid();
-        if (mediaUserId != authenticatedUserId) {
+        if (mediaUserId != authenticatedUserId && !user.userIsAdmin()) {
             return new Result(Http.Status.FORBIDDEN);
         }
 

@@ -20,7 +20,7 @@ public class EditVisitCommand extends UndoableCommand {
      * @param visit the visit that is being edited
      */
     public EditVisitCommand(Visit visit) {
-        super(CommandPage.TRIP);
+        super(CommandPage.MAP);
         this.editedVisit = new Visit();
         actualVisit = visit;
         this.editedVisit.applyEditChanges(visit);

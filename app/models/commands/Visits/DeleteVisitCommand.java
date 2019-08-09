@@ -21,7 +21,7 @@ public class DeleteVisitCommand extends UndoableCommand {
      * @param visit the visit that is being deleted
      */
     public DeleteVisitCommand(Visit visit) {
-        super(CommandPage.TRIP);
+        super(CommandPage.MAP);
         this.visitToDelete = visit;
         this.trip = visit.getTrip();
     }

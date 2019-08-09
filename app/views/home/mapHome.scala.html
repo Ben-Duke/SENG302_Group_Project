@@ -57,10 +57,17 @@
     }
     #singleTripContainer {
         height: 55%;
-        overflow-y: auto;
     }
     .singleTrip {
+        overflow-y: auto;
+        height: 90%;
         display: none;
+        position: relative;
+    }
+    .deleteTripBtn {
+        position: absolute;
+        bottom: 10px;
+        left: 20px;
     }
 
     #tripList {
@@ -325,7 +332,7 @@
                             </tbody>
                         </table>
 
-                        <button class="btn btn-danger" onclick="deleteTripRequest(@trip.getTripid(), '@routes.HomeController.mainMapPage()')">Delete trip</button>
+                        <button class="btn btn-danger deleteTripBtn" onclick="deleteTripRequest(@trip.getTripid(), '@routes.HomeController.mainMapPage()')">Delete trip</button>
 
                     </div>
                     }

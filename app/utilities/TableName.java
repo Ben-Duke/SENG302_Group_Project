@@ -8,8 +8,8 @@ package utilities;
 public enum TableName {
     // 3.sql tables
     visit("visitid"),
-    user_photo_destination("user_photo_photo_id", false),
-    user_photo("photo_id"),
+    destination_media("destination_destid", false),
+    media("media_id"),
     user_treasure_hunt("user_userid", false),
     user_traveller_type("user_userid", false),
     user_passport("user_userid", false),
@@ -21,8 +21,8 @@ public enum TableName {
     destination_modification_request("id"),
     destination_traveller_type("destination_destid", false),
     traveller_type("ttypeid"),
+    album("album_id"),
     destination("destid"),
-    admin("id"),
     user("userid"),
 
     // 2.sql tables

@@ -27,16 +27,7 @@ public class CreateTripFromVisitsCommandTest extends BaseTestWithApplicationAndD
     private List<Visit> visits = new ArrayList<>();
 
     @Override
-    @Before
-    public void setUpDatabase() {
-        ApplicationManager.setUserPhotoPath("/test/resources/test_photos/user_");
-        ApplicationManager.setIsTest(true);
-        database = Databases.inMemory();
-        Evolutions.applyEvolutions(database, Evolutions.forDefault(new Evolution(
-                1,
-                "create table test (id bigint not null, name varchar(255));",
-                "drop table test;"
-        )));
+    public void populateDatabase() {
         TestDatabaseManager.populateDatabase();
         Visit visit1 = new Visit(null, null, Destination.find().byId(1));
         Visit visit2 = new Visit(null, null, Destination.find().byId(2));

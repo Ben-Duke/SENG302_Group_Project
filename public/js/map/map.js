@@ -1,9 +1,10 @@
-var visitArray = [];
+let visitArray = [];
 const updateVisitDateUrl = "/user/trips/visit/dates/";
 const colors = ['6b5b95', 'feb236', 'd64161', 'ff7b25',
     '6b5b95', '86af49', '3e4444', 'eca1a6', 'ffef96', 'bc5a45', 'c1946a'];
 
-
+let map;
+window.globalMarkers = [];
 let tripFlightPaths = {};
 let isNewTrip = false;
 
@@ -27,7 +28,7 @@ function getInfoWindowHTML(destination) {
     let infoWindowHTML;
     // uses a ES6 template string
     infoWindowHTML = `<style>.basicLink {text-underline: #0000EE;}</style>
-                      <a class="basicLink" href="javascript:;" onclick="viewDestination(${destination.destId})">
+                      <a class="basicLink" href="/users/destinations/view/${destination.destId}" onclick="viewDestination(${destination.destId})">
                         ${destinationName}
                       </a>
                       <div>${destinationType}</div>
@@ -37,6 +38,56 @@ function getInfoWindowHTML(destination) {
                       <script src="indexDestination.js"></script>`;
 
     return infoWindowHTML;
+}
+
+/**
+ * Sets the global dest id to the destination id then opens the modal based on the dest id.
+ * @param destid
+ */
+function viewDestination(destid){
+    getIdFromRow = destid;
+    $('#orderModal').modal('show');
+}
+
+/**
+ * Gets a JSON of all marker icons.
+ *
+ * @returns {{greenIcon: {url: string, name: string}, blueIcon: {url: string, name: string}}}
+ */
+function getAllMarkerIcons() {
+    const icons = {
+        greenIcon: {
+            url: 'https://maps.google.com/mapfiles/ms/icons/green-dot.png',
+            name: 'Public Destination'
+        },
+        blueIcon: {
+            url: 'https://maps.google.com/mapfiles/ms/icons/blue-dot.png',
+            name: 'Private Destination'
+        }
+    };
+    return icons;
+}
+
+/**
+ * Creates the destination map legend.
+ *
+ * Code from here
+ * https://developers.google.com/maps/documentation/javascript/adding-a-legend
+ */
+function initMapLegend() {
+    let icons = getAllMarkerIcons();
+
+    let legend = document.getElementById('legend');
+    for (let key in icons) {
+        let type = icons[key];
+        let name = type.name;
+        let icon = type.url;
+        let div = document.createElement('div');
+        div.innerHTML = '<img src="' + icon + '"> ' + name;
+        legend.appendChild(div);
+    }
+
+    window.globalMap.controls[google.maps.ControlPosition.LEFT_BOTTOM].push(legend);
 }
 
 function addSelectedToVisitToTrip(destId){
@@ -169,7 +220,7 @@ function addSelectedToVisitToTrip(destId){
 
 function initMap() {
 
-    window.globalMap = new google.maps.Map(document.getElementById('map'), {
+    map = window.globalMap = new google.maps.Map(document.getElementById('map'), {
         center: {lat: -43.522057156877615, lng: 172.62360347218828},
         zoom: 5,
         mapTypeControl: true,
@@ -186,6 +237,113 @@ function initMap() {
 
 
 
+}
+
+/**
+ * Initiates all the event handlers for a google maps infoWindows.
+ *
+ * @param markerIndex The index of the marker and window in window.globalMarkers
+ */
+function initInforWindowEventHandlers(markerIndex) {
+// event handler to handle infoWindow exit
+    window.globalMarkers[markerIndex].infoWindow.addListener('closeclick', () => {
+        window.globalMarkers[markerIndex].isClicked = false;
+        window.globalMarkers[markerIndex].infoWindow.close(window.globalMap,
+            window.globalMarkers[markerIndex].marker);
+    });
+}
+
+/**
+ * Displays all visible destination markers to the google map. Add's the marker
+ * objects to the window.globalMarkers global variable.
+ */
+function initDestinationMarkers() {
+    fetch('/users/destinations/getalljson', {
+        method: 'GET'})
+        .then(res => res.json())
+        .then(destinations => {
+            let marker;
+            let infoWindow;
+            // console.log(destinations);
+            for (let index = 0; index < destinations.length; index++) {
+                marker = new google.maps.Marker({
+                    position: {
+                        lat: destinations[index].latitude,
+                        lng: destinations[index].longitude
+                    },
+                    map: window.globalMap,
+                    icon: getMarkerIcon(destinations[index].isPublic)
+                });
+
+                infoWindow = new google.maps.InfoWindow({
+                    content: getInfoWindowHTML(destinations[index])
+                });
+
+                //make the marker and infoWindow globals (persist in browser session)
+                window.globalMarkers.push({
+                    marker: marker,
+                    infoWindow: infoWindow,
+                    isClicked: false
+                });
+
+                initMarkerEventHandlers(index);
+                initInforWindowEventHandlers(index);
+            }
+        });
+}
+
+/**
+ * Initiates all the event handlers for a google maps markers.
+ *
+ * @param markerIndex The index of the marker and window in window.globalMarkers
+ */
+function initMarkerEventHandlers(markerIndex) {
+// event handler to open infoWindow on mouseout
+    window.globalMarkers[markerIndex].marker.addListener('mouseover', () => {
+        window.globalMarkers[markerIndex].infoWindow.open(window.globalMap,
+            window.globalMarkers[markerIndex].marker);
+    });
+
+    // event handler to close infoWindow on mouseout
+    window.globalMarkers[markerIndex].marker.addListener('mouseout', () => {
+
+        if (window.globalMarkers[markerIndex].isClicked) {
+            // user are clicked on current marker
+            // do nothing (dont close on mouseout)
+        } else {
+            // user hasn't explicitly clicked, so safe to close
+            window.globalMarkers[markerIndex].infoWindow.close(window.globalMap,
+                window.globalMarkers[markerIndex].marker);
+        }
+    });
+
+    // event handler to open infoWindow on click
+    window.globalMarkers[markerIndex].marker.addListener('click', () => {
+        window.globalMarkers[markerIndex].isClicked = true;
+        window.globalMarkers[markerIndex].infoWindow.open(window.globalMap,
+            window.globalMarkers[markerIndex].marker);
+    });
+}
+
+/**
+ * Gets the Icon (google maps api spec) for the Marker, depends on the Destintions
+ * privacy.
+ *
+ * @param isPublic A boolean, true if Destination is public, false otherwise
+ * @returns {icons.blueIcon|{url, scale}|icons.greenIcon} JSON of the icon
+ */
+function getMarkerIcon(isPublic) {
+    const icons = getAllMarkerIcons();
+
+    let selectedIcon;
+
+    if (isPublic) {
+        selectedIcon = icons.greenIcon;
+    } else {
+        selectedIcon = icons.blueIcon;
+    }
+
+    return selectedIcon;
 }
 
 function tripVisittableRefresh(data){
@@ -684,6 +842,10 @@ function initPlacesAutocompleteSearch() {
 
                     document.getElementById("latitude").value = coordinates.lat();
                     document.getElementById("longitude").value = coordinates.lng();
+                    console.log("Done the request for search")
+                    moveTo = new google.maps.LatLng(coordinates.lat(), coordinates.lng());
+                    map.panTo(moveTo)
+                    map.setZoom(14);
                 }
             },
             error: function(xhr, settings){

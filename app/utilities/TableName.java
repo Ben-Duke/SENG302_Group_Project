@@ -24,6 +24,7 @@ public enum TableName {
     media("media_id"),
     album("album_id"),
     destination("destid"),
+    admin("user_id"),   // has an underscore but user primary key does not
     user("userid"),
 
     // 2.sql tables

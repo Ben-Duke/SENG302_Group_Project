@@ -443,6 +443,10 @@ INSERT INTO `visit` (`visitid`, `visitorder`, `destination`, `trip`, `arrival`,
 
 delete from visit;
 
+delete from album_media;
+
+delete from destination_media;
+
 delete from media;
 
 delete from user_treasure_hunt;

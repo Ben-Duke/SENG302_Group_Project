@@ -46,8 +46,8 @@ public class AdminControllerTest extends BaseTestWithApplicationAndDatabase {
         user.save();
 
         // make user id=1 an admin
-        Admin admin = new Admin(1, true);
-        admin.save();
+//        Admin admin = new Admin(1, true);
+//        admin.save();
 
         User user1 = new User("testUser1");
         user1.save();

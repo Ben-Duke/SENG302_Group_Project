@@ -234,7 +234,8 @@ public class TreasureHuntController extends Controller {
         if (user != null) {
             TreasureHunt treasureHunt = TreasureHuntAccessor.getById(treasureHuntId);
             if (treasureHunt != null) {
-                if (treasureHunt.getUser().getUserid() == (user.getUserid())) {
+                if ((treasureHunt.getUser().getUserid() == (user.getUserid())) ||
+                        (user.userIsAdmin())) {
                     UndoableCommand cmd = new DeleteTreasureHuntCommand(treasureHunt);
                     user.getCommandManager().executeCommand(cmd);
                     return redirect(routes.TreasureHuntController.indexTreasureHunt());

@@ -2,7 +2,6 @@ package testhelpers;
 
 import accessors.CommandManagerAccessor;
 import com.google.inject.Guice;
-import com.mysql.jdbc.Connection;
 import controllers.ApplicationManager;
 import io.ebean.Ebean;
 import io.ebean.EbeanServer;

@@ -385,7 +385,7 @@ public class TripController extends Controller {
             System.out.println(trip.getVisits());
             System.out.println(newVisit.getVisitOrder());
             if (tripFactory.hasRepeatDest(trip.getVisits(), newVisit, "ADD")) {
-                return badRequest();
+                return badRequest("Trip cannot have two destinations in a row!");
             }
             else {
                 VisitAccessor.insert(newVisit);
@@ -393,14 +393,19 @@ public class TripController extends Controller {
                 trip.addVisit(newVisit);
                 TripAccessor.update(trip);
                 VisitAccessor.update(newVisit);
-                ArrayList<String> visitInformation = new ArrayList<>();
-                visitInformation.add(newVisit.getVisitid().toString());
-                visitInformation.add(newVisit.getVisitName());
-                visitInformation.add(newVisit.getDestination().getDestType());
-                visitInformation.add(newVisit.getArrival());
-                visitInformation.add(newVisit.getDeparture());
+                ObjectNode data =  (ObjectNode) Json.toJson(trip);
+                data.put("latitude", destination.getLatitude());
+                data.put("longitude", destination.getLongitude());
+                data.put("visitName", newVisit.getVisitName());
+                data.put("visitId", newVisit.getVisitid());
+                data.put("destType", destination.getDestType());
+                data.put("arrival", newVisit.getArrival());
+                data.put("departure", newVisit.getDeparture());
+                data.put("tripName", trip.getTripName());
+                data.put("tripId", trip.getTripid());
 
-                return ok(Json.toJson(visitInformation));
+
+                return ok(Json.toJson(data));
             }
 
         }

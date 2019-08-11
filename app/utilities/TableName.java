@@ -22,7 +22,7 @@ public enum TableName {
     destination_traveller_type("destination_destid", false),
     traveller_type("ttypeid"),
     destination("destid"),
-    admin("id"),
+    admin("user_id"),   // has an underscore but user primary key does not
     user("userid"),
 
     // 2.sql tables

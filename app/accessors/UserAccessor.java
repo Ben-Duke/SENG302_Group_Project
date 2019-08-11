@@ -11,6 +11,7 @@ public class UserAccessor {
 
     public static void insert(User user) { user.save(); }
 
+
     /** Hides the implicit public constructor */
     private UserAccessor() {
         throw new IllegalStateException("Utility class");

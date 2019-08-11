@@ -47,7 +47,8 @@ function addItem(data) {
     const tagFeed = document.getElementById('tag-feed');
 
     const media = document.createElement('DIV');
-    media.classList.add('media');
+    media.classList.add('media-' + data.type);
+    media.style.display = "block";
 
     const imgDiv = document.createElement('DIV');
     imgDiv.classList.add('media-left');
@@ -88,5 +89,53 @@ function createTagContent(tagData) {
         console.log(item);
         const data = getItemData(item);
         addItem(data);
+    }
+}
+
+/**
+ * Filter the tags when a checkbox is clicked
+ */
+function filterTags() {
+    let photoCheckBox = document.getElementById("photos-check");
+    if (photoCheckBox.checked === false) {
+       removeTags("Photo");
+    } else {
+        addTags("Photo");
+    }
+
+    let tripCheckBox = document.getElementById("trips-check");
+    if (tripCheckBox.checked === false) {
+        removeTags("Trip");
+    } else {
+        addTags("Trip");
+    }
+
+    let destinationCheckBox = document.getElementById("destinations-check");
+    if (destinationCheckBox.checked === false) {
+        removeTags("Destination");
+    } else {
+        addTags("Destination");
+    }
+}
+
+/**
+ * Make tags of a tag type not visible in the list
+ * @param tagType the type of tag to hide
+ */
+function removeTags(tagType) {
+    let tags = document.getElementsByClassName("media-" + tagType);
+    for(let i = 0; i < tags.length; i++) {
+        tags[i].style.display = "none"
+    }
+}
+
+/**
+ * Make tags of a particular tag type visible in the list
+ * @param tagType the type of tag to show
+ */
+function addTags(tagType) {
+    let tags = document.getElementsByClassName("media-" + tagType);
+    for(let i = 0; i < tags.length; i++) {
+        tags[i].style.display = "block"
     }
 }

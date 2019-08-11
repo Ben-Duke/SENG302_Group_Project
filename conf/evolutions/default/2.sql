@@ -289,8 +289,8 @@ INSERT INTO `user` (`userid`, `email`, `password_hash`, `date_of_birth`, `gender
 
 
 -- Admin
-INSERT INTO `admin` (`id`, `user_id`, `user_id_to_edit`, `is_default`) VALUES
-(1, 1, NULL, 1);
+INSERT INTO `admin` (`user_id`, `user_id_to_edit`, `is_default`) VALUES
+(1, NULL, 1);
 
 
 -- Destination

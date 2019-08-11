@@ -1,17 +1,15 @@
 -- SQL file for mysql databases
--- Differences from test sql files
---   1. Uses '#' for Ups/Downs
---   2. WILL NOT WORK if varchars are > 191
-
+-- Differences from play generated sql files
+--   1. WILL NOT WORK if varchars are > 191
+--   2. Does not have line talking about DDL Generation
 
 # --- !Ups
 
 create table admin (
-  id                            bigint auto_increment not null,
-  user_id                       integer,
+  user_id                       integer auto_increment not null,
   user_id_to_edit               integer,
   is_default                    boolean default false not null,
-  constraint pk_admin primary key (id)
+  constraint pk_admin primary key (user_id)
 );
 
 create table destination (
@@ -347,6 +345,4 @@ drop table if exists user_photo;
 drop table if exists user_photo_destination;
 
 drop table if exists visit;
-
-
 

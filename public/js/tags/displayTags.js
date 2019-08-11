@@ -33,6 +33,9 @@ function getItemData(item) {
         data.img = "https://img.purch.com/w/660/aHR0cDovL3d3dy5saXZlc2NpZW5jZS5jb20vaW1hZ2VzL2kvMDAwLzAzOS84ODUvb3JpZ2luYWwvc2h1dHRlcnN0b2NrXzc3NDAwNjYxLmpwZw==";
     } else if (item.hasOwnProperty('caption')) {
         data.header = item.caption;
+        if (item.caption === "") {
+            data.header = "Uncaptioned Photo"
+        }
         data.type = 'Photo';
         data.body = '';
         data.img = '/users/home/servePicture/' + encodeURIComponent(item.urlWithPath);

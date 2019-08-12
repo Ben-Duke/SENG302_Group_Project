@@ -448,7 +448,7 @@ public class TripController extends Controller {
 
         }
 
-        return unauthorized(); 
+        return unauthorized();
     }
 
     /**
@@ -659,7 +659,6 @@ public class TripController extends Controller {
     }
 
 
-
     /**
      * Turns a users trips into and array of json node with each destinations
      * coordinates
@@ -677,9 +676,6 @@ public class TripController extends Controller {
         ObjectNode tripNodes = objectMapper.createObjectNode();
 
         for (Trip trip : trips) {
-
-//            ObjectNode tripNode = objectMapper.createObjectNode();
-
             ArrayNode destinationNodes = objectMapper.createArrayNode();
 
             for (Visit visit : trip.getOrderedVisits()) {
@@ -694,16 +690,8 @@ public class TripController extends Controller {
             }
 
             tripNodes.put(trip.getTripid().toString(), destinationNodes);
-
-
-
-//            tripNodes.add(tripNode);
         }
 
         return ok(tripNodes);
-
     }
-
-
 }
-

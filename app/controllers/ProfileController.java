@@ -78,6 +78,9 @@ public class ProfileController extends Controller {
         Boolean isAdmin = false;
         if (users.size() != 0) {
             User user = users.get(0);
+            //Clear the command stack before starting otherwise can undo profile edits from this page
+            //which is not desired functionality.
+            user.getCommandManager().resetUndoRedoStack();
             if(users.get(0).getUserid() != users.get(1).getUserid()) {
                 isAdmin = true;
             }
@@ -108,6 +111,7 @@ public class ProfileController extends Controller {
      * @return home page or error page
      */
     public Result updateProfileRequest(Http.Request request){
+
         Form<UpdateUserFormData> updateProfileForm = formFactory
                             .form(UpdateUserFormData.class).bindFromRequest(request);
         // checking if a user is logged in.
@@ -115,6 +119,7 @@ public class ProfileController extends Controller {
         Boolean isAdmin = false;
         if (users.size() != 0) {
             User user = users.get(0);
+
             if(users.get(0).getUserid() != users.get(1).getUserid())
             {
                 isAdmin = true;
@@ -164,7 +169,7 @@ public class ProfileController extends Controller {
         if (0 < passwordPlainText.length()) {
             user.hashAndSetPassword(passwordPlainText);
         }
-
+        user.getCommandManager().resetUndoRedoStack();
         EditProfileCommand editProfileCommand = new EditProfileCommand(user);
         user.getCommandManager().executeCommand(editProfileCommand);
         // Show the user their home page
@@ -215,6 +220,7 @@ public class ProfileController extends Controller {
 
             List<Nationality> nationalities = Nationality.find().all();
             List<Passport> passports = Passport.find().all();
+            user.getCommandManager().resetUndoRedoStack();
             return ok(updateNatPass.render(userForm, nationalities, passports, user.getUserid(), User.getCurrentUser(request)));
         }
         else {

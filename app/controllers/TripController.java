@@ -414,20 +414,18 @@ public class TripController extends Controller {
 
     public Result CreateTripFromJSRequest(Http.Request request, Integer destid) {
         User user = User.getCurrentUser(request);
-        System.out.println("creating trip with the user id being " + user.getUserid());
         if(user != null) {
             Destination destination = Destination.find().byId(destid);
             if(destination == null) {
                 return notFound();
             }
-            System.out.println("Destination is public :" + destination.getIsPublic());
-            if (!destination.getIsPublic() && destination.getUser().getUserid() != user.getUserid()) {
-                System.out.println("Dest forbid");
+            // If private dest and user not owner and user not admin
+            if (!destination.getIsPublic() && destination.getUser().getUserid()
+                    != user.getUserid() && !user.userIsAdmin()) {
                 return forbidden("2");
 
             }
             Trip trip = new Trip("Trip to " + destination.getDestName(),false, user);
-            System.out.println("Trip user id is " + trip.getUser().getUserid());
             Visit visit = new Visit(null, null, trip, destination);
 
             TripAccessor.insert(trip);
@@ -446,8 +444,6 @@ public class TripController extends Controller {
             data.put("departure", visit.getDeparture());
             data.put("tripName", trip.getTripName());
             data.put("tripId", trip.getTripid());
-            System.out.println("Visit trip id is " +  visit.getTrip().getUser().getUserid());
-            System.out.println("***********************************************");
             return ok(data);
 
         }

@@ -159,7 +159,7 @@ GET     /users/home/serveProfilePicture/:id              controllers.HomeControl
 #Sets the picture as profile picture
 PUT     /users/home/setProfilePicture/:id              controllers.HomeController.setProfilePicture(request: Request, id: Integer)
 
-POST    /users/home         controllers.HomeController.upload(request:Request)
+POST    /users/home/photo         controllers.HomeController.upload(request:Request)
 
 POST    /users/home/profilePicture         controllers.HomeController.uploadProfilePicture(request:Request)
 

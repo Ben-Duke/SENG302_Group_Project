@@ -23,6 +23,8 @@ public class EditDestinationCommandTest extends BaseTestWithApplicationAndDataba
     public void populateDatabase() {
         TestDatabaseManager.populateDatabase();
 
+        //ApplicationManager.setMediaPath("/test/resources/test_photos/user_");
+        //ApplicationManager.setIsTest(true);
         Destination christchurch = Destination.find().byId(1);
         christchurch.setDestName("Auckland");
         christchurch.setDistrict("District 12");

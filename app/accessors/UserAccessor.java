@@ -1,9 +1,6 @@
 package accessors;
 
-import models.Nationality;
-import models.Passport;
-import models.User;
-import models.UserPhoto;
+import models.*;
 
 import java.util.List;
 
@@ -12,7 +9,10 @@ import java.util.List;
  */
 public class UserAccessor {
 
-    // Private constructor to hide the implicit public one
+    public static void insert(User user) { user.save(); }
+
+
+    /** Hides the implicit public constructor */
     private UserAccessor() {
         throw new IllegalStateException("Utility class");
     }
@@ -41,6 +41,10 @@ public class UserAccessor {
      */
     public static List<Nationality> getAllNationalities() {
         return Nationality.find().all();
+    }
+
+    public static List<Album> getAlbums() {
+        return Album.find.all();
     }
 
     /**
@@ -90,8 +94,6 @@ public class UserAccessor {
      *
      * @param user The User to get the photo of.
      * @return A UserPhoto representing the users profile picture.
-     * @throws io.ebean.DuplicateKeyException If the user has more than 1
-     *          profile picture (should never happen).
      */
     public static UserPhoto getProfilePhoto(User user) {
         List<UserPhoto> userProfilePhotoList = UserPhoto.find().query()
@@ -102,7 +104,11 @@ public class UserAccessor {
         if (userProfilePhotoList.isEmpty()) {
             return null;
         } else if (1 == userProfilePhotoList.size()) {
-            return userProfilePhotoList.get(0);
+            if (userProfilePhotoList.get(0).getUser() != null) {
+                return userProfilePhotoList.get(0);
+            } else {
+                return null;
+            }
         } else {
             throw new io.ebean.DuplicateKeyException("Multiple profile photos.",
                     new Throwable("Multiple profile photos."));

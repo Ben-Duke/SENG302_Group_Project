@@ -26,8 +26,12 @@ public class UserPhotoAccessor {
      * @param userPhoto the photo to delete
      */
     public static void delete(UserPhoto userPhoto) {
-        userPhoto.delete();
+        try {
+            userPhoto.delete();
+            userPhoto.update();
+        } catch (Exception e) { }
     }
+    public static void deleteById(int id) { delete(UserPhoto.find().byId(id)); }
 
     /**
      * update the photo
@@ -41,5 +45,9 @@ public class UserPhotoAccessor {
      */
     public static UserPhoto getUserPhotoById(int id) {
         return UserPhoto.find().byId(id);
+    }
+
+    public static UserPhoto getUserPhotoByUrl(String url) {
+        return UserPhoto.find().query().where().eq("url", url).findOne();
     }
 }

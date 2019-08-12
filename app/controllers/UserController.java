@@ -47,7 +47,9 @@ public class UserController {
     public Result userindex(Http.Request request){
 
         if (!wasRun.getAndSet(true)) {
-            ApplicationManager.setUserPhotoPath("/../user_photos/user_");
+            ApplicationManager.setMediaPath("/../media_");
+//            ApplicationManager.getMediaPath()
+
             TestDatabaseManager.populateDatabase(initCompleteLatch);
         } else {
             try {
@@ -91,7 +93,7 @@ public class UserController {
             List<Integer> photoIds = new ArrayList<>();
             if (userPhotos != null) {
                 for (UserPhoto photo: userPhotos) {
-                    photoIds.add(photo.getPhotoId());
+                    photoIds.add(photo.getMediaId());
                 }
             }
             return ok(Json.toJson(photoIds));
@@ -117,7 +119,7 @@ public class UserController {
             return notFound();
 
         }
-        if (!userPhoto.isPublic() && !userPhoto.getUser().equals(user) && !user.userIsAdmin()) {
+        if (!userPhoto.getIsPublic() && !userPhoto.getUser().equals(user) && !user.userIsAdmin()) {
             return forbidden();
         }
         String caption = userPhoto.getCaption();

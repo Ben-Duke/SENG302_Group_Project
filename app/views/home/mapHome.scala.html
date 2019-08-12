@@ -4,12 +4,14 @@
 
 <style>
 
-        body{
-            overflow-y: hidden;
-        }
-        #map {
-            top: -10px;
-            height: calc(100% + 10px);
+    body{
+        overflow-y: hidden;
+    }
+    #map {
+        top: -10px;
+        height: calc(100% + 10px);
+
+        z-index: 10;
 
         -webkit-transition: width 0.3s ease, height 0.3s ease, margin 0.3s ease, padding 0.3s ease, opacity 0.3s ease;
         -moz-transition: width 0.3s ease, height 0.3s ease, margin 0.3s ease, padding 0.3s ease, opacity 0.3s ease;
@@ -91,6 +93,10 @@
     }
 
     #legend {
+        position: absolute;
+        bottom: 25px;
+        left: 0px;
+        z-index: 11;
         font-family: Arial, sans-serif;
         background: hsla(120, 100%, 75%, 0.3);
         padding: 10px;

@@ -1,6 +1,8 @@
 # Issue context
 Branch observed on: _branch you were on when you noticed the bug_
 
+Commit SHA: _id of the commit branch head was at_
+
 Story Id: the story this bug relates to (if applicable)
 
 Acceptance Criteria: the ac the bug relates to (if applicable)

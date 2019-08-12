@@ -307,17 +307,17 @@ INSERT INTO `destination` (`destid`, `dest_name`, `dest_type`, `district`, `coun
 (8, 'Vatican City', 'Country', 'Rome', 'Vatican City', 0, 41.903133, 12.454341, 0, 4),
 (9, 'Lincoln Memorial', 'Monument', 'Washington DC', 'United States', 0, 38.889406, -77.050155, 1, 4);
 
---Albums
-INSERT INTO `album` (`album_id`,`destination`,`primary_photo_media_id`,`is_default`,`title`) VALUES
-(1,1,NULL,1,'Christchurch'),
-(2,2,NULL,1,'Wellington'),
-(3,3,NULL,1,'The Wok'),
-(4,4,NULL,1,'Hanmer Springs Thermal Pools'),
-(5,5,NULL,1,'Le Mans 24 hour race'),
-(6,6,NULL,1,'Great Pyramid of Giza'),
-(7,7,NULL,1,'Niagara Falls'),
-(8,8,NULL,1,'Vatican City'),
-(9,9,NULL,1,'Lincoln Memorial');
+-- Albums
+INSERT INTO `album`(`album_id`, `user`, `destination`, `primary_photo_media_id`, `is_default`, `title`) VALUES
+(1, null, 1, null,null,'Christchurch'),
+(2, null, 2, null, null,'Wellington'),
+(3, null, 3, null, null,'The Wok'),
+(4, null, 4, null, null,'Hanmer Springs Thermal Pools'),
+(5, null, 5, null, null,'Le Mans 24 hour race'),
+(6, null, 6, null, null,'Great Pyramid of Giza'),
+(7, null, 7, null, null,'Niagara Falls'),
+(8, null, 8, null, null,'Vatican City'),
+(9, null, 9, null, null,'Lincoln Memorial');
 
 
 -- Traveller Types

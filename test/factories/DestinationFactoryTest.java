@@ -1,6 +1,5 @@
 package factories;
 
-import accessors.AdminAccessor;
 import accessors.DestinationAccessor;
 import accessors.UserAccessor;
 import models.*;
@@ -242,7 +241,11 @@ public class DestinationFactoryTest extends BaseTestWithApplicationAndDatabase {
 
     @Test
     public void testMergingTwoPrivateDestinations() {
-        Admin adminUser = AdminAccessor.getAdmin();
+        User adminUser = new User("test@testytest.test", "hunter22");
+        adminUser.save();
+        Admin admin = new Admin(adminUser.getUserid(), true);
+        admin.save();
+        adminUser = UserAccessor.getUsersFromEmail("test@testytest.test").get(0);
         User privateUser = new User("test@testers.org", "hunter27");
         privateUser.save();
         privateUser = UserAccessor.getUsersFromEmail("test@testers.org").get(0);
@@ -256,7 +259,7 @@ public class DestinationFactoryTest extends BaseTestWithApplicationAndDatabase {
         formData.put("longitude", "172.943667");
         Http.RequestBuilder request = Helpers.fakeRequest().bodyForm(formData)
                 .method(POST).uri("/users/destinations/save").session("connected"
-                        , Integer.toString(adminUser.getUserId()));
+                        , Integer.toString(adminUser.getUserid()));
         route(app, request);
         request = Helpers.fakeRequest().bodyForm(formData)
                 .method(POST).uri("/users/destinations/save").session("connected"
@@ -277,7 +280,11 @@ public class DestinationFactoryTest extends BaseTestWithApplicationAndDatabase {
 
     @Test
     public void testMergingTwoPrivateDestinations2() {
-        Admin adminUser = AdminAccessor.getAdmin();
+        User adminUser = new User("test@testytest.test", "hunter22");
+        UserAccessor.insert(adminUser);
+        Admin admin = new Admin(adminUser.getUserid(), true);
+        admin.save();
+        adminUser = UserAccessor.getUsersFromEmail("test@testytest.test").get(0);
 
         User privateUser2 = new User("test@testers.org", "hunter27");
         UserAccessor.insert(privateUser2);
@@ -297,7 +304,7 @@ public class DestinationFactoryTest extends BaseTestWithApplicationAndDatabase {
 
         Http.RequestBuilder request = Helpers.fakeRequest().bodyForm(formData)
                 .method(POST).uri("/users/destinations/save").session("connected"
-                        , Integer.toString(adminUser.getUserId()));
+                        , Integer.toString(adminUser.getUserid()));
         route(app, request);
         request = Helpers.fakeRequest().bodyForm(formData)
                 .method(POST).uri("/users/destinations/save").session("connected"

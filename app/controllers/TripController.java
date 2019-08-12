@@ -19,6 +19,7 @@ import play.mvc.Result;
 import views.html.users.trip.*;
 
 import javax.inject.Inject;
+import java.io.File;
 import java.util.*;
 
 public class TripController extends Controller {
@@ -407,6 +408,27 @@ public class TripController extends Controller {
             }
         } else {
             return redirect(routes.UserController.userindex());
+        }
+    }
+
+    /**
+     * Get the trip photo being the photo of the first destination visited (or a placeholder)
+     * @param request the http request
+     * @param tripId the id of the trip which needs its photo to be retrieved
+     * @return
+     */
+    public Result getTripPhoto(Http.Request request, Integer tripId) {
+        User user = User.getCurrentUser(request);
+        if (user != null) {
+            Trip trip = Trip.find.byId(tripId);
+            Destination startDestination = trip.getOrderedVisits().get(0).getDestination();
+            UserPhoto startPhoto = startDestination.getPrimaryPhoto();
+            if (startPhoto != null) {
+                return ok(new File(startPhoto.getUrlWithPath()));
+            } else {
+                return ok(new File(ApplicationManager.getDefaultDestinationPhotoFullURL()));
+            }
+
         }
     }
 

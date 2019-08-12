@@ -448,7 +448,7 @@ public class TripController extends Controller {
 
         }
 
-        return unauthorized();
+        return unauthorized(); 
     }
 
     /**

@@ -33,6 +33,18 @@ public class ApplicationManager {
     }
 
     /**
+     * Gets the full url to the default destination photo.
+     *
+     * Used for new File(fullPath).
+     *
+     * @return The full url to the placeholder destination image.
+     */
+    public final static String getDefaultDestinationPhotoFullURL() {
+        String urlToRoot = Paths.get(".").toAbsolutePath().normalize().toString();
+        return urlToRoot + "/public/images/destinationPlaceHolder.png";
+    }
+
+    /**
      * Method to set the user photo path.
      *
      * @param userPhotoPath A String representing the user photo URL

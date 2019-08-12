@@ -30,7 +30,12 @@ function getItemData(item) {
         data.header = item.destName;
         data.type = 'Destination';
         data.body = item.district + ', ' + item.country;
-        data.img = "https://img.purch.com/w/660/aHR0cDovL3d3dy5saXZlc2NpZW5jZS5jb20vaW1hZ2VzL2kvMDAwLzAzOS84ODUvb3JpZ2luYWwvc2h1dHRlcnN0b2NrXzc3NDAwNjYxLmpwZw==";
+        if(item.primaryPhoto != null) {
+            data.img = '/users/home/servePicture/' + encodeURIComponent(item.primaryPhoto.urlWithPath);
+        } else {
+            data.img = "/users/home/servePlaceholderPicture/destinationPlaceholder.png"
+        }
+
     } else if (item.hasOwnProperty('caption')) {
         data.header = item.caption;
         if (item.caption === "") {

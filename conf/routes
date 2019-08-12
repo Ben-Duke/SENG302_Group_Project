@@ -132,6 +132,9 @@ GET     /users/home/serveDestPicture/:id               controllers.HomeControlle
 #Serve a file
 GET     /users/home/servePicture/:path                 controllers.HomeController.index(request: Request, path:String)
 
+#Serve a default file
+GET     /users/home/servePlaceholderPicture/:filename                 controllers.HomeController.getPlaceholderImage(request: Request, filename:String)
+
 #Unlinks the photo from destinations and deletes the UserPhoto with the photoID
 DELETE /users/unlinkAndDeletePicture/:photoId                  controllers.DestinationController.unlinkAndDelete(request: Request, photoId: Integer)
 

@@ -28,15 +28,15 @@
             <div class="col-md-2">
                 <div class="container" id="tag-checkboxes" class="checkboxes">
                     <div class="checkbox">
-                        <label ><input id="trips-check" type="checkbox" value="" checked><span>Trips</span></label>
+                        <label ><input id="trips-check" type="checkbox" onclick=filterTags(); value="" checked><span>Trips</span></label>
                     </div>
                     <br>
                     <div class="checkbox">
-                        <label ><input id="destinations-check" type="checkbox" value="" checked><span>Destinations</span></label>
+                        <label ><input id="destinations-check" type="checkbox" onclick=filterTags(); value="" checked><span>Destinations</span></label>
                     </div>
                     <br>
                     <div class="checkbox">
-                        <label ><input id="photos-check" type="checkbox" value="" onclick=filterTags() checked><span>Photos</span></label>
+                        <label ><input id="photos-check" type="checkbox" value="" onclick=filterTags(); checked><span>Photos</span></label>
                     </div>
                 </div>
             </div>

@@ -1428,10 +1428,8 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
         DestinationAccessor.insert(destination);
         Tag tag = new Tag("Places to see");
         TagAccessor.insert(tag);
-        tag.addDestinationById(destination.getDestId());
         destination.addTag(tag);
         DestinationAccessor.update(destination);
-        TagAccessor.update(tag);
         Destination clone = DestinationAccessor.getDestinationById(destination.getDestId());
         assertEquals(1, clone.getTags().size());
     }
@@ -1463,8 +1461,6 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
         DestinationAccessor.insert(destination);
         Tag tag = new Tag("Delete me");
         TagAccessor.insert(tag);
-        tag.addDestination(destination);
-        TagAccessor.update(tag);
 
         destination.addTag(tag);
         DestinationAccessor.update(destination);

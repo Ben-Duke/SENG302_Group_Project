@@ -535,13 +535,6 @@ public class User extends BaseModel implements Comparable<User>, AlbumOwner, Med
     {
         HashMap<Trip,LocalDate> datesMap = new HashMap<>();
         for(Trip trip: trips){
-            //TODO check with PO about business logic for this decision to allow less than 2 visits
-            /*if(trip.getVisits().size() < 2){
-                for(Visit visit : trip.getVisits()){
-                    visit.delete();
-                }
-                trip.delete();
-            }*/
 
             ArrayList<LocalDate> datesList = new ArrayList<>();
             for (Visit visit : trip.getVisits()) {

@@ -411,6 +411,13 @@ INSERT INTO `user_traveller_type` (`user_userid`, `traveller_type_ttypeid`) VALU
 -- user_photo_destination
 -- no data
 
+-- Tags
+
+INSERT INTO `tag`(`tag_id`, `name`)
+VALUES (1,"Fun place to stay");
+
+-- Tags destination
+INSERT INTO `tag_destination`(`tag_tag_id`, `destination_destid`) VALUES (1,1);
 
 -- visit
 INSERT INTO `visit` (`visitid`, `visitorder`, `destination`, `trip`, `arrival`,

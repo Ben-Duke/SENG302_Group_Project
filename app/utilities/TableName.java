@@ -26,7 +26,7 @@ public enum TableName {
     destination("destid"),
     admin("user_id"),   // has an underscore but user primary key does not
     user("userid"),
-
+    tag("tag_id"),
     // 2.sql tables
     passport("passid"),
     nationality("natid");

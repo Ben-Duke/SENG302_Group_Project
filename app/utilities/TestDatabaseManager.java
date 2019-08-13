@@ -1,5 +1,6 @@
 package utilities;
 
+import accessors.DestinationAccessor;
 import accessors.TagAccessor;
 import accessors.TripAccessor;
 import accessors.UserPhotoAccessor;
@@ -295,8 +296,19 @@ public class TestDatabaseManager {
         } catch (Exception e) {
             logger.error("Failed to add vacation spot tag", e);
         }
+        Tag tag4 = new Tag("New test tag 4");
+        try {
+            tag4.save();
+        } catch (Exception e) {
+            logger.error("Failed to add vacation spot tag", e);
+        }
+
         destination1.addTag(tag);
 
+
+
+        destination1.addTag(tag4);
+        TagAccessor.update(tag4);
         Destination destination2 = new Destination(
                 "Wellington", "Town", "Wellington",
                 "New Zealand", -41.2866, 174.7756,
@@ -319,6 +331,9 @@ public class TestDatabaseManager {
         destination4.setIsPublic(true);
         destination4.addTravellerType(TravellerType.find.byId(5));
         destination4.addTravellerType(TravellerType.find.byId(7));
+
+        destination4.addTag(tag4);
+        TagAccessor.update(tag4);
 
         Destination destination5 = new Destination(
                 "Le Mans 24 hour race", "Event",
@@ -388,6 +403,17 @@ public class TestDatabaseManager {
             trip1.addTag(tag2);
             TripAccessor.update(trip1);
             TagAccessor.update(tag2);
+
+
+            Tag tag3 = new Tag("Test tag1");
+            TagAccessor.insert(tag3);
+            trip1.addTag(tag3);
+            TripAccessor.update(trip1);
+            TagAccessor.update(tag3);
+
+            trip1.addTag(tag3);
+            TripAccessor.update(trip1);
+            TagAccessor.update(tag3);
 
             // creating all the visits
             Visit visit1 =  new Visit("2018-05-04", "2018-05-06", trip1, destination1,1);

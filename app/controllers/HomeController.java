@@ -25,8 +25,7 @@ import play.mvc.Http;
 import play.mvc.Result;
 import utilities.CountryUtils;
 import utilities.UtilityFunctions;
-import views.html.home.home;
-import views.html.home.mapHome;
+import views.html.home.*;
 
 import javax.imageio.ImageIO;
 import javax.inject.Inject;
@@ -48,8 +47,12 @@ public class HomeController {
 
 
     public Result mainMapPage(Http.Request request) {
+
         User user = User.getCurrentUser(request);
         if (user == null) { return redirect(routes.UserController.userindex()); }
+
+        // Clear the command stack
+        user.getCommandManager().setAllowedPage(CommandPage.MAP);
 
         List<Trip> trips = user.getTripsSorted();
 

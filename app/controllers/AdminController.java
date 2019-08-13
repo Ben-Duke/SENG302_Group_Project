@@ -172,7 +172,7 @@ public class AdminController extends Controller {
                 admin.setUserToEdit(null);
                 admin.update();
             }
-            return redirect(routes.HomeController.showhome());
+            return redirect(routes.HomeController.mainMapPage());
         } else {
             return unauthorized("Unauthorized: You are not an Admin");
         }

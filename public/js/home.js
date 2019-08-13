@@ -94,37 +94,31 @@ $('#save-profile').click(function (eve){
 
 
     eve.preventDefault();
-    var searchbar = document.getElementById('album-search-profile');
-    if (searchbar.value === null || searchbar.value === "") {
-        document.getElementById("profileAlbumMessage").style.display = "block";
-    } else {
-        var formData = new FormData();
-        croppedCanvas.toBlob(function (blob) {
-            formData.append('picture', blob, filename);
-            formData.append('album', searchbar.value);
-            var token = $('input[name="csrfToken"]').attr('value');
-            $.ajaxSetup({
-                beforeSend: function (xhr) {
-                    xhr.setRequestHeader('Csrf-Token', token);
-                }
-            });
-            $.ajax({
-                type: 'POST',
-                processData: false,
-                contentType: false,
-                url: '/users/home/profilePicture',
-                data: formData,
-                success: function (data, textStatus, xhr) {
-                    if (xhr.status == 200) {
-                        $("#selectProfileInput").show();
-                        window.location = '/users/home'
-                    } else {
-                        window.location = '/users/home'
-                    }
-                }
-            })
+    var formData = new FormData();
+    croppedCanvas.toBlob(function (blob) {
+        formData.append('picture', blob, filename);
+        var token = $('input[name="csrfToken"]').attr('value');
+        $.ajaxSetup({
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader('Csrf-Token', token);
+            }
         });
-    }
+        $.ajax({
+            type: 'POST',
+            processData: false,
+            contentType: false,
+            url: '/users/home/profilePicture',
+            data: formData,
+            success: function (data, textStatus, xhr) {
+                if (xhr.status == 200) {
+                    $("#selectProfileInput").show();
+                    window.location = '/users/home'
+                } else {
+                    window.location = '/users/home'
+                }
+            }
+        })
+    });
 });
 
 

@@ -355,7 +355,6 @@ function okDefault(album) {
 
 // Open the Modal
 function deleteAlbum(albumId) {
-    console.log(albumId);
     var url = '/users/albums/delete/' + albumId;
     var token = $('input[name="csrfToken"]').attr('value');
     $.ajaxSetup({
@@ -370,7 +369,7 @@ function deleteAlbum(albumId) {
             'Content-Type': 'application/json'
         },
         success: function() {
-            window.location.replace('/users/albums')
+            window.location = '/users/albums'
         }
     });
 }

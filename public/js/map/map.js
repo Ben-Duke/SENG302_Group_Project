@@ -56,8 +56,8 @@ function getMapInfoWindowHTML(destination) {
                       <div>${destinationType}</div>
                       <div>District: ${destinationDistrict}</div>
                       <div>${destinationCountry}</div>
-                      <div><button id="addToTripButton" onclick="addSelectedToVisitToTrip(${destination.destId})">Add to trip</button></div>`;
-
+                      <div><button id="addToTripButton" onclick="addSelectedToVisitToTrip(${destination.destId}, false)">Add to trip</button>
+                      <button id="createNewTripButton" onclick="createNewTrip(${destination.destId})">Start trip</button></div>`;
     return infoWindowHTML;
 }
 
@@ -111,8 +111,16 @@ function initMapLegend() {
     window.globalMap.controls[google.maps.ControlPosition.LEFT_BOTTOM].push(legend);
 }
 
-function addSelectedToVisitToTrip(destId){
-    if(currentlyDisplayedTripId == null){
+function createNewTrip(destId) {
+    if(currentlyDisplayedTripId === undefined) {
+        addSelectedToVisitToTrip(destId, false)
+    } else {
+        addSelectedToVisitToTrip(destId, true)
+    }
+}
+
+function addSelectedToVisitToTrip(destId, startTrip){
+    if(currentlyDisplayedTripId === undefined || (startTrip && currentlyDisplayedTripId !== undefined)) {
         //Start a new trip
         isNewTrip = true;
         let data = '';
@@ -125,8 +133,10 @@ function addSelectedToVisitToTrip(destId){
             url: url,
             success: function(data){
 
-                //Get outer divs to set to correct tab and view
-                currentlyDisplayedTripId = data.tripId;
+                if (currentlyDisplayedTripId === undefined) {
+                    currentlyDisplayedTripId = data.tripId;
+                }
+
                 let destTab = document.getElementById("destinationsTabListItem");
                 let tripsTab = document.getElementById("tripsTabListItem");
                 let tripsDiv = document.getElementById("tripsTab");
@@ -159,7 +169,8 @@ function addSelectedToVisitToTrip(destId){
                 deleteButton.innerText = "Delete trip";
                 outerTripDiv.appendChild(deleteButton);
 
-
+                // Handle checking the show/hide all button
+                document.getElementById('show-hide-all-btn').style.display = 'block';
 
                 //Add outer div to single trip view
                 singleTripContainer.appendChild(outerTripDiv);
@@ -171,7 +182,7 @@ function addSelectedToVisitToTrip(destId){
                 let tripLink = document.createElement('a');
                 tripLink.setAttribute('class', "list-group-item list-group-item-action");
                 tripLink.innerText = data.tripName + ' | No arrival dates';
-                tripLink.setAttribute("onclick", "displayTrip(" + currentlyDisplayedTripId + ", " + data.latitude+ ", "+ data.longitude + ")");
+                tripLink.setAttribute("onclick", "displayTrip(" + data.tripId + ", " + data.latitude+ ", "+ data.longitude + ")");
 
                 let formCheckDiv = document.createElement("div");
                 formCheckDiv.setAttribute("class", "form-check");
@@ -180,8 +191,9 @@ function addSelectedToVisitToTrip(destId){
                 tripCheckBox.setAttribute('type', 'checkbox');
                 tripCheckBox.setAttribute('id',"Toggle"+data.tripId);
                 tripCheckBox.setAttribute('checked', 'true');
-                tripCheckBox.setAttribute('onclick', 'toggleTrips(' + data.tripId + ')');
-                tripCheckBox.setAttribute('class', 'form-check-input');
+                tripCheckBox.setAttribute('onchange', 'toggleTrips(' + data.tripId + ')');
+                tripCheckBox.setAttribute('class', 'form-check-input map-check');
+                tripCheckBox.setAttribute('autocomplete', 'off');
                 let mapLabel = document.createElement('label');
                 mapLabel.setAttribute('class', 'form-check-label');
                 mapLabel.setAttribute('for', "toggleMap");
@@ -191,23 +203,24 @@ function addSelectedToVisitToTrip(destId){
                 tripLink.appendChild(formCheckDiv);
                 listGroup.appendChild(tripLink);
 
-                addTripRoutes(data.tripId);
 
-                var tripStartLatLng = new google.maps.LatLng(
-                    data.latitude, data.longitude
-                );
 
-                window.globalMap.setCenter(tripStartLatLng);
-                window.globalMap.setZoom(9);
+                for (let i in tripRoutes) {
+                    tripRoutes[i].setMap(null);
+                }
+                tripRoutes =[];
+                initTripRoutes();
 
+                if (startTrip == true && currentlyDisplayedTripId != undefined) {
+                    displayTrip(data.tripId, data.latitude, data.longitude)
+                }
 
             },
             error: function(xhr, textStatus, errorThrown){
                 alert(errorThrown);
             }
         });
-    }
-    else {
+    } else {
         let data = '';
         let url = '/users/trips/' + currentlyDisplayedTripId + '/addVisit/' + destId;
         // POST to server using $.post or $.ajax
@@ -513,12 +526,42 @@ var tripRoutes = [];
  * @param tripid The id of the trip on the map
  */
 function toggleTrips(tripid) {
-    var checkBox = document.getElementById("Toggle" + tripid);
+    const checkBox = document.getElementById("Toggle" + tripid);
     if (checkBox.checked === false) {
         tripFlightPaths[tripid].setMap(null);
     } else {
         tripFlightPaths[tripid].setMap(window.globalMap);
     }
+    const checkboxes = document.getElementsByClassName("map-check");
+    const showHideAllButton = document.getElementById("show-hide-all-btn");
+    // === true is important here
+    const showHideResult = getAllChecksChecked(checkboxes);
+    if (showHideResult === "Checked") {
+        showHideAllButton.innerText = "Hide all"
+    } else if (showHideResult === "Unchecked") {
+        showHideAllButton.innerText = "Show all"
+    }
+}
+
+
+
+/**
+ * Finds if ALL checkboxes in a list of checkboxes are checked or unchecked or mixed
+ * @param checkboxes list of checkboxes
+ * @returns string  "Checked" if all checkboxes are checked,
+ *                  "Unchecked" if all checkboxes are unchecked
+ *                   and "Do not all match" otherwise
+ */
+function getAllChecksChecked(checkboxes) {
+    let currentStates = null;
+    for (let check of checkboxes) {
+        if (currentStates == null) {
+            currentStates = check.checked;
+        } else if (currentStates !== check.checked) {
+            return "Do not all match";
+        }
+    }
+    return currentStates ? "Checked" : "Unchecked";
 }
 
 function initTripRoutes() {
@@ -539,13 +582,30 @@ function initTripRoutes() {
                 strokeOpacity: 1.0,
                 strokeWeight: 2
             });
+            flightPath.path = tripRoutes[tripId];
 
-            tripFlightPaths[tripId] = flightPath;
+            google.maps.event.addListener(flightPath, 'click', function(e) {
 
-            // tripFlightPaths.push({'tripId': flightPath});
+                displayTrip(tripId, tripRoutes[tripId][0]['lat'], tripRoutes[tripId][0]['lng'])
+            });
 
-            flightPath.setMap(window.globalMap);
-
+            if (tripFlightPaths[tripId] != null) {
+                if (tripFlightPaths[tripId].path.length !== flightPath.path.length) {
+                    tripFlightPaths[tripId].setMap(null);
+                    tripFlightPaths[tripId] = flightPath;
+                }
+            }
+            else{
+                tripFlightPaths[tripId] = flightPath;
+            }
+            const checkBox = document.getElementById("Toggle" + tripId);
+            if (checkBox.checked === false) {
+                tripFlightPaths[tripId].setMap(null);
+            } else {
+                if (tripFlightPaths[tripId].getMap() == null) {
+                    tripFlightPaths[tripId].setMap(window.globalMap);
+                }
+            }
         }
     });
 }
@@ -590,13 +650,12 @@ let currentlyDisplayedTripId;
  */
 function displayTrip(tripId, startLat, startLng) {
     if(tripId !== currentlyDisplayedTripId && currentlyDisplayedTripId !== undefined) {
-        if(document.getElementById("singleTrip_" + currentlyDisplayedTripId) != null) {
+        if(document.getElementById("singleTrip_" + currentlyDisplayedTripId) != undefined) {
             document.getElementById("singleTrip_" + currentlyDisplayedTripId).style.display = "none";
         }
-        isNewTrip = false;
         currentlyDisplayedTripId = undefined;
+        isNewTrip = false;
     }
-    console.log(tripId);
     let checkBox = document.getElementById("Toggle" + tripId);
     if (checkBox.checked === true) {
         if (currentlyDisplayedTripId !== undefined) {
@@ -604,22 +663,19 @@ function displayTrip(tripId, startLat, startLng) {
         } else {
             document.getElementById("placeholderTripTable").style.display = "none";
         }
-
-        currentlyDisplayedTripId = tripId;
         if(isNewTrip === false) {
             if(document.getElementById("placeholderTripTable").style.display != "none") {
                 document.getElementById("placeholderTripTable").style.display = "none";
             }
             document.getElementById("singleTrip_" + tripId).style.display = "block";
-        }
-        else{
+        } else {
             document.getElementById("placeholderTripTable").style.display = "block";
         }
 
         var tripStartLatLng = new google.maps.LatLng(
             startLat, startLng
         );
-
+        currentlyDisplayedTripId = tripId;
         window.globalMap.setCenter(tripStartLatLng);
         window.globalMap.setZoom(9);
     }
@@ -799,6 +855,33 @@ function deleteTripRequest(tripId, url) {
         }
     });
 }
+
+/**
+ * Changes all checkboxes for showing routes to either true or false and dispatches events for the routes on map
+ */
+function showHideMapTrips() {
+    const button = document.getElementById("show-hide-all-btn");
+    const checkboxes = document.getElementsByClassName('map-check');
+    if (button.innerText === "Hide all") {
+        button.innerText = "Show all";
+        for (let check of checkboxes) {
+            check.checked = false;
+            // Dispatch an event to fire the listener on the checkbox
+            const event = new Event('change');
+            check.dispatchEvent(event);
+        }
+    } else {
+        button.innerText = "Hide all";
+        for (let check of checkboxes) {
+            check.checked = true;
+            // Dispatch an event to fire the listener on the checkbox
+            const event = new Event('change');
+            check.dispatchEvent(event);
+        }
+    }
+}
+
+
 
 
 function sendDeleteVisitRequest(url, visitId) {
@@ -984,7 +1067,6 @@ function initDestinationMarkers() {
         .then(destinations => {
             let marker;
             let infoWindow;
-            // console.log(destinations);
             for (let index = 0; index < destinations.length; index++) {
                 marker = new google.maps.Marker({
                     position: {

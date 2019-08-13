@@ -143,10 +143,10 @@ public class UpdateUserFormData implements Constraints.Validatable<List<Validati
 
         LoginFactory loginFactory = new LoginFactory();
 
-
-
-        if(!isAdmin && !loginFactory.isPasswordMatch(existingUsername, existingPassword)) {
-            errors.add(new ValidationError("existingPassword", "Incorrect password"));
+        if(!password.equals("")) {
+            if (!isAdmin && !loginFactory.isPasswordMatch(existingUsername, existingPassword)) {
+                errors.add(new ValidationError("existingPassword", "Incorrect password"));
+            }
         }
 
         return errors;

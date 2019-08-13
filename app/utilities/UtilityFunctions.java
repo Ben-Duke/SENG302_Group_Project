@@ -405,5 +405,24 @@ public class UtilityFunctions {
         return countrySet;
     }
 
+    /**
+     * Deletes a file directory.
+     *
+     * Taken from : https://www.baeldung.com/java-delete-directory
+     *
+     * @param directoryToBeDeleted Path to directory to delete
+     *
+     * @return true if success, else false.
+     */
+    public static boolean deleteDirectory(File directoryToBeDeleted) {
+        File[] allContents = directoryToBeDeleted.listFiles();
+        if (allContents != null) {
+            for (File file : allContents) {
+                deleteDirectory(file);
+            }
+        }
+        return directoryToBeDeleted.delete();
+    }
+
 
 }

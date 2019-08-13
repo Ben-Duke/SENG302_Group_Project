@@ -7,6 +7,7 @@ import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
 
+import scala.collection.concurrent.Debug;
 import utilities.UtilityFunctions;
 
 /** Controller to handle undo/redo of actions */
@@ -46,7 +47,6 @@ public class UndoRedoController extends Controller {
         if (user == null) {
             return redirect(routes.UserController.userindex());
         }
-
         commandManager = user.getCommandManager();
         String result = commandManager.redo();
 

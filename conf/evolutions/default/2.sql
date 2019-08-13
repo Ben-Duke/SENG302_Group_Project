@@ -289,23 +289,35 @@ INSERT INTO `user` (`userid`, `email`, `password_hash`, `date_of_birth`, `gender
 
 
 -- Admin
-INSERT INTO `admin` (`id`, `user_id`, `user_id_to_edit`, `is_default`) VALUES
-(1, 1, NULL, 1);
+INSERT INTO `admin` (`user_id`, `user_id_to_edit`, `is_default`) VALUES
+(1, NULL, 1);
 
 
 -- Destination
 INSERT INTO `destination` (`destid`, `dest_name`, `dest_type`, `district`, `country`,
-                           `is_country_valid`, `latitude`, `longitude`, `is_public`,
-                           `primary_photo_photo_id`, `user`) VALUES
-(1, 'Christchurch', 'Town', 'Canterbury', 'New Zealand', 1, -43.5321, 172.6362, 1, NULL, 2),
-(2, 'Wellington', 'Town', 'Wellington', 'New Zealand', 1, -41.2866, 174.7756, 0, NULL, 2),
-(3, 'The Wok', 'Cafe/Restaurant', 'Canterbury', 'New Zealand', 1, -43.523593, 172.582971, 1, NULL, 2),
-(4, 'Hanmer Springs Thermal Pools', 'Attraction', 'North Canterbury', 'New Zealand', 1, -42.522791, 172.828944, 1, NULL, 3),
-(5, 'Le Mans 24 hour race', 'Event', 'Le Mans', 'France', 1, 47.956221, 0.207828, 0, NULL, 3),
-(6, 'Great Pyramid of Giza', 'Attraction', 'Giza', 'Egypt', 1, 29.979481, 31.134159, 1, NULL, 3),
-(7, 'Niagara Falls', 'Natural Spot', 'New York', 'United States', 0, 29.979481, 31.134159, 0, NULL, 4),
-(8, 'Vatican City', 'Country', 'Rome', 'Vatican City', 0, 41.903133, 12.454341, 0, NULL, 4),
-(9, 'Lincoln Memorial', 'Monument', 'Washington DC', 'United States', 0, 38.889406, -77.050155, 1, NULL, 4);
+                           `is_country_valid`, `latitude`, `longitude`, `dest_is_public`,
+                           `user`) VALUES
+(1, 'Christchurch', 'Town', 'Canterbury', 'New Zealand', 1, -43.5321, 172.6362, 1, 2),
+(2, 'Wellington', 'Town', 'Wellington', 'New Zealand', 1, -41.2866, 174.7756, 0, 2),
+(3, 'The Wok', 'Cafe/Restaurant', 'Canterbury', 'New Zealand', 1, -43.523593, 172.582971, 1, 2),
+(4, 'Hanmer Springs Thermal Pools', 'Attraction', 'North Canterbury', 'New Zealand', 1, -42.522791, 172.828944, 1, 3),
+(5, 'Le Mans 24 hour race', 'Event', 'Le Mans', 'France', 1, 47.956221, 0.207828, 0, 3),
+(6, 'Great Pyramid of Giza', 'Attraction', 'Giza', 'Egypt', 1, 29.979481, 31.134159, 1, 3),
+(7, 'Niagara Falls', 'Natural Spot', 'New York', 'United States', 0, 29.979481, 31.134159, 0, 4),
+(8, 'Vatican City', 'Country', 'Rome', 'Vatican City', 0, 41.903133, 12.454341, 0, 4),
+(9, 'Lincoln Memorial', 'Monument', 'Washington DC', 'United States', 0, 38.889406, -77.050155, 1, 4);
+
+-- Albums
+INSERT INTO `album`(`album_id`, `user`, `destination`, `primary_photo_media_id`, `is_default`, `title`) VALUES
+(1, null, 1, null,null,'Christchurch'),
+(2, null, 2, null, null,'Wellington'),
+(3, null, 3, null, null,'The Wok'),
+(4, null, 4, null, null,'Hanmer Springs Thermal Pools'),
+(5, null, 5, null, null,'Le Mans 24 hour race'),
+(6, null, 6, null, null,'Great Pyramid of Giza'),
+(7, null, 7, null, null,'Niagara Falls'),
+(8, null, 8, null, null,'Vatican City'),
+(9, null, 9, null, null,'Lincoln Memorial');
 
 
 -- Traveller Types
@@ -431,9 +443,11 @@ INSERT INTO `visit` (`visitid`, `visitorder`, `destination`, `trip`, `arrival`,
 
 delete from visit;
 
-delete from user_photo_destination;
+delete from album_media;
 
-delete from user_photo;
+delete from destination_media;
+
+delete from media;
 
 delete from user_treasure_hunt;
 
@@ -454,6 +468,8 @@ delete from destination_modification_request;
 delete from destination_traveller_type;
 
 delete from traveller_type;
+
+delete from album;
 
 delete from destination;
 

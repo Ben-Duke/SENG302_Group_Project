@@ -1,5 +1,6 @@
 package controllers;
 
+import accessors.AdminAccessor;
 import models.Admin;
 import models.User;
 import org.junit.After;
@@ -96,7 +97,8 @@ public class AdminControllerTest extends BaseTestWithApplicationAndDatabase {
      */
     @Test
     public void userToAdminWithLoginSession() {
-        assertEquals(1, Admin.find().all().size());
+        System.out.println(AdminAccessor.AdminFinder().all());
+        assertEquals(1, AdminAccessor.AdminFinder().all().size());
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(GET).uri("/users/admin/make/2")
                 .session("connected", "1");

@@ -414,27 +414,25 @@ public class TripController extends Controller {
 
     public Result CreateTripFromJSRequest(Http.Request request, Integer destid) {
         User user = User.getCurrentUser(request);
-        System.out.println("creating trip with the user id being " + user.getUserid());
         if(user != null) {
             Destination destination = Destination.find().byId(destid);
             if(destination == null) {
                 return notFound();
             }
-            System.out.println("Destination is public :" + destination.getIsPublic());
-            if (!destination.getIsPublic() && destination.getUser().getUserid() != user.getUserid()) {
-                System.out.println("Dest forbid");
+            // If private dest and user not owner and user not admin
+            if (!destination.getIsPublic() && destination.getUser().getUserid()
+                    != user.getUserid() && !user.userIsAdmin()) {
                 return forbidden("2");
 
             }
-            Visit visit = new Visit(null, null, null, destination);
-            visit.setVisitorder(1);
-            ArrayList<Visit> visits = new ArrayList<>();
-            visits.add(visit);
-            CreateTripFromVisitsCommand createTripFromVisitsCommand = new CreateTripFromVisitsCommand(visits, "Trip to " + destination.getDestName(), user);
-            user.getCommandManager().executeCommand(createTripFromVisitsCommand);
+            Trip trip = new Trip("Trip to " + destination.getDestName(),false, user);
+            Visit visit = new Visit(null, null, trip, destination);
 
-            visit = VisitAccessor.getById(visit.getVisitid());
-            Trip trip = visit.getTrip();
+            TripAccessor.insert(trip);
+            VisitAccessor.insert(visit);
+            visit.setVisitorder(0);
+            TripAccessor.update(trip);
+            VisitAccessor.update(visit);
 
             ObjectNode data =  (ObjectNode) Json.toJson(trip);
             data.put("latitude", destination.getLatitude());
@@ -446,8 +444,6 @@ public class TripController extends Controller {
             data.put("departure", visit.getDeparture());
             data.put("tripName", trip.getTripName());
             data.put("tripId", trip.getTripid());
-            System.out.println("Visit trip id is " +  visit.getTrip().getUser().getUserid());
-            System.out.println("***********************************************");
             return ok(data);
 
         }
@@ -663,7 +659,6 @@ public class TripController extends Controller {
     }
 
 
-
     /**
      * Turns a users trips into and array of json node with each destinations
      * coordinates
@@ -681,9 +676,6 @@ public class TripController extends Controller {
         ObjectNode tripNodes = objectMapper.createObjectNode();
 
         for (Trip trip : trips) {
-
-//            ObjectNode tripNode = objectMapper.createObjectNode();
-
             ArrayNode destinationNodes = objectMapper.createArrayNode();
 
             for (Visit visit : trip.getOrderedVisits()) {
@@ -698,16 +690,8 @@ public class TripController extends Controller {
             }
 
             tripNodes.put(trip.getTripid().toString(), destinationNodes);
-
-
-
-//            tripNodes.add(tripNode);
         }
 
         return ok(tripNodes);
-
     }
-
-
 }
-

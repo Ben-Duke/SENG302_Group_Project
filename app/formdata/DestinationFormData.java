@@ -9,22 +9,22 @@ import java.util.Map;
 import java.util.TreeMap;
 
 @Constraints.Validate
+/** A form class used to validate user inputs on the destination form page */
 public class DestinationFormData implements Constraints.Validatable<List<ValidationError>> {
 
-    public String destName;
-    public String destType;
-    public String district;
-    public String country;
-    public String latitude;
-    public String longitude;
-    public String tags;
+    private String destName;
+    private String destType;
+    private String district;
+    private String country;
+    private String latitude;
+    private String longitude;
+    private String tags;
 
 
     /** Required for form instantiation. */
     public DestinationFormData() {
     }
 
-    /** Constructor */
     public DestinationFormData(String destName, String destType, String district,
                                String country, Double latitude, Double longitude, String tags) {
         this.destName = destName;
@@ -35,6 +35,18 @@ public class DestinationFormData implements Constraints.Validatable<List<Validat
         this.longitude = longitude.toString();
         this.tags = tags;
     }
+
+    /** Constructor */
+//    public DestinationFormData(String destName, String destType, String district,
+//                               String country, Double latitude, Double longitude,
+//                               List<String> travellerTypes) {
+//        this.destName = destName;
+//        this.destType = destType;
+//        this.district = district;
+//        this.country = country;
+//        this.latitude = latitude.toString();
+//        this.longitude = longitude.toString();
+//    }
 
     /**
      * A function that is called when creating a destination to the the types
@@ -88,15 +100,10 @@ public class DestinationFormData implements Constraints.Validatable<List<Validat
 
 
         try {
-            if (latitude == null || latitude.length()==0) {
+            Double latitudeDouble = Double.parseDouble(latitude);
+            if (latitude == null || latitude.length()==0 || !(-90.0 <= latitudeDouble && latitudeDouble <= 90.0)) {
                 errors.add(new ValidationError("latitude",
                             "Latitude must be a number between -90 and 90"));
-            } else {
-                Double latitudeDouble = Double.parseDouble(latitude);
-                if (! (-90.0 <= latitudeDouble && latitudeDouble <= 90.0)) {
-                    errors.add(new ValidationError("latitude",
-                            "Latitude must be between -90 and 90"));
-                }
             }
         } catch (NumberFormatException e) {
             errors.add(new ValidationError("latitude",
@@ -104,15 +111,10 @@ public class DestinationFormData implements Constraints.Validatable<List<Validat
         }
 
         try {
-            if (longitude == null || longitude.length()==0) {
+            Double longitudeDouble = Double.parseDouble(longitude);
+            if (longitude == null || longitude.length()==0 || !(-180.0 <= longitudeDouble && longitudeDouble <= 180.0) ) {
                 errors.add(new ValidationError("longitude",
                                     "Longitude must be between -180 and 180"));
-            } else {
-                Double longitudeDouble = Double.parseDouble(longitude);
-                if (! (-180.0 <= longitudeDouble && longitudeDouble <= 180.0)) {
-                    errors.add(new ValidationError("longitude",
-                            "Longitude must be between -180 and 180"));
-                }
             }
         } catch (NumberFormatException e) {
             errors.add(new ValidationError("longitude",

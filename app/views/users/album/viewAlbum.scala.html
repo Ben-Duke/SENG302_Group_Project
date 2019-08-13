@@ -1,0 +1,286 @@
+@(album: Album, user: User)
+
+@allMedia = {album.viewAllMedia(true)}
+
+@main(user, "View Album") {
+
+<head>
+    <link rel="stylesheet" href="@routes.Assets.at("stylesheets/cropper.min.css")">
+    <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/album.css")">
+    <title>Album</title>
+</head>
+
+<body onpageshow="getAlbum(@user.getUserid, @album.getAlbumId, @album.userIsOwner(user))">
+    <div>
+        <h2 style="text-align: center;"> @album.getTitle <a id="deleteAlbumButton" onclick= "showDeleteAlbumModal(@album.getDefault)">&#10060</a></h2>
+    </div>
+
+    <div class="container">
+        @if(album.getMedia.size()==0) {
+            <div class="well" style="width: 250px; height: 50px; margin: auto;"><p>There is no media in this album.</p></div>
+        } else {
+            <div class="well" id="emptyAlbumMessage" style="width: 250px; height: 50px; margin: auto; display: none;">
+                <p>There is no media in this album.</p>
+            </div>
+            <div class="row">
+                <!--Media items added through Javascript-->
+                <div id="col1" class="column"></div>
+                <div id="col2" class="column"></div>
+                <div id="col3" class="column"></div>
+                <div id="col4" class="column"></div>
+            </div>
+        }
+    </div>
+
+    <!-- The Modal/Lightbox -->
+    <div id="myModal" class="modal" data-album="@album.getAlbumId" data-isOwner="@album.userIsOwner(user)">
+
+        <div class="modal-content">
+            <div id="snackbar"></div>
+            <div id="lightbox-modal">
+                <span class="close cursor" onclick="closeModal()">&times;</span>
+            </div>
+
+            <!-- Next/previous controls -->
+            <a class="prev" onclick="plusSlides(-1)">&#10094;</a>
+            <a class="next" onclick="plusSlides(1)">&#10095;</a>
+
+
+            <div id="existingAlbumId" class="hidden">@album.albumId</div>
+            @if(album.getOwner == user || user.userIsAdmin) {
+                <!-- Caption text -->
+                <div class="caption-container">
+                    <a class="btn btn-link" id="profilePictureBtn" style="color: white; padding: 5px;">Set Profile Picture</a>
+                    <a class="btn btn-link" id="deletePhotoBtn" style="color: white; padding: 5px;">Delete</a>
+                    <a class="btn btn-link" id="privacyBtn" style="color: white; padding: 5px;">Make Public/Private</a>
+                    <a class="btn btn-link" id="linkDestinationBtn" style="color: white; padding: 5px;">Link Destination</a>
+                    <label for="album-search-move" style="color: white; padding: 5px;">Move to Album: </label>
+                    <input style="color: #000000;" id="album-search-move" list="album-results-move"
+                    name="Album Move" title="Move Album" placeholder="Search for Album">
+                    <datalist  id="album-results-move">
+                    @for(userAlbum <- user.getAlbums()){
+                        @if(userAlbum.albumId != album.albumId) {
+                            <option value=@userAlbum.getTitle()></option>
+                        }
+                    }
+                    </datalist>
+                    <div id="imageModalAlert" class="alert alert-danger alert-dismissible hiddenDiv" role="alert">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <strong>SERVER ERROR:</strong> Failed to fetch unlinkable destinations.
+                        Try refreshing the page and try again.
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Modal to upload a new profile picture -->
+    <div id="addProfilePhoto" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Upload a new profile picture </h4>
+                </div>
+
+                <div class="modal-body">
+
+                    <div class="profile-pic-wraper ">
+                        <img class="img"  width = "450" height="450" id="change-profile-pic" src="@{routes.HomeController.serveProfilePicture(user.getUserid())}" alt="Profile photo image"/>
+                    </div>
+                    <div class="preview-wrapper">
+                        <div class="preview">
+
+                        </div><br>
+                    </div>
+                    <br>
+                    <input id="selectProfileInput" type="file" accept="image/png,image/jpeg" name="picture" required onchange="loadFile(event);"/>
+                    <div>
+                        <button class="btn btn-default" id="save-profile">
+                            Upload
+                        </button>
+                    </div>
+                    <div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="confirmDeleteProfilePhotoModal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title" id="deleteTitle">About to delete profile picture</h4>
+                </div>
+                <div class="modal-body">
+                    <p id="message">This image is your profile picture, do you want to delete it? This will also unlink it from any
+                        destinations</p>
+                </div>
+                <div class="modal-footer">
+                    <button id="yesDeleteProfilePhoto" class="btn btn-danger" data-dismiss="modal">Yes</button>
+                    <button id="noCloseDeleteProfilePhotoButton" class="btn btn-primary" data-dismiss="modal">No</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="confirmDeleteAlbumModal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+                <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title" id="deleteTitle">About to delete album</h4>
+                </div>
+                <div class="modal-body">
+                    <p id="message">Deleting this album will move all media into the default album, are you sure?</p>
+                </div>
+                <div class="modal-footer">
+                    <button id="yesDeleteAlbum" onclick="deleteAlbum(@album.getAlbumId)"class="btn btn-danger" data-dismiss="modal">Yes</button>
+                    <button id="noCloseDeleteAlbumButton" class="btn btn-primary" data-dismiss="modal">No</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+    <div id="defaultAlbum" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+                <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title" id="deleteTitle">About to delete album</h4>
+                </div>
+                <div class="modal-body">
+                    <p id="message">The default album cannot be deleted</p>
+                </div>
+                <div class="modal-footer">
+                    <button id="okdefaultAlbum" onclick="okDefault()"class="btn btn-danger" data-dismiss="modal">Ok</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="confirmDeletePhotoModal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title" id="deleteTitle">Deleting a photo that is linked to 1 or more destinations</h4>
+                </div>
+                <div class="modal-body">
+                    <p id="message">This image is linked to destination(s), do you want to
+                        unlink it from these places?</p>
+                </div>
+                <div class="modal-footer">
+                    <button id="yesDeletePhoto" class="btn btn-danger" data-dismiss="modal">Yes</button>
+                    <button id="noCloseDeletePhotoButton" class="btn btn-primary" data-dismiss="modal">No</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="destination-modal" class="modal" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" style="color:black" onclick="closeDestinationModal()">&times;</button>
+                    <h1>Link and unlink photos to destinations</h1>
+                </div>
+                <div class="modal-body">
+                    <h2>Private destinations</h2>
+                    @*<input type="text" class="searchDestinations" onkeyup="searchDestination" placeholder="Search for destinations">*@
+                    <table class="table privateDestinations">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th scope="col">Name</th>
+                                <th scope="col">Type</th>
+                                <th scope="col">Country</th>
+                                <th scope="col">District</th>
+                            </tr>
+                        </thead>
+                        <tbody id="private-dest-tbody">
+                            <!-- all data for the private destinations is loaded in here -->
+                        </tbody>
+                    </table>
+
+                    <h2>Public destinations</h2>
+                    @*<input type="text" class="searchPublicDestinations" onkeyup="searchPublicDestination()" placeholder="Search for destinations">*@
+                    <table class="table publicDestinations">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th scope="col">Name</th>
+                                <th scope="col">Type</th>
+                                <th scope="col">Country</th>
+                                <th scope="col">District</th>
+                            </tr>
+                        </thead>
+                        <tbody id="public-dest-tbody">
+                            <!-- All data for public destinations is loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade"
+            id="selectDestinationsToUnlinkPhotoModal"
+            tabindex="-1"
+            role="dialog"
+            aria-labelledby="selectDestinationToUnlinkModalTitle"
+            aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title"
+                        id="selectDestinationToUnlinkModalTitle">
+                            Delete photo and unlink from selected destinations
+                    </h4>
+                    <button type="button" class="close" onclick="closeSelectDestinationsToUnlinkPhotoModal()" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    nothing here will be shown, as it is cleared and added in javascript
+                </div>
+                <div class="modal-footer">
+                    <div class="buttons-div">
+                        <div class="text-left left-float-div">
+                            <button type="button" class="btn btn-primary" onclick="setAllCheckboxDestinationsToDeletePhotoIn(true)">Select All</button>
+                            <button type="button" class="btn btn-primary" onclick="setAllCheckboxDestinationsToDeletePhotoIn(false)">Unselect All</button>
+                        </div>
+                        <div class="text-right right-float-div">
+                            <button type="button"
+                                    class="btn btn-secondary"
+                                    onclick="closeSelectDestinationsToUnlinkPhotoModal()">Close</button>
+                            <button type="button"
+                            class="btn btn-danger" onclick="deleteAndUnlinkPhoto()">Delete*</button>
+                        </div>
+                    </div>
+                    <div class="text-div text-left">
+                        *The photo will remain associated with all unselected destinations
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+<script src="@routes.Assets.at("js/cropper.min.js")" type="text/javascript"></script>
+<script src="@routes.Assets.at("js/album/albumView.js")" type="text/javascript"></script>
+
+}

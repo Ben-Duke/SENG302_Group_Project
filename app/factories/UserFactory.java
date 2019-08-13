@@ -1,5 +1,7 @@
 package factories;
 
+import accessors.AlbumAccessor;
+import accessors.MediaAccessor;
 import accessors.UserAccessor;
 import accessors.UserPhotoAccessor;
 import formdata.UpdateUserFormData;
@@ -7,8 +9,10 @@ import formdata.UserFormData;
 import models.*;
 import models.commands.General.UndoableCommand;
 import models.commands.Photos.EditPhotoCaptionCommand;
+import play.data.FormFactory;
 import play.mvc.Http;
 
+import javax.inject.Inject;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -16,23 +20,29 @@ import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+/**
+ * A class to handle interactions with  the database involving the User class.
+ */
 public class UserFactory {
+
+    @Inject
+    static FormFactory formFactory;
 
     public UserFactory(){//Just used to instantiate
     }
 
     /**Returns 1 if in the database and 0 if not in the database
      *
+     * @param email the email to check if is in the database
      * @return 0 if email is not present or 1 if email is present.
      */
     public static int checkEmail(String email) {
 
-        List<User> users = User.find.all();
+        List<User> users = User.find().all();
 
         int present = 0;
         String userEmail;
         for (User user : users) {
-
             userEmail = user.getEmail();
             if (userEmail.equalsIgnoreCase(email)) {
                 present = 1;
@@ -43,19 +53,30 @@ public class UserFactory {
 
     }
 
+    /**
+     * Handles photo deletion for user photos
+     *
+     * @param photoId Id of photo being deleted
+     */
     public void deletePhoto(int photoId){
         UserPhoto photo = UserPhotoAccessor.getUserPhotoById(photoId);
         UserPhotoAccessor.unlinkAllTags(photo);
-        photo.delete();
+        UserPhotoAccessor.deleteById(photoId);
     }
 
+    /**
+     * Handles deleting a Nationality for a chosen user
+     *
+     * @param id Id of user
+     * @param nationalityId Id of nationality being deleted
+     */
     public static void deleteNatsOnUser(int id, String nationalityId) {
         User user = UserAccessor.getById(id);
         if (user == null) {
             return;
         }
 
-        Nationality nationality = Nationality.find.byId(Integer.parseInt(nationalityId));
+        Nationality nationality = Nationality.find().byId(Integer.parseInt(nationalityId));
         user.deleteNationality(nationality);
         user.update();
     }
@@ -64,7 +85,7 @@ public class UserFactory {
      * @param userId An int representing the userId to search for.
      * @return A User object with the userId, or null  if doesn't exist.
      */
-    static User getUserFromId(int userId) {
+    public static User getUserFromId(int userId) {
         return UserAccessor.getById(userId);
     }
 
@@ -73,13 +94,13 @@ public class UserFactory {
      * @return a list of a Passports from the backend in a Map<String, Boolean> format
      */
     public static  Map<String, Boolean> getPassports(){
-        List<Passport> passports = Passport.find.all();
+        List<Passport> passports = Passport.find().all();
 
         SortedMap<String, Boolean> passportList = new TreeMap<>();
         for (Passport passport : passports) {
 
             String localeName;
-            localeName = passport.passportName;
+            localeName = passport.getName();
             passportList.put(localeName, false);
         }
         passportList.remove("");
@@ -92,7 +113,7 @@ public class UserFactory {
      * @return a list of a Traveller Types from the backend in a Map<String, Boolean> format
      */
     public static Map<String, Boolean> getTTypesList() {
-        List<TravellerType> tTypes = TravellerType.find.all();
+        List<TravellerType> tTypes = TravellerType.find().all();
 
 
         SortedMap<String, Boolean> tTypesList = new TreeMap<>();
@@ -111,7 +132,7 @@ public class UserFactory {
      * @return a list of a Nationalities from the backend in a Map<String, Boolean> format
      */
     public static Map<String, Boolean> getNatList() {
-        List<Nationality> nationalityList = Nationality.find.all();
+        List<Nationality> nationalityList = Nationality.find().all();
 
 
         SortedMap<String, Boolean> nationalities = new TreeMap<>();
@@ -133,7 +154,7 @@ public class UserFactory {
      */
     public void updatePassport(User user, int passportId){
         if (user != null) {
-            Passport passport = Passport.find.byId(passportId);
+            Passport passport = Passport.find().byId(passportId);
             if(passportId != -1){
                 try {
                     user.addPassport(passport);
@@ -153,7 +174,7 @@ public class UserFactory {
      */
     public void updateNationality(User user, int natId){
         if (user != null) {
-            Nationality nationality = Nationality.find.byId(natId);
+            Nationality nationality = Nationality.find().byId(natId);
             if(natId != -1){
                 try {
                     user.addNationality(nationality);
@@ -173,7 +194,7 @@ public class UserFactory {
      */
     public void updateTravellerType(User user, int travellerId){
         if (user != null) {
-            TravellerType travellerType = TravellerType.find.byId(travellerId);
+            TravellerType travellerType = TravellerType.find().byId(travellerId);
 
             if( travellerId != -1){
                 try {
@@ -188,16 +209,17 @@ public class UserFactory {
 
     /**Returns the id of the Passport with the name passed in.
      *
+     * @param name The name associated the with passport
      * @return Passport id with the name passed in.
      */
     public static int getPassportId(String name){
-        List<Passport> passports = Passport.find.all();
+        List<Passport> passports = Passport.find().all();
 
         int id = -1;
         String passportName;
         for (Passport passport : passports) {
 
-            passportName = passport.passportName;
+            passportName = passport.getName();
 
             if (passportName.equals(name)) {
                 id = passport.getPassportId();
@@ -209,19 +231,20 @@ public class UserFactory {
 
     /**Returns the id of the Nationality with the name passed in.
      *
+     * @param name the name of the nationality
      * @return Nationality id with the name passed in.
      */
     private static int getNatId(String name){
-        List<Nationality> nationalities = Nationality.find.all();
+        List<Nationality> nationalities = Nationality.find().all();
 
         int id = -1;
         String natName;
         for (Nationality nationality : nationalities) {
 
-            natName = nationality.nationalityName;
+            natName = nationality.getNationalityName();
 
             if (natName.equals(name)) {
-                id = nationality.natid;
+                id = nationality.getNatId();
             }
         }
 
@@ -230,10 +253,11 @@ public class UserFactory {
 
     /**Returns the id of the Traveller Type with the name passed in.
      *
+     * @param name the name of the traveller type
      * @return Traveller Type id with the name passed in.
      */
-    private static int getTTypeId(String name){
-        List<TravellerType> tTypes = TravellerType.find.all();
+    public static int getTTypeId(String name){
+        List<TravellerType> tTypes = TravellerType.find().all();
 
         int id = -1;
         String tName;
@@ -272,9 +296,9 @@ public class UserFactory {
 
         if(checkEmail(email)!=1){
             User user = new User(email, password, firstName, lastName, date, gender);
-
-
             user.save();
+            Album album = new Album(user, "Default", true);
+            AlbumAccessor.insert(album);
             for (String aTType : tType) {
 
                 int tTypeId = getTTypeId(aTType);
@@ -302,26 +326,50 @@ public class UserFactory {
         return -1;
     }
 
+    /**
+     * Checks how many nationalities a specific user has
+     *
+     * @param userId Id of user
+     * @return Count of all nationalities for a specrfic user
+     */
     public static int getNatsForUserbyId(int userId){
         int count = 0;
         User user = UserAccessor.getById(userId);
         if (user != null) {
-            count = user.nationality.size();
+            count = user.getNationality().size();
         }
         return count;
     }
 
+    /**
+     * Finds all passports for a single user in the database
+     *
+     * @param id Id of user
+     * @return List of user passports
+     */
     public static List<Passport> getUserPassports(int id){
-        return UserAccessor.getById(id).passports;
+        return UserAccessor.getById(id).getPassports();
     }
 
+    /**
+     * Finds all nationalities for a single user in the database
+     *
+     * @param id Id of user
+     * @return List of user nationalities
+     */
     public static List<Nationality> getUserNats(int id){
-        return UserAccessor.getById(id).nationality;
+        return UserAccessor.getById(id).getNationality();
     }
 
+    /**
+     * Adds passport to a user's list of passports in the database
+     *
+     * @param id Id of user
+     * @param passportId Id of passport being added to user
+     */
     public static void addPassportToUser(int id, String passportId){
 
-        Passport passport = Passport.find.byId(Integer.parseInt(passportId));
+        Passport passport = Passport.find().byId(Integer.parseInt(passportId));
 
         try {
             User user = UserAccessor.getById(id);
@@ -336,8 +384,14 @@ public class UserFactory {
         }
     }
 
+    /**
+     * Deletes passport from a user's list of passports in the database
+     *
+     * @param id Id of user
+     * @param passportId Id of passport being added to user
+     */
     public static void deletePassportOnUser(int id, String passportId){
-        Passport passport = Passport.find.byId(Integer.parseInt(passportId));
+        Passport passport = Passport.find().byId(Integer.parseInt(passportId));
         User user = UserAccessor.getById(id);
         if (user == null) {
             return;
@@ -346,6 +400,12 @@ public class UserFactory {
         user.update();
     }
 
+    /**
+     * Deletes nationality to a user's list of nationalities in the database
+     *
+     * @param id Id of user
+     * @param nationalityId Id of passport being added to user
+     */
     public static void addNatsOnUser(int id, String nationalityId){
         User user = UserAccessor.getById(id);
         if (user == null) {
@@ -353,7 +413,7 @@ public class UserFactory {
         }
 
         try {
-            Nationality nationality = Nationality.find.byId(Integer.parseInt(nationalityId));
+            Nationality nationality = Nationality.find().byId(Integer.parseInt(nationalityId));
             user.addNationality(nationality);
             user.update();
         } catch (io.ebean.DuplicateKeyException e) {
@@ -368,7 +428,7 @@ public class UserFactory {
      */
     public static UserPhoto getUserProfilePicture(int userId) {
         User user = UserAccessor.getById(userId);
-        UserPhoto userPhoto = UserPhoto.find.query().where().eq("user", user).and().eq("isProfile", true).findOne();
+        UserPhoto userPhoto = UserPhoto.find().query().where().eq("user", user).and().eq("isProfile", true).findOne();
         if(userPhoto != null) {
             return  userPhoto;
         } else {
@@ -419,7 +479,7 @@ public class UserFactory {
      * @param setPublic true to make public, false to make private
      */
     public static void makePicturePublic(int userId, UserPhoto newPhoto, boolean setPublic) {
-        User user = User.find.byId(userId);
+        User user = User.find().byId(userId);
         if (user != null) {
             newPhoto.setPublic(setPublic);
             newPhoto.save();

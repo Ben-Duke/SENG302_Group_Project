@@ -1,7 +1,9 @@
 package models;
 
+import accessors.VisitAccessor;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import controllers.ApplicationManager;
 import formdata.TripFormData;
 import io.ebean.Ebean;
 import io.ebean.Finder;
@@ -12,6 +14,36 @@ import java.util.*;
 
 @Entity
 public class Trip extends TaggableModel {
+
+    @Id
+    private Integer tripid;
+
+    private String tripName;
+
+    @Column(columnDefinition = "integer default 0")
+    private Integer removedVisits;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "trip")
+    private List<Visit> visits;
+
+    private static Finder<Integer,Trip> find = new Finder<>(Trip.class,
+            ApplicationManager.getDatabaseName());
+
+    private boolean isPublic = true;
+
+    @JsonIgnore
+    @ManyToOne
+    @JoinColumn(name = "user", referencedColumnName = "userid")
+    private User user;
+
+
+
+    /**
+     * Default Constructor
+     */
+    public Trip(){
+    }
 
     public Trip(Trip trip, List<Visit> visits) {
         this.tripName = trip.getTripName();
@@ -35,6 +67,12 @@ public class Trip extends TaggableModel {
 
     public static Finder<Integer,Trip> find = new Finder<>(Trip.class);
 
+    public boolean isPublic = true;
+
+    @JsonIgnore
+    @ManyToOne
+    @JoinColumn(name = "user", referencedColumnName = "userid")
+    public User user;
 
     public static Trip makeInstance(TripFormData formData){
         Trip trip = new Trip();
@@ -45,6 +83,12 @@ public class Trip extends TaggableModel {
         return trip;
     }
 
+    /**
+     * Trip Constructor
+     * @param tripName Name of the trip
+     * @param isPublic the public attribute for the trip
+     * @param user The owner of the trip
+     */
     public Trip(String tripName, boolean isPublic, User user) {
         this.removedVisits = 0;
         this.tripName = tripName;
@@ -52,7 +96,14 @@ public class Trip extends TaggableModel {
         this.user = user;
         this.visits = new ArrayList<>();
     }
-    public Trip(){
+
+    /**
+     * Gets finder object for Trip.
+     *
+     * @return Finder<Integer,Trip> object
+     */
+    public static Finder<Integer,Trip> find() {
+        return find;
     }
 
 
@@ -81,9 +132,9 @@ public class Trip extends TaggableModel {
     }
 
     public List<Visit> getOrderedVisits(){
-        List<Visit> visits = this.getVisits();
-        visits.sort(Comparator.comparing(Visit::getVisitOrder));
-        return visits;
+        List<Visit> tempVisits = visits;
+        tempVisits.sort(Comparator.comparing(Visit::getVisitOrder));
+        return tempVisits;
     }
 
     public void deleteVisit(Visit visit){
@@ -94,20 +145,26 @@ public class Trip extends TaggableModel {
         this.visits.add(visit);
     }
 
-
-
+    /**
+     * Returns the start date of the trip
+     * @return The date of the start of the trip as a string
+     */
     public String getTripStart(){
         if(this.visits.isEmpty()){
             return null;
         }
         else {
-            String startDate = Ebean.find(Visit.class).where().eq("trip", this).orderBy("arrival DESC").findList().get(0).getArrival();
+            String startDate = Visit.find().query().where().eq("trip", this).orderBy("arrival DESC").findList().get(0).getArrival();
             return startDate;
         }
     }
 
+    /**
+     * Returns the end date of the trip
+     * @return The date of the end of the trip as a string
+     */
     public String getTripEnd(){
-        String endDate = Ebean.find(Visit.class).where().eq("trip", this).orderBy("departure ASC").findList().get(0).getDeparture();
+        String endDate = Visit.find().query().where().eq("trip", this).orderBy("departure ASC").findList().get(0).getDeparture();
         return endDate;
     }
 
@@ -119,13 +176,14 @@ public class Trip extends TaggableModel {
         this.removedVisits = removedVisits;
     }
 
+    public void removeAllVisits() {
+        visits = new ArrayList<>();
+    }
+
+
+
     public boolean hasVisit(){
-        if (visits != null) {
-            if (! visits.isEmpty()) {
-                return true;
-            }
-        }
-        return false;
+        return (visits != null) && (!visits.isEmpty());
     }
 
 

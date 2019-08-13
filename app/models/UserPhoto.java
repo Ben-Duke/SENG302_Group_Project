@@ -13,30 +13,19 @@ import java.util.*;
  * A class to hold information a user photograph.
  */
 @Entity
+public class UserPhoto extends Media {
 
-@Table(uniqueConstraints={@UniqueConstraint(columnNames={"url"})})
-public class UserPhoto extends TaggableModel {
-    @Id //The photos primary key
-    public int photoId;
-
-    @Column(name = "url")
-    public String url;
 
     private boolean isProfile;
 
     private String caption = "";
 
 
-    // Creating  the relation to Destination
-    @JsonIgnore
-    @ManyToMany
-    public List<Destination> destinations;
-
     @JsonIgnore
     @OneToMany(mappedBy = "primaryPhoto")
-    private List<Destination> primaryPhotoDestinations;
+    public List<Album> primaryPhotoDestinations;
 
-    public static final Finder<Integer,UserPhoto> find = new Finder<>(UserPhoto.class);
+    private static final Finder<Integer,UserPhoto> find = new Finder<>(UserPhoto.class, ApplicationManager.getDatabaseName());
 
     /**
      * Default constructor for caption edit commands
@@ -51,9 +40,7 @@ public class UserPhoto extends TaggableModel {
      * @param user The User who owns this photograph.
      */
     public UserPhoto(String url, boolean isPublic, boolean isProfile, User user) {
-        this.url = url;
-        this.isPublic = isPublic;
-        this.user = user;
+        super(url, isPublic, user);
         this.isProfile = isProfile;
     }
 
@@ -62,35 +49,48 @@ public class UserPhoto extends TaggableModel {
      * @param url A String representing the relative path to the photo resource.
      * @param isPublic A boolean, true if the photo is visible to everybody, false otherwise.
      * @param user The User who owns this photograph.
-     * @param destinations the photos linked destinations
+     * @param albums the albums containing the photo
      * @param primaryPhotoDestinations the photos linked primary photo destinations
      */
-    public UserPhoto(String url, boolean isPublic, boolean isProfile, User user, List<Destination> destinations,
-                     List<Destination> primaryPhotoDestinations) {
-        this.url = url;
-        this.isPublic = isPublic;
-        this.user = user;
+    public UserPhoto(String url, boolean isPublic, boolean isProfile, User user, List<Album> albums,
+                     List<Album> primaryPhotoDestinations) {
+        super(url, isPublic, user);
         this.isProfile = isProfile;
-        this.destinations = destinations;
         this.primaryPhotoDestinations = primaryPhotoDestinations;
+        this.albums = albums;
     }
 
-    public boolean getIsProfile(){
+
+    /**
+     * Create a userPhoto using another userPhoto objects and it's attributes
+     * @param userPhoto The userPhoto object being used
+     */
+    public UserPhoto(UserPhoto userPhoto) {
+        super(userPhoto.getUrl(), userPhoto.getIsPublic(), userPhoto.getUser(), userPhoto.getCaption());
+        this.isProfile = userPhoto.getIsProfilePhoto();
+        this.primaryPhotoDestinations = userPhoto.getPrimaryPhotoDestinations();
+    }
+
+    /**
+     * Gets a finder object for UserPhoto.
+     *
+     * @return A Finder<Integer,UserPhoto> object
+     */
+    public static Finder<Integer,UserPhoto> find() {
+        return find;
+    }
+
+
+
+    @Override
+    public String toString() {
+        return "url is " + this.getUrl() + " Id is " + this.getMediaId();
+    }
+
+
+    public boolean getIsProfile() {
         return this.isProfile;
     }
-
-    public UserPhoto(UserPhoto userPhoto) {
-        this.url = userPhoto.getUrl();
-        this.isPublic = userPhoto.getIsPhotoPublic();
-        this.user = userPhoto.getUser();
-        this.isProfile = userPhoto.getIsProfilePhoto();
-        this.destinations = userPhoto.getDestinations();
-        this.primaryPhotoDestinations = userPhoto.getPrimaryPhotoDestinations();
-        this.caption = userPhoto.getCaption();
-    }
-
-
-
 
     public boolean getIsPhotoPublic(){
         return this.isPublic;
@@ -101,29 +101,30 @@ public class UserPhoto extends TaggableModel {
     }
 
     /**
-     * Gets an unused user photo filename.
+     * Gets an unused user photo url.
      *
      * Checks for duplicate photo file names and increments the file name index until a non duplicate file name
      * is found.
      *
-     * @return A String representing the unused filename of the photo
+     * @return A String representing the unused url of the photo
      */
     public String getUnusedUserPhotoFileName(){
         int count = 0;
         UserPhoto userPhoto = this;
-        String filename = "";
+        String url = "";
         while(userPhoto != null) {
             count += 1;
-            filename = count + "_" + this.url;
-            userPhoto = UserPhoto.find.query().where().eq("url", filename).findOne();
+            url = count + "_" + this.getUrl();
+            userPhoto = UserPhoto.find().query().where().eq("url", url).findOne();
         }
 
-        return filename;
+        return url;
     }
 
     /**
      * Calling this function will delete a user photo that has that photoId does nothing if the photoId doesn't
      * match a photo in the database
+     * @param idOfPhoto The Id of the photo being deleted
      */
     public static void deletePhoto(int idOfPhoto){
         UserPhoto.find.query().where().eq("photoId",idOfPhoto).delete();
@@ -145,22 +146,7 @@ public class UserPhoto extends TaggableModel {
         this.caption = caption;
     }
 
-    public List<Destination> getDestinations() {
-        return destinations;
-    }
 
-    public void addDestination(Destination destination) {
-        this.destinations.add(destination);
-    }
-
-    /**
-     * Unlink the photo from the given destination
-     * @param destination the destination to unlink from
-     * @return true if the removal changed the list, else false
-     */
-    public boolean removeDestination(Destination destination) {
-        return this.destinations.remove(destination);
-    }
     /**
      * Method to set the photo as profile picture (or not)
      * @param isProfile the boolean showing if the picture is the profile picture
@@ -208,13 +194,8 @@ public class UserPhoto extends TaggableModel {
      * Get the primary photo destinations of the photo
      * @return the primary photo list
      */
-    public List<Destination> getPrimaryPhotoDestinations() {
+    public List<Album> getPrimaryPhotoDestinations() {
         return primaryPhotoDestinations;
-    }
-
-    @Override
-    public String toString() {
-        return "url is " + this.url + " Id is " + this.getPhotoId();
     }
 
     /**
@@ -223,12 +204,16 @@ public class UserPhoto extends TaggableModel {
      * passed in
      * */
     public void applyEditChanges(UserPhoto editedPhoto) {
-        this.url = editedPhoto.getUrl();
-        this.isPublic = editedPhoto.getIsPhotoPublic();
-        this.isProfile = editedPhoto.getIsProfile();
-        this.caption = editedPhoto.getCaption();
-        this.user = editedPhoto.getUser();
-        this.destinations = editedPhoto.getDestinations();
+        setUrl(editedPhoto.getUrl());
+        setPublic(editedPhoto.getIsPublic());
+        setProfile(editedPhoto.getIsProfile());
+        setCaption(editedPhoto.getCaption());
+        setUser(editedPhoto.getUser());
+        this.albums = editedPhoto.getAlbums();
         this.primaryPhotoDestinations = editedPhoto.getPrimaryPhotoDestinations();
+    }
+
+    public boolean isUserOwner(User user) {
+        return this.getUser().getUserid() == user.getUserid();
     }
 }

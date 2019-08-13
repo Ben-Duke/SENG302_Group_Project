@@ -1,28 +1,11 @@
 # TravelEA - Team 800
 Basic Play project using sbt build and basic GitLab CI.
 
-## URL's of live projects
-Navigate to these websites in your favourite web browser (such as Chrome or Edge).
 
-##### Sprint 3 Deliverable :
-```
-https://csse-s302g8.canterbury.ac.nz
-```
-
-##### Most up-to-date running app from our Master branch:
-```
-https://csse-s302g8.canterbury.ac.nz:8443
-```
-
-##### SonarQube Reports:
-```
-http://csse-s302g8.canterbury.ac.nz:8080
-```
-You must login to view reports, login information can be found here:
-<https://eng-git.canterbury.ac.nz/seng302-2019/team-800/wikis/code-quality-reports-(sonarqube)>
 
 ## Basic Project Structure
 * app/ Application source
+* public/ Javascript, images and stylesheets
 * conf/ configuration files required to ensure the project builds properly
 
 ## How to run
@@ -50,19 +33,19 @@ And run the server
 And open <http://localhost:9000/>
 
 ## Login details
-##### We reccomend you use the test user to test our system
+##### We recommend you use the test user to test our system
 
 * Default admin:
 
         Email: admin@admin.com
 
-        Password: admin
+        Password: FancyRock08
 
 * Test user:
 
         Email: testuser1@uclive.ac.nz
 
-        Password: test
+        Password: TinyHumans57
         
 ## How to use
 A detailed guide exists here: <https://eng-git.canterbury.ac.nz/seng302-2019/team-800/wikis/user-guide>
@@ -77,7 +60,58 @@ A detailed guide exists here: <https://eng-git.canterbury.ac.nz/seng302-2019/tea
 * Note: Home/TravelEA buttons navigate to the profile page but only if you are logged in.
 * You can undo/redo many actions by pressing the undo/redo buttons on the top right
   of the navigation bar. 
-* Alternatively to undo use the ctrl + z keyboard shortcut and ctrl + y for redo.
+* Alternatively to undo use the ctrl + z keyboard shortcut and ctrl + shift + z for redo.
+
+## Changing the database you are connected to for manual testing
+### Connect to mysql
+1. Open application.conf
+2. Comment in the block (around line 12)
+```//  default.url="jdbc:mysql://mysql2.csse.canterbury.ac.nz/seng302-2019-team800-prod"```
+  ```default.url="jdbc:mysql://mysql2.csse.canterbury.ac.nz/seng302-2019-team800-test"```
+  ```default.username=seng302-team800```
+  ```default.password="ChampHails8911"```
+
+
+3. comment in the line ending with 'test' to use the dev database or the line ending with 'prod' to use the production database
+
+4. Check evolutions are disabled (=false) on the line 
+```play.evolutions {```
+```db.default.enabled = false```
+near line 31
+
+### Connect to h2
+1. Open Application.conf
+2. Comment out the block 
+```//  default.url="jdbc:mysql://mysql2.csse.canterbury.ac.nz/seng302-2019-team800-prod"```
+  ```default.url="jdbc:mysql://mysql2.csse.canterbury.ac.nz/seng302-2019-team800-test"```
+  ```default.username=seng302-team800```
+  ```default.password="ChampHails8911"```
+
+3. Uncomment the block (around line 8)
+```//  default.driver=org.h2.Driver```
+```//  default.url="jdbc:h2:mem:play"```
+
+4. Ensure evolutions are enabled (=true) on the line
+```play.evolutions {```
+```db.default.enabled = true```
+near line 31
+
+### Reset/resample db
+##### mysql
+1. Enable evolutions (=true) near line 31
+```play.evolutions {```
+```db.default.enabled = true```
+
+2. Change the password of testuser1 (this will be overriden by TestdDatabaseManager so their actual passowrd will not be affected)
+Refresh the app
+
+##### h2 
+As long as you have enabled evolutions as per the instructions related to using h2 above the db will be reset and resampled
+when you start the application
+
+
+### Further information
+See wiki page https://eng-git.canterbury.ac.nz/seng302-2019/team-800/wikis/design-decisions/Story-8c-Connect-to-MySql-database
 
 ## How to run tests
 Clone the repository as above
@@ -89,7 +123,19 @@ Navigate to the root of the cloned repository and execute the test command
 ```bash
 sbt test
 ```
-All tests will run and a summary will be displayed. This will take a few minutes
+All tests will run and a summary will be displayed. This will take a few minutes.
+
+## Contributors
+* Benjamin Duke
+* Gavin Ong
+* Luke Parkinson
+* Michael Shannon
+* Noel Bisson
+* Logan Shaw
+* Jason Little
+* Jack Orchard
+* Priyesh Shah
+
 
 ## Attribution
 
@@ -104,3 +150,6 @@ All tests will run and a summary will be displayed. This will take a few minutes
 ## Dependencies
 
 https://eng-git.canterbury.ac.nz/seng302-2019/team-800/wikis/dependencies
+
+## License
+Creative Commons Zero v1.0 Universal

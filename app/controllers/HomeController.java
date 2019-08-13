@@ -1,12 +1,23 @@
 package controllers;
 
+import accessors.DestinationAccessor;
 import accessors.UserAccessor;
+import accessors.UserPhotoAccessor;
 import factories.UserFactory;
+import formdata.DestinationFormData;
 import io.ebean.DuplicateKeyException;
+import models.Destination;
+import models.Trip;
+import models.Album;
+import models.Media;
 import models.User;
 import models.UserPhoto;
-import models.commands.Profile.HomePageCommand;
+import models.commands.General.CommandPage;
+import models.commands.Albums.AddMediaToAlbumCommand;
+import models.commands.Albums.CreateAlbumCommand;
 import models.commands.Photos.UploadPhotoCommand;
+import org.slf4j.Logger;
+import play.data.Form;
 import play.data.FormFactory;
 import play.libs.Files;
 import play.libs.Json;
@@ -14,7 +25,7 @@ import play.mvc.Http;
 import play.mvc.Result;
 import utilities.CountryUtils;
 import utilities.UtilityFunctions;
-import views.html.home.home;
+import views.html.home.*;
 
 import javax.imageio.ImageIO;
 import javax.inject.Inject;
@@ -27,9 +38,44 @@ import java.util.*;
 import static play.mvc.Results.*;
 
 public class HomeController {
+    private final Logger logger = UtilityFunctions.getLogger();
 
     @Inject
     FormFactory formFactory;
+
+
+    public Result mainMapPage(Http.Request request) {
+
+        User user = User.getCurrentUser(request);
+        if (user == null) { return redirect(routes.UserController.userindex()); }
+
+        // Clear the command stack
+        user.getCommandManager().setAllowedPage(CommandPage.MAP);
+
+        List<Trip> trips = user.getTripsSorted();
+
+        List<Destination> allDestinations = DestinationAccessor.getAllDestinations();
+
+        List<Destination> userAccessibleDestinations = new ArrayList<>();
+
+        for (Destination destination : allDestinations) {
+            if (destination.getUser().getUserid() == user.getUserid() ||
+            destination.getIsPublic()) {
+
+                userAccessibleDestinations.add(destination);
+
+            }
+        }
+
+        Form<DestinationFormData> destFormData;
+        destFormData = formFactory.form(DestinationFormData.class);
+
+        Map<String, Boolean> countryList = CountryUtils.getCountriesMap();
+
+        return ok(mapHome.render(user, trips, userAccessibleDestinations, destFormData, countryList, Destination.getTypeList()));
+
+    }
+
 
     /**
      * The home page where currently users can access other creation pages (also displays their profile).
@@ -54,7 +100,7 @@ public class HomeController {
                 return redirect(routes.ProfileController.updateNatPass());
             } else {
                 // Clear command stack
-                user.getCommandManager().setAllowedType(HomePageCommand.class);
+                user.getCommandManager().setAllowedPage(CommandPage.HOME);
 
                 // Load countries from api and update validity of pass/nat/destinations
                 CountryUtils.updateCountries();
@@ -85,8 +131,9 @@ public class HomeController {
             //Get the photo data from the multipart form data encoding
             Http.MultipartFormData<Files.TemporaryFile> body = request.body().asMultipartFormData();
             Http.MultipartFormData.FilePart<Files.TemporaryFile> picture = body.getFile("picture");
-            if (picture != null) {
-                return getResultFromSaveUserPhoto(user, isPublic, picture, tags);
+            String albumName = dataPart.get("Album Search")[0];
+            if ((picture != null) && (!albumName.isEmpty())) {
+                return getResultFromSaveUserPhoto(user, isPublic, picture, albumName, tags);
             } else {
                 return badRequest("Error uploading the picture.");
             }
@@ -105,8 +152,8 @@ public class HomeController {
      * @param picture The FilePart of the picture, not null.
      * @return A Result from trying to save the photo.
      */
-    private Result getResultFromSaveUserPhoto(User user, boolean isPublic, Http.MultipartFormData.FilePart<Files.TemporaryFile> picture, ArrayList<String> tags) {
-        String origionalFilePath = picture.getFilename();
+    private Result getResultFromSaveUserPhoto(User user, boolean isPublic, Http.MultipartFormData.FilePart<Files.TemporaryFile> picture, String albumName, ArrayList<String> tags) {
+        String originalFilePath = picture.getFilename();
         long fileSize = picture.getFileSize();
         String contentType = picture.getContentType();
         Files.TemporaryFile fileObject = picture.getRef();
@@ -116,11 +163,11 @@ public class HomeController {
             //Add the path to the filename given by the uploaded picture
 
             // finding unused photo url
-            UserPhoto newPhoto = new UserPhoto(origionalFilePath, isPublic, false, user);
+            UserPhoto newPhoto = new UserPhoto(originalFilePath, isPublic, false, user);
             String unusedPhotoUrl = newPhoto.getUnusedUserPhotoFileName();
             newPhoto.setUrl(unusedPhotoUrl);
             Set uniqueTags = UtilityFunctions.tagLiteralsAsSet(tags);
-            UploadPhotoCommand uploadPhotoCommand = new UploadPhotoCommand(newPhoto, fileObject, uniqueTags);
+            UploadPhotoCommand uploadPhotoCommand = new UploadPhotoCommand(newPhoto, fileObject, user, albumName, uniqueTags);
             user.getCommandManager().executeCommand(uploadPhotoCommand);
             return redirect(routes.HomeController.showhome());
         } else {
@@ -141,7 +188,6 @@ public class HomeController {
     public Result uploadProfilePicture(Http.Request request) {
         User user = User.getCurrentUser(request);
         if(user != null) {
-            Map<String, String[]> datapart = request.body().asMultipartFormData().asFormUrlEncoded();
             boolean isPublic = true;
 
             //Get the photo data from the multipart form data encoding
@@ -149,8 +195,6 @@ public class HomeController {
             Http.MultipartFormData.FilePart<Files.TemporaryFile> picture = body.getFile("picture");
             if (picture != null) {
                 String originalFilePath = picture.getFilename();
-                //String fileName = datapart.get("filename")[0];
-                long fileSize = picture.getFileSize();
                 String contentType = picture.getContentType();
                 Files.TemporaryFile file = picture.getRef();
                 if (contentType.contains("image")) {
@@ -160,20 +204,24 @@ public class HomeController {
                     newPhoto.setUrl(unusedPhotoUrl);
                     //Add the path to the filename given by the uploaded picture
 
-                    String unusedAbsoluteFilePath = Paths.get(".").toAbsolutePath().normalize().toString() + ApplicationManager.getUserPhotoPath() + user.getUserid() + "/" + unusedPhotoUrl;
+                    String unusedAbsoluteFilePath = Paths.get(".").toAbsolutePath().normalize().toString() + ApplicationManager.getMediaPath() + "/" + unusedPhotoUrl;
                     //Save the file, replacing the existing one if the name is taken
                     try {
-                        java.nio.file.Files.createDirectories(Paths.get(Paths.get(".").toAbsolutePath().normalize().toString() + ApplicationManager.getUserPhotoPath() + user.getUserid() + "/"));
+                        java.nio.file.Files.createDirectories(Paths.get(Paths.get(".").toAbsolutePath().normalize().toString() + ApplicationManager.getMediaPath() + "/"));
                         file.copyTo(Paths.get(unusedAbsoluteFilePath), true);
 
                         BufferedImage thumbnailImage = UtilityFunctions.resizeImage(unusedAbsoluteFilePath);
-                        ImageIO.write(thumbnailImage, "png", new File(Paths.get(".").toAbsolutePath().normalize().toString() + ApplicationManager.getUserPhotoPath() + user.getUserid() + "/profilethumbnail.png"));
+                        ImageIO.write(thumbnailImage, "png", new File(Paths.get(".").toAbsolutePath().normalize().toString() + ApplicationManager.getMediaPath() + "/profilethumbnail.png"));
                     } catch (IOException e) {
-                        System.out.println(e);
+                        logger.error("Something went wrong", e);
                         return internalServerError("Oops, something went wrong.");
                     }
                     //DB saving
                     UserFactory.replaceProfilePicture(user.getUserid(), newPhoto);
+                    UploadPhotoCommand uploadPhotoCommand = new UploadPhotoCommand(UserPhotoAccessor.getUserPhotoByUrl(unusedPhotoUrl), file, user,
+                            user.getFName()+"'s "+"Profile Pictures");
+                    uploadPhotoCommand.addUploadToAlbum(user, UserPhotoAccessor.getUserPhotoByUrl(unusedPhotoUrl),
+                            user.getFName()+"'s "+"Profile Pictures");
                     return redirect(routes.HomeController.showhome());
                 }
             }
@@ -184,6 +232,8 @@ public class HomeController {
         }
     }
 
+    //public Result addToAlbumFromUpload(Http.Request request)
+
     /**Serve an image file with a get request
      * @param request the HTTP request
      * @param photoId the id of the photo
@@ -193,8 +243,8 @@ public class HomeController {
     {
         User user = User.getCurrentUser(request);
         if(user != null) {
-            UserPhoto photo = UserPhoto.find.byId(photoId);
-            if(!photo.isPublic() && user.getUserid() != photo.getUser().getUserid() && !user.userIsAdmin()){
+            UserPhoto photo = UserPhoto.find().byId(photoId);
+            if(!photo.getIsPublic() && user.getUserid() != photo.getUser().getUserid() && !user.userIsAdmin()){
                 return unauthorized("Oops, this is a private photo.");
             }
             else{
@@ -225,7 +275,7 @@ public class HomeController {
         User user = User.getCurrentUser(httpRequest);
         if(user != null) {
 
-            User otherUser = User.find.byId(userId);
+            User otherUser = User.find().byId(userId);
             if (otherUser != null) {
                 UserPhoto profilePicture = UserFactory.getUserProfilePicture(userId);
                 if (profilePicture != null) {
@@ -255,7 +305,7 @@ public class HomeController {
      */
     public Result setProfilePicture(Http.Request request, Integer photoId) {
         User user = User.getCurrentUser(request);
-        UserPhoto profilePhoto = UserPhoto.find.byId(photoId);
+        UserPhoto profilePhoto = UserPhoto.find().byId(photoId);
         if(user != null) {
             if (profilePhoto != null) {
                 if(user.getUserid() == profilePhoto.getUser().getUserid() || user.userIsAdmin()) {
@@ -282,7 +332,7 @@ public class HomeController {
      */
     public Result makePicturePublic(Http.Request request, Integer photoId, Integer setPublic) {
         User user = User.getCurrentUser(request);
-        UserPhoto photo = UserPhoto.find.byId(photoId);
+        UserPhoto photo = UserPhoto.find().byId(photoId);
         if(user != null) {
             if (photo != null) {
                 if(user.getUserid() == photo.getUser().getUserid() || user.userIsAdmin()) {
@@ -318,24 +368,18 @@ public class HomeController {
      *      200: successfully set the profile photo to a normal photo.
      */
     public Result setProfilePhotoToNormalPhoto(Http.Request request) {
-        System.out.println(request);
-        System.out.println("check");
         User user = User.getCurrentUser(request);
 
         if(user != null) {
-            UserPhoto profilePicture = null;
-            boolean hasDuplicateProfilephotos = false;
+            UserPhoto profilePicture;
 
             try {
                 profilePicture =  UserAccessor.getProfilePhoto(user);
             } catch (DuplicateKeyException e) {
-                System.out.println("ERROR: duplicate profile photos");
-                hasDuplicateProfilephotos = true;
+                return internalServerError("help");
             }
 
-            if (hasDuplicateProfilephotos) {
-                return internalServerError("help");
-            } else if (profilePicture == null) {
+            if (profilePicture == null) {
                 return badRequest("help");
             } else {
                 profilePicture.setProfile(false);

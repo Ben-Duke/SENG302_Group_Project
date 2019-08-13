@@ -503,8 +503,8 @@ public class DestinationController extends Controller {
                 newDestination.setTags(new HashSet<>());
                 newDestination.setUser(user);
                 newDestination.setCountryValid(true);
-                if (destinationForm.get().tags != null && destinationForm.get().tags.length() > 0) {
-                    List<String> tags = Arrays.asList(destinationForm.get().tags.split(","));
+                if (destinationForm.get().getTags() != null && destinationForm.get().getTags().length() > 0) {
+                    List<String> tags = Arrays.asList(destinationForm.get().getTags().split(","));
                     Set uniqueTags = UtilityFunctions.tagLiteralsAsSet(tags);
                     newDestination.setTags(uniqueTags);
                 }

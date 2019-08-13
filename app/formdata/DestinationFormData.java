@@ -170,4 +170,13 @@ public class DestinationFormData implements Constraints.Validatable<List<Validat
     public void setLongitude(String longitude) {
         this.longitude = longitude;
     }
+
+
+    public String getTags() {
+        return tags;
+    }
+
+    public void setTags(String tags) {
+        this.tags = tags;
+    }
 }

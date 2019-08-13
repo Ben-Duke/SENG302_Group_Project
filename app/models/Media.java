@@ -14,7 +14,7 @@ import java.util.List;
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @Table(uniqueConstraints={@UniqueConstraint(columnNames={"url"})})
-public abstract class Media extends BaseModel {
+public abstract class Media extends TaggableModel {
 
     @Id
     public Integer mediaId;
@@ -148,7 +148,6 @@ public abstract class Media extends BaseModel {
     public void setUrl(String url) {this.url = url; }
     public void setPublic(boolean isPublic) { this.isMediaPublic = isPublic; }
     public void setCaption(String caption) { this.caption = caption; }
-    protected void setUser(User user) { this.user = user; }
 
 //    public void addAlbum(Album album) { this.albums.add(album); }
 

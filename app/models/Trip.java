@@ -53,26 +53,6 @@ public class Trip extends TaggableModel {
         this.visits = visits;
     }
 
-    @Id
-    public Integer tripid;
-
-    public String tripName;
-
-    @Column(columnDefinition = "integer default 0")
-    public Integer removedVisits;
-
-    @JsonIgnore
-    @OneToMany(mappedBy = "trip")
-    public List<Visit> visits;
-
-    public static Finder<Integer,Trip> find = new Finder<>(Trip.class);
-
-    public boolean isPublic = true;
-
-    @JsonIgnore
-    @ManyToOne
-    @JoinColumn(name = "user", referencedColumnName = "userid")
-    public User user;
 
     public static Trip makeInstance(TripFormData formData){
         Trip trip = new Trip();

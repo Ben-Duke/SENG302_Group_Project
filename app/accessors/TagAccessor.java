@@ -79,9 +79,9 @@ public class TagAccessor {
      */
     public static Set<TaggableModel> findTaggedItems(Tag tag) {
         String tagQuery = "tags.tagId";
-        Set<TaggableModel> taggedItems = new HashSet<>(Destination.find.query().where().eq(tagQuery, tag.getTagId()).findSet());
-        taggedItems.addAll(UserPhoto.find.query().where().eq(tagQuery, tag.getTagId()).findSet());
-        taggedItems.addAll(Trip.find.query().where().eq(tagQuery, tag.getTagId()).findSet());
+        Set<TaggableModel> taggedItems = new HashSet<>(Destination.find().query().where().eq(tagQuery, tag.getTagId()).findSet());
+        taggedItems.addAll(UserPhoto.find().query().where().eq(tagQuery, tag.getTagId()).findSet());
+        taggedItems.addAll(Trip.find().query().where().eq(tagQuery, tag.getTagId()).findSet());
         return taggedItems;
     }
 

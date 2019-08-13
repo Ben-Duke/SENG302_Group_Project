@@ -32,11 +32,11 @@ import static play.mvc.Results.unauthorized;
  */
 public class UtilityFunctions {
 
-    private static final Logger logger = UtilityFunctions.getLogger();
+    private static final Logger logger = getLogger();
 
     /** Get a default logger (application) */
     public static Logger getLogger() {
-        return UtilityFunctions.getLogger("application");
+        return getLogger("application");
     }
 
     /** Get a new logger */
@@ -44,6 +44,10 @@ public class UtilityFunctions {
         return LoggerFactory.getLogger(loggerName);
     }
 
+    // Private constructor to hide the implicit public one
+    private UtilityFunctions() {
+        throw new IllegalStateException("Utility class");
+    }
 
 
     /**
@@ -58,6 +62,11 @@ public class UtilityFunctions {
         return null;
     }
 
+    /**
+     * Makes a set of all the users to be retained
+     * @param lists A set of user as a list
+     * @return A set of all retained users
+     */
     public static Set<User> retainFromLists(List<Set<User>> lists) {
         int count = 0;
         Set<User> retainedList = lists.get(count);
@@ -74,7 +83,7 @@ public class UtilityFunctions {
      *
      * @param max         the character limit
      * @param inputString the input string
-     * @return
+     * @return if the string has more characters than the limit return false, else return true.
      */
     public static boolean validateMaxCharLimit(String inputString, Integer max) {
         return inputString.length() <= max;
@@ -86,7 +95,7 @@ public class UtilityFunctions {
      *
      * @param min         the minimum number of characters
      * @param inputString the input string
-     * @return
+     * @return A boolean,  if the string has less characters than the limit return false, else return true.
      */
     public static boolean validateMinCharLimit(String inputString, Integer min) {
         return min <= inputString.length();
@@ -113,7 +122,7 @@ public class UtilityFunctions {
      */
     public static boolean isStringADouble(String inputString) {
         try {
-            double doubleFromInput = Double.parseDouble(inputString);
+            Double.parseDouble(inputString);
             return true;
         } catch (NumberFormatException exception) {
             return false;
@@ -128,7 +137,7 @@ public class UtilityFunctions {
      */
     static boolean isStringAnInt(String inputString) {
         try {
-            int intFromInput = Integer.parseInt(inputString);
+            Integer.parseInt(inputString);
             return true;
         } catch (NumberFormatException exception) {
             return false;
@@ -175,12 +184,12 @@ public class UtilityFunctions {
 
         CountryUtils.updateCountries();
 
-        if (Nationality.find.all().isEmpty()) {
+        if (Nationality.find().all().isEmpty()) {
             try {
 
                 if (CountryUtils.getCountries() == null){
 
-                    System.out.println("Countries have not been loaded. " +
+                    logger.error("Countries have not been loaded. " +
                             "Nationalities will not be loaded. " +
                             "Restart Server?");
 
@@ -195,16 +204,16 @@ public class UtilityFunctions {
                             nationality.save();
                         } catch (Exception error) {
                             isInSuccessState = false;
-                            System.out.println("Failed to save nationality: " +
+                            logger.error("Failed to save nationality: " +
                                     nationality.getNationalityName() +
-                                    " uniqueness contraint failed");
+                                    " uniqueness contraint failed", error);
                         }
 
                     }
                 }
 
             } catch (Exception error) {
-                System.out.println(error);
+                logger.error("Unknown error", error);
             }
         } else {
             isInSuccessState = false;
@@ -222,10 +231,10 @@ public class UtilityFunctions {
 
         CountryUtils.updateCountries();
 
-        if (Passport.find.all().isEmpty()) {
+        if (Passport.find().all().isEmpty()) {
             if (CountryUtils.getCountries() == null){
 
-                System.out.println("Countries have not been loaded. " +
+                logger.error("Countries have not been loaded. " +
                         "Passports will not be loaded. " +
                         "Restart Server?");
 
@@ -237,9 +246,9 @@ public class UtilityFunctions {
                         passport.save();
                     } catch (Exception error) {
                         isInSuccessState = false;
-                        System.out.println("Passport failed to save. name: " +
+                        logger.error("Passport failed to save. name: " +
                                 passport.getName() +
-                                " uniqueness constraint failed");
+                                " uniqueness constraint failed", error);
                     }
                 }
             }
@@ -265,14 +274,14 @@ public class UtilityFunctions {
         types.add("Business Traveller");
         types.add("Backpacker");
         boolean successfullyAddedAllTravvelers = true;
-        if (TravellerType.find.all().isEmpty()) {
+        if (TravellerType.find().all().isEmpty()) {
             for (String type : types) {
                 try {
                     (new TravellerType(type)).save();
                 } catch (Exception error) {
                     //Will remove after peer check
                     successfullyAddedAllTravvelers = false;
-                    System.out.println("Failed to add type: " + type + " Duplicate key");
+                    logger.error("Failed to add type: " + type + " Duplicate key", error);
                 }
             }
         } else {
@@ -298,7 +307,7 @@ public class UtilityFunctions {
             g.dispose();
             return resizedImage;
         } catch (IOException e) {
-            System.out.println(e);
+            logger.error("unknown error", e);
             return null;
         }
 
@@ -307,8 +316,8 @@ public class UtilityFunctions {
     /**
      * This method sends a get request to the countries api and returns a sorted set of these countries
      *
-     * @return
-     * @throws Exception
+     * @return Map of all countries fom the api
+     * @throws Exception Throws exception if error found when using countries api
      */
     public static Map<String, Boolean> CountryUtils() throws IOException {
         Map<String, Boolean> countryMap = new TreeMap<>();
@@ -351,8 +360,8 @@ public class UtilityFunctions {
     /**
      * This method sends a get request to the countries api and returns a sorted set of these countries
      *
-     * @return
-     * @throws Exception
+     * @return A set of all countries from the api
+     * @throws Exception Throws exception if error found when using countries api
      */
     public static Set countriesAsStrings() throws Exception {
         Set<String> countries = new HashSet<String>();
@@ -392,6 +401,25 @@ public class UtilityFunctions {
         Set countrySet = new TreeSet<String>();
         countrySet.addAll(countries);
         return countrySet;
+    }
+
+    /**
+     * Deletes a file directory.
+     *
+     * Taken from : https://www.baeldung.com/java-delete-directory
+     *
+     * @param directoryToBeDeleted Path to directory to delete
+     *
+     * @return true if success, else false.
+     */
+    public static boolean deleteDirectory(File directoryToBeDeleted) {
+        File[] allContents = directoryToBeDeleted.listFiles();
+        if (allContents != null) {
+            for (File file : allContents) {
+                deleteDirectory(file);
+            }
+        }
+        return directoryToBeDeleted.delete();
     }
 
     /**

@@ -7,11 +7,17 @@ scalaVersion := "2.12.8"
 maintainer := "s302team800@cosc.canterbury.ac.nz"
 
 
-lazy val myProject = (project in file(".")).enablePlugins(PlayJava, PlayEbean)
+lazy val myProject = (project in file(".")).enablePlugins(PlayJava, PlayEbean, LauncherJarPlugin)
 
 libraryDependencies += guice
 libraryDependencies += jdbc
+libraryDependencies += javaJdbc % Test
 libraryDependencies += "com.h2database" % "h2" % "1.4.197"
+libraryDependencies += "mysql" % "mysql-connector-java" % "5.1.41"
+
+
+libraryDependencies += evolutions
+
 libraryDependencies += "org.glassfish.jaxb" % "jaxb-core" % "2.3.0.1"
 libraryDependencies += "org.glassfish.jaxb" % "jaxb-runtime" % "2.3.2"
 
@@ -26,10 +32,13 @@ libraryDependencies ++= Seq (
   "org.mockito" % "mockito-core" % "2.25.1" % " test "
 )
 
+javaOptions in Test ++= Seq("-Dconfig.file=conf/test.conf")
+
 testOptions in Test += Tests.Argument(TestFrameworks.JUnit, "-a", "-v")
 
 
 javacOptions ++= Seq("-Xlint:unchecked", "-Xlint:deprecation")
+javacOptions ++= Seq("-source", "1.8", "-target", "1.8")
 configs(IntegrationTest)
 Defaults.itSettings
 

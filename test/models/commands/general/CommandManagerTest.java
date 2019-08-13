@@ -30,7 +30,7 @@ public class CommandManagerTest extends BaseTestWithApplicationAndDatabase {
     @Test
     public void executeCommandCheckUndoNotEmptyAndRedoEmptyAfterExecute() {
         UploadPhotoCommandTest test = new UploadPhotoCommandTest();
-        test.setUpDatabase();
+        test.populateDatabase();
         test.testExecute();
         assertFalse(UserAccessor.getById(1).getCommandManager().isUndoStackEmpty());
         assertTrue(UserAccessor.getById(1).getCommandManager().isRedoStackEmpty());
@@ -39,7 +39,7 @@ public class CommandManagerTest extends BaseTestWithApplicationAndDatabase {
     @Test
     public void undoCheckUndoEmptyAndRedoNotEmptyAfterExecuteAndUndo() {
         UploadPhotoCommandTest test = new UploadPhotoCommandTest();
-        test.setUpDatabase();
+        test.populateDatabase();
         test.testUndo();
         assertTrue(UserAccessor.getById(1).getCommandManager().isUndoStackEmpty());
         assertFalse(UserAccessor.getById(1).getCommandManager().isRedoStackEmpty());
@@ -48,7 +48,7 @@ public class CommandManagerTest extends BaseTestWithApplicationAndDatabase {
     @Test
     public void redoCheckUndoNotEmptyAndRedoEmptyAfterExecuteAndUndoAndRedo() {
         UploadPhotoCommandTest test = new UploadPhotoCommandTest();
-        test.setUpDatabase();
+        test.populateDatabase();
         test.testRedo();
         assertFalse(UserAccessor.getById(1).getCommandManager().isUndoStackEmpty());
         assertTrue(UserAccessor.getById(1).getCommandManager().isRedoStackEmpty());
@@ -57,7 +57,7 @@ public class CommandManagerTest extends BaseTestWithApplicationAndDatabase {
     @Test
     public void resetUndoRedoStackCheckBothStackEmptyAfterReset() {
         UploadPhotoCommandTest test = new UploadPhotoCommandTest();
-        test.setUpDatabase();
+        test.populateDatabase();
         test.testRedo();
         UserAccessor.getById(1).getCommandManager().resetUndoRedoStack();
         assertTrue(UserAccessor.getById(1).getCommandManager().isUndoStackEmpty());

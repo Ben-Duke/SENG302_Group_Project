@@ -1,0 +1,311 @@
+@import formdata.DestinationFormData
+@import views.html.bootstrap3._
+
+@(user : User, destination: Destination, editMode: Boolean,
+        destForm: Form[DestinationFormData], countryMap: Map[String, Boolean], typeMap: Map[String, Boolean], travellerTypeMap : Map[String, Boolean])
+
+
+<style>
+    #map {
+        height: 610px;
+    }
+    form {
+        margin-bottom: 0;
+    }
+    #imagesContainer {
+        position: relative;
+        max-width: 120px;
+        height: 100%;
+        width: 100%;
+        left: -25px;
+        top: -5px;
+    }
+    #addPhotoLink {
+        display: inline-block;
+        max-width: 120px;
+        max-height: 120px;
+    }
+
+</style>
+
+@main(user, "Destination") {
+
+    <h2>Destination</h2>
+    <div class="row">
+        <div class="col-sm-5">
+            <div id="map"></div>
+        </div>
+        <div class="col-sm-7">
+
+        @if(editMode) {
+
+            <h3 style="margin-top: 0;">Edit mode</h3>
+
+            @if(destination.isUserOwner(user) || user.userIsAdmin()) {
+                @helper.form(action = helper.CSRF(routes.DestinationController.updateDestination(destination.getDestId()))) {
+                    @formBody()
+
+                    @if(!destination.getIsPublic()) {
+                        <a class="btn" href="@routes.DestinationController.makeDestinationPublic(destination.getDestId())" role="button">
+                            Make public
+                        </a>
+                        <br>
+                    }
+
+                    <input id="submit" type="submit" value="Submit" class="btn btn-primary"/>
+
+                    <a class="btn btn-danger" href="@routes.DestinationController.viewDestination(destination.getDestId())" role="button">
+                        Cancel
+                    </a>
+
+                    <a href="@routes.DestinationController.deleteDestination(destination.getDestId)" class="btn btn-danger" style="position: absolute; right: 30px;">
+                        Delete Destination
+                    </a>
+                }
+
+            } else {
+                @helper.form(action = helper.CSRF(routes.DestinationController.updatePublicDestination(destination.getDestId()))) {
+                    @formBody()
+
+                    <input id="submit" type="submit" value="Submit Modification Request" class="btn btn-primary"/>
+
+                    <a class="btn btn-danger" href="@routes.DestinationController.viewDestination(destination.getDestId())" role="button">
+                        Cancel
+                    </a>
+                }
+
+
+            }
+
+        } else {
+
+            <h3 style="margin-top: 0;">@destination.getDestName()</h3>
+
+            @if(destination.getPrimaryAlbum().getPrimaryPhoto() != null) {
+
+                <div class="row">
+                    <img id=@{destination.getPrimaryAlbum().getPrimaryPhoto().getUrl()} height="250"
+                    src="@{routes.HomeController.index(destination.getPrimaryAlbum().getPrimaryPhoto().getUrlWithPath())}" alt="Primary Image">
+                </div>
+
+            } else {
+                <img id="/assets/images/destinationPlaceHolder.png" height="150"
+                src="/assets/images/destinationPlaceHolder.png" alt="Placeholder Primary Image">
+            }
+
+
+            <div class="row">
+                <label class="col-sm-3 control-label">Type</label>
+                <div class="col-sm-9">
+                    <span>@destination.getDestType()</span>
+                </div>
+            </div>
+
+            <div class="row">
+                <label class="col-sm-3 control-label">Traveller Types</label>
+                <div class="col-sm-9">
+                @for(travellerType <- destination.getTravellerTypes()) {
+                    <span style="margin-right: 6px;">@travellerType</span>
+                }
+                </div>
+            </div>
+
+            <div class="row">
+                <label class="col-sm-3 control-label">Country</label>
+                <div class="col-sm-9">
+                    <span>@destination.getCountry()</span>
+                    @if(!destination.getIsCountryValid()) {
+                        <span class="text-danger"> Invalid country</span>
+                    }
+                </div>
+            </div>
+
+            <div class="row">
+                <label class="col-sm-3 control-label">District</label>
+                <div class="col-sm-9">
+                    <span>@destination.getDistrict()</span>
+                </div>
+            </div>
+
+            <div class="row">
+                <label class="col-sm-3 control-label">Latitude</label>
+                <div class="col-sm-9">
+                    <span>@destination.getLatitude()</span>
+                </div>
+            </div>
+
+            <div class="row">
+                <label class="col-sm-3 control-label">Longitude</label>
+                <div class="col-sm-9">
+                    <span>@destination.getLongitude()</span>
+                </div>
+            </div>
+
+            <br>
+
+            <a class="btn btn-primary" href="@routes.DestinationController.editDestination(destination.getDestId())" role="button">
+                Edit
+            </a>
+
+        }
+
+        </div>
+    </div>
+
+    <hr>
+
+    <h2>Destination Media</h2>
+
+    <button id="addPhotoButton" class="btn btn-primary" data-toggle="modal" data-target="#myModal">
+        Add photo
+    </button>
+
+    <div class="row" style="margin-bottom: 50px;">
+
+        @for(photo <- destination.getPrimaryAlbum().getMedia()) {
+             @if(photo.isOwner(user) || photo.getIsPublic()) {
+
+                <a href="#" data-toggle="modal" data-target="#photo-carousel" onclick="displayPhoto(@photo.getMediaId())">
+                    <img id=@{photo.getUrl} height="150"
+                    src="@{routes.HomeController.index(photo.getUrlWithPath())}" alt="Destination Image">
+                </a>
+            }
+
+        }
+
+    </div>
+
+    <div id="myModal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Select Your Photo</h4>
+                </div>
+
+                <div class="modal-body">
+                    @if(user.getUserPhotos.isEmpty) {
+                        <p id="para">No photos to add to destination. Upload some!</p>
+                    }
+
+                    @for(photo <- user.getUserPhotos()) {
+                        @if(!photo.getDestinations().contains(destination)) {
+                            <a id="addPhotoLink" class="btn btn-light" href="@routes.DestinationController.addPhotoToDestination(photo.getMediaId(), destination.getDestId())">
+                                <div class="container" id="imagesContainer">
+                                    <div class="overlay">
+                                        <i class="icon" title="User Profile">
+                                            @if(photo.getIsPublic()) {
+                                                <i class="fa fa-eye"></i>
+                                            } else {
+                                                <i class="fa fa-eye-slash"></i>
+                                            }
+                                        </i>
+                                    </div>
+                                    <img class="img-thumbnail" id=@{photo.getUrl()} width="60" src="@{routes.HomeController.index(photo.getUrlWithPath())}" alt="User Image">
+                                </div>
+                            </a>
+                        }
+                    }
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="photo-carousel" class="modal fade">
+        <div class="container">
+            <div class="carousel slide" id="myslider" data-ride="carousel" data-interval="false">
+                <div id="carousel-inner" class="carousel-inner" style="text-align: center;">
+                @for(photo <- destination.getPrimaryAlbum().getMedia()) {
+                    @if(photo.isOwner(user) || photo.getIsPublic()) {
+                        <div id="caro-@photo.getMediaId" class="item">
+
+                            <img class="center" id="carouselImage@photo.getMediaId()" src="@{routes.HomeController.index(photo.getUrlWithPath)}" style="height: 75%; margin: auto;">
+
+                            @if(photo != destination.getPrimaryAlbum.getPrimaryPhoto()) {
+                                <a class="btn btn-primary" id="setPrimaryPicture" href="@routes.DestinationController.setPrimaryPhoto(photo.getMediaId(), destination.getDestId())">
+                                Set as primary</a>
+                            }
+
+                            <a class="btn btn-danger" href="@routes.DestinationController.unlinkPhotoFromDestination(photo.getMediaId(), destination.getDestId())">
+                            Remove Photo</a>
+                        </div>
+                    }
+                }
+                </div>
+                    <a class ="left carousel-control" href="#myslider" data-slide="prev">
+                        <span class="glyphicon glyphicon-chevron-left"></span>
+                    </a>
+                    <a class ="right carousel-control" href="#myslider" data-slide="next">
+                        <span class="glyphicon glyphicon-chevron-right"></span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+    <script src="@routes.Assets.at("js/destination/viewDestination.js")"></script>
+    <script>setLatLng(@destination.getLatitude(), @destination.getLongitude());</script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC9Z1g5p2rQtS0nHgDudzCCXVl2HJl3NPI&libraries=drawing&callback=initMap"
+    async defer></script>
+
+
+}
+
+@formBody()= {
+    <fieldset>
+            <!-- Name -->
+        @text(destForm("destName"),
+            label = "Name",
+            placeholder = "destinationPage name",
+            help = "Please enter the name of the destination. (required)")
+
+        @views.html.bootstrap3.select(destForm("destType"),
+        label = "Type",
+        optionMap = typeMap,
+        isMultiple = false,
+        help = "Select a type")
+
+        @views.html.bootstrap3.select(destForm("travellerTypes"),
+        label = "Traveller Types",
+        optionMap = travellerTypeMap,
+        isMultiple = true,
+        help = "Select multiple Using ctrl or cmd."
+        )
+
+        @views.html.bootstrap3.select(destForm("country"),
+            label = "Country",
+            optionMap = countryMap,
+            isMultiple = false,
+            help = "Select a country",
+        )
+
+        @text(destForm("district"),
+            label = "District",
+            placeholder = "district",
+        )
+
+        @text(destForm("latitude"),
+            label = "Latitude",
+            placeholder = "latitude",
+            help = "Click on map"
+        )
+
+        @text(destForm("longitude"),
+            label = "Longitude",
+            placeholder = "longitude (click on map)",
+            help = "Click on map"
+        )
+
+    </fieldset>
+}

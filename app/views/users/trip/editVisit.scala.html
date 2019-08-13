@@ -6,7 +6,7 @@
 @import helper._
 
 @main(user, "Edit destination") {
-    @form(action = helper.CSRF(routes.TripController.updateVisit(visit.visitid))) {
+    @form(action = helper.CSRF(routes.TripController.updateVisit(visit.getVisitid))) {
         <h2>Edit visit to @destinations.get(0).getDestName()</h2>
         <br>
         @views.html.bootstrap3.datepicker(visitForm("arrival"),

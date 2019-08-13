@@ -285,7 +285,7 @@ public class TagController {
             return addTripTag(request, trip.getTripid());
         } else if (itemToTag.getClass() == UserPhoto.class) {
             UserPhoto userPhoto = (UserPhoto) itemToTag;
-            return addPhotoTag(request, userPhoto.getPhotoId());
+            return addPhotoTag(request, userPhoto.getMediaId());
         } else {
             return badRequest();
         }

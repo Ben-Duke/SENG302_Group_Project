@@ -34,8 +34,6 @@ import static org.junit.Assert.assertEquals;
  */
 public class UpdateUserFormDataTest extends BaseTestWithApplicationAndDatabase {
 
-
-
     @Test
     public void validateNoErrorsMale() {
         LocalDate localDateNow = LocalDate.now().minusYears(10);
@@ -49,7 +47,7 @@ public class UpdateUserFormDataTest extends BaseTestWithApplicationAndDatabase {
 
         UpdateUserFormData updateUserFormData = new UpdateUserFormData(user, false);
         List<ValidationError> errors = updateUserFormData.validate();
-        assertEquals(2, errors.size());
+        assertEquals(1, errors.size());
     }
 
     @Test
@@ -64,7 +62,7 @@ public class UpdateUserFormDataTest extends BaseTestWithApplicationAndDatabase {
 
         UpdateUserFormData updateUserFormData = new UpdateUserFormData(user, false);
         List<ValidationError> errors = updateUserFormData.validate();
-        assertEquals(2, errors.size());
+        assertEquals(1, errors.size());
     }
 
     @Test
@@ -79,7 +77,7 @@ public class UpdateUserFormDataTest extends BaseTestWithApplicationAndDatabase {
 
         UpdateUserFormData updateUserFormData = new UpdateUserFormData(user, false);
         List<ValidationError> errors = updateUserFormData.validate();
-        assertEquals(3, errors.size());
+        assertEquals(2, errors.size());
     }
 
     @Test
@@ -94,7 +92,7 @@ public class UpdateUserFormDataTest extends BaseTestWithApplicationAndDatabase {
 
         UpdateUserFormData updateUserFormData = new UpdateUserFormData(user, false);
         List<ValidationError> errors = updateUserFormData.validate();
-        assertEquals(3, errors.size());
+        assertEquals(2, errors.size());
     }
 
     @Test
@@ -109,7 +107,7 @@ public class UpdateUserFormDataTest extends BaseTestWithApplicationAndDatabase {
 
         UpdateUserFormData updateUserFormData = new UpdateUserFormData(user, false);
         List<ValidationError> errors = updateUserFormData.validate();
-        assertEquals(3, errors.size());
+        assertEquals(2, errors.size());
     }
 
     @Test
@@ -124,7 +122,7 @@ public class UpdateUserFormDataTest extends BaseTestWithApplicationAndDatabase {
 
         UpdateUserFormData updateUserFormData = new UpdateUserFormData(user, false);
         List<ValidationError> errors = updateUserFormData.validate();
-        assertEquals(3, errors.size());
+        assertEquals(2, errors.size());
     }
 
     @Test
@@ -139,7 +137,7 @@ public class UpdateUserFormDataTest extends BaseTestWithApplicationAndDatabase {
 
         UpdateUserFormData updateUserFormData = new UpdateUserFormData(user, false);
         List<ValidationError> errors = updateUserFormData.validate();
-        assertEquals(3, errors.size());
+        assertEquals(2, errors.size());
     }
 
     @Test
@@ -154,7 +152,7 @@ public class UpdateUserFormDataTest extends BaseTestWithApplicationAndDatabase {
 
         UpdateUserFormData updateUserFormData = new UpdateUserFormData(user, false);
         List<ValidationError> errors = updateUserFormData.validate();
-        assertEquals(3, errors.size());
+        assertEquals(2, errors.size());
     }
 
     @Test
@@ -169,7 +167,7 @@ public class UpdateUserFormDataTest extends BaseTestWithApplicationAndDatabase {
 
         UpdateUserFormData updateUserFormData = new UpdateUserFormData(user, false);
         List<ValidationError> errors = updateUserFormData.validate();
-        assertEquals(3, errors.size());
+        assertEquals(2, errors.size());
     }
 
     @Test
@@ -184,7 +182,7 @@ public class UpdateUserFormDataTest extends BaseTestWithApplicationAndDatabase {
 
         UpdateUserFormData updateUserFormData = new UpdateUserFormData(user, false);
         List<ValidationError> errors = updateUserFormData.validate();
-        assertEquals(3, errors.size());
+        assertEquals(2, errors.size());
     }
 
     @Test
@@ -199,7 +197,7 @@ public class UpdateUserFormDataTest extends BaseTestWithApplicationAndDatabase {
 
         UpdateUserFormData updateUserFormData = new UpdateUserFormData(user, false);
         List<ValidationError> errors = updateUserFormData.validate();
-        assertEquals(3, errors.size());
+        assertEquals(2, errors.size());
     }
 
     @Test
@@ -214,7 +212,7 @@ public class UpdateUserFormDataTest extends BaseTestWithApplicationAndDatabase {
 
         UpdateUserFormData updateUserFormData = new UpdateUserFormData(user, false);
         List<ValidationError> errors = updateUserFormData.validate();
-        assertEquals(3, errors.size());
+        assertEquals(2, errors.size());
     }
 
     @Test
@@ -229,7 +227,7 @@ public class UpdateUserFormDataTest extends BaseTestWithApplicationAndDatabase {
 
         UpdateUserFormData updateUserFormData = new UpdateUserFormData(user, false);
         List<ValidationError> errors = updateUserFormData.validate();
-        assertEquals(3, errors.size());
+        assertEquals(2, errors.size());
     }
 
     @Test
@@ -244,7 +242,7 @@ public class UpdateUserFormDataTest extends BaseTestWithApplicationAndDatabase {
 
         UpdateUserFormData updateUserFormData = new UpdateUserFormData(user, false);
         List<ValidationError> errors = updateUserFormData.validate();
-        assertEquals(3, errors.size());
+        assertEquals(2, errors.size());
     }
 
     @Test
@@ -259,7 +257,7 @@ public class UpdateUserFormDataTest extends BaseTestWithApplicationAndDatabase {
 
         UpdateUserFormData updateUserFormData = new UpdateUserFormData(user, false);
         List<ValidationError> errors = updateUserFormData.validate();
-        assertEquals(3, errors.size());
+        assertEquals(2, errors.size());
     }
 
     @Test
@@ -274,7 +272,7 @@ public class UpdateUserFormDataTest extends BaseTestWithApplicationAndDatabase {
 
         UpdateUserFormData updateUserFormData = new UpdateUserFormData(user, false);
         List<ValidationError> errors = updateUserFormData.validate();
-        assertEquals(3, errors.size());
+        assertEquals(2, errors.size());
     }
 
 }

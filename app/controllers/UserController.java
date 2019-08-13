@@ -23,12 +23,13 @@ import static play.mvc.Results.*;
 
 public class UserController {
 
-    private Logger logger = UtilityFunctions.getLogger();
+    private final Logger logger = UtilityFunctions.getLogger();
 
     // A thread safe boolean
     private AtomicBoolean wasRun = new AtomicBoolean(false);
     // A countdownlatch which frees when the database has been populated.
     private CountDownLatch initCompleteLatch = new CountDownLatch(1);
+
 
     /**
      * Renders the index page and populates the in memory database
@@ -40,31 +41,33 @@ public class UserController {
      * Only one thread gets into the if block and all other concurrent threads
      * wait in the else block for the if block free the lock.
      *
+     * @param request The HTTP request
      * @return the user index page
      */
     public Result userindex(Http.Request request){
+
         if (!wasRun.getAndSet(true)) {
-            ApplicationManager.setUserPhotoPath("/../user_photos/user_");
-            TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
-            testDatabaseManager.populateDatabase(initCompleteLatch);
-            logger.info("populating database");
+            ApplicationManager.setMediaPath("/../media_");
+//            ApplicationManager.getMediaPath()
 
-            CountryUtils.updateCountries();
-
+            TestDatabaseManager.populateDatabase(initCompleteLatch);
         } else {
             try {
                 initCompleteLatch.await();
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                logger.error("initCompleteLatch interrupted", e);
+                Thread.currentThread().interrupt();
             }
         }
-        List<User> users = User.find.all();
-        List<Admin> admins = Admin.find.all();
+        List<User> users = User.find().all();
+        List<Admin> admins = Admin.find().all();
         return ok(userIndex.render(users, admins,User.getCurrentUser(request)));
     }
 
     /**
-     * Handles the ajax request to get a user.
+     * Handles the ajax request to get a user as a json object.
+     *
+     * @param request The HTTP request
      * @return the corresponding user as a json based on the login session.
      */
     public Result getUser(Http.Request request){
@@ -79,6 +82,8 @@ public class UserController {
 
     /**
      * Handles the ajax request to get a user.
+     *
+     * @param request The HTTP Request
      * @return the corresponding user as a json based on the login session.
      */
     public Result getUserPhotosAjax(Http.Request request){
@@ -88,7 +93,7 @@ public class UserController {
             List<Integer> photoIds = new ArrayList<>();
             if (userPhotos != null) {
                 for (UserPhoto photo: userPhotos) {
-                    photoIds.add(photo.photoId);
+                    photoIds.add(photo.getMediaId());
                 }
             }
             return ok(Json.toJson(photoIds));
@@ -114,7 +119,7 @@ public class UserController {
             return notFound();
 
         }
-        if (!userPhoto.isPublic() && !userPhoto.getUser().equals(user) && !user.userIsAdmin()) {
+        if (!userPhoto.getIsPublic() && !userPhoto.getUser().equals(user) && !user.userIsAdmin()) {
             return forbidden();
         }
         String caption = userPhoto.getCaption();

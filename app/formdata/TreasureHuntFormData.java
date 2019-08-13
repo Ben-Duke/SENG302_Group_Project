@@ -72,39 +72,29 @@ public class TreasureHuntFormData implements Constraints.Validatable<List<Valida
             errors.add(new ValidationError("riddle", "No riddle was given"));
         }
 
+
         // Check dates are valid
         if (startDate.isEmpty()) {
             errors.add(new ValidationError("startDate", "Please enter a start date"));
-            if (endDate.isEmpty()) {
-                errors.add(new ValidationError("endDate", "Please enter a end date"));
-            }
-        } else {
-            try{
-                userStartDate = LocalDate.parse(startDate, formatter);
-            if (userStartDate.compareTo(minDate) < 0) {
-                errors.add(new ValidationError("startDate", "Please select a date after 1/1/1900"));
-
-            }
-            }catch(Exception error){
-                errors.add(new ValidationError("startDate", "Please enter a valid date in the form d/m/yyyy"));
-            }
-
-            if (endDate.isEmpty()) {
-                errors.add(new ValidationError("endDate", "Please enter a end date"));
-            } else {
-                try {
-                    userEndDate = LocalDate.parse(endDate, formatter);
-                    if(userStartDate != null) {
-                        if (userEndDate.compareTo(userStartDate) < 0) {
-                            errors.add(new ValidationError("endDate", "Please select a date which is after the start date."));
-                        }
-                    }
-                }catch(Exception error){
-                    errors.add(new ValidationError("endDate", "Please enter a date in the form d/m/yyyy"));
-                }
-            }
+        } else if (endDate.isEmpty()) {
+            errors.add(new ValidationError("endDate", "Please enter a end date"));
         }
-
+        try {
+            userStartDate = LocalDate.parse(startDate, formatter);
+            if (!startDate.isEmpty() && !endDate.isEmpty() && userStartDate.compareTo(minDate) < 0) {
+                errors.add(new ValidationError("startDate", "Please select a date after 1/1/1900"));
+            }
+        }catch(Exception error){
+            errors.add(new ValidationError("startDate", "Please enter a valid date in the form d/m/yyyy"));
+        }
+        try {
+            userEndDate = LocalDate.parse(endDate, formatter);
+            if (!startDate.isEmpty() && !endDate.isEmpty() && userStartDate != null && userEndDate.compareTo(userStartDate) < 0) {
+                errors.add(new ValidationError("endDate", "Please select a date which is after the start date."));
+            }
+        }catch(Exception error){
+            errors.add(new ValidationError("endDate", "Please enter a date in the form d/m/yyyy"));
+        }
 
         if (destination == null || destination.length() == 0) {
             errors.add(new ValidationError("destination", "Please select a destination."));

@@ -23,6 +23,7 @@ public class LoginFormData implements Constraints.Validatable<List<ValidationErr
     public String email;
     public String password;
     public Boolean user = false;
+
     private List<ValidationError> errors = new ArrayList<>();
     private final Logger logger = LoggerFactory.getLogger("application");
 

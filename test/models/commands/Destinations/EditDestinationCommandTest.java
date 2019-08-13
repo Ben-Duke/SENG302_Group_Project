@@ -19,19 +19,13 @@ public class EditDestinationCommandTest extends BaseTestWithApplicationAndDataba
     private Database database;
 
     @Override
-    @Before
-    public void setUpDatabase() {
-        ApplicationManager.setUserPhotoPath("/test/resources/test_photos/user_");
-        ApplicationManager.setIsTest(true);
-        database = Databases.inMemory();
-        Evolutions.applyEvolutions(database, Evolutions.forDefault(new Evolution(
-                1,
-                "create table test (id bigint not null, name varchar(255));",
-                "drop table test;"
-        )));
-        TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
-        testDatabaseManager.populateDatabase();
-        Destination christchurch = Destination.find.byId(1);
+    /* Populate the database */
+    public void populateDatabase() {
+        TestDatabaseManager.populateDatabase();
+
+        //ApplicationManager.setMediaPath("/test/resources/test_photos/user_");
+        //ApplicationManager.setIsTest(true);
+        Destination christchurch = Destination.find().byId(1);
         christchurch.setDestName("Auckland");
         christchurch.setDistrict("District 12");
         christchurch.setCountry("New Zealand");
@@ -42,17 +36,10 @@ public class EditDestinationCommandTest extends BaseTestWithApplicationAndDataba
                 new EditDestinationCommand(christchurch);
     }
 
-    @Override
-    @After
-    public void shutdownDatabase() {
-        Evolutions.cleanupEvolutions(database);
-        database.shutdown();
-    }
-
     @Test
     public void testExecute(){
         editDestinationCommand.execute();
-        Destination updatedDestination = Destination.find.byId(1);
+        Destination updatedDestination = Destination.find().byId(1);
         assertEquals("Auckland", updatedDestination.getDestName());
         assertEquals("District 12", updatedDestination.getDistrict());
         assertEquals("New Zealand", updatedDestination.getCountry());
@@ -65,7 +52,7 @@ public class EditDestinationCommandTest extends BaseTestWithApplicationAndDataba
     public void testUndo(){
         testExecute();
         editDestinationCommand.undo();
-        Destination undoneDestination = Destination.find.byId(1);
+        Destination undoneDestination = Destination.find().byId(1);
         assertEquals("Christchurch", undoneDestination.getDestName());
         assertEquals("Canterbury", undoneDestination.getDistrict());
         assertEquals("New Zealand", undoneDestination.getCountry());
@@ -79,7 +66,7 @@ public class EditDestinationCommandTest extends BaseTestWithApplicationAndDataba
         editDestinationCommand.execute();
         editDestinationCommand.undo();
         editDestinationCommand.redo();
-        Destination updatedDestination = Destination.find.byId(1);
+        Destination updatedDestination = Destination.find().byId(1);
         assertEquals("Auckland", updatedDestination.getDestName());
         assertEquals("District 12", updatedDestination.getDistrict());
         assertEquals("New Zealand", updatedDestination.getCountry());

@@ -91,7 +91,7 @@ public class RegisterController {
             UserFormData user = userForm.get();
 
                 int userid = factory.createUser(user);
-                return redirect(routes.HomeController.showhome()).addingToSession(request, "connected", Integer.toString(userid));
+                return redirect(routes.HomeController.mainMapPage()).addingToSession(request, "connected", Integer.toString(userid));
 
         }
 

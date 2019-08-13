@@ -149,6 +149,7 @@ public class TestDatabaseManager {
         logger.info("Clearing database data");
 
         for (TableName tableName : TableName.values()) {
+            logger.debug(tableName.toString());
             if (persisted.contains(tableName)) {
                 continue;   // do not clear tables in persisted
             }

@@ -6,7 +6,13 @@ package utilities;
  * Order of names must be the same as in 3.sql #!Downs to prevent foreign key violations
  */
 public enum TableName {
-    // 3.sql tables
+    // drop all connecting tables first - don't need to specify primary key column name
+    trip_tag("", false),
+    destination_tag("", false),
+    media_tag("", false),
+
+    tag("tag_id"),
+
     visit("visitid"),
     destination_media("destination_destid", false),
     album_media("media_media_id", false),
@@ -23,11 +29,11 @@ public enum TableName {
     traveller_type("ttypeid"),
     media("media_id"),
     album("album_id"),
+
     destination("destid"),
     admin("user_id"),   // has an underscore but user primary key does not
     user("userid"),
-    tag("tag_id"),
-    // 2.sql tables
+
     passport("passid"),
     nationality("natid");
 

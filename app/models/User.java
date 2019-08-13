@@ -534,7 +534,7 @@ public class User extends BaseModel implements Comparable<User>, AlbumOwner, Med
     public List<Trip> getTripsSorted()
     {
         HashMap<Trip,LocalDate> datesMap = new HashMap<>();
-        for(Trip trip: trips){
+        for(Trip trip: trips) {
 
             ArrayList<LocalDate> datesList = new ArrayList<>();
             for (Visit visit : trip.getVisits()) {

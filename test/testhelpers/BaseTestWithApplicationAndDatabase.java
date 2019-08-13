@@ -60,14 +60,6 @@ public class BaseTestWithApplicationAndDatabase extends WithApplication {
         configuration.put("db.default.url", "jdbc:h2:mem:play");
         configuration.put("ebean.default", "models.*");
         configuration.put("play.evolutions.db.default.enabled", "true");
-//        configuration.put("play.evolutions.db.default.autoApply", "false");
-//        configuration.put("play.evolutions.db.default.autoApplyDowns", "false");
-
-
-        // Dummy database to generate ebean ddl
-//        configuration.put("db.default.driver", "org.h2.Driver");
-//        configuration.put("db.default.url", "jdbc:h2:mem:defaultDB;MODE=MYSQL;");
-//        configuration.put("ebean.default", "models.*");
 
         //Set up the fake application to use the in memory database config
         application = fakeApplication(configuration);

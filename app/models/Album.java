@@ -131,6 +131,8 @@ public class Album extends Model {
         return this.getUser().getUserid() == user.getUserid();
     }
 
+
+
     public boolean isPublic() {
         return getVisibility();
     }

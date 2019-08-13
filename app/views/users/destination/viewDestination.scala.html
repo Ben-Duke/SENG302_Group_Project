@@ -14,6 +14,7 @@
             District: @destination.getDistrict()
             Latitude: @destination.getLatitude()
             Longitude: @destination.getLongitude()
+            Tag: @destination.getTags
             <a href="@routes.DestinationController.editDestination(destination.getDestId())">Edit</a>
             <a href="@routes.DestinationController.deleteDestination(destination.getDestId())">Delete</a>
         </p>

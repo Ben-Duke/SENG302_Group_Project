@@ -1,7 +1,7 @@
 package utilities;
 
 /** Enum mapping database table names to the column name of their primary key(id)
- *  Used for clearing the database in TestDatabaseManager
+ *  Used for clearing evolutions data the database in TestDatabaseManager
  *
  * Order of names must be the same as in 3.sql #!Downs to prevent foreign key violations
  */

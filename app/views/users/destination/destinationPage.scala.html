@@ -81,11 +81,11 @@
 
             <h3 style="margin-top: 0;">@destination.getDestName()</h3>
 
-            @if(destination.hasPrimaryPhoto()) {
+            @if(destination.getPrimaryAlbum().getPrimaryPhoto() != null) {
 
                 <div class="row">
-                    <img id=@{destination.getPrimaryPhoto.getUrl} height="250"
-                    src="@{routes.HomeController.index(destination.getPrimaryPhoto().getUrlWithPath())}" alt="Primary Image">
+                    <img id=@{destination.getPrimaryAlbum().getPrimaryPhoto().getUrl()} height="250"
+                    src="@{routes.HomeController.index(destination.getPrimaryAlbum().getPrimaryPhoto().getUrlWithPath())}" alt="Primary Image">
                 </div>
 
             } else {
@@ -162,10 +162,10 @@
 
     <div class="row" style="margin-bottom: 50px;">
 
-        @for(photo <- destination.getUserPhotos()) {
-            @if(photo.isUserOwner(user) || photo.isPublic()) {
+        @for(photo <- destination.getPrimaryAlbum().getMedia()) {
+             @if(photo.isOwner(user) || photo.getIsPublic()) {
 
-                <a href="#" data-toggle="modal" data-target="#photo-carousel" onclick="displayPhoto(@photo.getPhotoId)">
+                <a href="#" data-toggle="modal" data-target="#photo-carousel" onclick="displayPhoto(@photo.getMediaId())">
                     <img id=@{photo.getUrl} height="150"
                     src="@{routes.HomeController.index(photo.getUrlWithPath())}" alt="Destination Image">
                 </a>
@@ -191,11 +191,11 @@
 
                     @for(photo <- user.getUserPhotos()) {
                         @if(!photo.getDestinations().contains(destination)) {
-                            <a id="addPhotoLink" class="btn btn-light" href="@routes.DestinationController.addPhotoToDestination(photo.getPhotoId(), destination.getDestId())">
+                            <a id="addPhotoLink" class="btn btn-light" href="@routes.DestinationController.addPhotoToDestination(photo.getMediaId(), destination.getDestId())">
                                 <div class="container" id="imagesContainer">
                                     <div class="overlay">
                                         <i class="icon" title="User Profile">
-                                            @if(photo.isPublic()) {
+                                            @if(photo.getIsPublic()) {
                                                 <i class="fa fa-eye"></i>
                                             } else {
                                                 <i class="fa fa-eye-slash"></i>
@@ -222,22 +222,22 @@
         <div class="container">
             <div class="carousel slide" id="myslider" data-ride="carousel" data-interval="false">
                 <div id="carousel-inner" class="carousel-inner" style="text-align: center;">
-                    @for(photo <- destination.getUserPhotos()) {
-                        @if(photo.isUserOwner(user) || photo.isPublic()) {
-                            <div id="caro-@photo.getPhotoId" class="item">
+                @for(photo <- destination.getPrimaryAlbum().getMedia()) {
+                    @if(photo.isOwner(user) || photo.getIsPublic()) {
+                        <div id="caro-@photo.getMediaId" class="item">
 
-                                <img class="center" id="carouselImage@photo.getPhotoId()" src="@{routes.HomeController.index(photo.getUrlWithPath)}" style="height: 75%; margin: auto;">
+                            <img class="center" id="carouselImage@photo.getMediaId()" src="@{routes.HomeController.index(photo.getUrlWithPath)}" style="height: 75%; margin: auto;">
 
-                                @if(photo != destination.getPrimaryPhoto()) {
-                                    <a class="btn btn-primary" id="setPrimaryPicture" href="@routes.DestinationController.setPrimaryPhoto(photo.getPhotoId(), destination.getDestId())">
-                                    Set as primary</a>
-                                }
+                            @if(photo != destination.getPrimaryAlbum.getPrimaryPhoto()) {
+                                <a class="btn btn-primary" id="setPrimaryPicture" href="@routes.DestinationController.setPrimaryPhoto(photo.getMediaId(), destination.getDestId())">
+                                Set as primary</a>
+                            }
 
-                                <a class="btn btn-danger" href="@routes.DestinationController.unlinkPhotoFromDestination(photo.getPhotoId(), destination.getDestId())">
-                                Remove Photo</a>
-                            </div>
-                        }
+                            <a class="btn btn-danger" href="@routes.DestinationController.unlinkPhotoFromDestination(photo.getMediaId(), destination.getDestId())">
+                            Remove Photo</a>
+                        </div>
                     }
+                }
                 </div>
                     <a class ="left carousel-control" href="#myslider" data-slide="prev">
                         <span class="glyphicon glyphicon-chevron-left"></span>

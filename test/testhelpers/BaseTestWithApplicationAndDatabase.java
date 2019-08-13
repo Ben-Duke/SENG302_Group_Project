@@ -74,7 +74,7 @@ public class BaseTestWithApplicationAndDatabase extends WithApplication {
 
         database = application.injector().instanceOf(Database.class);
 
-        ApplicationManager.setUserPhotoPath("/test/resources/test_photos/user_");
+        ApplicationManager.setMediaPath("/test/resources/test_photos/user_");
         CommandManagerAccessor.resetCommandManagers();
 
         // setup tables

@@ -1,5 +1,6 @@
 package controllers;
 
+import accessors.MediaAccessor;
 import accessors.UserAccessor;
 import factories.UserFactory;
 import formdata.NatFormData;
@@ -45,17 +46,21 @@ public class ProfileController extends Controller {
      * @return will delete the given photo and return to index page
      */
     public Result deletePhoto(Http.Request request, Integer photoId, Boolean userInput){
-        UserPhoto photo = UserPhoto.find().byId(photoId);
+        UserFactory factory = new UserFactory();
+        UserPhoto photo = (UserPhoto) MediaAccessor.getMediaById(photoId);
         User user = User.getCurrentUser(request);
         if (photo != null && photo.getIsProfile() && (!userInput)) {
             return badRequest("Is profile picture ask user");
         }
 
-        if (photo == null || photo.getDestinations().isEmpty()) {
+        //TODO AC11 albums. Implement it here
+        /*
+        if (photo.getDestinations().size() > 0) {
             return badRequest("Failed to delete image");
         }
+        */
 
-        DeletePhotoCommand deletePhotoCommand = new DeletePhotoCommand(photo);
+        DeletePhotoCommand deletePhotoCommand = new DeletePhotoCommand((UserPhoto) MediaAccessor.getMediaById(photoId));
         user.getCommandManager().executeCommand(deletePhotoCommand);
 
         return ok();

@@ -5,13 +5,13 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import controllers.ApplicationManager;
 import io.ebean.Finder;
 import io.ebean.Model;
-import utilities.UtilityFunctions;
+import models.media.MediaOwner;
 
 import javax.persistence.*;
 import java.util.*;
 
 @Entity
-public class Destination extends BaseModel {
+public class Destination extends BaseModel implements AlbumOwner, MediaOwner  {
 
     @Id
     private Integer destid;
@@ -23,10 +23,17 @@ public class Destination extends BaseModel {
     private boolean isCountryValid;
     private double latitude;
     private double longitude;
-    private boolean isPublic;
+    private boolean destIsPublic;
 
     @ManyToOne
     private UserPhoto primaryPhoto;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "destination")
+    private List<Album> albums;
+
+    @ManyToMany
+    public List<Media> mediaList;
 
     @JsonIgnore
     @ManyToOne
@@ -38,10 +45,6 @@ public class Destination extends BaseModel {
     private List<Visit> visits;
 
     @JsonIgnore
-    @ManyToMany(mappedBy = "destinations")
-    private List<UserPhoto> userPhotos;
-
-    @JsonIgnore
     @ManyToMany(cascade = CascadeType.ALL)
     private Set<TravellerType> travellerTypes;
 
@@ -49,7 +52,7 @@ public class Destination extends BaseModel {
     private static Finder<Integer,Destination> find = new Finder<>(Destination.class, ApplicationManager.getDatabaseName());
 
     /**
-     * Destination constructor with isPublic method
+     * Destination constructor with destIsPublic method
      * @param destName The name of the destination
      * @param destType The type of the destination
      * @param district The district of the destination
@@ -57,9 +60,9 @@ public class Destination extends BaseModel {
      * @param latitude The latitude of the destination
      * @param longitude The longitude of the destination
      * @param user The user that owns the destination
-     * @param isPublic Is the destination public
+     * @param destIsPublic Is the destination public
      */
-    public Destination(String destName, String destType, String district, String country, double latitude, double longitude, User user, boolean isPublic){
+    public Destination(String destName, String destType, String district, String country, double latitude, double longitude, User user, boolean destIsPublic){
         this.destName = destName;
         this.user = user;
         this.destType = destType;
@@ -68,7 +71,7 @@ public class Destination extends BaseModel {
         this.isCountryValid = true;
         this.latitude = latitude;
         this.longitude = longitude;
-        this.isPublic = isPublic;
+        this.destIsPublic = destIsPublic;
     }
 
     /**
@@ -85,11 +88,11 @@ public class Destination extends BaseModel {
         this.isCountryValid = destination.getIsCountryValid();
         this.latitude = destination.getLatitude();
         this.longitude = destination.getLongitude();
-        this.isPublic = destination.getIsPublic();
+        this.destIsPublic = destination.getIsPublic();
     }
 
     /**
-     * Destination constructor without isPublic method (isPublic defaults to false)
+     * Destination constructor without destIsPublic method (destIsPublic defaults to false)
      * @param destName The name of the destination
      * @param destType The type of the destination
      * @param district The district of the destination
@@ -111,7 +114,7 @@ public class Destination extends BaseModel {
     public Destination(Destination destination, List<Visit> visits) {
         this(destination.destName, destination.destType, destination.district,
                 destination.country, destination.latitude, destination.longitude,
-                destination.user, destination.isPublic);
+                destination.user, destination.destIsPublic);
         this.visits = visits;
     }
 
@@ -151,19 +154,22 @@ public class Destination extends BaseModel {
 
     //GETTERS
     public Integer getDestId() { return destid; }
+
+    /**
+     * Weird scala html bug fix.
+     * Without this, tests will give this error for some reason:
+     * Uncaught error from thread [application-akka.actor.default-dispatcher-4]:
+     * models.Destination.getDestid()Ljava/lang/Integer;
+     * @return the destination id
+     */
+    public Integer getDestid() { return destid; }
     public String getDestName() { return destName; }
     public String getDestType() { return destType; }
     public String getDistrict() { return district; }
     public String getCountry() { return country; }
     public double getLatitude() { return latitude; }
     public double getLongitude() { return longitude; }
-    public boolean getIsPublic() { return isPublic; }
-    public List<UserPhoto> getUserPhotos() {
-        return userPhotos;
-    }
-    public UserPhoto getPrimaryPhoto() {
-        return primaryPhoto;
-    }
+    public boolean getIsPublic() { return destIsPublic; }
     public List<Visit> getVisits() {
         return visits;
     }
@@ -186,15 +192,9 @@ public class Destination extends BaseModel {
     public void setCountry(String country) { this.country = country; }
     public void setLatitude(double latitude) { this.latitude = latitude; }
     public void setLongitude(double longitude) { this.longitude = longitude; }
-    public void setIsPublic(boolean isPublic) { this.isPublic = isPublic; }
+    public void setIsPublic(boolean isPublic) { this.destIsPublic = isPublic; }
     public void setTravellerTypes(Set<TravellerType> travellerTypes) {
         this.travellerTypes = travellerTypes;
-    }
-    public void setUserPhotos(List<UserPhoto> userPhotos) {
-        this.userPhotos = userPhotos;
-    }
-    public void setPrimaryPhoto(UserPhoto primaryPhoto) {
-        this.primaryPhoto = primaryPhoto;
     }
     public void setVisits(List<Visit> visits) {
         this.visits = visits;
@@ -226,18 +226,17 @@ public class Destination extends BaseModel {
                 ", country='" + country + '\'' +
                 ", latitude=" + latitude +
                 ", longitude=" + longitude +
-                ", isPublic=" + isPublic +
-                ", primaryPhoto=" + primaryPhoto +
+                ", destIsPublic=" + destIsPublic +
                 ", user=" + user +
                 ", visits=" + visits +
-                ", userPhotos=" + userPhotos +
+                ", albums=" + albums +
                 ", travellerTypes=" + travellerTypes +
                 '}';
     }
 
     /**
      * The equals method compares two Destination objects for equality. The criteria
-     * is all attributes, except isPublic.
+     * is all attributes, except destIsPublic.
      *
      * @param o the other Destination object which is being compared for equality
      * @return true if destinations are equal, false if not.
@@ -368,5 +367,21 @@ public class Destination extends BaseModel {
         this.latitude = newDestination.getLatitude();
         this.destType = newDestination.getDestType();
         this.travellerTypes = newDestination.getTravellerTypes();
+    }
+
+    @Override
+    public List<Album> getAlbums() {
+        return albums;
+    }
+
+    /**
+     * Returns the first album in the destination's list of albums.
+     * Currently, a destination should only have one album so this should return
+     * the only album the destination has.
+     * @return the destination's album
+     */
+    @JsonIgnore
+    public Album getPrimaryAlbum() {
+        return albums.get(0);
     }
 }

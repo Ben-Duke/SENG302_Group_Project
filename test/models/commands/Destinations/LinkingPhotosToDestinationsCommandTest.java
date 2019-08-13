@@ -44,33 +44,33 @@ public class LinkingPhotosToDestinationsCommandTest extends BaseTestWithApplicat
 
     @Test
     public void testExecute() {
-        int beforeSize = destination.getUserPhotos().size();
+        int beforeSize = destination.getPrimaryAlbum().getMedia().size();
         user.getCommandManager().executeCommand(linkCmd);
         destination = DestinationAccessor.getDestinationById(1);
-        int afterSize = destination.getUserPhotos().size();
+        int afterSize = destination.getPrimaryAlbum().getMedia().size();
 
         assertEquals(beforeSize + 1, afterSize);
     }
 
     @Test
     public void testUndo() {
-        int beforeSize = destination.getUserPhotos().size();
+        int beforeSize = destination.getPrimaryAlbum().getMedia().size();
         user.getCommandManager().executeCommand(linkCmd);
         user.getCommandManager().undo();
         destination = DestinationAccessor.getDestinationById(1);
-        int afterSize = destination.getUserPhotos().size();
+        int afterSize = destination.getPrimaryAlbum().getMedia().size();
 
         assertEquals(beforeSize, afterSize);
     }
 
     @Test
     public void testRedo() {
-        int beforeSize = destination.getUserPhotos().size();
+        int beforeSize = destination.getPrimaryAlbum().getMedia().size();
         user.getCommandManager().executeCommand(linkCmd);
         user.getCommandManager().undo();
         user.getCommandManager().redo();
         destination = DestinationAccessor.getDestinationById(1);
-        int afterSize = destination.getUserPhotos().size();
+        int afterSize = destination.getPrimaryAlbum().getMedia().size();
 
         assertEquals(beforeSize + 1, afterSize);
     }

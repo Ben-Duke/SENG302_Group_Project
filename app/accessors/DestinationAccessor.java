@@ -31,7 +31,7 @@ public class DestinationAccessor {
      */
     public static Destination getPublicDestinationbyName(String name) {
         return Destination.find().query().where()
-                .eq("isPublic", true).and()
+                .eq("destIsPublic", true).and()
                 .eq("destName", name)
                 .findOne();
     }
@@ -40,6 +40,17 @@ public class DestinationAccessor {
      * Returns all destination in the database
      * @return List of destinations
      */
+    /**
+     * Used for unit tests
+     * Return the first destination that matches this name.
+     * Private destinations can share the same name so list size can be more than one
+     */
+    public static List<Destination> getDestinationsbyName(String name) {
+        return Destination.find().query().where()
+                .eq("destName", name)
+                .findList();
+    }
+
     public static List<Destination> getAllDestinations() {
         return Destination.find().all();
     }

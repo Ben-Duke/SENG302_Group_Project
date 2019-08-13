@@ -2,14 +2,19 @@ package controllers;
 
 import accessors.DestinationAccessor;
 import accessors.UserAccessor;
+import accessors.UserPhotoAccessor;
 import factories.UserFactory;
 import formdata.DestinationFormData;
 import io.ebean.DuplicateKeyException;
 import models.Destination;
 import models.Trip;
+import models.Album;
+import models.Media;
 import models.User;
 import models.UserPhoto;
 import models.commands.General.CommandPage;
+import models.commands.Albums.AddMediaToAlbumCommand;
+import models.commands.Albums.CreateAlbumCommand;
 import models.commands.Photos.UploadPhotoCommand;
 import org.slf4j.Logger;
 import play.data.Form;
@@ -125,8 +130,9 @@ public class HomeController {
             //Get the photo data from the multipart form data encoding
             Http.MultipartFormData<Files.TemporaryFile> body = request.body().asMultipartFormData();
             Http.MultipartFormData.FilePart<Files.TemporaryFile> picture = body.getFile("picture");
-            if (picture != null) {
-                return getResultFromSaveUserPhoto(user, isPublic, picture);
+            String albumName = dataPart.get("Album Search")[0];
+            if ((picture != null) && (!albumName.isEmpty())) {
+                return getResultFromSaveUserPhoto(user, isPublic, picture, albumName);
             } else {
                 return badRequest("Error uploading the picture.");
             }
@@ -145,8 +151,9 @@ public class HomeController {
      * @param picture The FilePart of the picture, not null.
      * @return A Result from trying to save the photo.
      */
-    private Result getResultFromSaveUserPhoto(User user, boolean isPublic, Http.MultipartFormData.FilePart<Files.TemporaryFile> picture) {
+    private Result getResultFromSaveUserPhoto(User user, boolean isPublic, Http.MultipartFormData.FilePart<Files.TemporaryFile> picture, String albumName) {
         String originalFilePath = picture.getFilename();
+        long fileSize = picture.getFileSize();
         String contentType = picture.getContentType();
         Files.TemporaryFile fileObject = picture.getRef();
 
@@ -158,7 +165,7 @@ public class HomeController {
             UserPhoto newPhoto = new UserPhoto(originalFilePath, isPublic, false, user);
             String unusedPhotoUrl = newPhoto.getUnusedUserPhotoFileName();
             newPhoto.setUrl(unusedPhotoUrl);
-            UploadPhotoCommand uploadPhotoCommand = new UploadPhotoCommand(newPhoto, fileObject);
+            UploadPhotoCommand uploadPhotoCommand = new UploadPhotoCommand(newPhoto, fileObject, user, albumName);
             user.getCommandManager().executeCommand(uploadPhotoCommand);
             return redirect(routes.HomeController.showhome());
         } else {
@@ -184,7 +191,7 @@ public class HomeController {
             //Get the photo data from the multipart form data encoding
             Http.MultipartFormData<Files.TemporaryFile> body = request.body().asMultipartFormData();
             Http.MultipartFormData.FilePart<Files.TemporaryFile> picture = body.getFile("picture");
-             if (picture != null) {
+            if (picture != null) {
                 String originalFilePath = picture.getFilename();
                 String contentType = picture.getContentType();
                 Files.TemporaryFile file = picture.getRef();
@@ -195,20 +202,24 @@ public class HomeController {
                     newPhoto.setUrl(unusedPhotoUrl);
                     //Add the path to the filename given by the uploaded picture
 
-                    String unusedAbsoluteFilePath = Paths.get(".").toAbsolutePath().normalize().toString() + ApplicationManager.getUserPhotoPath() + user.getUserid() + "/" + unusedPhotoUrl;
+                    String unusedAbsoluteFilePath = Paths.get(".").toAbsolutePath().normalize().toString() + ApplicationManager.getMediaPath() + "/" + unusedPhotoUrl;
                     //Save the file, replacing the existing one if the name is taken
                     try {
-                        java.nio.file.Files.createDirectories(Paths.get(Paths.get(".").toAbsolutePath().normalize().toString() + ApplicationManager.getUserPhotoPath() + user.getUserid() + "/"));
+                        java.nio.file.Files.createDirectories(Paths.get(Paths.get(".").toAbsolutePath().normalize().toString() + ApplicationManager.getMediaPath() + "/"));
                         file.copyTo(Paths.get(unusedAbsoluteFilePath), true);
 
                         BufferedImage thumbnailImage = UtilityFunctions.resizeImage(unusedAbsoluteFilePath);
-                        ImageIO.write(thumbnailImage, "png", new File(Paths.get(".").toAbsolutePath().normalize().toString() + ApplicationManager.getUserPhotoPath() + user.getUserid() + "/profilethumbnail.png"));
+                        ImageIO.write(thumbnailImage, "png", new File(Paths.get(".").toAbsolutePath().normalize().toString() + ApplicationManager.getMediaPath() + "/profilethumbnail.png"));
                     } catch (IOException e) {
                         logger.error("Something went wrong", e);
                         return internalServerError("Oops, something went wrong.");
                     }
                     //DB saving
                     UserFactory.replaceProfilePicture(user.getUserid(), newPhoto);
+                    UploadPhotoCommand uploadPhotoCommand = new UploadPhotoCommand(UserPhotoAccessor.getUserPhotoByUrl(unusedPhotoUrl), file, user,
+                            user.getFName()+"'s "+"Profile Pictures");
+                    uploadPhotoCommand.addUploadToAlbum(user, UserPhotoAccessor.getUserPhotoByUrl(unusedPhotoUrl),
+                            user.getFName()+"'s "+"Profile Pictures");
                     return redirect(routes.HomeController.showhome());
                 }
             }
@@ -218,6 +229,8 @@ public class HomeController {
             return redirect(routes.UserController.userindex());
         }
     }
+
+    //public Result addToAlbumFromUpload(Http.Request request)
 
     /**Serve an image file with a get request
      * @param request the HTTP request
@@ -229,7 +242,7 @@ public class HomeController {
         User user = User.getCurrentUser(request);
         if(user != null) {
             UserPhoto photo = UserPhoto.find().byId(photoId);
-            if(!photo.isPublic() && user.getUserid() != photo.getUser().getUserid() && !user.userIsAdmin()){
+            if(!photo.getIsPublic() && user.getUserid() != photo.getUser().getUserid() && !user.userIsAdmin()){
                 return unauthorized("Oops, this is a private photo.");
             }
             else{

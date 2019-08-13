@@ -374,7 +374,7 @@ public class DestinationController extends Controller {
         if (destination == null) { return notFound("Destination not found"); }
 
         if (!destination.isUserOwner(user) && !user.userIsAdmin()) {
-            return unauthorized("Not your destination. You cant Delete.");
+            return unauthorized("Not your destination. You can't Delete.");
         }
 
         if (user.userIsAdmin()) {
@@ -402,7 +402,7 @@ public class DestinationController extends Controller {
 
         }
 
-        return redirect(routes.DestinationController.indexDestination());
+        return redirect(routes.HomeController.mainMapPage());
 
     }
 

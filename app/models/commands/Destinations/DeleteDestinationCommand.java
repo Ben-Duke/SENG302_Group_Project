@@ -28,7 +28,7 @@ public class DeleteDestinationCommand extends UndoableCommand {
     private final Logger logger = UtilityFunctions.getLogger();
 
     public DeleteDestinationCommand(Destination destination, Boolean deletedByAdmin) {
-        super(CommandPage.DESTINATION);
+        super(CommandPage.MAP);
         this.destination = destination;
         this.deletedByAdmin = deletedByAdmin;
         this.unlinkedPhotos = destination.getUserPhotos();

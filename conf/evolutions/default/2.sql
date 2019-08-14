@@ -423,6 +423,9 @@ INSERT INTO `destination_tag`(`destination_destid`, `tag_tag_id`) VALUES
 (2,2),
 (1,3);
 
+INSERT INTO `trip_tag`(`trip_tripid`, `tag_tag_id`) VALUES
+(1,1);
+
 -- visit
 INSERT INTO `visit` (`visitid`, `visitorder`, `destination`, `trip`, `arrival`,
                      `departure`, `visit_name`) VALUES

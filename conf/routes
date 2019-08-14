@@ -105,6 +105,9 @@ DELETE    /users/trips/edit/:id    controllers.TripController.deletevisit(reques
 #Handles swapping visits in a trip
 PUT    /users/trips/edit/:id      controllers.TripController.swapvisits(request: Request, id:Integer)
 
+#Gets the trip photo or a placeholder
+GET     /users/trips/:id/tripPicture controllers.TripController.getTripPhoto(request: Request, id:Integer)
+
 #Renders page for editing a trip
 #GET     /users/trips/edit/:id        controllers.TripController.edittrip(request: Request, id:Integer)
 

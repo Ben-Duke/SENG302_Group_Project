@@ -25,7 +25,7 @@ function getItemData(item) {
         } else {
             data.body = "No date entered"
         }
-        data.img = "https://img.purch.com/w/660/aHR0cDovL3d3dy5saXZlc2NpZW5jZS5jb20vaW1hZ2VzL2kvMDAwLzAzOS84ODUvb3JpZ2luYWwvc2h1dHRlcnN0b2NrXzc3NDAwNjYxLmpwZw==";
+        data.img = "/users/trips/" + item.tripid + "/tripPicture";
     } else if (item.hasOwnProperty('destName')) {
         data.header = item.destName;
         data.type = 'Destination';

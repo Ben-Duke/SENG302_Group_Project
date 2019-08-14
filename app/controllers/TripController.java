@@ -430,6 +430,7 @@ public class TripController extends Controller {
             }
 
         }
+        return badRequest();
     }
 
 

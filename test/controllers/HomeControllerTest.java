@@ -130,18 +130,21 @@ public class HomeControllerTest extends BaseTestWithApplicationAndDatabase {
         createUser();
         File file = getFile(Paths.get(".").toAbsolutePath().normalize().toString() + "/test/resources/imagetest.png");
         Http.MultipartFormData.Part<Source<ByteString, ?>> part = new Http.MultipartFormData.FilePart<>("picture", "imagetest.png", "image/png", FileIO.fromPath(file.toPath()), Files.size(file.toPath()));
-        Http.MultipartFormData.DataPart part1 = new Http.MultipartFormData.DataPart("Album Search", "album1");
+        Http.MultipartFormData.DataPart part1 = new Http.MultipartFormData.DataPart("private", "false");
+        Http.MultipartFormData.DataPart part2 = new Http.MultipartFormData.DataPart("album", "album1");
         List formData = new ArrayList<>();
         formData.add(part);
         formData.add(part1);
+        formData.add(part2);
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(POST)
-                .uri("/users/home").session("connected", "2")
+                .uri("/users/home/photo").session("connected", "2")
                 .bodyRaw(formData,
                         play.libs.Files.singletonTemporaryFileCreator(),
                         app.asScala().materializer());
         CSRFTokenHelper.addCSRFToken(request);
         Result result = route(app, request);
+        System.out.println(result.body());
         assertEquals(SEE_OTHER, result.status());
     }
 

@@ -94,38 +94,69 @@ $('#save-profile').click(function (eve){
 
 
     eve.preventDefault();
-    var searchbar = document.getElementById('album-search-profile');
-    if (searchbar.value === null || searchbar.value === "") {
-        alert("File must be in an album");
+    var formData = new FormData();
+    croppedCanvas.toBlob(function (blob) {
+        formData.append('picture', blob, filename);
+        var token = $('input[name="csrfToken"]').attr('value');
+        $.ajaxSetup({
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader('Csrf-Token', token);
+            }
+        });
+        $.ajax({
+            type: 'POST',
+            processData: false,
+            contentType: false,
+            url: '/users/home/profilePicture',
+            data: formData,
+            success: function (data, textStatus, xhr) {
+                if (xhr.status == 200) {
+                    $("#selectProfileInput").show();
+                    window.location = '/users/home'
+                } else {
+                    window.location = '/users/home'
+                }
+            }
+        })
+    });
+});
+
+
+$('#photo-upload').click(function (eve){
+    let searchBar = document.getElementById("album-search-photo");
+    let privateInput = document.getElementById("private").checked;
+    let filePath = document.getElementById("photoUpload");
+    if (searchBar.value === null || searchBar.value === "") {
+        document.getElementById("photoAlbumMessage").style.display = "block";
     } else {
         var formData = new FormData();
-        croppedCanvas.toBlob(function (blob) {
-            formData.append('picture', blob, filename);
-            formData.append('album', searchbar.value);
-            var token = $('input[name="csrfToken"]').attr('value');
-            $.ajaxSetup({
-                beforeSend: function (xhr) {
-                    xhr.setRequestHeader('Csrf-Token', token);
-                }
-            });
-            $.ajax({
-                type: 'POST',
-                processData: false,
-                contentType: false,
-                url: '/users/home/profilePicture',
-                data: formData,
-                success: function (data, textStatus, xhr) {
-                    if (xhr.status == 200) {
-                        $("#selectProfileInput").show();
-                        window.location = '/users/home'
-                    } else {
-                        window.location = '/users/home'
-                    }
-                }
-            })
+        formData.append('picture', filePath.files[0]);
+        formData.append('private', privateInput);
+        console.log(searchBar.value);
+        formData.append('album', searchBar.value);
+        var token = $('input[name="csrfToken"]').attr('value');
+        $.ajaxSetup({
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader('Csrf-Token', token);
+            }
         });
+        $.ajax({
+            type: 'POST',
+            processData: false,
+            contentType: false,
+            url: '/users/home/photo',
+            data: formData,
+            success: function (data, textStatus, xhr) {
+                if (xhr.status == 200) {
+                    window.location = '/users/home'
+                } else {
+                    window.location = '/users/home'
+                }
+            }
+        })
     }
 });
+
 
 /**
  * Shows an error message to the user in the set profile pic modal.

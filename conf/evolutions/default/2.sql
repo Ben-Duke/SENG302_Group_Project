@@ -412,10 +412,16 @@ INSERT INTO `user_traveller_type` (`user_userid`, `traveller_type_ttypeid`) VALU
 -- no data
 
 -- tags
-INSERT INTO `tag`(`tag_id`, `name`) VALUES (1,'Fun place to stay');
+INSERT INTO `tag`(`tag_id`, `name`) VALUES
+(1,'Fun place to stay'),
+(2, 'Vacation spot'),
+(3, 'Top Rated');
 
 -- destination_tag
-INSERT INTO `destination_tag`(`destination_destid`, `tag_tag_id`) VALUES (1,1);
+INSERT INTO `destination_tag`(`destination_destid`, `tag_tag_id`) VALUES
+(1,1),
+(2,2),
+(1,3);
 
 -- visit
 INSERT INTO `visit` (`visitid`, `visitorder`, `destination`, `trip`, `arrival`,

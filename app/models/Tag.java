@@ -16,9 +16,6 @@ public class Tag extends Model implements Comparable{
 
     public static Finder<Integer,Tag> find = new Finder<>(Tag.class);
 
-    @JsonIgnore
-    @ManyToMany
-    public List<Destination> destinations;
     /**
      * The ID of the Tag. This is the primary key.
      */
@@ -52,18 +49,6 @@ public class Tag extends Model implements Comparable{
         this.tagId = tagId;
     }
 
-    public void addDestination(Destination destination) {
-        this.destinations.add(destination);
-    }
-
-
-    public void addDestinationById(Integer destId) {
-        Destination destination = Destination.find().byId(destId);
-        addDestination(destination);
-    }
-    public boolean removeDestination(Destination destination) {
-        return this.destinations.remove(destination);
-    }
     /**
      * Sets the name of a tag based on the passed string.
      * @param name

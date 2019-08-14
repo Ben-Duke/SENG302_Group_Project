@@ -29,7 +29,8 @@ public class TagControllerTest extends BaseTestWithApplicationAndDatabase {
     public void getItems() {
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(GET)
-                .uri("/tags/items/" + 1);
+                .uri("/tags/items/" + 1)
+                .session("connected", "1");
         Result result =  route(app, request);
 
         assertEquals(OK, result.status());
@@ -265,7 +266,7 @@ public class TagControllerTest extends BaseTestWithApplicationAndDatabase {
     @Test
     public void getDestTagSuccessCheckData() {
         Result result = getDestTagHelper(1, 2);
-        assertEquals("[{\"tagId\":1,\"name\":\"Vacation spot\"}]", contentAsString(result));
+        assertEquals("[{\"tagId\":1,\"name\":\"Fun place to stay\"}]", contentAsString(result));
     }
 
     @Test
@@ -286,7 +287,7 @@ public class TagControllerTest extends BaseTestWithApplicationAndDatabase {
 
         Result result = getDestTagHelper(2, 2);
         assertEquals(
-                "[{\"tagId\":4,\"name\":\"Cool spot\"},{\"tagId\":5,\"name\":\"Dream spot\"}]",
+                "[{\"tagId\":2,\"name\":\"Cool spot\"},{\"tagId\":3,\"name\":\"Dream spot\"}]",
                 contentAsString(result));
     }
 
@@ -372,13 +373,13 @@ public class TagControllerTest extends BaseTestWithApplicationAndDatabase {
 
     @Test
     public void removeDestTag() {
-        Result result = addRemoveDestTagHelper(DELETE, "Shrek", 1, 2);
+        Result result = addRemoveDestTagHelper(DELETE, "Fun place to stay", 1, 2);
         assertEquals(OK, result.status());
     }
 
     @Test
     public void removeDestTagTagNotLinked() {
-        Result result = addRemoveDestTagHelper(DELETE, "Shrek", 2, 2);
+        Result result = addRemoveDestTagHelper(DELETE, "Fun place to stay", 2, 2);
         assertEquals(OK, result.status());
     }
 
@@ -390,7 +391,7 @@ public class TagControllerTest extends BaseTestWithApplicationAndDatabase {
 
     @Test
     public void removeDestTagAsAdmin() {
-        Result result = addRemoveDestTagHelper(DELETE, "Shrek", 1, 1);
+        Result result = addRemoveDestTagHelper(DELETE, "Fun place to stay", 1, 1);
         assertEquals(OK, result.status());
     }
 

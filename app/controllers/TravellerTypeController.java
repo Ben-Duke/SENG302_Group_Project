@@ -35,7 +35,7 @@ public class TravellerTypeController {
             Form<User> userForm = formFactory.form(User.class).fill(user);
             List<TravellerType> travellerTypes = TravellerType.find().all();
             travellerTypes.removeAll(user.getTravellerTypes());
-
+            user.getCommandManager().resetUndoRedoStack();
             return ok(updatetraveller.render(userForm, travellerTypes, user));
         }
         else {
@@ -61,7 +61,7 @@ public class TravellerTypeController {
                     Form<Destination> destForm = formFactory.form(Destination.class).fill(destination);
                     List<TravellerType> travellerTypes = TravellerType.find().all();
                     travellerTypes.removeAll(destination.getTravellerTypes());
-                    return ok(updateDestinationTraveller.render(destForm, travellerTypes, destination,user));
+                    return ok();
                 }
                 else{
                     return unauthorized("You do not own this destination!");

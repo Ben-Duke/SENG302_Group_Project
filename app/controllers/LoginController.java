@@ -72,8 +72,9 @@ public class LoginController {
                                                 User.getCurrentUser(request)));
             } else {
                 UserAccessor.getById(Integer.parseInt(userId)).getCommandManager().resetUndoRedoStack();
-                return redirect(routes.HomeController.showhome())
+                return redirect(routes.HomeController.mainMapPage())
                            .addingToSession(request, "connected", userId);
+
             }
 
         }

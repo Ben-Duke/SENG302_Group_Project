@@ -1,5 +1,6 @@
 package controllers;
 
+import accessors.TripAccessor;
 import accessors.UserAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -265,7 +266,7 @@ public class TripControllerTest extends BaseTestWithApplicationAndDatabase {
     public void checkAddVistToTripJSRequestDestinationIsNotFound() {
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(POST)
-                .uri("/users/trips/1/addVisit/10000000").session("connected", "1");
+                .uri("/users/trips/1/addVisit/10000000").session("connected", "2");
         Result result = route(app, request);
         assertEquals(NOT_FOUND, result.status());
     }
@@ -292,7 +293,8 @@ public class TripControllerTest extends BaseTestWithApplicationAndDatabase {
     public void checkAddVistToTripJSRequestOK() {
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(POST)
-                .uri("/users/trips/1/addVisit/1").session("connected", "1");
+                .uri("/users/trips/1/addVisit/1").session("connected", "2");
+
         Result result = route(app, request);
         assertEquals(OK, result.status());
     }

@@ -1,5 +1,6 @@
 package models.commands.Photos;
 
+import accessors.AlbumAccessor;
 import models.Destination;
 import models.UserPhoto;
 import org.junit.After;
@@ -27,13 +28,14 @@ public class DeletePhotoCommandTest  extends BaseTestWithApplicationAndDatabase 
         UserPhoto userPhoto1 = UserPhoto.find().byId(1);
         Destination christchurch = Destination.find().byId(1);
         Destination wellington = Destination.find().byId(2);
-        userPhoto1.addDestination(christchurch);
-        userPhoto1.addDestination(wellington);
-        userPhoto1.save();
+        christchurch.getPrimaryAlbum().addMedia(userPhoto1);
+        AlbumAccessor.update(christchurch.getPrimaryAlbum());
+        wellington.getPrimaryAlbum().addMedia(userPhoto1);
+        AlbumAccessor.update(wellington.getPrimaryAlbum());
 
         UserPhoto userPhoto = UserPhoto.find().byId(1);
         String url = userPhoto.getUrl();
-        assertEquals(2, userPhoto.getDestinations().size());
+        assertEquals(2, userPhoto.getAlbums().size());
         DeletePhotoCommand deletePhotoCommand = new DeletePhotoCommand(userPhoto);
         deletePhotoCommand.execute();
         UserPhoto beforeUndoPhoto = UserPhoto.find().query().where().eq("url",url).findOne();
@@ -41,7 +43,7 @@ public class DeletePhotoCommandTest  extends BaseTestWithApplicationAndDatabase 
         deletePhotoCommand.undo();
         UserPhoto afterUndoPhoto = UserPhoto.find().query().where().eq("url",url).findOne();
         assertNotNull(afterUndoPhoto);
-        assertEquals(2, afterUndoPhoto.getDestinations().size());
+        assertEquals(2, afterUndoPhoto.getAlbums().size());
     }
 
     @Test

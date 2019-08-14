@@ -1,6 +1,7 @@
 package models.commands.General;
 
 import accessors.UserAccessor;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import models.BaseModel;
 import models.User;
 import org.slf4j.Logger;
@@ -25,6 +26,7 @@ public class CommandManager extends BaseModel {
 
     private final Logger logger = UtilityFunctions.getLogger();
 
+    @JsonIgnore
     private User user;
 
     public User getUser() {
@@ -80,6 +82,7 @@ public class CommandManager extends BaseModel {
             try {
                 undoCommand.undo();
                 redoStack.push(undoCommand);
+                System.out.println(redoStack.isEmpty());
                 return undoCommand.toString();
             } catch(Exception exception){
                 user.setUndoRedoError(true);
@@ -96,14 +99,13 @@ public class CommandManager extends BaseModel {
      * @return The undo command as a string message ot be shown to the user
      */
     public String redo() {
-
         if (!redoStack.isEmpty()) {
             UndoableCommand redoCommand = redoStack.pop();
             try {
                 redoCommand.redo();
                 undoStack.push(redoCommand);
                 return redoCommand.toString();
-            } catch (Exception exception){
+            } catch(Exception exception){
                 user.setUndoRedoError(true);
                 UserAccessor.update(user);
             }

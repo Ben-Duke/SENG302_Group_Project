@@ -2,7 +2,6 @@ package testhelpers;
 
 import accessors.CommandManagerAccessor;
 import com.google.inject.Guice;
-import com.mysql.jdbc.Connection;
 import controllers.ApplicationManager;
 import io.ebean.Ebean;
 import io.ebean.EbeanServer;
@@ -75,7 +74,7 @@ public class BaseTestWithApplicationAndDatabase extends WithApplication {
 
         database = application.injector().instanceOf(Database.class);
 
-        ApplicationManager.setUserPhotoPath("/test/resources/test_photos/user_");
+        ApplicationManager.setMediaPath("/test/resources/test_photos/user_");
         CommandManagerAccessor.resetCommandManagers();
 
         // setup tables

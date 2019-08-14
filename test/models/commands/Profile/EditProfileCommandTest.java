@@ -1,5 +1,6 @@
 package models.commands.Profile;
 
+import accessors.UserAccessor;
 import controllers.ApplicationManager;
 import factories.LoginFactory;
 import models.User;
@@ -31,6 +32,10 @@ public class EditProfileCommandTest extends BaseTestWithApplicationAndDatabase {
         TestDatabaseManager.populateDatabase();
 
         User user = User.find().byId(2);
+
+        assertTrue(loginFactory.isPasswordMatch(user.getEmail(),
+                "TinyHumans57"));
+
         user.setFName("Logan");
         user.setLName("Paul");
         user.setGender("Female");
@@ -58,7 +63,7 @@ public class EditProfileCommandTest extends BaseTestWithApplicationAndDatabase {
     public void testUndo(){
         testExecute();
         editProfileCommand.undo();
-        User undoUser = User.find().byId(2);
+        User undoUser = UserAccessor.getById(2);
         assertEquals("Gavin", undoUser.getFName());
         assertEquals("Ong", undoUser.getLName());
         assertEquals("Male", undoUser.getGender());
@@ -66,7 +71,7 @@ public class EditProfileCommandTest extends BaseTestWithApplicationAndDatabase {
         assertEquals(expectedBirthdate, undoUser.getDateOfBirth());
         assertEquals("testuser1@uclive.ac.nz", undoUser.getEmail());
         assertTrue(loginFactory.isPasswordMatch(undoUser.getEmail(),
-                "test"));
+                "TinyHumans57"));
     }
 
     @Test

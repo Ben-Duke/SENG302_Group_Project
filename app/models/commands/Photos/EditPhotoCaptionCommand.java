@@ -16,7 +16,7 @@ public class EditPhotoCaptionCommand extends UndoableCommand {
         this.actualPhoto = editedPhoto;
         this.editedPhoto.applyEditChanges(actualPhoto);
         this.uneditedPhoto =
-                UserPhotoAccessor.getUserPhotoById(editedPhoto.getPhotoId());
+                UserPhotoAccessor.getUserPhotoById(editedPhoto.getMediaId());
     }
 
     /**

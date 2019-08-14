@@ -1,10 +1,11 @@
-var visitArray = [];
+let visitArray = [];
 window.globalMarkers = [];
 const updateVisitDateUrl = "/user/trips/visit/dates/";
 const colors = ['6b5b95', 'feb236', 'd64161', 'ff7b25',
     '6b5b95', '86af49', '3e4444', 'eca1a6', 'ffef96', 'bc5a45', 'c1946a'];
 
-
+let map;
+window.globalMarkers = [];
 let tripFlightPaths = {};
 let isNewTrip = false;
 
@@ -28,19 +29,77 @@ function getMapInfoWindowHTML(destination) {
     let infoWindowHTML;
     // uses a ES6 template string
     infoWindowHTML = `<style>.basicLink {text-underline: #0000EE;}</style>
-                      <a class="basicLink" href="javascript:;" onclick="viewDestination(${destination.destId})">
+                      <a class="basicLink" href="/users/destinations/view/${destination.destId}" onclick="viewDestination(${destination.destId})">
                         ${destinationName}
                       </a>
                       <div>${destinationType}</div>
                       <div>District: ${destinationDistrict}</div>
                       <div>${destinationCountry}</div>
-                      <div><button id="addToTripButton" onclick="addSelectedToVisitToTrip(${destination.destId})">Add to trip</button></div>`;
-
+                      <div><button id="addToTripButton" onclick="addSelectedToVisitToTrip(${destination.destId}, false)">Add to trip</button>
+                      <button id="createNewTripButton" onclick="createNewTrip(${destination.destId})">Start trip</button></div>`;
     return infoWindowHTML;
 }
 
-function addSelectedToVisitToTrip(destId){
-    if(currentlyDisplayedTripId == null){
+/**
+ * Sets the global dest id to the destination id then opens the modal based on the dest id.
+ * @param destid
+ */
+function viewDestination(destid){
+    getIdFromRow = destid;
+    $('#orderModal').modal('show');
+}
+
+/**
+ * Gets a JSON of all marker icons.
+ *
+ * @returns {{greenIcon: {url: string, name: string}, blueIcon: {url: string, name: string}}}
+ */
+function getAllMarkerIcons() {
+    const icons = {
+        greenIcon: {
+            url: 'https://maps.google.com/mapfiles/ms/icons/green-dot.png',
+            name: 'Public Destination'
+        },
+        blueIcon: {
+            url: 'https://maps.google.com/mapfiles/ms/icons/blue-dot.png',
+            name: 'Private Destination'
+        }
+    };
+    return icons;
+}
+
+/**
+ * Creates the destination map legend.
+ *
+ * Code from here
+ * https://developers.google.com/maps/documentation/javascript/adding-a-legend
+ */
+function initMapLegend() {
+    let icons = getAllMarkerIcons();
+
+    let legend = document.getElementById('legend');
+    for (let key in icons) {
+        let type = icons[key];
+        let name = type.name;
+        let icon = type.url;
+        let div = document.createElement('div');
+        div.innerHTML = '<img src="' + icon + '"> ' + name;
+        legend.appendChild(div);
+    }
+
+    window.globalMap.controls[google.maps.ControlPosition.LEFT_BOTTOM].push(legend);
+}
+
+function createNewTrip(destId) {
+    if(currentlyDisplayedTripId === undefined) {
+        addSelectedToVisitToTrip(destId, false)
+    } else {
+        addSelectedToVisitToTrip(destId, true)
+    }
+}
+
+function addSelectedToVisitToTrip(destId, startTrip){
+    if(currentlyDisplayedTripId === undefined || (startTrip && currentlyDisplayedTripId !== undefined)) {
         //Start a new trip
         isNewTrip = true;
         let data = '';
@@ -53,8 +112,10 @@ function addSelectedToVisitToTrip(destId){
             url: url,
             success: function(data){
 
-                //Get outer divs to set to correct tab and view
-                currentlyDisplayedTripId = data.tripId;
+                if (currentlyDisplayedTripId === undefined) {
+                    currentlyDisplayedTripId = data.tripId;
+                }
+
                 let destTab = document.getElementById("destinationsTabListItem");
                 let tripsTab = document.getElementById("tripsTabListItem");
                 let tripsDiv = document.getElementById("tripsTab");
@@ -87,7 +148,8 @@ function addSelectedToVisitToTrip(destId){
                 deleteButton.innerText = "Delete trip";
                 outerTripDiv.appendChild(deleteButton);
 
-
+                // Handle checking the show/hide all button
+                document.getElementById('show-hide-all-btn').style.display = 'block';
 
                 //Add outer div to single trip view
                 singleTripContainer.appendChild(outerTripDiv);
@@ -99,7 +161,7 @@ function addSelectedToVisitToTrip(destId){
                 let tripLink = document.createElement('a');
                 tripLink.setAttribute('class', "list-group-item list-group-item-action");
                 tripLink.innerText = data.tripName + ' | No arrival dates';
-                tripLink.setAttribute("onclick", "displayTrip(" + currentlyDisplayedTripId + ", " + data.latitude+ ", "+ data.longitude + ")");
+                tripLink.setAttribute("onclick", "displayTrip(" + data.tripId + ", " + data.latitude+ ", "+ data.longitude + ")");
 
                 let formCheckDiv = document.createElement("div");
                 formCheckDiv.setAttribute("class", "form-check");
@@ -108,8 +170,9 @@ function addSelectedToVisitToTrip(destId){
                 tripCheckBox.setAttribute('type', 'checkbox');
                 tripCheckBox.setAttribute('id',"Toggle"+data.tripId);
                 tripCheckBox.setAttribute('checked', 'true');
-                tripCheckBox.setAttribute('onclick', 'toggleTrips(' + data.tripId + ')');
-                tripCheckBox.setAttribute('class', 'form-check-input');
+                tripCheckBox.setAttribute('onchange', 'toggleTrips(' + data.tripId + ')');
+                tripCheckBox.setAttribute('class', 'form-check-input map-check');
+                tripCheckBox.setAttribute('autocomplete', 'off');
                 let mapLabel = document.createElement('label');
                 mapLabel.setAttribute('class', 'form-check-label');
                 mapLabel.setAttribute('for', "toggleMap");
@@ -119,23 +182,24 @@ function addSelectedToVisitToTrip(destId){
                 tripLink.appendChild(formCheckDiv);
                 listGroup.appendChild(tripLink);
 
-                addTripRoutes(data.tripId);
 
-                var tripStartLatLng = new google.maps.LatLng(
-                    data.latitude, data.longitude
-                );
 
-                window.globalMap.setCenter(tripStartLatLng);
-                window.globalMap.setZoom(9);
+                for (let i in tripRoutes) {
+                    tripRoutes[i].setMap(null);
+                }
+                tripRoutes =[];
+                initTripRoutes();
 
+                if (startTrip == true && currentlyDisplayedTripId != undefined) {
+                    displayTrip(data.tripId, data.latitude, data.longitude)
+                }
 
             },
             error: function(xhr, textStatus, errorThrown){
                 alert(errorThrown);
             }
         });
-    }
-    else {
+    } else {
         let data = '';
         let url = '/users/trips/' + currentlyDisplayedTripId + '/addVisit/' + destId;
         // POST to server using $.post or $.ajax
@@ -271,7 +335,7 @@ function createTripTable(data) {
 
 function initMap() {
 
-    window.globalMap = new google.maps.Map(document.getElementById('map'), {
+    map = window.globalMap = new google.maps.Map(document.getElementById('map'), {
         center: {lat: -43.522057156877615, lng: 172.62360347218828},
         zoom: 5,
         mapTypeControl: true,
@@ -288,6 +352,113 @@ function initMap() {
 
 
 
+}
+
+/**
+ * Initiates all the event handlers for a google maps infoWindows.
+ *
+ * @param markerIndex The index of the marker and window in window.globalMarkers
+ */
+function initInforWindowEventHandlers(markerIndex) {
+// event handler to handle infoWindow exit
+    window.globalMarkers[markerIndex].infoWindow.addListener('closeclick', () => {
+        window.globalMarkers[markerIndex].isClicked = false;
+        window.globalMarkers[markerIndex].infoWindow.close(window.globalMap,
+            window.globalMarkers[markerIndex].marker);
+    });
+}
+
+/**
+ * Displays all visible destination markers to the google map. Add's the marker
+ * objects to the window.globalMarkers global variable.
+ */
+function initDestinationMarkers() {
+    fetch('/users/destinations/getalljson', {
+        method: 'GET'})
+        .then(res => res.json())
+        .then(destinations => {
+            let marker;
+            let infoWindow;
+            // console.log(destinations);
+            for (let index = 0; index < destinations.length; index++) {
+                marker = new google.maps.Marker({
+                    position: {
+                        lat: destinations[index].latitude,
+                        lng: destinations[index].longitude
+                    },
+                    map: window.globalMap,
+                    icon: getMarkerIcon(destinations[index].isPublic)
+                });
+
+                infoWindow = new google.maps.InfoWindow({
+                    content: getInfoWindowHTML(destinations[index])
+                });
+
+                //make the marker and infoWindow globals (persist in browser session)
+                window.globalMarkers.push({
+                    marker: marker,
+                    infoWindow: infoWindow,
+                    isClicked: false
+                });
+
+                initMarkerEventHandlers(index);
+                initInforWindowEventHandlers(index);
+            }
+        });
+}
+
+/**
+ * Initiates all the event handlers for a google maps markers.
+ *
+ * @param markerIndex The index of the marker and window in window.globalMarkers
+ */
+function initMarkerEventHandlers(markerIndex) {
+// event handler to open infoWindow on mouseout
+    window.globalMarkers[markerIndex].marker.addListener('mouseover', () => {
+        window.globalMarkers[markerIndex].infoWindow.open(window.globalMap,
+            window.globalMarkers[markerIndex].marker);
+    });
+
+    // event handler to close infoWindow on mouseout
+    window.globalMarkers[markerIndex].marker.addListener('mouseout', () => {
+
+        if (window.globalMarkers[markerIndex].isClicked) {
+            // user are clicked on current marker
+            // do nothing (dont close on mouseout)
+        } else {
+            // user hasn't explicitly clicked, so safe to close
+            window.globalMarkers[markerIndex].infoWindow.close(window.globalMap,
+                window.globalMarkers[markerIndex].marker);
+        }
+    });
+
+    // event handler to open infoWindow on click
+    window.globalMarkers[markerIndex].marker.addListener('click', () => {
+        window.globalMarkers[markerIndex].isClicked = true;
+        window.globalMarkers[markerIndex].infoWindow.open(window.globalMap,
+            window.globalMarkers[markerIndex].marker);
+    });
+}
+
+/**
+ * Gets the Icon (google maps api spec) for the Marker, depends on the Destintions
+ * privacy.
+ *
+ * @param isPublic A boolean, true if Destination is public, false otherwise
+ * @returns {icons.blueIcon|{url, scale}|icons.greenIcon} JSON of the icon
+ */
+function getMarkerIcon(isPublic) {
+    const icons = getAllMarkerIcons();
+
+    let selectedIcon;
+
+    if (isPublic) {
+        selectedIcon = icons.greenIcon;
+    } else {
+        selectedIcon = icons.blueIcon;
+    }
+
+    return selectedIcon;
 }
 
 function tripVisitTableRefresh(data){
@@ -349,12 +520,42 @@ var tripRoutes = [];
  * @param tripid The id of the trip on the map
  */
 function toggleTrips(tripid) {
-    var checkBox = document.getElementById("Toggle" + tripid);
+    const checkBox = document.getElementById("Toggle" + tripid);
     if (checkBox.checked === false) {
         tripFlightPaths[tripid].setMap(null);
     } else {
         tripFlightPaths[tripid].setMap(window.globalMap);
     }
+    const checkboxes = document.getElementsByClassName("map-check");
+    const showHideAllButton = document.getElementById("show-hide-all-btn");
+    // === true is important here
+    const showHideResult = getAllChecksChecked(checkboxes);
+    if (showHideResult === "Checked") {
+        showHideAllButton.innerText = "Hide all"
+    } else if (showHideResult === "Unchecked") {
+        showHideAllButton.innerText = "Show all"
+    }
+}
+
+
+
+/**
+ * Finds if ALL checkboxes in a list of checkboxes are checked or unchecked or mixed
+ * @param checkboxes list of checkboxes
+ * @returns string  "Checked" if all checkboxes are checked,
+ *                  "Unchecked" if all checkboxes are unchecked
+ *                   and "Do not all match" otherwise
+ */
+function getAllChecksChecked(checkboxes) {
+    let currentStates = null;
+    for (let check of checkboxes) {
+        if (currentStates == null) {
+            currentStates = check.checked;
+        } else if (currentStates !== check.checked) {
+            return "Do not all match";
+        }
+    }
+    return currentStates ? "Checked" : "Unchecked";
 }
 
 function initTripRoutes() {
@@ -375,13 +576,30 @@ function initTripRoutes() {
                 strokeOpacity: 1.0,
                 strokeWeight: 2
             });
+            flightPath.path = tripRoutes[tripId];
 
-            tripFlightPaths[tripId] = flightPath;
+            google.maps.event.addListener(flightPath, 'click', function(e) {
 
-            // tripFlightPaths.push({'tripId': flightPath});
+                displayTrip(tripId, tripRoutes[tripId][0]['lat'], tripRoutes[tripId][0]['lng'])
+            });
 
-            flightPath.setMap(window.globalMap);
-
+            if (tripFlightPaths[tripId] != null) {
+                if (tripFlightPaths[tripId].path.length !== flightPath.path.length) {
+                    tripFlightPaths[tripId].setMap(null);
+                    tripFlightPaths[tripId] = flightPath;
+                }
+            }
+            else{
+                tripFlightPaths[tripId] = flightPath;
+            }
+            const checkBox = document.getElementById("Toggle" + tripId);
+            if (checkBox.checked === false) {
+                tripFlightPaths[tripId].setMap(null);
+            } else {
+                if (tripFlightPaths[tripId].getMap() == null) {
+                    tripFlightPaths[tripId].setMap(window.globalMap);
+                }
+            }
         }
     });
 }
@@ -426,11 +644,11 @@ let currentlyDisplayedTripId;
  */
 function displayTrip(tripId, startLat, startLng) {
     if(tripId !== currentlyDisplayedTripId && currentlyDisplayedTripId !== undefined) {
-        if(document.getElementById("singleTrip_" + currentlyDisplayedTripId) != null) {
+        if(document.getElementById("singleTrip_" + currentlyDisplayedTripId) != undefined) {
             document.getElementById("singleTrip_" + currentlyDisplayedTripId).style.display = "none";
         }
-        isNewTrip = false;
         currentlyDisplayedTripId = undefined;
+        isNewTrip = false;
     }
     let checkBox = document.getElementById("Toggle" + tripId);
     if (checkBox.checked === true) {
@@ -439,22 +657,19 @@ function displayTrip(tripId, startLat, startLng) {
         } else {
             document.getElementById("placeholderTripTable").style.display = "none";
         }
-
-        currentlyDisplayedTripId = tripId;
         if(isNewTrip === false) {
             if(document.getElementById("placeholderTripTable").style.display != "none") {
                 document.getElementById("placeholderTripTable").style.display = "none";
             }
             document.getElementById("singleTrip_" + tripId).style.display = "block";
-        }
-        else{
+        } else {
             document.getElementById("placeholderTripTable").style.display = "block";
         }
 
         var tripStartLatLng = new google.maps.LatLng(
             startLat, startLng
         );
-
+        currentlyDisplayedTripId = tripId;
         window.globalMap.setCenter(tripStartLatLng);
         window.globalMap.setZoom(9);
     }
@@ -618,6 +833,32 @@ function updateTripName(newName) {
     });
 
 }
+
+/**
+ * Changes all checkboxes for showing routes to either true or false and dispatches events for the routes on map
+ */
+function showHideMapTrips() {
+    const button = document.getElementById("show-hide-all-btn");
+    const checkboxes = document.getElementsByClassName('map-check');
+    if (button.innerText === "Hide all") {
+        button.innerText = "Show all";
+        for (let check of checkboxes) {
+            check.checked = false;
+            // Dispatch an event to fire the listener on the checkbox
+            const event = new Event('change');
+            check.dispatchEvent(event);
+        }
+    } else {
+        button.innerText = "Hide all";
+        for (let check of checkboxes) {
+            check.checked = true;
+            // Dispatch an event to fire the listener on the checkbox
+            const event = new Event('change');
+            check.dispatchEvent(event);
+        }
+    }
+}
+
     function deleteTripRequest(tripId, url) {
         let token = $('input[name="csrfToken"]').attr('value');
         $.ajaxSetup({
@@ -649,6 +890,7 @@ function updateTripName(newName) {
             success: function (data, textStatus, xhr) {
                 if (xhr.status == 200) {
                     document.getElementById("visit_row_" + visitId).remove();
+                    document.getElementById('undoButton').classList.remove('disabled');
                 }
                 else {
                     console.log("error in success function");
@@ -690,7 +932,7 @@ function updateTripName(newName) {
             contentType: 'application/json',
             success: function (data, textStatus, xhr) {
                 if (xhr.status == 200) {
-
+                    document.getElementById('undoButton').classList.remove('disabled');
                 }
                 else {
 
@@ -786,6 +1028,10 @@ function initPlacesAutocompleteSearch() {
 
                     document.getElementById("latitude").value = coordinates.lat();
                     document.getElementById("longitude").value = coordinates.lng();
+                    console.log("Done the request for search")
+                    moveTo = new google.maps.LatLng(coordinates.lat(), coordinates.lng());
+                    map.panTo(moveTo)
+                    map.setZoom(14);
                 }
             },
             error: function(xhr, settings){
@@ -814,7 +1060,6 @@ function initDestinationMarkers() {
         .then(destinations => {
             let marker;
             let infoWindow;
-            // console.log(destinations);
             for (let index = 0; index < destinations.length; index++) {
                 marker = new google.maps.Marker({
                     position: {

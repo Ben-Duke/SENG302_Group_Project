@@ -26,7 +26,7 @@ public class DeleteTripCommand extends UndoableCommand {
      * @param trip the trip to delete
      */
     public DeleteTripCommand(Trip trip) {
-        super(CommandPage.HOME);
+        super(CommandPage.MAP);
         this.trip = trip;
         this.savedTrip = trip;
         for (Visit visit : trip.getVisits()) {

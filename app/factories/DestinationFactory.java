@@ -1,5 +1,7 @@
 package factories;
 
+import accessors.AlbumAccessor;
+import accessors.DestinationAccessor;
 import formdata.DestinationFormData;
 import models.*;
 import org.slf4j.Logger;
@@ -22,7 +24,7 @@ public class DestinationFactory {
      */
     public List<Destination> getPublicDestinations() {
         return Destination.find().query()
-                .where().eq("isPublic", true).findList();
+                .where().eq("destIsPublic", true).findList();
     }
 
     /**
@@ -33,7 +35,7 @@ public class DestinationFactory {
     public static UserPhoto getPrimaryPicture(int destID) {
         Destination destination = Destination.find().byId(destID);
         if (destination != null) {
-            return destination.getPrimaryPhoto();
+            return destination.getPrimaryAlbum().getPrimaryPhoto();
         }
        return null;
     }
@@ -50,7 +52,7 @@ public class DestinationFactory {
         User user = UserFactory.getUserFromId(userId);
 
         List<Destination> privateDestinations = Destination.find().query()
-                .where().eq("user", user).and().eq("isPublic", false)
+                .where().eq("user", user).and().eq("destIsPublic", false)
                 .findList();
 
         return privateDestinations;
@@ -122,7 +124,7 @@ public class DestinationFactory {
         User user = UserFactory.getUserFromId(userId);
         // Get all destinations that are private and belong to another user
         List<Destination> allDestinations = Destination.find().query()
-                .where().eq("isPublic", false).and()
+                .where().eq("destIsPublic", false).and()
                 .not().eq("user", user).findList();
 
         List<Destination> matchingDestinations = new ArrayList<>();
@@ -145,11 +147,21 @@ public class DestinationFactory {
     public void removePrivatePhotos(List<UserPhoto> userPhotos, Integer viewerId) {
         ArrayList<UserPhoto> photosToRemove = new ArrayList<>();
         for (UserPhoto photo : userPhotos) {
-            if(!photo.isPublic() && photo.getUser().getUserid() != viewerId) {
+            if(!photo.getIsPublic() && photo.getUser().getUserid() != viewerId) {
                 photosToRemove.add(photo);
             }
         }
         userPhotos.removeAll(photosToRemove);
+    }
+
+    public void removePrivateMedia(List<Media> media, Integer viewerId) {
+        ArrayList<Media> photosToRemove = new ArrayList<Media>();
+        for (Media med : media) {
+            if(!med.getIsPublic() && med.getUser().getUserid() != viewerId) {
+                photosToRemove.add(med);
+            }
+        }
+        media.removeAll(photosToRemove);
     }
 
     /**
@@ -176,14 +188,14 @@ public class DestinationFactory {
      * @param destinationTwo the new destination which will hold new photos
      */
     private void movePhotosToAnotherDestination(Destination destinationOne, Destination destinationTwo) {
-        while(!destinationOne.getUserPhotos().isEmpty()) {
-            UserPhoto changingPhoto = destinationOne.getUserPhotos().get(0);
-            changingPhoto.removeDestination(destinationOne);
-            changingPhoto.addDestination(destinationTwo);
-            destinationOne.getUserPhotos().remove(changingPhoto);
-            changingPhoto.update();
-            destinationOne.update();
-            destinationTwo.update();
+        while(!destinationOne.getPrimaryAlbum().getMedia().isEmpty()) {
+            Media changingPhoto = destinationOne.getPrimaryAlbum().getMedia().get(0);
+
+            destinationOne.getPrimaryAlbum().removeMedia(changingPhoto);
+            AlbumAccessor.update(destinationOne.getPrimaryAlbum());
+
+            destinationTwo.getPrimaryAlbum().addMedia(changingPhoto);
+            AlbumAccessor.update(destinationTwo.getPrimaryAlbum());
         }
     }
 
@@ -222,18 +234,19 @@ public class DestinationFactory {
                 moveVisitsToAnotherDestination(otherDestination, destination);
                 otherDestination.setVisits(new ArrayList<>());
                 try {
-                    otherDestination.update();
+                    DestinationAccessor.update(otherDestination);
                 } catch (Exception e) {
                     logger.error("merge destinations 1", e);
                 }
                 movePhotosToAnotherDestination(otherDestination, destination);
                 try {
-                    otherDestination.delete();
+                    AlbumAccessor.delete(otherDestination.getPrimaryAlbum());
+                    DestinationAccessor.delete(otherDestination);
                 } catch (Exception e) {
                     logger.error("merge destinations 2", e);
                 }
                 try {
-                    destination.update();
+                    DestinationAccessor.update(otherDestination);
                 } catch (Exception e) {
                     logger.error("merge destinations 3", e);
                 }

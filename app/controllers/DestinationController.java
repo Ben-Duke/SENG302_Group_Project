@@ -1,6 +1,10 @@
 package controllers;
 
+import accessors.AlbumAccessor;
 import accessors.DestinationAccessor;
+import accessors.TreasureHuntAccessor;
+import accessors.UserPhotoAccessor;
+import accessors.UserPhotoAccessor;
 import accessors.TreasureHuntAccessor;
 import accessors.UserPhotoAccessor;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -13,6 +17,7 @@ import formdata.DestinationFormData;
 import models.*;
 
 
+import models.commands.Albums.CreateAlbumCommand;
 import models.commands.Destinations.*;
 import models.commands.General.CommandPage;
 import models.commands.Photos.DeletePhotoCommand;
@@ -120,7 +125,7 @@ public class DestinationController extends Controller {
 
             List<Destination> allDestinations = Destination.find().all();
 
-            return ok(indexDestination.render(destinations, allDestinations, destFactory, user));
+            return ok();
 
 
         }
@@ -374,7 +379,7 @@ public class DestinationController extends Controller {
         if (destination == null) { return notFound("Destination not found"); }
 
         if (!destination.isUserOwner(user) && !user.userIsAdmin()) {
-            return unauthorized("Not your destination. You cant Delete.");
+            return unauthorized("Not your destination. You can't Delete.");
         }
 
         if (user.userIsAdmin()) {
@@ -402,7 +407,7 @@ public class DestinationController extends Controller {
 
         }
 
-        return redirect(routes.DestinationController.indexDestination());
+        return redirect(routes.HomeController.mainMapPage());
 
     }
 
@@ -469,7 +474,7 @@ public class DestinationController extends Controller {
 
             Map<String, Boolean> countryList = CountryUtils.getCountriesMap();
 
-            return ok(createEditDestination.render(destFormData, null, countryList , Destination.getTypeList(),user));
+            return ok();
         }
         return redirect(routes.UserController.userindex());
     }
@@ -497,7 +502,11 @@ public class DestinationController extends Controller {
                 newDestination.setUser(user);
                 newDestination.setCountryValid(true);
                 newDestination.save();
-
+                CreateAlbumCommand cmd = new CreateAlbumCommand(
+                        newDestination.getDestName(),
+                        newDestination,
+                        null);
+                cmd.execute();
 
                 return redirect(routes.HomeController.mainMapPage());
             }
@@ -506,6 +515,10 @@ public class DestinationController extends Controller {
             return redirect(routes.UserController.userindex());
         }
     }
+
+
+
+
 
 
     public Result doesDestinationExist(Http.Request request) {
@@ -597,8 +610,7 @@ public class DestinationController extends Controller {
                 countryList.replace(dynamicDestForm.get("country"), true);
             }
 
-            return badRequest(createEditDestination.render(destForm, destId, countryList,
-                    typeList, user));
+            return badRequest();
         } else {
             return null;    // no errors
         }
@@ -685,6 +697,11 @@ public class DestinationController extends Controller {
 
 
 
+
+
+
+
+
     /**
      * Links a photo with a photo id to a destination with a destination id.
      *
@@ -704,7 +721,7 @@ public class DestinationController extends Controller {
                 if (photo.getUser().getUserid() == user.getUserid()) {
                     //add checks for private destinations here once destinations have been merged in.
                     //You can only link a photo to a private destination if you own the private destination.
-                    if (!photo.getDestinations().contains(destination)) {
+                    if (!photo.getAlbums().contains(destination.getPrimaryAlbum())) {
 
                         LinkPhotoDestinationCommand cmd = new LinkPhotoDestinationCommand(photo, destination);
                         user.getCommandManager().executeCommand(cmd);
@@ -786,7 +803,7 @@ public class DestinationController extends Controller {
                 && photo.getUser().getUserid() != user.getUserid()) {
             return unauthorized("You cannot unlink this photo from this destination as neither of those belong to you.");
         }
-        if (!photo.getDestinations().contains(destination))
+        if (!photo.getAlbums().contains(destination.getPrimaryAlbum()))
             return badRequest("The destination was not linked to this photo");
 
         UnlinkPhotoDestinationCommand cmd = new UnlinkPhotoDestinationCommand(photo, destination);
@@ -822,15 +839,11 @@ public class DestinationController extends Controller {
         User user = User.getCurrentUser(request);
         if(user != null){
             Destination destination = Destination.find().byId(destId);
-            List<UserPhoto> photos;
+            List<Media> photos = Destination.find().byId(destId).getPrimaryAlbum().getMedia();
             if(destination.getIsPublic() && !user.userIsAdmin()) {
-                photos = Destination.find().byId(destId).getUserPhotos();
                 DestinationFactory destinationFactory = new DestinationFactory();
-                destinationFactory.removePrivatePhotos(photos, user.getUserid());
-            } else {
-                photos = Destination.find().byId(destId).getUserPhotos();
+                destinationFactory.removePrivateMedia(photos, user.getUserid());
             }
-
             return ok(Json.toJson(photos));
         } else {
             return redirect(routes.UserController.userindex());
@@ -847,8 +860,8 @@ public class DestinationController extends Controller {
     public Result getPhoto(Http.Request request, Integer photoId) {
         User user = User.getCurrentUser(request);
         if(user != null){
-            UserPhoto photo = UserPhoto.find().byId(photoId);
-            if (photo.getUser().getUserid() == user.getUserid() || photo.isPublic() || user.userIsAdmin()) {
+            Media photo = Media.find.byId(photoId);
+            if (photo.getUser().getUserid() == user.getUserid() || photo.getIsPublic() || user.userIsAdmin()) {
                 return ok(Json.toJson(photo));
             } else {
                 return unauthorized("Oops, you do not have the rights to view this photo");
@@ -913,7 +926,7 @@ public class DestinationController extends Controller {
         UserPhoto photo = UserPhotoAccessor.getUserPhotoById(photoId);
         if (photo == null) { return notFound("Photo not found"); }
 
-        if (!destination.getUserPhotos().contains(photo)) {
+        if (!destination.getAlbums().get(0).getMedia().contains(photo)) {
             return badRequest("Photo not linked to destination");
         }
 
@@ -921,8 +934,9 @@ public class DestinationController extends Controller {
             return unauthorized("Not your destination");
         }
 
-        destination.setPrimaryPhoto(photo);
-        DestinationAccessor.update(destination);
+        destination.getPrimaryAlbum().setPrimaryPhoto(photo);
+        AlbumAccessor.update(destination.getPrimaryAlbum());
+
 
         return redirect(routes.DestinationController.viewDestination(destId));
     }
@@ -979,9 +993,10 @@ public class DestinationController extends Controller {
             return unauthorized("Not your photo.");
         }
 
-        if (photo.getDestinations().contains(destination)) {
+        if (photo.getAlbums().contains(destination.getPrimaryAlbum())) {
             return badRequest("You have already linked the photo to this destination.");
         }
+
 
         LinkPhotoDestinationCommand cmd = new LinkPhotoDestinationCommand(photo, destination);
         user.getCommandManager().executeCommand(cmd);

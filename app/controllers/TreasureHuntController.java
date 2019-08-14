@@ -41,7 +41,7 @@ public class TreasureHuntController extends Controller {
      * Creates the option map of public destinations for treasure hunts.
      */
     void createPublicDestinationsMap() {
-        List<Destination> allDestinations = Destination.find().query().where().eq("is_public", true).findList();
+        List<Destination> allDestinations = Destination.find().query().where().eq("dest_is_public", true).findList();
         for (Destination destination: allDestinations) {
             destinationMap.put(destination.getDestName(), false);
         }
@@ -206,7 +206,7 @@ public class TreasureHuntController extends Controller {
             // Change the destination map to keep track of the current destination selected in the select
             String destName = incomingForm.rawData().get("destination");
             if (destName !=null && !destName.isEmpty()) {
-                destinationMap.put(destName, true);
+                destinationMap.replace(destName, true);
             }
             return badRequest(editTreasureHunt.render(incomingForm, treasureHunt, user, destinationMap));
         }
@@ -234,7 +234,8 @@ public class TreasureHuntController extends Controller {
         if (user != null) {
             TreasureHunt treasureHunt = TreasureHuntAccessor.getById(treasureHuntId);
             if (treasureHunt != null) {
-                if (treasureHunt.getUser().getUserid() == (user.getUserid())) {
+                if ((treasureHunt.getUser().getUserid() == (user.getUserid())) ||
+                        (user.userIsAdmin())) {
                     UndoableCommand cmd = new DeleteTreasureHuntCommand(treasureHunt);
                     user.getCommandManager().executeCommand(cmd);
                     return redirect(routes.TreasureHuntController.indexTreasureHunt());

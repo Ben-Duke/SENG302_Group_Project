@@ -18,6 +18,8 @@ enum DatabaseName {
  */
 public class ApplicationManager {
 
+    private static String mediaPath;
+
     // Private constructor to hide the implicit public one
     private ApplicationManager() {
         throw new IllegalStateException("Utility class");
@@ -34,12 +36,12 @@ public class ApplicationManager {
     private static DatabaseName databaseName = DatabaseName.DEFAULT;
 
     /**
-     * Method to get the user photo path.
+     * Method to get the media path.
      *
      * @return A String representing the user photo URL
      */
-    public static String getUserPhotoPath(){
-        return userPhotoPath;
+    public static String getMediaPath(){
+        return mediaPath;
     }
 
     /**
@@ -57,10 +59,10 @@ public class ApplicationManager {
     /**
      * Method to set the user photo path.
      *
-     * @param userPhotoPath A String representing the user photo URL
+     * @param mediaPath A String representing the media URL
      */
-    public static void setUserPhotoPath(String userPhotoPath) {
-        ApplicationManager.userPhotoPath = userPhotoPath;
+    public static void setMediaPath(String mediaPath) {
+        ApplicationManager.mediaPath = mediaPath;
     }
 
     /**

@@ -1,5 +1,6 @@
 package controllers;
 
+import accessors.MediaAccessor;
 import accessors.UserAccessor;
 import factories.UserFactory;
 import formdata.NatFormData;
@@ -45,17 +46,21 @@ public class ProfileController extends Controller {
      * @return will delete the given photo and return to index page
      */
     public Result deletePhoto(Http.Request request, Integer photoId, Boolean userInput){
-        UserPhoto photo = UserPhoto.find().byId(photoId);
+        UserFactory factory = new UserFactory();
+        UserPhoto photo = (UserPhoto) MediaAccessor.getMediaById(photoId);
         User user = User.getCurrentUser(request);
         if (photo != null && photo.getIsProfile() && (!userInput)) {
             return badRequest("Is profile picture ask user");
         }
 
-        if (photo == null || photo.getDestinations().isEmpty()) {
+        //TODO AC11 albums. Implement it here
+        /*
+        if (photo.getDestinations().size() > 0) {
             return badRequest("Failed to delete image");
         }
+        */
 
-        DeletePhotoCommand deletePhotoCommand = new DeletePhotoCommand(photo);
+        DeletePhotoCommand deletePhotoCommand = new DeletePhotoCommand((UserPhoto) MediaAccessor.getMediaById(photoId));
         user.getCommandManager().executeCommand(deletePhotoCommand);
 
         return ok();
@@ -73,6 +78,9 @@ public class ProfileController extends Controller {
         Boolean isAdmin = false;
         if (users.size() != 0) {
             User user = users.get(0);
+            //Clear the command stack before starting otherwise can undo profile edits from this page
+            //which is not desired functionality.
+            user.getCommandManager().resetUndoRedoStack();
             if(users.get(0).getUserid() != users.get(1).getUserid()) {
                 isAdmin = true;
             }
@@ -103,6 +111,7 @@ public class ProfileController extends Controller {
      * @return home page or error page
      */
     public Result updateProfileRequest(Http.Request request){
+
         Form<UpdateUserFormData> updateProfileForm = formFactory
                             .form(UpdateUserFormData.class).bindFromRequest(request);
         // checking if a user is logged in.
@@ -110,6 +119,7 @@ public class ProfileController extends Controller {
         Boolean isAdmin = false;
         if (users.size() != 0) {
             User user = users.get(0);
+
             if(users.get(0).getUserid() != users.get(1).getUserid())
             {
                 isAdmin = true;
@@ -159,7 +169,7 @@ public class ProfileController extends Controller {
         if (0 < passwordPlainText.length()) {
             user.hashAndSetPassword(passwordPlainText);
         }
-
+        user.getCommandManager().resetUndoRedoStack();
         EditProfileCommand editProfileCommand = new EditProfileCommand(user);
         user.getCommandManager().executeCommand(editProfileCommand);
         // Show the user their home page
@@ -210,6 +220,7 @@ public class ProfileController extends Controller {
 
             List<Nationality> nationalities = Nationality.find().all();
             List<Passport> passports = Passport.find().all();
+            user.getCommandManager().resetUndoRedoStack();
             return ok(updateNatPass.render(userForm, nationalities, passports, user.getUserid(), User.getCurrentUser(request)));
         }
         else {

@@ -1,5 +1,6 @@
 package models.commands.Destinations;
 
+import accessors.AlbumAccessor;
 import accessors.DestinationAccessor;
 import accessors.UserPhotoAccessor;
 import models.Destination;
@@ -27,8 +28,10 @@ public class LinkPhotoDestinationCommand extends UndoableCommand {
      * Link the destination to the photo
      */
     public void execute() {
-        photo.addDestination(destination);
-        UserPhotoAccessor.update(photo);
+        destination.getPrimaryAlbum().addMedia(photo);
+        AlbumAccessor.update(destination.getPrimaryAlbum());
+        //photo.addDestination(destination);
+        //UserPhotoAccessor.update(photo);
     }
 
     /**
@@ -37,12 +40,15 @@ public class LinkPhotoDestinationCommand extends UndoableCommand {
      * was unlinked.
      */
     public void undo() {
-        photo.removeDestination(destination);
-        UserPhotoAccessor.update(photo);
-        if ((destination.getPrimaryPhoto() != null) &&
-                (photo.getPhotoId() == destination.getPrimaryPhoto().getPhotoId())) {
-            destination.setPrimaryPhoto(null);
-            DestinationAccessor.update(destination);
+        destination.getPrimaryAlbum().removeMedia(photo);
+        AlbumAccessor.update(destination.getPrimaryAlbum());
+        //photo.removeDestination(destination);
+        //UserPhotoAccessor.update(photo);
+        if ((destination.getPrimaryAlbum().getPrimaryPhoto() != null) &&
+                (photo.getMediaId() == destination.getPrimaryAlbum()
+                        .getPrimaryPhoto().getMediaId())) {
+            destination.getPrimaryAlbum().setPrimaryPhoto(null);
+            AlbumAccessor.update(destination.getPrimaryAlbum());
         }
     }
 

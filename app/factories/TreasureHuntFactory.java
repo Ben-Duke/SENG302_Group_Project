@@ -41,7 +41,7 @@ public class TreasureHuntFactory {
         if (treasureHunt != null) {
             treasureHunt.setTitle(treasureHuntFormData.title);
             treasureHunt.setRiddle(treasureHuntFormData.riddle);
-            List<Destination> destinations = Destination.find().query().where().eq("is_public", true).findList();
+            List<Destination> destinations = Destination.find().query().where().eq("destIsPublic", true).findList();
             for (Destination destination: destinations) {
                 if (destination.getDestName().equals(treasureHuntFormData.destination)) {
                     treasureHunt.setDestination(destination);

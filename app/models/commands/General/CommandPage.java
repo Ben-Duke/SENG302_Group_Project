@@ -4,5 +4,7 @@ public enum CommandPage {
     DESTINATION,
     HOME,
     TREASURE_HUNT,
-    TRIP
+    TRIP,
+    MAP,
+    ALBUM
 }

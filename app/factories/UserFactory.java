@@ -1,5 +1,7 @@
 package factories;
 
+import accessors.AlbumAccessor;
+import accessors.MediaAccessor;
 import accessors.UserAccessor;
 import accessors.UserPhotoAccessor;
 import formdata.UpdateUserFormData;
@@ -7,8 +9,10 @@ import formdata.UserFormData;
 import models.*;
 import models.commands.General.UndoableCommand;
 import models.commands.Photos.EditPhotoCaptionCommand;
+import play.data.FormFactory;
 import play.mvc.Http;
 
+import javax.inject.Inject;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -21,11 +25,15 @@ import java.util.TreeMap;
  */
 public class UserFactory {
 
+    @Inject
+    static FormFactory formFactory;
+
     public UserFactory(){//Just used to instantiate
     }
 
     /**Returns 1 if in the database and 0 if not in the database
      *
+     * @param email the email to check if is in the database
      * @return 0 if email is not present or 1 if email is present.
      */
     public static int checkEmail(String email) {
@@ -51,7 +59,7 @@ public class UserFactory {
      * @param photoId Id of photo being deleted
      */
     public void deletePhoto(int photoId){
-         UserPhoto.deletePhoto(photoId);
+        UserPhotoAccessor.deleteById(photoId);
     }
 
     /**
@@ -199,6 +207,7 @@ public class UserFactory {
 
     /**Returns the id of the Passport with the name passed in.
      *
+     * @param name The name associated the with passport
      * @return Passport id with the name passed in.
      */
     public static int getPassportId(String name){
@@ -220,6 +229,7 @@ public class UserFactory {
 
     /**Returns the id of the Nationality with the name passed in.
      *
+     * @param name the name of the nationality
      * @return Nationality id with the name passed in.
      */
     private static int getNatId(String name){
@@ -241,6 +251,7 @@ public class UserFactory {
 
     /**Returns the id of the Traveller Type with the name passed in.
      *
+     * @param name the name of the traveller type
      * @return Traveller Type id with the name passed in.
      */
     public static int getTTypeId(String name){
@@ -283,9 +294,9 @@ public class UserFactory {
 
         if(checkEmail(email)!=1){
             User user = new User(email, password, firstName, lastName, date, gender);
-
-
             user.save();
+            Album album = new Album(user, "Default", true);
+            AlbumAccessor.insert(album);
             for (String aTType : tType) {
 
                 int tTypeId = getTTypeId(aTType);

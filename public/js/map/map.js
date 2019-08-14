@@ -1028,7 +1028,6 @@ function initPlacesAutocompleteSearch() {
 
                     document.getElementById("latitude").value = coordinates.lat();
                     document.getElementById("longitude").value = coordinates.lng();
-                    console.log("Done the request for search")
                     moveTo = new google.maps.LatLng(coordinates.lat(), coordinates.lng());
                     map.panTo(moveTo)
                     map.setZoom(14);

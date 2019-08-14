@@ -378,9 +378,6 @@ public class TripController extends Controller {
 
             VisitFactory visitFactory = new VisitFactory();
             Visit newVisit = visitFactory.createVisitByJSRequest(destination, trip);
-            System.out.println(newVisit);
-            System.out.println(trip.getVisits());
-            System.out.println(newVisit.getVisitOrder());
             if (tripFactory.hasRepeatDest(trip.getVisits(), newVisit, "ADD")) {
                 return badRequest("Trip cannot have two destinations in a row!");
             }
@@ -461,17 +458,12 @@ public class TripController extends Controller {
 
         User user = User.getCurrentUser(request);
         if (user == null) { return redirect(routes.UserController.userindex()); }
-        System.out.println("visit id is " + visitid);
         Visit visit = VisitAccessor.getById(visitid);
-        System.out.println(visit.isTripOwner(user.getUserid()));
         if (visit == null) { return redirect(routes.UserController.userindex()); }
 
         Trip trip = visit.getTrip();
 
-        System.out.println("User id from the visit trip|" + visit.getTrip().getUser().getUserid());
 
-        System.out.println("User id from request|" + user.getUserid());
-        System.out.println("User id from the trip|" +trip.getUser().getUserid());
 
         if (!trip.isUserOwner(user.getUserid())) { return unauthorized(); }
 

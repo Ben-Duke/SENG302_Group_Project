@@ -31,7 +31,7 @@ public class CreateTripFromVisitsCommand extends UndoableCommand {
      * @param user the user that's creating the trip
      */
     public CreateTripFromVisitsCommand(List<Visit> visits, String name, User user) {
-        super(CommandPage.TRIP);
+        super(CommandPage.MAP);
         this.visits = visits;
         this.cleanVisits = new ArrayList<>();
         this.name = name;

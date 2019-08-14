@@ -890,6 +890,7 @@ function showHideMapTrips() {
             success: function (data, textStatus, xhr) {
                 if (xhr.status == 200) {
                     document.getElementById("visit_row_" + visitId).remove();
+                    document.getElementById('undoButton').classList.remove('disabled');
                 }
                 else {
                     console.log("error in success function");
@@ -931,7 +932,7 @@ function showHideMapTrips() {
             contentType: 'application/json',
             success: function (data, textStatus, xhr) {
                 if (xhr.status == 200) {
-
+                    document.getElementById('undoButton').classList.remove('disabled');
                 }
                 else {
 

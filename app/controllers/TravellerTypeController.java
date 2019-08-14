@@ -35,7 +35,7 @@ public class TravellerTypeController {
             Form<User> userForm = formFactory.form(User.class).fill(user);
             List<TravellerType> travellerTypes = TravellerType.find().all();
             travellerTypes.removeAll(user.getTravellerTypes());
-
+            user.getCommandManager().resetUndoRedoStack();
             return ok(updatetraveller.render(userForm, travellerTypes, user));
         }
         else {

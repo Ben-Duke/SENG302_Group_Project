@@ -12,10 +12,10 @@
 
 <body onpageshow="getAlbum(@user.getUserid, @album.getAlbumId, @album.userIsOwner(user))">
     <div class="container">
-        <h2 style="text-align: center;"> @album.getTitle
+        <h2 style="margin-left: 45%"> @album.getTitle
             <a class="btn btn-default sharp pull-right" id="deleteAlbumButton" onclick= "showDeleteAlbumModal(@album.getDefault)"
                >Delete Album</a>
-            <a class="btn btn-default btn-lg sharp" data-toggle="modal" data-target="#addPhotoModal">
+            <a class="btn btn-default sharp pull-right" style="margin-right: 10px" data-toggle="modal" data-target="#addPhotoModal">
                 Add Photo &nbsp; <i class="glyphicon glyphicon-camera"></i>
             </a>
         </h2>

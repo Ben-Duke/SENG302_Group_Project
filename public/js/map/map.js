@@ -7,10 +7,11 @@ let map;
 window.globalMarkers = [];
 let tripFlightPaths = {};
 let isNewTrip = false;
-
+let geoCoder;
 
 
 function initMap() {
+
     map = window.globalMap = new google.maps.Map(document.getElementById('map'), {
         center: {lat: -43.522057156877615, lng: 172.62360347218828},
         zoom: 5,
@@ -18,8 +19,11 @@ function initMap() {
         mapTypeControlOptions: {
             style: google.maps.MapTypeControlStyle.HORIZONTAL_BAR,
             position: google.maps.ControlPosition.TOP_RIGHT
-        }
-    });
+        },
+
+
+    })
+    geoCoder = new google.maps.Geocoder;
 
     initPlacesAutocompleteSearch();
     initDestinationMarkers();
@@ -1192,6 +1196,8 @@ function viewCreatePanel() {
     document.getElementById('createDestination').style.display = 'block';
 }
 
+
+
 /**
  * If in edit mode then listeners will
  * be added to the latitude and longitude
@@ -1231,6 +1237,71 @@ function initMapPositionListeners() {
         window.globalMap.addListener('click', function (event) {
             document.getElementById("latitude").value = event.latLng.lat();
             document.getElementById("longitude").value = event.latLng.lng();
+            var latlng = {lat: parseFloat(event.latLng.lat()), lng: parseFloat(event.latLng.lng())};
+
+            geoCoder.geocode({'location': latlng}, function(results, status) {
+                if (status === 'OK') {
+                    console.log(results)
+                    if (results[0]) {
+                        map.setZoom(11);
+                        console.log(results[0].place_id);
+                        console.log(results[0].address_components[results[0].address_components.length]);
+                        let placeId = results[0].place_id;
+                        var marker = new google.maps.Marker({
+                            position: latlng,
+                            map: map
+                        });
+                        $.ajax({
+                            url: "/users/destination/placeid/" + placeId,
+                            method: "GET",
+                            //contentType: 'application/json',
+                            dataType: 'json',
+                            cache: false,
+                            success: function (data, textStatus, xhr) {
+                                if (xhr.status == 200) {
+                                   let placeData = data;
+                                   console.log(placeData.address_components);
+                                    console.log("______________");
+                                    console.log(placeData["result"]);
+                                    //Check if it can be a number if it can leave it blank
+                                    if(placeData.result.address_components[0].types[0] == 'street_number' || placeData.result.address_components[0].types[0] == "post_code"){
+                                        if(placeData.result.address_components[1].types[0] == 'route') {
+                                            console.log(placeData.result.address_components[2]);
+                                            document.getElementById("destName").value = placeData.result.address_components[2].long_name
+                                            document.getElementById("district").value = placeData.result.address_components[3].long_name
+                                        } else {
+                                            document.getElementById("destName").value = placeData.result.address_components[1].long_name
+                                            document.getElementById("district").value = placeData.result.address_components[2].long_name
+                                        }
+                                    }else{
+                                        if(placeData.result.address_components[1].types[0] == 'route') {
+                                            document.getElementById("destName").value = placeData.result.address_components[1].long_name
+                                            document.getElementById("district").value = placeData.result.address_components[2].long_name
+                                        } else {
+                                            document.getElementById("destName").value = placeData.result.address_components[0].long_name
+                                            document.getElementById("district").value = placeData.result.address_components[1].long_name
+                                        }
+                                    }
+
+                                }
+                                else {
+
+                                }
+                            },
+                            error: function (error) {
+                               console.log(error);
+                            }
+                        });
+                        // infowindow.setContent(results[0].formatted_address);
+                        // infowindow.open(map, marker);
+                    } else {
+                        window.alert('No results found');
+                    }
+                } else {
+                    window.alert('Geocoder failed due to: ' + status);
+                }
+            });
+
         });
 
     }

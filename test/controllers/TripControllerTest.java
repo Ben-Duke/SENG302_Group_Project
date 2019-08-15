@@ -743,4 +743,14 @@ public class TripControllerTest extends BaseTestWithApplicationAndDatabase {
         Result result = route(app, request);
         assertEquals(NOT_FOUND, result.status());
     }
+
+    @Test
+    public void getUserTripLengths(){
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/trips/userTrips").session("connected", "1");
+        Result result = route(app, request);
+        assertEquals(OK, result.status());
+    }
+
 }

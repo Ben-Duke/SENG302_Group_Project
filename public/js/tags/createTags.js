@@ -19,23 +19,53 @@ function addTagAddTagListeners() {
         const addInput = document.getElementById("tag-add");
         const addList = document.getElementById("tag-add-results");
         addInput.addEventListener('input', (e) => {
+
             if (e.constructor.name !== 'InputEvent') {
-            // then this is a selection, not user input
-            addTag(addInput.value);
-        }
-        while (addList.firstChild) {
-            addList.removeChild(addList.firstChild);
-        }
+                // then this is a selection, not user input
+                addTag(addInput.value);
+
+            } else {
+                if (e.data === ' ' || e.data === '"') {
+
+                    let inputVal = addInput.value;
+                    inputVal = inputVal.trim(); //Take off white space
+
+                    let numOfQuotes = (inputVal.match(/"/g) || []).length;
+
+                    if (numOfQuotes === 0) {
+                        addTag(inputVal);
+                    }
+
+
+                    if (numOfQuotes === 2) {
+                        inputVal = inputVal.replace(/"/g, ""); //Takes of quotes
+
+                        console.log(inputVal);
+
+                        let words = inputVal.split(" ");
+
+
+                        let tag = "";
+                        for (let i in words) {
+                            console.log(words[i]);
+                            tag += words[i] + ' ';
+                        }
+
+                        tag = tag.trim();
+
+                        addTag(tag);
+                    }
+                }
+            }
+            while (addList.firstChild) {
+                addList.removeChild(addList.firstChild);
+            }
             const query = addInput.value;
             if (query) {
                 searchAddTags(query);
             }
         });
-        addInput.addEventListener('keyup', e => {
-            if (e.key === 'Enter') {
-                addTag(addInput.value);
-            }
-        })
+
     } catch (err) {
         //do nothing. Just to avoid errors if the correct page is not loaded
     }

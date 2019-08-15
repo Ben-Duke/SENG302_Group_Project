@@ -491,7 +491,7 @@ function tripVisitTableRefresh(data){
     deleteButtonText.setAttribute('style', 'deleteButton');
     let urlForDelete = '/users/trips/edit/' + data.visitId;
     deleteButtonText.setAttribute('onclick', 'sendDeleteVisitRequest(' + '"' + urlForDelete + '"' + ','
-        + data[0] + ')');
+        + data.visitId + ')');
     deleteButton.appendChild(deleteButtonText);
     tableDataDeparture.appendChild(departureDateInput);
 
@@ -889,7 +889,7 @@ function showHideMapTrips() {
             contentType: 'application/json',
             success: function (data, textStatus, xhr) {
                 if (xhr.status == 200) {
-                    document.getElementById("visit_row_" + visitId).remove();
+                    document.getElementById(visitId).remove();
                     document.getElementById('undoButton').classList.remove('disabled');
                 }
                 else {
@@ -1028,7 +1028,6 @@ function initPlacesAutocompleteSearch() {
 
                     document.getElementById("latitude").value = coordinates.lat();
                     document.getElementById("longitude").value = coordinates.lng();
-                    console.log("Done the request for search")
                     moveTo = new google.maps.LatLng(coordinates.lat(), coordinates.lng());
                     map.panTo(moveTo)
                     map.setZoom(14);
@@ -1173,3 +1172,48 @@ function initInforWindowEventHandlers(markerIndex) {
                                     window.globalMarkers[markerIndex].marker);
     });
 }
+
+/**
+ * Used to check invalid trips with less than two visits and deletes them on reload
+ */
+function checkTripVisits() {
+    fetch('/users/trips/userTrips', {
+        method: 'GET'})
+        .then(res => res.json())
+        .then(data => {
+            for (let trip in tripFlightPaths) {
+                if (data[trip] < 2) {
+                    let token = $('input[name="csrfToken"]').attr('value');
+                    $.ajaxSetup({
+                        beforeSend: function (xhr) {
+                            xhr.setRequestHeader('Csrf-Token', token);
+                        }
+                    });
+                    $.ajax({
+                        url: '/users/trips/' + trip,
+                        method: "DELETE",
+                        success: function () {
+                            let element = document.getElementById("Button" + trip);
+                            element.parentNode.removeChild(element);
+                            const x = document.getElementById("snackbar");
+
+                            // Add the "show" class to DIV
+                            x.className = "show";
+                            x.innerText = "Trip with id: " + trip + " has been deleted as it has less than two visits ";
+                            // After 3 seconds, remove the show class from DIV
+                            setTimeout(function(){
+                                x.className = x.className.replace("show", "");
+                            }, 5000);
+                        }
+                    });
+                }
+            }
+        })
+}
+
+
+window.onload = function() {
+    checkTripVisits();
+};
+
+

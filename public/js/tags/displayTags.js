@@ -26,6 +26,7 @@ function getItemData(item) {
             data.body = "No date entered"
         }
         data.img = "/users/trips/" + item.tripid + "/tripPicture";
+        data.link = "/users/map_home";
     } else if (item.hasOwnProperty('destName')) {
         data.header = item.destName;
         data.type = 'Destination';
@@ -35,6 +36,7 @@ function getItemData(item) {
         } else {
             data.img = "/users/home/servePlaceholderPicture/destinationPlaceholder.png"
         }
+        data.link = "/users/destinations/view/" + item.destId;
 
     } else if (item.hasOwnProperty('caption')) {
         data.header = item.caption;
@@ -44,6 +46,7 @@ function getItemData(item) {
         data.type = 'Photo';
         data.body = '';
         data.img = '/users/home/servePicture/' + encodeURIComponent(item.urlWithPath);
+        data.link = "http://google.com";
     }
     return data;
 }
@@ -69,7 +72,7 @@ function addItem(data) {
     heading.classList.add('media-heading');
 
     const link = document.createElement('A');
-    link.href = "http://google.com";
+    link.href = data.link;
     link.innerText = data.header;
 
     const title = document.createElement('STRONG');

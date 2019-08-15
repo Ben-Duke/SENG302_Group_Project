@@ -81,6 +81,8 @@ public class UploadPhotoCommand extends UndoableCommand {
             UserPhotoAccessor.update(userPhoto);
 
         }
+        System.out.println(userPhoto.getTags().size());
+        System.out.println(UserPhotoAccessor.getUserPhotoById(userPhoto.mediaId).getTags().size());
     }
 
     public void addUploadToAlbum(User user, UserPhoto media, String albumName) {

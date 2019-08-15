@@ -131,10 +131,14 @@
                         <h4 class="modal-title">Upload a new photo </h4>
                     </div>
                     <div class="modal-body">
+                        <div class="row">
+                            @users.tag.createSearchTags(user)
+                        </div>
+
+                        @helper.form(action = routes.HomeController.upload, 'id -> "myForm", 'enctype -> "multipart/form-data") {
+                        @helper.CSRF.formField
                         <input id="photoUpload" type="file" accept="image/png,image/jpeg" name="picture" required/>
-                            <div class="row">
-                                @users.tag.createSearchTags(user)
-                            </div>
+
                         <br>
                         <div>
                             <p>
@@ -221,3 +225,4 @@
     <script src="@routes.Assets.at("js/cropper.min.js")" type="text/javascript"></script>
     <script src="@routes.Assets.at("js/home.js")" type="text/javascript"></script>
     }
+}

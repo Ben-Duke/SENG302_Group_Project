@@ -7,6 +7,15 @@ let selectedMediaID_GLOBAL;
 
 moveAlbumSearch();
 
+// Add event listener for closing the modal on clicking outside of it
+document.getElementById('myModal').addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    e.stopImmediatePropagation();
+    if (e.target === document.getElementById('myModal')) {
+        closeModal()
+    }
+});
 
 function moveAlbumSearch() {
 

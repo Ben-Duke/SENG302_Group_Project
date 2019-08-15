@@ -1,5 +1,4 @@
 -- SQL file for mysql databases
-# To stop Ebean DDL generation, remove this comment and start using Evolutions		-- Differences from play generated sql files
 --   1. WILL NOT WORK if varchars are > 191
 --   2. Does not have line talking about DDL Generation
 
@@ -122,12 +121,6 @@ create table tag (
   name                          varchar(191),
   constraint uq_tag_name unique (name),
   constraint pk_tag primary key (tag_id)
-);
-
-create table tag_destination (
-  tag_tag_id                    integer not null,
-  destination_destid            integer not null,
-  constraint pk_tag_destination primary key (tag_tag_id,destination_destid)
 );
 
 create table traveller_type (
@@ -273,12 +266,6 @@ alter table media_tag add constraint fk_media_tag_media foreign key (media_media
 create index ix_media_tag_tag on media_tag (tag_tag_id);
 alter table media_tag add constraint fk_media_tag_tag foreign key (tag_tag_id) references tag (tag_id) on delete restrict on update restrict;
 
-create index ix_tag_destination_tag on tag_destination (tag_tag_id);
-alter table tag_destination add constraint fk_tag_destination_tag foreign key (tag_tag_id) references tag (tag_id) on delete restrict on update restrict;
-
-create index ix_tag_destination_destination on tag_destination (destination_destid);
-alter table tag_destination add constraint fk_tag_destination_destination foreign key (destination_destid) references destination (destid) on delete restrict on update restrict;
-
 create index ix_treasure_hunt_destination_destid on treasure_hunt (destination_destid);
 alter table treasure_hunt add constraint fk_treasure_hunt_destination_destid foreign key (destination_destid) references destination (destid) on delete restrict on update restrict;
 
@@ -387,12 +374,6 @@ drop index if exists ix_media_tag_media;
 alter table media_tag drop constraint if exists fk_media_tag_tag;
 drop index if exists ix_media_tag_tag;
 
-alter table tag_destination drop constraint if exists fk_tag_destination_tag;
-drop index if exists ix_tag_destination_tag;
-
-alter table tag_destination drop constraint if exists fk_tag_destination_destination;
-drop index if exists ix_tag_destination_destination;
-
 alter table treasure_hunt drop constraint if exists fk_treasure_hunt_destination_destid;
 drop index if exists ix_treasure_hunt_destination_destid;
 
@@ -466,8 +447,6 @@ drop table if exists passport;
 
 drop table if exists tag;
 
-drop table if exists tag_destination;
-
 drop table if exists traveller_type;
 
 drop table if exists treasure_hunt;
@@ -487,3 +466,5 @@ drop table if exists user_traveller_type;
 drop table if exists user_treasure_hunt;
 
 drop table if exists visit;
+
+

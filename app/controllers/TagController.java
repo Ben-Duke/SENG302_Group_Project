@@ -10,6 +10,8 @@ import play.mvc.Http;
 import play.mvc.Result;
 import views.html.users.tag.displayTag;
 import java.util.Set;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import static play.mvc.Results.*;
 
@@ -22,7 +24,6 @@ public class TagController {
      * @return Ok if the user is logged in, otherwise unauthorized
      */
     public Result displayTags(Http.Request request, String tagName) {
-        System.out.println(tagName);
         User user = User.getCurrentUser(request);
         if (user == null) {
             return unauthorized();
@@ -71,6 +72,23 @@ public class TagController {
         } else {
             return unauthorized();
         }
+    }
+
+    public Result getTagDetails(Http.Request request, int tagId) {
+        User user = User.getCurrentUser(request);
+        if (user == null) {
+            return unauthorized();
+        }
+        Tag tag = TagAccessor.getTagById(tagId);
+        Set<TaggableModel> taggedItems = TagAccessor.findTaggedItems(tag);
+        if (!user.userIsAdmin()) {
+            Predicate<TaggableModel> accessFilter = item -> item.isPublic() || item.getUser().equals(user);
+            taggedItems = taggedItems.stream().
+                    filter(accessFilter)
+                    .collect(Collectors.toSet());
+        }
+
+        return ok(Json.toJson(taggedItems));
     }
 
     /**
@@ -267,7 +285,7 @@ public class TagController {
             return addTripTag(request, trip.getTripid());
         } else if (itemToTag.getClass() == UserPhoto.class) {
             UserPhoto userPhoto = (UserPhoto) itemToTag;
-            return addPhotoTag(request, userPhoto.getPhotoId());
+            return addPhotoTag(request, userPhoto.getMediaId());
         } else {
             return badRequest();
         }

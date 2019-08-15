@@ -1,10 +1,12 @@
 package controllers;
 
+import accessors.AdminAccessor;
 import models.Admin;
 import models.User;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
 import play.Application;
 import play.db.Database;
 import play.db.Databases;
@@ -15,7 +17,13 @@ import play.mvc.Http;
 import play.mvc.Result;
 import play.test.Helpers;
 import play.test.WithApplication;
+import testhelpers.BaseTestWithApplicationAndDatabase;
+import utilities.TestDatabaseManager;
+import utilities.UtilityFunctions;
 
+
+import java.sql.SQLOutput;
+import java.util.List;
 
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertEquals;
@@ -23,50 +31,29 @@ import static play.mvc.Http.Status.*;
 import static play.test.Helpers.GET;
 import static play.test.Helpers.route;
 
-public class AdminControllerTest extends WithApplication {
+public class AdminControllerTest extends BaseTestWithApplicationAndDatabase {
+
+    private final Logger logger = UtilityFunctions.getLogger();
 
     /**
-     * The fake database.
+     * Populate custom data
      */
-    Database database;
-
     @Override
-    protected Application provideApplication() {
-        return new GuiceApplicationBuilder().build();
-    }
-
-
-    /**
-     * Sets up the fake database before each test.
-     */
-    @Before
-    public void setUpDatabase() {
-        database = Databases.inMemory();
-        Evolutions.applyEvolutions(database, Evolutions.forDefault(new Evolution(
-                1,
-                "create table test (id bigint not null, name varchar(255));",
-                "drop table test;"
-        )));
-
+    public void populateDatabase() {
+        TestDatabaseManager.clearAllData();
 
         //Initialises test users and default admin and saves it to the database.
         User user = new User("testAdmin");
         user.save();
+
+        // make user id=1 an admin
         Admin admin = new Admin(1, true);
         admin.save();
+
         User user1 = new User("testUser1");
         user1.save();
         User user2 = new User("testUser2");
         user2.save();
-    }
-
-    /**
-     * Clears the fake database after each test.
-     */
-    @After
-    public void shutdownDatabase() {
-        Evolutions.cleanupEvolutions(database);
-        database.shutdown();
     }
 
     /**
@@ -110,13 +97,14 @@ public class AdminControllerTest extends WithApplication {
      */
     @Test
     public void userToAdminWithLoginSession() {
-        assertEquals(1, Admin.find.all().size());
+        System.out.println(AdminAccessor.AdminFinder().all());
+        assertEquals(1, AdminAccessor.AdminFinder().all().size());
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(GET).uri("/users/admin/make/2")
                 .session("connected", "1");
         Result result = route(app, request);
         assertEquals(SEE_OTHER, result.status());
-        assertEquals(2, Admin.find.all().size());
+        assertEquals(2, Admin.find().all().size());
     }
 
     /**
@@ -124,13 +112,13 @@ public class AdminControllerTest extends WithApplication {
      */
     @Test
     public void userToAdminByNormalUser() {
-        assertEquals(1, Admin.find.all().size());
+        assertEquals(1, Admin.find().all().size());
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(GET).uri("/users/admin/make/3")
                 .session("connected", "2");
         Result result = route(app, request);
         assertEquals(SEE_OTHER, result.status());
-        assertEquals(1, Admin.find.all().size());
+        assertEquals(1, Admin.find().all().size());
     }
 
     /**
@@ -138,13 +126,13 @@ public class AdminControllerTest extends WithApplication {
      */
     @Test
     public void userToAdminByUserItself() {
-        assertEquals(1, Admin.find.all().size());
+        assertEquals(1, Admin.find().all().size());
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(GET).uri("/users/admin/make/2")
                 .session("connected", "2");
         Result result = route(app, request);
         assertEquals(SEE_OTHER, result.status());
-        assertEquals(1, Admin.find.all().size());
+        assertEquals(1, Admin.find().all().size());
     }
 
     /**
@@ -152,16 +140,16 @@ public class AdminControllerTest extends WithApplication {
      */
     @Test
     public void userToAdminByAdminItself() {
-        assertEquals(1, Admin.find.all().size());
+        assertEquals(1, Admin.find().all().size());
         Admin admin = new Admin(2,false);
         admin.save();
-        assertEquals(2, Admin.find.all().size());
+        assertEquals(2, Admin.find().all().size());
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(GET).uri("/users/admin/make/2")
                 .session("connected", "2");
         Result result = route(app, request);
         assertEquals(SEE_OTHER, result.status());
-        assertEquals(2, Admin.find.all().size());
+        assertEquals(2, Admin.find().all().size());
     }
 
     /**
@@ -182,13 +170,13 @@ public class AdminControllerTest extends WithApplication {
     @Test
     public void adminToUserWithLoginSession() {
         userToAdminWithLoginSession();
-        assertEquals(2, Admin.find.all().size());
+        assertEquals(2, Admin.find().all().size());
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(GET).uri("/users/admin/remove/2")
                 .session("connected", "1");
         Result result = route(app, request);
         assertEquals(SEE_OTHER, result.status());
-        assertEquals(1, Admin.find.all().size());
+        assertEquals(1, Admin.find().all().size());
     }
 
     /**
@@ -208,13 +196,13 @@ public class AdminControllerTest extends WithApplication {
      */
     @Test
     public void defaultAdminToUserWithLoginSession() {
-        assertEquals(1, Admin.find.all().size());
+        assertEquals(1, Admin.find().all().size());
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(GET).uri("/users/admin/remove/1")
                 .session("connected", "2");
         Result result = route(app, request);
         assertEquals(SEE_OTHER, result.status());
-        assertEquals(1, Admin.find.all().size());
+        assertEquals(1, Admin.find().all().size());
     }
 
 
@@ -223,13 +211,13 @@ public class AdminControllerTest extends WithApplication {
      */
     @Test
     public void adminToUserByNormalUser() {
-        assertEquals(1, Admin.find.all().size());
+        assertEquals(1, Admin.find().all().size());
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(GET).uri("/users/admin/remove/3")
                 .session("connected", "2");
         Result result = route(app, request);
         assertEquals(SEE_OTHER, result.status());
-        assertEquals(1, Admin.find.all().size());
+        assertEquals(1, Admin.find().all().size());
     }
 
     /**
@@ -237,16 +225,16 @@ public class AdminControllerTest extends WithApplication {
      */
     @Test
     public void adminToUserByAdminItself() {
-        assertEquals(1, Admin.find.all().size());
+        assertEquals(1, Admin.find().all().size());
         Admin admin = new Admin(2,false);
         admin.save();
-        assertEquals(2, Admin.find.all().size());
+        assertEquals(2, Admin.find().all().size());
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(GET).uri("/users/admin/remove/2")
                 .session("connected", "2");
         Result result = route(app, request);
         assertEquals(SEE_OTHER, result.status());
-        assertEquals(2, Admin.find.all().size());
+        assertEquals(2, Admin.find().all().size());
     }
 
     @Test
@@ -269,16 +257,16 @@ public class AdminControllerTest extends WithApplication {
 
     @Test
     public void setUserToActAsWithRequestUserAsAnAdmin() {
-        assertEquals(1, Admin.find.all().size());
+        assertEquals(1, Admin.find().all().size());
         Admin admin = new Admin(2,false);
         admin.save();
-        assertEquals(2, Admin.find.all().size());
+        assertEquals(2, Admin.find().all().size());
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(GET).uri("/users/admin/actasuser/3")
                 .session("connected", "2");
         Result result = route(app, request);
         assertEquals(SEE_OTHER, result.status());
-        admin = Admin.find.byId(2);
+        admin = Admin.find().byId(2);
         Integer userIdToEdit = admin.getUserIdToActAs();
         assertEquals((Integer) 3, userIdToEdit);
     }
@@ -303,7 +291,7 @@ public class AdminControllerTest extends WithApplication {
 
     @Test
     public void setUserBackToAdminWithValidAdmin(){
-        Admin admin = Admin.find.byId(1);
+        Admin admin = Admin.find().byId(1);
         admin.setUserToEdit(3);
         admin.update();
         Http.RequestBuilder request = Helpers.fakeRequest()
@@ -311,7 +299,7 @@ public class AdminControllerTest extends WithApplication {
                 .session("connected", "1");
         Result result = route(app, request);
         assertEquals(SEE_OTHER, result.status());
-        admin = Admin.find.byId(1);
+        admin = Admin.find().byId(1);
         assertNull(admin.getUserIdToActAs());
     }
 

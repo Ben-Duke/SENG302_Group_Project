@@ -26,6 +26,36 @@ import static play.test.Helpers.*;
 public class TagControllerTest extends BaseTestWithApplicationAndDatabase {
 
     @Test
+    public void getItems() {
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/tags/items/" + 1);
+        Result result =  route(app, request);
+
+        assertEquals(OK, result.status());
+    }
+
+    @Test
+    public void getItemsNotLoggedIn() {
+
+    }
+
+    @Test
+    public void getItemsLoggedInAsAdmin() {
+
+    }
+
+    @Test
+    public void getItemsNoSuchTag() {
+
+    }
+
+    @Test
+    public void getItemsCaseInsenstive() {
+
+    }
+
+    @Test
     public void searchTagsForOneItemCheckResponse() {
         Result result = searchTagsHelper("e", 2);
         assertEquals(OK, result.status());

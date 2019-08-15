@@ -1,14 +1,12 @@
 package models.commands.Profile;
 
+import accessors.UserAccessor;
 import controllers.ApplicationManager;
 import factories.LoginFactory;
-import models.Destination;
 import models.User;
-import models.commands.Destinations.EditDestinationCommand;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import play.data.validation.ValidationError;
 import play.db.Database;
 import play.db.Databases;
 import play.db.evolutions.Evolution;
@@ -29,21 +27,17 @@ public class EditProfileCommandTest extends BaseTestWithApplicationAndDatabase {
     private LoginFactory loginFactory = new LoginFactory();
 
     @Override
-    @Before
-    public void setUpDatabase() {
-        ApplicationManager.setUserPhotoPath("/test/resources/test_photos/user_");
-        ApplicationManager.setIsTest(true);
-        database = Databases.inMemory();
-        Evolutions.applyEvolutions(database, Evolutions.forDefault(new Evolution(
-                1,
-                "create table test (id bigint not null, name varchar(255));",
-                "drop table test;"
-        )));
-        TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
-        testDatabaseManager.populateDatabase();
-        User user = User.find.byId(2);
-        user.setfName("Logan");
-        user.setlName("Paul");
+    /* Populate the database */
+    public void populateDatabase() {
+        TestDatabaseManager.populateDatabase();
+
+        User user = User.find().byId(2);
+
+        assertTrue(loginFactory.isPasswordMatch(user.getEmail(),
+                "TinyHumans57"));
+
+        user.setFName("Logan");
+        user.setLName("Paul");
         user.setGender("Female");
         user.setDateOfBirth(birthDate);
         user.setEmail("loganpaul@gmail.com");
@@ -52,19 +46,12 @@ public class EditProfileCommandTest extends BaseTestWithApplicationAndDatabase {
                 new EditProfileCommand(user);
     }
 
-    @Override
-    @After
-    public void shutdownDatabase() {
-        Evolutions.cleanupEvolutions(database);
-        database.shutdown();
-    }
-
     @Test
     public void testExecute(){
         editProfileCommand.execute();
-        User updatedUser = User.find.byId(2);
-        assertEquals("Logan", updatedUser.getfName());
-        assertEquals("Paul", updatedUser.getlName());
+        User updatedUser = User.find().byId(2);
+        assertEquals("Logan", updatedUser.getFName());
+        assertEquals("Paul", updatedUser.getLName());
         assertEquals("Female", updatedUser.getGender());
         assertEquals(birthDate, updatedUser.getDateOfBirth());
         assertEquals("loganpaul@gmail.com", updatedUser.getEmail());
@@ -76,15 +63,15 @@ public class EditProfileCommandTest extends BaseTestWithApplicationAndDatabase {
     public void testUndo(){
         testExecute();
         editProfileCommand.undo();
-        User undoUser = User.find.byId(2);
-        assertEquals("Gavin", undoUser.getfName());
-        assertEquals("Ong", undoUser.getlName());
+        User undoUser = UserAccessor.getById(2);
+        assertEquals("Gavin", undoUser.getFName());
+        assertEquals("Ong", undoUser.getLName());
         assertEquals("Male", undoUser.getGender());
         LocalDate expectedBirthdate = LocalDate.parse("1998-08-23", formatter);
         assertEquals(expectedBirthdate, undoUser.getDateOfBirth());
         assertEquals("testuser1@uclive.ac.nz", undoUser.getEmail());
         assertTrue(loginFactory.isPasswordMatch(undoUser.getEmail(),
-                "test"));
+                "TinyHumans57"));
     }
 
     @Test
@@ -92,9 +79,9 @@ public class EditProfileCommandTest extends BaseTestWithApplicationAndDatabase {
         editProfileCommand.execute();
         editProfileCommand.undo();
         editProfileCommand.redo();
-        User updatedUser = User.find.byId(2);
-        assertEquals("Logan", updatedUser.getfName());
-        assertEquals("Paul", updatedUser.getlName());
+        User updatedUser = User.find().byId(2);
+        assertEquals("Logan", updatedUser.getFName());
+        assertEquals("Paul", updatedUser.getLName());
         assertEquals("Female", updatedUser.getGender());
         assertEquals(birthDate, updatedUser.getDateOfBirth());
         assertEquals("loganpaul@gmail.com", updatedUser.getEmail());

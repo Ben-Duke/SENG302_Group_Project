@@ -1,8 +1,12 @@
 package accessors;
 
-import models.Tag;
+import models.*;
 
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 
 public class TagAccessor {
@@ -66,6 +70,19 @@ public class TagAccessor {
      */
     public static Set<Tag> searchTags(String searchQuery) {
         return Tag.find.query().where().ilike("name", "%" + searchQuery + "%").findSet();
+    }
+
+    /**
+     * Finds all TaggableModels that are tagged with the given tag
+     * @param tag the tag to match for
+     * @return the set of all taggable models tagged
+     */
+    public static Set<TaggableModel> findTaggedItems(Tag tag) {
+        String tagQuery = "tags.tagId";
+        Set<TaggableModel> taggedItems = new HashSet<>(Destination.find().query().where().eq(tagQuery, tag.getTagId()).findSet());
+        taggedItems.addAll(UserPhoto.find().query().where().eq(tagQuery, tag.getTagId()).findSet());
+        taggedItems.addAll(Trip.find().query().where().eq(tagQuery, tag.getTagId()).findSet());
+        return taggedItems;
     }
 
 }

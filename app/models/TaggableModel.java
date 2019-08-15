@@ -3,7 +3,9 @@ package models;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.ebean.Model;
 
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
 import java.util.*;
 
@@ -13,6 +15,37 @@ public abstract class TaggableModel extends Model {
     @JsonIgnore
     @ManyToMany
     protected Set<Tag> tags = new HashSet<>();
+
+    @JsonIgnore
+    @ManyToOne
+    @JoinColumn(name = "user", referencedColumnName = "userid")
+    protected User user;
+
+    protected boolean isPublic = true;
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public boolean isPublic() {
+        return isPublic;
+    }
+
+    public boolean getIsPublic() {
+        return isPublic;
+    }
+
+    public void setIsPublic(boolean isPublic) {
+        this.isPublic = isPublic;
+    }
+
+    public void setPublic(boolean isPublic) {
+        this.isPublic = isPublic;
+    }
 
     public Set<Tag> getTags() {
         return tags;

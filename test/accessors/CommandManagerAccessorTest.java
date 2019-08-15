@@ -12,50 +12,25 @@ import play.db.evolutions.Evolution;
 import play.db.evolutions.Evolutions;
 import play.inject.guice.GuiceApplicationBuilder;
 import play.test.WithApplication;
+import testhelpers.BaseTestWithApplicationAndDatabase;
+import utilities.TestDatabaseManager;
 
 
 import java.util.Map;
 
 import static org.junit.Assert.*;
 
-public class CommandManagerAccessorTest extends WithApplication {
-
-    private Database database;
+public class CommandManagerAccessorTest extends BaseTestWithApplicationAndDatabase {
 
     /**
-     * Set's up a dummy application for the tests.
-     *
-     * @return The dummy Application.
+     * Initialises the test database. Only contains one user.
      */
     @Override
-    protected Application provideApplication() {
-        return new GuiceApplicationBuilder().build();
-    }
-
-    /**
-     * Initilizes the test database. Only contains one user.
-     */
-    @Before
-    public void setUpDatabase() {
-        database = Databases.inMemory();
-        Evolutions.applyEvolutions(database, Evolutions.forDefault(new Evolution(
-                1,
-                "create table test (id bigint not null, name varchar(255));",
-                "drop table test;"
-        )));
+    public void populateDatabase() {
+        TestDatabaseManager.clearAllData();
 
         User user = new User("gon12_2@uclive.ac.nz", "hunter22");
         user.save();
-
-    }
-
-    /**
-     * Clears the fake database after each test
-     */
-    @After
-    public void shutdownDatabase() {
-        Evolutions.cleanupEvolutions(database);
-        database.shutdown();
     }
 
     @Test

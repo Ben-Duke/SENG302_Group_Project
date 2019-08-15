@@ -2,10 +2,11 @@ package models.commands.Destinations;
 
 import accessors.DestinationAccessor;
 import models.Destination;
+import models.commands.General.CommandPage;
 import models.commands.General.UndoableCommand;
 
 /** Command to edit a destination */
-public class EditDestinationCommand extends DestinationPageCommand {
+public class EditDestinationCommand extends UndoableCommand {
     private Destination uneditedDestination;
     private Destination editedDestination;
     private Destination actualDestination;
@@ -18,6 +19,7 @@ public class EditDestinationCommand extends DestinationPageCommand {
      * @param editedDestination the edited destination
      */
     public EditDestinationCommand(Destination editedDestination) {
+        super(CommandPage.DESTINATION);
         this.editedDestination = new Destination();
         actualDestination = editedDestination;
         this.editedDestination.applyEditChanges(actualDestination);

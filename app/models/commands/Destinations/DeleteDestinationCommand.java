@@ -1,12 +1,11 @@
 package models.commands.Destinations;
 
+import accessors.AlbumAccessor;
 import accessors.DestinationAccessor;
 import accessors.TreasureHuntAccessor;
 import accessors.VisitAccessor;
-import models.Destination;
-import models.TreasureHunt;
-import models.UserPhoto;
-import models.Visit;
+import models.*;
+import models.commands.General.CommandPage;
 import models.commands.General.UndoableCommand;
 import org.slf4j.Logger;
 import utilities.UtilityFunctions;
@@ -15,21 +14,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** Command to delete a destination */
-public class DeleteDestinationCommand extends DestinationPageCommand {
+public class DeleteDestinationCommand extends UndoableCommand {
     private Destination destination;
     private Boolean deletedByAdmin;
 
-    // Using sets as the items do not need to be ordered and are unique
+    // Using sets as the items do not need to be ordered and are u nique
     private List<Visit> deletedVisits = new ArrayList<>();
     private List<TreasureHunt> deletedTreasureHunts = new ArrayList<>();
-    private List<UserPhoto> unlinkedPhotos = new ArrayList<>();
+    private List<Album> deletedAlbums = new ArrayList<>();
 
     private final Logger logger = UtilityFunctions.getLogger();
 
     public DeleteDestinationCommand(Destination destination, Boolean deletedByAdmin) {
+        super(CommandPage.MAP);
         this.destination = destination;
         this.deletedByAdmin = deletedByAdmin;
-        this.unlinkedPhotos = destination.getUserPhotos();
     }
 
     /**
@@ -51,10 +50,10 @@ public class DeleteDestinationCommand extends DestinationPageCommand {
                 TreasureHuntAccessor.delete(treasureHunt);
             }
         }
-        List<UserPhoto> userPhotosList = new ArrayList<>(unlinkedPhotos);
-        for (UserPhoto userPhoto : userPhotosList) {
-            userPhoto.removeDestination(destination);
-            userPhoto.update();
+        List<Album> albumsCopy = AlbumAccessor.getAlbumsByOwner(destination);
+        for (Album album : albumsCopy) {
+            deletedAlbums.add(new Album(album));
+            AlbumAccessor.delete(album);
         }
         destination.getTags().clear();
         destination.update();
@@ -77,10 +76,10 @@ public class DeleteDestinationCommand extends DestinationPageCommand {
             visit.setDestination(destination);
             VisitAccessor.insert(visit);
         }
-
-        for (UserPhoto userPhoto : unlinkedPhotos) {
-            userPhoto.addDestination(destination);
-            userPhoto.update();
+        for (Album album : deletedAlbums) {
+           // album
+            album.setOwner(destination);
+            AlbumAccessor.insert(album);
         }
     }
 

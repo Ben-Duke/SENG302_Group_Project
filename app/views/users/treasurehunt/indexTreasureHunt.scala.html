@@ -14,6 +14,7 @@
                     <th scope="col">End Date (NZST)</th>
                     <th scope="col">Destination</th>
                     <th scope="col">Riddle</th>
+                    <th scope="col">Delete</th>
                 </tr>
             </thead>
             <tbody>
@@ -29,6 +30,13 @@
                             <td>Hidden</td>
                         }
                         <td>@treasureHunt.getRiddle</td>
+                        @if(user.userIsAdmin || treasureHunt.getUser.getUserid.equals(user.getUserid)) {
+                            <td><a data-toggle="modal" data-target="#confirmTreasureHuntDeleteModal" class="btn btn-danger">
+                                Delete</a></td>
+                        } else {
+                        <td><a class="btn btn-danger" style="cursor: not-allowed; opacity: 0.5;">
+                            Unauthorized</a></td>
+                        }
                     </tr>
 
 

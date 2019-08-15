@@ -1,5 +1,6 @@
 package models;
 
+import controllers.ApplicationManager;
 import io.ebean.Finder;
 import io.ebean.Model;
 import io.ebean.annotation.CreatedTimestamp;
@@ -8,33 +9,42 @@ import play.data.format.Formats;
 import javax.persistence.*;
 import java.util.*;
 
+/** The model class for the destination modification request */
 @Entity
-public class DestinationModificationRequest extends Model {
+public class DestinationModificationRequest extends BaseModel {
 
     @Id
-    public Integer id;
+    private Integer id;
 
     @ManyToOne
-    public Destination oldDestination;
+    private Destination oldDestination;
 
-    public String newDestName;
-    public String newDestType;
-    public String newDestCountry;
-    public String newDestDistrict;
-    public double newDestLatitude;
-    public double newDestLongitude;
+    private String newDestName;
+    private String newDestType;
+    private String newDestCountry;
+    private String newDestDistrict;
+    private double newDestLatitude;
+    private double newDestLongitude;
 
     @ManyToMany(cascade = CascadeType.ALL)
-    public Set<TravellerType> newTravelerTypes;
+    private Set<TravellerType> newTravelerTypes;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Formats.DateTime(pattern="yyyy-MM-dd HH:mm:ss")
     @CreatedTimestamp
-    public Date creationDate;
+    private Date creationDate;
 
     @ManyToOne
-    public User requestAuthor;
+    private User requestAuthor;
+    private static Finder<Integer, DestinationModificationRequest> find = new Finder<>(
+            DestinationModificationRequest.class, ApplicationManager.getDatabaseName());
 
+    /**
+     * Constructor for the destination modification request
+     * @param oldDestination The previous destination
+     * @param newDestination The modified destination
+     * @param user The user making the changes
+     */
     public DestinationModificationRequest(Destination oldDestination, Destination newDestination, User user) {
         this.oldDestination = oldDestination;
         this.newDestName = newDestination.getDestName();
@@ -43,37 +53,21 @@ public class DestinationModificationRequest extends Model {
         this.newDestDistrict = newDestination.getDistrict();
         this.newDestLatitude = newDestination.getLatitude();
         this.newDestLongitude = newDestination.getLongitude();
-        this.newTravelerTypes = formNewTravellerTypes(newDestination.getTravellerTypes());
+        this.newTravelerTypes = newDestination.getTravellerTypes();
 
         this.requestAuthor = user;
     }
 
+
+
     /**
-     * A work-around due to a bug introduced working with Play. The bug was unexplained
-     * but essentially a String object was being jammed into the place of a Set and so
-     * this method unpacks the String and rebuilds the Set
-     * @param travellerTypes The possibly malformed Set produced by PlayFramework
-     * @return A well-formed Set of TravellerTypes
+     * Method to get the find object for Ebeans queries.
+     *
+     * @return a Finder<Integer, DestinationModificationRequest> object
      */
-    private Set<TravellerType> formNewTravellerTypes(Set<TravellerType> travellerTypes) {
-
-        Set<TravellerType> travellerTypesSet = new HashSet<>();
-
-        String typesString = travellerTypes.toString();
-        if (typesString.equals("[]") || typesString.equals("BeanSet size[0] set[]")) {
-            return travellerTypesSet;
-        }
-        typesString = typesString.replaceAll("\\[|]", ""); //Trim off the set square brackets
-        String[] types = typesString.split("\\s*,\\s"); // Split into array by the comma/whitespace delim
-        for (String type: types) {
-            TravellerType travellerType = TravellerType.find.query()
-                    .where().eq("travellerTypeName", type).findOne();
-            travellerTypesSet.add(travellerType);
-        }
-        return travellerTypesSet;
+    public static Finder<Integer, DestinationModificationRequest> find() {
+        return find;
     }
-
-    public static Finder<Integer, DestinationModificationRequest> find = new Finder<>(DestinationModificationRequest.class);
 
     public Integer getId() { return id; }
     public Destination getOldDestination() { return oldDestination; }

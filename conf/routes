@@ -83,6 +83,15 @@ POST    /users/profile/search       controllers.TravelPartnerController.searchBy
 GET     /users/profilepicture/isSet     controllers.ProfileController.isProfilePictureSet(request: Request)
 
 
+
+GET     /users/map_home     controllers.HomeController.mainMapPage(request : Request)
+
+
+
+#Add route for adding a trip with AJAX
+
+#Add destination to a trip using AJAX
+
 #Renders page for creating trips
 GET     /users/trips/create         controllers.TripController.createtrip(request: Request)
 
@@ -98,6 +107,10 @@ GET     /users/trips/addDestinations/:id    controllers.TripController.addTripDe
 
 #Handles creating trips
 POST    /users/trips/create         controllers.TripController.savetrip(request: Request)
+
+POST /users/trips/createFromJS/:destId  controllers.TripController.CreateTripFromJSRequest(request: Request, destId:Integer)
+
+PATCH /user/trips/edit/:id      controllers.TripController.updateTripName(request: Request, id: Integer)
 
 #Handles deleting visits from a trip
 DELETE    /users/trips/edit/:id    controllers.TripController.deletevisit(request: Request, id:Integer)
@@ -116,6 +129,8 @@ GET    /users/trips/table/edit/:tripid/:destid       controllers.TripController.
 
 #Renders page for editing a visit of a trip
 GET    /users/trips/visit/edit/:id       controllers.TripController.editvisit(request: Request, id:Integer)
+
+PATCH     /user/trips/visit/dates/:id      controllers.TripController.updateVisitDates(request: Request, id: Integer)
 
 #Handles editing a visit of a trip
 POST    /users/trips/visit/edit/:id       controllers.TripController.updateVisit(request: Request, id:Integer)
@@ -136,7 +151,7 @@ GET     /users/home/servePicture/:path                 controllers.HomeControlle
 DELETE /users/unlinkAndDeletePicture/:photoId                  controllers.DestinationController.unlinkAndDelete(request: Request, photoId: Integer)
 
 #Deletes the UserPhoto with the photoId
-DELETE /users/home/deletePicture/                  controllers.ProfileController.deletePhoto(request: Request, photoId: Integer, userInput : Boolean)
+DELETE /users/home/deletePicture/:photoId/:userInput                  controllers.ProfileController.deletePhoto(request: Request, photoId: Integer, userInput : Boolean)
 
 #Serve the profile picture
 GET     /users/home/serveProfilePicture/:id              controllers.HomeController.serveProfilePicture(request: Request, id:Integer)
@@ -180,6 +195,8 @@ GET     /assets/*file               controllers.Assets.at(path="/public", file)
 #Renders index page for destinations
 GET     /users/destinations             controllers.DestinationController.indexDestination(request : Request)
 
+POST     /users/destination/exists       controllers.DestinationController.doesDestinationExist(request: Request)
+
 #*************_*_*_*_*_*_*_*_*_*
 GET     /users/destinations/getprimaryphoto  controllers.DestinationController.servePrimaryPicture(request : Request, destId : Integer)
 
@@ -187,7 +204,19 @@ GET     /users/destinations/getprimaryphoto  controllers.DestinationController.s
 GET     /users/destinations/getalljson         controllers.DestinationController.getVisibleDestinationMarkersJSON(request : Request)
 
 #Renders page for displaying a given destination
-GET     /users/destinations/:id         controllers.DestinationController.viewDestination(request : Request, id : Integer)
+GET     /users/destinations/view/:id         controllers.DestinationController.viewDestination(request : Request, id : Integer)
+
+#Renders page for editing destinations
+GET     /users/destinations/edit/:id    controllers.DestinationController.editDestination(request : Request, id : Integer)
+
+#Handles updating a destination
+POST    /users/destinations/update/:id  controllers.DestinationController.updateDestination(request : Request, id : Integer)
+
+#Handles updating a public destination
+POST    /users/destinations/update/public/:id  controllers.DestinationController.updatePublicDestination(request : Request, id : Integer)
+
+#Handles making a destination public
+GET     /users/destinations/update/make_public/:id         controllers.DestinationController.makeDestinationPublic(request : Request, id : Integer)
 
 #Handles AJAX request to get a given destination (maybe change ^ to /users/destinations/display/:id and this one to /users/destinations/:id
 GET     /users/destinations/get/:id         controllers.DestinationController.getDestination(request : Request, id : Integer)
@@ -195,8 +224,6 @@ GET     /users/destinations/get/:id         controllers.DestinationController.ge
 #Renders page for creating destinations
 GET     /users/destinations/create/     controllers.DestinationController.createDestination(request : Request)
 
-#Renders page for editing destinations
-GET     /users/destinations/edit/:id    controllers.DestinationController.editDestination(request : Request, id : Integer)
 
 #Renders request for displaying the page for updating destination traveller types
 GET     /users/destinations/ttypes/display/:id    controllers.TravellerTypeController.updateDestinationTravellerType(request : Request, id : Integer)
@@ -222,35 +249,25 @@ PUT     /users/photos/:photoId/caption           controllers.UserController.edit
 #Renders request for destination traveller types
 POST    /users/destinations/ttypes/:id    controllers.TravellerTypeController.submitUpdateDestinationTravellerType(request : Request, id : Integer)
 
-#Handles making a destination public
-GET     /users/destinations/public/:id         controllers.DestinationController.makeDestinationPublic(request : Request, id : Integer)
 
-GET     /users/destination/merge/:id           controllers.DestinationController.makeDestinationsMerge(request : Request, id : Integer)
 
-#Renders page for editing public destinations
-GET     /users/destinations/edit/public/:id     controllers.DestinationController.editPublicDestination(request : Request, id : Integer)
 
 #Gets the user id of the owner of the destination
 GET     /users/destinations/owner/:id         controllers.DestinationController.getDestinationOwner(request : Request, id : Integer)
 
-#Handles updating a destination
-POST    /users/destinations/update/:id  controllers.DestinationController.updateDestination(request : Request, id : Integer)
 
-#Handles sending modification request to admins for editing public destinations
-POST    /users/destinations/update/public/:id  controllers.DestinationController.updatePublicDestination(request : Request, id : Integer)
-
-#Handles setting a photo to a primary photo (for some reason this route throws some csrf failed thing so i added a +nocsrf)... raise an issue in the future
-+nocsrf
-PUT     /users/destinations/primary/:id     controllers.DestinationController.setPrimaryPhoto(request : Request, id : Integer)
+#Handles setting a photo to the primary photo for a destination
+GET     /users/destinations/:destId/set_primary/:photoId     controllers.DestinationController.setPrimaryPhoto(request : Request, photoId : Integer, destId : Integer)
 
 #Handles linking a photo to a destination
 PUT     /users/destinations/:id         controllers.DestinationController.linkPhotoToDestination(request : Request, id : Integer)
 
 #Handles linking a photo to a destination
-+nocsrf
-POST     /users/destinations/:destId/:photoId         controllers.DestinationController.addPhotoToDestination(request : Request, photoId : Integer, destId : Integer)
+GET /users/destinations/:destId/add_photo/:photoId     controllers.DestinationController.addPhotoToDestination(request : Request, photoId : Integer, destId : Integer)
 
 #Handles unlinking a destination from a photo
+GET /users/destinations/:destId/remove_photo/:photoId   controllers.DestinationController.unlinkPhotoFromDestination(request : Request, photoId : Integer, destId : Integer)
+
 +nocsrf
 DELETE  /users/destinations/:photoId/:destId                   controllers.DestinationController.unlinkPhotoFromDestination(request : Request, photoId : Integer, destId: Integer)
 
@@ -278,6 +295,57 @@ POST     /users/treasurehunts/edit/save/:id                    controllers.Treas
 
 #Delete treasure hunt
 GET     /users/treasurehunts/delete/:id                    controllers.TreasureHuntController.deleteTreasureHunt(request : Request, id : Integer)
+
+
+
+# ------ ALBUMS ------
+
+#Get an album's Id from the title
+GET     /users/:id/albums/getFromTitle/:title    controllers.AlbumController.getAlbumFromTitle(request : Request, id : Integer, title : String)
+
+#Albums index page
+GET     /users/albums   controllers.AlbumController.indexAlbum(request : Request)
+
+
+#Get JSON of one album
+GET     /users/albums/get/:all/:id   controllers.AlbumController.getAlbum(request : Request, id : Integer, all : Boolean)
+
+#View one album
+GET     /users/albums/:id   controllers.AlbumController.viewAlbum(request : Request, id : Integer)
+
+#Create one album. With or without media
+POST    /users/albums/create    controllers.AlbumController.createAlbum(request : Request)
+
+#Deletes a user photo and unlinks the photo from selected destinations
+DELETE /users/albums/delete/photo_and_unlink_selected_destinations    controllers.AlbumController.deleteUserPhotoAndUnlinkFromSelectDests(request : Request)
+
+#Delete one album
+DELETE  /users/albums/delete/:id    controllers.AlbumController.deleteAlbum(request : Request, id : Integer)
+
+#Update one album
+PUT     /users/albums/update/:id    controllers.AlbumController.updateAlbum(request : Request, id : Integer)
+
+#Add multiple media to one album
+PUT     /users/albums/add_media/:id     controllers.AlbumController.addMediaToAlbum(request : Request, id : Integer)
+
+#Remove multiple media from one album
+PUT     /users/albums/remove_media/:id     controllers.AlbumController.removeMediaFromAlbum(request : Request, id : Integer)
+
+#Move multiple media to one album
+PUT     /users/albums/move_media/:id     controllers.AlbumController.moveMediaToAlbum(request : Request, id : Integer)
+
+#Gets a JSON array containing information on all destinations linked to a user photo
+GET     /users/albums/photos/get_linked_destinations/:photoId controllers.AlbumController.getUnlinkableDestinationsForPhoto(request : Request, photoId : Integer)
+
+
+GET /googlemap  controllers.DestinationController.renderMap(request : Request)
+
+
+
+
+GET /users/trips/fetch/trips_routes_json  controllers.TripController.getTripsRoutesJson(request : Request)
+
+POST /users/trips/:tripId/addVisit/:destId   controllers.TripController.addVisitToTripJSRequest(request : Request, tripId:Integer, destId:Integer)
 
 #Get photo tags
 GET    /photos/:photoId/tags                                    controllers.TagController.getPhotoTags(request : Request, photoId : Integer)
@@ -312,7 +380,11 @@ PUT /tags/search                                            controllers.TagContr
 
 
 # Tag page
-GET /tags/:tagName                                            controllers.TagController.displayTags(request: Request, tagName: String)
+GET /tags/display/:tagName                                            controllers.TagController.displayTags(request: Request, tagName: String)
+
+GET /tags/items/:tagId                                  controllers.TagController.getTagDetails(request: Request, tagId: Integer)
+
+
 
 # Undo
 +nocsrf
@@ -321,4 +393,3 @@ PUT     /undo                                              controllers.UndoRedoC
 # Redo
 +nocsrf
 PUT     /redo                                              controllers.UndoRedoController.redo(request: Request)
-

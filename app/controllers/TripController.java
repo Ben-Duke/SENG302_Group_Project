@@ -662,9 +662,12 @@ public class TripController extends Controller {
     public Result getTripPhoto(Http.Request request, Integer tripId) {
         User user = User.getCurrentUser(request);
         if (user != null) {
-            Trip trip = Trip.find.byId(tripId);
+            Trip trip = TripAccessor.getTripById(tripId);
+            if (trip == null) {
+                return notFound();
+            }
             Destination startDestination = trip.getOrderedVisits().get(0).getDestination();
-            UserPhoto startPhoto = startDestination.getPrimaryPhoto();
+            UserPhoto startPhoto = startDestination.getPrimaryAlbum().getPrimaryPhoto();
             if (startPhoto != null) {
                 return ok(new File(startPhoto.getUrlWithPath()));
             } else {
@@ -672,7 +675,7 @@ public class TripController extends Controller {
             }
 
         }
-        return badRequest();
+        return redirect(routes.UserController.userindex());
     }
 
 

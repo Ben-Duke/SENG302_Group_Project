@@ -137,6 +137,8 @@ function addSelectedToVisitToTrip(destId, startTrip){
                     currentlyDisplayedTripId = data.tripId;
                 }
 
+                document.getElementById("placeholderTripTable").style.display = "none";
+
                 let destTab = document.getElementById("destinationsTabListItem");
                 let tripsTab = document.getElementById("tripsTabListItem");
                 let tripsDiv = document.getElementById("tripsTab");
@@ -164,7 +166,7 @@ function addSelectedToVisitToTrip(destId, startTrip){
 
                 //Handle delete button
                 let deleteButton = document.createElement("button");
-                deleteButton.setAttribute("class", "btn btn-danger");
+                deleteButton.setAttribute("class", "btn btn-danger deleteTripBtn");
                 deleteButton.setAttribute("onclick", "deleteTripRequest(" + data.tripId + ", 'map_home')");
                 deleteButton.innerText = "Delete trip";
                 outerTripDiv.appendChild(deleteButton);
@@ -214,6 +216,13 @@ function addSelectedToVisitToTrip(destId, startTrip){
                 if (startTrip == true && currentlyDisplayedTripId != undefined) {
                     displayTrip(data.tripId, data.latitude, data.longitude)
                 }
+
+                $('tbody').sortable({
+                    axis: 'y',
+                    update: function (event, ui) {
+                        swapVisitOnSort();
+                    }
+                });
 
             },
             error: function(xhr, textStatus, errorThrown){
@@ -275,7 +284,7 @@ function createTripTitleDiv(data) {
 }
 
 function createTripTable(data) {
-    let newTable = document.createElement("div");
+    let newTable = document.createElement("table");
     newTable.setAttribute("id", "tripTable_" + data.tripId);
     newTable.setAttribute("class", "table table-hover");
 
@@ -311,8 +320,11 @@ function createTripTable(data) {
     let tableBody = document.createElement("tbody");
     tableBody.setAttribute("id", "tripTableBody_"+ data.tripId);
     tableBody.setAttribute("class", "table table-hover");
+    tableBody.setAttribute("class", "ui-sortable");
+
     let newRow = document.createElement('tr');
-    newRow.setAttribute('id', "visit_row_" + data.visitId);
+    newRow.setAttribute('id', data.visitId);
+    newRow.setAttribute('class', "ui-sortable-handle");
     let tableHeader = document.createElement('th');
     tableHeader.setAttribute('scope', 'row');
     tableHeader.innerText = data.visitName;
@@ -346,6 +358,9 @@ function createTripTable(data) {
     newRow.appendChild(tableDataDeparture);
     newRow.appendChild(deleteButton);
     tableBody.appendChild(newRow);
+
+
+
     newTable.appendChild(tableBody);
 
     return newTable;
@@ -467,11 +482,12 @@ function getMarkerIcon(isPublic) {
     return selectedIcon;
 }
 
-function tripVisitTableRefresh(data){
+function tripVisitTableRefresh(data) {
     let targetTable = document.getElementById("placeholderTripTable");
     let targetTripBody = document.getElementById("tripTableBody_" + currentlyDisplayedTripId);
     let newRow = document.createElement('tr');
-    newRow.setAttribute('id', "visit_row_" + data.visitId);
+    newRow.setAttribute('id', data.visitId);
+    newRow.classList.add("ui-sortable-handle");
     let tableHeader = document.createElement('th');
     tableHeader.setAttribute('scope', 'row');
     tableHeader.innerText = data.visitName;
@@ -686,44 +702,48 @@ function displayTrip(tripId, startLat, startLng) {
 $('tbody').sortable({
     axis: 'y',
     update: function (event, ui) {
-        var token =  $('input[name="csrfToken"]').attr('value');
-        $.ajaxSetup({
-            beforeSend: function(xhr) {
-                xhr.setRequestHeader('Csrf-Token', token);
-            }
-        });
-        var data = jQuery('#tripTableBody_'+currentlyDisplayedTripId+' tr').map(function() {
-            return jQuery (this).attr("id");
-        }).get();
-        var url = '/users/trips/edit/' + currentlyDisplayedTripId;
-        // POST to server using $.post or $.ajax
-
-
-        $.ajax({
-            data : JSON.stringify(data),
-            contentType : 'application/json',
-            type: 'PUT',
-            url: url,
-            success: function(data, textStatus, xhr) {
-
-                if(xhr.status == 200) {
-                    //This is an inefficient way of update the route
-                    for (let tripId in tripFlightPaths) {
-                        tripFlightPaths[tripId].setMap(null);
-                    }
-                    initTripRoutes();
-
-                }
-                else{
-                }
-            },
-            error: function(xhr, textStatus, errorThrown){
-                $('tbody').sortable('cancel');
-                alert("You cannot visit the same destination twice in a row!");
-            }
-        });
+        swapVisitOnSort();
     }
 });
+
+function swapVisitOnSort(tripId) {
+    var token =  $('input[name="csrfToken"]').attr('value');
+    $.ajaxSetup({
+        beforeSend: function(xhr) {
+            xhr.setRequestHeader('Csrf-Token', token);
+        }
+    });
+    var data = jQuery('#tripTableBody_'+currentlyDisplayedTripId+' tr').map(function() {
+        return jQuery (this).attr("id");
+    }).get();
+    var url = '/users/trips/edit/' + currentlyDisplayedTripId;
+    // POST to server using $.post or $.ajax
+
+
+    $.ajax({
+        data : JSON.stringify(data),
+        contentType : 'application/json',
+        type: 'PUT',
+        url: url,
+        success: function(data, textStatus, xhr) {
+
+            if(xhr.status == 200) {
+                //This is an inefficient way of update the route
+                for (let tripId in tripFlightPaths) {
+                    tripFlightPaths[tripId].setMap(null);
+                }
+                initTripRoutes();
+
+            }
+            else{
+            }
+        },
+        error: function(xhr, textStatus, errorThrown){
+            $('tbody').sortable('cancel');
+            alert("You cannot visit the same destination twice in a row!");
+        }
+    });
+}
 
 let currentlyDisplayedDestId;
 

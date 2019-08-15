@@ -134,7 +134,7 @@
                             <div class="modal-body">
                                 <div class="container-fluid">
                                     <div class="row">
-                                        @users.tag.createSearchTags(user)
+                                        @users.tag.createSearchTags(user,"photo", null)
                                     </div>
                                 @helper.form(action = routes.HomeController.upload, 'id -> "myForm", 'enctype -> "multipart/form-data") {
                                 @helper.CSRF.formField

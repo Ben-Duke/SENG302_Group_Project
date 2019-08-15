@@ -91,6 +91,21 @@ public class TagController {
         return ok(Json.toJson(taggedItems));
     }
 
+    public Result addTagToTaggable(Http.Request request, int taggableId) {
+        String tagName = request.body().asJson().get("taggableType").asText();
+        switch (tagName){
+            case "trip":
+                return addTripTag(request, taggableId);
+            case "destination":
+                return addDestTag(request, taggableId);
+            case "photo":
+                return addPhotoTag(request, taggableId);
+            default:
+                return null;
+        }
+    }
+
+
     /**
      * Adds a tag to a photo
      * @param request An authenticated http request containing the new tag
@@ -189,6 +204,12 @@ public class TagController {
         return ok(Json.toJson(tags));
     }
 
+    /**
+     *
+     * @param request
+     * @param destId
+     * @return
+     */
     public Result addDestTag(Http.Request request, int destId) {
         User user = User.getCurrentUser(request);
         if (user == null) {

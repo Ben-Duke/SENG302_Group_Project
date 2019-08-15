@@ -26,22 +26,29 @@ function addTagAddTagListeners() {
         while (addList.firstChild) {
             addList.removeChild(addList.firstChild);
         }
-        const query = addInput.value;
-        if (query) {
-            searchAddTags(query);
-        }
-    });
+            const query = addInput.value;
+            if (query) {
+                searchAddTags(query);
+            }
+        });
         addInput.addEventListener('keyup', e => {
             if (e.key === 'Enter') {
-            addTag(addInput.value);
-        }
-    })
+                addTag(addInput.value);
+            }
+        })
     } catch (err) {
         //do nothing. Just to avoid errors if the correct page is not loaded
     }
 }
 
 function addTag(name) {
+    let dataset = document.getElementById('tag-list').dataset;
+    let taggableType = dataset.taggabletype;
+    let taggableId = dataset.taggableid;
+    sendAddTagRequest(name, taggableType, taggableId);
+}
+
+function addTagLabel(name) {
     let tagList = document.getElementById("tag-line");
     let newTag = document.createElement("span");
     let newText = document.createElement("span");
@@ -55,9 +62,9 @@ function addTag(name) {
     newText.innerHTML = name;
     newIcon.className = "remove glyphicon glyphicon-remove-sign glyphicon-white";
     newRemove.onclick = function() {
-           tagList.removeChild(newTag);
-           toAddTagList.delete(name.toLowerCase());
-     }
+        tagList.removeChild(newTag);
+        toAddTagList.delete(name.toLowerCase());
+    };
     newRemove.appendChild(newIcon);
     newTag.appendChild(newText);
     newTag.appendChild(newRemove);
@@ -65,7 +72,24 @@ function addTag(name) {
         toAddTagList.add(name.toLowerCase());
         tagList.appendChild(newTag);
     }
+}
 
+function sendAddTagRequest(name, taggableType, taggableId) {
+    $.ajax({
+        type: 'PUT',
+        url: '/tags/' + taggableId,
+        data: JSON.stringify({
+            tag: name,
+            taggableType: taggableType
+        }),
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    }).done(() => {
+        addTagLabel(name)
+    }).fail((xhr, textStatus, errorThrown) => {
+        console.log(xhr.status + " " + textStatus + " " + errorThrown);
+    });
 }
 
 function addExistingTag(name) {

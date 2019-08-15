@@ -378,6 +378,9 @@ DELETE /destinations/:destId/tags                               controllers.TagC
 # Search for tag
 PUT /tags/search                                            controllers.TagController.searchTags(request : Request)
 
+#Adds a tag to a taggable
+PUT /tags/:taggableId                                          controllers.TagController.addTagToTaggable(request : Request, taggableId : Integer)
+
 
 # Tag page
 GET /tags/display/:tagName                                            controllers.TagController.displayTags(request: Request, tagName: String)

@@ -82,7 +82,6 @@ public class CommandManager extends BaseModel {
             try {
                 undoCommand.undo();
                 redoStack.push(undoCommand);
-                System.out.println(redoStack.isEmpty());
                 return undoCommand.toString();
             } catch(Exception exception){
                 user.setUndoRedoError(true);

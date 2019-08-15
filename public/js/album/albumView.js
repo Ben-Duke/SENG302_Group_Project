@@ -355,7 +355,6 @@ function okDefault(album) {
 
 // Open the Modal
 function deleteAlbum(albumId) {
-    console.log(albumId);
     var url = '/users/albums/delete/' + albumId;
     var token = $('input[name="csrfToken"]').attr('value');
     $.ajaxSetup({
@@ -370,7 +369,7 @@ function deleteAlbum(albumId) {
             'Content-Type': 'application/json'
         },
         success: function() {
-            window.location.replace('/users/albums')
+            window.location = '/users/albums'
         }
     });
 }
@@ -578,17 +577,18 @@ function showSlides(n) {
     for (i = 0; i < slides.length; i++) {
         slides[i].style.display = "none";
     }
-    slides[slideIndex-1].style.display = "block";
-    const privacyBtn = document.getElementById("privacyBtn")
-    if (privacyBtn != null) {
-        if (slides[slideIndex - 1].getAttribute("data-privacy") === "true") {
-            document.getElementById("privacyBtn").innerHTML = "Make Private";
-        } else if (slides[slideIndex - 1].getAttribute("data-privacy") === "false") {
-            document.getElementById("privacyBtn").innerHTML = "Make Public";
+    if(slides[slideIndex-1] !== undefined) {
+        slides[slideIndex-1].style.display = "block";
+        const privacyBtn = document.getElementById("privacyBtn")
+        if (privacyBtn != null) {
+            if (slides[slideIndex - 1].getAttribute("data-privacy") === "true") {
+                document.getElementById("privacyBtn").innerHTML = "Make Private";
+            } else if (slides[slideIndex - 1].getAttribute("data-privacy") === "false") {
+                document.getElementById("privacyBtn").innerHTML = "Make Public";
+            }
         }
+        setSlideListeners(slideIndex-1);
     }
-    setSlideListeners(slideIndex-1);
-
 }
 
 

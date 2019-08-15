@@ -348,6 +348,7 @@
                     </div>
                     }
                 </div>
+                <datalist id="tripListDeletion"></datalist>
                 <hr>
                 <div id="tripList">
 
@@ -357,7 +358,7 @@
                         <a onclick="displayTrip(@trip.getTripid(),
                             @trip.getOrderedVisits().get(0).getDestination().getLatitude(),
                                 @trip.getOrderedVisits().get(0).getDestination().getLongitude())"
-                            class="list-group-item list-group-item-action">
+                            class="list-group-item list-group-item-action" id="Button@trip.getTripid()">
                             @if(trip.getTripStart() != null){
                                 @trip.getTripName() | Arrival date: @trip.getTripStart()
                             } else{
@@ -395,7 +396,8 @@
     </div>
 
 
-    <script src="@routes.Assets.at("js/destination/destinationMap.js")"></script>
+
+
     <script src="@routes.Assets.at("js/map/map.js")"></script>
     <script src="@routes.Assets.at("js/map/mapStyle.js")"></script>
     <script src="https://maps.googleapis.com/maps/api/js?key=&callback=initMap&libraries=drawing,places"

@@ -18,6 +18,8 @@ public class DeleteAlbumCommand extends UndoableCommand {
     private Album album;
     private List<Media> albumsMedia;
     private List<Media> deletedMedia;
+    private Album defaultAlbum;
+
 
 
     public DeleteAlbumCommand(Album album) {
@@ -25,6 +27,7 @@ public class DeleteAlbumCommand extends UndoableCommand {
         this.album = album;
         albumsMedia = new ArrayList<>(album.getMedia());
         deletedMedia = new ArrayList<>();
+        defaultAlbum = new Album(album.getOwner(), "Default", true);
     }
 
     /**
@@ -38,7 +41,6 @@ public class DeleteAlbumCommand extends UndoableCommand {
         AlbumAccessor.update(album);
         AlbumAccessor.delete(album);
         List<Album> albumList = AlbumAccessor.getAlbumsByOwner(album.getOwner());
-        Album defaultAlbum = new Album(album.getOwner(), "Default", true);
         for (Album thisAlbum: albumList) {
             if (thisAlbum.getTitle().equals("Default")) {
                 defaultAlbum = thisAlbum;
@@ -48,7 +50,7 @@ public class DeleteAlbumCommand extends UndoableCommand {
             defaultAlbum.addMedia(media);
             MediaAccessor.update(media);
         }
-//        AlbumAccessor.update(defaultAlbum);
+        AlbumAccessor.update(defaultAlbum);
 
     }
 
@@ -67,16 +69,17 @@ public class DeleteAlbumCommand extends UndoableCommand {
                 if (media instanceof UserPhoto) {
                     UserPhoto photo = (UserPhoto)media;
                     media = new UserPhoto(photo);
-                } else if (media instanceof UserVideo) {
+                    defaultAlbum.removeMedia(media);
                     UserVideo video = (UserVideo)media;
                     media = new UserVideo(video);
                 }
                 MediaAccessor.insert(media);
                 album.addMedia(media);
-
             } else {
                 album.addMedia(media);
             }
+            defaultAlbum.removeMedia(media);
+            AlbumAccessor.update(defaultAlbum);
             AlbumAccessor.update(album);
         }
     }

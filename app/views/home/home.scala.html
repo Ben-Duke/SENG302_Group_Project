@@ -136,7 +136,7 @@
                                     <div class="row">
                                         @users.tag.createSearchTags(user,"photo", null)
                                     </div>
-                                @helper.form(action = routes.HomeController.upload, 'id -> "myForm", 'enctype -> "multipart/form-data") {
+                                @helper.form(action = routes.HomeController.upload(), 'id -> "myForm", 'enctype -> "multipart/form-data") {
                                 @helper.CSRF.formField
                                 <input id="photoUpload"
                                        type="file"

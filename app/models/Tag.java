@@ -3,6 +3,7 @@ package models;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.ebean.Finder;
 import io.ebean.Model;
+import org.h2.mvstore.DataUtils;
 import play.data.validation.Constraints;
 
 import javax.persistence.Column;
@@ -10,6 +11,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 public class Tag extends Model implements Comparable{
@@ -24,6 +26,11 @@ public class Tag extends Model implements Comparable{
      */
     @Id
     public int tagId;
+
+    /**
+     * Users in the process of adding tags to something that doesn't have an id yet.
+     */
+    private Set<User> pendingUsers;
 
     @Constraints.Required
     @Column(name="name", unique=true)
@@ -56,6 +63,13 @@ public class Tag extends Model implements Comparable{
         this.destinations.add(destination);
     }
 
+    public Set<User> getPendingUsers() {
+        return pendingUsers;
+    }
+
+    public void setPendingUsers(Set<User> pendingUsers) {
+        this.pendingUsers = pendingUsers;
+    }
 
     public void addDestinationById(Integer destId) {
         Destination destination = Destination.find().byId(destId);

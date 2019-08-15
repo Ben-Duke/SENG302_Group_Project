@@ -85,4 +85,14 @@ public class TagAccessor {
         return taggedItems;
     }
 
+    /**
+     * Find all tags that the user is currently adding to a taggable item that has not been fully uploaded
+     * @param userId The id of the current user
+     * @return Set of tags
+     */
+    public static Set<Tag> findPendingTagsFromUserId(Integer userId) {
+        return Tag.find.query().where().contains("pendingUsers", userId.toString()).findSet();
+
+    }
+
 }

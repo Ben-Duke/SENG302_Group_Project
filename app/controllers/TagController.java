@@ -91,6 +91,24 @@ public class TagController {
         return ok(Json.toJson(taggedItems));
     }
 
+    public Result addRawTag(Http.Request request) {
+        User user = User.getCurrentUser(request);
+        if (user == null) {
+            return unauthorized();
+        }
+        String tagName = request.body().asJson().get("tag").asText();
+        if (tagName.isEmpty()) {
+            return badRequest();
+        }
+        Tag tag = TagAccessor.getTagByName(tagName);
+        if(tag != null) {
+            return ok();
+        }
+        tag = new Tag(tagName);
+        TagAccessor.insert(tag);
+        return created();
+    }
+
     public Result addTagToTaggable(Http.Request request, int taggableId) {
         String tagName = request.body().asJson().get("taggableType").asText();
         switch (tagName){

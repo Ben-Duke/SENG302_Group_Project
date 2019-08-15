@@ -75,6 +75,7 @@ function addTagLabel(name) {
 }
 
 function sendAddTagRequest(name, taggableType, taggableId) {
+
     $.ajax({
         type: 'PUT',
         url: '/tags/' + taggableId,

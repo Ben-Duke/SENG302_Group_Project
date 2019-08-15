@@ -301,7 +301,8 @@
                     <div>
                         <p>
                             Add to Album
-                            <input id="album-search-photo" name="Album Search" title="Album Search" value=@album.getTitle disabled>
+                            <input id="album-search-photo" name="Album Search" title="Album Search" data-albumId="@album.getAlbumId"
+                                   value="@album.getTitle" disabled>
                         </p>
                         <p id="photoAlbumMessage" hidden> This media must be in an Album </p>
                     </div>

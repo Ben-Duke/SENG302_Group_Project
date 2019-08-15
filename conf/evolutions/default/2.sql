@@ -464,6 +464,8 @@ delete from media_tag;
 
 delete from trip_tag;
 
+delete from tag_user;
+
 delete from tag;
 
 delete from album_media;

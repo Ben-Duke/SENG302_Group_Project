@@ -61,13 +61,9 @@ function addTag(name) {
     newRemove.appendChild(newIcon);
     newTag.appendChild(newText);
     newTag.appendChild(newRemove);
-
-    console.log('add tag', name, toAddTagList);
     if(!toAddTagList.has(name.toLowerCase())) {
         toAddTagList.add(name.toLowerCase());
         tagList.appendChild(newTag);
-
-        console.log('after adding tag', name, toAddTagList);
     }
 
 }

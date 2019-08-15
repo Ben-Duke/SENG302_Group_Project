@@ -125,10 +125,8 @@ public class HomeController {
             if (dataPart.get("private")[0].equals("false")) {
                 isPublic = true;
             }
-            logger.debug(dataPart.toString());
             if (dataPart.get("tags[]") != null) {
                 tags = new ArrayList<String>(Arrays.asList(dataPart.get("tags[]")));
-                logger.debug("in the if", tags);
             }
             //Get the photo data from the multipart form data encoding
             Http.MultipartFormData<Files.TemporaryFile> body = request.body().asMultipartFormData();
@@ -168,9 +166,7 @@ public class HomeController {
             UserPhoto newPhoto = new UserPhoto(originalFilePath, isPublic, false, user);
             String unusedPhotoUrl = newPhoto.getUnusedUserPhotoFileName();
             newPhoto.setUrl(unusedPhotoUrl);
-            logger.debug(tags.toString(), tags.size());
             Set uniqueTags = UtilityFunctions.tagLiteralsAsSet(tags);
-            logger.debug(uniqueTags.toString());
             UploadPhotoCommand uploadPhotoCommand = new UploadPhotoCommand(newPhoto, fileObject, user, albumName, uniqueTags);
             user.getCommandManager().executeCommand(uploadPhotoCommand);
             return redirect(routes.HomeController.showhome());

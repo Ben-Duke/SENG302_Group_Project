@@ -491,7 +491,7 @@ function tripVisitTableRefresh(data){
     deleteButtonText.setAttribute('style', 'deleteButton');
     let urlForDelete = '/users/trips/edit/' + data.visitId;
     deleteButtonText.setAttribute('onclick', 'sendDeleteVisitRequest(' + '"' + urlForDelete + '"' + ','
-        + data[0] + ')');
+        + data.visitId + ')');
     deleteButton.appendChild(deleteButtonText);
     tableDataDeparture.appendChild(departureDateInput);
 
@@ -889,7 +889,7 @@ function showHideMapTrips() {
             contentType: 'application/json',
             success: function (data, textStatus, xhr) {
                 if (xhr.status == 200) {
-                    document.getElementById("visit_row_" + visitId).remove();
+                    document.getElementById(visitId).remove();
                     document.getElementById('undoButton').classList.remove('disabled');
                 }
                 else {
@@ -1195,6 +1195,15 @@ function checkTripVisits() {
                         success: function () {
                             let element = document.getElementById("Button" + trip);
                             element.parentNode.removeChild(element);
+                            const x = document.getElementById("snackbar");
+
+                            // Add the "show" class to DIV
+                            x.className = "show";
+                            x.innerText = "Trip with id: " + trip + " has been deleted as it has less than two visits ";
+                            // After 3 seconds, remove the show class from DIV
+                            setTimeout(function(){
+                                x.className = x.className.replace("show", "");
+                            }, 5000);
                         }
                     });
                 }

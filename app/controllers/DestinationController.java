@@ -129,7 +129,6 @@ public class DestinationController extends Controller {
         }
         in.close();
         JsonNode jsonJacksonArray = Json.parse(response.toString());
-        System.out.println(jsonJacksonArray);
 
 
 

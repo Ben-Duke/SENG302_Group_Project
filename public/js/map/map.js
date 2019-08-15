@@ -1206,6 +1206,7 @@ function viewCreatePanel() {
  * will update the latitude and longitude fields.
  */
 function initMapPositionListeners() {
+    window.globalMarkers = [];
 
     if (document.getElementById("latitude") !== null
         && document.getElementById("longitude") !== null) {
@@ -1217,7 +1218,6 @@ function initMapPositionListeners() {
                     document.getElementById("latitude").value,
                     window.globalMap.center.lng());
 
-                window.globalMap.setCenter(latlng);
 
             }
         });
@@ -1230,7 +1230,6 @@ function initMapPositionListeners() {
                     window.globalMap.center.lat(),
                     document.getElementById("longitude").value);
 
-                window.globalMap.setCenter(latlng);
             }
         });
 
@@ -1238,14 +1237,11 @@ function initMapPositionListeners() {
             document.getElementById("latitude").value = event.latLng.lat();
             document.getElementById("longitude").value = event.latLng.lng();
             var latlng = {lat: parseFloat(event.latLng.lat()), lng: parseFloat(event.latLng.lng())};
-
             geoCoder.geocode({'location': latlng}, function(results, status) {
                 if (status === 'OK') {
-                    console.log(results)
                     if (results[0]) {
+                        map.panTo(latlng);
                         map.setZoom(11);
-                        console.log(results[0].place_id);
-                        console.log(results[0].address_components[results[0].address_components.length]);
                         let placeId = results[0].place_id;
                         var marker = new google.maps.Marker({
                             position: latlng,
@@ -1259,33 +1255,30 @@ function initMapPositionListeners() {
                             cache: false,
                             success: function (data, textStatus, xhr) {
                                 if (xhr.status == 200) {
-                                   let placeData = data;
-                                   console.log(placeData.address_components);
-                                    console.log("______________");
-                                    console.log(placeData["result"]);
+                                    let placeData = data.result.address_components;
                                     //Check if it can be a number if it can leave it blank
-                                    if(placeData.result.address_components[0].types[0] == 'street_number' || placeData.result.address_components[0].types[0] == "post_code"){
-                                        if(placeData.result.address_components[1].types[0] == 'route') {
-                                            console.log(placeData.result.address_components[2]);
-                                            document.getElementById("destName").value = placeData.result.address_components[2].long_name
-                                            document.getElementById("district").value = placeData.result.address_components[3].long_name
-                                        } else {
-                                            document.getElementById("destName").value = placeData.result.address_components[1].long_name
-                                            document.getElementById("district").value = placeData.result.address_components[2].long_name
-                                        }
-                                    }else{
-                                        if(placeData.result.address_components[1].types[0] == 'route') {
-                                            document.getElementById("destName").value = placeData.result.address_components[1].long_name
-                                            document.getElementById("district").value = placeData.result.address_components[2].long_name
-                                        } else {
-                                            document.getElementById("destName").value = placeData.result.address_components[0].long_name
-                                            document.getElementById("district").value = placeData.result.address_components[1].long_name
-                                        }
-                                    }
 
-                                }
-                                else {
+                                    placeData.forEach((addressItem) => {
+                                        if (addressItem.types.includes("country")) {
+                                            document.getElementById("country").value = addressItem.long_name;
 
+                                        } else if (addressItem.types.includes("administrative_area_level_1")
+                                            || addressItem.types.includes("administrative_area_level_2")) {
+                                            document.getElementById("district").value = addressItem.long_name;
+                                        }
+                                    });
+
+                                     if (placeData.length < 2) {
+                                         document.getElementById("destName").value = placeData[0].long_name
+                                     } else if(placeData[0].types[0] == 'street_number' || placeData[0].types[0] == "postal_code"){
+                                         if(placeData[1].types[0] == 'route') {
+                                             document.getElementById("destName").value = placeData[2].long_name;
+                                         } else {
+                                             document.getElementById("destName").value = placeData[1].long_name;
+                                         }
+                                     }else{
+                                         document.getElementById("destName").value = data.result.name;
+                                     }
                                 }
                             },
                             error: function (error) {
@@ -1297,6 +1290,7 @@ function initMapPositionListeners() {
                     } else {
                         window.alert('No results found');
                     }
+
                 } else {
                     window.alert('Geocoder failed due to: ' + status);
                 }

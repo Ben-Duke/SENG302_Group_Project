@@ -882,6 +882,7 @@ function submitEditCaption(caption, photoId) {
         },
         success:function(){
             console.log("caption edited");
+            document.getElementById('undoButton').classList.remove('disabled');
         },
         error: function(xhr, textStatus, errorThrown){
             console.log(xhr.status + " " + textStatus + " " + errorThrown);

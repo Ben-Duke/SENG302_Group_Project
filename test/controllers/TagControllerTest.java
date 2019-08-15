@@ -29,7 +29,8 @@ public class TagControllerTest extends BaseTestWithApplicationAndDatabase {
     public void getItems() {
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(GET)
-                .uri("/tags/items/" + 1);
+                .uri("/tags/items/" + 1)
+                .session("connected", "1");
         Result result =  route(app, request);
 
         assertEquals(OK, result.status());
@@ -63,26 +64,26 @@ public class TagControllerTest extends BaseTestWithApplicationAndDatabase {
 
     @Test
     public void searchTagsForOneItemCheckData() {
-        Result result = searchTagsHelper("Shrek", 2);
-        assertEquals("[{\"tagId\":3,\"name\":\"Shrek\"}]", contentAsString(result));
+        Result result = searchTagsHelper("Fun place to stay", 2);
+        assertEquals("[{\"tagId\":1,\"name\":\"Fun place to stay\"}]", contentAsString(result));
     }
 
     @Test
     public void searchTagsCaseInsensitiveCheckData() {
-        Result result = searchTagsHelper("shReK", 2);
-        assertEquals("[{\"tagId\":3,\"name\":\"Shrek\"}]", contentAsString(result));
+        Result result = searchTagsHelper("fUn pLaCe To sTaY", 2);
+        assertEquals("[{\"tagId\":1,\"name\":\"Fun place to stay\"}]", contentAsString(result));
     }
 
     @Test
     public void searchTagsMultipleTagsCheckData() {
-        Result result = searchTagsHelper("S", 2);
-        assertEquals("[{\"tagId\":1,\"name\":\"Vacation spot\"},{\"tagId\":2,\"name\":\"Best trip ever\"},{\"tagId\":3,\"name\":\"Shrek\"}]", contentAsString(result));
+        Result result = searchTagsHelper("t", 2);
+        assertEquals("[{\"tagId\":1,\"name\":\"Fun place to stay\"},{\"tagId\":2,\"name\":\"Vacation spot\"},{\"tagId\":3,\"name\":\"Top Rated\"}]", contentAsString(result));
     }
 
     @Test
     public void searchTagsEmptySearchCheckData() {
         Result result = searchTagsHelper("", 2);
-        assertEquals("[{\"tagId\":1,\"name\":\"Vacation spot\"},{\"tagId\":2,\"name\":\"Best trip ever\"},{\"tagId\":3,\"name\":\"Shrek\"}]", contentAsString(result));
+        assertEquals("[{\"tagId\":1,\"name\":\"Fun place to stay\"},{\"tagId\":2,\"name\":\"Vacation spot\"},{\"tagId\":3,\"name\":\"Top Rated\"}]", contentAsString(result));
     }
 
     @Test
@@ -153,7 +154,8 @@ public class TagControllerTest extends BaseTestWithApplicationAndDatabase {
 
     @Test
     public void getPhotoTagLoggedInAsWrongUser() {
-        Result result = getPhotoTagHelper(2, 3);
+        Result result = getPhotoTagHelper(2, 1);
+
         assertEquals(FORBIDDEN, result.status());
     }
 
@@ -265,7 +267,7 @@ public class TagControllerTest extends BaseTestWithApplicationAndDatabase {
     @Test
     public void getDestTagSuccessCheckData() {
         Result result = getDestTagHelper(1, 2);
-        assertEquals("[{\"tagId\":1,\"name\":\"Vacation spot\"}]", contentAsString(result));
+        assertEquals("[{\"tagId\":1,\"name\":\"Fun place to stay\"},{\"tagId\":3,\"name\":\"Top Rated\"}]", contentAsString(result));
     }
 
     @Test
@@ -286,7 +288,7 @@ public class TagControllerTest extends BaseTestWithApplicationAndDatabase {
 
         Result result = getDestTagHelper(2, 2);
         assertEquals(
-                "[{\"tagId\":4,\"name\":\"Cool spot\"},{\"tagId\":5,\"name\":\"Dream spot\"}]",
+                "[{\"tagId\":2,\"name\":\"Vacation spot\"},{\"tagId\":4,\"name\":\"Cool spot\"},{\"tagId\":5,\"name\":\"Dream spot\"}]",
                 contentAsString(result));
     }
 
@@ -298,7 +300,7 @@ public class TagControllerTest extends BaseTestWithApplicationAndDatabase {
 
     @Test
     public void getDestTagNoTagsCheckData(){
-        Result result = getDestTagHelper(2, 2);
+        Result result = getDestTagHelper(4, 2);
         assertEquals("[]", contentAsString(result));
     }
 
@@ -372,13 +374,13 @@ public class TagControllerTest extends BaseTestWithApplicationAndDatabase {
 
     @Test
     public void removeDestTag() {
-        Result result = addRemoveDestTagHelper(DELETE, "Shrek", 1, 2);
+        Result result = addRemoveDestTagHelper(DELETE, "Fun place to stay", 1, 2);
         assertEquals(OK, result.status());
     }
 
     @Test
     public void removeDestTagTagNotLinked() {
-        Result result = addRemoveDestTagHelper(DELETE, "Shrek", 2, 2);
+        Result result = addRemoveDestTagHelper(DELETE, "Fun place to stay", 2, 2);
         assertEquals(OK, result.status());
     }
 
@@ -390,7 +392,7 @@ public class TagControllerTest extends BaseTestWithApplicationAndDatabase {
 
     @Test
     public void removeDestTagAsAdmin() {
-        Result result = addRemoveDestTagHelper(DELETE, "Shrek", 1, 1);
+        Result result = addRemoveDestTagHelper(DELETE, "Fun place to stay", 1, 1);
         assertEquals(OK, result.status());
     }
 

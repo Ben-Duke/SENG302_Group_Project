@@ -411,6 +411,17 @@ INSERT INTO `user_traveller_type` (`user_userid`, `traveller_type_ttypeid`) VALU
 -- user_photo_destination
 -- no data
 
+-- tags
+INSERT INTO `tag`(`tag_id`, `name`) VALUES
+(1,'Fun place to stay'),
+(2, 'Vacation spot'),
+(3, 'Top Rated');
+
+-- destination_tag
+INSERT INTO `destination_tag`(`destination_destid`, `tag_tag_id`) VALUES
+(1,1),
+(2,2),
+(1,3);
 
 -- visit
 INSERT INTO `visit` (`visitid`, `visitorder`, `destination`, `trip`, `arrival`,
@@ -442,6 +453,14 @@ INSERT INTO `visit` (`visitid`, `visitorder`, `destination`, `trip`, `arrival`,
 -- foreign key constraints
 
 delete from visit;
+
+delete from destination_tag;
+
+delete from media_tag;
+
+delete from trip_tag;
+
+delete from tag;
 
 delete from album_media;
 

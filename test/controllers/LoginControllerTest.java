@@ -15,6 +15,8 @@ import play.mvc.Http;
 import play.mvc.Result;
 import play.test.Helpers;
 import play.test.WithApplication;
+import testhelpers.BaseTestWithApplicationAndDatabase;
+import utilities.TestDatabaseManager;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -24,38 +26,17 @@ import static play.mvc.Http.Status.*;
 import static play.test.Helpers.GET;
 import static play.test.Helpers.route;
 
-public class LoginControllerTest extends WithApplication {
-
-    /**
-     * The fake database
-     */
-    Database database;
+public class LoginControllerTest extends BaseTestWithApplicationAndDatabase {
 
     @Override
-    protected Application provideApplication() {
-        return new GuiceApplicationBuilder().build();
-    }
+    /*
+     * Populate test data
+     */
+    public void populateDatabase() {
+        TestDatabaseManager.clearAllData();
 
-    @Before
-    public void setUpDatabase() {
-        database = Databases.inMemory();
-        Evolutions.applyEvolutions(database, Evolutions.forDefault(new Evolution(
-                1,
-                "create table test (id bigint not null, name varchar(255));",
-                "drop table test;"
-        )));
-        //Initialises a test user with name "testUser" and saves it to the database.
         User user = new User("gon12@uclive.ac.nz", "hunter22");
         user.save();
-    }
-
-    /**
-     * Clears the fake database after each test
-     */
-    @After
-    public void shutdownDatabase() {
-        Evolutions.cleanupEvolutions(database);
-        database.shutdown();
     }
 
     @Test

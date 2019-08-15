@@ -1,16 +1,25 @@
 package factories;
 
+import accessors.DestinationAccessor;
+import accessors.UserAccessor;
 import models.*;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import play.db.Database;
+import play.mvc.Http;
+import play.test.Helpers;
 import testhelpers.BaseTestWithApplicationAndDatabase;
+import utilities.TestDatabaseManager;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.*;
+import static play.test.Helpers.POST;
+import static play.test.Helpers.route;
 
 /**
  * JUnit 4 tests for DestinationFactory
@@ -21,8 +30,11 @@ public class DestinationFactoryTest extends BaseTestWithApplicationAndDatabase {
     private User testUser;
     private Destination testPublicDestination;
 
-    @Before
-    public void setUpDatabase() {
+    @Override
+    /* Populate the database */
+    public void populateDatabase() {
+        TestDatabaseManager.clearAllData();
+
         //Initialises a test user with name "testUser" and saves it to the database.
         User user = new User("gon12@uclive.ac.nz", "hunter22");
         testUser = user;
@@ -32,18 +44,6 @@ public class DestinationFactoryTest extends BaseTestWithApplicationAndDatabase {
                 "destType", "district", "country",
                 45.0, 45.0, testUser, true);
     }
-
-    /**
-     * Clears the fake database after each test
-     */
-    @After
-    public void shutdownDatabase() {
-        testUserId = -1;
-        destinationFactory = null;
-        testUser = null;
-        testPublicDestination = null;
-    }
-
 
     @Test
     public void userHasPrivateDestinationInvalidUserId() {
@@ -243,29 +243,37 @@ public class DestinationFactoryTest extends BaseTestWithApplicationAndDatabase {
     public void testMergingTwoPrivateDestinations() {
         User adminUser = new User("test@testytest.test", "hunter22");
         adminUser.save();
-        Admin admin = new Admin(adminUser.userid, true);
+        Admin admin = new Admin(adminUser.getUserid(), true);
         admin.save();
-        Destination testPrivateDestination = new Destination("Rotherham",
-                "Town", "North Canterbury", "New Zealand",
-                -42.699000, 172.943667, adminUser, false);
-        testPrivateDestination.save();
-        List<Visit> visitList = new ArrayList();
-        testPrivateDestination.setVisits(visitList);
-
+        adminUser = UserAccessor.getUsersFromEmail("test@testytest.test").get(0);
         User privateUser = new User("test@testers.org", "hunter27");
         privateUser.save();
-        Destination testPrivateDestination1 = new Destination("Rotherham",
-                "Town", "North Canterbury", "New Zealand",
-                -42.699000, 172.943667, privateUser, false);
-        testPrivateDestination1.save();
-        testPrivateDestination1.setVisits(visitList);
+        privateUser = UserAccessor.getUsersFromEmail("test@testers.org").get(0);
 
+        Map<String, String> formData = new HashMap<>();
+        formData.put("destName", "Rotherham");
+        formData.put("destType", "Town");
+        formData.put("district", "North Canterbury");
+        formData.put("country", "New Zealand");
+        formData.put("latitude", "-42.699000");
+        formData.put("longitude", "172.943667");
+        Http.RequestBuilder request = Helpers.fakeRequest().bodyForm(formData)
+                .method(POST).uri("/users/destinations/save").session("connected"
+                        , Integer.toString(adminUser.getUserid()));
+        route(app, request);
+        request = Helpers.fakeRequest().bodyForm(formData)
+                .method(POST).uri("/users/destinations/save").session("connected"
+                        , Integer.toString(privateUser.getUserid()));
+        route(app, request);
+
+        Destination testPrivateDestination1 =
+                DestinationAccessor.getDestinationsbyName("Rotherham").get(1);
 
         List<Destination> matchingDests = destinationFactory
                 .getOtherUsersMatchingPrivateDestinations(privateUser.getUserid(), testPrivateDestination1);
 
         destinationFactory.mergeDestinations(matchingDests, testPrivateDestination1);
-        List<Destination> destinationsWithSameName = Destination.find.query().where()
+        List<Destination> destinationsWithSameName = Destination.find().query().where()
                 .eq("destName", "Rotherham").findList();
         assertEquals(1, destinationsWithSameName.size());
     }
@@ -273,37 +281,54 @@ public class DestinationFactoryTest extends BaseTestWithApplicationAndDatabase {
     @Test
     public void testMergingTwoPrivateDestinations2() {
         User adminUser = new User("test@testytest.test", "hunter22");
-        adminUser.save();
-        Admin admin = new Admin(adminUser.userid, true);
+        UserAccessor.insert(adminUser);
+        Admin admin = new Admin(adminUser.getUserid(), true);
         admin.save();
-        Destination testPrivateDestination = new Destination("Rotherham",
-                "Town", "North Canterbury", "New Zealand",
-                -42.699000, 172.943667, adminUser, false);
-        testPrivateDestination.save();
-        List<Visit> visitList = new ArrayList();
-        testPrivateDestination.setVisits(visitList);
+        adminUser = UserAccessor.getUsersFromEmail("test@testytest.test").get(0);
 
         User privateUser2 = new User("test@testers.org", "hunter27");
-        privateUser2.save();
-        Destination testPrivateDestination2 = new Destination("Rotherham",
-                "Town", "North Canterbury", "New Zealand",
-                -42.699000, 172.943667, privateUser2, false);
-        testPrivateDestination2.save();
-        testPrivateDestination2.setVisits(visitList);
+        UserAccessor.insert(privateUser2);
+        privateUser2 = UserAccessor.getUsersFromEmail("test@testers.org").get(0);
 
         User privateUser3 = new User("test@testerstest.org", "hunter29");
-        privateUser3.save();
-        Destination testPrivateDestination3 = new Destination("Rotherham",
-                "Town", "North Canterbury", "New Zealand",
-                -42.699000, 172.943667, privateUser3, false);
-        testPrivateDestination3.save();
-        testPrivateDestination3.setVisits(visitList);
+        UserAccessor.insert(privateUser3);
+        privateUser3 = UserAccessor.getUsersFromEmail("test@testerstest.org").get(0);
 
+        Map<String, String> formData = new HashMap<>();
+        formData.put("destName", "Rotherham");
+        formData.put("destType", "Town");
+        formData.put("district", "North Canterbury");
+        formData.put("country", "New Zealand");
+        formData.put("latitude", "-42.699000");
+        formData.put("longitude", "172.943667");
 
+        Http.RequestBuilder request = Helpers.fakeRequest().bodyForm(formData)
+                .method(POST).uri("/users/destinations/save").session("connected"
+                        , Integer.toString(adminUser.getUserid()));
+        route(app, request);
+        request = Helpers.fakeRequest().bodyForm(formData)
+                .method(POST).uri("/users/destinations/save").session("connected"
+                        , Integer.toString(privateUser2.getUserid()));
+        route(app, request);
+        request = Helpers.fakeRequest().bodyForm(formData)
+                .method(POST).uri("/users/destinations/save").session("connected"
+                        , Integer.toString(privateUser3.getUserid()));
+        route(app, request);
+
+        Destination testPrivateDestination2 = null;
+        for (Destination destination :
+                DestinationAccessor.getDestinationsbyName("Rotherham")) {
+            if (destination.getUser() != null) {
+                if (destination.getUser().getUserid() == privateUser2.getUserid()) {
+                    testPrivateDestination2 = destination;
+                }
+            }
+        }
+        assertNotNull(testPrivateDestination2);
         List<Destination> matchingDests = destinationFactory
                 .getOtherUsersMatchingPrivateDestinations(privateUser2.getUserid(), testPrivateDestination2);
         destinationFactory.mergeDestinations(matchingDests, testPrivateDestination2);
-        List<Destination> destinationsWithSameName = Destination.find.query().where()
+        List<Destination> destinationsWithSameName = Destination.find().query().where()
                 .eq("destName", "Rotherham").findList();
         assertEquals(1, destinationsWithSameName.size());
     }

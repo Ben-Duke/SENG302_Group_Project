@@ -1,5 +1,6 @@
 package models;
 
+import controllers.ApplicationManager;
 import io.ebean.Finder;
 import io.ebean.Model;
 import org.checkerframework.common.aliasing.qual.Unique;
@@ -11,26 +12,30 @@ import javax.persistence.*;
 //@Table(name = "admin",
 //        uniqueConstraints = @UniqueConstraint(columnNames = "userId")
 //)
+/** Model class for admin construction */
 public class Admin extends BaseModel {
 
     /**
      * The ID of the user. This is the foreign key to user.
      */
+    @Id
     @Unique
     @OneToOne(mappedBy = "userid")
-    public Integer userId;
+    private Integer userId;
 
 
     /**
      * The user the admin wants to edit as.
      */
-    public Integer userIdToEdit;
+    private Integer userIdToEdit;
 
     /**
      * True if admin is a Default admin.
      */
     private boolean isDefault;
 
+    private static Finder<Integer, Admin> find = new Finder<>(
+            Admin.class, ApplicationManager.getDatabaseName());
 
     /**
      * The constructor for the Admin that takes the parameters, userId, isDefault.
@@ -41,6 +46,15 @@ public class Admin extends BaseModel {
     public Admin(Integer userId, boolean isDefault) {
         this.userId = userId;
         this.isDefault = isDefault;
+    }
+
+    /**
+     * Get's the EBeans finder for Admin
+     *
+     * @return A Finder<Integer, Admin> object.
+     */
+    public static Finder<Integer, Admin> find() {
+        return find;
     }
 
     public Integer getUserId() {
@@ -66,6 +80,4 @@ public class Admin extends BaseModel {
     public void setUserToEdit(Integer userIdToEdit) {
         this.userIdToEdit = userIdToEdit;
     }
-
-    public static Finder<Integer, Admin> find = new Finder<>(Admin.class);
 }

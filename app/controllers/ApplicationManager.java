@@ -1,23 +1,47 @@
 package controllers;
 
+import org.slf4j.Logger;
+import utilities.UtilityFunctions;
+
 import java.nio.file.Paths;
+
+/**
+ * Enum for the two databases used by the application
+ *  matches those declared in db {} of application.conf and test.conf
+ */
+enum DatabaseName {
+    DEFAULT
+}
 
 /**
  * Application manager used to differentiate between the test environment and main environment
  */
 public class ApplicationManager {
 
+    private static String mediaPath;
+
+    // Private constructor to hide the implicit public one
+    private ApplicationManager() {
+        throw new IllegalStateException("Utility class");
+    }
+
+    private static final Logger logger = UtilityFunctions.getLogger();
+
     private static String userPhotoPath;
 
+    /** Used to determine whether to load countries over http or use local data */
     private static boolean isTest = false;
 
+    /** Current database app is using saved as the name of the database */
+    private static DatabaseName databaseName = DatabaseName.DEFAULT;
+
     /**
-     * Method to get the user photo path.
+     * Method to get the media path.
      *
      * @return A String representing the user photo URL
      */
-    public static String getUserPhotoPath(){
-        return userPhotoPath;
+    public static String getMediaPath(){
+        return mediaPath;
     }
 
     /**
@@ -47,17 +71,29 @@ public class ApplicationManager {
     /**
      * Method to set the user photo path.
      *
-     * @param userPhotoPath A String representing the user photo URL
+     * @param mediaPath A String representing the media URL
      */
-    public static void setUserPhotoPath(String userPhotoPath) {
-        ApplicationManager.userPhotoPath = userPhotoPath;
+    public static void setMediaPath(String mediaPath) {
+        ApplicationManager.mediaPath = mediaPath;
     }
 
+    /**
+     * Method to check what environment the application is needed to bne run on
+     * @retun isTest A boolean representing the environment
+     */
     public static boolean isIsTest() {
         return isTest;
     }
 
-    public static void setIsTest(boolean isTest) {
-        ApplicationManager.isTest = isTest;
+    /** Return database name as it is in the .conf files (lowercase) */
+    public static String getDatabaseName() {
+        return databaseName.toString().toLowerCase();
+    }
+
+    /** Set the app to use the testing database */
+    public static void setTesting() {
+        // H2 testing db accessed through Default
+        databaseName = DatabaseName.DEFAULT;
+        isTest = true;
     }
 }

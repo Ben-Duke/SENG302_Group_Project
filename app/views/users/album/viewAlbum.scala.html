@@ -11,9 +11,13 @@
 </head>
 
 <body onpageshow="getAlbum(@user.getUserid, @album.getAlbumId, @album.userIsOwner(user))">
-    <div>
-        <h2 style="text-align: center;"> @album.getTitle <a id="deleteAlbumButton" onclick= "showDeleteAlbumModal(@album.getDefault)">&#10060</a></h2>
+    <div class="container">
+        <h2 style="text-align: center;"> @album.getTitle
+            <a class="btn btn-default sharp pull-right" id="deleteAlbumButton" onclick= "showDeleteAlbumModal(@album.getDefault)"
+               >Delete Album</a>
+        </h2>
     </div>
+
 
     <div class="container">
         @if(album.getMedia.size()==0) {

@@ -132,7 +132,7 @@ public class Trip extends BaseModel {
      * @return The date of the start of the trip as a string
      */
     public String getTripStart(){
-        if(this.visits.isEmpty()){
+        if(this.visits.size() < 2){
             return null;
         }
         else {

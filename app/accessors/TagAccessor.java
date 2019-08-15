@@ -95,4 +95,23 @@ public class TagAccessor {
 
     }
 
+    /**
+     * Removes pending tags based on a user id.
+     * If the pending tag isn't connected to any users and isn't tagged in anything
+     * the tag is deleted.
+     * @param userId the user id
+     */
+    public static void removePendingTagsFromUserId(int userId) {
+        Set<Tag> pendingTags = findPendingTagsFromUserId(userId);
+        for (Tag tag: pendingTags) {
+            tag.getPendingUsers().removeIf((user -> user.getUserid() == userId));
+            update(tag);
+        }
+        Set<Tag> allTags = Tag.find.query().findSet();
+        for (Tag tag: allTags) {
+            if (tag.getPendingUsers().isEmpty() && findTaggedItems(tag).isEmpty()) {
+                delete(tag);
+            }
+        }
+    }
 }

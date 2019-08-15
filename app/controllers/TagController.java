@@ -105,6 +105,7 @@ public class TagController {
             return ok();
         }
         tag = new Tag(tagName);
+        tag.getPendingUsers().add(user);
         TagAccessor.insert(tag);
         return created();
     }

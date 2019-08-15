@@ -24,38 +24,8 @@ function addTagAddTagListeners() {
                 // then this is a selection, not user input
                 addTag(addInput.value);
 
-            } else {
-                if (e.data === ' ' || e.data === '"') {
-
-                    let inputVal = addInput.value;
-                    inputVal = inputVal.trim(); //Take off white space
-
-                    let numOfQuotes = (inputVal.match(/"/g) || []).length;
-
-                    if (numOfQuotes === 0) {
-                        addTag(inputVal);
-                    }
-
-
-                    if (numOfQuotes === 2) {
-                        inputVal = inputVal.replace(/"/g, ""); //Takes of quotes
-
-                        console.log(inputVal);
-
-                        let words = inputVal.split(" ");
-
-
-                        let tag = "";
-                        for (let i in words) {
-                            console.log(words[i]);
-                            tag += words[i] + ' ';
-                        }
-
-                        tag = tag.trim();
-
-                        addTag(tag);
-                    }
-                }
+            } else if (e.data === ' ' || e.data === '"') {
+                extractAndAddTag(addInput.value)
             }
             while (addList.firstChild) {
                 addList.removeChild(addList.firstChild);
@@ -65,9 +35,41 @@ function addTagAddTagListeners() {
                 searchAddTags(query);
             }
         });
+        addInput.addEventListener('keyup', e => {
+            if (e.key === 'Enter') {
+                extractAndAddTag(addInput.value);
+            }
+        });
 
     } catch (err) {
         //do nothing. Just to avoid errors if the correct page is not loaded
+    }
+}
+
+function extractAndAddTag(inputVal) {
+    inputVal = inputVal.trim(); //Take off white space
+
+    let numOfQuotes = (inputVal.match(/"/g) || []).length;
+
+    if (numOfQuotes === 0) {
+        addTag(inputVal);
+    } else if (numOfQuotes === 2) {
+        inputVal = inputVal.replace(/"/g, ""); //Takes of quotes
+
+        console.log(inputVal);
+
+        let words = inputVal.split(" ");
+
+
+        let tag = "";
+        for (let i in words) {
+            console.log(words[i]);
+            tag += words[i] + ' ';
+        }
+
+        tag = tag.trim();
+
+        addTag(tag);
     }
 }
 

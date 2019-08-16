@@ -230,7 +230,7 @@ public class TagControllerTest extends BaseTestWithApplicationAndDatabase {
 
     @Test
     public void removePhotoTag() {
-        Result result = addRemovePhotoTagHelper(DELETE, "Shrek", 1, 2);
+        Result result = addRemovePhotoTagHelper(DELETE, "Fun place to stay", 1, 2);
         assertEquals(OK, result.status());
     }
 
@@ -495,7 +495,7 @@ public class TagControllerTest extends BaseTestWithApplicationAndDatabase {
                 .uri("/trips/1/tags").session("connected", "2");
         Result result = route(app, request);
 
-        assertEquals("[{\"tagId\":2,\"name\":\"Best trip ever\"}]", contentAsString(result));
+        assertEquals("[{\"tagId\":1,\"name\":\"Fun place to stay\"}]", contentAsString(result));
     }
 
     @Test
@@ -570,9 +570,9 @@ public class TagControllerTest extends BaseTestWithApplicationAndDatabase {
     @Test
     public void checkAddTagThatAlreadyExists() {
         Map<String, String> tagData = new HashMap<>();
-        tagData.put("tag", "Best trip ever");
+        tagData.put("tag", "Fun place to stay");
         Result result = tripTagHelper("PUT", tagData,  1 , 2);
-        assertEquals("The tag Best trip ever appears to already be on this trip", contentAsString(result));
+        assertEquals("The tag Fun place to stay appears to already be on this trip", contentAsString(result));
     }
 
 
@@ -596,7 +596,7 @@ public class TagControllerTest extends BaseTestWithApplicationAndDatabase {
     @Test
     public void checkRemoveTripTag() {
         Map<String, String> tagData = new HashMap<>();
-        tagData.put("tag", "Best trip ever");
+        tagData.put("tag", "Fun place to stay");
         tripTagHelper("DELETE", tagData,  1 , 2);
         assertEquals(0, TripAccessor.getTripById(1).getTags().size());
     }

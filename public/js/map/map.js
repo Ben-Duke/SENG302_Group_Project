@@ -1367,6 +1367,11 @@ $("#formBody").submit(function(e){
     e.preventDefault();
 });
 
+
+/**
+ * Function used to submit destination creation.
+ * If there are errors in the form messages will be shown or updated when necessary.
+ */
 $("#submit").click(function(e){
     var formData = {
         destName: $("#destName").val(),
@@ -1388,15 +1393,38 @@ $("#submit").click(function(e){
         },
         error: function(response) {
             let responseData = JSON.parse(response.responseText);
-            let errorForm = {
-                destName: responseData.destName[0],
-                country: responseData.country[0],
-                district: responseData.district[0],
-                latitude: responseData.latitude[0],
-                longitude: responseData.longitude[0],
-                destType: responseData.destType[0]
-            };
+            if (responseData.destName != null) {
+                document.getElementById("nameError").innerText = responseData.destName[0];
+            } else {
+                document.getElementById("nameError").innerText = "";
+            }
+            if (responseData.country != null) {
+                document.getElementById("countryError").innerText = responseData.country[0];
+            } else {
+                document.getElementById("countryError").innerText = "";
+            }
+            if (responseData.district != null) {
+                document.getElementById("districtError").innerText = responseData.district[0];
+            } else {
+                document.getElementById("districtError").innerText = "";
+            }
+            if (responseData.latitude != null) {
+                document.getElementById("latitudeError").innerText = responseData.latitude[0];
+            } else {
+                document.getElementById("latitudeError").innerText = "";
+            }
+            if (responseData.longitude != null) {
+                document.getElementById("longitudeError").innerText = responseData.longitude[0];
+            } else {
+                document.getElementById("longitudeError").innerText = "";
+            }
+            if (responseData.destType != null) {
+                document.getElementById("typeError").innerText = responseData.destType[0];
+            } else {
+                document.getElementById("typeError").innerText = "";
+            }
         }
+
     });
 });
 

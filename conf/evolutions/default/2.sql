@@ -309,15 +309,19 @@ INSERT INTO `destination` (`destid`, `dest_name`, `dest_type`, `district`, `coun
 
 -- Albums
 INSERT INTO `album`(`album_id`, `user`, `destination`, `primary_photo_media_id`, `is_default`, `title`) VALUES
-(1, null, 1, null,null,'Christchurch'),
-(2, null, 2, null, null,'Wellington'),
-(3, null, 3, null, null,'The Wok'),
-(4, null, 4, null, null,'Hanmer Springs Thermal Pools'),
-(5, null, 5, null, null,'Le Mans 24 hour race'),
-(6, null, 6, null, null,'Great Pyramid of Giza'),
-(7, null, 7, null, null,'Niagara Falls'),
-(8, null, 8, null, null,'Vatican City'),
-(9, null, 9, null, null,'Lincoln Memorial');
+(1, 1, null, null, true,'Default'),
+(2, 2, null, null, true,'Default'),
+(3, 3, null, null, true,'Default'),
+(4, 4, null, null, true,'Default'),
+(5, null, 1, null, null,'Christchurch'),
+(6, null, 2, null, null,'Wellington'),
+(7, null, 3, null, null,'The Wok'),
+(8, null, 4, null, null,'Hanmer Springs Thermal Pools'),
+(9, null, 5, null, null,'Le Mans 24 hour race'),
+(10, null, 6, null, null,'Great Pyramid of Giza'),
+(11, null, 7, null, null,'Niagara Falls'),
+(12, null, 8, null, null,'Vatican City'),
+(13, null, 9, null, null,'Lincoln Memorial');
 
 
 -- Traveller Types

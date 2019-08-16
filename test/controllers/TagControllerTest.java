@@ -1,11 +1,7 @@
 package controllers;
 
-import accessors.TagAccessor;
-import accessors.TripAccessor;
-import accessors.UserAccessor;
-import models.Tag;
-import models.Trip;
-import models.User;
+import accessors.*;
+import models.*;
 import org.junit.Test;
 import play.libs.Json;
 import play.mvc.Http;
@@ -14,7 +10,9 @@ import play.test.Helpers;
 import testhelpers.BaseTestWithApplicationAndDatabase;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -98,6 +96,21 @@ public class TagControllerTest extends BaseTestWithApplicationAndDatabase {
     public void searchTagsNotLoggedIn() {
         Result result = searchTagsHelper("Shrek", null);
         assertEquals(UNAUTHORIZED, result.status());
+    }
+
+    @Test
+    // Add a tag to a user's photo
+    public void addPhotoTag() {
+        UserPhoto photo1 = UserPhotoAccessor.getUserPhotoById(1);
+        //System.out.println(Media.find.all().get(0).getMediaId());
+        Set<Tag> tags =  photo1.getTags();
+        int numTags = tags.size();
+
+        addRemovePhotoTagHelper(PUT, "Test1", 1,2);
+
+        photo1 = UserPhotoAccessor.getUserPhotoById(1);
+        tags =  photo1.getTags();
+        assertEquals(numTags + 1, tags.size());
     }
 
     @Test

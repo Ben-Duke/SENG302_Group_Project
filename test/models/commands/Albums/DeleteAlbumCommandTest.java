@@ -104,7 +104,8 @@ public class DeleteAlbumCommandTest extends BaseTestWithApplicationAndDatabase {
     @Test
     public void undoTestWithMultipleMedia() {
 
-        User user = new User();
+        User user = UserAccessor.getById(1);
+
         user.save();
 
         Album album = new Album(user, "testAlbum", false);
@@ -142,9 +143,10 @@ public class DeleteAlbumCommandTest extends BaseTestWithApplicationAndDatabase {
         assert (afterSize == beforeSize);
 
         user = UserAccessor.getById(user.getUserid());
-        album = user.getAlbums().get(1);
+        album = user.getAlbums().get(2);
 
         assert (album != null);
+        System.out.println(album.getMedia().size());
         assert (album.getMedia().size() == 3);
 
     }
@@ -172,7 +174,7 @@ public class DeleteAlbumCommandTest extends BaseTestWithApplicationAndDatabase {
     @Test
     public void redoTestWithMultipleMedia() {
 
-        User user = new User();
+        User user = UserAccessor.getById(1);
         user.save();
 
         Album album = new Album(user, "testAlbum", false);
@@ -219,7 +221,7 @@ public class DeleteAlbumCommandTest extends BaseTestWithApplicationAndDatabase {
     @Test
     public void redoThenUndoTestWithMultipleMedia() {
 
-        User user = new User();
+        User user = UserAccessor.getById(1);
         user.save();
 
         Album album = new Album(user, "testAlbum", false);
@@ -259,7 +261,7 @@ public class DeleteAlbumCommandTest extends BaseTestWithApplicationAndDatabase {
         assert (afterSize == beforeSize);
 
         user = UserAccessor.getById(user.getUserid());
-        album = user.getAlbums().get(1);
+        album = user.getAlbums().get(2);
 
         assert (album != null);
         assert (album.getMedia().size() == 3);

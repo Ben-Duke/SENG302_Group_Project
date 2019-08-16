@@ -130,43 +130,28 @@
                         <button type="button" class="close" data-dismiss="modal">&times;</button>
                         <h4 class="modal-title">Upload a new photo </h4>
                     </div>
-
-                            <div class="modal-body">
-                                <div class="container-fluid">
-                                    <div class="row">
-                                        @users.tag.createSearchTags(user)
-                                    </div>
-                                @helper.form(action = routes.HomeController.upload, 'id -> "myForm", 'enctype -> "multipart/form-data") {
-                                @helper.CSRF.formField
-                                <input id="photoUpload"
-                                       type="file"
-                                       name="picture"
-                                       accept="image/png,image/jpeg"
-                                       required
-                                >
-
+                    <div class="modal-body">
+                        <input id="photoUpload" type="file" accept="image/png,image/jpeg" name="picture" required/>
+                            <div class="row">
+                                @users.tag.createSearchTags(user)
+                            </div>
                         <br>
                         <div>
                             <p>
                                 Add to Album
-                                @helper.CSRF.formField
-                                <input id="album-search" list="album-results" name="Album Search" title="Album Search" placeholder="Search Album">
-                                <datalist id="album-results">
-                                    @for(album <- user.getAlbums()){
+                                <input id="album-search-photo" list="album-results-photo" name="Album Search" title="Album Search" placeholder="Search Album">
+                                <datalist id="album-results-photo">
+                                @for(album <- user.getAlbums()){
                                     <option value="@album.getTitle()"></option>
-                                    }
+                                }
                                 </datalist>
                             </p>
+                            <p id="photoAlbumMessage" hidden> This media must be in an Album </p>
                         </div>
-
                         <p>
                             <input type="submit" value="Upload" id="photo-upload">
-                            @helper.CSRF.formField
-                            <input type="checkbox" name="private" value="private" title=""> Make photo private
+                            <input type="checkbox" id="private" name="private" value="private" title=""> Make photo private
                         </p>
-
-                        }
-
 
                     </div>
                 </div>
@@ -199,17 +184,6 @@
                         <br>
                         <input id="selectProfileInput" type="file" accept="image/png,image/jpeg" name="picture" required onchange="loadFile(event);"/>
                         <div>
-                            <div>
-                                <p>
-                                    Add to Album
-                                    <input id="album-search-profile" list="album-results-profile" name="Album Search" title="Album Search" placeholder="Search Album">
-                                    <datalist id="album-results-profile">
-                                        @for(album <- user.getAlbums()){
-                                        <option value="@album.getTitle()"></option>
-                                        }
-                                    </datalist>
-                                </p>
-                            </div>
                             <button class="btn btn-default" id="save-profile">
                                 Upload
                             </button>

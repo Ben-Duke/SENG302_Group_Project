@@ -381,3 +381,13 @@ window.onload = function() {
         })
     }
 };
+
+
+checkTripVisits = function() {
+
+};
+
+$(window).bind('beforeunload', function(){
+    checkTripVisits();
+    return 'Are you sure you want to leave?';
+});

@@ -105,6 +105,23 @@ public class TagAccessor {
     }
 
     /**
+     * Removes pending tags based on a user id and tag name.
+     * Implicitly clears all unneeded tags after the pending tags are removed.
+     * @param userId the user id
+     * @param name the name of the tag
+     */
+    public static void removePendingTagsWithName(int userId, String name) {
+        Set<Tag> pendingTags = findPendingTagsFromUserId(userId);
+        for (Tag tag: pendingTags) {
+            tag.getPendingUsers().removeIf((user ->
+                    user.getUserid() == userId && tag.getName().equalsIgnoreCase(name)
+            ));
+            update(tag);
+        }
+        clearUnneededTags();
+    }
+
+    /**
      * Clears all unneeded tags from the database.
      * A tag is unneeded if it isn't connected to any users and isn't tagged in anything.
      */

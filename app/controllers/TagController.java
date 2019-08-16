@@ -169,7 +169,8 @@ public class TagController {
         if (user == null) {
             return unauthorized();
         }
-        TagAccessor.removePendingTagsFromUserId(user.getUserid());
+        String tagName = request.body().asJson().get("tag").asText();
+        TagAccessor.removePendingTagsWithName(user.getUserid(), tagName);
         return ok();
     }
 

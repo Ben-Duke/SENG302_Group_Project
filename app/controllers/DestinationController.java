@@ -527,8 +527,24 @@ public class DestinationController extends Controller {
             if (errorForm != null) {
                 return errorForm;
             } else {
+
                 Destination newDestination = formFactory.form(Destination.class)
                         .bindFromRequest(request).get();
+                List<Destination> allDestinations = DestinationAccessor.getAllDestinations();
+                List<Destination> userAccessibleDestinations = new ArrayList<>();
+
+                for (Destination existingDestination : allDestinations) {
+                    if (existingDestination.getUser().getUserid() == user.getUserid() ||
+                            newDestination.getIsPublic()) {
+                        userAccessibleDestinations.add(existingDestination);
+                    }
+                }
+
+                for (Destination existingDestination : userAccessibleDestinations) {
+                    if (newDestination.isSimilar(existingDestination) || newDestination.isSame(existingDestination)) {
+                        return badRequest();
+                    }
+                }
                 newDestination.setUser(user);
                 newDestination.setCountryValid(true);
                 newDestination.save();

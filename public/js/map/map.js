@@ -1389,39 +1389,51 @@ $("#submit").click(function(e){
         dataType: 'text',
         timeout: 5000,
         success: function(response) {
-            location.reload();
+            location.reload()
         },
         error: function(response) {
             let responseData = JSON.parse(response.responseText);
+            let count = 0;
             if (responseData.destName != null) {
+                count += 1;
                 document.getElementById("nameError").innerText = responseData.destName[0];
             } else {
                 document.getElementById("nameError").innerText = "";
             }
             if (responseData.country != null) {
+                count += 1;
                 document.getElementById("countryError").innerText = responseData.country[0];
             } else {
                 document.getElementById("countryError").innerText = "";
             }
             if (responseData.district != null) {
+                count += 1;
                 document.getElementById("districtError").innerText = responseData.district[0];
             } else {
                 document.getElementById("districtError").innerText = "";
             }
             if (responseData.latitude != null) {
+                count += 1;
                 document.getElementById("latitudeError").innerText = responseData.latitude[0];
             } else {
                 document.getElementById("latitudeError").innerText = "";
             }
             if (responseData.longitude != null) {
+                count += 1;
                 document.getElementById("longitudeError").innerText = responseData.longitude[0];
             } else {
                 document.getElementById("longitudeError").innerText = "";
             }
             if (responseData.destType != null) {
+                count += 1;
                 document.getElementById("typeError").innerText = responseData.destType[0];
             } else {
                 document.getElementById("typeError").innerText = "";
+            }
+            if (count === 0) {
+                document.getElementById("existingMessage").innerText = "Similar Destination already exists"
+            } else {
+                document.getElementById("existingMessage").innerText = "";
             }
         }
 

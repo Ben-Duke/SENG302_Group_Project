@@ -120,14 +120,33 @@ public class TagController {
     }
 
     /**
+     * Get all tags for a given item
+     * @param request the request containing the taggableType, the name of the tag and the logged in user.
+     * @param taggableId the id of the item that contains tags
+     * @return Result from the associated getTags method
+     */
+    public Result getTaggablesTags(Http.Request request, int taggableId) {
+        String taggableType = request.body().asJson().get("taggableType").asText();
+        switch (taggableType) {
+            case "trip":
+                return getTripTags(request,taggableId);
+            case "destination":
+                return getDestTags(request, taggableId);
+            case "photo":
+                return getPhotoTags(request, taggableId);
+            default:
+                return null;
+        }
+    }
+    /**
      * Adds a tag to any taggable item. Request specifies the type of the taggable model
      * @param request contains the session and a json containing the taggableType and tag
      * @param taggableId the id of the item to be tagged
      * @return Result from the associated tag add method
      */
     public Result addTagToTaggable(Http.Request request, int taggableId) {
-        String tagName = request.body().asJson().get("taggableType").asText();
-        switch (tagName){
+        String taggableType = request.body().asJson().get("taggableType").asText();
+        switch (taggableType){
             case "trip":
                 return addTripTag(request, taggableId);
             case "destination":
@@ -146,8 +165,8 @@ public class TagController {
      * @return Result from the associated tag remove method
      */
     public Result removeTagFromTaggable(Http.Request request, int taggableId) {
-        String tagName = request.body().asJson().get("taggableType").asText();
-        switch (tagName){
+        String taggableType = request.body().asJson().get("taggableType").asText();
+        switch (taggableType){
             case "trip":
                 return removeTripTag(request, taggableId);
             case "destination":
@@ -347,7 +366,7 @@ public class TagController {
      * @param tripId
      * @return
      */
-    public Result getTags(Http.Request request, int tripId){
+    public Result getTripTags(Http.Request request, int tripId){
         User user = User.getCurrentUser(request);
         if (user != null) {
             Trip trip = TripAccessor.getTripById(tripId);

@@ -2,6 +2,44 @@ var user;
 var toAddTagList = new Set();
 
 addTagAddTagListeners();
+addExistingTagLabels();
+
+/**
+ * Adds the tags that belong to the tagged item to labels
+ */
+function addExistingTagLabels() {
+    let dataset = document.getElementById('tag-list').dataset;
+    let taggableType = dataset.taggabletype;
+    let taggableId = dataset.taggableid;
+    if (taggableId !== "") {
+        sendGetTagsRequest(taggableId, taggableType);
+    }
+}
+
+/**
+ * Gets all tags for a given item and adds them to the display
+ * @param taggableId the id of the item
+ * @param taggableType the type of the item
+ */
+function sendGetTagsRequest(taggableId, taggableType) {
+    const url = `/tags/get/${taggableId}`;
+    $.ajax({
+        type: 'PUT',
+        url: url,
+        data: JSON.stringify({
+            taggableType: taggableType
+        }),
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    }).done((tags) => {
+        for (let tag of tags) {
+            addTagLabel(tag.name)
+        }
+    }).fail((xhr, textStatus, errorThrown) => {
+        console.log(xhr.status + " " + textStatus + " " + errorThrown);
+    });
+}
 
 /**
  * Adds listeners to the search bar to search the database and redirect to tags page if needed
@@ -151,10 +189,6 @@ function sendAddTagRequest(name, taggableType, taggableId) {
     }).fail((xhr, textStatus, errorThrown) => {
         console.log(xhr.status + " " + textStatus + " " + errorThrown);
     });
-}
-
-function addExistingTag(name) {
-
 }
 
 /**

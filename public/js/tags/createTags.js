@@ -8,12 +8,26 @@ addExistingTagLabels();
  * Adds the tags that belong to the tagged item to labels
  */
 function addExistingTagLabels() {
+    removeExistingTagLabels();
     let dataset = document.getElementById('tag-list').dataset;
     let taggableType = dataset.taggabletype;
     let taggableId = dataset.taggableid;
     if (taggableId !== "") {
         sendGetTagsRequest(taggableId, taggableType);
     }
+}
+
+/**
+ * Removes all existing tag labels in preparation for refreshing them
+ */
+function removeExistingTagLabels() {
+    toAddTagList = new Set();
+    const tagList = document.getElementById("tag-line");
+    const tagInput = document.getElementById('tag-add');
+    while (tagList.firstChild) {
+        tagList.removeChild(tagList.firstChild)
+    }
+    tagList.appendChild(tagInput);
 }
 
 /**
@@ -45,43 +59,31 @@ function sendGetTagsRequest(taggableId, taggableType) {
  * Adds listeners to the search bar to search the database and redirect to tags page if needed
  */
 function addTagAddTagListeners() {
-    function redirectToTagPage(tag, datalist) {
-        for (let dataTag of datalist.options) {
-            if (dataTag.value.toUpperCase() === tag.toUpperCase()) {
-                window.location.href = "/tags/" + tag.toLowerCase();
-            }
+    const addInput = document.getElementById("tag-add");
+    const addList = document.getElementById("tag-add-results");
+    document.getElementById('tag-list').addEventListener('tagChange', addExistingTagLabels);
+    addInput.addEventListener('input', (e) => {
+
+        if (e.constructor.name !== 'InputEvent') {
+            // then this is a selection, not user input
+            addTag(addInput.value);
+
+        } else if (e.data === ' ' || e.data === '"') {
+            extractAndAddTag(addInput.value)
         }
-    }
-
-    try {
-        const addInput = document.getElementById("tag-add");
-        const addList = document.getElementById("tag-add-results");
-        addInput.addEventListener('input', (e) => {
-
-            if (e.constructor.name !== 'InputEvent') {
-                // then this is a selection, not user input
-                addTag(addInput.value);
-
-            } else if (e.data === ' ' || e.data === '"') {
-                extractAndAddTag(addInput.value)
-            }
-            while (addList.firstChild) {
-                addList.removeChild(addList.firstChild);
-            }
-            const query = addInput.value;
-            if (query) {
-                searchAddTags(query);
-            }
-        });
-        addInput.addEventListener('keyup', e => {
-            if (e.key === 'Enter') {
-                extractAndAddTag(addInput.value);
-            }
-        });
-
-    } catch (err) {
-        //do nothing. Just to avoid errors if the correct page is not loaded
-    }
+        while (addList.firstChild) {
+            addList.removeChild(addList.firstChild);
+        }
+        const query = addInput.value;
+        if (query) {
+            searchAddTags(query);
+        }
+    });
+    addInput.addEventListener('keyup', e => {
+        if (e.key === 'Enter') {
+            extractAndAddTag(addInput.value);
+        }
+    });
 }
 
 /**

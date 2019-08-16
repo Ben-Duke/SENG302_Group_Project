@@ -178,7 +178,9 @@ function setSlideListeners(i) {
             setMakeProfilePictureListener(albumData, i);
             const mediaId = albumData[i]["mediaId"];
             const caption = albumData[i]["caption"];
-            document.getElementById("tag-list").setAttribute("data-taggableId", mediaId);
+            const tagList = document.getElementById("tag-list");
+            tagList.setAttribute("data-taggableId", mediaId);
+            tagList.dispatchEvent(new Event('tagChange'));
             if (caption != "") {
                 document.querySelector('div[data-mediaId="'+mediaId+'"] [contenteditable]').innerHTML = caption.toString();
             } else {

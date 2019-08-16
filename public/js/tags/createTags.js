@@ -84,6 +84,10 @@ function addTagAddTagListeners() {
     }
 }
 
+/**
+ * Extracts the tag name from user input and adds the tag to the database
+ * @param inputVal the user inputted data
+ */
 function extractAndAddTag(inputVal) {
     inputVal = inputVal.trim(); //Take off white space
 
@@ -111,6 +115,10 @@ function extractAndAddTag(inputVal) {
     }
 }
 
+/**
+ * Adds a tag to the database
+ * @param name the name of the tag
+ */
 function addTag(name) {
     let dataset = document.getElementById('tag-list').dataset;
     let taggableType = dataset.taggabletype;
@@ -118,6 +126,10 @@ function addTag(name) {
     sendAddTagRequest(name, taggableType, taggableId);
 }
 
+/**
+ * Adds a tag label to the display
+ * @param name the name of the tag being displayed
+ */
 function addTagLabel(name) {
     let tagList = document.getElementById("tag-line");
     let newTag = document.createElement("span");
@@ -171,6 +183,12 @@ function removeTagFromItem(name) {
 
 }
 
+/**
+ * Sends a request to add a tag to an item
+ * @param name the name of the tag
+ * @param taggableType the type of the item
+ * @param taggableId the id of the item
+ */
 function sendAddTagRequest(name, taggableType, taggableId) {
     let url;
     taggableId === "" ? url = '/tags' :  url = `/tags/${taggableId}`;

@@ -160,8 +160,8 @@ public class TagController {
     }
 
     /**
-     * Removes all pending tags from a user
-     * @param request the request containing the logged in user
+     * Removes the given pending tag from a user and clears all unused tags
+     * @param request the request containing the logged in user and the name of the tag to clear
      * @return unauthorized if no user logged in, otherwise ok if successful
      */
     public Result removeUsersPendingTags(Http.Request request) {

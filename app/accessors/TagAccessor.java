@@ -111,13 +111,9 @@ public class TagAccessor {
      * @param name the name of the tag
      */
     public static void removePendingTagsWithName(int userId, String name) {
-        Set<Tag> pendingTags = findPendingTagsFromUserId(userId);
-        for (Tag tag: pendingTags) {
-            tag.getPendingUsers().removeIf((user ->
-                    user.getUserid() == userId && tag.getName().equalsIgnoreCase(name)
-            ));
-            update(tag);
-        }
+        Tag tag = getTagByName(name);
+        tag.getPendingUsers().removeIf(user -> user.getUserid() == userId);
+        update(tag);
         clearUnneededTags();
     }
 

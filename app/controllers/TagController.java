@@ -111,6 +111,8 @@ public class TagController {
         }
         Tag tag = TagAccessor.getTagByName(tagName);
         if(tag != null) {
+            tag.getPendingUsers().add(user);
+            TagAccessor.update(tag);
             return ok();
         }
         tag = new Tag(tagName);
@@ -120,14 +122,33 @@ public class TagController {
     }
 
     /**
+     * Get all tags for a given item
+     * @param request the request containing the taggableType, the name of the tag and the logged in user.
+     * @param taggableId the id of the item that contains tags
+     * @return Result from the associated getTags method
+     */
+    public Result getTaggablesTags(Http.Request request, int taggableId) {
+        String taggableType = request.body().asJson().get("taggableType").asText();
+        switch (taggableType) {
+            case "trip":
+                return getTripTags(request,taggableId);
+            case "destination":
+                return getDestTags(request, taggableId);
+            case "photo":
+                return getPhotoTags(request, taggableId);
+            default:
+                return null;
+        }
+    }
+    /**
      * Adds a tag to any taggable item. Request specifies the type of the taggable model
      * @param request contains the session and a json containing the taggableType and tag
      * @param taggableId the id of the item to be tagged
      * @return Result from the associated tag add method
      */
     public Result addTagToTaggable(Http.Request request, int taggableId) {
-        String tagName = request.body().asJson().get("taggableType").asText();
-        switch (tagName){
+        String taggableType = request.body().asJson().get("taggableType").asText();
+        switch (taggableType){
             case "trip":
                 return addTripTag(request, taggableId);
             case "destination":
@@ -139,6 +160,40 @@ public class TagController {
         }
     }
 
+    /**
+     * Removes a tag from a taggable item
+     * @param request request containing the taggableType and the name of the tag
+     * @param taggableId the id of the taggable item
+     * @return Result from the associated tag remove method
+     */
+    public Result removeTagFromTaggable(Http.Request request, int taggableId) {
+        String taggableType = request.body().asJson().get("taggableType").asText();
+        switch (taggableType){
+            case "trip":
+                return removeTripTag(request, taggableId);
+            case "destination":
+                return removeDestTag(request, taggableId);
+            case "photo":
+                return removePhotoTag(request, taggableId);
+            default:
+                return null;
+        }
+    }
+
+    /**
+     * Removes the given pending tag from a user and clears all unused tags
+     * @param request the request containing the logged in user and the name of the tag to clear
+     * @return unauthorized if no user logged in, otherwise ok if successful
+     */
+    public Result removeUsersPendingTags(Http.Request request) {
+        User user = User.getCurrentUser(request);
+        if (user == null) {
+            return unauthorized();
+        }
+        String tagName = request.body().asJson().get("tag").asText();
+        TagAccessor.removePendingTagsWithName(user.getUserid(), tagName);
+        return ok();
+    }
 
     /**
      * Adds a tag to a photo
@@ -217,6 +272,7 @@ public class TagController {
         photo.removeTag(tag);
         photo.update();
         tag.update();
+        TagAccessor.clearUnneededTags();
         return ok();
     }
 
@@ -298,6 +354,7 @@ public class TagController {
         destination.removeTag(tag);
         destination.update();
         tag.update();
+        TagAccessor.clearUnneededTags();
         return ok();
     }
 
@@ -311,7 +368,7 @@ public class TagController {
      * @param tripId
      * @return
      */
-    public Result getTags(Http.Request request, int tripId){
+    public Result getTripTags(Http.Request request, int tripId){
         User user = User.getCurrentUser(request);
         if (user != null) {
             Trip trip = TripAccessor.getTripById(tripId);
@@ -416,6 +473,7 @@ public class TagController {
                 trip.removeTag(tagEbeans);
                 TripAccessor.update(trip);
                 TagAccessor.update(tagEbeans);
+                TagAccessor.clearUnneededTags();
                 return ok("Tag removed from trip");
             }
             else{

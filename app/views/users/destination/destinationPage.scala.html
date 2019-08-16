@@ -25,6 +25,21 @@
         max-width: 120px;
         max-height: 120px;
     }
+    #tag-line {
+        overflow: scroll; /* for CSS3 lacking browsers */
+
+        width:600px;
+        height:200px;
+    }
+    .tag {
+        background-color: white;
+        border-color: white;
+        color: #2e6da4;
+        padding: 5px;
+        border-radius: 10px;
+        display: inline;
+        margin-bottom: 10px;
+    }
 
 </style>
 
@@ -142,9 +157,16 @@
             </div>
 
             <br>
-            Tag: @destination.getTags()
+            Tags:
             <br>
-
+            <br>
+            <div id="tag-line">
+            @for(tag <- destination.getTags()){
+                <button onclick="location.href= '/tags/display/@tag.getName().toLowerCase()'" class="tag">@tag.getName()</button>
+            }
+            </div>
+            <br>
+            <br>
             <a class="btn btn-primary" href="@routes.DestinationController.editDestination(destination.getDestId())" role="button">
                 Edit
             </a>

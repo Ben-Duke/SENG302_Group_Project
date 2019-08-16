@@ -88,7 +88,6 @@ public class TagAccessor {
      */
     public static Set<Tag> findPendingTagsFromUserId(Integer userId) {
         return Tag.find.query().where().eq("pendingUsers.userid", userId.toString()).findSet();
-
     }
 
     /**

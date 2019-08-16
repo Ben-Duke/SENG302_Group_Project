@@ -16,9 +16,7 @@ import testhelpers.BaseTestWithApplicationAndDatabase;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 import static play.mvc.Http.Status.FORBIDDEN;
 import static play.mvc.Http.Status.OK;
 import static play.mvc.Http.Status.UNAUTHORIZED;
@@ -78,6 +76,48 @@ public class TagControllerTest extends BaseTestWithApplicationAndDatabase {
         return route(app, request);
     }
 
+    @Test
+    public void removePendingTagsCheckDelete() {
+        int userId = 2;
+        User user = UserAccessor.getById(userId);
+
+        Tag tag = new Tag("Tag One");
+        tag.getPendingUsers().add(user);
+        TagAccessor.insert(tag);
+        int tagId = tag.getTagId();
+        TagAccessor.removePendingTagsFromUserId(userId);
+
+        Tag refreshedTag = TagAccessor.getTagById(tagId);
+        assertNull(refreshedTag);
+    }
+
+    @Test
+    public void removePendingTagsCheckRemovesOnlyGivenUser() {
+        int userId = 2;
+        User user1 = UserAccessor.getById(userId);
+        User user2 = UserAccessor.getById(userId + 1);
+
+        Tag tag = new Tag("Tag One");
+        tag.getPendingUsers().add(user1);
+        tag.getPendingUsers().add(user2);
+        TagAccessor.insert(tag);
+        int tagId = tag.getTagId();
+        TagAccessor.removePendingTagsFromUserId(userId);
+
+        Tag refreshedTag = TagAccessor.getTagById(tagId);
+        assertEquals(tag, refreshedTag);
+    }
+
+    @Test
+    public void removePendingTagsWithNoUsersOrItems() {
+        Tag tag = new Tag("Empty tag");
+        TagAccessor.insert(tag);
+        int tagId = tag.getTagId();
+        TagAccessor.removePendingTagsFromUserId(0);
+
+        Tag refreshedTag = TagAccessor.getTagById(tagId);
+        assertNull(refreshedTag);
+    }
 
     @Test
     public void getItems() {

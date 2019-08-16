@@ -323,6 +323,13 @@ INSERT INTO `album`(`album_id`, `user`, `destination`, `primary_photo_media_id`,
 (12, null, 8, null, null,'Vatican City'),
 (13, null, 9, null, null,'Lincoln Memorial');
 
+-- media
+INSERT INTO `media` (`dtype`, `media_id`, `user`, `is_public`, `url`, `is_media_public`, `caption`, `is_profile`) VALUES
+('UserPhoto', 1, 2, 1, '1_test.png', 1, '', 0);
+
+-- album_media
+INSERT INTO `album_media` (`album_album_id`, `media_media_id`) VALUES
+(2, 1);
 
 -- Traveller Types
 -- Order will look a bit weird on phpMyAdmin as it sorts alphabetically by default
@@ -426,6 +433,12 @@ INSERT INTO `destination_tag`(`destination_destid`, `tag_tag_id`) VALUES
 (1,1),
 (2,2),
 (1,3);
+
+-- media_tag
+INSERT INTO `seng302-2019-team800-test`.`media_tag` (`media_media_id`, `tag_tag_id`) VALUES ('1', '1');
+INSERT INTO `seng302-2019-team800-test`.`media_tag` (`media_media_id`, `tag_tag_id`) VALUES ('1', '2');
+INSERT INTO `seng302-2019-team800-test`.`media_tag` (`media_media_id`, `tag_tag_id`) VALUES ('1', '3');
+
 
 -- visit
 INSERT INTO `visit` (`visitid`, `visitorder`, `destination`, `trip`, `arrival`,

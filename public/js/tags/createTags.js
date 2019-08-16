@@ -108,7 +108,7 @@ function addTagLabel(name) {
 
 function sendAddTagRequest(name, taggableType, taggableId) {
     let url;
-    taggableId == null ? url = '/tags' :  url = `/tags/${taggableId}`;
+    taggableId === "" ? url = '/tags' :  url = `/tags/${taggableId}`;
     $.ajax({
         type: 'PUT',
         url: url,

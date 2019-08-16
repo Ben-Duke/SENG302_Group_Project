@@ -159,9 +159,9 @@ public class HomeController {
             String unusedPhotoUrl = newPhoto.getUnusedUserPhotoFileName();
             newPhoto.setUrl(unusedPhotoUrl);
             Set<Tag> tags = TagAccessor.findPendingTagsFromUserId(user.getUserid());
-            TagAccessor.removePendingTagsFromUserId(user.getUserid());
             UploadPhotoCommand uploadPhotoCommand = new UploadPhotoCommand(newPhoto, fileObject, user, albumName, tags);
             user.getCommandManager().executeCommand(uploadPhotoCommand);
+            TagAccessor.removePendingTagsFromUserId(user.getUserid());
             return redirect(routes.HomeController.showhome());
         } else {
             return badRequest();

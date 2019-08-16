@@ -114,7 +114,7 @@
         position: absolute;
         z-index: 13;
         left: 10px;
-        top: 70px;
+        top: 60px;
         width: 30%;
         max-width: 500px;
         min-width: 250px;
@@ -257,7 +257,7 @@
                     <h4 style="text-align: left">My Destinations</h4>
                     <a class="btn btn-primary createDestBtn" onclick="viewCreatePanel()">
                         &#10133</a>
-                    <div id="dest-list-group" class="list-group">
+                    <div class="list-group">
                         @for(destination <- destinations) {
                             @if(!destination.getIsPublic()) {
                                 <a onclick="displayDestination(@destination.getDestId(),
@@ -398,7 +398,7 @@
 
     <script src="@routes.Assets.at("js/map/map.js")"></script>
     <script src="@routes.Assets.at("js/map/mapStyle.js")"></script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC9Z1g5p2rQtS0nHgDudzCCXVl2HJl3NPI&callback=initMap&libraries=drawing,places"
+    <script src="https://maps.googleapis.com/maps/api/js?key=&callback=initMap&libraries=drawing,places"
     async defer></script>
 
 }

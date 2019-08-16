@@ -91,6 +91,15 @@ public class TagAccessor {
     }
 
     /**
+     * Find all users that the tag is pending for. Used for testing purposes.
+     * @param tagId The id of the tag
+     * @return Set of users
+     */
+    public static Set<User> findUsersTagIsPendingFor(Integer tagId) {
+        return getTagById(tagId).getPendingUsers();
+    }
+
+    /**
      * Removes pending tags based on a user id.
      * Implicitly clears all unneeded tags after the pending tags are removed.
      * @param userId the user id

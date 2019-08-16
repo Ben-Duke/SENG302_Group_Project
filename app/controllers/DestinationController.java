@@ -639,8 +639,7 @@ public class DestinationController extends Controller {
             if (countryList != null) {
                 countryList.replace(dynamicDestForm.get("country"), true);
             }
-
-            return badRequest();
+            return badRequest(destForm.errorsAsJson());
         } else {
             return null;    // no errors
         }

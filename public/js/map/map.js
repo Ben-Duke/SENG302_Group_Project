@@ -661,28 +661,26 @@ function displayTrip(tripId, startLat, startLng) {
         isNewTrip = false;
     }
     let checkBox = document.getElementById("Toggle" + tripId);
-    if (checkBox.checked === true) {
-        if (currentlyDisplayedTripId !== undefined) {
-            document.getElementById("singleTrip_" + currentlyDisplayedTripId).style.display = "none";
-        } else {
+    if (currentlyDisplayedTripId !== undefined) {
+        document.getElementById("singleTrip_" + currentlyDisplayedTripId).style.display = "none";
+    } else {
+        document.getElementById("placeholderTripTable").style.display = "none";
+    }
+    if(isNewTrip === false) {
+        if(document.getElementById("placeholderTripTable").style.display != "none") {
             document.getElementById("placeholderTripTable").style.display = "none";
         }
-        if(isNewTrip === false) {
-            if(document.getElementById("placeholderTripTable").style.display != "none") {
-                document.getElementById("placeholderTripTable").style.display = "none";
-            }
-            document.getElementById("singleTrip_" + tripId).style.display = "block";
-        } else {
-            document.getElementById("placeholderTripTable").style.display = "block";
-        }
-
-        var tripStartLatLng = new google.maps.LatLng(
-            startLat, startLng
-        );
-        currentlyDisplayedTripId = tripId;
-        window.globalMap.setCenter(tripStartLatLng);
-        window.globalMap.setZoom(9);
+        document.getElementById("singleTrip_" + tripId).style.display = "block";
+    } else {
+        document.getElementById("placeholderTripTable").style.display = "block";
     }
+
+    var tripStartLatLng = new google.maps.LatLng(
+        startLat, startLng
+    );
+    currentlyDisplayedTripId = tripId;
+    window.globalMap.setCenter(tripStartLatLng);
+    window.globalMap.setZoom(9);
 }
 
 
@@ -1191,8 +1189,6 @@ function viewCreatePanel() {
     if (currentlyDisplayedDestId !== undefined) {
         document.getElementById('singleDestination_'+currentlyDisplayedDestId).style.display = 'none';
     }
-    document.getElementById("latitude").value = '';
-    document.getElementById("longitude").value = '';
     document.getElementById('createDestination').style.display = 'block';
 }
 
@@ -1277,8 +1273,14 @@ function initMapPositionListeners() {
                                              document.getElementById("destName").value = placeData[1].long_name;
                                          }
                                      }else{
-                                         document.getElementById("destName").value = data.result.name;
+                                         if (data.result.name == "Unnamed Road") {
+                                             document.getElementById("destName").value = placeData[1].long_name;
+                                         } else {
+                                             document.getElementById("destName").value = data.result.name;
+                                         }
                                      }
+                                    $('[href="#destinationsTab"]').tab('show');
+                                    viewCreatePanel();
                                 }
                             },
                             error: function (error) {
@@ -1340,6 +1342,44 @@ function checkTripVisits() {
             }
         })
 }
+
+$("#formBody").submit(function(e){
+    e.preventDefault();
+});
+
+$("#submit").click(function(e){
+    var formData = {
+        destName: $("#destName").val(),
+        country: $("#country").val(),
+        district: $("#district").val(),
+        latitude: $("#latitude").val(),
+        longitude: $("#longitude").val(),
+        destType: $("#destType").val()
+    }
+    $.ajax({
+        type: 'POST',
+        url: '/users/destinations/save',
+        contentType: 'application/json',
+        data: JSON.stringify(formData),
+        dataType: 'text',
+        timeout: 5000,
+        success: function(response) {
+            location.reload();
+        },
+        error: function(response) {
+            let responseData = JSON.parse(response.responseText);
+            let errorForm = {
+                destName: responseData.destName[0],
+                country: responseData.country[0],
+                district: responseData.district[0],
+                latitude: responseData.latitude[0],
+                longitude: responseData.longitude[0],
+                destType: responseData.destType[0]
+            };
+        }
+    });
+});
+
 
 
 window.onload = function() {

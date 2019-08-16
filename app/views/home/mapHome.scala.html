@@ -245,9 +245,7 @@
 
                     }
                     <div class="singleDestination" id="createDestination" style="margin-top: 20px">
-                        @helper.form(action = helper.CSRF(routes.DestinationController.saveDestinationFromRequest())) {
-                            @formBody()
-                        }
+                        @formBody()
                     </div>
 
                 </div>
@@ -259,7 +257,7 @@
                     <h4 style="text-align: left">My Destinations</h4>
                     <a class="btn btn-primary createDestBtn" onclick="viewCreatePanel()">
                         &#10133</a>
-                    <div class="list-group">
+                    <div id="dest-list-group" class="list-group">
                         @for(destination <- destinations) {
                             @if(!destination.getIsPublic()) {
                                 <a onclick="displayDestination(@destination.getDestId(),

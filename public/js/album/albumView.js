@@ -166,11 +166,23 @@ function setPrivacyListener(setPrivacy, mediaId) {
     clone.addEventListener('click', privacyListener )
 }
 
+function getTags(albumData, i) {
+    const mediaId = albumData[i]["mediaId"];
+
+    $.ajax({
+        type: 'GET',
+        url: `/photos/${mediaId}/tags`,
+        contentType: 'application/json'
+    })
+}
+
 /**
  * Sets listeners for all buttons on the current slide
  * @param i the index of the current slide
  */
 function setSlideListeners(i) {
+    console.log('setting slide listeners');
+
     const dataset = document.getElementById('myModal').dataset;
     const isOwner = dataset.isowner;
     const albumId = dataset.album;
@@ -262,7 +274,10 @@ async function addAlbum(albumData, userId) {
         showSlides(slideIndex);
 }
 
+/** Called when displaying the grid of photos */
 async function displayGrid(i, albumData, path) {
+    console.log('display grid called');
+
     let url = albumData[i]["urlWithPath"];
     let imgContainer = document.createElement("div");
     imgContainer.classList.add("container");
@@ -313,15 +328,18 @@ async function displaySlides(i, albumData, path) {
     captionInput.setAttribute("captionMediaId", mediaId);
     captionInput.setAttribute("contenteditable", "true");
     captionInput.setAttribute("style", "color: white;");
+
     mySlidesDiv.classList.add("mySlides");
     mySlidesDiv.setAttribute("data-privacy", albumData[i]["isMediaPublic"]);
     mySlidesDiv.setAttribute("data-mediaId", mediaId);
+
     var img1 = document.createElement("img");
     img1.setAttribute("id", "img"+(i+1));
     img1.classList.add("center-block");
     img1.src = path + encodeURIComponent(url);
     mySlidesDiv.appendChild(img1);
     mySlidesDiv.appendChild(captionInput);
+
     lightBox.appendChild(mySlidesDiv);
     var content = document.querySelector('div[data-mediaId="'+mediaId+'"] [contenteditable]');
     // 1. Listen for changes of the contenteditable element
@@ -578,7 +596,10 @@ function currentSlide(n) {
     showSlides(slideIndex = n);
 }
 
+/** Called when displaying a photo modal */
 function showSlides(n) {
+    console.log('show slides called');
+
     var i;
     var slides = document.getElementsByClassName("mySlides");
     if (n > slides.length) {slideIndex = 1}

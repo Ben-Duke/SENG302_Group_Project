@@ -34,7 +34,6 @@
 
     <!-- The Modal/Lightbox -->
     <div id="myModal" class="modal" data-album="@album.getAlbumId" data-isOwner="@album.userIsOwner(user)">
-
         <div class="modal-content">
             <div id="snackbar"></div>
             <div id="lightbox-modal">
@@ -45,6 +44,9 @@
             <a class="prev" onclick="plusSlides(-1)">&#10094;</a>
             <a class="next" onclick="plusSlides(1)">&#10095;</a>
 
+            <div>
+                <a class="btn btn-link" id="tag-list">Testing tags</a>
+            </div>
 
             <div id="existingAlbumId" class="hidden">@album.albumId</div>
             @if(album.getOwner == user || user.userIsAdmin) {

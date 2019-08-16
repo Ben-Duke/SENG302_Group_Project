@@ -111,6 +111,8 @@ public class TagController {
         }
         Tag tag = TagAccessor.getTagByName(tagName);
         if(tag != null) {
+            tag.getPendingUsers().add(user);
+            TagAccessor.update(tag);
             return ok();
         }
         tag = new Tag(tagName);

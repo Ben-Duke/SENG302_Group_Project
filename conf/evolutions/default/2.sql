@@ -412,10 +412,27 @@ INSERT INTO `user_traveller_type` (`user_userid`, `traveller_type_ttypeid`) VALU
 -- no data
 
 -- tags
-INSERT INTO `tag`(`tag_id`, `name`) VALUES (1,'Fun place to stay');
+INSERT INTO `tag`(`tag_id`, `name`) VALUES
+(1,'Fun place to stay'),
+(2,'christchurch'),
+(3,'newzealand'),
+(4,'canterburynz'),
+(5,'parks'),
+(6,'chchnz'),
+(7,'sunrise'),
+(8,'canterbury'),
+(9,'Fun in the sun');
 
 -- destination_tag
-INSERT INTO `destination_tag`(`destination_destid`, `tag_tag_id`) VALUES (1,1);
+INSERT INTO `destination_tag`(`destination_destid`, `tag_tag_id`) VALUES
+(1,1),
+(1,2),
+(1,3),
+(1,4),
+(1,5),
+(1,6),
+(1,7),
+(1,8);
 
 -- visit
 INSERT INTO `visit` (`visitid`, `visitorder`, `destination`, `trip`, `arrival`,

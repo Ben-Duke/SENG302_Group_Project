@@ -27,6 +27,7 @@ public class Tag extends Model implements Comparable{
      * Users in the process of adding tags to something that doesn't have an id yet.
      */
     @ManyToMany
+    @JsonIgnore
     private Set<User> pendingUsers;
 
     @Constraints.Required

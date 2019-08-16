@@ -107,10 +107,11 @@ function addTagLabel(name) {
 }
 
 function sendAddTagRequest(name, taggableType, taggableId) {
-
+    let url;
+    taggableId == null ? url = '/tags' :  url = `/tags/${taggableId}`;
     $.ajax({
         type: 'PUT',
-        url: '/tags/' + taggableId,
+        url: url,
         data: JSON.stringify({
             tag: name,
             taggableType: taggableType

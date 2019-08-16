@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static play.mvc.Http.Status.FORBIDDEN;
 import static play.mvc.Http.Status.OK;
@@ -24,6 +25,59 @@ import static play.mvc.Http.Status.UNAUTHORIZED;
 import static play.test.Helpers.*;
 
 public class TagControllerTest extends BaseTestWithApplicationAndDatabase {
+
+    @Test
+    public void addValidNewRawTagCheckResponse() {
+        Result result = addRawTagHelper("Brand new original tag", 2);
+        assertEquals(CREATED, result.status());
+    }
+
+    @Test
+    public void addValidNewRawTagCheckDatabase() {
+        String tagName = "Brand new original tag";
+        addRawTagHelper(tagName, 2);
+        assertTrue(TagAccessor.exists(new Tag(tagName)));
+    }
+
+    @Test
+    public void addValidExistingRawTagCheckResponse() {
+        Result result = addRawTagHelper("Vacation Spot", 2);
+        assertEquals(OK, result.status());
+    }
+
+    @Test
+    public void addValidExistingRawTagCheckDatabase() {
+        String tagName = "Vacation Spot";
+        addRawTagHelper(tagName, 2);
+        assertTrue(TagAccessor.exists(new Tag(tagName)));
+    }
+
+    @Test
+    public void addRawTagNoUserLoggedIn() {
+        Result result = addRawTagHelper("Great tag", null);
+        assertEquals(UNAUTHORIZED, result.status());
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void addRawTagNoTag() {
+       addRawTagHelper(null, 2);
+    }
+
+    private Result addRawTagHelper(String tagName, Integer userId) {
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(PUT)
+                .uri("/tags");
+        if (tagName != null) {
+            Map<String, String> data = new HashMap<>();
+            data.put("tag", tagName);
+            request.bodyJson(Json.toJson(data));
+        }
+        if (userId != null) {
+            request.session("connected", userId.toString());
+        }
+        return route(app, request);
+    }
+
 
     @Test
     public void getItems() {

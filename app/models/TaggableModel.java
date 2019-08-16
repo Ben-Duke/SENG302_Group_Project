@@ -62,7 +62,6 @@ public abstract class TaggableModel extends Model {
      * @return true if the tag is not already in the set, else false
      */
     public boolean addTag(Tag tag) {
-        System.out.println("TAGS2 " + tag);
         if (tag == null) {
             throw new IllegalArgumentException("Added Tag cannot be null");
         }

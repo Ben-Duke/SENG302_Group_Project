@@ -382,7 +382,7 @@ PUT /tags/search                                            controllers.TagContr
 PUT /tags/:taggableId                                          controllers.TagController.addTagToTaggable(request : Request, taggableId : Integer)
 
 #Adds a raw tag
-PUT /tags/                                                      controllers.TagController.addRawTag(request : Request)
+PUT /tags                                                      controllers.TagController.addRawTag(request : Request)
 
 # Tag page
 GET /tags/display/:tagName                                            controllers.TagController.displayTags(request: Request, tagName: String)

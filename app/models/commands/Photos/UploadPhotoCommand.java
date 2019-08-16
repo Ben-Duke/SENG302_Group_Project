@@ -76,7 +76,6 @@ public class UploadPhotoCommand extends UndoableCommand {
         userPhoto = UserPhotoAccessor.getUserPhotoByUrl(userPhoto.getUrl());
         addUploadToAlbum(user, userPhoto, albumName);
         for (Tag tag : tags) {
-            System.out.println("TAGS1 " + tag);
             userPhoto.addTag(tag);
             TagAccessor.update(tag);
             UserPhotoAccessor.update(userPhoto);

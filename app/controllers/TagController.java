@@ -139,6 +139,12 @@ public class TagController {
         }
     }
 
+    /**
+     * Removes a tag from a taggable item
+     * @param request request containing the taggableType and the name of the tag
+     * @param taggableId the id of the taggable item
+     * @return Result from the associated tag remove method
+     */
     public Result removeTagFromTaggable(Http.Request request, int taggableId) {
         String tagName = request.body().asJson().get("taggableType").asText();
         switch (tagName){
@@ -153,6 +159,11 @@ public class TagController {
         }
     }
 
+    /**
+     * Removes all pending tags from a user
+     * @param request the request containing the logged in user
+     * @return unauthorized if no user logged in, otherwise ok if successful
+     */
     public Result removeUsersPendingTags(Http.Request request) {
         User user = User.getCurrentUser(request);
         if (user == null) {
@@ -239,6 +250,7 @@ public class TagController {
         photo.removeTag(tag);
         photo.update();
         tag.update();
+        TagAccessor.clearUnneededTags();
         return ok();
     }
 
@@ -320,6 +332,7 @@ public class TagController {
         destination.removeTag(tag);
         destination.update();
         tag.update();
+        TagAccessor.clearUnneededTags();
         return ok();
     }
 
@@ -438,6 +451,7 @@ public class TagController {
                 trip.removeTag(tagEbeans);
                 TripAccessor.update(trip);
                 TagAccessor.update(tagEbeans);
+                TagAccessor.clearUnneededTags();
                 return ok("Tag removed from trip");
             }
             else{

@@ -107,29 +107,30 @@ function addTagLabel(name) {
     }
 }
 
+/**
+ * Removes a tag from the item. If there is no item it clears all of the pending tags of a user
+ * @param name the name of the tag to clear
+ */
 function removeTagFromItem(name) {
     let dataset = document.getElementById('tag-list').dataset;
     let taggableType = dataset.taggabletype;
     let taggableId = dataset.taggableid;
-    if (taggableId !== "") {
-        $.ajax({
-            type: 'DELETE',
-            url: `/tags/${taggableId}`,
-            data: JSON.stringify({
-                tag: name,
-                taggableType: taggableType
-            }),
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        }).done(() => {
-            addTagLabel(name)
-        }).fail((xhr, textStatus, errorThrown) => {
-            console.log(xhr.status + " " + textStatus + " " + errorThrown);
-        });
-    } else {
+    let url;
+    taggableId === "" ? url = '/tags' : url = `/tags/${taggableId}`;
+    $.ajax({
+        type: 'DELETE',
+        url: url,
+        data: JSON.stringify({
+            tag: name,
+            taggableType: taggableType
+        }),
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    }).fail((xhr, textStatus, errorThrown) => {
+        console.log(xhr.status + " " + textStatus + " " + errorThrown);
+    });
 
-    }
 }
 
 function sendAddTagRequest(name, taggableType, taggableId) {

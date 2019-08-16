@@ -178,6 +178,7 @@ function setSlideListeners(i) {
             setMakeProfilePictureListener(albumData, i);
             const mediaId = albumData[i]["mediaId"];
             const caption = albumData[i]["caption"];
+            document.getElementById("tag-list").setAttribute("data-taggableId", mediaId);
             if (caption != "") {
                 document.querySelector('div[data-mediaId="'+mediaId+'"] [contenteditable]').innerHTML = caption.toString();
             } else {
@@ -1042,8 +1043,11 @@ function openDropdown() {
 window.onclick = function(event) {
     if (!event.target.matches('.dropbtn')) {
         var openDropdown = document.getElementsByClassName("optionsDropdown");
-        if (openDropdown.classList.contains('show')) {
-            openDropdown.classList.remove('show');
+        console.log(openDropdown);
+        if (openDropdown.classList !== undefined) {
+            if (openDropdown.classList.contains('show')) {
+                openDropdown.classList.remove('show');
+            }
         }
     }
 

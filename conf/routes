@@ -381,6 +381,11 @@ PUT /tags/search                                            controllers.TagContr
 #Adds a tag to a taggable
 PUT /tags/:taggableId                                          controllers.TagController.addTagToTaggable(request : Request, taggableId : Integer)
 
+# Deletes a tag from a taggable
+DELETE /tags/:taggableId                                      controllers.TagController.removeTagFromTaggable(request : Request, taggableId : Integer)
+
+DELETE /tags                                                  controllers.TagController.removeUsersPendingTags(request: Request)
+
 #Adds a raw tag
 PUT /tags                                                      controllers.TagController.addRawTag(request : Request)
 

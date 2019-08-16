@@ -96,6 +96,7 @@ function addTagLabel(name) {
     newRemove.onclick = function() {
         tagList.removeChild(newTag);
         toAddTagList.delete(name.toLowerCase());
+        removeTagFromItem(name);
     };
     newRemove.appendChild(newIcon);
     newTag.appendChild(newText);
@@ -103,6 +104,31 @@ function addTagLabel(name) {
     if(!toAddTagList.has(name.toLowerCase())) {
         toAddTagList.add(name.toLowerCase());
         tagList.appendChild(newTag);
+    }
+}
+
+function removeTagFromItem(name) {
+    let dataset = document.getElementById('tag-list').dataset;
+    let taggableType = dataset.taggabletype;
+    let taggableId = dataset.taggableid;
+    if (taggableId !== "") {
+        $.ajax({
+            type: 'DELETE',
+            url: `/tags/${taggableId}`,
+            data: JSON.stringify({
+                tag: name,
+                taggableType: taggableType
+            }),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).done(() => {
+            addTagLabel(name)
+        }).fail((xhr, textStatus, errorThrown) => {
+            console.log(xhr.status + " " + textStatus + " " + errorThrown);
+        });
+    } else {
+
     }
 }
 

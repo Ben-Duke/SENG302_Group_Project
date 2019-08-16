@@ -139,6 +139,28 @@ public class TagController {
         }
     }
 
+    public Result removeTagFromTaggable(Http.Request request, int taggableId) {
+        String tagName = request.body().asJson().get("taggableType").asText();
+        switch (tagName){
+            case "trip":
+                return removeTripTag(request, taggableId);
+            case "destination":
+                return removeDestTag(request, taggableId);
+            case "photo":
+                return removePhotoTag(request, taggableId);
+            default:
+                return null;
+        }
+    }
+
+    public Result removeUsersPendingTags(Http.Request request) {
+        User user = User.getCurrentUser(request);
+        if (user == null) {
+            return unauthorized();
+        }
+        TagAccessor.removePendingTagsFromUserId(user.getUserid());
+        return ok();
+    }
 
     /**
      * Adds a tag to a photo

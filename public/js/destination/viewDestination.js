@@ -95,3 +95,30 @@ function displayPhoto(photoId) {
     document.getElementById('caro-'+photoId).classList.add('active');
     activePhotoId = photoId;
 }
+
+/**
+ * Sets a photo privacy to the setting specified
+ * @param mediaId the id of the media to change privacy
+ * @param setPublic true to set to public, false to set to private
+ */
+function setMediaPrivacy(mediaId, setPublic) {
+    const intPublic = setPublic ? 1 : 0;
+    $.ajax({
+        type: 'GET',
+        url: '/users/home/photoPrivacy/' + mediaId + '/' + intPublic,
+        contentType: 'application/json',
+        success: () => {
+            if (!setPublic) {
+                let publicButton = document.getElementById("makePrivateLink-"+mediaId);
+                publicButton.innerHTML = "Make Public";
+                publicButton.setAttribute('id', "makePublicLink-"+mediaId);
+                publicButton.setAttribute('onclick', "setMediaPrivacy("+mediaId+", " + !setPublic + ")");
+            } else {
+                let privateButton = document.getElementById("makePublicLink-"+mediaId);
+                privateButton.innerHTML = "Make Private";
+                privateButton.setAttribute('id', "makePrivateLink-"+mediaId);
+                privateButton.setAttribute('onclick', "setMediaPrivacy("+mediaId+", " + !setPublic + ")");
+            }
+        }
+    });
+}

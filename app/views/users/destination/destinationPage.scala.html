@@ -6,6 +6,9 @@
 
 
 <style>
+    body{
+        overflow-x: hidden;
+    }
     #map {
         height: 610px;
     }
@@ -231,6 +234,17 @@
                             @if(photo != destination.getPrimaryAlbum.getPrimaryPhoto()) {
                                 <a class="btn btn-primary" id="setPrimaryPicture" href="@routes.DestinationController.setPrimaryPhoto(photo.getMediaId(), destination.getDestId())">
                                 Set as primary</a>
+                            }
+                            @if(photo.isOwner(user)) {
+                                @if(photo.getIsPublic()) {
+                                    @if(photo != destination.getPrimaryAlbum.getPrimaryPhoto()) {
+                                        <a class="btn btn-primary" id="makePrivateLink-@photo.getMediaId()" href="#" onclick="setMediaPrivacy(@photo.getMediaId(), false)">
+                                            Make Private</a>
+                                    }
+                                } else {
+                                    <a class="btn btn-primary" id="makePublicLink-@photo.getMediaId()" href="#" onclick="setMediaPrivacy(@photo.getMediaId(), true)">
+                                        Make Public</a>
+                                }
                             }
 
                             <a class="btn btn-danger" href="@routes.DestinationController.unlinkPhotoFromDestination(photo.getMediaId(), destination.getDestId())">

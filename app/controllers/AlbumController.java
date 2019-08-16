@@ -404,16 +404,24 @@ public class AlbumController extends Controller {
             photo.setProfile(false);
             UserPhotoAccessor.update(photo);
 
+            List<Media> medias = new ArrayList<>();
+            Media media = MediaAccessor.getMediaById(photo.getMediaId());
             for (Album album: user.getAlbums()) {
-                if (album.containsMedia(photo)) {
-                    album.removeMedia(photo);
-                    AlbumAccessor.update(album);
+                if (album.containsMedia(media)) {
+                    medias.add(media);
+                    RemoveMediaFromAlbumCommand cmd = new RemoveMediaFromAlbumCommand(album, medias);
+                    user.getCommandManager().executeCommand(cmd);
                 }
             }
 
-            if (user.getUserPhotos().contains(photo)) {
+
+            if ((user.getUserPhotos().contains(photo))) {
                 user.getUserPhotos().remove(photo);
                 UserAccessor.update(user);
+                if(media.getAlbums().isEmpty()) {
+                    UserPhotoAccessor.delete(photo);
+                    UserPhotoAccessor.update(photo);
+                }
             }
 
             Ebean.commitTransaction();

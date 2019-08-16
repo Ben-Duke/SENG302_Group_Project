@@ -10,7 +10,7 @@ import javax.persistence.MappedSuperclass;
 import java.util.*;
 
 @MappedSuperclass
-public abstract class TaggableModel extends Model {
+public abstract class TaggableModel extends BaseModel {
 
     @JsonIgnore
     @ManyToMany

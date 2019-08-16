@@ -8,7 +8,7 @@ import models.*;
 import play.libs.Json;
 import play.mvc.Http;
 import play.mvc.Result;
-import views.html.users.tag.displayTag;
+import views.html.users.tag.*;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;

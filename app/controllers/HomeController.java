@@ -122,7 +122,7 @@ public class HomeController {
             Map<String, String[]> dataPart = request.body().asMultipartFormData().asFormUrlEncoded();
             boolean isPublic = false;
             ArrayList<String> tags = new ArrayList<>();
-            if (dataPart.get("private") == null) {
+            if (dataPart.get("private")[0].equals("false")) {
                 isPublic = true;
             }
             if (dataPart.get("tags[]") != null) {
@@ -131,11 +131,11 @@ public class HomeController {
             //Get the photo data from the multipart form data encoding
             Http.MultipartFormData<Files.TemporaryFile> body = request.body().asMultipartFormData();
             Http.MultipartFormData.FilePart<Files.TemporaryFile> picture = body.getFile("picture");
-            String albumName = dataPart.get("Album Search")[0];
+            String albumName = dataPart.get("album")[0];
             if ((picture != null) && (!albumName.isEmpty())) {
                 return getResultFromSaveUserPhoto(user, isPublic, picture, albumName, tags);
             } else {
-                return badRequest("Error uploading the picture.");
+                return redirect(routes.HomeController.showhome());
             }
         } else {
             return unauthorized("Unauthorized: Can not upload picture.");

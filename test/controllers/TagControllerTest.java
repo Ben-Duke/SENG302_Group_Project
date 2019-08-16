@@ -56,12 +56,18 @@ public class TagControllerTest extends BaseTestWithApplicationAndDatabase {
         assertEquals(UNAUTHORIZED, result.status());
     }
 
+    @Test
+    public void addRawTagWithEmptyTagName() {
+        Result result = addRawTagHelper("", 2);
+        assertEquals(BAD_REQUEST, result.status());
+    }
+
     @Test(expected = NullPointerException.class)
     public void addRawTagNoTag() {
        addRawTagHelper(null, 2);
     }
 
-    private Result addRawTagHelper(String tagName, Integer userId) {
+    public Result addRawTagHelper(String tagName, Integer userId) {
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(PUT)
                 .uri("/tags");
@@ -74,49 +80,6 @@ public class TagControllerTest extends BaseTestWithApplicationAndDatabase {
             request.session("connected", userId.toString());
         }
         return route(app, request);
-    }
-
-    @Test
-    public void removePendingTagsCheckDelete() {
-        int userId = 2;
-        User user = UserAccessor.getById(userId);
-
-        Tag tag = new Tag("Tag One");
-        tag.getPendingUsers().add(user);
-        TagAccessor.insert(tag);
-        int tagId = tag.getTagId();
-        TagAccessor.removePendingTagsFromUserId(userId);
-
-        Tag refreshedTag = TagAccessor.getTagById(tagId);
-        assertNull(refreshedTag);
-    }
-
-    @Test
-    public void removePendingTagsCheckRemovesOnlyGivenUser() {
-        int userId = 2;
-        User user1 = UserAccessor.getById(userId);
-        User user2 = UserAccessor.getById(userId + 1);
-
-        Tag tag = new Tag("Tag One");
-        tag.getPendingUsers().add(user1);
-        tag.getPendingUsers().add(user2);
-        TagAccessor.insert(tag);
-        int tagId = tag.getTagId();
-        TagAccessor.removePendingTagsFromUserId(userId);
-
-        Tag refreshedTag = TagAccessor.getTagById(tagId);
-        assertEquals(tag, refreshedTag);
-    }
-
-    @Test
-    public void removePendingTagsWithNoUsersOrItems() {
-        Tag tag = new Tag("Empty tag");
-        TagAccessor.insert(tag);
-        int tagId = tag.getTagId();
-        TagAccessor.removePendingTagsFromUserId(0);
-
-        Tag refreshedTag = TagAccessor.getTagById(tagId);
-        assertNull(refreshedTag);
     }
 
     @Test

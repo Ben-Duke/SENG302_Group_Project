@@ -178,6 +178,7 @@ function setSlideListeners(i) {
             setMakeProfilePictureListener(albumData, i);
             const mediaId = albumData[i]["mediaId"];
             const caption = albumData[i]["caption"];
+            document.getElementById("tag-list").setAttribute("data-taggableId", mediaId);
             if (caption != "") {
                 document.querySelector('div[data-mediaId="'+mediaId+'"] [contenteditable]').innerHTML = caption.toString();
             } else {
@@ -308,11 +309,17 @@ async function displaySlides(i, albumData, path) {
     mySlidesDiv.setAttribute("data-privacy", albumData[i]["isMediaPublic"]);
     mySlidesDiv.setAttribute("data-mediaId", mediaId);
     var img1 = document.createElement("img");
+
     img1.setAttribute("id", "img"+(i+1));
     img1.classList.add("center-block");
     img1.src = path + encodeURIComponent(url);
-    mySlidesDiv.appendChild(img1);
-    mySlidesDiv.appendChild(captionInput);
+    var figure = document.createElement("figure");
+    figure.appendChild(img1);
+    var figureCaption = document.createElement("figcaption");
+    figureCaption.appendChild(captionInput);
+    figure.appendChild(figureCaption);
+    mySlidesDiv.appendChild(figure);
+    //mySlidesDiv.appendChild(captionInput);
     lightBox.appendChild(mySlidesDiv);
     var content = document.querySelector('div[data-mediaId="'+mediaId+'"] [contenteditable]');
     // 1. Listen for changes of the contenteditable element
@@ -578,7 +585,7 @@ function showSlides(n) {
     for (i = 0; i < slides.length; i++) {
         slides[i].style.display = "none";
     }
-    slides[slideIndex-1].style.display = "block";
+    slides[slideIndex-1].style.display = "inline-block";
     const privacyBtn = document.getElementById("privacyBtn")
     if (privacyBtn != null) {
         if (slides[slideIndex - 1].getAttribute("data-privacy") === "true") {
@@ -1021,5 +1028,27 @@ function deleteAndUnlinkPhoto() {
     });
 
 
+
+
+
+}
+
+/* When the user clicks on the button,
+toggle between hiding and showing the dropdown content */
+function openDropdown() {
+    document.getElementById("optionsDropdown").classList.toggle("show");
+}
+
+// Close the dropdown menu if the user clicks outside of it
+window.onclick = function(event) {
+    if (!event.target.matches('.dropbtn')) {
+        var openDropdown = document.getElementsByClassName("optionsDropdown");
+        console.log(openDropdown);
+        if (openDropdown.classList !== undefined) {
+            if (openDropdown.classList.contains('show')) {
+                openDropdown.classList.remove('show');
+            }
+        }
+    }
 
 }

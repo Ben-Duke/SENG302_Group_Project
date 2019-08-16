@@ -435,9 +435,10 @@ INSERT INTO `destination_tag`(`destination_destid`, `tag_tag_id`) VALUES
 (1,3);
 
 -- media_tag
-INSERT INTO `seng302-2019-team800-test`.`media_tag` (`media_media_id`, `tag_tag_id`) VALUES ('1', '1');
-INSERT INTO `seng302-2019-team800-test`.`media_tag` (`media_media_id`, `tag_tag_id`) VALUES ('1', '2');
-INSERT INTO `seng302-2019-team800-test`.`media_tag` (`media_media_id`, `tag_tag_id`) VALUES ('1', '3');
+INSERT INTO `media_tag` (`media_media_id`, `tag_tag_id`) VALUES
+(1, 1),
+(1, 2),
+(1, 3);
 
 
 -- visit

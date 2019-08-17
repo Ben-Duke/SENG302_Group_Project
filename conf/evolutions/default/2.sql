@@ -417,6 +417,10 @@ INSERT INTO `tag`(`tag_id`, `name`) VALUES
 (2, 'Vacation spot'),
 (3, 'Top Rated');
 
+-- pending users
+INSERT INTO `tag_user`(`tag_tag_id`,`user_userid`) VALUES
+(2,2);
+
 -- destination_tag
 INSERT INTO `destination_tag`(`destination_destid`, `tag_tag_id`) VALUES
 (1,1),
@@ -459,6 +463,8 @@ delete from destination_tag;
 delete from media_tag;
 
 delete from trip_tag;
+
+delete from tag_user;
 
 delete from tag;
 

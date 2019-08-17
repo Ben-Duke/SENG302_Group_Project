@@ -1,12 +1,8 @@
 package accessors;
 
 import models.*;
-
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 
 public class TagAccessor {
@@ -85,4 +81,61 @@ public class TagAccessor {
         return taggedItems;
     }
 
+    /**
+     * Find all tags that the user is currently adding to a taggable item that has not been fully uploaded
+     * @param userId The id of the current user
+     * @return Set of tags
+     */
+    public static Set<Tag> findPendingTagsFromUserId(Integer userId) {
+        return Tag.find.query().where().eq("pendingUsers.userid", userId.toString()).findSet();
+    }
+
+    /**
+     * Find all users that the tag is pending for. Used for testing purposes.
+     * @param tagId The id of the tag
+     * @return Set of users
+     */
+    public static Set<User> findUsersTagIsPendingFor(Integer tagId) {
+        return getTagById(tagId).getPendingUsers();
+    }
+
+    /**
+     * Removes pending tags based on a user id.
+     * Implicitly clears all unneeded tags after the pending tags are removed.
+     * @param userId the user id
+     */
+    public static void removePendingTagsFromUserId(int userId) {
+        Set<Tag> pendingTags = findPendingTagsFromUserId(userId);
+        for (Tag tag: pendingTags) {
+            tag.getPendingUsers().removeIf((user -> user.getUserid() == userId));
+            update(tag);
+        }
+        clearUnneededTags();
+    }
+
+    /**
+     * Removes pending tags based on a user id and tag name.
+     * Implicitly clears all unneeded tags after the pending tags are removed.
+     * @param userId the user id
+     * @param name the name of the tag
+     */
+    public static void removePendingTagsWithName(int userId, String name) {
+        Tag tag = getTagByName(name);
+        tag.getPendingUsers().removeIf(user -> user.getUserid() == userId);
+        update(tag);
+        clearUnneededTags();
+    }
+
+    /**
+     * Clears all unneeded tags from the database.
+     * A tag is unneeded if it isn't connected to any users and isn't tagged in anything.
+     */
+    public static void clearUnneededTags() {
+        Set<Tag> allTags = Tag.find.query().findSet();
+        for (Tag tag: allTags) {
+            if (tag.getPendingUsers().isEmpty() && findTaggedItems(tag).isEmpty()) {
+                delete(tag);
+            }
+        }
+    }
 }

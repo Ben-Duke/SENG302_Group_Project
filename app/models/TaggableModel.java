@@ -53,6 +53,7 @@ public abstract class TaggableModel extends Model {
 
     public void setTags(Set<Tag> tags) {
         this.tags = tags;
+        System.out.println(tags);
     }
 
     /**

@@ -10,7 +10,7 @@ public enum TableName {
     trip_tag("", false),
     destination_tag("", false),
     media_tag("", false),
-
+    tag_user("", false),
     tag("tag_id"),
 
     visit("visitid"),

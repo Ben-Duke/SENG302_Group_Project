@@ -250,6 +250,21 @@ public class DestinationController extends Controller {
         }
 
         Destination newDestination = getDestinationFromRequest(request);
+
+//        if (newDestination.getTags() != null && newDestination.getTags().size() > 0) {
+////            List<String> tags = Arrays.asList(destinationForm.get().tags.split(","));
+//            Set uniqueTags = UtilityFunctions.tagLiteralsAsSet(tags);
+//            newDestination.setTags(uniqueTags);
+//        }
+//        DestinationFactory destinationFactory = new DestinationFactory();
+//        Set<Tag> tagSet = destinationFactory.changedTags(newDestination, destId);
+//        System.out.println(tagSet);
+//        oldDestination.setTags(tagSet);
+
+        //Thing needed to get tags working:
+        //Make sure applyEditChanges changes tags
+        //Make sure tags are bound to newDestination in getDestinationFromRequest
+
         oldDestination.applyEditChanges(newDestination);
 
         EditDestinationCommand editDestinationCommand =
@@ -259,6 +274,8 @@ public class DestinationController extends Controller {
 
         return redirect(routes.DestinationController.viewDestination(destId));
     }
+
+
 
     /**
      * Creates a new destination object from the edit page form, checks if inputs make a valid destination.
@@ -567,6 +584,7 @@ public class DestinationController extends Controller {
 
 
 
+
     /** Perform form validation for the edit/create destination form
      *  Returns a request containing the form with errors if errors found,
      *  null if no errors found
@@ -589,7 +607,6 @@ public class DestinationController extends Controller {
 
             DestinationFactory destinationFactory = new DestinationFactory();
             int userId = user.getUserid();
-
             if (destinationFactory.userHasPrivateDestination(userId, destination)) {
                 flash("privateDestinationExists",
                         "You already have a matching private destination!");

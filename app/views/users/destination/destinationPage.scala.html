@@ -42,6 +42,10 @@
             <h3 style="margin-top: 0;">Edit mode</h3>
 
             @if(destination.isUserOwner(user) || user.userIsAdmin()) {
+
+                <div class="row">
+                    @users.tag.createSearchTags(user,"destination", destination.getDestId())
+                </div>
                 @helper.form(action = helper.CSRF(routes.DestinationController.updateDestination(destination.getDestId()))) {
                     @formBody()
 

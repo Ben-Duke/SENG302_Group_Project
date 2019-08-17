@@ -24,7 +24,6 @@ import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
 import utilities.UtilityFunctions;
-import views.html.home.mapHome;
 import views.html.users.trip.*;
 
 import javax.inject.Inject;
@@ -143,6 +142,15 @@ public class TripController extends Controller {
             }
             TripFormData created = incomingForm.get();
             int tripid = tripFactory.createTrip(created, user);
+            System.out.println("ME TOO THANKS");
+            System.out.println(incomingForm.get().tags != null && incomingForm.get().tags.length() > 0);
+            if (incomingForm.get().tags != null && incomingForm.get().tags.length() > 0) {
+                List<String> tags = Arrays.asList(incomingForm.get().tags.split(","));
+                Set<Tag> uniqueTags = UtilityFunctions.tagLiteralsAsSet(tags);
+                Trip trip = TripAccessor.getTripById(tripid);
+                trip.setTags(uniqueTags);
+                TripAccessor.update(trip);
+            }
             return redirect(routes.TripController.addTripDestinations(tripid));
         }
         else{
@@ -178,6 +186,7 @@ public class TripController extends Controller {
             return redirect(routes.UserController.userindex());
         }
     }
+
 
     /**
      * Handles the update visit request. Updates a visit with the given form details. If the updated visit would cause

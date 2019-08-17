@@ -29,7 +29,9 @@ public class UndoRedoController extends Controller {
             return redirect(routes.UserController.userindex());
         }
         commandManager = user.getCommandManager();
-        commandManager.isUndoStackEmpty();
+        if(commandManager.isUndoStackEmpty()){
+            return noContent();
+        }
         String result = commandManager.undo();
 
         return ok(result);
@@ -48,6 +50,9 @@ public class UndoRedoController extends Controller {
             return redirect(routes.UserController.userindex());
         }
         commandManager = user.getCommandManager();
+        if(commandManager.isRedoStackEmpty()){
+            return noContent();
+        }
         String result = commandManager.redo();
 
         return ok(result);

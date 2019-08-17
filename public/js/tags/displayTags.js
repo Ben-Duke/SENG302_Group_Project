@@ -27,6 +27,7 @@ function getItemData(item) {
         }
         data.img = "/users/trips/" + item.tripid + "/tripPicture";
         data.link = "/users/map_home";
+        addItem(data);
     } else if (item.hasOwnProperty('destName')) {
         data.header = item.destName;
         data.type = 'Destination';
@@ -37,18 +38,39 @@ function getItemData(item) {
             data.img = "/users/home/servePlaceholderPicture/destinationPlaceholder.png"
         }
         data.link = "/users/destinations/view/" + item.destId;
+        addItem(data);
 
     } else if (item.hasOwnProperty('caption')) {
-        data.header = item.caption;
-        if (item.caption === "") {
-            data.header = "Uncaptioned Photo"
-        }
-        data.type = 'Photo';
-        data.body = '';
-        data.img = '/users/home/servePicture/' + encodeURIComponent(item.urlWithPath);
-        data.link = "http://google.com";
+        $.ajax({
+                type: 'GET',
+                url: '/users/albums/getAlbumFromMediaId/' + item.mediaId,
+                success: function(albumData) {
+                    data.link = "/users/albums/" + albumData;
+                    data.header = item.caption;
+                    if (item.caption === "") {
+                        data.header = "Uncaptioned Photo"
+                    }
+                    data.type = 'Photo';
+                    data.body = '';
+                    data.img = '/users/home/servePicture/' + encodeURIComponent(item.urlWithPath);
+                    addItem(data);
+                },
+                error: function() {
+                    data.link = "/users/albums";
+                    data.header = item.caption;
+                    if (item.caption === "") {
+                        data.header = "Uncaptioned Photo"
+                    }
+                    data.type = 'Photo';
+                    data.body = '';
+                    data.img = '/users/home/servePicture/' + encodeURIComponent(item.urlWithPath);
+                    addItem(data);
+                }
+            });
+
+
     }
-    return data;
+
 }
 
 function addItem(data) {
@@ -94,9 +116,7 @@ function addItem(data) {
 
 function createTagContent(tagData) {
     for (let item of tagData) {
-        console.log(item);
         const data = getItemData(item);
-        addItem(data);
     }
 }
 

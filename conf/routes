@@ -312,6 +312,9 @@ GET     /users/:id/albums/getFromTitle/:title    controllers.AlbumController.get
 #Albums index page
 GET     /users/albums   controllers.AlbumController.indexAlbum(request : Request)
 
+#Get the first available album ID of a media item if it exists
+GET     /users/albums/getAlbumFromMediaId/:mediaId      controllers.AlbumController.getFirstAlbumIdFromMediaId(request : Request, mediaId : Integer)
+
 
 #Get JSON of one album
 GET     /users/albums/get/:all/:id   controllers.AlbumController.getAlbum(request : Request, id : Integer, all : Boolean)

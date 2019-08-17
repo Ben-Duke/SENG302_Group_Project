@@ -430,4 +430,26 @@ public class AlbumController extends Controller {
                     "from destinations.");
         }
     }
+
+    /**
+     * AJAX request to get a media item's first available album ID if it is in an album
+     * @param request the HTTP request
+     * @param mediaId the media item which needs its album to be found
+     * @return the first available album ID the media item is in if available
+     */
+    public Result getFirstAlbumIdFromMediaId(Http.Request request, Integer mediaId) {
+        User user = User.getCurrentUser(request);
+        if (user == null) {
+            return new Result(Http.Status.UNAUTHORIZED);
+        }
+        Media mediaItem = MediaAccessor.getMediaById(mediaId);
+        if (mediaItem == null) {
+            return badRequest("Media does not exist");
+        }
+        List<Album> mediaItemAlbums = mediaItem.getAlbums();
+        if( mediaItemAlbums == null || mediaItemAlbums.size() < 1) {
+            return badRequest("Album does not exist");
+        }
+        return ok(Json.toJson(mediaItemAlbums.get(0).albumId));
+    }
 }

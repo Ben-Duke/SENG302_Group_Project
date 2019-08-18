@@ -342,6 +342,8 @@ GET     /users/albums/photos/get_linked_destinations/:photoId controllers.AlbumC
 
 GET /googlemap  controllers.DestinationController.renderMap(request : Request)
 
+GET     /users/events/search            controllers.EventsController.indexEvents(request : Request)
+
 
 
 

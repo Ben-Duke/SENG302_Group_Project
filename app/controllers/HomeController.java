@@ -126,7 +126,7 @@ public class HomeController {
             Http.MultipartFormData.FilePart<Files.TemporaryFile> picture = body.getFile("picture");
             String albumName = dataPart.get("album")[0];
             if ((picture != null) && (!albumName.isEmpty())) {
-                return getResultFromSaveUserPhoto(user, isPublic, picture, albumName, tags);
+                return getResultFromSaveUserPhoto(user, isPublic, picture, albumName);
             } else {
                 return redirect(routes.HomeController.showhome());
             }

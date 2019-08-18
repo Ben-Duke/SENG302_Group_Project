@@ -14,10 +14,13 @@
 
     <div class="container">
         @if(albums.isEmpty) {
-            <div class="well" style="width: 250px; height: 50px"><p>You don't have any albums yet.</p></div>
+            <div class="well" style="width:80%; height: 50px"><p>You don't have any albums yet.</p></div>
         } else {
-            <input type="text" id="searchAlbums" onkeyup="searchAlbum()" placeholder="Search for albums">
+            <input type="text" id="searchAlbums" style="width:50%; height: 40px; padding: 10px; margin-right: 20px;" onkeyup="searchAlbum()" placeholder="Search for albums">
         }
+        <a class="btn btn-default btn-lg sharp" data-toggle="modal" data-target="#addPhotoModal">
+            Add Photo &nbsp; <i class="glyphicon glyphicon-camera"></i>
+        </a>
     </div>
 
     <div class="container">
@@ -62,6 +65,43 @@
             </div>
         }
         </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="addPhotoModal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Upload a new photo </h4>
+                </div>
+                <div class="modal-body">
+                    <input id="photoUpload" type="file" accept="image/png,image/jpeg" name="picture" required/>
+                    <br>
+                    <div>
+                        <p>
+                            Add to Album
+                            <input id="album-search-photo" list="album-results-photo" name="Album Search" title="Album Search" placeholder="Search Album">
+                            <datalist id="album-results-photo">
+                                @for(album <- user.getAlbums()){
+                                <option value="@album.getTitle()"></option>
+                                }
+                            </datalist>
+                        </p>
+                        <p id="photoAlbumMessage" hidden> This media must be in an Album </p>
+                    </div>
+                    <p>
+                        <input type="submit" value="Upload" id="photo-upload">
+                        <input type="checkbox" id="private" name="private" value="private" title=""> Make photo private
+                    </p>
+
+                </div>
+            </div>
+        </div>
+
+
     </div>
 
 

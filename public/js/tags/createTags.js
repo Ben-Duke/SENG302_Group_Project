@@ -25,7 +25,6 @@ function initaliseTaggableIdAndTaggableType() {
  * Adds the tags that belong to the tagged item to labels
  */
 function updateExistingTagLabels() {
-    console.log("taggableId is " + taggableId);
     removeExistingTagLabels();
     if (taggableId !== "") {
         sendGetTagsRequest();

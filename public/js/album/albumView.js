@@ -187,9 +187,10 @@ function setSlideListeners(i) {
             setMakeProfilePictureListener(albumData, i);
             const mediaId = albumData[i]["mediaId"];
             const caption = albumData[i]["caption"];
-            const tagList = document.getElementById("tag-list");
-            tagList.setAttribute("data-taggableId", mediaId);
-            tagList.dispatchEvent(new Event('tagChange'));
+            //const tagList = document.getElementById("tag-list");
+            //tagList.setAttribute("data-taggableId", mediaId);
+            //tagList.dispatchEvent(new Event('tagChange'));
+            changeTaggableModel(mediaId, "photo");
             if (caption != "") {
                 document.querySelector('div[data-mediaId="'+mediaId+'"] [contenteditable]').innerHTML = caption.toString();
             } else {
@@ -248,7 +249,6 @@ function getAlbum(userId, albumId, isOwner){
         contentType: 'application/json',
         success: (albumData) => {
             addAlbum(albumData, userId);
-            console.log(albumData);
         }
     });
 }

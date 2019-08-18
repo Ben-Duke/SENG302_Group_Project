@@ -166,24 +166,11 @@ function setPrivacyListener(setPrivacy, mediaId) {
     clone.addEventListener('click', privacyListener )
 }
 
-function getTags(mediaId) {
-    return $.ajax({
-        type: 'GET',
-        url: `/photos/${mediaId}/tags`,
-        contentType: 'application/json',
-        success: (res) => {
-            return res.toString();
-        }
-    })
-}
-
 /**
  * Sets listeners for all buttons on the current slide
  * @param i the index of the current slide
  */
 function setSlideListeners(i) {
-    console.log('setting slide listeners');
-
     const dataset = document.getElementById('myModal').dataset;
     const isOwner = dataset.isowner;
     const albumId = dataset.album;
@@ -200,6 +187,10 @@ function setSlideListeners(i) {
             setMakeProfilePictureListener(albumData, i);
             const mediaId = albumData[i]["mediaId"];
             const caption = albumData[i]["caption"];
+            //const tagList = document.getElementById("tag-list");
+            //tagList.setAttribute("data-taggableId", mediaId);
+            //tagList.dispatchEvent(new Event('tagChange'));
+            changeTaggableModel(mediaId, "photo");
             if (caption != "") {
                 document.querySelector('div[data-mediaId="'+mediaId+'"] [contenteditable]').innerHTML = caption.toString();
             } else {
@@ -210,10 +201,6 @@ function setSlideListeners(i) {
             if(albumData[i]["isMediaPublic"]) {setPrivacy=0;}
             else {setPrivacy=1;}
             setPrivacyListener(setPrivacy, mediaId);
-
-            // Tags
-
-            console.log('tags ' + getTags(mediaId));
         }
     });
 }
@@ -262,7 +249,6 @@ function getAlbum(userId, albumId, isOwner){
         contentType: 'application/json',
         success: (albumData) => {
             addAlbum(albumData, userId);
-            console.log(albumData);
         }
     });
 }
@@ -281,8 +267,6 @@ async function addAlbum(albumData, userId) {
 
 /** Called when displaying the grid of photos */
 async function displayGrid(i, albumData, path) {
-    console.log('display grid called');
-
     let url = albumData[i]["urlWithPath"];
     let imgContainer = document.createElement("div");
     imgContainer.classList.add("container");
@@ -339,12 +323,17 @@ async function displaySlides(i, albumData, path) {
     mySlidesDiv.setAttribute("data-mediaId", mediaId);
 
     var img1 = document.createElement("img");
+
     img1.setAttribute("id", "img"+(i+1));
     img1.classList.add("center-block");
     img1.src = path + encodeURIComponent(url);
-    mySlidesDiv.appendChild(img1);
-    mySlidesDiv.appendChild(captionInput);
-
+    var figure = document.createElement("figure");
+    figure.appendChild(img1);
+    var figureCaption = document.createElement("figcaption");
+    figureCaption.appendChild(captionInput);
+    figure.appendChild(figureCaption);
+    mySlidesDiv.appendChild(figure);
+    //mySlidesDiv.appendChild(captionInput);
     lightBox.appendChild(mySlidesDiv);
     var content = document.querySelector('div[data-mediaId="'+mediaId+'"] [contenteditable]');
     // 1. Listen for changes of the contenteditable element
@@ -603,8 +592,6 @@ function currentSlide(n) {
 
 /** Called when displaying a photo modal */
 function showSlides(n) {
-    console.log('show slides called');
-
     var i;
     var slides = document.getElementsByClassName("mySlides");
     if (n > slides.length) {slideIndex = 1}
@@ -613,7 +600,7 @@ function showSlides(n) {
         slides[i].style.display = "none";
     }
     if(slides[slideIndex-1] !== undefined) {
-        slides[slideIndex-1].style.display = "block";
+        slides[slideIndex-1].style.display = "inline-block";
         const privacyBtn = document.getElementById("privacyBtn")
         if (privacyBtn != null) {
             if (slides[slideIndex - 1].getAttribute("data-privacy") === "true") {
@@ -1056,5 +1043,27 @@ function deleteAndUnlinkPhoto() {
     });
 
 
+
+
+
+}
+
+/* When the user clicks on the button,
+toggle between hiding and showing the dropdown content */
+function openDropdown() {
+    document.getElementById("optionsDropdown").classList.toggle("show");
+}
+
+// Close the dropdown menu if the user clicks outside of it
+window.onclick = function(event) {
+    if (!event.target.matches('.dropbtn')) {
+        var openDropdown = document.getElementsByClassName("optionsDropdown");
+        console.log(openDropdown);
+        if (openDropdown.classList !== undefined) {
+            if (openDropdown.classList.contains('show')) {
+                openDropdown.classList.remove('show');
+            }
+        }
+    }
 
 }

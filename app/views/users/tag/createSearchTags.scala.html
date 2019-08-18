@@ -1,17 +1,17 @@
-@(user: User)
+@(user: User, taggableType: String, taggableId: Integer)
 
 <head>
     <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/createTag.css")">
 </head>
 
-<div class="container">
+<div class="container" id="tag-container">
 
-    <div id ="tag-list">
+    <div id ="tag-list" data-taggableType="@taggableType" data-taggableId="@taggableId">
         <div class="row">
 
                 <div id="tag-well" style="width:400px;height:60px" class="well well-sm">
                     <div id ="tag-line">
-                        <input type="text" id="tag-add" list="tag-add-results" name="Tag Add" title="Tag Add" placeholder="Add Tags">
+                        <input type="text" id="tag-add" list="tag-add-results" name="Tag Add" title="Tag Add" placeholder="Add Tags" autocomplete="off">
                     </div>
                 </div>
         </div>

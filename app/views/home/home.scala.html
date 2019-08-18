@@ -131,10 +131,11 @@
                         <h4 class="modal-title">Upload a new photo </h4>
                     </div>
                     <div class="modal-body">
-                        <input id="photoUpload" type="file" accept="image/png,image/jpeg" name="picture" required/>
+                        <div class="container-fluid">
                             <div class="row">
-                                @users.tag.createSearchTags(user)
+                            @users.tag.createSearchTags(user,"photo", null)
                             </div>
+                        <input id="photoUpload" type="file" accept="image/png,image/jpeg" name="picture" required/>
                         <br>
                         <div>
                             <p>

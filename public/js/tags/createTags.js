@@ -1,27 +1,112 @@
 var user;
 var toAddTagList = new Set();
+let taggableId;
+let taggableType;
 
-addTagAddTagListeners();
+
+initialise();
+
+function initialise() {
+    addTagAddTagListeners();
+    initaliseTaggableIdAndTaggableType();
+    updateExistingTagLabels();
+}
+
+/**
+ * Initialises the TaggableId and TaggableType to the parameters set when the Tag Editor was constructed.
+ */
+function initaliseTaggableIdAndTaggableType() {
+    let dataset = document.getElementById('tag-list').dataset;
+    taggableType = dataset.taggabletype;
+    taggableId = dataset.taggableid;
+}
+
+/**
+ * Adds the tags that belong to the tagged item to labels
+ */
+function updateExistingTagLabels() {
+    removeExistingTagLabels();
+    if (taggableId !== "") {
+        sendGetTagsRequest();
+    }
+}
+
+/**
+ * Hides the tag editor
+ */
+function hideTagEditor() {
+    document.getElementById("tag-container").style.visibility = 'hidden';
+}
+
+/**
+ * Shows the tag editor
+ */
+function showTagEditor() {
+    document.getElementById("tag-container").style.visibility = 'visible';
+}
+
+/**
+ * Sets the ID of the taggable model to be tagged by the tag editor
+ */
+function changeTaggableModel(newTaggableId, newTaggableType) {
+    taggableId = newTaggableId;
+    taggableType = newTaggableType;
+    updateExistingTagLabels();
+}
+
+/**
+ * Removes all existing tag labels in preparation for refreshing them
+ */
+function removeExistingTagLabels() {
+    toAddTagList = new Set();
+    const tagList = document.getElementById("tag-line");
+    const tagInput = document.getElementById('tag-add');
+    while (tagList.firstChild) {
+        tagList.removeChild(tagList.firstChild)
+    }
+    tagList.appendChild(tagInput);
+}
+
+/**
+ * Gets all tags for a given item and adds them to the display
+ * @param taggableId the id of the item
+ * @param taggableType the type of the item
+ */
+function sendGetTagsRequest() {
+    const url = `/tags/get/${taggableId}`;
+    $.ajax({
+        type: 'PUT',
+        url: url,
+        data: JSON.stringify({
+            taggableType: taggableType
+        }),
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    }).done((tags) => {
+        for (let tag of tags) {
+            addTagLabel(tag.name)
+        }
+    }).fail((xhr, textStatus, errorThrown) => {
+        console.log(xhr.status + " " + textStatus + " " + errorThrown);
+    });
+}
 
 /**
  * Adds listeners to the search bar to search the database and redirect to tags page if needed
  */
 function addTagAddTagListeners() {
-    function redirectToTagPage(tag, datalist) {
-        for (let dataTag of datalist.options) {
-            if (dataTag.value.toUpperCase() === tag.toUpperCase()) {
-                window.location.href = "/tags/" + tag.toLowerCase();
-            }
-        }
-    }
+    const addInput = document.getElementById("tag-add");
+    const addList = document.getElementById("tag-add-results");
+    document.getElementById('tag-list').addEventListener('tagChange', updateExistingTagLabels);
+    addInput.addEventListener('input', (e) => {
 
-    try {
-        const addInput = document.getElementById("tag-add");
-        const addList = document.getElementById("tag-add-results");
-        addInput.addEventListener('input', (e) => {
-            if (e.constructor.name !== 'InputEvent') {
+        if (e.constructor.name !== 'InputEvent') {
             // then this is a selection, not user input
             addTag(addInput.value);
+
+        } else if (e.data === ' ' || e.data === '"') {
+            extractAndAddTag(addInput.value)
         }
         while (addList.firstChild) {
             addList.removeChild(addList.firstChild);
@@ -31,33 +116,79 @@ function addTagAddTagListeners() {
             searchAddTags(query);
         }
     });
-        addInput.addEventListener('keyup', e => {
-            if (e.key === 'Enter') {
-            addTag(addInput.value);
+    addInput.addEventListener('keyup', e => {
+        if (e.key === 'Enter') {
+            extractAndAddTag(addInput.value);
         }
-    })
-    } catch (err) {
-        //do nothing. Just to avoid errors if the correct page is not loaded
+    });
+}
+
+/**
+ * Extracts the tag name from user input and adds the tag to the database
+ * @param inputVal the user inputted data
+ */
+function extractAndAddTag(inputVal) {
+    inputVal = inputVal.trim(); //Take off white space
+
+    let numOfQuotes = (inputVal.match(/"/g) || []).length;
+
+    if (numOfQuotes === 0) {
+        addTag(inputVal);
+    } else if (numOfQuotes === 2) {
+        inputVal = inputVal.replace(/"/g, ""); //Takes of quotes
+
+        console.log(inputVal);
+
+        let words = inputVal.split(" ");
+
+
+        let tag = "";
+        for (let i in words) {
+            console.log(words[i]);
+            tag += words[i] + ' ';
+        }
+
+        tag = tag.trim();
+
+        addTag(tag);
     }
 }
 
+/**
+ * Adds a tag to the database
+ * @param name the name of the tag
+ */
 function addTag(name) {
+    sendAddTagRequest(name, taggableType, taggableId);
+}
+
+/**
+ * Adds a tag label to the display
+ * @param name the name of the tag being displayed
+ */
+function addTagLabel(name) {
     let tagList = document.getElementById("tag-line");
     let newTag = document.createElement("span");
     let newText = document.createElement("span");
     let newRemove = document.createElement("a");
     let newIcon = document.createElement("i");
     let input = document.getElementById("tag-add");
+
     input.value = "";
 
     newTag.className = "tag label label-info";
     newTag.id = name;
-    newText.innerHTML = name;
+    newText.innerHTML = `<a style="color: black">${name}</a>`;
     newIcon.className = "remove glyphicon glyphicon-remove-sign glyphicon-white";
+
     newRemove.onclick = function() {
-           tagList.removeChild(newTag);
-           toAddTagList.delete(name.toLowerCase());
-     }
+        tagList.removeChild(newTag);
+        toAddTagList.delete(name.toLowerCase());
+        removeTagFromItem(name);
+    };
+    newText.onclick = function() {
+        window.location.href = '/tags/display/' + name.toLowerCase();
+    };
     newRemove.appendChild(newIcon);
     newTag.appendChild(newText);
     newTag.appendChild(newRemove);
@@ -65,11 +196,55 @@ function addTag(name) {
         toAddTagList.add(name.toLowerCase());
         tagList.appendChild(newTag);
     }
+}
+
+/**
+ * Removes a tag from the item. If there is no item it clears all of the pending tags of a user
+ * @param name the name of the tag to clear
+ */
+function removeTagFromItem(name) {
+    let url;
+    taggableId === "" ? url = '/tags' : url = `/tags/${taggableId}`;
+    $.ajax({
+        type: 'DELETE',
+        url: url,
+        data: JSON.stringify({
+            tag: name,
+            taggableType: taggableType
+        }),
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    }).fail((xhr, textStatus, errorThrown) => {
+        console.log(xhr.status + " " + textStatus + " " + errorThrown);
+    });
 
 }
 
-function addExistingTag(name) {
-
+/**
+ * Sends a request to add a tag to an item
+ * @param name the name of the tag
+ * @param taggableType the type of the item
+ * @param taggableId the id of the item
+ */
+function sendAddTagRequest(name, taggableType, taggableId) {
+    let url;
+    taggableId === "" ? url = '/tags' :  url = `/tags/${taggableId}`;
+    $.ajax({
+        type: 'PUT',
+        url: url,
+        data: JSON.stringify({
+            tag: name,
+            taggableType: taggableType
+        }),
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    }).done(() => {
+        addTagLabel(name)
+    }).fail((xhr, textStatus, errorThrown) => {
+        console.log(xhr.status + " " + textStatus + " " + errorThrown);
+    });
 }
 
 /**

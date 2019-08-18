@@ -10,6 +10,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 public class Tag extends Model implements Comparable{
@@ -21,6 +22,13 @@ public class Tag extends Model implements Comparable{
      */
     @Id
     public int tagId;
+
+    /**
+     * Users in the process of adding tags to something that doesn't have an id yet.
+     */
+    @ManyToMany
+    @JsonIgnore
+    private Set<User> pendingUsers;
 
     @Constraints.Required
     @Column(name="name", unique=true)
@@ -47,6 +55,15 @@ public class Tag extends Model implements Comparable{
 
     public void setTagId(Integer tagId) {
         this.tagId = tagId;
+    }
+
+
+    public Set<User> getPendingUsers() {
+        return pendingUsers;
+    }
+
+    public void setPendingUsers(Set<User> pendingUsers) {
+        this.pendingUsers = pendingUsers;
     }
 
     /**

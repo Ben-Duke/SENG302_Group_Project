@@ -359,9 +359,9 @@ PUT   /photos/:photoId/tags                                 controllers.TagContr
 DELETE   /photos/:photoId/tags                                    controllers.TagController.removePhotoTag(request : Request, photoId : Integer)
 
 # Get trip tags
-GET   /trips/:tripId/tags                                         controllers.TagController.getTags(request : Request, tripId : Integer)
+GET   /trips/:tripId/tags                                         controllers.TagController.getTripTags(request : Request, tripId : Integer)
 
-#Add a new tag to a destination
+#Add new tag to a trip
 PUT /trips/:tripId/tags                                             controllers.TagController.addTripTag(request: Request, tripId :Integer)
 
 #Remove a tag from a trip
@@ -380,6 +380,19 @@ DELETE /destinations/:destId/tags                               controllers.TagC
 # Search for tag
 PUT /tags/search                                            controllers.TagController.searchTags(request : Request)
 
+#Adds a tag to a taggable
+PUT /tags/:taggableId                                          controllers.TagController.addTagToTaggable(request : Request, taggableId : Integer)
+
+# Deletes a tag from a taggable
+DELETE /tags/:taggableId                                      controllers.TagController.removeTagFromTaggable(request : Request, taggableId : Integer)
+
+DELETE /tags                                                  controllers.TagController.removeUsersPendingTags(request: Request)
+
+#Adds a raw tag
+PUT /tags                                                      controllers.TagController.addRawTag(request : Request)
+
+# get all tags of a taggable item
+PUT /tags/get/:taggableId                                                       controllers.TagController.getTaggablesTags(request: Request, taggableId: Integer)
 
 # Tag page
 GET /tags/display/:tagName                                            controllers.TagController.displayTags(request: Request, tagName: String)

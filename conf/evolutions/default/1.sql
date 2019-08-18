@@ -123,6 +123,12 @@ create table tag (
   constraint pk_tag primary key (tag_id)
 );
 
+create table tag_user (
+  tag_tag_id                    integer not null,
+  user_userid                   integer not null,
+  constraint pk_tag_user primary key (tag_tag_id,user_userid)
+);
+
 create table traveller_type (
   ttypeid                       integer auto_increment not null,
   traveller_type_name           varchar(191),
@@ -266,6 +272,12 @@ alter table media_tag add constraint fk_media_tag_media foreign key (media_media
 create index ix_media_tag_tag on media_tag (tag_tag_id);
 alter table media_tag add constraint fk_media_tag_tag foreign key (tag_tag_id) references tag (tag_id) on delete restrict on update restrict;
 
+create index ix_tag_user_tag on tag_user (tag_tag_id);
+alter table tag_user add constraint fk_tag_user_tag foreign key (tag_tag_id) references tag (tag_id) on delete restrict on update restrict;
+
+create index ix_tag_user_user on tag_user (user_userid);
+alter table tag_user add constraint fk_tag_user_user foreign key (user_userid) references user (userid) on delete restrict on update restrict;
+
 create index ix_treasure_hunt_destination_destid on treasure_hunt (destination_destid);
 alter table treasure_hunt add constraint fk_treasure_hunt_destination_destid foreign key (destination_destid) references destination (destid) on delete restrict on update restrict;
 
@@ -374,6 +386,12 @@ drop index if exists ix_media_tag_media;
 alter table media_tag drop constraint if exists fk_media_tag_tag;
 drop index if exists ix_media_tag_tag;
 
+alter table tag_user drop constraint if exists fk_tag_user_tag;
+drop index if exists ix_tag_user_tag;
+
+alter table tag_user drop constraint if exists fk_tag_user_user;
+drop index if exists ix_tag_user_user;
+
 alter table treasure_hunt drop constraint if exists fk_treasure_hunt_destination_destid;
 drop index if exists ix_treasure_hunt_destination_destid;
 
@@ -447,6 +465,8 @@ drop table if exists passport;
 
 drop table if exists tag;
 
+drop table if exists tag_user;
+
 drop table if exists traveller_type;
 
 drop table if exists treasure_hunt;
@@ -466,5 +486,4 @@ drop table if exists user_traveller_type;
 drop table if exists user_treasure_hunt;
 
 drop table if exists visit;
-
 

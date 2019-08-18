@@ -31,10 +31,16 @@ function updateExistingTagLabels() {
     }
 }
 
+/**
+ * Hides the tag editor
+ */
 function hideTagEditor() {
     document.getElementById("tag-container").style.visibility = 'hidden';
 }
 
+/**
+ * Shows the tag editor
+ */
 function showTagEditor() {
     document.getElementById("tag-container").style.visibility = 'visible';
 }

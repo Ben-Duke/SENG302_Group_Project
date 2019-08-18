@@ -7,10 +7,11 @@ let map;
 window.globalMarkers = [];
 let tripFlightPaths = {};
 let isNewTrip = false;
-
+let geoCoder;
 
 
 function initMap() {
+
     map = window.globalMap = new google.maps.Map(document.getElementById('map'), {
         center: {lat: -43.522057156877615, lng: 172.62360347218828},
         zoom: 5,
@@ -18,8 +19,11 @@ function initMap() {
         mapTypeControlOptions: {
             style: google.maps.MapTypeControlStyle.HORIZONTAL_BAR,
             position: google.maps.ControlPosition.TOP_RIGHT
-        }
-    });
+        },
+
+
+    })
+    geoCoder = new google.maps.Geocoder;
 
     initPlacesAutocompleteSearch();
     initDestinationMarkers();
@@ -673,28 +677,26 @@ function displayTrip(tripId, startLat, startLng) {
         isNewTrip = false;
     }
     let checkBox = document.getElementById("Toggle" + tripId);
-    if (checkBox.checked === true) {
-        if (currentlyDisplayedTripId !== undefined) {
-            document.getElementById("singleTrip_" + currentlyDisplayedTripId).style.display = "none";
-        } else {
+    if (currentlyDisplayedTripId !== undefined) {
+        document.getElementById("singleTrip_" + currentlyDisplayedTripId).style.display = "none";
+    } else {
+        document.getElementById("placeholderTripTable").style.display = "none";
+    }
+    if(isNewTrip === false) {
+        if(document.getElementById("placeholderTripTable").style.display != "none") {
             document.getElementById("placeholderTripTable").style.display = "none";
         }
-        if(isNewTrip === false) {
-            if(document.getElementById("placeholderTripTable").style.display != "none") {
-                document.getElementById("placeholderTripTable").style.display = "none";
-            }
-            document.getElementById("singleTrip_" + tripId).style.display = "block";
-        } else {
-            document.getElementById("placeholderTripTable").style.display = "block";
-        }
-
-        var tripStartLatLng = new google.maps.LatLng(
-            startLat, startLng
-        );
-        currentlyDisplayedTripId = tripId;
-        window.globalMap.setCenter(tripStartLatLng);
-        window.globalMap.setZoom(9);
+        document.getElementById("singleTrip_" + tripId).style.display = "block";
+    } else {
+        document.getElementById("placeholderTripTable").style.display = "block";
     }
+
+    var tripStartLatLng = new google.maps.LatLng(
+        startLat, startLng
+    );
+    currentlyDisplayedTripId = tripId;
+    window.globalMap.setCenter(tripStartLatLng);
+    window.globalMap.setZoom(9);
 }
 
 
@@ -1207,10 +1209,10 @@ function viewCreatePanel() {
     if (currentlyDisplayedDestId !== undefined) {
         document.getElementById('singleDestination_'+currentlyDisplayedDestId).style.display = 'none';
     }
-    document.getElementById("latitude").value = '';
-    document.getElementById("longitude").value = '';
     document.getElementById('createDestination').style.display = 'block';
 }
+
+
 
 /**
  * If in edit mode then listeners will
@@ -1220,6 +1222,7 @@ function viewCreatePanel() {
  * will update the latitude and longitude fields.
  */
 function initMapPositionListeners() {
+    window.globalMarkers = [];
 
     if (document.getElementById("latitude") !== null
         && document.getElementById("longitude") !== null) {
@@ -1231,7 +1234,6 @@ function initMapPositionListeners() {
                     document.getElementById("latitude").value,
                     window.globalMap.center.lng());
 
-                window.globalMap.setCenter(latlng);
 
             }
         });
@@ -1244,13 +1246,78 @@ function initMapPositionListeners() {
                     window.globalMap.center.lat(),
                     document.getElementById("longitude").value);
 
-                window.globalMap.setCenter(latlng);
             }
         });
 
         window.globalMap.addListener('click', function (event) {
             document.getElementById("latitude").value = event.latLng.lat();
             document.getElementById("longitude").value = event.latLng.lng();
+            var latlng = {lat: parseFloat(event.latLng.lat()), lng: parseFloat(event.latLng.lng())};
+            geoCoder.geocode({'location': latlng}, function(results, status) {
+                if (status === 'OK') {
+                    if (results[0]) {
+                        map.panTo(latlng);
+                        map.setZoom(11);
+                        let placeId = results[0].place_id;
+                        var marker = new google.maps.Marker({
+                            position: latlng,
+                            map: map
+                        });
+                        $.ajax({
+                            url: "/users/destination/placeid/" + placeId,
+                            method: "GET",
+                            //contentType: 'application/json',
+                            dataType: 'json',
+                            cache: false,
+                            success: function (data, textStatus, xhr) {
+                                if (xhr.status == 200) {
+                                    let placeData = data.result.address_components;
+                                    //Check if it can be a number if it can leave it blank
+
+                                    placeData.forEach((addressItem) => {
+                                        if (addressItem.types.includes("country")) {
+                                            document.getElementById("country").value = addressItem.long_name;
+
+                                        } else if (addressItem.types.includes("administrative_area_level_1")
+                                            || addressItem.types.includes("administrative_area_level_2")) {
+                                            document.getElementById("district").value = addressItem.long_name;
+                                        }
+                                    });
+
+                                     if (placeData.length < 2) {
+                                         document.getElementById("destName").value = placeData[0].long_name
+                                     } else if(placeData[0].types[0] == 'street_number' || placeData[0].types[0] == "postal_code"){
+                                         if(placeData[1].types[0] == 'route') {
+                                             document.getElementById("destName").value = placeData[2].long_name;
+                                         } else {
+                                             document.getElementById("destName").value = placeData[1].long_name;
+                                         }
+                                     }else{
+                                         if (data.result.name == "Unnamed Road") {
+                                             document.getElementById("destName").value = placeData[1].long_name;
+                                         } else {
+                                             document.getElementById("destName").value = data.result.name;
+                                         }
+                                     }
+                                    $('[href="#destinationsTab"]').tab('show');
+                                    viewCreatePanel();
+                                }
+                            },
+                            error: function (error) {
+                               console.log(error);
+                            }
+                        });
+                        // infowindow.setContent(results[0].formatted_address);
+                        // infowindow.open(map, marker);
+                    } else {
+                        window.alert('No results found');
+                    }
+
+                } else {
+                    window.alert('Geocoder failed due to: ' + status);
+                }
+            });
+
         });
 
     }
@@ -1295,6 +1362,84 @@ function checkTripVisits() {
             }
         })
 }
+
+$("#formBody").submit(function(e){
+    e.preventDefault();
+});
+
+
+/**
+ * Function used to submit destination creation.
+ * If there are errors in the form messages will be shown or updated when necessary.
+ */
+$("#submit").click(function(e){
+    var formData = {
+        destName: $("#destName").val(),
+        country: $("#country").val(),
+        district: $("#district").val(),
+        latitude: $("#latitude").val(),
+        longitude: $("#longitude").val(),
+        destType: $("#destType").val()
+    }
+    $.ajax({
+        type: 'POST',
+        url: '/users/destinations/save',
+        contentType: 'application/json',
+        data: JSON.stringify(formData),
+        dataType: 'text',
+        timeout: 5000,
+        success: function(response) {
+            location.reload()
+        },
+        error: function(response) {
+            let responseData = JSON.parse(response.responseText);
+            let count = 0;
+            if (responseData.destName != null) {
+                count += 1;
+                document.getElementById("nameError").innerText = responseData.destName[0];
+            } else {
+                document.getElementById("nameError").innerText = "";
+            }
+            if (responseData.country != null) {
+                count += 1;
+                document.getElementById("countryError").innerText = responseData.country[0];
+            } else {
+                document.getElementById("countryError").innerText = "";
+            }
+            if (responseData.district != null) {
+                count += 1;
+                document.getElementById("districtError").innerText = responseData.district[0];
+            } else {
+                document.getElementById("districtError").innerText = "";
+            }
+            if (responseData.latitude != null) {
+                count += 1;
+                document.getElementById("latitudeError").innerText = responseData.latitude[0];
+            } else {
+                document.getElementById("latitudeError").innerText = "";
+            }
+            if (responseData.longitude != null) {
+                count += 1;
+                document.getElementById("longitudeError").innerText = responseData.longitude[0];
+            } else {
+                document.getElementById("longitudeError").innerText = "";
+            }
+            if (responseData.destType != null) {
+                count += 1;
+                document.getElementById("typeError").innerText = responseData.destType[0];
+            } else {
+                document.getElementById("typeError").innerText = "";
+            }
+            if (count === 0) {
+                document.getElementById("existingMessage").innerText = "Similar Destination already exists"
+            } else {
+                document.getElementById("existingMessage").innerText = "";
+            }
+        }
+
+    });
+});
+
 
 
 window.onload = function() {

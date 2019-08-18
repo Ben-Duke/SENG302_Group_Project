@@ -166,13 +166,14 @@ function setPrivacyListener(setPrivacy, mediaId) {
     clone.addEventListener('click', privacyListener )
 }
 
-function getTags(albumData, i) {
-    const mediaId = albumData[i]["mediaId"];
-
-    $.ajax({
+function getTags(mediaId) {
+    return $.ajax({
         type: 'GET',
         url: `/photos/${mediaId}/tags`,
-        contentType: 'application/json'
+        contentType: 'application/json',
+        success: (res) => {
+            return res.toString();
+        }
     })
 }
 
@@ -188,7 +189,7 @@ function setSlideListeners(i) {
     const albumId = dataset.album;
     const hidePrivate = !isOwner;
 
-    $.ajax({
+    return $.ajax({
         type: 'GET',
         url: '/users/albums/get/' + hidePrivate + '/' + albumId,
         contentType: 'application/json',
@@ -209,6 +210,10 @@ function setSlideListeners(i) {
             if(albumData[i]["isMediaPublic"]) {setPrivacy=0;}
             else {setPrivacy=1;}
             setPrivacyListener(setPrivacy, mediaId);
+
+            // Tags
+
+            console.log('tags ' + getTags(mediaId));
         }
     });
 }

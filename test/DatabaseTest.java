@@ -27,7 +27,6 @@ public class DatabaseTest extends BaseTestWithApplicationAndDatabase {
         user.save();
 
         List<User> users = User.find().all();
-        logger.debug(Integer.toString(users.get(0).getUserid()));
     }
 
     @Test
@@ -36,9 +35,6 @@ public class DatabaseTest extends BaseTestWithApplicationAndDatabase {
         nat.save();
 
         List<Nationality> nats = Nationality.find().all();
-//        for (Nationality nationality : nats) {
-//            //logger.debug(nationality.getNationalityName());
-//        }
 
         assertTrue(true);
     }

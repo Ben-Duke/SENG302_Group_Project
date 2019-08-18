@@ -5,9 +5,11 @@ import accessors.TagAccessor;
 import accessors.TripAccessor;
 import accessors.UserPhotoAccessor;
 import models.*;
+import org.slf4j.Logger;
 import play.libs.Json;
 import play.mvc.Http;
 import play.mvc.Result;
+import utilities.UtilityFunctions;
 import views.html.users.tag.*;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -16,6 +18,8 @@ import java.util.stream.Collectors;
 import static play.mvc.Results.*;
 
 public class TagController {
+
+    Logger logger = UtilityFunctions.getLogger();
 
     /**
      * Displays the tag page for a particular tag
@@ -56,6 +60,7 @@ public class TagController {
      * @return a http response with the list of tags
      */
     public Result getPhotoTags(Http.Request request, int photoId) {
+        logger.debug("getPhotoTags");
         User user = User.getCurrentUser(request);
         if (user != null) {
             UserPhoto photo = UserPhotoAccessor.getUserPhotoById(photoId);
@@ -68,6 +73,7 @@ public class TagController {
                 return forbidden();
             }
             Set<Tag> tags = photo.getTags();
+            logger.debug("tags = ", Json.toJson(tags).toString());
             return ok(Json.toJson(tags));
         } else {
             return unauthorized();

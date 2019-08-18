@@ -20,13 +20,12 @@ function initMap() {
             position: google.maps.ControlPosition.TOP_RIGHT
         }
     });
-
     initPlacesAutocompleteSearch();
     initDestinationMarkers();
     initMapLegend();
     initTripRoutes();
     initMapPositionListeners();
-
+    hideTagEditor();
 }
 
 
@@ -205,7 +204,9 @@ function addSelectedToVisitToTrip(destId, startTrip){
                 tripLink.appendChild(formCheckDiv);
                 listGroup.appendChild(tripLink);
 
-
+                //Update tags
+                changeTaggableModel(data.tripId, "trip");
+                showTagEditor();
 
                 for (let i in tripRoutes) {
                     tripRoutes[i].setMap(null);
@@ -695,6 +696,9 @@ function displayTrip(tripId, startLat, startLng) {
         window.globalMap.setCenter(tripStartLatLng);
         window.globalMap.setZoom(9);
     }
+    //Update tags
+    changeTaggableModel(tripId, "trip");
+    showTagEditor();
 }
 
 

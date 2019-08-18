@@ -1,20 +1,52 @@
 var user;
 var toAddTagList = new Set();
+let taggableId;
+let taggableType;
 
-addTagAddTagListeners();
-addExistingTagLabels();
+
+initialise();
+
+function initialise() {
+    addTagAddTagListeners();
+    initaliseTaggableIdAndTaggableType();
+    updateExistingTagLabels();
+}
+
+/**
+ * Initialises the TaggableId and TaggableType to the parameters set when the Tag Editor was constructed.
+ */
+function initaliseTaggableIdAndTaggableType() {
+    let dataset = document.getElementById('tag-list').dataset;
+    taggableType = dataset.taggabletype;
+    taggableId = dataset.taggableid;
+}
 
 /**
  * Adds the tags that belong to the tagged item to labels
  */
-function addExistingTagLabels() {
+function updateExistingTagLabels() {
+    console.log("taggableId is " + taggableId);
     removeExistingTagLabels();
-    let dataset = document.getElementById('tag-list').dataset;
-    let taggableType = dataset.taggabletype;
-    let taggableId = dataset.taggableid;
     if (taggableId !== "") {
-        sendGetTagsRequest(taggableId, taggableType);
+        sendGetTagsRequest();
     }
+}
+
+function hideTagEditor() {
+    document.getElementById("tag-container").style.visibility = 'hidden';
+}
+
+function showTagEditor() {
+    document.getElementById("tag-container").style.visibility = 'visible';
+}
+
+/**
+ * Sets the ID of the taggable model to be tagged by the tag editor
+ */
+function changeTaggableModel(newTaggableId, newTaggableType) {
+    taggableId = newTaggableId;
+    taggableType = newTaggableType;
+    updateExistingTagLabels();
 }
 
 /**
@@ -35,7 +67,7 @@ function removeExistingTagLabels() {
  * @param taggableId the id of the item
  * @param taggableType the type of the item
  */
-function sendGetTagsRequest(taggableId, taggableType) {
+function sendGetTagsRequest() {
     const url = `/tags/get/${taggableId}`;
     $.ajax({
         type: 'PUT',
@@ -61,7 +93,7 @@ function sendGetTagsRequest(taggableId, taggableType) {
 function addTagAddTagListeners() {
     const addInput = document.getElementById("tag-add");
     const addList = document.getElementById("tag-add-results");
-    document.getElementById('tag-list').addEventListener('tagChange', addExistingTagLabels);
+    document.getElementById('tag-list').addEventListener('tagChange', updateExistingTagLabels);
     addInput.addEventListener('input', (e) => {
 
         if (e.constructor.name !== 'InputEvent') {
@@ -122,9 +154,6 @@ function extractAndAddTag(inputVal) {
  * @param name the name of the tag
  */
 function addTag(name) {
-    let dataset = document.getElementById('tag-list').dataset;
-    let taggableType = dataset.taggabletype;
-    let taggableId = dataset.taggableid;
     sendAddTagRequest(name, taggableType, taggableId);
 }
 
@@ -164,9 +193,6 @@ function addTagLabel(name) {
  * @param name the name of the tag to clear
  */
 function removeTagFromItem(name) {
-    let dataset = document.getElementById('tag-list').dataset;
-    let taggableType = dataset.taggabletype;
-    let taggableId = dataset.taggableid;
     let url;
     taggableId === "" ? url = '/tags' : url = `/tags/${taggableId}`;
     $.ajax({

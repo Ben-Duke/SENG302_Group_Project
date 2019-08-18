@@ -33,7 +33,6 @@ $('#photo-upload').click(function (eve){
         var formData = new FormData();
         formData.append('picture', filePath.files[0]);
         formData.append('private', privateInput);
-        console.log(searchBar.value);
         formData.append('album', searchBar.value);
         var token = $('input[name="csrfToken"]').attr('value');
         $.ajaxSetup({

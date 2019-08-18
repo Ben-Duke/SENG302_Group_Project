@@ -2,10 +2,9 @@ package models.commands.Albums;
 
 import accessors.AlbumAccessor;
 import accessors.MediaAccessor;
-import models.Album;
-import models.Media;
-import models.UserPhoto;
-import models.UserVideo;
+import accessors.UserAccessor;
+import accessors.UserPhotoAccessor;
+import models.*;
 import models.commands.General.CommandPage;
 import models.commands.General.UndoableCommand;
 
@@ -37,14 +36,14 @@ public class RemoveMediaFromAlbumCommand extends UndoableCommand {
         for (Media media : medias) {
             album.removeMedia(media);
             AlbumAccessor.update(album);
-
             media = MediaAccessor.getMediaById(media.getMediaId());
-
             if (media.getAlbums().size() == 0) {
                 deletedMedia.add(media);
                 MediaAccessor.delete(media);
             }
+
         }
+
 
     }
 
@@ -89,6 +88,14 @@ public class RemoveMediaFromAlbumCommand extends UndoableCommand {
     public void redo() {
         this.deletedMedia = new ArrayList<>();
         execute();
+    }
+
+    /**
+     * Returns result from the undo/redo command as a string
+     * @return String result of command
+     */
+    public String toString() {
+        return "Delete " + medias.get(0) + " from " + this.album.getTitle();
     }
 
 

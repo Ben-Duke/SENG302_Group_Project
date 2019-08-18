@@ -384,9 +384,6 @@ public class TripController extends Controller {
 
             VisitFactory visitFactory = new VisitFactory();
             Visit newVisit = visitFactory.createVisitByJSRequest(destination, trip);
-            System.out.println(newVisit);
-            System.out.println(trip.getVisits());
-            System.out.println(newVisit.getVisitOrder());
             if (tripFactory.hasRepeatDest(trip.getVisits(), newVisit, "ADD")) {
                 return badRequest("Trip cannot have two destinations in a row!");
             }
@@ -467,17 +464,12 @@ public class TripController extends Controller {
 
         User user = User.getCurrentUser(request);
         if (user == null) { return redirect(routes.UserController.userindex()); }
-        System.out.println("visit id is " + visitid);
         Visit visit = VisitAccessor.getById(visitid);
-        System.out.println(visit.isTripOwner(user.getUserid()));
         if (visit == null) { return redirect(routes.UserController.userindex()); }
 
         Trip trip = visit.getTrip();
 
-        System.out.println("User id from the visit trip|" + visit.getTrip().getUser().getUserid());
 
-        System.out.println("User id from request|" + user.getUserid());
-        System.out.println("User id from the trip|" +trip.getUser().getUserid());
 
         if (!trip.isUserOwner(user.getUserid())) { return unauthorized(); }
 
@@ -656,6 +648,26 @@ public class TripController extends Controller {
             } else {
                 return unauthorized("Oops, this is a private trip and you don't own it.");
             }
+        } else {
+            return redirect(routes.UserController.userindex());
+        }
+    }
+
+    /**
+     * Returns a map of th legnth of each of the user's trip and their is as a json
+     *
+     * @param request the HTTP request
+     * @return Map of the length user's trips and trip id
+     */
+    public Result getLengthUserTrips(Http.Request request){
+        User user = User.getCurrentUser(request);
+        if (user != null) {
+            Map<Integer, Integer> visitList = new HashMap<>();
+            for (Trip trip: user.getTrips()) {
+                visitList.put(trip.getTripid(), trip.getVisits().size());
+            }
+
+            return ok(Json.toJson(visitList));
         } else {
             return redirect(routes.UserController.userindex());
         }

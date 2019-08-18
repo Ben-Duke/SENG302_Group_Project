@@ -4,87 +4,150 @@
 
 <style>
 
-        body{
-            overflow-y: hidden;
-        }
-        #map {
-            top: -10px;
-            height: calc(100% + 10px);
+    body{
+        overflow-y: hidden;
+    }
+    #map {
+        top: -10px;
+        height: calc(100% + 10px);
 
-        }
-        #control {
-            /*height: calc(100% - 50px)%;*/
-            height: 100%;
-            text-align: center;
-        }
-        #destinationsTab {
+        z-index: 10;
 
-        }
-        #singleDestinationContainer {
-            height: 50%;
-        }
-        .singleDestination {
-            height: 45%;
-            display: none;
-        }
+        -webkit-transition: width 0.3s ease, height 0.3s ease, margin 0.3s ease, padding 0.3s ease, opacity 0.3s ease;
+        -moz-transition: width 0.3s ease, height 0.3s ease, margin 0.3s ease, padding 0.3s ease, opacity 0.3s ease;
+        -o-transition: width 0.3s ease, height 0.3s ease, margin 0.3s ease, padding 0.3s ease, opacity 0.3s ease;
+        transition: width 0.3s ease, height 0.3s ease, margin 0.3s ease, padding 0.3s ease, opacity 0.3s ease;
+    }
+    #control {
+        height: 100%;
+        text-align: center;
+        position: relative;
+        padding-left: 28px;
 
-        #tripsTab {
-            height: calc(100% - 50px)%;
-        }
-        #singleTripContainer {
-            height: 55%;
-            overflow-y: auto;
-        }
-        .singleTrip {
-            display: none;
-        }
+        -webkit-transition: width 0.3s ease, height 0.3s ease, margin 0.3s ease, padding 0.3s ease, opacity 0.3s ease;
+        -moz-transition: width 0.3s ease, height 0.3s ease, margin 0.3s ease, padding 0.3s ease, opacity 0.3s ease;
+        -o-transition: width 0.3s ease, height 0.3s ease, margin 0.3s ease, padding 0.3s ease, opacity 0.3s ease;
+        transition: width 0.3s ease, height 0.3s ease, margin 0.3s ease, padding 0.3s ease, opacity 0.3s ease;
+    }
+    #destinationsTab {
 
-        #tripList {
-            height: 30%;
-            overflow-y: auto;
-        }
+    }
+    #singleDestinationContainer {
+        min-height: 360px;
+        height: 35%;
+        position: relative;
+    }
+    .singleDestination {
+        margin-top: 20px;
+        /*height: 45%;*/
+        display: none;
+    }
+    .destBtnContainer {
+        position: absolute;
+        padding: 10px 10px 10px 20px;
+        bottom: 0;
+        text-align: left;
+    }
+    #destinationList {
+        margin-top: 10px;
+        position: relative;
+    }
+    .createDestBtn {
+        color: white;
+        position: absolute;
+        top: -8px;
+        right: 0;
+    }
 
-        .tripDateInput {
-            height: 25px;
-            width: 120px;
-            font-size: 12px;
-        }
+    #tripsTab {
+        height: calc(100% - 50px)%;
+    }
+    #singleTripContainer {
+        height: 55%;
+    }
+    .singleTrip {
+        overflow-y: auto;
+        height: 90%;
+        display: none;
+        position: relative;
+    }
+    .deleteTripBtn {
+        position: absolute;
+        bottom: 10px;
+        left: 20px;
+    }
 
-        a {
-            cursor: pointer;
-        }
+    #tripList {
+        height: 30%;
+        overflow-y: auto;
+    }
 
-        #legend {
-            font-family: Arial, sans-serif;
-            background: hsla(120, 100%, 75%, 0.3);
-            padding: 10px;
-            margin: 10px;
-            border: 1px solid #000;
-        }
-        #legend h3 {
-            margin-top: 0;
-        }
-        #legend img {
-            vertical-align: middle;
-        }
+    .tripDateInput {
+        height: 25px;
+        width: 120px;
+        font-size: 12px;
+    }
 
-        #placesContainer {
-            position: absolute;
-            z-index: 2;
-            left: 10px;
-            top: 70px;
-            width: 30%;
-            max-width: 500px;
-            min-width: 250px;
-            font-family: Roboto;
+    a {
+        cursor: pointer;
+    }
 
-        }
-        #placesAutocomplete {
-            width: 100%;
-            font-size: 16px;
-            padding: 12px 20px 12px 40px; /* Add some padding */
-            border: 1px solid #ddd; /* Add a grey border */
-        }
+    #legend {
+        position: absolute;
+        bottom: 25px;
+        left: 0px;
+        z-index: 11;
+        font-family: Arial, sans-serif;
+        background: hsla(120, 100%, 75%, 0.3);
+        padding: 10px;
+        margin: 10px;
+        border: 1px solid #000;
+    }
+    #legend h3 {
+        margin-top: 0;
+    }
+    #legend img {
+        vertical-align: middle;
+    }
+
+    #placesContainer {
+        position: absolute;
+        z-index: 13;
+        left: 10px;
+        top: 60px;
+        width: 30%;
+        max-width: 500px;
+        min-width: 250px;
+        font-family: Roboto;
+
+    }
+    #placesAutocomplete {
+        width: 100%;
+        font-size: 16px;
+        padding: 12px 20px 12px 40px; /* Add some padding */
+        border: 1px solid #ddd; /* Add a grey border */
+    }
+    .resizeBtn {
+        position: absolute;
+        height: 100%;
+
+        width: 8px;
+        padding: 0;
+
+        border: none;
+        border-radius: 2px;
+
+        font-size: 8px;
+        color: #8f8f8f;
+        background-color: #e5e5e5;
+    }
+    #resizeLeft {
+        left: 1px;
+    }
+    #resizeRight {
+        left: 10px;
+    }
+
 
 </style>
 
@@ -97,6 +160,10 @@
     <div id="legend"><h3>Legend</h3></div>
     <div id="map" class="col-md-8"></div>
     <div id="control" class="col-md-4">
+
+        <button type="button" id="resizeLeft" class="resizeBtn">&#9668</button>
+        <button type="button" id="resizeRight" class="resizeBtn">&#9658</button>
+
 
         <ul class="nav nav-tabs nav-justified">
             <li class="active" id="tripsTabListItem"><a data-toggle="tab" href="#tripsTab">Trips</a></li>
@@ -166,9 +233,12 @@
                                     <span>@destination.getLongitude()</span>
                                 </div>
                             </div>
-
-                            <a class="btn btn-primary" id="setPrimaryPicture" href="@routes.DestinationController.viewDestination(destination.getDestId())">
-                            View Destination</a>
+                            <div class="destBtnContainer">
+                                <a class="btn btn-primary" href="@routes.DestinationController.viewDestination(destination.getDestId())">
+                                View</a>
+                                <a class="btn btn-primary" href="@routes.DestinationController.editDestination(destination.getDestId())">
+                                Edit</a>
+                            </div>
 
 
                         </div>
@@ -187,6 +257,8 @@
                 <hr>
                 <div id="destinationList">
                     <h4 style="text-align: left">My Destinations</h4>
+                    <a class="btn btn-primary createDestBtn" onclick="viewCreatePanel()">
+                        New Destination</a>
                     <div class="list-group">
                         @for(destination <- destinations) {
                             @if(!destination.getIsPublic()) {
@@ -231,7 +303,6 @@
                             </tr>
                         </thead>
                     </table>
-
                     @for(trip <- trips) {
 
                     <div id="singleTrip_@trip.getTripid()" class="singleTrip">
@@ -271,21 +342,21 @@
                             </tbody>
                         </table>
 
-                        <button class="btn btn-danger" onclick="deleteTripRequest(@trip.getTripid(), '@routes.HomeController.mainMapPage()')">Delete trip</button>
+                        <button class="btn btn-danger deleteTripBtn" onclick="deleteTripRequest(@trip.getTripid(), '@routes.HomeController.mainMapPage()')">Delete trip</button>
 
                     </div>
                     }
                 </div>
+                <datalist id="tripListDeletion"></datalist>
                 <hr>
                 <div id="tripList">
-
                 <div id="trip-list-group"class="list-group">
                     @for(trip <- trips) {
 
                         <a onclick="displayTrip(@trip.getTripid(),
                             @trip.getOrderedVisits().get(0).getDestination().getLatitude(),
                                 @trip.getOrderedVisits().get(0).getDestination().getLongitude())"
-                            class="list-group-item list-group-item-action">
+                            class="list-group-item list-group-item-action" id="Button@trip.getTripid()">
                             @if(trip.getTripStart() != null){
                                 @trip.getTripName() | Arrival date: @trip.getTripStart()
                             } else{
@@ -323,8 +394,10 @@
     </div>
 
 
-    <script src="@routes.Assets.at("js/destination/destinationMap.js")"></script>
+
+
     <script src="@routes.Assets.at("js/map/map.js")"></script>
+    <script src="@routes.Assets.at("js/map/mapStyle.js")"></script>
     <script src="https://maps.googleapis.com/maps/api/js?key=&callback=initMap&libraries=drawing,places"
     async defer></script>
 

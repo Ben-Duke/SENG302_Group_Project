@@ -404,7 +404,7 @@ public class TagController {
     }
 
     /**
-     * This function is used to do a request to add a tag to a destination
+     * This function is used to do a request to add a tag to a trip
      * @param request
      * @param tripId
 

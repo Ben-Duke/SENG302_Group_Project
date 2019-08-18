@@ -132,13 +132,15 @@ public class TagControllerTest extends BaseTestWithApplicationAndDatabase {
     @Test
     public void searchTagsMultipleTagsCheckData() {
         Result result = searchTagsHelper("t", 2);
-        assertEquals("[{\"tagId\":1,\"name\":\"Fun place to stay\"},{\"tagId\":2,\"name\":\"Vacation spot\"},{\"tagId\":3,\"name\":\"Top Rated\"}]", contentAsString(result));
+        assertEquals("[{\"tagId\":1,\"name\":\"Fun place to stay\"},{\"tagId\":2,\"name\":\"Vacation spot\"}" +
+                ",{\"tagId\":3,\"name\":\"Top Rated\"},{\"tagId\":4,\"name\":\"Best trip ever\"}]", contentAsString(result));
     }
 
     @Test
     public void searchTagsEmptySearchCheckData() {
         Result result = searchTagsHelper("", 2);
-        assertEquals("[{\"tagId\":1,\"name\":\"Fun place to stay\"},{\"tagId\":2,\"name\":\"Vacation spot\"},{\"tagId\":3,\"name\":\"Top Rated\"}]", contentAsString(result));
+        assertEquals("[{\"tagId\":1,\"name\":\"Fun place to stay\"},{\"tagId\":2,\"name\":\"Vacation spot\"}," +
+                "{\"tagId\":3,\"name\":\"Top Rated\"},{\"tagId\":4,\"name\":\"Best trip ever\"}]", contentAsString(result));
     }
 
     @Test
@@ -185,7 +187,7 @@ public class TagControllerTest extends BaseTestWithApplicationAndDatabase {
 
         Result result = getPhotoTagHelper(2, 2);
         assertEquals(
-                "[{\"tagId\":4,\"name\":\"UC\"},{\"tagId\":5,\"name\":\"Second Tag\"}]",
+                "[{\"tagId\":5,\"name\":\"UC\"},{\"tagId\":6,\"name\":\"Second Tag\"}]",
                 contentAsString(result));
     }
 
@@ -537,7 +539,7 @@ public class TagControllerTest extends BaseTestWithApplicationAndDatabase {
                 .uri("/trips/1/tags").session("connected", "2");
         Result result = route(app, request);
 
-        assertEquals("[{\"tagId\":2,\"name\":\"Best trip ever\"}]", contentAsString(result));
+        assertEquals("[{\"tagId\":4,\"name\":\"Best trip ever\"}]", contentAsString(result));
     }
 
     @Test
@@ -574,11 +576,14 @@ public class TagControllerTest extends BaseTestWithApplicationAndDatabase {
 
     @Test
     public void checkAddTripTag() {
+        Trip trip = TripAccessor.getTripById(1);
+        int beforeSize = trip.getTags().size();
         Map<String, String> tagData = new HashMap<>();
         tagData.put("tag", "Best trip ever 2");
-        tripTagHelper("PUT", tagData,  1 , 2);
-        Trip trip = TripAccessor.getTripById(1);
-        assertEquals(2, trip.getTags().size());
+        tripTagHelper("PUT", tagData,  trip.getTripid() , 2);
+        trip = TripAccessor.getTripById(1);
+        int afterSize = trip.getTags().size();
+        assertEquals(beforeSize + 1, afterSize);
     }
 
     @Test
@@ -628,11 +633,14 @@ public class TagControllerTest extends BaseTestWithApplicationAndDatabase {
 
     @Test
     public void checkAddTagAsAdmin() {
+        Trip trip = TripAccessor.getTripById(1);
+        int beforeSize = trip.getTags().size();
         Map<String, String> tagData = new HashMap<>();
         tagData.put("tag", "Admin Tag TEST");
         tripTagHelper("PUT", tagData,  1 , 1);
-        Trip trip = TripAccessor.getTripById(1);
-        assertEquals(2, trip.getTags().size());
+        trip = TripAccessor.getTripById(1);
+        int afterSize = trip.getTags().size();
+        assertEquals(beforeSize + 1, afterSize);
     }
 
     @Test

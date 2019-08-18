@@ -419,7 +419,8 @@ INSERT INTO `user_traveller_type` (`user_userid`, `traveller_type_ttypeid`) VALU
 INSERT INTO `tag`(`tag_id`, `name`) VALUES
 (1,'Fun place to stay'),
 (2, 'Vacation spot'),
-(3, 'Top Rated');
+(3, 'Top Rated'),
+(4, 'Best trip ever');
 
 -- pending users
 INSERT INTO `tag_user`(`tag_tag_id`,`user_userid`) VALUES
@@ -430,6 +431,9 @@ INSERT INTO `destination_tag`(`destination_destid`, `tag_tag_id`) VALUES
 (1,1),
 (2,2),
 (1,3);
+
+INSERT INTO `trip_tag`(`trip_tripid`,`tag_tag_id`) VALUES
+(1,4);
 
 -- visit
 INSERT INTO `visit` (`visitid`, `visitorder`, `destination`, `trip`, `arrival`,

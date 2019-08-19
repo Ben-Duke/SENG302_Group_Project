@@ -344,8 +344,11 @@ GET     /users/albums/photos/get_linked_destinations/:photoId controllers.AlbumC
 
 GET /googlemap  controllers.DestinationController.renderMap(request : Request)
 
+# ------ ALBUMS ------
+
 GET     /users/events/search            controllers.EventsController.indexEvents(request : Request)
 
+GET     /events     controllers.EventsController.getEventsData(request : Request, latitude : Double, longitude : Double, place : String, offset : Integer)
 
 
 

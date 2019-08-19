@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.util.Base64;
@@ -24,7 +23,7 @@ public class EventFindaUtilities {
      * Default private constructor
      */
     private EventFindaUtilities() {
-
+        throw new UnsupportedOperationException();
     }
 
     private static final Logger logger = UtilityFunctions.getLogger();
@@ -34,7 +33,7 @@ public class EventFindaUtilities {
      * @param targetUrl
      * @return a JsonNode object is the result of the api call
      */
-    private JsonNode eventFindaGetResponse(String targetUrl) {
+    private static JsonNode eventFindaGetResponse(String targetUrl) {
         try {
             String url = "https://api.eventfinda.co.nz/v2/" + targetUrl;
             URL obj = new URL(url);
@@ -58,6 +57,7 @@ public class EventFindaUtilities {
                 response.append(inputLine);
             }
             in.close();
+
             //Json comes out cleaner using this code.
             return Json.parse(response.toString());
         } catch (ProtocolException e) {
@@ -77,11 +77,14 @@ public class EventFindaUtilities {
      * @param offset
      * @return Returns a JsonNode object that has all events for the given location
      */
-    public JsonNode getEvents(double latitude, double longitude, String place, int offset) {
+    public static JsonNode getEvents(double latitude, double longitude, String place, int offset) {
         if (offset < 0) {
             offset = 0;
         }
         int locationId = getLocationId(latitude, longitude, place);
+        if (locationId == -1) {
+            return null;
+        }
         String url = "events.json?location=" + locationId + "&rows=20" + "&offset=" + offset;
         return eventFindaGetResponse(url);
     }
@@ -93,9 +96,12 @@ public class EventFindaUtilities {
      * @param place
      * @return returns the id of given place name.
      */
-    public int getLocationId(double latitude, double longitude, String place){
+    public static int getLocationId(double latitude, double longitude, String place){
         JsonNode nodes = getLocations(latitude, longitude, place, 0);
-        return Integer.parseInt(nodes.get("locations").get(0).get("id").asText());
+        if (nodes != null) {
+            return Integer.parseInt(nodes.get("locations").get(0).get("id").asText());
+        }
+        return -1;
     }
 
     /**
@@ -106,13 +112,12 @@ public class EventFindaUtilities {
      * @param offset Offset amount
      * @return a JsonNode object that has all locations based on the passed query.
      */
-    public JsonNode getLocations(double latitude, double longitude, String query, int offset) {
+    public static JsonNode getLocations(double latitude, double longitude, String query, int offset) {
         if (offset < 0) {
             offset = 0;
         }
         String url = "locations.json?point=" + latitude + "," + longitude +"&rows=20" + "&offset=" + offset + "&q=" + query;
-        JsonNode locations = eventFindaGetResponse(url);
-        return locations;
+        return eventFindaGetResponse(url);
     }
 
 

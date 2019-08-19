@@ -143,13 +143,14 @@ function extractAndAddTag(inputVal) {
 
 
         let tag = "";
-        for (let i in words) {
-            console.log(words[i]);
-            tag += words[i] + ' ';
+        for (let word of words) {
+            console.log(word.length + " " + word);
+            if (word) {
+                tag += word + ' ';
+            }
         }
 
         tag = tag.trim();
-
         addTag(tag);
     }
 }

@@ -1,0 +1,25 @@
+@(user: User, taggableType: String, taggableId: Integer)
+
+<head>
+    <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/createTag.css")">
+</head>
+
+<div class="container" id="tag-container2">
+
+    <div id ="tag-list2" data-taggableType="@taggableType" data-taggableId="@taggableId">
+        <div class="row">
+
+                <div id="tag-well2" style="width:400px;height:60px" class="well well-sm">
+                    <div id ="tag-line2">
+                        <input type="text" id="tag-add2" list="tag-add-results" name="Tag Add" title="Tag Add" placeholder="Add Tags" autocomplete="off">
+                    </div>
+                </div>
+        </div>
+
+    </div>
+
+    <datalist id="tag-add-results2"></datalist>
+
+</div>
+
+<script src="@routes.Assets.at("js/tags/createTags2.js")" type="text/javascript"></script>

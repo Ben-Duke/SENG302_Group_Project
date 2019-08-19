@@ -188,9 +188,12 @@ function setSlideListeners(i) {
             const mediaId = albumData[i]["mediaId"];
             const caption = albumData[i]["caption"];
             // changeTaggableModel(mediaId, "photo");
-            const tagList = document.getElementById("tag-list");
-            tagList.setAttribute("data-taggableId", mediaId);
-            tagList.dispatchEvent(new Event('tagChange'));
+            const tagLists = document.getElementsByClassName("tag-list");
+            for (let i = 0; i < tagLists.length; i++) {
+                tagLists[i].setAttribute("data-taggableId", mediaId);
+                tagLists[i].setAttribute("data-taggableType", "photo");
+                tagLists[i].dispatchEvent(new Event('tagChange'));
+            }
 
             if (caption != "") {
                 document.querySelector('div[data-mediaId="'+mediaId+'"] [contenteditable]').innerHTML = caption.toString();

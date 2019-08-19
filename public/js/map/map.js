@@ -210,10 +210,13 @@ function addSelectedToVisitToTrip(destId, startTrip){
                 listGroup.appendChild(tripLink);
 
                 //Update tags
-                const tagList = document.getElementById("tag-list");
-                tagList.setAttribute("data-taggableId", data.tripId);
-                tagList.setAttribute("data-taggableType", "trip");
-                tagList.dispatchEvent(new Event('tagChange'));
+                const tagLists = document.getElementsByClassName("tag-list");
+                let tagList;
+                for (let i = 0; i < tagLists.length; i++) {
+                    tagLists[i].setAttribute("data-taggableId", data.tripId);
+                    tagLists[i].setAttribute("data-taggableType", "trip");
+                    tagLists[i].dispatchEvent(new Event('tagChange'));
+                }
                 showTagEditor();
 
                 for (let i in tripRoutes) {
@@ -704,10 +707,12 @@ function displayTrip(tripId, startLat, startLng) {
     window.globalMap.setZoom(9);
 
     //Update tags
-    const tagList = document.getElementById("tag-list");
-    tagList.setAttribute("data-taggableId", tripId);
-    tagList.setAttribute("data-taggableType", "trip");
-    tagList.dispatchEvent(new Event('tagChange'));
+    const tagLists = document.getElementsByClassName("tag-list");
+    for (let i = 0; i < tagLists.length; i++) {
+        tagLists[i].setAttribute("data-taggableId", tripId);
+        tagLists[i].setAttribute("data-taggableType", "trip");
+        tagLists[i].dispatchEvent(new Event('tagChange'));
+    }
     showTagEditor();
 }
 

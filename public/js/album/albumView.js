@@ -1036,27 +1036,6 @@ function deleteAndUnlinkPhoto() {
     });
 }
 
-/* When the user clicks on the button,
-toggle between hiding and showing the dropdown content */
-function openDropdown() {
-    document.getElementById("optionsDropdown").classList.toggle("show");
-}
-
-
-// Close the dropdown menu if the user clicks outside of it
-window.onclick = function(event) {
-    if (!event.target.matches('.dropbtn')) {
-        var openDropdown = document.getElementsByClassName("optionsDropdown");
-        console.log(openDropdown);
-        if (openDropdown.classList !== undefined) {
-            if (openDropdown.classList.contains('show')) {
-                openDropdown.classList.remove('show');
-            }
-        }
-    }
-
-};
-
 
 $('#photo-upload').click(function (eve){
     let searchBar = document.getElementById("album-search-photo");

@@ -23,7 +23,7 @@ public class EventFindaUtilities {
     /**
      * Default private constructor
      */
-    private EventFindaUtilities() {
+    public EventFindaUtilities() {
 
     }
 
@@ -93,8 +93,9 @@ public class EventFindaUtilities {
      * @param place
      * @return returns the id of given place name.
      */
-    public int getLocationId(double latitude, double longitude, String place){
+    public int getLocationId(double latitude, double longitude, String place) throws NullPointerException{
         JsonNode nodes = getLocations(latitude, longitude, place, 0);
+
         return Integer.parseInt(nodes.get("locations").get(0).get("id").asText());
     }
 

@@ -60,7 +60,6 @@ public class TagController {
      * @return a http response with the list of tags
      */
     public Result getPhotoTags(Http.Request request, int photoId) {
-        logger.debug("getPhotoTags");
         User user = User.getCurrentUser(request);
         if (user != null) {
             UserPhoto photo = UserPhotoAccessor.getUserPhotoById(photoId);
@@ -73,7 +72,6 @@ public class TagController {
                 return forbidden();
             }
             Set<Tag> tags = photo.getTags();
-            logger.debug("tags = ", Json.toJson(tags).toString());
             return ok(Json.toJson(tags));
         } else {
             return unauthorized();

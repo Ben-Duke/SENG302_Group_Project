@@ -11,6 +11,11 @@
                 margin: 10px 20px 10px 20px;
                 height: 40vh;
             }
+
+            #search-container {
+            border-right: 1px inset;
+            }
+
             
         </style>
     </head>
@@ -18,13 +23,17 @@
 
 
     <div class="col-md-4" id="search-container">
+
+
         <div class="row" id="search-input-row">
 
-            <fieldset>
+
+
+            <form class="form-horizontal" role="form">
 
                 <div class="form-group">
-                    <label class="col-sm-2 control-label">Keyword</label>
-                    <div class="col-sm-10">
+                    <label  for="keyword-search-input" class="col-sm-2 control-label">Keyword</label>
+                    <div class="col-sm-8">
                         <input type="text"
                         class="form-control"
                         id="keyword-search-input"
@@ -33,7 +42,7 @@
                 </div>
                 <div class="form-group">
                     <label class="col-sm-2 control-label">Category</label>
-                    <div class="col-sm-10">
+                    <div class="col-sm-8">
                         <input type="text"
                         class="form-control"
                         id="category-search-input"
@@ -44,7 +53,7 @@
 
                 <div class="form-group">
                     <label class="col-sm-2 control-label">Artist</label>
-                    <div class="col-sm-10">
+                    <div class="col-sm-8">
                         <input type="text"
                         class="form-control"
                         id="artist-search-input"
@@ -53,7 +62,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label class="col-sm-4 control-label">Start Date</label>
+                    <label class="col-sm-2 control-label">Start Date</label>
                     <div class="col-sm-8">
                         <input type="date"
                         id="start-datepicker"
@@ -63,7 +72,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label class="col-sm-4 control-label">End Date</label>
+                    <label class="col-sm-2 control-label">End Date</label>
                     <div class="col-sm-8">
                         <input type="date"
                         id="end-datepicker"
@@ -72,32 +81,36 @@
                     </div>
                 </div>
 
+
                 <div class="form-group">
-                    <label class="col-sm-4 control-label">Min Price</label>
-                    <div class="col-sm-8">
-                        <input type="number"
-                        class="form-control"
-                        id="minprice-search-input"
-                        placeholder="Min Price">
+                    <label for="minprice-search-input" class="col-sm-2 control-label">Price</label>
+                    <div class="form-group row">
+                        <div class="form-group">
+                            <div class="input-group col-md-6">
+                                <div class="input-group-addon">$</div>
+                                <input type="number"
+                                       class="form-control"
+                                       id="minprice-search-input"
+                                placeholder="Min">
+                                <div class="input-group-addon">$</div>
+                                <input type="number"
+                                       class="form-control"
+                                       id="maxprice-search-input"
+                                placeholder="Max">
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <label class="col-sm-4 control-label">Max Price</label>
-                    <div class="col-sm-8">
-                        <input type="number"
-                        class="form-control"
-                        id="maxprice-search-input"
-                        placeholder="Max Price">
-                    </div>
-                </div>
+            </form>
 
-            </fieldset>
-            <br>
-            <fieldset>
+
+            <hr>
+
+            <form class="form-horizontal" role="form">
 
                 <div class="form-group">
-                    <label class="col-sm-4 control-label">Sort by</label>
+                    <label class="col-sm-2 control-label">Sort by</label>
                     <div class="col-sm-8">
                         <select
                         class="form-control"
@@ -109,22 +122,24 @@
                     </div>
                 </div>
 
-            </fieldset>
-            <br>
-            <fieldset>
+            </form>
+
+            <hr>
+
+            <form class="form-horizontal" role="form">
 
                 <div class="form-group">
                     <label class="col-sm-2 control-label">Destination</label>
-                    <div class="col-sm-10">
+                    <div class="col-sm-8">
                         <input type="text"
                         class="form-control"
-                        id="minprice-search-input"
+                        id="destination-search-input"
                         placeholder="Select destination on map"
                         disabled>
                     </div>
                 </div>
 
-            </fieldset>
+            </form>
 
             <div id="map"></div>
 

@@ -23,6 +23,68 @@
         left: -25px;
         top: -5px;
     }
+    #imageContainer {
+        position: relative;
+        margin: 10px;
+        width: 200px;
+        float: left;
+    }
+
+    .img-thumbnails {
+        border-radius: 5px;
+        cursor: pointer;
+        max-height: 200px;
+        height: 200px;
+        max-width: 200px;
+        width: 200px;
+    }
+
+
+    .overlay {
+        position: absolute;
+        max-width: 200px;
+        opacity: 1;
+        transition: .3s ease;
+    }
+
+    .icon {
+        color: white;
+        font-size: 25px;
+        position: absolute;
+        top: -20px;
+        left: 150px;
+        max-width: 60px;
+        transform: translate(50%, 50%);
+        -ms-transform: translate(-50%, -50%);
+    }
+
+    .fa {
+        display: inline-block;
+        font-size: inherit;
+        text-rendering: auto;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale
+    }
+
+    .fa-eye-green {
+        color: green;
+    }
+
+    .fa-eye-red {
+        color: red;
+    }
+
+    .fa-eye-green:before {
+        content: "\1F441";
+    }
+
+    .fa-eye-red:before {
+        content: "\1F441";
+    }
+
+
+
+
     #addPhotoLink {
         display: inline-block;
         max-width: 120px;
@@ -168,9 +230,23 @@
         @for(photo <- destination.getPrimaryAlbum().getMedia()) {
              @if(photo.isOwner(user) || photo.getIsPublic()) {
 
+                <img src="">
                 <a href="#" data-toggle="modal" data-target="#photo-carousel" onclick="displayPhoto(@photo.getMediaId())">
-                    <img id=@{photo.getUrl} height="150"
-                    src="@{routes.HomeController.index(photo.getUrlWithPath())}" alt="Destination Image">
+
+                    <div class="" id="imageContainer">
+                        <div class="overlay">
+                            <i class="icon" title="User Profile">
+                            @if(photo.getIsPublic()) {
+                                <i class="fa fa-eye-green"></i>
+                            } else {
+                                <i class="fa fa-eye-red"></i>
+                            }
+                            </i>
+                        </div>
+                        <img class="img-thumbnails" id=@{photo.getUrl} src="@{routes.HomeController.index(photo.getUrlWithPath())}" alt="Destination Image">
+                    </div>
+
+
                 </a>
             }
 

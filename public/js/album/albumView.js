@@ -187,7 +187,14 @@ function setSlideListeners(i) {
             setMakeProfilePictureListener(albumData, i);
             const mediaId = albumData[i]["mediaId"];
             const caption = albumData[i]["caption"];
-            changeTaggableModel(mediaId, "photo");
+            // changeTaggableModel(mediaId, "photo");
+            const tagLists = document.getElementsByClassName("tag-list");
+            for (let i = 0; i < tagLists.length; i++) {
+                tagLists[i].setAttribute("data-taggableId", mediaId);
+                tagLists[i].setAttribute("data-taggableType", "photo");
+                tagLists[i].dispatchEvent(new Event('tagChange'));
+            }
+
             if (caption != "") {
                 document.querySelector('div[data-mediaId="'+mediaId+'"] [contenteditable]').innerHTML = caption.toString();
             } else {

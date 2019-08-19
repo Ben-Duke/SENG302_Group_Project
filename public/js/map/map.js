@@ -8,6 +8,7 @@ window.globalMarkers = [];
 let tripFlightPaths = {};
 let isNewTrip = false;
 let geoCoder;
+let destMarker;
 
 
 function initMap() {
@@ -1259,7 +1260,10 @@ function initMapPositionListeners() {
                         map.panTo(latlng);
                         map.setZoom(11);
                         let placeId = results[0].place_id;
-                        var marker = new google.maps.Marker({
+                        if (destMarker != undefined) {
+                            destMarker.setMap(null);
+                        }
+                        destMarker = new google.maps.Marker({
                             position: latlng,
                             map: map
                         });
@@ -1307,8 +1311,6 @@ function initMapPositionListeners() {
                                console.log(error);
                             }
                         });
-                        // infowindow.setContent(results[0].formatted_address);
-                        // infowindow.open(map, marker);
                     } else {
                         window.alert('No results found');
                     }

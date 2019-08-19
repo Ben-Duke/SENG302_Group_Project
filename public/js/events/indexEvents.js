@@ -19,37 +19,45 @@ function getEventsData(latitude, longitude, place, pageNum) {
 function displayEvents(events) {
     for (let i=0; i < events.length; i++) {
         const mediaRow = document.createElement("div");
-        mediaRow.classList.add("row", "media")
+        mediaRow.classList.add("media")
         const mediaLeft = document.createElement("div");
         mediaLeft.classList.add("media-left");
         const eventImageLink = document.createElement("a");
-        eventImageLink.setAttribute("href", "#");
-        const eventImage = document.createElement("img-thumbnail");
-        eventImage.setAttribute("src", "/assets/images/destinationPlaceHolder.png");
+        eventImageLink.setAttribute("target", "_blank");
+        eventImageLink.setAttribute("href", events[i].images.images[0].transforms.transforms[3].url);
+        const eventImage = document.createElement("img");
+        eventImage.classList.add("img-thumbnail");
+        console.log(events[i]);
+        eventImage.setAttribute("src", events[i].images.images[0].transforms.transforms[3].url);
 
 
         const mediaBody = document.createElement("div");
         mediaBody.classList.add("media-body")
+        const eventLink = document.createElement("a");
+        eventLink.setAttribute("href", events[i].url);
+        eventLink.setAttribute("target", "_blank");
         const eventName = document.createElement("h4");
         eventName.classList.add("media-heading");
         eventName.innerText = events[i]["name"];
+        eventLink.appendChild(eventName);
         const eventDateTime = document.createElement("p");
-        eventDateTime.innerText = events[i].datetime_start + "-" + events[i].datetime_end;
+        eventDateTime.innerText = "Starts: " + events[i].datetime_start + "\nEnds: " + events[i].datetime_end;
         const eventAddress = document.createElement("p");
         eventAddress.innerText = events[i].address;
+        const eventCategory = document.createElement("p");
+        eventCategory.innerText = "Type: " + events[i].category.name
         const eventDescription = document.createElement("p");
         eventDescription.innerText = events[i].description;
-
-        mediaBody.appendChild(eventName);
-        mediaBody.appendChild(eventDateTime);
+        mediaBody.appendChild(eventLink);
         mediaBody.appendChild(eventAddress);
+        mediaBody.appendChild(eventDateTime);
+        mediaBody.appendChild(eventCategory);
         mediaBody.appendChild(eventDescription);
-
         eventImageLink.appendChild(eventImage);
         mediaLeft.appendChild(eventImageLink);
         mediaRow.appendChild(mediaLeft);
         mediaRow.appendChild(mediaBody);
-
+        mediaRow.appendChild(document.createElement("hr"));
         document.getElementById("events-results").appendChild(mediaRow);
 
     }

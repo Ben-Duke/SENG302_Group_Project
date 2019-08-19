@@ -168,7 +168,7 @@ function getMapInfoWindowHTML(destination) {
                       <div>District: ${destinationDistrict}</div>
                       <div>${destinationCountry}</div>
                       <div>
-                      <button id="selectDestination" onclick="selectDestination(${destination.destId}, false)">Add to trip</button>
+                      <button id="selectDestination" onclick="selectDestination(${destination.destId}, false)">Select Destination</button>
                       </div>`;
     return infoWindowHTML;
 }

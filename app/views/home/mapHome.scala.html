@@ -30,11 +30,11 @@
         transition: width 0.3s ease, height 0.3s ease, margin 0.3s ease, padding 0.3s ease, opacity 0.3s ease;
     }
     #destinationsTab {
-
+        height: calc(100% - 50px)%;
     }
     #singleDestinationContainer {
-        min-height: 360px;
-        height: 35%;
+        min-height: 400px;
+        height: 50%;
         position: relative;
     }
     .singleDestination {
@@ -208,7 +208,7 @@
                                 <div class="col-sm-9">
                                     <span>@destination.getCountry()</span>
                                     @if(!destination.getIsCountryValid()) {
-                                        <span class="text-danger"> Invalid country</span>
+
                                     }
                                 </div>
                             </div>
@@ -245,9 +245,7 @@
 
                     }
                     <div class="singleDestination" id="createDestination" style="margin-top: 20px">
-                        @helper.form(action = helper.CSRF(routes.DestinationController.saveDestinationFromRequest())) {
-                            @formBody()
-                        }
+                        @formBody()
                     </div>
 
                 </div>
@@ -258,7 +256,7 @@
                 <div id="destinationList">
                     <h4 style="text-align: left">My Destinations</h4>
                     <a class="btn btn-primary createDestBtn" onclick="viewCreatePanel()">
-                        New Destination</a>
+                        &#10133</a>
                     <div class="list-group">
                         @for(destination <- destinations) {
                             @if(!destination.getIsPublic()) {
@@ -406,45 +404,52 @@
 }
 
 @formBody()= {
-    <fieldset>
+    <fieldset id="fieldset">
             <!-- Name -->
         @text(destForm("destName"),
             label = "Destination Name",
             placeholder = "Destination name",
-            help = "Please enter the Destination name. (required)")
+            help = "Please enter the Destination name"
+        )
+        <span class="text-danger" id="nameError"></span>
 
         @views.html.bootstrap3.select(destForm("country"),
             label = "Country",
             optionMap = countryMap,
             isMultiple = false,
-            help= "Select a country",
         )
+        <span class="text-danger" id="countryError"></span>
 
         @text(destForm("district"),
             label = "District",
             placeholder = "district",
         )
+        <span class="text-danger" id="districtError"></span>
 
         @text(destForm("latitude"),
             label = "Latitude",
             placeholder = "latitude (click on map)"
         )
+        <span class="text-danger" id="latitudeError"></span>
 
         @text(destForm("longitude"),
             label = "Longitude",
-            placeholder = "longitude (click on map)"
+            placeholder = "longitude (click on map)",
         )
+        <span class="text-danger" id="longitudeError"></span>
 
         @views.html.bootstrap3.select(destForm("destType"),
             label = "Type",
             optionMap = typeMap,
             isMultiple = false
         )
+        <span class="text-danger" id="typeError"></span>
     </fieldset>
 
     <div class="form-group actions">
         <input id="submit" type="submit" value="Create" class="btn btn-primary"/>
     </div>
+    <span class="text-danger" id="existingMessage"></span>
 
 
-}
+}git

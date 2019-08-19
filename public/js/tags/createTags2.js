@@ -1,9 +1,4 @@
-/**
- * Exists to provide a second trip editor component when there needs to be two on the same page.
- * This means that if createTags.js is edited, this file also needs to be changed accordingly.
- * It's a pretty big band aid fix but there's no workaround unless we re-engineered the reusable component to
- * work with classes instead of IDs. I had a go at that but it got confusing very fast - Gavin
- */
+var user;
 var toAddTagList2 = new Set();
 // let taggableId;
 // let taggableType;
@@ -55,6 +50,12 @@ function removeExistingTagLabels2() {
         tagList.removeChild(tagList.firstChild)
     }
     tagList.appendChild(tagInput);
+}
+
+function clearTagCreator2() {
+    // const tagList = document.getElementsByClassName("tag-list");
+    // tagList.setAttribute("data-taggableId", null);
+    // tagList.dispatchEvent(new Event('tagChange'));
 }
 
 /**
@@ -234,6 +235,27 @@ function sendAddTagRequest2(name, taggableId, taggableType) {
     }).fail((xhr, textStatus, errorThrown) => {
         console.log(xhr.status + " " + textStatus + " " + errorThrown);
     });
+}
+
+/**
+ * Search the database for the tag and if it succeeds adds these tags to the datalist on the search bar
+ * @param query the tag to search for
+ */
+function searchAddTags2(query) {
+    $.ajax({
+        type: 'PUT',
+        url: '/tags/search',
+        data: JSON.stringify({
+            search: query
+        }),
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    }).done((result) => {
+        addTagsToAddList2(result)
+    }).fail((xhr, textStatus, errorThrown) => {
+        console.log(xhr.status + " " + textStatus + " " + errorThrown);
+});
 }
 
 /**

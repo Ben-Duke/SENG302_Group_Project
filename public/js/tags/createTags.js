@@ -1,10 +1,7 @@
-/**
- * Note: All edits here must be edited in createTags2.js too. This is a result of a band aid fix to get
- * multiple of the trip editor instances on the same page without having their element IDs interfering with each other.
- */
-
 var user;
 var toAddTagList = new Set();
+// let taggableId;
+// let taggableType;
 
 
 initialise();
@@ -55,6 +52,11 @@ function removeExistingTagLabels() {
     tagList.appendChild(tagInput);
 }
 
+function clearTagCreator() {
+    // const tagList = document.getElementsByClassName("tag-list");
+    // tagList.setAttribute("data-taggableId", null);
+    // tagList.dispatchEvent(new Event('tagChange'));
+}
 
 /**
  * Gets all tags for a given item and adds them to the display
@@ -233,6 +235,27 @@ function sendAddTagRequest(name, taggableId, taggableType) {
     }).fail((xhr, textStatus, errorThrown) => {
         console.log(xhr.status + " " + textStatus + " " + errorThrown);
     });
+}
+
+/**
+ * Search the database for the tag and if it succeeds adds these tags to the datalist on the search bar
+ * @param query the tag to search for
+ */
+function searchAddTags(query) {
+    $.ajax({
+        type: 'PUT',
+        url: '/tags/search',
+        data: JSON.stringify({
+            search: query
+        }),
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    }).done((result) => {
+        addTagsToAddList(result)
+    }).fail((xhr, textStatus, errorThrown) => {
+        console.log(xhr.status + " " + textStatus + " " + errorThrown);
+});
 }
 
 /**

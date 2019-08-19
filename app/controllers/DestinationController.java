@@ -35,7 +35,11 @@ import utilities.CountryUtils;
 import views.html.users.destination.*;
 
 import javax.inject.Inject;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.*;
 
 
@@ -103,6 +107,32 @@ public class DestinationController extends Controller {
         }
 
         return null;
+    }
+
+    public Result getPlacesDetailsRequest(Http.Request request, String placeId) throws Exception {
+        String url = "https://maps.googleapis.com/maps/api/place/details/json?placeid="+ placeId +
+                "&key=AIzaSyC9Z1g5p2rQtS0nHgDudzCCXVl2HJl3NPI";
+        URL obj = new URL(url);
+        HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+        // optional default is GET
+        con.setRequestMethod("GET");
+        con.setConnectTimeout(5000);
+        BufferedReader in = new BufferedReader(
+                new InputStreamReader(con.getInputStream()));
+        String inputLine;
+        StringBuffer response = new StringBuffer();
+
+
+        while ((inputLine = in.readLine()) != null) {
+            response.append(inputLine);
+        }
+        in.close();
+        JsonNode jsonJacksonArray = Json.parse(response.toString());
+
+
+
+        return ok(jsonJacksonArray);
     }
 
 
@@ -250,21 +280,6 @@ public class DestinationController extends Controller {
         }
 
         Destination newDestination = getDestinationFromRequest(request);
-
-//        if (newDestination.getTags() != null && newDestination.getTags().size() > 0) {
-////            List<String> tags = Arrays.asList(destinationForm.get().tags.split(","));
-//            Set uniqueTags = UtilityFunctions.tagLiteralsAsSet(tags);
-//            newDestination.setTags(uniqueTags);
-//        }
-//        DestinationFactory destinationFactory = new DestinationFactory();
-//        Set<Tag> tagSet = destinationFactory.changedTags(newDestination, destId);
-//        System.out.println(tagSet);
-//        oldDestination.setTags(tagSet);
-
-        //Thing needed to get tags working:
-        //Make sure applyEditChanges changes tags
-        //Make sure tags are bound to newDestination in getDestinationFromRequest
-
         oldDestination.applyEditChanges(newDestination);
 
         EditDestinationCommand editDestinationCommand =
@@ -514,12 +529,30 @@ public class DestinationController extends Controller {
             if (errorForm != null) {
                 return errorForm;
             } else {
+
                 Destination newDestination = formFactory.form(Destination.class)
                         .bindFromRequest(request).get();
+                List<Destination> allDestinations = DestinationAccessor.getAllDestinations();
+                List<Destination> userAccessibleDestinations = new ArrayList<>();
+
+                for (Destination existingDestination : allDestinations) {
+                    if (existingDestination.getUser().getUserid() == user.getUserid() ||
+                            newDestination.getIsPublic()) {
+                        userAccessibleDestinations.add(existingDestination);
+                    }
+                }
+
+                for (Destination existingDestination : userAccessibleDestinations) {
+                    if (newDestination.isSimilar(existingDestination) || newDestination.isSame(existingDestination)) {
+                        return badRequest();
+                    }
+                }
+
                 Form<DestinationFormData> destinationForm = formFactory.form(DestinationFormData.class).bindFromRequest();
                 newDestination.setTags(new HashSet<>());
                 newDestination.setUser(user);
                 newDestination.setCountryValid(true);
+
                 if (destinationForm.get().getTags() != null && destinationForm.get().getTags().length() > 0) {
                     List<String> tags = Arrays.asList(destinationForm.get().getTags().split(","));
                     Set uniqueTags = UtilityFunctions.tagLiteralsAsSet(tags);
@@ -581,10 +614,6 @@ public class DestinationController extends Controller {
     }
 
 
-
-
-
-
     /** Perform form validation for the edit/create destination form
      *  Returns a request containing the form with errors if errors found,
      *  null if no errors found
@@ -607,6 +636,7 @@ public class DestinationController extends Controller {
 
             DestinationFactory destinationFactory = new DestinationFactory();
             int userId = user.getUserid();
+
             if (destinationFactory.userHasPrivateDestination(userId, destination)) {
                 flash("privateDestinationExists",
                         "You already have a matching private destination!");
@@ -633,8 +663,7 @@ public class DestinationController extends Controller {
             if (countryList != null) {
                 countryList.replace(dynamicDestForm.get("country"), true);
             }
-
-            return badRequest();
+            return badRequest(destForm.errorsAsJson());
         } else {
             return null;    // no errors
         }

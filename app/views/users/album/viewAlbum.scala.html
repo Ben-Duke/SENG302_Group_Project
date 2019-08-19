@@ -11,9 +11,16 @@
 </head>
 
 <body onpageshow="getAlbum(@user.getUserid, @album.getAlbumId, @album.userIsOwner(user))">
-    <div>
-        <h2 style="text-align: center;"> @album.getTitle <a id="deleteAlbumButton" onclick= "showDeleteAlbumModal(@album.getDefault)">&#10060</a></h2>
+    <div class="container">
+        <h2 style="margin-left: 45%"> @album.getTitle
+            <a class="btn btn-default sharp pull-right" id="deleteAlbumButton" onclick= "showDeleteAlbumModal(@album.getDefault)"
+               >Delete Album</a>
+            <a class="btn btn-default sharp pull-right" style="margin-right: 10px" data-toggle="modal" data-target="#addPhotoModal">
+                Add Photo &nbsp; <i class="glyphicon glyphicon-camera"></i>
+            </a>
+        </h2>
     </div>
+
 
     <div class="container">
         @if(album.getMedia.size()==0) {
@@ -299,6 +306,39 @@
                 </div>
             </div>
         </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="addPhotoModal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Upload a new photo </h4>
+                </div>
+                <div class="modal-body">
+                    <input id="photoUpload" type="file" accept="image/png,image/jpeg" name="picture" required/>
+                    <br>
+                    <div>
+                        <p>
+                            Add to Album
+                            <input id="album-search-photo" name="Album Search" title="Album Search" data-albumId="@album.getAlbumId"
+                                   value="@album.getTitle" disabled>
+                        </p>
+                        <p id="photoAlbumMessage" hidden> This media must be in an Album </p>
+                    </div>
+                    <p>
+                        <input type="submit" value="Upload" id="photo-upload">
+                        <input type="checkbox" id="private" name="private" value="private" title=""> Make photo private
+                    </p>
+
+                </div>
+            </div>
+        </div>
+
+
     </div>
 
 </body>

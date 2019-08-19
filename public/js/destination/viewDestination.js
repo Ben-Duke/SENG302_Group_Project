@@ -119,6 +119,8 @@ function setMediaPrivacy(mediaId, setPublic) {
                 privateButton.setAttribute('id', "makePrivateLink-"+mediaId);
                 privateButton.setAttribute('onclick', "setMediaPrivacy("+mediaId+", " + !setPublic + ")");
             }
+
+            location.reload();
         }
     });
 }

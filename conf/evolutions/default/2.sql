@@ -308,7 +308,7 @@ INSERT INTO `destination` (`destid`, `user`, `is_public`, `dest_name`, `dest_typ
 (12, 2, 1, 'Bluff', 'Town', 'Southland', 'New Zealand', 1, -46.60075957529487, 168.34655027490953, 1, NULL),
 (13, 2, 1, 'Wanaka', 'Town', 'Queenstown Lakes', 'New Zealand', 1, -44.703242638828584, 169.1327502437765, 1, NULL),
 (14, 2, 1, 'Masterton', 'Town', 'Wairarapa', 'New Zealand', 1, -40.9549210178137, 175.6605914889867, 1, NULL),
-(15, 2, 1, 'Castlepoint', 'Town', 'Wairarapa', 'New Zealand', 1, -40.91199513908064, 176.2265855109639, 0, NULL),
+(15, 2, 1, 'Castlepoint', 'Town', 'Wairarapa', 'New Zealand', 1, -40.91199513908064, 176.2265855109639, 1, NULL),
 (16, 2, 1, 'Sydney', 'Town', 'New South Wales', 'New Zealand', 1, -33.918608452325465, 151.22067000223797, 1, NULL),
 (17, 2, 1, 'Gisborne', 'Town', 'Hawke''s Bay', 'New Zealand', 1, -38.64201030447191, 178.05072585611822, 0, NULL),
 (18, 2, 1, 'Lake Pukaki', 'Attraction', 'MacKenzie District', 'New Zealand', 1, -44.190364079904214, 170.1398079316018, 1, NULL),
@@ -381,12 +381,20 @@ INSERT INTO `destination_traveller_type` (`destination_destid`,
 
 
 -- treasure_hunt
-INSERT INTO `treasure_hunt` (`thuntid`, `title`, `riddle`, `destination_destid`,
-                             `start_date`, `end_date`, `user`) VALUES
+INSERT INTO `treasure_hunt` (`thuntid`, `title`, `riddle`, `destination_destid`, `start_date`, `end_date`, `user`) VALUES
 (1, 'Surprise', 'The garden city', 1, '2019-04-17', '2019-12-25', 2),
 (2, 'Surprise2', 'Prime example of inflation', 3, '2019-04-17', '2019-12-25', 3),
-(3, 'Closed Treasure Hunt', 'You should not be able to view this', 4, '2019-04-17',
- '2019-04-25', 4);
+(3, 'Closed Treasure Hunt', 'You should not be able to view this', 4, '2019-04-17', '2019-04-25', 4),
+(4, 'Home sweet home (for me)', 'Lakes, mountains and far too many tourists', 13, '2019-08-07', '2019-12-06', 2),
+(5, 'A fruity tale', 'Home of the giant fruit', 20, '2019-08-23', '2019-12-21', 2),
+(6, 'Gardens and a hill if you''re lucky', 'The garden city', 1, '2019-08-09', '2019-11-22', 2),
+(7, 'A city by the sea', 'Percieved as cold and wet but the burning couches will keep you warm', 11, '2019-08-23', '2019-11-23', 2),
+(8, 'The big apple (For NZ)', 'A tower that touches the sky among traffic congestions', 10, '2019-08-07', '2019-09-01', 2),
+(9, 'Sunny place across the ditch', 'Home to Google and Atlassian', 16, '2019-08-08', '2021-07-03', 2),
+(10, 'A lake below the tallest mountain', 'Blue and pure below Aoraki', 18, '2019-07-30', '2020-10-21', 2),
+(11, 'A town by the beach', 'Beside Castlerock, a lighthouse and a submarine shaped rock', 15, '2019-07-30', '2020-10-20', 2),
+(12, 'A holiday destination near Christchurch', 'Hot pools and mountainous country', 4, '2019-08-08', '2020-02-20', 3),
+(13, 'The most beautiful town in New Zealand?', 'Home of the golden shears', 14, '2019-08-05', '2019-11-28', 3);
 
 
 -- trip

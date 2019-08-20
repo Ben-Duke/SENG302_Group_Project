@@ -109,10 +109,15 @@ public class EnvironmentalVariablesAccessor {
         }
 
         if (envVariables == null) {
-            logger.error("Error getting env variable.");
+            logger.error("Error getting env variables.");
             return null;
         } else {
-            return envVariables.get(key);
+            String variable = envVariables.get(key);
+            if (variable == null) {
+                logger.error("Error getting env variable: " + key + ". " +
+                        "Make sure the key exists in the .env and has a value.");
+            }
+            return variable;
         }
     }
 

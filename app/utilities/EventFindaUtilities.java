@@ -12,7 +12,7 @@ import java.util.Map;
 
 
 import com.fasterxml.jackson.databind.JsonNode;
-//import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Pair;
 import models.Destination;
 import org.slf4j.Logger;
 import play.libs.Json;
@@ -103,9 +103,13 @@ public class EventFindaUtilities {
         String url = "events.json?location="+locationId+ "&rows=20" + "&offset=" + 0;
 
         if (!category.isEmpty()) {
+            /*TODO use addFreeTextFilterToQuery() to parse input. Then get matching category from eventFinda using this as the q param. Then get the category ID from results of this.
+            The category ID is to be used here. */
             url += "&category="+category;
         }
         if (!artist.isEmpty()) {
+            /*TODO use addFreeTextFilterToQuery() to parse input. Then get matching artist from eventFinda using this as the q param. Then get the artist ID from results of this.
+            The artist ID is to be used here. */
             url += "&artist="+artist;
         }
         if (!startDate.isEmpty()) {
@@ -199,31 +203,31 @@ public class EventFindaUtilities {
      * @param freeText the free text, which is a pair of a list of a list of pairs of strings and a string.
      * @return the updated query
      */
-//    private static String addFreeTextFilterToQuery(String currentQuery, List<Pair<List<Pair<String, String>>,String>> freeText) {
-//        String updatedQuery = currentQuery;
-//        updatedQuery += "q=";
-//        for (Pair<List<Pair<String, String>>,String> bracketPair : freeText) {
-//            List<Pair<String, String>> bracketStrings = bracketPair.getLeft();
-//            String bracketConjunction = bracketPair.getRight();
-//
-//            updatedQuery += "(";
-//            for (Pair<String,String> bracketString : bracketStrings) {
-//                updatedQuery += bracketString.getLeft();
-//                updatedQuery += "+";
-//                updatedQuery += bracketString.getRight();
-//                updatedQuery += "+";
-//            }
-//            updatedQuery = removeLastChar(updatedQuery);
-//            updatedQuery += ")+";
-//            updatedQuery += bracketConjunction;
-//        }
-//        updatedQuery = removeLastChar(updatedQuery);
-//        return updatedQuery;
-//    }
-//
-//    private static String removeLastChar(String str) {
-//        return str.substring(0, str.length() - 1);
-//    }
+    private static String addFreeTextFilterToQuery(String currentQuery, List<Pair<List<Pair<String, String>>,String>> freeText) {
+        String updatedQuery = currentQuery;
+        updatedQuery += "q=";
+        for (Pair<List<Pair<String, String>>,String> bracketPair : freeText) {
+            List<Pair<String, String>> bracketStrings = bracketPair.getLeft();
+            String bracketConjunction = bracketPair.getRight();
+
+            updatedQuery += "(";
+            for (Pair<String,String> bracketString : bracketStrings) {
+                updatedQuery += bracketString.getLeft();
+                updatedQuery += "+";
+                updatedQuery += bracketString.getRight();
+                updatedQuery += "+";
+            }
+            updatedQuery = removeLastChar(updatedQuery);
+            updatedQuery += ")+";
+            updatedQuery += bracketConjunction;
+        }
+        updatedQuery = removeLastChar(updatedQuery);
+        return updatedQuery;
+    }
+
+    private static String removeLastChar(String str) {
+        return str.substring(0, str.length() - 1);
+    }
 }
 
 

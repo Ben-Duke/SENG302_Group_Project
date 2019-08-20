@@ -1,0 +1,21 @@
+.pre-scrollable{
+    max-height: 700px;
+    overflow: auto;
+}
+input[type=checkbox] {
+    transform: scale(1.3);
+    padding: 20px;
+
+}
+.checkbox label {
+    display: inline-block;
+    padding-right: 10px;
+
+}
+.checkbox input {
+    vertical-align: middle;
+}
+.checkbox label span {
+    vertical-align: middle;
+    font-size: 130%;
+}

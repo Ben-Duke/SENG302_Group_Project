@@ -208,7 +208,7 @@ GET     /users/destinations             controllers.DestinationController.indexD
 POST     /users/destination/exists       controllers.DestinationController.doesDestinationExist(request: Request)
 
 #*************_*_*_*_*_*_*_*_*_*
-GET     /users/destinations/getprimaryphoto  controllers.DestinationController.servePrimaryPicture(request : Request, destId : Integer)
+GET     /users/destinations/getprimaryphoto/:destId  controllers.DestinationController.servePrimaryPicture(request : Request, destId : Integer)
 
 #Gets JSON of all public and private Destinations avaliable to a user.
 GET     /users/destinations/getalljson         controllers.DestinationController.getVisibleDestinationMarkersJSON(request : Request)

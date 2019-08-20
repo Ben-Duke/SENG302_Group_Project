@@ -29,14 +29,11 @@ function getItemData(item) {
         data.link = "/users/map_home";
         addItem(data);
     } else if (item.hasOwnProperty('destName')) {
+        console.log(item);
         data.header = item.destName;
         data.type = 'Destination';
         data.body = item.district + ', ' + item.country;
-        if(item.primaryPhoto != null) {
-            data.img = '/users/home/servePicture/' + encodeURIComponent(item.primaryPhoto.urlWithPath);
-        } else {
-            data.img = "/users/home/servePlaceholderPicture/destinationPlaceholder.png"
-        }
+        data.img = '/users/destinations/getprimaryphoto/' + item.destId
         data.link = "/users/destinations/view/" + item.destId;
         addItem(data);
 

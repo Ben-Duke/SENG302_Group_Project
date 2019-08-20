@@ -1,8 +1,11 @@
 package models.commands.Profile;
 
+import accessors.AlbumAccessor;
 import accessors.UserAccessor;
+import accessors.UserPhotoAccessor;
 import controllers.ApplicationManager;
 import factories.LoginFactory;
+import models.Album;
 import models.User;
 import org.junit.After;
 import org.junit.Before;
@@ -35,6 +38,8 @@ public class EditProfileCommandTest extends BaseTestWithApplicationAndDatabase {
 
         assertTrue(loginFactory.isPasswordMatch(user.getEmail(),
                 "TinyHumans57"));
+        Album album = new Album(user, user.getFName() + " " + user.getLName() +"'s "+"Profile Pictures", false);
+        AlbumAccessor.insert(album);
 
         user.setFName("Logan");
         user.setLName("Paul");
@@ -57,6 +62,8 @@ public class EditProfileCommandTest extends BaseTestWithApplicationAndDatabase {
         assertEquals("loganpaul@gmail.com", updatedUser.getEmail());
         assertTrue(loginFactory.isPasswordMatch(updatedUser.getEmail(),
                 "its everyday bro"));
+        Album newAlbum  = AlbumAccessor.getAlbumByTitle(updatedUser.getFName() + " " + updatedUser.getLName() +"'s "+"Profile Pictures");
+        assertNotNull(newAlbum);
     }
 
     @Test
@@ -72,6 +79,8 @@ public class EditProfileCommandTest extends BaseTestWithApplicationAndDatabase {
         assertEquals("testuser1@uclive.ac.nz", undoUser.getEmail());
         assertTrue(loginFactory.isPasswordMatch(undoUser.getEmail(),
                 "TinyHumans57"));
+        Album newAlbum  = AlbumAccessor.getAlbumByTitle(undoUser.getFName() + " " + undoUser.getLName() +"'s "+"Profile Pictures");
+        assertNotNull(newAlbum);
     }
 
     @Test
@@ -87,5 +96,7 @@ public class EditProfileCommandTest extends BaseTestWithApplicationAndDatabase {
         assertEquals("loganpaul@gmail.com", updatedUser.getEmail());
         assertTrue(loginFactory.isPasswordMatch(updatedUser.getEmail(),
                 "its everyday bro"));
+        Album newAlbum  = AlbumAccessor.getAlbumByTitle(updatedUser.getFName() + " " + updatedUser.getLName() +"'s "+"Profile Pictures");
+        assertNotNull(newAlbum);
     }
 }

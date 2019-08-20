@@ -32,7 +32,7 @@ public class UserPhotoAccessor {
                 userPhoto.removeTag(tag);
                 TagAccessor.update(tag);
             }
-            System.out.println(userPhoto.getTags());
+
             userPhoto.delete();
             userPhoto.update();
         } catch (Exception e) { }

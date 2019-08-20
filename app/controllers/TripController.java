@@ -143,8 +143,8 @@ public class TripController extends Controller {
             }
             TripFormData created = incomingForm.get();
             int tripid = tripFactory.createTrip(created, user);
-            System.out.println("ME TOO THANKS");
-            System.out.println(incomingForm.get().tags != null && incomingForm.get().tags.length() > 0);
+
+
             if (incomingForm.get().tags != null && incomingForm.get().tags.length() > 0) {
                 List<String> tags = Arrays.asList(incomingForm.get().tags.split(","));
                 Set<Tag> uniqueTags = UtilityFunctions.tagLiteralsAsSet(tags);

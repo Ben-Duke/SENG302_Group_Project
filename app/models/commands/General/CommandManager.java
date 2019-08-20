@@ -1,5 +1,6 @@
 package models.commands.General;
 
+import accessors.TagAccessor;
 import accessors.UserAccessor;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import models.BaseModel;
@@ -41,6 +42,7 @@ public class CommandManager extends BaseModel {
         this.allowedPage = allowedPage;
         filterStack(undoStack);
         filterStack(redoStack);
+        TagAccessor.removePendingTagsFromUserId(user.getUserid());
     }
 
     /**
@@ -82,7 +84,6 @@ public class CommandManager extends BaseModel {
             try {
                 undoCommand.undo();
                 redoStack.push(undoCommand);
-                System.out.println(redoStack.isEmpty());
                 return undoCommand.toString();
             } catch(Exception exception){
                 user.setUndoRedoError(true);
@@ -140,4 +141,5 @@ public class CommandManager extends BaseModel {
         this.undoStack = new ArrayDeque<>();
         this.redoStack = new ArrayDeque<>();
     }
+
 }

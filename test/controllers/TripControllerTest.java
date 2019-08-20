@@ -554,7 +554,7 @@ public class TripControllerTest extends BaseTestWithApplicationAndDatabase {
                 .method(GET)
                 .uri("/users/trips/table/edit/2/2").session("connected", "1");
         Result result = route(app, request);
-        System.out.println(contentAsString(result));
+
         assertEquals(SEE_OTHER, result.status());
         assertEquals(5, Trip.find().byId(2).getVisits().size());
         //5th visit should be the newly added one (Wellington)
@@ -744,6 +744,15 @@ public class TripControllerTest extends BaseTestWithApplicationAndDatabase {
     }
 
     @Test
+    public void getUserTripLengths(){
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/trips/userTrips").session("connected", "1");
+        Result result = route(app, request);
+        assertEquals(OK, result.status());
+    }
+    
+    @Test
     public void getTripPhoto() {
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(GET)
@@ -760,7 +769,4 @@ public class TripControllerTest extends BaseTestWithApplicationAndDatabase {
         Result result = route(app, request);
         assertEquals(NOT_FOUND, result.status());
     }
-
-
-
 }

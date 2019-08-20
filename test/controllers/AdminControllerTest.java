@@ -97,7 +97,7 @@ public class AdminControllerTest extends BaseTestWithApplicationAndDatabase {
      */
     @Test
     public void userToAdminWithLoginSession() {
-        System.out.println(AdminAccessor.AdminFinder().all());
+
         assertEquals(1, AdminAccessor.AdminFinder().all().size());
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(GET).uri("/users/admin/make/2")

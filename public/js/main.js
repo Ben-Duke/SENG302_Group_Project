@@ -114,8 +114,10 @@ function undoRedoRequest(url){
         url: '/' + url,
 
         success:function(res){
-            sessionStorage.setItem(url, res);
-            window.location.reload();
+            if(res.status !== 204) {
+                sessionStorage.setItem(url, res);
+                window.location.reload();
+            }
         },
         error: function(xhr, textStatus, errorThrown){
             console.log(xhr.status + " " + textStatus + " " + errorThrown);

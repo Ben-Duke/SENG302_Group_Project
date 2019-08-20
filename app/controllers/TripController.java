@@ -1,6 +1,8 @@
 package controllers;
 
+import accessors.DestinationAccessor;
 import accessors.TripAccessor;
+import accessors.UserAccessor;
 import accessors.VisitAccessor;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -24,7 +26,6 @@ import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
 import utilities.UtilityFunctions;
-import views.html.home.mapHome;
 import views.html.users.trip.*;
 
 import javax.inject.Inject;
@@ -143,6 +144,15 @@ public class TripController extends Controller {
             }
             TripFormData created = incomingForm.get();
             int tripid = tripFactory.createTrip(created, user);
+
+
+            if (incomingForm.get().tags != null && incomingForm.get().tags.length() > 0) {
+                List<String> tags = Arrays.asList(incomingForm.get().tags.split(","));
+                Set<Tag> uniqueTags = UtilityFunctions.tagLiteralsAsSet(tags);
+                Trip trip = TripAccessor.getTripById(tripid);
+                trip.setTags(uniqueTags);
+                TripAccessor.update(trip);
+            }
             return redirect(routes.TripController.addTripDestinations(tripid));
         }
         else{
@@ -178,6 +188,7 @@ public class TripController extends Controller {
             return redirect(routes.UserController.userindex());
         }
     }
+
 
     /**
      * Handles the update visit request. Updates a visit with the given form details. If the updated visit would cause
@@ -373,12 +384,16 @@ public class TripController extends Controller {
 
             }
 
+            // If public dest and user not owner and user not admin
+            if (destination.getIsPublic() && destination.getUser().getUserid()
+                    != user.getUserid() && !user.userIsAdmin()) {
+                destination.setUser(UserAccessor.getById(1)); // change ownership to admin
+                DestinationAccessor.update(destination);
+            }
+
 
             VisitFactory visitFactory = new VisitFactory();
             Visit newVisit = visitFactory.createVisitByJSRequest(destination, trip);
-            System.out.println(newVisit);
-            System.out.println(trip.getVisits());
-            System.out.println(newVisit.getVisitOrder());
             if (tripFactory.hasRepeatDest(trip.getVisits(), newVisit, "ADD")) {
                 return badRequest("Trip cannot have two destinations in a row!");
             }
@@ -420,6 +435,14 @@ public class TripController extends Controller {
                 return forbidden("2");
 
             }
+
+            // If public dest and user not owner and user not admin
+            if (destination.getIsPublic() && destination.getUser().getUserid()
+                    != user.getUserid() && !user.userIsAdmin()) {
+                destination.setUser(UserAccessor.getById(1)); // change ownership to admin
+                DestinationAccessor.update(destination);
+            }
+
             Trip trip = new Trip("Trip to " + destination.getDestName(),false, user);
             Visit visit = new Visit(null, null, trip, destination);
 
@@ -459,17 +482,12 @@ public class TripController extends Controller {
 
         User user = User.getCurrentUser(request);
         if (user == null) { return redirect(routes.UserController.userindex()); }
-        System.out.println("visit id is " + visitid);
         Visit visit = VisitAccessor.getById(visitid);
-        System.out.println(visit.isTripOwner(user.getUserid()));
         if (visit == null) { return redirect(routes.UserController.userindex()); }
 
         Trip trip = visit.getTrip();
 
-        System.out.println("User id from the visit trip|" + visit.getTrip().getUser().getUserid());
 
-        System.out.println("User id from request|" + user.getUserid());
-        System.out.println("User id from the trip|" +trip.getUser().getUserid());
 
         if (!trip.isUserOwner(user.getUserid())) { return unauthorized(); }
 
@@ -648,6 +666,26 @@ public class TripController extends Controller {
             } else {
                 return unauthorized("Oops, this is a private trip and you don't own it.");
             }
+        } else {
+            return redirect(routes.UserController.userindex());
+        }
+    }
+
+    /**
+     * Returns a map of th legnth of each of the user's trip and their is as a json
+     *
+     * @param request the HTTP request
+     * @return Map of the length user's trips and trip id
+     */
+    public Result getLengthUserTrips(Http.Request request){
+        User user = User.getCurrentUser(request);
+        if (user != null) {
+            Map<Integer, Integer> visitList = new HashMap<>();
+            for (Trip trip: user.getTrips()) {
+                visitList.put(trip.getTripid(), trip.getVisits().size());
+            }
+
+            return ok(Json.toJson(visitList));
         } else {
             return redirect(routes.UserController.userindex());
         }

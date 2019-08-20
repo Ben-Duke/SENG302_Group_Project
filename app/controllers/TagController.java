@@ -92,6 +92,110 @@ public class TagController {
     }
 
     /**
+     * Adds a tag to the database but does not assign it to any item.
+     * This tag is pending under the user and once it is no longer pending it will be deleted if it not being used.
+     * @param request the request containing json of the tag name under attribute tag.
+     * @return OK if the tag already exists,
+     *         Created if the tag has been created and is now pending
+     *         Unauthorized if the user is not logged in
+     *         Bad request if the tag name is invalid
+     */
+    public Result addRawTag(Http.Request request) {
+        User user = User.getCurrentUser(request);
+        if (user == null) {
+            return unauthorized();
+        }
+        String tagName = request.body().asJson().get("tag").asText();
+        if (tagName.isEmpty()) {
+            return badRequest();
+        }
+        Tag tag = TagAccessor.getTagByName(tagName);
+        if(tag != null) {
+            tag.getPendingUsers().add(user);
+            TagAccessor.update(tag);
+            return ok();
+        }
+        tag = new Tag(tagName);
+        tag.getPendingUsers().add(user);
+        TagAccessor.insert(tag);
+        return created();
+    }
+
+    /**
+     * Get all tags for a given item
+     * @param request the request containing the taggableType, the name of the tag and the logged in user.
+     * @param taggableId the id of the item that contains tags
+     * @return Result from the associated getTags method
+     */
+    public Result getTaggablesTags(Http.Request request, int taggableId) {
+        String taggableType = request.body().asJson().get("taggableType").asText();
+        switch (taggableType) {
+            case "trip":
+                return getTripTags(request,taggableId);
+            case "destination":
+                return getDestTags(request, taggableId);
+            case "photo":
+                return getPhotoTags(request, taggableId);
+            default:
+                return null;
+        }
+    }
+    /**
+     * Adds a tag to any taggable item. Request specifies the type of the taggable model
+     * @param request contains the session and a json containing the taggableType and tag
+     * @param taggableId the id of the item to be tagged
+     * @return Result from the associated tag add method
+     */
+    public Result addTagToTaggable(Http.Request request, int taggableId) {
+        String taggableType = request.body().asJson().get("taggableType").asText();
+        switch (taggableType){
+            case "trip":
+                return addTripTag(request, taggableId);
+            case "destination":
+                return addDestTag(request, taggableId);
+            case "photo":
+                return addPhotoTag(request, taggableId);
+            default:
+                return null;
+        }
+    }
+
+    /**
+     * Removes a tag from a taggable item
+     * @param request request containing the taggableType and the name of the tag
+     * @param taggableId the id of the taggable item
+     * @return Result from the associated tag remove method
+     */
+    public Result removeTagFromTaggable(Http.Request request, int taggableId) {
+        String taggableType = request.body().asJson().get("taggableType").asText();
+        switch (taggableType){
+            case "trip":
+                return removeTripTag(request, taggableId);
+            case "destination":
+                return removeDestTag(request, taggableId);
+            case "photo":
+                return removePhotoTag(request, taggableId);
+            default:
+                return null;
+        }
+    }
+
+    /**
+     * Removes the given pending tag from a user and clears all unused tags
+     * @param request the request containing the logged in user and the name of the tag to clear
+     * @return unauthorized if no user logged in, otherwise ok if successful
+     */
+    public Result removeUsersPendingTags(Http.Request request) {
+        User user = User.getCurrentUser(request);
+        if (user == null) {
+            return unauthorized();
+        }
+        String tagName = request.body().asJson().get("tag").asText();
+        TagAccessor.removePendingTagsWithName(user.getUserid(), tagName);
+        return ok();
+    }
+
+    /**
      * Adds a tag to a photo
      * @param request An authenticated http request containing the new tag
      * @param photoId the id of the photo to add a tag to
@@ -168,6 +272,7 @@ public class TagController {
         photo.removeTag(tag);
         photo.update();
         tag.update();
+        TagAccessor.clearUnneededTags();
         return ok();
     }
 
@@ -189,6 +294,12 @@ public class TagController {
         return ok(Json.toJson(tags));
     }
 
+    /**
+     *
+     * @param request
+     * @param destId
+     * @return
+     */
     public Result addDestTag(Http.Request request, int destId) {
         User user = User.getCurrentUser(request);
         if (user == null) {
@@ -243,6 +354,7 @@ public class TagController {
         destination.removeTag(tag);
         destination.update();
         tag.update();
+        TagAccessor.clearUnneededTags();
         return ok();
     }
 
@@ -256,7 +368,7 @@ public class TagController {
      * @param tripId
      * @return
      */
-    public Result getTags(Http.Request request, int tripId){
+    public Result getTripTags(Http.Request request, int tripId){
         User user = User.getCurrentUser(request);
         if (user != null) {
             Trip trip = TripAccessor.getTripById(tripId);
@@ -292,7 +404,7 @@ public class TagController {
     }
 
     /**
-     * This function is used to do a request to add a tag to a destination
+     * This function is used to do a request to add a tag to a trip
      * @param request
      * @param tripId
 
@@ -361,6 +473,7 @@ public class TagController {
                 trip.removeTag(tagEbeans);
                 TripAccessor.update(trip);
                 TagAccessor.update(tagEbeans);
+                TagAccessor.clearUnneededTags();
                 return ok("Tag removed from trip");
             }
             else{

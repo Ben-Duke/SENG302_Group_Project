@@ -16,14 +16,69 @@ import testhelpers.BaseTestWithApplicationAndDatabase;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 import static play.mvc.Http.Status.FORBIDDEN;
 import static play.mvc.Http.Status.OK;
 import static play.mvc.Http.Status.UNAUTHORIZED;
 import static play.test.Helpers.*;
 
 public class TagControllerTest extends BaseTestWithApplicationAndDatabase {
+
+    @Test
+    public void addValidNewRawTagCheckResponse() {
+        Result result = addRawTagHelper("Brand new original tag", 2);
+        assertEquals(CREATED, result.status());
+    }
+
+    @Test
+    public void addValidNewRawTagForMultipleUsers() {
+        Integer userOneId = 2;
+        Integer userTwoId = 3;
+        String tagName = "Brand new original tag";
+
+        addRawTagHelper(tagName, userOneId);
+        addRawTagHelper(tagName, userTwoId);
+
+        assertEquals(2, TagAccessor.findUsersTagIsPendingFor(
+                TagAccessor.getTagByName(tagName).getTagId()).size());
+    }
+
+    @Test
+    public void addValidNewRawTagCheckDatabase() {
+        String tagName = "Brand new original tag";
+        addRawTagHelper(tagName, 2);
+        assertTrue(TagAccessor.exists(new Tag(tagName)));
+    }
+
+    @Test
+    public void addValidExistingRawTagCheckResponse() {
+        Result result = addRawTagHelper("Vacation Spot", 2);
+        assertEquals(OK, result.status());
+    }
+
+    @Test
+    public void addValidExistingRawTagCheckDatabase() {
+        String tagName = "Vacation Spot";
+        addRawTagHelper(tagName, 2);
+        assertTrue(TagAccessor.exists(new Tag(tagName)));
+    }
+
+    @Test
+    public void addRawTagNoUserLoggedIn() {
+        Result result = addRawTagHelper("Great tag", null);
+        assertEquals(UNAUTHORIZED, result.status());
+    }
+
+    @Test
+    public void addRawTagWithEmptyTagName() {
+        Result result = addRawTagHelper("", 2);
+        assertEquals(BAD_REQUEST, result.status());
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void addRawTagNoTag() {
+       addRawTagHelper(null, 2);
+    }
 
     @Test
     public void getItems() {
@@ -77,13 +132,16 @@ public class TagControllerTest extends BaseTestWithApplicationAndDatabase {
     @Test
     public void searchTagsMultipleTagsCheckData() {
         Result result = searchTagsHelper("t", 2);
-        assertEquals("[{\"tagId\":1,\"name\":\"Fun place to stay\"},{\"tagId\":2,\"name\":\"Vacation spot\"},{\"tagId\":3,\"name\":\"Top Rated\"}]", contentAsString(result));
+        assertEquals("[{\"tagId\":1,\"name\":\"Fun place to stay\"},{\"tagId\":2,\"name\":\"Vacation spot\"}" +
+                ",{\"tagId\":3,\"name\":\"Top Rated\"},{\"tagId\":4,\"name\":\"Best trip ever\"}]", contentAsString(result));
     }
 
     @Test
     public void searchTagsEmptySearchCheckData() {
         Result result = searchTagsHelper("", 2);
-        assertEquals("[{\"tagId\":1,\"name\":\"Fun place to stay\"},{\"tagId\":2,\"name\":\"Vacation spot\"},{\"tagId\":3,\"name\":\"Top Rated\"}]", contentAsString(result));
+        assertEquals("[{\"tagId\":1,\"name\":\"Fun place to stay\"}" +
+                ",{\"tagId\":2,\"name\":\"Vacation spot\"},{\"tagId\":3,\"name\":\"Top Rated\"}," +
+                "{\"tagId\":4,\"name\":\"Best trip ever\"},{\"tagId\":5,\"name\":\"Shrek\"}]", contentAsString(result));
     }
 
     @Test
@@ -109,7 +167,7 @@ public class TagControllerTest extends BaseTestWithApplicationAndDatabase {
     @Test
     public void getPhotoTagSuccessCheckData() {
         Result result = getPhotoTagHelper(1, 2);
-        assertEquals("[{\"tagId\":3,\"name\":\"Shrek\"}]", contentAsString(result));
+        assertEquals("[{\"tagId\":5,\"name\":\"Shrek\"}]", contentAsString(result));
     }
 
     @Test
@@ -130,7 +188,7 @@ public class TagControllerTest extends BaseTestWithApplicationAndDatabase {
 
         Result result = getPhotoTagHelper(2, 2);
         assertEquals(
-                "[{\"tagId\":4,\"name\":\"UC\"},{\"tagId\":5,\"name\":\"Second Tag\"}]",
+                "[{\"tagId\":6,\"name\":\"UC\"},{\"tagId\":7,\"name\":\"Second Tag\"}]",
                 contentAsString(result));
     }
 
@@ -154,7 +212,7 @@ public class TagControllerTest extends BaseTestWithApplicationAndDatabase {
 
     @Test
     public void getPhotoTagLoggedInAsWrongUser() {
-        Result result = getPhotoTagHelper(2, 1);
+        Result result = getPhotoTagHelper(2, 3);
 
         assertEquals(FORBIDDEN, result.status());
     }
@@ -288,7 +346,7 @@ public class TagControllerTest extends BaseTestWithApplicationAndDatabase {
 
         Result result = getDestTagHelper(2, 2);
         assertEquals(
-                "[{\"tagId\":2,\"name\":\"Vacation spot\"},{\"tagId\":4,\"name\":\"Cool spot\"},{\"tagId\":5,\"name\":\"Dream spot\"}]",
+                "[{\"tagId\":2,\"name\":\"Vacation spot\"},{\"tagId\":6,\"name\":\"Cool spot\"},{\"tagId\":7,\"name\":\"Dream spot\"}]",
                 contentAsString(result));
     }
 
@@ -482,7 +540,7 @@ public class TagControllerTest extends BaseTestWithApplicationAndDatabase {
                 .uri("/trips/1/tags").session("connected", "2");
         Result result = route(app, request);
 
-        assertEquals("[{\"tagId\":2,\"name\":\"Best trip ever\"}]", contentAsString(result));
+        assertEquals("[{\"tagId\":4,\"name\":\"Best trip ever\"}]", contentAsString(result));
     }
 
     @Test
@@ -519,11 +577,14 @@ public class TagControllerTest extends BaseTestWithApplicationAndDatabase {
 
     @Test
     public void checkAddTripTag() {
+        Trip trip = TripAccessor.getTripById(1);
+        int beforeSize = trip.getTags().size();
         Map<String, String> tagData = new HashMap<>();
         tagData.put("tag", "Best trip ever 2");
-        tripTagHelper("PUT", tagData,  1 , 2);
-        Trip trip = TripAccessor.getTripById(1);
-        assertEquals(2, trip.getTags().size());
+        tripTagHelper("PUT", tagData,  trip.getTripid() , 2);
+        trip = TripAccessor.getTripById(1);
+        int afterSize = trip.getTags().size();
+        assertEquals(beforeSize + 1, afterSize);
     }
 
     @Test
@@ -573,11 +634,14 @@ public class TagControllerTest extends BaseTestWithApplicationAndDatabase {
 
     @Test
     public void checkAddTagAsAdmin() {
+        Trip trip = TripAccessor.getTripById(1);
+        int beforeSize = trip.getTags().size();
         Map<String, String> tagData = new HashMap<>();
         tagData.put("tag", "Admin Tag TEST");
         tripTagHelper("PUT", tagData,  1 , 1);
-        Trip trip = TripAccessor.getTripById(1);
-        assertEquals(2, trip.getTags().size());
+        trip = TripAccessor.getTripById(1);
+        int afterSize = trip.getTags().size();
+        assertEquals(beforeSize + 1, afterSize);
     }
 
     @Test
@@ -661,6 +725,85 @@ public class TagControllerTest extends BaseTestWithApplicationAndDatabase {
         TripAccessor.update(trip);
 
         assertEquals(0, trip.getTags().size());
+    }
+
+    @Test
+    public void removeUsersPendingTagsForUsedTag() {
+        //Vacation spot should already be an existing tag which is tagged to Wellington
+        String tagName = "Vacation spot";
+        Integer userId = 2;
+
+        addRawTagHelper(tagName, userId);
+        int userPendingTagSizeBefore = TagAccessor.findPendingTagsFromUserId(2).size();
+        Map<String, String> data = new HashMap<>();
+        data.put("tag", tagName);
+
+        removeUsersPendingTagHelper(tagName, userId);
+
+        Tag tag = TagAccessor.getTagByName(tagName);
+        int userPendingTagSizeAfter = TagAccessor.findPendingTagsFromUserId(2).size();
+
+        assertNotNull(tag);
+
+        assertEquals(userPendingTagSizeBefore - 1, userPendingTagSizeAfter);
+    }
+
+    @Test
+    public void removeUsersPendingTagsForUnusedTag() {
+        //Definitely not used tag should not be in the database
+        String tagName = "Definitely not used tag";
+        Integer userId = 2;
+
+        addRawTagHelper(tagName, userId);
+        int userPendingTagSizeBefore = TagAccessor.findPendingTagsFromUserId(2).size();
+
+        removeUsersPendingTagHelper(tagName, userId);
+
+        Tag tag = TagAccessor.getTagByName(tagName);
+        int userPendingTagSizeAfter = TagAccessor.findPendingTagsFromUserId(2).size();
+
+        assertNull(tag);
+
+        assertEquals(userPendingTagSizeBefore - 1, userPendingTagSizeAfter);
+    }
+
+    @Test
+    public void removeUsersPendingTagsCheckOnlyBelongingToUserRemoved() {
+        String tagName = "Super cool new exciting tag";
+        addRawTagHelper(tagName, 2);
+        addRawTagHelper(tagName, 3);
+        int beforeSize = TagAccessor.getTagByName(tagName).getPendingUsers().size();
+        removeUsersPendingTagHelper(tagName, 2);
+        assertNotNull(TagAccessor.getTagByName(tagName));
+        assertEquals(beforeSize - 1, TagAccessor.getTagByName(tagName).getPendingUsers().size());
+    }
+
+    private Result addRawTagHelper(String tagName, Integer userId) {
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(PUT)
+                .uri("/tags");
+        if (tagName != null) {
+            Map<String, String> data = new HashMap<>();
+            data.put("tag", tagName);
+            request.bodyJson(Json.toJson(data));
+        }
+        if (userId != null) {
+            request.session("connected", userId.toString());
+        }
+        return route(app, request);
+    }
+
+    private Result removeUsersPendingTagHelper(String tagName, Integer userId) {
+        Map<String, String> data = new HashMap<>();
+        data.put("tag", tagName);
+
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(DELETE)
+                .bodyJson(Json.toJson(data))
+                .uri("/tags")
+                .session("connected", userId.toString());
+
+        return route(app, request);
     }
 
 }

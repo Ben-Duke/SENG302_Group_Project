@@ -368,6 +368,7 @@ public class Destination extends TaggableModel implements AlbumOwner, MediaOwner
         this.latitude = newDestination.getLatitude();
         this.destType = newDestination.getDestType();
         this.travellerTypes = newDestination.getTravellerTypes();
+        this.tags = newDestination.getTags();
     }
 
     @Override

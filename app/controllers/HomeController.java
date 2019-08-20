@@ -1,17 +1,13 @@
 package controllers;
 
 import accessors.DestinationAccessor;
+import accessors.TagAccessor;
 import accessors.UserAccessor;
 import accessors.UserPhotoAccessor;
 import factories.UserFactory;
 import formdata.DestinationFormData;
 import io.ebean.DuplicateKeyException;
-import models.Destination;
-import models.Trip;
-import models.Album;
-import models.Media;
-import models.User;
-import models.UserPhoto;
+import models.*;
 import models.commands.General.CommandPage;
 import models.commands.Albums.AddMediaToAlbumCommand;
 import models.commands.Albums.CreateAlbumCommand;
@@ -121,21 +117,17 @@ public class HomeController {
         if(user != null) {
             Map<String, String[]> dataPart = request.body().asMultipartFormData().asFormUrlEncoded();
             boolean isPublic = false;
-            ArrayList<String> tags = new ArrayList<>();
-            if (dataPart.get("private") == null) {
+            if (dataPart.get("private")[0].equals("false")) {
                 isPublic = true;
-            }
-            if (dataPart.get("tags[]") != null) {
-                tags = new ArrayList<String>(Arrays.asList(dataPart.get("tags[]")));
             }
             //Get the photo data from the multipart form data encoding
             Http.MultipartFormData<Files.TemporaryFile> body = request.body().asMultipartFormData();
             Http.MultipartFormData.FilePart<Files.TemporaryFile> picture = body.getFile("picture");
-            String albumName = dataPart.get("Album Search")[0];
-            if ((picture != null) && (!albumName.isEmpty())) {
-                return getResultFromSaveUserPhoto(user, isPublic, picture, albumName, tags);
+            String albumName = dataPart.get("album")[0];
+            if (picture != null) {
+                return getResultFromSaveUserPhoto(user, isPublic, picture, albumName);
             } else {
-                return badRequest("Error uploading the picture.");
+                return redirect(routes.HomeController.showhome());
             }
         } else {
             return unauthorized("Unauthorized: Can not upload picture.");
@@ -152,7 +144,7 @@ public class HomeController {
      * @param picture The FilePart of the picture, not null.
      * @return A Result from trying to save the photo.
      */
-    private Result getResultFromSaveUserPhoto(User user, boolean isPublic, Http.MultipartFormData.FilePart<Files.TemporaryFile> picture, String albumName, ArrayList<String> tags) {
+    private Result getResultFromSaveUserPhoto(User user, boolean isPublic, Http.MultipartFormData.FilePart<Files.TemporaryFile> picture, String albumName) {
         String originalFilePath = picture.getFilename();
         long fileSize = picture.getFileSize();
         String contentType = picture.getContentType();
@@ -166,9 +158,10 @@ public class HomeController {
             UserPhoto newPhoto = new UserPhoto(originalFilePath, isPublic, false, user);
             String unusedPhotoUrl = newPhoto.getUnusedUserPhotoFileName();
             newPhoto.setUrl(unusedPhotoUrl);
-            Set uniqueTags = UtilityFunctions.tagLiteralsAsSet(tags);
-            UploadPhotoCommand uploadPhotoCommand = new UploadPhotoCommand(newPhoto, fileObject, user, albumName, uniqueTags);
+            Set<Tag> tags = TagAccessor.findPendingTagsFromUserId(user.getUserid());
+            UploadPhotoCommand uploadPhotoCommand = new UploadPhotoCommand(newPhoto, fileObject, user, albumName, tags);
             user.getCommandManager().executeCommand(uploadPhotoCommand);
+            TagAccessor.removePendingTagsFromUserId(user.getUserid());
             return redirect(routes.HomeController.showhome());
         } else {
             return badRequest();
@@ -219,9 +212,9 @@ public class HomeController {
                     //DB saving
                     UserFactory.replaceProfilePicture(user.getUserid(), newPhoto);
                     UploadPhotoCommand uploadPhotoCommand = new UploadPhotoCommand(UserPhotoAccessor.getUserPhotoByUrl(unusedPhotoUrl), file, user,
-                            user.getFName()+"'s "+"Profile Pictures");
+                            user.getFName() + " " + user.getLName() + "'s "+"Profile Pictures");
                     uploadPhotoCommand.addUploadToAlbum(user, UserPhotoAccessor.getUserPhotoByUrl(unusedPhotoUrl),
-                            user.getFName()+"'s "+"Profile Pictures");
+                            user.getFName() + " " + user.getLName() +"'s "+"Profile Pictures");
                     return redirect(routes.HomeController.showhome());
                 }
             }

@@ -309,15 +309,19 @@ INSERT INTO `destination` (`destid`, `dest_name`, `dest_type`, `district`, `coun
 
 -- Albums
 INSERT INTO `album`(`album_id`, `user`, `destination`, `primary_photo_media_id`, `is_default`, `title`) VALUES
-(1, null, 1, null,null,'Christchurch'),
-(2, null, 2, null, null,'Wellington'),
-(3, null, 3, null, null,'The Wok'),
-(4, null, 4, null, null,'Hanmer Springs Thermal Pools'),
-(5, null, 5, null, null,'Le Mans 24 hour race'),
-(6, null, 6, null, null,'Great Pyramid of Giza'),
-(7, null, 7, null, null,'Niagara Falls'),
-(8, null, 8, null, null,'Vatican City'),
-(9, null, 9, null, null,'Lincoln Memorial');
+(1, 1, null, null, true,'Default'),
+(2, 2, null, null, true,'Default'),
+(3, 3, null, null, true,'Default'),
+(4, 4, null, null, true,'Default'),
+(5, null, 1, null, null,'Christchurch'),
+(6, null, 2, null, null,'Wellington'),
+(7, null, 3, null, null,'The Wok'),
+(8, null, 4, null, null,'Hanmer Springs Thermal Pools'),
+(9, null, 5, null, null,'Le Mans 24 hour race'),
+(10, null, 6, null, null,'Great Pyramid of Giza'),
+(11, null, 7, null, null,'Niagara Falls'),
+(12, null, 8, null, null,'Vatican City'),
+(13, null, 9, null, null,'Lincoln Memorial');
 
 
 -- Traveller Types
@@ -415,13 +419,21 @@ INSERT INTO `user_traveller_type` (`user_userid`, `traveller_type_ttypeid`) VALU
 INSERT INTO `tag`(`tag_id`, `name`) VALUES
 (1,'Fun place to stay'),
 (2, 'Vacation spot'),
-(3, 'Top Rated');
+(3, 'Top Rated'),
+(4, 'Best trip ever');
+
+-- pending users
+INSERT INTO `tag_user`(`tag_tag_id`,`user_userid`) VALUES
+(2,2);
 
 -- destination_tag
 INSERT INTO `destination_tag`(`destination_destid`, `tag_tag_id`) VALUES
 (1,1),
 (2,2),
 (1,3);
+
+INSERT INTO `trip_tag`(`trip_tripid`,`tag_tag_id`) VALUES
+(1,4);
 
 -- visit
 INSERT INTO `visit` (`visitid`, `visitorder`, `destination`, `trip`, `arrival`,
@@ -459,6 +471,8 @@ delete from destination_tag;
 delete from media_tag;
 
 delete from trip_tag;
+
+delete from tag_user;
 
 delete from tag;
 

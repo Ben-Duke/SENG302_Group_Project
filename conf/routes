@@ -46,6 +46,8 @@ GET     /users/admin/actasuser/:id      controllers.AdminController.setUserToAct
 #Handles setting a user back to the admin after acting as a user
 GET     /users/admin/back_to_admin/:id      controllers.AdminController.setUserBackToAdmin(request: Request, id: Integer)
 
+GET /users/destination/placeid/:placeId   controllers.DestinationController.getPlacesDetailsRequest(request: Request, placeId:String)
+
 #Handles view a destination modification request
 GET     /users/admin/destination_modification_request/:id   controllers.AdminController.viewDestinationModificationRequest(request: Request, id: Integer)
 
@@ -98,6 +100,8 @@ GET     /users/trips/create         controllers.TripController.createtrip(reques
 DELETE     /users/trips/:id         controllers.TripController.deleteTrip(request: Request, id:Integer)
 
 GET     /users/trips/json/:id         controllers.TripController.getTrip(request: Request, id:Integer)
+
+GET     /users/trips/userTrips         controllers.TripController.getLengthUserTrips(request: Request)
 
 GET     /users/trips/addDestinations/:id    controllers.TripController.addTripDestinations(request: Request, id:Integer)
 
@@ -165,7 +169,7 @@ GET     /users/home/serveProfilePicture/:id              controllers.HomeControl
 #Sets the picture as profile picture
 PUT     /users/home/setProfilePicture/:id              controllers.HomeController.setProfilePicture(request: Request, id: Integer)
 
-POST    /users/home         controllers.HomeController.upload(request:Request)
+POST    /users/home/photo         controllers.HomeController.upload(request:Request)
 
 POST    /users/home/profilePicture         controllers.HomeController.uploadProfilePicture(request:Request)
 
@@ -363,9 +367,9 @@ PUT   /photos/:photoId/tags                                 controllers.TagContr
 DELETE   /photos/:photoId/tags                                    controllers.TagController.removePhotoTag(request : Request, photoId : Integer)
 
 # Get trip tags
-GET   /trips/:tripId/tags                                         controllers.TagController.getTags(request : Request, tripId : Integer)
+GET   /trips/:tripId/tags                                         controllers.TagController.getTripTags(request : Request, tripId : Integer)
 
-#Add a new tag to a destination
+#Add new tag to a trip
 PUT /trips/:tripId/tags                                             controllers.TagController.addTripTag(request: Request, tripId :Integer)
 
 #Remove a tag from a trip
@@ -384,6 +388,19 @@ DELETE /destinations/:destId/tags                               controllers.TagC
 # Search for tag
 PUT /tags/search                                            controllers.TagController.searchTags(request : Request)
 
+#Adds a tag to a taggable
+PUT /tags/:taggableId                                          controllers.TagController.addTagToTaggable(request : Request, taggableId : Integer)
+
+# Deletes a tag from a taggable
+DELETE /tags/:taggableId                                      controllers.TagController.removeTagFromTaggable(request : Request, taggableId : Integer)
+
+DELETE /tags                                                  controllers.TagController.removeUsersPendingTags(request: Request)
+
+#Adds a raw tag
+PUT /tags                                                      controllers.TagController.addRawTag(request : Request)
+
+# get all tags of a taggable item
+PUT /tags/get/:taggableId                                                       controllers.TagController.getTaggablesTags(request: Request, taggableId: Integer)
 
 # Tag page
 GET /tags/display/:tagName                                            controllers.TagController.displayTags(request: Request, tagName: String)

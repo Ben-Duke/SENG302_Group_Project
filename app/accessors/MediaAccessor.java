@@ -5,8 +5,7 @@ import models.Destination;
 import models.Media;
 import models.Tag;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class MediaAccessor {
 
@@ -17,8 +16,13 @@ public class MediaAccessor {
     public static void insert(Media media) { media.save(); }
 
     public static void delete(Media media) {
+        ArrayList<Tag> tags = new ArrayList<Tag>() ;
 
         for(Tag tag : media.getTags()){
+            tags.add(tag);
+        }
+
+        for(Tag tag : tags){
             media.removeTag(tag);
             TagAccessor.update(tag);
         }

@@ -1,6 +1,8 @@
 package controllers;
 
+import accessors.DestinationAccessor;
 import accessors.TripAccessor;
+import accessors.UserAccessor;
 import accessors.VisitAccessor;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -141,8 +143,8 @@ public class TripController extends Controller {
             }
             TripFormData created = incomingForm.get();
             int tripid = tripFactory.createTrip(created, user);
-            System.out.println("ME TOO THANKS");
-            System.out.println(incomingForm.get().tags != null && incomingForm.get().tags.length() > 0);
+
+
             if (incomingForm.get().tags != null && incomingForm.get().tags.length() > 0) {
                 List<String> tags = Arrays.asList(incomingForm.get().tags.split(","));
                 Set<Tag> uniqueTags = UtilityFunctions.tagLiteralsAsSet(tags);
@@ -381,6 +383,13 @@ public class TripController extends Controller {
 
             }
 
+            // If public dest and user not owner and user not admin
+            if (destination.getIsPublic() && destination.getUser().getUserid()
+                    != user.getUserid() && !user.userIsAdmin()) {
+                destination.setUser(UserAccessor.getById(1)); // change ownership to admin
+                DestinationAccessor.update(destination);
+            }
+
 
             VisitFactory visitFactory = new VisitFactory();
             Visit newVisit = visitFactory.createVisitByJSRequest(destination, trip);
@@ -425,6 +434,14 @@ public class TripController extends Controller {
                 return forbidden("2");
 
             }
+
+            // If public dest and user not owner and user not admin
+            if (destination.getIsPublic() && destination.getUser().getUserid()
+                    != user.getUserid() && !user.userIsAdmin()) {
+                destination.setUser(UserAccessor.getById(1)); // change ownership to admin
+                DestinationAccessor.update(destination);
+            }
+
             Trip trip = new Trip("Trip to " + destination.getDestName(),false, user);
             Visit visit = new Visit(null, null, trip, destination);
 

@@ -141,4 +141,5 @@ public class CommandManager extends BaseModel {
         this.undoStack = new ArrayDeque<>();
         this.redoStack = new ArrayDeque<>();
     }
+
 }

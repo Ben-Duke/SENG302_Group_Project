@@ -73,10 +73,10 @@ public class DeleteTripCommand extends UndoableCommand {
             TripAccessor.update(savedTrip);
         }
         for (Tag tag : deletedTags) {
-            trip.addTag(tag);
+            savedTrip.addTag(tag);
             TagAccessor.update(tag);
-            TripAccessor.update(trip);
         }
+        TripAccessor.insert(savedTrip);
     }
 
     /**

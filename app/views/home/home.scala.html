@@ -11,54 +11,39 @@
         <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/home.css")">
         <title>Home</title>
     </head>
+
     <div class="container">
+    <div class="row">
+        <div class="col-md-6">
             <!-- The thumbnail in the else is being displayed to show the AC passing -->
-        <h1>@user.getFName() @user.getLName
-            @if(UserFactory.getUserProfilePicture(user.getUserid()) != null){
+            <h2>@user.getFName() @user.getLName
+                @if(UserFactory.getUserProfilePicture(user.getUserid()) != null){
                 <img id="thumbnailProfilePic" class="img-circle"  width = "50" height="50" src="@{routes.HomeController.serveProfilePicture(user.getUserid())}">
-            } else {
+                } else {
                 <img id="thumbnailProfilePic" class="img-circle"  width = "50" height="50" src="@{routes.Assets.at("images/Generic.png")}">
-            }
-            @if(user.userIsAdmin) {
+                }
+                @if(user.userIsAdmin) {
                 <img class="img"  width = "60" height="50" src="../assets/images/key_2_small.png">
-            }
-            @if(adminUser.userIsAdmin && user.getUserid != adminUser.getUserid) {
+                }
+                @if(adminUser.userIsAdmin && user.getUserid != adminUser.getUserid) {
                 <a class="btn btn-default" href="@routes.AdminController.setUserBackToAdmin(adminUser.getUserid)">
                     Back to your profile
                 </a>
-            }
-        </h1>
-    </div>
-
-    <br>
-
-    <div class="container">
-    <div class="row">
-        <!-- The profile picture, currently a placeholder -->
-        <div class="text-center">
-            <a href="#" data-toggle="modal" data-target="#addProfilePhoto">
-                @if(UserFactory.getUserProfilePicture(user.getUserid()) != null){
-                <img id="profilePicture" class="img-circle" width = "150" height = "150" src="@{routes.HomeController.serveProfilePicture(user.getUserid())}")>
-                } else {
-                <img id="profilePicture" class="img-circle" width = "150" height = "150" src="@{routes.Assets.at("images/Generic.png")}")>
                 }
-            </a>
-            <br>
-            <br>
-        </div>
-    </div>
-    <div class = "row">
-        <ul id="mylist" class="text-center">
-            <li><a class="btn btn-default btn-outline btn-lg sharp" href="@routes.TripController.createtrip()"> <i class="glyphicon glyphicon-plane"></i>Create Trip</a>
-                <a class="btn btn-default btn-lg sharp" href="@routes.TravelPartnerController.renderFilterPage()"><i class="glyphicon glyphicon-search"></i>Travellers </a>
-                <a class="btn btn-default btn-lg sharp" data-toggle="modal" data-target="#addPhotoModal"><i class="glyphicon glyphicon-camera"></i>Add Photo</a>
-            </li>
-        </ul>
-
-    </div>
-    <div class="row">
-        <div class="col-md-4">
-            <h2>Profile</h2>
+                <a href="@routes.ProfileController.updateProfile()" class="btn btn-default btn-lg sharp">Update</a>
+            </h2>
+            <!-- The profile picture, currently a placeholder -->
+            <div class="text-left">
+                <a href="#" data-toggle="modal" data-target="#addProfilePhoto">
+                    @if(UserFactory.getUserProfilePicture(user.getUserid()) != null){
+                    <img id="profilePicture" class="img-circle" width = "150" height = "150" src="@{routes.HomeController.serveProfilePicture(user.getUserid())}")>
+                    } else {
+                    <img id="profilePicture" class="img-circle" width = "150" height = "150" src="@{routes.Assets.at("images/Generic.png")}")>
+                    }
+                </a>
+                <br>
+                <br>
+            </div>
             <p>Email: @user.getEmail()</p>
             <p>Gender: @user.getGender</p>
             <p>Date of Birth: @user.getDateOfBirth</p>
@@ -97,8 +82,10 @@
 
         </div>
 
-        <div class="col-md-4">
-            <h2>Trips</h2>
+        <div class="col-md-6">
+            <h2>Trips
+                <a class="btn btn-default btn-outline btn-lg sharp" href="@routes.TripController.createtrip()"> <i class="glyphicon glyphicon-plane"></i> &nbsp; Create Trip</a>
+            </h2>
             <form>
                 @if(user.getTripsSorted.isEmpty()) {
                     <div class="well" style="height: 50px">
@@ -117,48 +104,6 @@
                     }
                 </div>
             </form>
-        </div>
-
-
-        <!-- Modal -->
-        <div id="addPhotoModal" class="modal fade" role="dialog">
-            <div class="modal-dialog">
-
-                <!-- Modal content-->
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal">&times;</button>
-                        <h4 class="modal-title">Upload a new photo </h4>
-                    </div>
-                    <div class="modal-body">
-                        <div class="container-fluid">
-                            <div class="row">
-                            @users.tag.createSearchTags(user,"photo", null)
-                            </div>
-                        <input id="photoUpload" type="file" accept="image/png,image/jpeg" name="picture" required/>
-                        <br>
-                        <div>
-                            <p>
-                                Add to Album
-                                <input id="album-search-photo" list="album-results-photo" name="Album Search" title="Album Search" placeholder="Search Album">
-                                <datalist id="album-results-photo">
-                                @for(album <- user.getAlbums()){
-                                    <option value="@album.getTitle()"></option>
-                                }
-                                </datalist>
-                            </p>
-                            <p id="photoAlbumMessage" hidden> This media must be in an Album </p>
-                        </div>
-                        <p>
-                            <input type="submit" value="Upload" id="photo-upload">
-                            <input type="checkbox" id="private" name="private" value="private" title=""> Make photo private
-                        </p>
-
-                    </div>
-                </div>
-            </div>
-
-
         </div>
 
         <!-- Modal to upload a new profile picture -->

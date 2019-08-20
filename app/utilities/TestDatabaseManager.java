@@ -74,6 +74,14 @@ public class TestDatabaseManager {
         Media userPhoto1 = new UserPhoto("shrek.jpeg", true, true,
                 User.find().byId(2));
         userPhoto1.setCaption("Get out of my swamp");
+        Tag tag = new Tag("Shrek");
+        try {
+            tag.save();
+        } catch (Exception e) {
+            logger.error("Failed to add Shrek tag", e);
+        }
+        userPhoto1.addTag(tag);
+
 
         Media userPhoto2 = new UserPhoto("placeholder.png", false, false,
                 User.find().byId(2));

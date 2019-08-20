@@ -6,6 +6,9 @@
 
 
 <style>
+    body{
+        overflow-x: hidden;
+    }
     #map {
         height: 610px;
     }
@@ -20,6 +23,68 @@
         left: -25px;
         top: -5px;
     }
+    #imageContainer {
+        position: relative;
+        margin: 10px;
+        width: 200px;
+        float: left;
+    }
+
+    .img-thumbnails {
+        border-radius: 5px;
+        cursor: pointer;
+        max-height: 200px;
+        height: 200px;
+        max-width: 200px;
+        width: 200px;
+    }
+
+
+    .overlay {
+        position: absolute;
+        max-width: 200px;
+        opacity: 1;
+        transition: .3s ease;
+    }
+
+    .icon {
+        color: white;
+        font-size: 25px;
+        position: absolute;
+        top: -20px;
+        left: 150px;
+        max-width: 60px;
+        transform: translate(50%, 50%);
+        -ms-transform: translate(-50%, -50%);
+    }
+
+    .fa {
+        display: inline-block;
+        font-size: inherit;
+        text-rendering: auto;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale
+    }
+
+    .fa-eye-green {
+        color: green;
+    }
+
+    .fa-eye-red {
+        color: red;
+    }
+
+    .fa-eye-green:before {
+        content: "\1F441";
+    }
+
+    .fa-eye-red:before {
+        content: "\1F441";
+    }
+
+
+
+
     #addPhotoLink {
         display: inline-block;
         max-width: 120px;
@@ -58,9 +123,6 @@
 
             @if(destination.isUserOwner(user) || user.userIsAdmin()) {
 
-                <div class="row">
-                    @users.tag.createSearchTags(user,"destination", destination.getDestId())
-                </div>
                 @helper.form(action = helper.CSRF(routes.DestinationController.updateDestination(destination.getDestId()))) {
                     @formBody()
 
@@ -171,6 +233,12 @@
             </div>
             <br>
             <br>
+
+            @if(destination.isUserOwner(user) || user.userIsAdmin()) {
+                <div class="row">
+                    @users.tag.createSearchTags(user, "destination", destination.getDestId())
+                </div>
+            }
             <a class="btn btn-primary" href="@routes.DestinationController.editDestination(destination.getDestId())" role="button">
                 Edit
             </a>
@@ -193,9 +261,23 @@
         @for(photo <- destination.getPrimaryAlbum().getMedia()) {
              @if(photo.isOwner(user) || photo.getIsPublic()) {
 
+                <img src="">
                 <a href="#" data-toggle="modal" data-target="#photo-carousel" onclick="displayPhoto(@photo.getMediaId())">
-                    <img id=@{photo.getUrl} height="150"
-                    src="@{routes.HomeController.index(photo.getUrlWithPath())}" alt="Destination Image">
+
+                    <div class="" id="imageContainer">
+                        <div class="overlay">
+                            <i class="icon" title="User Profile">
+                            @if(photo.getIsPublic()) {
+                                <i class="fa fa-eye-green"></i>
+                            } else {
+                                <i class="fa fa-eye-red"></i>
+                            }
+                            </i>
+                        </div>
+                        <img class="img-thumbnails" id=@{photo.getUrl} src="@{routes.HomeController.index(photo.getUrlWithPath())}" alt="Destination Image">
+                    </div>
+
+
                 </a>
             }
 
@@ -260,6 +342,17 @@
                                 <a class="btn btn-primary" id="setPrimaryPicture" href="@routes.DestinationController.setPrimaryPhoto(photo.getMediaId(), destination.getDestId())">
                                 Set as primary</a>
                             }
+                            @if(photo.isOwner(user)) {
+                                @if(photo.getIsPublic()) {
+                                    @if(photo != destination.getPrimaryAlbum.getPrimaryPhoto()) {
+                                        <a class="btn btn-primary" id="makePrivateLink-@photo.getMediaId()" href="#" onclick="setMediaPrivacy(@photo.getMediaId(), false)">
+                                            Make Private</a>
+                                    }
+                                } else {
+                                    <a class="btn btn-primary" id="makePublicLink-@photo.getMediaId()" href="#" onclick="setMediaPrivacy(@photo.getMediaId(), true)">
+                                        Make Public</a>
+                                }
+                            }
 
                             <a class="btn btn-danger" href="@routes.DestinationController.unlinkPhotoFromDestination(photo.getMediaId(), destination.getDestId())">
                             Remove Photo</a>
@@ -284,7 +377,7 @@
 
     <script src="@routes.Assets.at("js/destination/viewDestination.js")"></script>
     <script>setLatLng(@destination.getLatitude(), @destination.getLongitude());</script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC9Z1g5p2rQtS0nHgDudzCCXVl2HJl3NPI&libraries=drawing&callback=initMap"
+    <script src="https://maps.googleapis.com/maps/api/js?key=&libraries=drawing&callback=initMap"
     async defer></script>
 
 

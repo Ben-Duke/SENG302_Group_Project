@@ -137,8 +137,9 @@ public class TagControllerTest extends BaseTestWithApplicationAndDatabase {
     @Test
     public void searchTagsEmptySearchCheckData() {
         Result result = searchTagsHelper("", 2);
-        assertEquals("[{\"tagId\":1,\"name\":\"Fun place to stay\"},{\"tagId\":2,\"name\":\"Vacation spot\"}," +
-                "{\"tagId\":3,\"name\":\"Top Rated\"},{\"tagId\":4,\"name\":\"Best trip ever\"}]", contentAsString(result));
+        assertEquals("[{\"tagId\":1,\"name\":\"Fun place to stay\"}" +
+                ",{\"tagId\":2,\"name\":\"Vacation spot\"},{\"tagId\":3,\"name\":\"Top Rated\"}," +
+                "{\"tagId\":4,\"name\":\"Best trip ever\"},{\"tagId\":5,\"name\":\"Shrek\"}]", contentAsString(result));
     }
 
     @Test
@@ -179,7 +180,7 @@ public class TagControllerTest extends BaseTestWithApplicationAndDatabase {
     @Test
     public void getPhotoTagSuccessCheckData() {
         Result result = getPhotoTagHelper(1, 2);
-        assertEquals("[{\"tagId\":3,\"name\":\"Shrek\"}]", contentAsString(result));
+        assertEquals("[{\"tagId\":5,\"name\":\"Shrek\"}]", contentAsString(result));
     }
 
     @Test
@@ -200,7 +201,7 @@ public class TagControllerTest extends BaseTestWithApplicationAndDatabase {
 
         Result result = getPhotoTagHelper(2, 2);
         assertEquals(
-                "[{\"tagId\":5,\"name\":\"UC\"},{\"tagId\":6,\"name\":\"Second Tag\"}]",
+                "[{\"tagId\":6,\"name\":\"UC\"},{\"tagId\":7,\"name\":\"Second Tag\"}]",
                 contentAsString(result));
     }
 
@@ -224,7 +225,7 @@ public class TagControllerTest extends BaseTestWithApplicationAndDatabase {
 
     @Test
     public void getPhotoTagLoggedInAsWrongUser() {
-        Result result = getPhotoTagHelper(2, 1);
+        Result result = getPhotoTagHelper(2, 3);
 
         assertEquals(FORBIDDEN, result.status());
     }
@@ -358,7 +359,7 @@ public class TagControllerTest extends BaseTestWithApplicationAndDatabase {
 
         Result result = getDestTagHelper(2, 2);
         assertEquals(
-                "[{\"tagId\":2,\"name\":\"Vacation spot\"},{\"tagId\":4,\"name\":\"Cool spot\"},{\"tagId\":5,\"name\":\"Dream spot\"}]",
+                "[{\"tagId\":2,\"name\":\"Vacation spot\"},{\"tagId\":6,\"name\":\"Cool spot\"},{\"tagId\":7,\"name\":\"Dream spot\"}]",
                 contentAsString(result));
     }
 

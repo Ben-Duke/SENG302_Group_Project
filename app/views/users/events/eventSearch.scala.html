@@ -6,6 +6,9 @@
 @main(user, "Events") {
 
     <head>
+
+
+        <link rel="stylesheet" href="@routes.Assets.at("stylesheets/events.css")">
         <style>
             #map {
                 margin: 10px 20px 10px 20px;
@@ -160,128 +163,10 @@
 
 
     <div class="col-md-8" id="events-results">
-        <div class="row">
-            <div class="media">
-                <div class="media-left">
-                    <a href="#">
-                        <img class="img-thumbnail" src="/assets/images/destinationPlaceHolder.png">
-                    </a>
-                </div>
-                <div class="media-body">
-                    <h4 class="media-heading">Concert</h4>
-                    <p>19/08/2019 - 20/08/2019</p>
-                    <p>Christchurch</p>
-                    <p>Short description</p>
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="media">
-                <div class="media-left">
-                    <a href="#">
-                        <img class="img-thumbnail" src="/assets/images/destinationPlaceHolder.png">
-                    </a>
-                </div>
-                <div class="media-body">
-                    <h4 class="media-heading">Concert 2</h4>
-                    <p>19/08/2019 - 20/08/2019</p>
-                    <p>Christchurch</p>
-                    <p>Short description</p>
-                </div>
-            </div>
-        </div>
 
-            <div class="row">
-                <div class="media">
-                    <div class="media-left">
-                        <a href="#">
-                            <img class="img-thumbnail" src="/assets/images/destinationPlaceHolder.png">
-                        </a>
-                    </div>
-                    <div class="media-body">
-                        <h4 class="media-heading">Concert</h4>
-                        <p>19/08/2019 - 20/08/2019</p>
-                        <p>Christchurch</p>
-                        <p>Short description</p>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="media">
-                    <div class="media-left">
-                        <a href="#">
-                            <img class="img-thumbnail" src="/assets/images/destinationPlaceHolder.png">
-                        </a>
-                    </div>
-                    <div class="media-body">
-                        <h4 class="media-heading">Concert 2</h4>
-                        <p>19/08/2019 - 20/08/2019</p>
-                        <p>Christchurch</p>
-                        <p>Short description</p>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="media">
-                    <div class="media-left">
-                        <a href="#">
-                            <img class="img-thumbnail" src="/assets/images/destinationPlaceHolder.png">
-                        </a>
-                    </div>
-                    <div class="media-body">
-                        <h4 class="media-heading">Concert</h4>
-                        <p>19/08/2019 - 20/08/2019</p>
-                        <p>Christchurch</p>
-                        <p>Short description</p>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="media">
-                    <div class="media-left">
-                        <a href="#">
-                            <img class="img-thumbnail" src="/assets/images/destinationPlaceHolder.png">
-                        </a>
-                    </div>
-                    <div class="media-body">
-                        <h4 class="media-heading">Concert 2</h4>
-                        <p>19/08/2019 - 20/08/2019</p>
-                        <p>Christchurch</p>
-                        <p>Short description</p>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="media">
-                    <div class="media-left">
-                        <a href="#">
-                            <img class="img-thumbnail" src="/assets/images/destinationPlaceHolder.png">
-                        </a>
-                    </div>
-                    <div class="media-body">
-                        <h4 class="media-heading">Concert</h4>
-                        <p>19/08/2019 - 20/08/2019</p>
-                        <p>Christchurch</p>
-                        <p>Short description</p>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="media">
-                    <div class="media-left">
-                        <a href="#">
-                            <img class="img-thumbnail" src="/assets/images/destinationPlaceHolder.png">
-                        </a>
-                    </div>
-                    <div class="media-body">
-                        <h4 class="media-heading">Concert 2</h4>
-                        <p>19/08/2019 - 20/08/2019</p>
-                        <p>Christchurch</p>
-                        <p>Short description</p>
-                    </div>
-                </div>
-            </div>
     </div>
+
+    <div id="loader" style="display: none;"></div>
 
 
     <script src="@routes.Assets.at("js/events/eventSearchMap.js")"></script>

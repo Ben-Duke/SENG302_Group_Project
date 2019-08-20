@@ -27,6 +27,28 @@ function getEventsData(latitude, longitude, place, pageNum) {
     });
 }
 
+function getEventsFromApiResponse(eventData) {
+    $.ajax({
+        url: loader(),
+        success: function () {
+            let pageNum = 1;
+            const count = eventData["@attributes"].count;
+            const events = eventData.events;
+            let eventsPage = document.getElementById("events-results");
+            while (eventsPage.childNodes.length > 0) {
+                eventsPage.removeChild(eventsPage.childNodes[0]);
+            }
+            let eventsPagination = document.getElementById("eventsPage");
+            while (eventsPagination.childNodes.length > 0) {
+                eventsPagination.removeChild(eventsPagination.childNodes[0]);
+            }
+            displayEvents(events);
+            addPagination(count, pageNum);
+        }
+    });
+
+}
+
 function displayEvents(events) {
     document.getElementById("events-results").appendChild(document.createElement("hr"));
     for (let i=0; i < events.length; i++) {

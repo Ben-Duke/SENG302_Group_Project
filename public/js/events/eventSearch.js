@@ -43,7 +43,8 @@ function searchEvents() {
         url: url,
         success: function (data) {
             console.log(data);
-            createEventsResultsElements(data);
+            getEventsFromApiResponse(data);
+            // createEventsResultsElements(data);
 
         }
     });
@@ -51,7 +52,7 @@ function searchEvents() {
 
 function createEventsResultsElements(data) {
 
-    for (let i = 0; i < data.size(); i++) {
+    for (let i = 0; i < data.length; i++) {
         let event = data[i];
         let eventRow = document.createElement("div");
         eventRow.setAttribute("class", "row");

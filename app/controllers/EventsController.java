@@ -44,15 +44,19 @@ public class EventsController {
         if (user == null) {
             return unauthorized();
         }
-        System.out.println(destination);
+        Destination destinationRetrieved;
         if(destination.isEmpty()) {
            //TODO change to a default destination if none selected
-            return badRequest();
+            //return badRequest();
+            //Temporary default destination is christchurc, does nothing right now
+            int DEFAULT_DESTINATION = 1;
+            destinationRetrieved = DestinationAccessor.getDestinationById(DEFAULT_DESTINATION);
         }
-        Destination destinationRetrieved = DestinationAccessor.getDestinationById(Integer.parseInt(destination));
+        else {
+            destinationRetrieved = DestinationAccessor.getDestinationById(Integer.parseInt(destination));
+        }
 
-        JsonNode data = EventFindaUtilities.getEvents(keyword, category, artist, startDate, endDate, minPrice, maxPrice,
-                destinationRetrieved, sortBy);
+        JsonNode data = EventFindaUtilities.getEvents(keyword, category, artist, startDate, endDate, minPrice, maxPrice, destinationRetrieved, sortBy);
 
         if (data == null) {
             return badRequest("EventFinda could not find anything matching your query");

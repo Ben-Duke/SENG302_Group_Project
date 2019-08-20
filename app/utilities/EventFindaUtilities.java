@@ -3,19 +3,21 @@ package utilities;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.ProtocolException;
 import java.net.URL;
+import java.net.URLDecoder;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
-import java.util.Map;
 
 
 import com.fasterxml.jackson.databind.JsonNode;
-import javafx.util.Pair;
 import models.Destination;
 import org.slf4j.Logger;
 import play.libs.Json;
+import scala.collection.concurrent.Debug;
 
 
 /**
@@ -39,6 +41,7 @@ public class EventFindaUtilities {
      */
     private static JsonNode eventFindaGetResponse(String targetUrl) {
         try {
+            targetUrl = URLDecoder.decode(targetUrl, "UTF-8");
             String url = "https://api.eventfinda.co.nz/v2/" + targetUrl;
             URL obj = new URL(url);
             HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -94,7 +97,8 @@ public class EventFindaUtilities {
     }
 
     public static JsonNode getEvents(String keyword, String category, String artist, String startDate,
-                                     String endDate, String minPrice, String maxPrice, Destination destination, String sortBy) {
+                                     String endDate, String minPrice, String maxPrice,
+                                     Destination destination, String sortBy) {
 
         int locationId = getLocationId(-43.53, 172.620278, "Christchurch");
         if (locationId == -1) {
@@ -127,9 +131,56 @@ public class EventFindaUtilities {
         if (!sortBy.isEmpty()) {
             url += "&order="+sortBy;
         }
-
-
+        if (!keyword.isEmpty()) {
+            url = addKeyWordFilterToQuery(url, keyword);
+        }
         return eventFindaGetResponse(url);
+    }
+
+    /**
+     * Adds keyword parameter to the API given query.
+     *
+     * The "keywords" parameter should be a string of one or more keywords.
+     * If they are separated by "," then an "OR" search is performed, and
+     * if they are separated by spaces then an "AND" search is performed.
+     * For example:
+     * Input: addKeyWordFilterToQuery("currentUrl", "cycling    Southland    ,   running, alpha")
+     * Output: currentUrl&q=(cycling+AND+Southland)+OR+(running)+OR+(alpha)
+     * @param currentQuery String
+     * @param keywords String
+     * @return returns the id of given place name.
+     */
+    public static String addKeyWordFilterToQuery(String currentQuery, String keywords){
+        String updatedQuery = currentQuery;
+        try {
+            keywords = URLDecoder.decode(keywords, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            Debug.log(e.getStackTrace());
+        }
+        String[] qParams = keywords.split("\\s*,\\s*");
+        List<String[]> ors = new ArrayList<>();
+        for (String words: qParams) {
+            String[] splitWords = words.split("\\s+");
+            ors.add(splitWords);
+        }
+        String stringToAdd = "";
+        int index = 0;
+        for (String[] str : ors) {
+            if (str.length > 0) {
+                String andString = "(";
+                for (String word : str) {
+                    andString = andString.concat(word + "+AND+");
+                }
+                andString = removeCharsFromEnd(andString, 5);
+                andString = andString.concat(")");
+                stringToAdd = stringToAdd.concat(andString);
+            }
+            stringToAdd = stringToAdd.concat("+OR+");
+            index++;
+        }
+        stringToAdd = removeCharsFromEnd(stringToAdd, 4);
+        updatedQuery = updatedQuery.concat("&q=" + stringToAdd);
+        return updatedQuery;
     }
 
     /**
@@ -169,64 +220,12 @@ public class EventFindaUtilities {
     }
 
 
-    private static String addLocationFilterToQuery() {
-        return null;
+    private static String removeCharsFromEnd(String str, int numOfChars) {
+        return str.substring(0, str.length() - numOfChars);
     }
 
-    private static String addArtistFilterToQuery() {
-        return null;
-    }
-
-    private static String addCategoryFilterToQuery() {
-        return null;
-    }
-
-    /**
-     * Filter by keyword, implemented using the auto complete parameter
-     * @param keyword the keyword to filter by
-     * @return the updated query
-     */
-    private static String addKeywordFilterToQuery(String currentQuery, String keyword) {
-        return currentQuery + "autocomplete=" + keyword + "&";
-    }
-
-    /**
-     * Filter by free text (Check the q parameter in https://www.eventfinda.co.nz/api/v2/end-points)
-     * The free text should be a Pair of a list of a list of pairs of strings and a string.
-     * The left value of the pair should be the keywords and the right value should be the conjunction.
-     * If there are no conjunctions (its the last string) it should be left as an empty string.
-     * Example:
-     * Filter by (cycling and running and swimming) or triathlon should be parsed as the list:
-     * [Pair<[Pair<"cycling", "and">, Pair<"running", "and">, Pair<"swimming, "">], "or">, Pair<[Pair<"triathlon", ""], "">>]
-     *
-     * @param currentQuery the current query string
-     * @param freeText the free text, which is a pair of a list of a list of pairs of strings and a string.
-     * @return the updated query
-     */
-    private static String addFreeTextFilterToQuery(String currentQuery, List<Pair<List<Pair<String, String>>,String>> freeText) {
-        String updatedQuery = currentQuery;
-        updatedQuery += "q=";
-        for (Pair<List<Pair<String, String>>,String> bracketPair : freeText) {
-            List<Pair<String, String>> bracketStrings = bracketPair.getKey();
-            String bracketConjunction = bracketPair.getValue();
-
-            updatedQuery += "(";
-            for (Pair<String,String> bracketString : bracketStrings) {
-                updatedQuery += bracketString.getKey();
-                updatedQuery += "+";
-                updatedQuery += bracketString.getValue();
-                updatedQuery += "+";
-            }
-            updatedQuery = removeLastChar(updatedQuery);
-            updatedQuery += ")+";
-            updatedQuery += bracketConjunction;
-        }
-        updatedQuery = removeLastChar(updatedQuery);
-        return updatedQuery;
-    }
-
-    private static String removeLastChar(String str) {
-        return str.substring(0, str.length() - 1);
+    public static void main(String [] args) {
+        System.out.println(addKeyWordFilterToQuery("currentUrl", "cycling    Southland    ,   running, alpha"));
     }
 }
 

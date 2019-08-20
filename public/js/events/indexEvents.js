@@ -4,20 +4,25 @@ function getEventsData(latitude, longitude, place, pageNum) {
 
     const offset = (pageNum - 1) * 20;
     $.ajax({
-        type: 'GET',
-        url: `/events?latitude=${latitude}&longitude=${longitude}&place=${place}&offset=${offset}`,
-        contentType: 'application/json',
-        success: (eventData) => {
-            const count = eventData["@attributes"].count;
-            const events = eventData.events;
-            if (pageNum > 1) {
-                let eventsPage = document.getElementById("events-results");
-                while (eventsPage.childNodes.length > 0) {
-                    eventsPage.removeChild(eventsPage.childNodes[0]);
+        url:loader(),
+        success: function(){
+            $.ajax({
+                type: 'GET',
+                url: `/events?latitude=${latitude}&longitude=${longitude}&place=${place}&offset=${offset}`,
+                contentType: 'application/json',
+                success: (eventData) => {
+                    const count = eventData["@attributes"].count;
+                    const events = eventData.events;
+                    if (pageNum > 1) {
+                        let eventsPage = document.getElementById("events-results");
+                        while (eventsPage.childNodes.length > 0) {
+                            eventsPage.removeChild(eventsPage.childNodes[0]);
+                        }
+                    }
+                    displayEvents(events);
+                    addPagination(count, pageNum);
                 }
-            }
-            displayEvents(events);
-            addPagination(count);
+            });
         }
     });
 }
@@ -63,19 +68,34 @@ function displayEvents(events) {
         mediaRow.appendChild(mediaBody);
         mediaRow.appendChild(document.createElement("hr"));
         document.getElementById("events-results").appendChild(mediaRow);
+        document.getElementById("events-results").style.display = "block";
+        document.getElementById("loader").style.display = "none";
     }
 }
 
-function addPagination(count) {
+function addPagination(count, pageNum) {
+    var numOfPagesAdded = 0;
     latitudes = -43.53;
     longitudes = 172.620278;
     places = 'Christchurch';
+    const pagination = document.createElement("ul");
+    pagination.classList.add("pagination");
+    pageNumbers = [pageNum-2, pageNum-1, pageNum, pageNum+1, pageNum+2]
     for (let i=0; i < count; i+=20) {
-        const pageButton = document.createElement("Button");
-        const pageNum = (i/20)+1;
-        pageButton.innerText = (i/20)+1;
-        pageButton.setAttribute("onClick", `getEventsData(-43.53, 172.620278, 'Christchurch', ${pageNum})`);
-        document.getElementById("events-results").appendChild(pageButton);
+        if (i==0 || i==(count-(count%20)) || pageNumbers.includes((i/20)+1)) {
+            let item = document.createElement("li");
+            const pageButton = document.createElement("a");
+            const pageNum = (i/20)+1;
+            pageButton.innerText = (i/20)+1;
+            pageButton.setAttribute("onClick", `getEventsData(-43.53, 172.620278, 'Christchurch', ${pageNum})`);
+            item.appendChild(pageButton);
+            pagination.appendChild(item);
+        }
     }
+    document.getElementById("events-results").appendChild(pagination);
 }
 
+function loader() {
+    document.getElementById("events-results").style.display = "none";
+    document.getElementById("loader").style.display = "block";
+}

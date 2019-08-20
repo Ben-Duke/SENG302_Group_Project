@@ -6,6 +6,9 @@
 @main(user, "Events") {
 
     <head>
+
+
+        <link rel="stylesheet" href="@routes.Assets.at("stylesheets/events.css")">
         <style>
             #map {
                 margin: 10px 20px 10px 20px;
@@ -147,6 +150,8 @@
     <div class="col-md-8" id="events-results">
 
     </div>
+
+    <div id="loader" style="display: none;"></div>
 
 
     <script src="@routes.Assets.at("js/events/eventSearchMap.js")"></script>

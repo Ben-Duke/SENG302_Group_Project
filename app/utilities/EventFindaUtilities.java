@@ -12,7 +12,7 @@ import java.util.Map;
 
 
 import com.fasterxml.jackson.databind.JsonNode;
-import org.apache.commons.lang3.tuple.Pair;
+//import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import play.libs.Json;
 
@@ -157,27 +157,27 @@ public class EventFindaUtilities {
      * @param freeText the free text, which is a pair of a list of a list of pairs of strings and a string.
      * @return the updated query
      */
-    private static String addFreeTextFilterToQuery(String currentQuery, List<Pair<List<Pair<String, String>>,String>> freeText) {
-        String updatedQuery = currentQuery;
-        updatedQuery += "q=";
-        for (Pair<List<Pair<String, String>>,String> bracketPair : freeText) {
-            List<Pair<String, String>> bracketStrings = bracketPair.getLeft();
-            String bracketConjunction = bracketPair.getRight();
-
-            updatedQuery += "(";
-            for (Pair<String,String> bracketString : bracketStrings) {
-                updatedQuery += bracketString.getLeft();
-                updatedQuery += "+";
-                updatedQuery += bracketString.getRight();
-                updatedQuery += "+";
-            }
-            updatedQuery = removeLastChar(updatedQuery);
-            updatedQuery += ")+";
-            updatedQuery += bracketConjunction;
-        }
-        updatedQuery = removeLastChar(updatedQuery);
-        return updatedQuery;
-    }
+//    private static String addFreeTextFilterToQuery(String currentQuery, List<Pair<List<Pair<String, String>>,String>> freeText) {
+//        String updatedQuery = currentQuery;
+//        updatedQuery += "q=";
+//        for (Pair<List<Pair<String, String>>,String> bracketPair : freeText) {
+//            List<Pair<String, String>> bracketStrings = bracketPair.getLeft();
+//            String bracketConjunction = bracketPair.getRight();
+//
+//            updatedQuery += "(";
+//            for (Pair<String,String> bracketString : bracketStrings) {
+//                updatedQuery += bracketString.getLeft();
+//                updatedQuery += "+";
+//                updatedQuery += bracketString.getRight();
+//                updatedQuery += "+";
+//            }
+//            updatedQuery = removeLastChar(updatedQuery);
+//            updatedQuery += ")+";
+//            updatedQuery += bracketConjunction;
+//        }
+//        updatedQuery = removeLastChar(updatedQuery);
+//        return updatedQuery;
+//    }
 
     private static String removeLastChar(String str) {
         return str.substring(0, str.length() - 1);

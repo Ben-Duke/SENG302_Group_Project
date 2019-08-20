@@ -1071,7 +1071,7 @@ public class DestinationController extends Controller {
                 return ok(new File(primaryPicture.getUrlWithPath()));
             } else {
                 //should be 404 but then console logs an error
-                return ok();
+                return ok(new File(ApplicationManager.getDefaultDestinationPhotoFullURL()));
             }
         } else {
             return redirect(routes.UserController.userindex());

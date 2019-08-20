@@ -29,6 +29,7 @@ import utilities.UtilityFunctions;
 import views.html.users.trip.*;
 
 import javax.inject.Inject;
+import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -688,6 +689,31 @@ public class TripController extends Controller {
         } else {
             return redirect(routes.UserController.userindex());
         }
+    }
+
+    /**
+     * Get the trip photo being the photo of the first destination visited (or a placeholder)
+     * @param request the http request
+     * @param tripId the id of the trip which needs its photo to be retrieved
+     * @return
+     */
+    public Result getTripPhoto(Http.Request request, Integer tripId) {
+        User user = User.getCurrentUser(request);
+        if (user != null) {
+            Trip trip = TripAccessor.getTripById(tripId);
+            if (trip == null) {
+                return notFound();
+            }
+            Destination startDestination = trip.getOrderedVisits().get(0).getDestination();
+            UserPhoto startPhoto = startDestination.getPrimaryAlbum().getPrimaryPhoto();
+            if (startPhoto != null) {
+                return ok(new File(startPhoto.getUrlWithPath()));
+            } else {
+                return ok(new File(ApplicationManager.getDefaultDestinationPhotoFullURL()));
+            }
+
+        }
+        return redirect(routes.UserController.userindex());
     }
 
 

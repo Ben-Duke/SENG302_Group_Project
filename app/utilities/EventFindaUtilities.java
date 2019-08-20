@@ -108,6 +108,9 @@ public class EventFindaUtilities {
             url += "&category="+category;
         }
         if (!startDate.isEmpty()) {
+
+            System.out.println(startDate);
+
             url += "&start_date="+startDate;
         }
         if (!endDate.isEmpty()) {

@@ -9,6 +9,8 @@ import play.mvc.Result;
 import utilities.EventFindaUtilities;
 import views.html.users.events.*;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Map;
 
 import static play.mvc.Results.*;
@@ -58,6 +60,20 @@ public class EventsController {
         else {
             destinationRetrieved = DestinationAccessor.getDestinationById(Integer.parseInt(destination));
         }
+
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+
+        try {
+            format.parse(startDate);
+        } catch (ParseException e) {
+            startDate = "";
+        }
+        try {
+            format.parse(endDate);
+        } catch (ParseException e) {
+            endDate = "";
+        }
+
 
         JsonNode data = EventFindaUtilities.getEvents(keyword, category, startDate, endDate, minPrice, maxPrice, destinationRetrieved, sortBy, offset);
 

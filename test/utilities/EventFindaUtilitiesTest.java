@@ -8,5 +8,11 @@ import static org.junit.Assert.assertEquals;
 
 public class EventFindaUtilitiesTest  {
 
+    /**
+     * Filter by (cycling and running and swimming) or triathlon
+     */
+    @Test
+    public void addFreeTextFilterToQuery(){
 
+    }
 }

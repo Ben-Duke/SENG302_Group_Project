@@ -74,6 +74,24 @@ public class EventsController {
             endDate = "";
         }
 
+        try {
+            Integer price = Integer.parseInt(minPrice);
+            if (price < 0) {
+                throw new NumberFormatException();
+            }
+        } catch (NumberFormatException e) {
+            minPrice = "";
+        }
+
+        try {
+            Integer price = Integer.parseInt(maxPrice);
+            if (price < 0) {
+                throw new NumberFormatException();
+            }
+        } catch (NumberFormatException e) {
+            maxPrice = "";
+        }
+
 
         JsonNode data = EventFindaUtilities.getEvents(keyword, category, startDate, endDate, minPrice, maxPrice, destinationRetrieved, sortBy, offset);
 

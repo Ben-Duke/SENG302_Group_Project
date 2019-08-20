@@ -28,6 +28,7 @@ function getEventsData(latitude, longitude, place, pageNum) {
 }
 
 function displayEvents(events) {
+    document.getElementById("events-results").appendChild(document.createElement("hr"));
     for (let i=0; i < events.length; i++) {
         const mediaRow = document.createElement("div");
         mediaRow.classList.add("media")
@@ -69,33 +70,91 @@ function displayEvents(events) {
         mediaRow.appendChild(document.createElement("hr"));
         document.getElementById("events-results").appendChild(mediaRow);
         document.getElementById("events-results").style.display = "block";
+        document.getElementById("search-container").style.display = "block";
+        window.scrollTo(0, 0);
         document.getElementById("loader").style.display = "none";
     }
 }
 
 function addPagination(count, pageNum) {
-    var numOfPagesAdded = 0;
+    numOfPages = [];
+    pageNumbers = [];
     latitudes = -43.53;
     longitudes = 172.620278;
     places = 'Christchurch';
     const pagination = document.createElement("ul");
     pagination.classList.add("pagination");
-    pageNumbers = [pageNum-2, pageNum-1, pageNum, pageNum+1, pageNum+2]
     for (let i=0; i < count; i+=20) {
-        if (i==0 || i==(count-(count%20)) || pageNumbers.includes((i/20)+1)) {
-            let item = document.createElement("li");
-            const pageButton = document.createElement("a");
-            const pageNum = (i/20)+1;
-            pageButton.innerText = (i/20)+1;
-            pageButton.setAttribute("onClick", `getEventsData(-43.53, 172.620278, 'Christchurch', ${pageNum})`);
-            item.appendChild(pageButton);
-            pagination.appendChild(item);
-        }
+        numOfPages.push((i/20)+1);
     }
+    if (numOfPages.length > 10) {
+        if (pageNum > 5) {
+            if (numOfPages.length >= pageNum+5) {
+                pageNumbers = [pageNum-3,pageNum-2, pageNum-1, pageNum, pageNum+1, pageNum+2, pageNum+3, pageNum+4];
+            } else {
+                lastPage = numOfPages.length-0;
+                pageNumbers = []
+                for (let j=lastPage-7; (j<lastPage+1 && j>0); j++) {
+                    pageNumbers.push(j);
+                }
+            }
+        } else {
+            for (let k=0; k<10; k++) {
+                pageNumbers.push(numOfPages[k]);
+            }
+        }
+    } else {
+        pageNumbers = numOfPages;
+    }
+    console.log(pageNumbers);
+    let item = document.createElement("li");
+    pageButton = document.createElement("a");
+    currentPageNum = pageNumbers[0];
+    pageButton.innerText = "First";
+    pageButton.setAttribute("onClick", `getEventsData(-43.53, 172.620278, 'Christchurch', ${currentPageNum})`);
+    item.appendChild(pageButton);
+    pagination.appendChild(item);
+
+    item = document.createElement("li");
+    pageButton = document.createElement("a");
+    currentPageNum = pageNum-1;
+    pageButton.innerText = "<";
+    pageButton.setAttribute("onClick", `getEventsData(-43.53, 172.620278, 'Christchurch', ${currentPageNum})`);
+    item.appendChild(pageButton);
+    pagination.appendChild(item);
+    for (let i=0; i < pageNumbers.length; i++) {
+        let item = document.createElement("li");
+        const pageButton = document.createElement("a");
+        const currentPageNum = pageNumbers[i];
+        pageButton.innerText = pageNumbers[i];
+        if (currentPageNum==pageNum) {
+            pageButton.classList.add("active");
+        }
+        pageButton.setAttribute("onClick", `getEventsData(-43.53, 172.620278, 'Christchurch', ${currentPageNum})`);
+        item.appendChild(pageButton);
+        pagination.appendChild(item);
+    }
+    item = document.createElement("li");
+    pageButton = document.createElement("a");
+    currentPageNum = pageNum+1;
+    pageButton.innerText = ">";
+    pageButton.setAttribute("onClick", `getEventsData(-43.53, 172.620278, 'Christchurch', ${currentPageNum})`);
+    item.appendChild(pageButton);
+    pagination.appendChild(item);
+    document.getElementById("events-results").appendChild(pagination);
+
+    item = document.createElement("li");
+    pageButton = document.createElement("a");
+    currentPageNum = numOfPages.length;
+    pageButton.innerText = "Last";
+    pageButton.setAttribute("onClick", `getEventsData(-43.53, 172.620278, 'Christchurch', ${currentPageNum})`);
+    item.appendChild(pageButton);
+    pagination.appendChild(item);
     document.getElementById("events-results").appendChild(pagination);
 }
 
 function loader() {
+    document.getElementById("search-container").style.display = "none";
     document.getElementById("events-results").style.display = "none";
     document.getElementById("loader").style.display = "block";
 }

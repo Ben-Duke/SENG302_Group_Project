@@ -1,7 +1,10 @@
 package models.commands.Profile;
 
+import accessors.AlbumAccessor;
 import accessors.UserAccessor;
+import models.Album;
 import models.User;
+import models.commands.Albums.UpdateAlbumCommand;
 import models.commands.General.CommandPage;
 import models.commands.General.UndoableCommand;
 
@@ -10,6 +13,9 @@ public class EditProfileCommand extends UndoableCommand {
     private User uneditedUser;
     private User editedUser;
     private User actualUser;
+    private Album album;
+    private String editedTitle;
+    private String uneditedTitle;
 
     /**
      * Constructor to create an EditProfileCommand. Takes an edited user
@@ -25,6 +31,13 @@ public class EditProfileCommand extends UndoableCommand {
         this.editedUser.applyEditChanges(actualUser);
         this.uneditedUser =
                 UserAccessor.getById(editedUser.getUserid());
+        if(!editedUser.getFName().equals(uneditedUser.getFName()) || !editedUser.getLName().equals(uneditedUser.getLName())) {
+            if (AlbumAccessor.getAlbumByTitle(uneditedUser.getFName() + " " + uneditedUser.getLName() + "'s "+"Profile Pictures") != null) {
+                this.album = AlbumAccessor.getAlbumByTitle(uneditedUser.getFName() + " " + uneditedUser.getLName() + "'s " + "Profile Pictures");
+                this.uneditedTitle = album.getTitle();
+                this.editedTitle = (editedUser.getFName() + " " + editedUser.getLName() + "'s " + "Profile Pictures");
+            }
+        }
     }
 
     /**
@@ -33,6 +46,10 @@ public class EditProfileCommand extends UndoableCommand {
     public void execute() {
         actualUser.applyEditChanges(editedUser);
         UserAccessor.update(actualUser);
+        if ((album != null) && (!editedTitle.equals(uneditedTitle))) {
+            album.setTitle(editedTitle);
+            AlbumAccessor.update(album);
+        }
     }
 
     /**
@@ -41,6 +58,12 @@ public class EditProfileCommand extends UndoableCommand {
     public void undo() {
         actualUser.applyEditChanges(uneditedUser);
         UserAccessor.update(actualUser);
+        if ((album != null) && (!editedTitle.equals(uneditedTitle))) {
+            album.setTitle(uneditedTitle);
+            AlbumAccessor.update(album);
+        }
+
+
     }
 
     /**

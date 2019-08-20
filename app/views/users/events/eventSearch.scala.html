@@ -1,7 +1,7 @@
 @import helper._
 @import views.html.bootstrap3._
 
-@(user: User)
+@(user: User, categoryOptions : Map[Integer, String])
 
 @main(user, "Events") {
 
@@ -12,7 +12,7 @@
         <style>
             #map {
                 margin: 10px 20px 10px 20px;
-                height: 40vh;
+                height: 30vh;
             }
 
             #search-container {
@@ -46,23 +46,27 @@
                 <div class="form-group">
                     <label class="col-sm-2 control-label">Category</label>
                     <div class="col-sm-8">
-                        <input type="text"
+                        <select
                         class="form-control"
-                        id="category-search-input"
-                        placeholder="Category">
+                        id="category-search-input">
+                            @for((id, name) <- categoryOptions) {
+                                @if(name == "All Events") {
+                                    <option value=@id default>
+                                    @name
+                                    </option>
+                                }
+                            }
+                            @for((id, name) <- categoryOptions) {
+                                @if(name != "All Events") {
+                                <option value=@id>
+                                @name
+                                </option>
+                                }
+                            }
+                        </select>
                     </div>
                 </div>
 
-
-                <div class="form-group">
-                    <label class="col-sm-2 control-label">Artist</label>
-                    <div class="col-sm-8">
-                        <input type="text"
-                        class="form-control"
-                        id="artist-search-input"
-                        placeholder="Artist">
-                    </div>
-                </div>
 
                 <div class="form-group">
                     <label class="col-sm-2 control-label">Start Date</label>

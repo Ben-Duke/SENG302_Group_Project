@@ -4,7 +4,6 @@ function searchEvents(pageNum) {
     const offset = (pageNum-1)*20;
     let keyword = document.getElementById('keyword-search-input').value;
     let category = document.getElementById('category-search-input').value;
-    let artist = document.getElementById('artist-search-input').value;
     let startDate = document.getElementById('start-datepicker').value;
     let endDate = document.getElementById('end-datepicker').value;
     let minPrice = document.getElementById('minprice-search-input').value;
@@ -15,7 +14,6 @@ function searchEvents(pageNum) {
     let query = {
         keyword: keyword,
         category: category,
-        artist: artist,
         startDate: startDate,
         endDate: endDate,
         minPrice: minPrice,
@@ -29,7 +27,6 @@ function searchEvents(pageNum) {
 
     url += "?keyword=" + query.keyword;
     url += "&category=" + query.category;
-    url += "&artist=" + query.artist;
     url += "&startDate=" + query.startDate;
     url += "&endDate=" + query.endDate;
     url += "&minPrice=" + query.minPrice;

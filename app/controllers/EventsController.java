@@ -9,6 +9,8 @@ import play.mvc.Result;
 import utilities.EventFindaUtilities;
 import views.html.users.events.*;
 
+import java.util.Map;
+
 import static play.mvc.Results.*;
 
 public class EventsController {
@@ -16,12 +18,13 @@ public class EventsController {
     public Result indexEvents(Http.Request request) {
         User user = User.getCurrentUser(request);
 
+
+
         if (user == null) { return redirect(routes.UserController.userindex()); }
 
-        JsonNode data = EventFindaUtilities.getCategories();
-        System.out.println(data.get("categories").size());
+        Map<Integer, String> categoryIdsToNames = EventFindaUtilities.getMainCategories();
 
-        return ok(eventSearch.render(user));
+        return ok(eventSearch.render(user, categoryIdsToNames));
     }
 
     public Result getEventsDataByDestination(Http.Request request, double latitude, double longitude, String place, Integer offset) {
@@ -38,7 +41,7 @@ public class EventsController {
     }
 
 
-    public Result getEventsData(Http.Request request, String keyword, String category, String artist, String startDate,
+    public Result getEventsData(Http.Request request, String keyword, String category, String startDate,
                                 String endDate, String minPrice, String maxPrice, String destination, String sortBy, Integer offset) {
         User user = User.getCurrentUser(request);
         if (user == null) {
@@ -56,7 +59,7 @@ public class EventsController {
             destinationRetrieved = DestinationAccessor.getDestinationById(Integer.parseInt(destination));
         }
 
-        JsonNode data = EventFindaUtilities.getEvents(keyword, category, artist, startDate, endDate, minPrice, maxPrice, destinationRetrieved, sortBy, offset);
+        JsonNode data = EventFindaUtilities.getEvents(keyword, category, startDate, endDate, minPrice, maxPrice, destinationRetrieved, sortBy, offset);
 
         if (data == null) {
             return badRequest("EventFinda could not find anything matching your query");

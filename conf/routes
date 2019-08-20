@@ -350,7 +350,7 @@ GET     /events             controllers.EventsController.getEventsDataByDestinat
 
 GET     /users/events/search            controllers.EventsController.indexEvents(request : Request)
 
-GET     /users/events       controllers.EventsController.getEventsData(request : Request, keyword: String, category : String, artist : String, startDate: String, endDate: String, minPrice: String, maxPrice: String, destination: String, sortBy: String, offset: Integer)
+GET     /users/events       controllers.EventsController.getEventsData(request : Request, keyword: String, category : String, startDate: String, endDate: String, minPrice: String, maxPrice: String, destination: String, sortBy: String, offset: Integer)
 
 
 

@@ -888,6 +888,7 @@ function submitEditCaption(caption, photoId) {
         },
         success:function(){
             console.log("caption edited");
+            document.getElementById('undoButton').classList.remove('disabled');
         },
         error: function(xhr, textStatus, errorThrown){
             console.log(xhr.status + " " + textStatus + " " + errorThrown);
@@ -1047,7 +1048,6 @@ function openDropdown() {
 window.onclick = function(event) {
     if (!event.target.matches('.dropbtn')) {
         var openDropdown = document.getElementsByClassName("optionsDropdown");
-        console.log(openDropdown);
         if (openDropdown.classList !== undefined) {
             if (openDropdown.classList.contains('show')) {
                 openDropdown.classList.remove('show');
@@ -1056,7 +1056,6 @@ window.onclick = function(event) {
     }
 
 };
-
 
 $('#photo-upload').click(function (eve){
     let searchBar = document.getElementById("album-search-photo");

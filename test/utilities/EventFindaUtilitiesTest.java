@@ -3,6 +3,7 @@ package utilities;
 import javafx.util.Pair;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -19,6 +20,10 @@ public class EventFindaUtilitiesTest  {
         Pair pair1 = new Pair("cycling", "and");
         Pair pair2 = new Pair("running", "and");
         Pair pair3 = new Pair("swimming", "");
-//        List pairCombination =
+        List<Pair> pairCombination = new ArrayList();
+        pairCombination.add(pair1);
+        pairCombination.add(pair2);
+        pairCombination.add(pair3);
+
     }
 }

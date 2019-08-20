@@ -24,6 +24,20 @@ public class EventsController {
         return ok(eventSearch.render(user));
     }
 
+    public Result getEventsDataByDestination(Http.Request request, double latitude, double longitude, String place, int offset) {
+        User user = User.getCurrentUser(request);
+        if (user == null) {
+            return unauthorized();
+        }
+        JsonNode data = EventFindaUtilities.getEvents(latitude, longitude, place, offset);
+        if (data != null) {
+            return ok(data);
+        } else {
+            return badRequest("EventFinda could not find anything matching your query");
+        }
+    }
+
+
     public Result getEventsData(Http.Request request, String keyword, String category, String artist, String startDate,
                                 String endDate, String minPrice, String maxPrice, String destination, String sortBy) {
         User user = User.getCurrentUser(request);

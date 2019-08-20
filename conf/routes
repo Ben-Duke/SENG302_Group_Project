@@ -346,7 +346,7 @@ GET /googlemap  controllers.DestinationController.renderMap(request : Request)
 
 # ------ ALBUMS ------
 
-GET     /events             controllers.EventsController.getEventsData(request : Request, latitude: Double, longitude: Double, place: String, offset: Integer)
+GET     /events             controllers.EventsController.getEventsDataByDestination(request : Request, latitude: Double, longitude: Double, place: String, offset: Integer)
 
 GET     /users/events/search            controllers.EventsController.indexEvents(request : Request)
 

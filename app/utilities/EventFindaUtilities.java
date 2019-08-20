@@ -13,6 +13,7 @@ import java.util.Map;
 
 import com.fasterxml.jackson.databind.JsonNode;
 //import org.apache.commons.lang3.tuple.Pair;
+import models.Destination;
 import org.slf4j.Logger;
 import play.libs.Json;
 
@@ -92,6 +93,45 @@ public class EventFindaUtilities {
         return eventFindaGetResponse(url);
     }
 
+    public static JsonNode getEvents(String keyword, String category, String artist, String startDate,
+                                     String endDate, String minPrice, String maxPrice, Destination destination, String sortBy) {
+
+        int locationId = getLocationId(-43.53, 172.620278, "Christchurch");
+        if (locationId == -1) {
+            return null;
+        }
+        String url = "events.json?location="+locationId+ "&rows=20" + "&offset=" + 0;
+
+        if (!category.isEmpty()) {
+            /*TODO use addFreeTextFilterToQuery() to parse input. Then get matching category from eventFinda using this as the q param. Then get the category ID from results of this.
+            The category ID is to be used here. */
+            url += "&category="+category;
+        }
+        if (!artist.isEmpty()) {
+            /*TODO use addFreeTextFilterToQuery() to parse input. Then get matching artist from eventFinda using this as the q param. Then get the artist ID from results of this.
+            The artist ID is to be used here. */
+            url += "&artist="+artist;
+        }
+        if (!startDate.isEmpty()) {
+            url += "&start_date="+startDate;
+        }
+        if (!endDate.isEmpty()) {
+            url += "&end_date="+endDate;
+        }
+        if (!minPrice.isEmpty()) {
+            url += "&price_min="+minPrice;
+        }
+        if (!maxPrice.isEmpty()) {
+            url += "&price_max="+maxPrice;
+        }
+        if (!sortBy.isEmpty()) {
+            url += "&order="+sortBy;
+        }
+
+
+        return eventFindaGetResponse(url);
+    }
+
     /**
      * Gets the location id of the passed place name.
      * @param latitude
@@ -122,6 +162,12 @@ public class EventFindaUtilities {
         String url = "locations.json?point=" + latitude + "," + longitude +"&rows=20" + "&offset=" + offset + "&q=" + query;
         return eventFindaGetResponse(url);
     }
+
+    public static JsonNode getCategories() {
+        String url = "categories.json?order=name";
+        return eventFindaGetResponse(url);
+    }
+
 
     private static String addLocationFilterToQuery() {
         return null;

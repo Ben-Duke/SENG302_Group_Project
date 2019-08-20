@@ -24,7 +24,7 @@ function searchEvents() {
     };
 
 
-    let url = "/users/events/";
+    let url = "/users/events";
 
     url += "?keyword=" + query.keyword;
     url += "&category=" + query.category;
@@ -42,6 +42,7 @@ function searchEvents() {
         type: 'GET',
         url: url,
         success: function (data) {
+            console.log(data);
             createEventsResultsElements(data);
 
         }

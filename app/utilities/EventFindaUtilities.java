@@ -7,9 +7,12 @@ import java.net.HttpURLConnection;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.util.Base64;
+import java.util.List;
+import java.util.Map;
 
 
 import com.fasterxml.jackson.databind.JsonNode;
+import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import play.libs.Json;
 
@@ -120,7 +123,65 @@ public class EventFindaUtilities {
         return eventFindaGetResponse(url);
     }
 
+    private static String addLocationFilterToQuery() {
+        return null;
+    }
 
+    private static String addArtistFilterToQuery() {
+        return null;
+    }
+
+    private static String addCategoryFilterToQuery() {
+        return null;
+    }
+
+    /**
+     * Filter by keyword, implemented using the auto complete parameter
+     * @param keyword the keyword to filter by
+     * @return the updated query
+     */
+    private static String addKeywordFilterToQuery(String currentQuery, String keyword) {
+        return currentQuery + "autocomplete=" + keyword + "&";
+    }
+
+    /**
+     * Filter by free text (Check the q parameter in https://www.eventfinda.co.nz/api/v2/end-points)
+     * The free text should be a Pair of a list of a list of pairs of strings and a string.
+     * The left value of the pair should be the keywords and the right value should be the conjunction.
+     * If there are no conjunctions (its the last string) it should be left as an empty string.
+     * Example:
+     * Filter by (cycling and running and swimming) or triathlon should be parsed as the list:
+     * [Pair<[Pair<"cycling", "and">, Pair<"running", "and">, Pair<"swimming, "">], "or">, Pair<[Pair<"triathlon", ""], "">>]
+     *
+     * @param currentQuery the current query string
+     * @param freeText the free text, which is a pair of a list of a list of pairs of strings and a string.
+     * @return the updated query
+     */
+    private static String addFreeTextFilterToQuery(String currentQuery, List<Pair<List<Pair<String, String>>,String>> freeText) {
+        String updatedQuery = currentQuery;
+        updatedQuery += "q=";
+        for (Pair<List<Pair<String, String>>,String> bracketPair : freeText) {
+            List<Pair<String, String>> bracketStrings = bracketPair.getLeft();
+            String bracketConjunction = bracketPair.getRight();
+
+            updatedQuery += "(";
+            for (Pair<String,String> bracketString : bracketStrings) {
+                updatedQuery += bracketString.getLeft();
+                updatedQuery += "+";
+                updatedQuery += bracketString.getRight();
+                updatedQuery += "+";
+            }
+            updatedQuery = removeLastChar(updatedQuery);
+            updatedQuery += ")+";
+            updatedQuery += bracketConjunction;
+        }
+        updatedQuery = removeLastChar(updatedQuery);
+        return updatedQuery;
+    }
+
+    private static String removeLastChar(String str) {
+        return str.substring(0, str.length() - 1);
+    }
 }
 
 

@@ -351,6 +351,58 @@ GET /users/trips/fetch/trips_routes_json  controllers.TripController.getTripsRou
 
 POST /users/trips/:tripId/addVisit/:destId   controllers.TripController.addVisitToTripJSRequest(request : Request, tripId:Integer, destId:Integer)
 
+#Get photo tags
+GET    /photos/:photoId/tags                                    controllers.TagController.getPhotoTags(request : Request, photoId : Integer)
+
+# Add photo tag
+PUT   /photos/:photoId/tags                                 controllers.TagController.addPhotoTag(request : Request, photoId : Integer)
+
+# Delete photo tag
+DELETE   /photos/:photoId/tags                                    controllers.TagController.removePhotoTag(request : Request, photoId : Integer)
+
+# Get trip tags
+GET   /trips/:tripId/tags                                         controllers.TagController.getTripTags(request : Request, tripId : Integer)
+
+#Add new tag to a trip
+PUT /trips/:tripId/tags                                             controllers.TagController.addTripTag(request: Request, tripId :Integer)
+
+#Remove a tag from a trip
+DELETE /trips/:tripId/tags                                          controllers.TagController.removeTripTag(request: Request, tripId :Integer)
+
+
+# Get destination tags
+GET /destinations/:destId/tags                                 controllers.TagController.getDestTags(request : Request, destId : Integer)
+
+# Add destination tag
+PUT /destinations/:destId/tags                                 controllers.TagController.addDestTag(request : Request, destId : Integer)
+
+# Delete photo tag
+DELETE /destinations/:destId/tags                               controllers.TagController.removeDestTag(request : Request, destId : Integer)
+
+# Search for tag
+PUT /tags/search                                            controllers.TagController.searchTags(request : Request)
+
+#Adds a tag to a taggable
+PUT /tags/:taggableId                                          controllers.TagController.addTagToTaggable(request : Request, taggableId : Integer)
+
+# Deletes a tag from a taggable
+DELETE /tags/:taggableId                                      controllers.TagController.removeTagFromTaggable(request : Request, taggableId : Integer)
+
+DELETE /tags                                                  controllers.TagController.removeUsersPendingTags(request: Request)
+
+#Adds a raw tag
+PUT /tags                                                      controllers.TagController.addRawTag(request : Request)
+
+# get all tags of a taggable item
+PUT /tags/get/:taggableId                                                       controllers.TagController.getTaggablesTags(request: Request, taggableId: Integer)
+
+# Tag page
+GET /tags/display/:tagName                                            controllers.TagController.displayTags(request: Request, tagName: String)
+
+GET /tags/items/:tagId                                  controllers.TagController.getTagDetails(request: Request, tagId: Integer)
+
+
+
 # Undo
 +nocsrf
 PUT     /undo                                              controllers.UndoRedoController.undo(request: Request)

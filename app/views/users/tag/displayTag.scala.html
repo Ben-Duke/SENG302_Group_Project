@@ -1,0 +1,26 @@
+@import helper._
+@import views.html.bootstrap3._
+
+@(tag: Tag, user: User)
+
+    @main(user, "Tags") {
+        <h2>Results for @tag.getName</h2>
+
+        <div class="container">
+            <h3>Filter by tag type</h3>
+            <div class="checkbox">
+                <label><input type="checkbox" value="">Trips</label>
+            </div>
+            <div class="checkbox">
+                <label><input type="checkbox" value="">Destinations</label>
+            </div>
+            <div class="checkbox">
+                <label><input type="checkbox" value="">Photos</label>
+            </div>
+        </div>
+        <div class="container pre-scrollable" id="tag-feed" data-tag="@tag.getTagId" data-user="@user.getUserid">
+            <!-- Links to photos and other taggable items are placed in here by js -->
+        </div>
+        <script src="@routes.Assets.at("js/tags/displayTags.js")" type="text/javascript"></script>
+    }
+

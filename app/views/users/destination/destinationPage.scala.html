@@ -107,6 +107,7 @@
             <h3 style="margin-top: 0;">Edit mode</h3>
 
             @if(destination.isUserOwner(user) || user.userIsAdmin()) {
+
                 @helper.form(action = helper.CSRF(routes.DestinationController.updateDestination(destination.getDestId()))) {
                     @formBody()
 
@@ -205,9 +206,11 @@
                     <span>@destination.getLongitude()</span>
                 </div>
             </div>
-
-            <br>
-
+            @if(destination.isUserOwner(user) || user.userIsAdmin()) {
+                <div class="row">
+                    @users.tag.createSearchTags(user, "destination", destination.getDestId())
+                </div>
+            }
             <a class="btn btn-primary" href="@routes.DestinationController.editDestination(destination.getDestId())" role="button">
                 Edit
             </a>
@@ -346,7 +349,7 @@
 
     <script src="@routes.Assets.at("js/destination/viewDestination.js")"></script>
     <script>setLatLng(@destination.getLatitude(), @destination.getLongitude());</script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC9Z1g5p2rQtS0nHgDudzCCXVl2HJl3NPI&libraries=drawing&callback=initMap"
+    <script src="https://maps.googleapis.com/maps/api/js?key=&libraries=drawing&callback=initMap"
     async defer></script>
 
 

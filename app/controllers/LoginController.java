@@ -12,7 +12,7 @@ import play.data.FormFactory;
 import play.mvc.Http;
 import play.mvc.Result;
 import utilities.UtilityFunctions;
-import views.html.users.loginpage.loginPage;
+import views.html.users.loginpage.*;
 
 import javax.inject.Inject;
 
@@ -74,7 +74,6 @@ public class LoginController {
                 UserAccessor.getById(Integer.parseInt(userId)).getCommandManager().resetUndoRedoStack();
                 return redirect(routes.HomeController.mainMapPage())
                            .addingToSession(request, "connected", userId);
-
             }
 
         }

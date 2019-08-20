@@ -8,7 +8,9 @@ import org.slf4j.Logger;
 import utilities.UtilityFunctions;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * A class to handle interactions with  the database involving the Destination class.
@@ -111,7 +113,7 @@ public class DestinationFactory {
     public DestinationFormData makeDestinationFormData(Destination dest) {
         return new DestinationFormData(dest.getDestName(), dest.getDestType(),
                 dest.getDistrict(), dest.getCountry(), dest.getLatitude(),
-                dest.getLongitude());
+                dest.getLongitude(), null);
     }
 
     /**
@@ -162,6 +164,17 @@ public class DestinationFactory {
             }
         }
         media.removeAll(photosToRemove);
+    }
+
+    public Set<Tag> changedTags(Destination newDestination, int oldDestinationId) {
+        Destination oldDestination = DestinationAccessor.getDestinationById(oldDestinationId);
+        if (oldDestination.getTags() != newDestination.getTags()) {
+            Set<Tag> newSet = new HashSet<>();
+            newSet.addAll(newDestination.getTags());
+            newSet.addAll(oldDestination.getTags());
+            return newSet;
+        }
+        return oldDestination.getTags();
     }
 
     /**

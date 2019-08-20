@@ -146,7 +146,7 @@ public class DeleteAlbumCommandTest extends BaseTestWithApplicationAndDatabase {
         album = user.getAlbums().get(2);
 
         assert (album != null);
-        System.out.println(album.getMedia().size());
+
         assert (album.getMedia().size() == 3);
 
     }

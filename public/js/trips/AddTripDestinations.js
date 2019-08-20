@@ -23,3 +23,37 @@ function sendDeleteTripRequest(tripId, homeURL){
         }
     })
 }
+
+function sendTripTags(tripId) {
+    toAddTagList = Array.from(toAddTagList);
+    let toAddTagString = "";
+    for (var i = 0; i < toAddTagList.length; i++) {
+        toAddTagString += toAddTagList[i] + ",";
+    }
+    if (toAddTagString.length > 0) {
+        toAddTagString = toAddTagString.substring(0, toAddTagString.length - 1);
+    }
+
+    const token =  $('input[name="csrfToken"]').attr('value');
+    $.ajaxSetup({
+        beforeSend: function(xhr) {
+            xhr.setRequestHeader('Csrf-Token', token);
+        }
+    });
+    $.ajax({
+        url: '/trips/' + tripId + '/tags',
+        method: "PUT",
+        data: JSON.stringify({
+            tag: toAddTagString
+        }),
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        success: function(res) {
+            console.log(res)
+        },
+        error: function(res) {
+            console.log(res)
+        }
+    });
+}

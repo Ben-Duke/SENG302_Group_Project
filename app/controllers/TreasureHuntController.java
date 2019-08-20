@@ -1,5 +1,4 @@
 package controllers;
-
 import accessors.TreasureHuntAccessor;
 import factories.TreasureHuntFactory;
 import formdata.TreasureHuntFormData;

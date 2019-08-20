@@ -55,6 +55,8 @@ public class DeleteDestinationCommand extends UndoableCommand {
             deletedAlbums.add(new Album(album));
             AlbumAccessor.delete(album);
         }
+        destination.getTags().clear();
+        destination.update();
         DestinationAccessor.delete(destination);
     }
 

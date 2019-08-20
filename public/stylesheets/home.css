@@ -16,6 +16,14 @@
     width: 500px;
 }
 
+#photoAlbumMessage {
+    color: red;
+}
+
+#profileAlbumMessage {
+    color: red;
+}
+
 .carousel-indicators li {
     display: inline-block;
     width: 24px;

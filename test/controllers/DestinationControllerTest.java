@@ -912,7 +912,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
         Destination destination = Destination.find().byId(destId);
 
         assertEquals(303, result.status());
-        System.out.println(destination.getDestName());
+
         assert(destination.getDestName().equals("Test Dest2"));
         assert(destination.getDestType().equals("Town2"));
         assert(destination.getDistrict().equals("Test District2"));
@@ -1453,7 +1453,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
     }
 
     @Test
-    @Ignore
+
     public void checkRemoveTag(){
         Destination destination;
         destination = new Destination

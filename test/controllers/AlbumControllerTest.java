@@ -871,7 +871,7 @@ public class AlbumControllerTest extends BaseTestWithApplicationAndDatabase {
         Result result = route(app, request);
 
         JsonNode jsonJacksonArray = play.libs.Json.parse(contentAsString(result));
-        System.out.println(jsonJacksonArray);
+
         assertEquals(1, jsonJacksonArray.size());
     }
 

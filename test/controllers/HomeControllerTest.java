@@ -12,6 +12,7 @@ import models.*;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
 import play.Application;
 import play.api.test.CSRFTokenHelper;
 import play.db.Database;
@@ -52,6 +53,8 @@ import static play.mvc.Http.Status.UNAUTHORIZED;
 import static play.test.Helpers.*;
 
 public class HomeControllerTest extends BaseTestWithApplicationAndDatabase {
+
+    Logger logger = UtilityFunctions.getLogger();
 
     /**
      * Test to render home with no login session
@@ -130,18 +133,21 @@ public class HomeControllerTest extends BaseTestWithApplicationAndDatabase {
         createUser();
         File file = getFile(Paths.get(".").toAbsolutePath().normalize().toString() + "/test/resources/imagetest.png");
         Http.MultipartFormData.Part<Source<ByteString, ?>> part = new Http.MultipartFormData.FilePart<>("picture", "imagetest.png", "image/png", FileIO.fromPath(file.toPath()), Files.size(file.toPath()));
-        Http.MultipartFormData.DataPart part1 = new Http.MultipartFormData.DataPart("Album Search", "album1");
+        Http.MultipartFormData.DataPart part1 = new Http.MultipartFormData.DataPart("private", "false");
+        Http.MultipartFormData.DataPart part2 = new Http.MultipartFormData.DataPart("album", "album1");
         List formData = new ArrayList<>();
         formData.add(part);
         formData.add(part1);
+        formData.add(part2);
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(POST)
-                .uri("/users/home").session("connected", "2")
+                .uri("/users/home/photo").session("connected", "2")
                 .bodyRaw(formData,
                         play.libs.Files.singletonTemporaryFileCreator(),
                         app.asScala().materializer());
         CSRFTokenHelper.addCSRFToken(request);
         Result result = route(app, request);
+
         assertEquals(SEE_OTHER, result.status());
     }
 
@@ -469,14 +475,14 @@ public class HomeControllerTest extends BaseTestWithApplicationAndDatabase {
         user3.save();
     }
 
-    public String convertResultFileToString(Result result){
+    private String convertResultFileToString(Result result){
         ActorSystem actorSystem = ActorSystem.create("TestSystem");
         try {
             Materializer mat = ActorMaterializer.create(actorSystem);
             String contentAsString = Helpers.contentAsString(result, mat);
             return contentAsString;
         } catch (Exception e){
-            e.printStackTrace();
+            logger.error(e.toString());
             fail();
         }
         finally {
@@ -484,7 +490,7 @@ public class HomeControllerTest extends BaseTestWithApplicationAndDatabase {
             try {
                 Await.result(future, Duration.create("5s"));
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error(e.toString());
                 fail();
             }
         }

@@ -1,5 +1,6 @@
 package accessors;
 
+import models.Tag;
 import models.User;
 import models.UserPhoto;
 
@@ -27,6 +28,11 @@ public class UserPhotoAccessor {
      */
     public static void delete(UserPhoto userPhoto) {
         try {
+            for(Tag tag : userPhoto.getTags()){
+                userPhoto.removeTag(tag);
+                TagAccessor.update(tag);
+            }
+
             userPhoto.delete();
             userPhoto.update();
         } catch (Exception e) { }

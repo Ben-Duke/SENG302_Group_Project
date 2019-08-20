@@ -7,6 +7,15 @@ let selectedMediaID_GLOBAL;
 
 moveAlbumSearch();
 
+// Add event listener for closing the modal on clicking outside of it
+document.getElementById('myModal').addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    e.stopImmediatePropagation();
+    if (e.target === document.getElementById('myModal')) {
+        closeModal()
+    }
+});
 
 function moveAlbumSearch() {
 
@@ -178,9 +187,7 @@ function setSlideListeners(i) {
             setMakeProfilePictureListener(albumData, i);
             const mediaId = albumData[i]["mediaId"];
             const caption = albumData[i]["caption"];
-            const tagList = document.getElementById("tag-list");
-            tagList.setAttribute("data-taggableId", mediaId);
-            tagList.dispatchEvent(new Event('tagChange'));
+            changeTaggableModel(mediaId, "photo");
             if (caption != "") {
                 document.querySelector('div[data-mediaId="'+mediaId+'"] [contenteditable]').innerHTML = caption.toString();
             } else {
@@ -239,7 +246,6 @@ function getAlbum(userId, albumId, isOwner){
         contentType: 'application/json',
         success: (albumData) => {
             addAlbum(albumData, userId);
-            console.log(albumData);
         }
     });
 }
@@ -321,7 +327,7 @@ async function displaySlides(i, albumData, path) {
     figureCaption.appendChild(captionInput);
     figure.appendChild(figureCaption);
     mySlidesDiv.appendChild(figure);
-    //mySlidesDiv.appendChild(captionInput);
+
     lightBox.appendChild(mySlidesDiv);
     var content = document.querySelector('div[data-mediaId="'+mediaId+'"] [contenteditable]');
     // 1. Listen for changes of the contenteditable element
@@ -364,7 +370,6 @@ function okDefault(album) {
 
 // Open the Modal
 function deleteAlbum(albumId) {
-    console.log(albumId);
     var url = '/users/albums/delete/' + albumId;
     var token = $('input[name="csrfToken"]').attr('value');
     $.ajaxSetup({
@@ -379,7 +384,7 @@ function deleteAlbum(albumId) {
             'Content-Type': 'application/json'
         },
         success: function() {
-            window.location.replace('/users/albums')
+            window.location = '/users/albums'
         }
     });
 }
@@ -587,17 +592,18 @@ function showSlides(n) {
     for (i = 0; i < slides.length; i++) {
         slides[i].style.display = "none";
     }
-    slides[slideIndex-1].style.display = "inline-block";
-    const privacyBtn = document.getElementById("privacyBtn")
-    if (privacyBtn != null) {
-        if (slides[slideIndex - 1].getAttribute("data-privacy") === "true") {
-            document.getElementById("privacyBtn").innerHTML = "Make Private";
-        } else if (slides[slideIndex - 1].getAttribute("data-privacy") === "false") {
-            document.getElementById("privacyBtn").innerHTML = "Make Public";
+    if(slides[slideIndex-1] !== undefined) {
+        slides[slideIndex-1].style.display = "inline-block";
+        const privacyBtn = document.getElementById("privacyBtn")
+        if (privacyBtn != null) {
+            if (slides[slideIndex - 1].getAttribute("data-privacy") === "true") {
+                document.getElementById("privacyBtn").innerHTML = "Make Private";
+            } else if (slides[slideIndex - 1].getAttribute("data-privacy") === "false") {
+                document.getElementById("privacyBtn").innerHTML = "Make Public";
+            }
         }
+        setSlideListeners(slideIndex-1);
     }
-    setSlideListeners(slideIndex-1);
-
 }
 
 
@@ -882,6 +888,7 @@ function submitEditCaption(caption, photoId) {
         },
         success:function(){
             console.log("caption edited");
+            document.getElementById('undoButton').classList.remove('disabled');
         },
         error: function(xhr, textStatus, errorThrown){
             console.log(xhr.status + " " + textStatus + " " + errorThrown);
@@ -1028,11 +1035,6 @@ function deleteAndUnlinkPhoto() {
             showImageUnlinkalert();
         }
     });
-
-
-
-
-
 }
 
 /* When the user clicks on the button,
@@ -1041,11 +1043,11 @@ function openDropdown() {
     document.getElementById("optionsDropdown").classList.toggle("show");
 }
 
+
 // Close the dropdown menu if the user clicks outside of it
 window.onclick = function(event) {
     if (!event.target.matches('.dropbtn')) {
         var openDropdown = document.getElementsByClassName("optionsDropdown");
-        console.log(openDropdown);
         if (openDropdown.classList !== undefined) {
             if (openDropdown.classList.contains('show')) {
                 openDropdown.classList.remove('show');
@@ -1053,4 +1055,40 @@ window.onclick = function(event) {
         }
     }
 
-}
+};
+
+$('#photo-upload').click(function (eve){
+    let searchBar = document.getElementById("album-search-photo");
+    let albumId = searchBar.getAttribute("data-albumId");
+    let privateInput = document.getElementById("private").checked;
+    let filePath = document.getElementById("photoUpload");
+    if (searchBar.value === null || searchBar.value === "") {
+        document.getElementById("photoAlbumMessage").style.display = "block";
+    } else {
+        var formData = new FormData();
+        formData.append('picture', filePath.files[0]);
+        formData.append('private', privateInput);
+        console.log(searchBar.value);
+        formData.append('album', searchBar.value);
+        var token = $('input[name="csrfToken"]').attr('value');
+        $.ajaxSetup({
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader('Csrf-Token', token);
+            }
+        });
+        $.ajax({
+            type: 'POST',
+            processData: false,
+            contentType: false,
+            url: '/users/home/photo',
+            data: formData,
+            success: function (data, textStatus, xhr) {
+                if (xhr.status == 200) {
+                    window.location = ('/users/albums/' + albumId)
+                } else {
+                    window.location = ('/users/albums/' + albumId)
+                }
+            }
+        })
+    }
+});

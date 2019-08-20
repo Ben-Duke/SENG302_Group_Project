@@ -55,7 +55,7 @@ public class UserControllerTest extends BaseTestWithApplicationAndDatabase {
     }
 
     @Test
-    @Ignore
+
     public void checkAddTag(){
         UserPhoto userPhoto = new UserPhoto
                 ("",true,true, new User());
@@ -64,7 +64,7 @@ public class UserControllerTest extends BaseTestWithApplicationAndDatabase {
     }
 
     @Test
-    @Ignore
+
     public void checkAddingSameTag(){
         UserPhoto userPhoto = new UserPhoto
                 ("",true,true, new User());

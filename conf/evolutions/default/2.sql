@@ -295,7 +295,7 @@ INSERT INTO `admin` (`user_id`, `user_id_to_edit`, `is_default`) VALUES
 INSERT INTO `destination` (`destid`, `user`, `is_public`, `dest_name`, `dest_type`, `district`, `country`,
                            `is_country_valid`, `latitude`, `longitude`, `dest_is_public`, `primary_photo_media_id`) VALUES
 (1, 2, 0, 'Christchurch', 'Town', 'Canterbury', 'New Zealand', 1, -43.5321, 172.6362, 1, NULL),
-(2, 2, 0, 'Wellington', 'Town', 'Wellington', 'New Zealand', 1, -41.2866, 174.7756, 0, NULL),
+(2, 2, 0, 'Wellington', 'Town', 'Wellington', 'New Zealand', 1, -41.2866, 174.7756, 1, NULL),
 (3, 2, 0, 'The Wok', 'Cafe/Restaurant', 'Canterbury', 'New Zealand', 1, -43.523593, 172.582971, 1, NULL),
 (4, 3, 0, 'Hanmer Springs Thermal Pools', 'Attraction', 'North Canterbury', 'New Zealand', 1, -42.522791, 172.828944, 1, NULL),
 (5, 3, 0, 'Le Mans 24 hour race', 'Event', 'Le Mans', 'France', 1, 47.956221, 0.207828, 0, NULL),
@@ -304,33 +304,44 @@ INSERT INTO `destination` (`destid`, `user`, `is_public`, `dest_name`, `dest_typ
 (8, 4, 0, 'Vatican City', 'Country', 'Rome', 'Vatican City', 0, 41.903133, 12.454341, 0, NULL),
 (9, 4, 0, 'Lincoln Memorial', 'Monument', 'Washington DC', 'United States', 0, 38.889406, -77.050155, 1, NULL),
 (10, 2, 1, 'Auckland', 'Town', 'Northland', 'New Zealand', 1, -36.857977621977284, 174.76421311439333, 1, NULL),
-(11, 2, 1, 'Dunedin', 'Town', 'Otago', 'New Zealand', 1, -45.8933166311672, 170.50647588515426, 0, NULL),
+(11, 2, 1, 'Dunedin', 'Town', 'Otago', 'New Zealand', 1, -45.8933166311672, 170.50647588515426, 1, NULL),
 (12, 2, 1, 'Bluff', 'Town', 'Southland', 'New Zealand', 1, -46.60075957529487, 168.34655027490953, 1, NULL),
-(13, 2, 1, 'Wanaka', 'Town', 'Queenstown Lakes', 'New Zealand', 1, -44.703242638828584, 169.1327502437765, 0, NULL),
-(14, 2, 1, 'Masterton', 'Town', 'Wairarapa', 'New Zealand', 1, -40.9549210178137, 175.6605914889867, 0, NULL),
+(13, 2, 1, 'Wanaka', 'Town', 'Queenstown Lakes', 'New Zealand', 1, -44.703242638828584, 169.1327502437765, 1, NULL),
+(14, 2, 1, 'Masterton', 'Town', 'Wairarapa', 'New Zealand', 1, -40.9549210178137, 175.6605914889867, 1, NULL),
 (15, 2, 1, 'Castlepoint', 'Town', 'Wairarapa', 'New Zealand', 1, -40.91199513908064, 176.2265855109639, 0, NULL),
 (16, 2, 1, 'Sydney', 'Town', 'New South Wales', 'New Zealand', 1, -33.918608452325465, 151.22067000223797, 1, NULL),
 (17, 2, 1, 'Gisborne', 'Town', 'Hawke''s Bay', 'New Zealand', 1, -38.64201030447191, 178.05072585611822, 0, NULL),
-(18, 2, 1, 'Lake Pukaki', 'Attraction', 'MacKenzie District', 'New Zealand', 1, -44.190364079904214, 170.1398079316018, 0, NULL),
-(19, 2, 1, 'Queenstown', 'Town', 'Queenstown Lakes', 'New Zealand', 1, -45.04401028410226, 168.70883298914157, 0, NULL),
-(20, 2, 1, 'Cromwell', 'Town', 'Central Otago', 'New Zealand', 1, -45.057368951338255, 169.22068037212568, 0, NULL);
+(18, 2, 1, 'Lake Pukaki', 'Attraction', 'MacKenzie District', 'New Zealand', 1, -44.190364079904214, 170.1398079316018, 1, NULL),
+(19, 2, 1, 'Queenstown', 'Town', 'Queenstown Lakes', 'New Zealand', 1, -45.04401028410226, 168.70883298914157, 1, NULL),
+(20, 2, 1, 'Cromwell', 'Town', 'Central Otago', 'New Zealand', 1, -45.057368951338255, 169.22068037212568, 1, NULL);
 
 
 -- Albums
-INSERT INTO `album`(`album_id`, `user`, `destination`, `primary_photo_media_id`, `is_default`, `title`) VALUES
-(1, 1, null, null, true,'Default'),
-(2, 2, null, null, true,'Default'),
-(3, 3, null, null, true,'Default'),
-(4, 4, null, null, true,'Default'),
-(5, null, 1, null, null,'Christchurch'),
-(6, null, 2, null, null,'Wellington'),
-(7, null, 3, null, null,'The Wok'),
-(8, null, 4, null, null,'Hanmer Springs Thermal Pools'),
-(9, null, 5, null, null,'Le Mans 24 hour race'),
-(10, null, 6, null, null,'Great Pyramid of Giza'),
-(11, null, 7, null, null,'Niagara Falls'),
-(12, null, 8, null, null,'Vatican City'),
-(13, null, 9, null, null,'Lincoln Memorial');
+INSERT INTO `album` (`album_id`, `user`, `destination`, `primary_photo_media_id`, `is_default`, `title`) VALUES
+(1, 1, NULL, NULL, 1, 'Default'),
+(2, 2, NULL, NULL, 1, 'Default'),
+(3, 3, NULL, NULL, 1, 'Default'),
+(4, 4, NULL, NULL, 1, 'Default'),
+(5, NULL, 1, NULL, NULL, 'Christchurch'),
+(6, NULL, 2, NULL, NULL, 'Wellington'),
+(7, NULL, 3, NULL, NULL, 'The Wok'),
+(8, NULL, 4, NULL, NULL, 'Hanmer Springs Thermal Pools'),
+(9, NULL, 5, NULL, NULL, 'Le Mans 24 hour race'),
+(10, NULL, 6, NULL, NULL, 'Great Pyramid of Giza'),
+(11, NULL, 7, NULL, NULL, 'Niagara Falls'),
+(12, NULL, 8, NULL, NULL, 'Vatican City'),
+(13, NULL, 9, NULL, NULL, 'Lincoln Memorial'),
+(30, NULL, 19, NULL, 0, 'Queenstown'),
+(31, NULL, 20, NULL, 0, 'Cromwell'),
+(32, NULL, 10, NULL, 0, 'Auckland'),
+(33, NULL, 11, NULL, 0, 'Dunedin'),
+(34, NULL, 12, NULL, 0, 'Bluff'),
+(35, NULL, 13, NULL, 0, 'Wanaka'),
+(36, NULL, 14, NULL, 0, 'Masterton'),
+(37, NULL, 15, NULL, 0, 'Castlepoint'),
+(38, NULL, 16, NULL, 0, 'Sydney'),
+(39, NULL, 17, NULL, 0, 'Gisborne'),
+(40, NULL, 18, NULL, 0, 'Lake Pukaki');
 
 
 -- Traveller Types

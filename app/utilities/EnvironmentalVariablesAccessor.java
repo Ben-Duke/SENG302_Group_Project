@@ -1,6 +1,7 @@
 package utilities;
 
 import jdk.nashorn.internal.runtime.ParserException;
+import org.slf4j.Logger;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -14,6 +15,11 @@ import java.util.*;
  * A Class to read the .env file in the root directory and get important data from it.
  */
 public class EnvironmentalVariablesAccessor {
+    private static EnvironmentalVariablesAccessor envAccessor = null;
+    private static AbstractMap<String, String> envVariablesMap = null;
+
+    private static final Logger logger = UtilityFunctions.getLogger();
+
     private FileReader envFileReader;
     private String envFileDelimiter;
     private char commentSymbol;
@@ -24,10 +30,90 @@ public class EnvironmentalVariablesAccessor {
      * @throws FileNotFoundException Thrown if the ".env" file does not exist in
      *         the projects root folder.
      */
-    public EnvironmentalVariablesAccessor() throws FileNotFoundException {
+    private EnvironmentalVariablesAccessor() throws FileNotFoundException {
         this.envFileReader = new FileReader(".env");
         this.envFileDelimiter = "=";
         this.commentSymbol = '#';
+    }
+
+    /**
+     * Gets the singleton instance of the EnvironmentalVariableAccessor.
+     *
+     * @return The EnvironmentalVariableAccessor singleton object.
+     * @throws FileNotFoundException If the ".env" file does not exist in the project root.
+     */
+    private static EnvironmentalVariablesAccessor getInstance() throws FileNotFoundException {
+        if (envAccessor == null) {
+            envAccessor = new EnvironmentalVariablesAccessor();
+        }
+
+        return envAccessor;
+    }
+
+    /**
+     * Gets the singleton instance of the Environmental variable map.
+     *
+     * @return A AbstractMap<String, String> containing all env variables, or null
+     * if they cant be loaded.
+     */
+    private static AbstractMap<String, String> getEnvVariables() {
+        if (envVariablesMap == null) {
+            EnvironmentalVariablesAccessor envAccessor = null;
+            try {
+                envAccessor = EnvironmentalVariablesAccessor.getInstance();
+            } catch (FileNotFoundException e) {
+                logger.error("'.env' file not found.");
+            }
+
+            List<String> lines = null;
+            if (envAccessor != null) {
+                try {
+                    lines = envAccessor.getLinesEnvFile();
+                } catch (IOException e) {
+                    logger.error("Error reading from '.env' file.");
+                }
+            }
+
+            AbstractMap<String, String> envVariables = null;
+            if (lines != null) {
+                try {
+                    envVariables = envAccessor.getParsedKeyValuePairs(lines);
+                } catch (ParserException e) {
+                    logger.error("Some line does not match \"*=*\" regex.");
+                }
+            }
+
+            if (envVariables == null) {
+                logger.error("Some error occurred parsing .env lines.");
+            }
+
+            envVariablesMap = envVariables;
+        }
+
+        return envVariablesMap;
+    }
+
+    /**
+     * Gets an environmental variable.
+     *
+     * @param key A String representing the key to look for in the .env file.
+     * @return A String representing the env variable, or null if not found.
+     */
+    public static String getEnvVariable(String key) {
+        AbstractMap<String, String> envVariables = null;
+
+        try {
+            envVariables = EnvironmentalVariablesAccessor.getEnvVariables();
+        } catch (ParserException e) {
+            logger.error("Parse exception in .env file.");
+        }
+
+        if (envVariables == null) {
+            logger.error("Error getting env variable.");
+            return null;
+        } else {
+            return envVariables.get(key);
+        }
     }
 
     /**
@@ -99,37 +185,7 @@ public class EnvironmentalVariablesAccessor {
     }
 
     public static void main(String[] args) {
-        EnvironmentalVariablesAccessor envAccessor = null;
-        try {
-            envAccessor = new EnvironmentalVariablesAccessor();
-        } catch (FileNotFoundException e) {
-            System.out.println("File does not exist.");
-        }
-
-        List<String> lines = null;
-        if (envAccessor != null) {
-            try {
-                lines = envAccessor.getLinesEnvFile();
-            } catch (IOException e) {
-                System.out.println("Error reading .env file.");
-            }
-        }
-
-        AbstractMap<String, String> envVariables = null;
-        if (lines != null) {
-            try {
-                envVariables = envAccessor.getParsedKeyValuePairs(lines);
-            } catch (ParserException e) {
-                System.out.println("Some line does not match \"*=*\" regex.");
-            }
-        }
-
-        if (envVariables != null) {
-            for (String key: envVariables.keySet()) {
-                System.out.println("key: " + key + ", value: " + envVariables.get(key));
-            }
-        } else {
-            System.out.println("Some error occurred parsing .env lines.");
-        }
+        System.out.println("google api key=" +
+                EnvironmentalVariablesAccessor.getEnvVariable("GOOGLE_MAPS_API_KEY"));
     }
 }

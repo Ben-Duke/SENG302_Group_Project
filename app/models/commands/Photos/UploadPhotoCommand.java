@@ -50,7 +50,7 @@ public class UploadPhotoCommand extends UndoableCommand {
     }
 
     public UploadPhotoCommand(UserPhoto photo, Files.TemporaryFile fileObject, User user, String albumName, Set<Tag> tags) {
-        super(CommandPage.HOME);
+        super(CommandPage.ALBUM);
         this.user = user;
         this.userPhoto = photo;
         this.fileObject = fileObject;

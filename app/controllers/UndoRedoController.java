@@ -33,7 +33,6 @@ public class UndoRedoController extends Controller {
             return noContent();
         }
         String result = commandManager.undo();
-
         return ok(result);
     }
 

@@ -18,7 +18,7 @@ public class AddMediaToAlbumCommand extends UndoableCommand {
     private List<Media> savedMediaList;
 
     public AddMediaToAlbumCommand(Album album, List<Media> medias) {
-        super(CommandPage.HOME);
+        super(CommandPage.ALBUM);
         this.album = album;
         this.medias = medias;
     }

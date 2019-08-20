@@ -222,18 +222,7 @@
                 </div>
             </div>
 
-            <br>
-            Tags:
-            <br>
-            <br>
-            <div id="tag-line">
-            @for(tag <- destination.getTags()){
-                <button onclick="location.href= '/tags/display/@tag.getName().toLowerCase()'" class="tag">@tag.getName()</button>
-            }
-            </div>
-            <br>
-            <br>
-
+@*            Tag Editor *@
             @if(destination.isUserOwner(user) || user.userIsAdmin()) {
                 <div class="row">
                     @users.tag.createSearchTags(user, "destination", destination.getDestId())
@@ -242,7 +231,6 @@
             <a class="btn btn-primary" href="@routes.DestinationController.editDestination(destination.getDestId())" role="button">
                 Edit
             </a>
-
         }
 
         </div>

@@ -3,7 +3,6 @@ var toAddTagList = new Set();
 let taggableId;
 let taggableType;
 
-
 initialise();
 
 function initialise() {
@@ -96,6 +95,8 @@ function sendGetTagsRequest() {
  * Adds listeners to the search bar to search the database and redirect to tags page if needed
  */
 function addTagAddTagListeners() {
+    const allowedQuotes = ['"', '\''];      // the characters which a multi-word tag can be enclosed in
+
     const addInput = document.getElementById("tag-add");
     const addList = document.getElementById("tag-add-results");
     document.getElementById('tag-list').addEventListener('tagChange', updateExistingTagLabels);
@@ -105,8 +106,8 @@ function addTagAddTagListeners() {
             // then this is a selection, not user input
             addTag(addInput.value);
 
-        } else if (e.data === ' ' || e.data === '"') {
-            extractAndAddTag(addInput.value)
+        } else if (e.data === ' ' || allowedQuotes.includes(e.data)) {
+            extractAndAddTag(addInput.value, allowedQuotes)
         }
         while (addList.firstChild) {
             addList.removeChild(addList.firstChild);
@@ -118,7 +119,7 @@ function addTagAddTagListeners() {
     });
     addInput.addEventListener('keyup', e => {
         if (e.key === 'Enter') {
-            extractAndAddTag(addInput.value);
+            extractAndAddTag(addInput.value, allowedQuotes);
         }
     });
 }
@@ -126,25 +127,29 @@ function addTagAddTagListeners() {
 /**
  * Extracts the tag name from user input and adds the tag to the database
  * @param inputVal the user inputted data
+ * @param allowedQuotes list of legal enclosing characters for a multi-word tag
  */
-function extractAndAddTag(inputVal) {
+function extractAndAddTag(inputVal, allowedQuotes) {
     inputVal = inputVal.trim(); //Take off white space
 
-    let numOfQuotes = (inputVal.match(/"/g) || []).length;
+    // Get type of quote used (first character
+    const firstChar = inputVal[0];  // will be undefined for empty input
 
-    if (numOfQuotes === 0) {
+    if (!allowedQuotes.includes(firstChar)) { // one word tag
         addTag(inputVal);
-    } else if (numOfQuotes === 2) {
-        inputVal = inputVal.replace(/"/g, ""); //Takes of quotes
+    } else {    // starts with a quote
+        // check if the input ends with the same quote it started with
+        if (!inputVal.endsWith(firstChar)) {
+            return  // enclosing quotes do not match
+        }
 
-        console.log(inputVal);
+        // remove quotes and add tag
+        inputVal = inputVal.slice(1, inputVal.length - 1);  // remove the first and last chars (the quotes)
 
         let words = inputVal.split(" ");
-
-
         let tag = "";
+
         for (let word of words) {
-            console.log(word.length + " " + word);
             if (word) {
                 tag += word + ' ';
             }

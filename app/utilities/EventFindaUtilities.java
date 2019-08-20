@@ -41,7 +41,6 @@ public class EventFindaUtilities {
      */
     private static JsonNode eventFindaGetResponse(String targetUrl) {
         try {
-            targetUrl = URLDecoder.decode(targetUrl, "UTF-8");
             String url = "https://api.eventfinda.co.nz/v2/" + targetUrl;
             URL obj = new URL(url);
             HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -98,9 +97,9 @@ public class EventFindaUtilities {
 
     public static JsonNode getEvents(String keyword, String category, String artist, String startDate,
                                      String endDate, String minPrice, String maxPrice,
-                                     Destination destination, String sortBy) {
+                                     Destination destination, String sortBy, Integer offset) {
 
-        int locationId = getLocationId(-43.53, 172.620278, "Christchurch");
+        int locationId = getLocationId(-43.53, 172.620278, "");
         if (locationId == -1) {
             return null;
         }
@@ -133,6 +132,8 @@ public class EventFindaUtilities {
         }
         if (!keyword.isEmpty()) {
             url = addKeyWordFilterToQuery(url, keyword);
+        }if (offset != null) {
+            url += "&offset="+offset;
         }
         return eventFindaGetResponse(url);
     }
@@ -152,6 +153,7 @@ public class EventFindaUtilities {
      */
     public static String addKeyWordFilterToQuery(String currentQuery, String keywords){
         String updatedQuery = currentQuery;
+        keywords = keywords.trim();
         try {
             keywords = URLDecoder.decode(keywords, "UTF-8");
         } catch (UnsupportedEncodingException e) {

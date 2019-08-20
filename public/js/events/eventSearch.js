@@ -1,6 +1,7 @@
 
-function searchEvents() {
+function searchEvents(pageNum) {
 
+    const offset = (pageNum-1)*20;
     let keyword = document.getElementById('keyword-search-input').value;
     let category = document.getElementById('category-search-input').value;
     let artist = document.getElementById('artist-search-input').value;
@@ -35,6 +36,7 @@ function searchEvents() {
     url += "&maxPrice=" + query.maxPrice;
     url += "&destination=" + query.destination;
     url += "&sortBy=" + query.sortBy;
+    url += "&offset=" + offset;
 
 
     // POST to server using $.post or $.ajax
@@ -43,7 +45,7 @@ function searchEvents() {
         url: url,
         success: function (data) {
             console.log(data);
-            getEventsFromApiResponse(data);
+            getEventsFromApiResponse(data, url, pageNum);
             // createEventsResultsElements(data);
 
         }

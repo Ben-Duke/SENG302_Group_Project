@@ -751,5 +751,22 @@ public class TripControllerTest extends BaseTestWithApplicationAndDatabase {
         Result result = route(app, request);
         assertEquals(OK, result.status());
     }
+    
+    @Test
+    public void getTripPhoto() {
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/trips/2/tripPicture").session("connected", "1");
+        Result result = route(app, request);
+        assertEquals(OK, result.status());
+    }
 
+    @Test
+    public void getTripPhotoNotFound() {
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/trips/15/tripPicture").session("connected", "1");
+        Result result = route(app, request);
+        assertEquals(NOT_FOUND, result.status());
+    }
 }

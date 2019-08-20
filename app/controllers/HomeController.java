@@ -286,8 +286,13 @@ public class HomeController {
         }
     }
 
-    public Result getGenericProfileImage(Http.Request request){
-        return ok((new File("public/images/Generic.png")).getPath());
+    /**
+     * Get a placeholder image
+     * @param request
+     * @return
+     */
+    public Result getPlaceholderImage(Http.Request request, String filename){
+        return ok(new File(ApplicationManager.getDefaultDestinationPhotoFullURL()));
     }
 
     /**

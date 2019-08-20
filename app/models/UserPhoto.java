@@ -7,7 +7,7 @@ import io.ebean.Model;
 
 import javax.persistence.*;
 import java.nio.file.Paths;
-import java.util.List;
+import java.util.*;
 
 /**
  * A class to hold information a user photograph.
@@ -92,6 +92,10 @@ public class UserPhoto extends Media {
         return this.isProfile;
     }
 
+    public boolean getIsPhotoPublic(){
+        return this.isPublic;
+    }
+
     public boolean getIsProfilePhoto(){
         return this.isProfile;
     }
@@ -150,6 +154,7 @@ public class UserPhoto extends Media {
     public void setProfile(boolean isProfile) {
         this.isProfile = isProfile;
     }
+
 
 
     /**

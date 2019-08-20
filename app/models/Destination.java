@@ -11,7 +11,7 @@ import javax.persistence.*;
 import java.util.*;
 
 @Entity
-public class Destination extends BaseModel implements AlbumOwner, MediaOwner  {
+public class Destination extends TaggableModel implements AlbumOwner, MediaOwner  {
 
     @Id
     private Integer destid;
@@ -231,6 +231,7 @@ public class Destination extends BaseModel implements AlbumOwner, MediaOwner  {
                 ", visits=" + visits +
                 ", albums=" + albums +
                 ", travellerTypes=" + travellerTypes +
+                ", tags=" + tags +
                 '}';
     }
 
@@ -367,6 +368,7 @@ public class Destination extends BaseModel implements AlbumOwner, MediaOwner  {
         this.latitude = newDestination.getLatitude();
         this.destType = newDestination.getDestType();
         this.travellerTypes = newDestination.getTravellerTypes();
+        this.tags = newDestination.getTags();
     }
 
     @Override

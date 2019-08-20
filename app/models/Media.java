@@ -14,7 +14,7 @@ import java.util.List;
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @Table(uniqueConstraints={@UniqueConstraint(columnNames={"url"})})
-public abstract class Media extends BaseModel {
+public abstract class Media extends TaggableModel {
 
     @Id
     public Integer mediaId;
@@ -44,6 +44,7 @@ public abstract class Media extends BaseModel {
     public Media(String url, boolean isPublic, User user, String caption) {
         this.url = url;
         this.isMediaPublic = isPublic;
+        this.isPublic = isPublic;
         this.user = user;
         this.caption = caption;
     }
@@ -51,6 +52,7 @@ public abstract class Media extends BaseModel {
     public Media(String url, boolean isPublic, User user) {
         this.url = url;
         this.isMediaPublic = isPublic;
+        this.isPublic = isPublic;
         this.user = user;
     }
 
@@ -65,14 +67,12 @@ public abstract class Media extends BaseModel {
 
     public Integer getMediaId() { return mediaId; }
     public String getUrl() { return url; }
-    public boolean getIsPublic() { return isMediaPublic; }
 
     /**
      * Required for failing test. If deleted, ViewPublicAlbum test will print:
      * java.lang.NoSuchMethodError: models.Media.getIsMediaPublic()Z
      * @return the isMediaPublic attribute
      */
-    public boolean getIsMediaPublic() { return isMediaPublic; }
     public User getUser() { return user; }
     public List<Album> getAlbums() { return albums; }
     public String getCaption() { return caption; }
@@ -146,9 +146,7 @@ public abstract class Media extends BaseModel {
     }
 
     public void setUrl(String url) {this.url = url; }
-    public void setPublic(boolean isPublic) { this.isMediaPublic = isPublic; }
     public void setCaption(String caption) { this.caption = caption; }
-    protected void setUser(User user) { this.user = user; }
 
 //    public void addAlbum(Album album) { this.albums.add(album); }
 

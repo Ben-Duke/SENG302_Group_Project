@@ -1,5 +1,9 @@
 package controllers;
 
+import models.Tag;
+import models.User;
+import models.UserPhoto;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import play.libs.Json;
@@ -8,6 +12,9 @@ import play.mvc.Result;
 import play.test.Helpers;
 import testhelpers.BaseTestWithApplicationAndDatabase;
 
+import java.rmi.server.ExportException;
+import java.util.Collection;
+import java.util.Collections;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -45,6 +52,48 @@ public class UserControllerTest extends BaseTestWithApplicationAndDatabase {
         Result result = route(app, request);
         assertEquals(OK, result.status());
         assertEquals(3, Integer.parseInt(contentAsString(result)));
+    }
+
+    @Test
+
+    public void checkAddTag(){
+        UserPhoto userPhoto = new UserPhoto
+                ("",true,true, new User());
+        userPhoto.addTag(new Tag("Test"));
+        assertEquals(1, userPhoto.getTags().size());
+    }
+
+    @Test
+
+    public void checkAddingSameTag(){
+        UserPhoto userPhoto = new UserPhoto
+                ("",true,true, new User());
+        userPhoto.addTag(new Tag("Test"));
+        userPhoto.addTag(new Tag("Test"));
+        assertEquals(1, userPhoto.getTags().size());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void checkAddingNullTag(){
+        UserPhoto userPhoto = new UserPhoto
+                ("",true,true, new User());
+        userPhoto.addTag(null);
+    }
+
+    @Test
+    public void checkRemoveTag(){
+        UserPhoto userPhoto = new UserPhoto
+                ("",true,true, new User());
+        userPhoto.addTag(new Tag("Test"));
+        userPhoto.removeTag(new Tag("Test"));
+        assertEquals(0, userPhoto.getTags().size());
+    }
+
+    @Test
+    public void checkRemoveTagOnEmptySet(){
+        UserPhoto userPhoto = new UserPhoto
+                ("",true,true, new User());
+        assertEquals(false, userPhoto.removeTag(new Tag("Test")));
     }
 
     @Test

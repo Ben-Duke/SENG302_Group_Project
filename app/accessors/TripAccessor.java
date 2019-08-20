@@ -1,5 +1,6 @@
 package accessors;
 
+import models.Tag;
 import models.Trip;
 
 import java.util.List;
@@ -27,6 +28,9 @@ public class TripAccessor {
      */
     public static List<Trip> getAllTrips() {
         return Trip.find().all();
+    }
+    public static List<Tag> getAllTags() {
+        return Tag.find.all();
     }
 
     /** Insert a trip

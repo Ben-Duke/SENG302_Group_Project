@@ -18,6 +18,7 @@ public class DestinationFormData implements Constraints.Validatable<List<Validat
     private String country;
     private String latitude;
     private String longitude;
+    private String tags;
 
 
     /** Required for form instantiation. */
@@ -25,13 +26,14 @@ public class DestinationFormData implements Constraints.Validatable<List<Validat
     }
 
     public DestinationFormData(String destName, String destType, String district,
-                               String country, Double latitude, Double longitude) {
+                               String country, Double latitude, Double longitude, String tags) {
         this.destName = destName;
         this.destType = destType;
         this.district = district;
         this.country = country;
         this.latitude = latitude.toString();
         this.longitude = longitude.toString();
+        this.tags = tags;
     }
 
     /** Constructor */
@@ -118,7 +120,6 @@ public class DestinationFormData implements Constraints.Validatable<List<Validat
             errors.add(new ValidationError("longitude",
                                     "Longitude must be between -180 and 180"));
         }
-
         return errors;
     }
 
@@ -168,5 +169,14 @@ public class DestinationFormData implements Constraints.Validatable<List<Validat
 
     public void setLongitude(String longitude) {
         this.longitude = longitude;
+    }
+
+
+    public String getTags() {
+        return tags;
+    }
+
+    public void setTags(String tags) {
+        this.tags = tags;
     }
 }

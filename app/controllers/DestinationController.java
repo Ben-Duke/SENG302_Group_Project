@@ -290,6 +290,8 @@ public class DestinationController extends Controller {
         return redirect(routes.DestinationController.viewDestination(destId));
     }
 
+
+
     /**
      * Creates a new destination object from the edit page form, checks if inputs make a valid destination.
      * then using the given destination, checks if any changes have been made. If so, a request to the admins is
@@ -545,8 +547,17 @@ public class DestinationController extends Controller {
                         return badRequest();
                     }
                 }
+
+                Form<DestinationFormData> destinationForm = formFactory.form(DestinationFormData.class).bindFromRequest();
+                newDestination.setTags(new HashSet<>());
                 newDestination.setUser(user);
                 newDestination.setCountryValid(true);
+
+                if (destinationForm.get().getTags() != null && destinationForm.get().getTags().length() > 0) {
+                    List<String> tags = Arrays.asList(destinationForm.get().getTags().split(","));
+                    Set uniqueTags = UtilityFunctions.tagLiteralsAsSet(tags);
+                    newDestination.setTags(uniqueTags);
+                }
                 newDestination.save();
                 CreateAlbumCommand cmd = new CreateAlbumCommand(
                         newDestination.getDestName(),
@@ -601,9 +612,6 @@ public class DestinationController extends Controller {
         }
         return created();
     }
-
-
-
 
 
     /** Perform form validation for the edit/create destination form

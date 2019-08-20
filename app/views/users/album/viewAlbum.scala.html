@@ -15,9 +15,6 @@
         <h2 style="margin-left: 45%"> @album.getTitle
             <a class="btn btn-default sharp pull-right" id="deleteAlbumButton" onclick= "showDeleteAlbumModal(@album.getDefault)"
                >Delete Album</a>
-            <a class="btn btn-default sharp pull-right" style="margin-right: 10px" data-toggle="modal" data-target="#addPhotoModal">
-                Add Photo &nbsp; <i class="glyphicon glyphicon-camera"></i>
-            </a>
         </h2>
     </div>
 
@@ -41,10 +38,31 @@
 
     <!-- The Modal/Lightbox -->
     <div id="myModal" class="modal" data-album="@album.getAlbumId" data-isOwner="@album.userIsOwner(user)">
-
         <div class="modal-content">
             <div id="snackbar"></div>
             <div id="lightbox-modal">
+                <div class="dropdown-options" style="text-align: right">
+                    <button onclick="openDropdown()" class="dropbtn">
+                        <h3><span class="glyphicon glyphicon-pencil"></span></h3>
+                    </button>
+                    <div class="dropdown-content" id="optionsDropdown">
+                        <a class="btn btn-link" id="profilePictureBtn" style="color: white; padding: 5px;">Set Profile Picture</a>
+                        <a class="btn btn-link" id="deletePhotoBtn" style="color: white; padding: 5px;">Delete</a>
+                        <a class="btn btn-link" id="privacyBtn" style="color: white; padding: 5px;">Make Public/Private</a>
+                        <a class="btn btn-link" id="linkDestinationBtn" style="color: white; padding: 5px;">Link Destination</a>
+                        <p style="text-align: center;">________________</p>
+                        <p style="text-align: center; font-weight: bold ">Move to Album:</p>
+                        <input style="color: #000000;" id="album-search-move" list="album-results-move"
+                        name="Album Move" title="Move Album" placeholder="Search for Album">
+                        <datalist  id="album-results-move">
+                        @for(userAlbum <- user.getAlbums()){
+                            @if(userAlbum.albumId != album.albumId) {
+                                <option value=@userAlbum.getTitle()></option>
+                            }
+                        }
+                        </datalist>
+                    </div>
+                </div>
                 <span class="close cursor" onclick="closeModal()">&times;</span>
             </div>
 
@@ -56,21 +74,21 @@
             <div id="existingAlbumId" class="hidden">@album.albumId</div>
             @if(album.getOwner == user || user.userIsAdmin) {
                 <!-- Caption text -->
+
                 <div class="caption-container">
-                    <a class="btn btn-link" id="profilePictureBtn" style="color: white; padding: 5px;">Set Profile Picture</a>
-                    <a class="btn btn-link" id="deletePhotoBtn" style="color: white; padding: 5px;">Delete</a>
-                    <a class="btn btn-link" id="privacyBtn" style="color: white; padding: 5px;">Make Public/Private</a>
-                    <a class="btn btn-link" id="linkDestinationBtn" style="color: white; padding: 5px;">Link Destination</a>
-                    <label for="album-search-move" style="color: white; padding: 5px;">Move to Album: </label>
-                    <input style="color: #000000;" id="album-search-move" list="album-results-move"
-                    name="Album Move" title="Move Album" placeholder="Search for Album">
-                    <datalist  id="album-results-move">
-                    @for(userAlbum <- user.getAlbums()){
-                        @if(userAlbum.albumId != album.albumId) {
-                            <option value=@userAlbum.getTitle()></option>
-                        }
-                    }
-                    </datalist>
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-md-3">
+
+                            </div>
+                            <div class="col-md-7">
+                                @users.tag.createSearchTags(user,"photo", null)
+                            </div>
+
+                        </div>
+
+                    </div>
+
                     <div id="imageModalAlert" class="alert alert-danger alert-dismissible hiddenDiv" role="alert">
                         <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                         <strong>SERVER ERROR:</strong> Failed to fetch unlinkable destinations.
@@ -285,42 +303,9 @@
         </div>
     </div>
 
-    <!-- Modal -->
-    <div id="addPhotoModal" class="modal fade" role="dialog">
-        <div class="modal-dialog">
-
-            <!-- Modal content-->
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h4 class="modal-title">Upload a new photo </h4>
-                </div>
-                <div class="modal-body">
-                    <input id="photoUpload" type="file" accept="image/png,image/jpeg" name="picture" required/>
-                    <br>
-                    <div>
-                        <p>
-                            Add to Album
-                            <input id="album-search-photo" name="Album Search" title="Album Search" data-albumId="@album.getAlbumId"
-                                   value="@album.getTitle" disabled>
-                        </p>
-                        <p id="photoAlbumMessage" hidden> This media must be in an Album </p>
-                    </div>
-                    <p>
-                        <input type="submit" value="Upload" id="photo-upload">
-                        <input type="checkbox" id="private" name="private" value="private" title=""> Make photo private
-                    </p>
-
-                </div>
-            </div>
-        </div>
-
-
-    </div>
-
 </body>
+
 
 <script src="@routes.Assets.at("js/cropper.min.js")" type="text/javascript"></script>
 <script src="@routes.Assets.at("js/album/albumView.js")" type="text/javascript"></script>
-
 }

@@ -10,12 +10,10 @@ import io.ebean.Finder;
 import io.ebean.Model;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 @Entity
-public class Trip extends BaseModel {
+public class Trip extends TaggableModel {
 
     @Id
     private Integer tripid;
@@ -53,6 +51,16 @@ public class Trip extends BaseModel {
         this.isPublic = trip.getIsPublic();
         this.user = trip.getUser();
         this.visits = visits;
+    }
+
+
+    public static Trip makeInstance(TripFormData formData){
+        Trip trip = new Trip();
+        trip.tripName = formData.tripName;
+        trip.user = formData.user;
+        trip.removedVisits = 0;
+        trip.visits = new ArrayList<>();
+        return trip;
     }
 
     /**
@@ -99,18 +107,8 @@ public class Trip extends BaseModel {
         return visits;
     }
 
-    public boolean getIsPublic() { return isPublic; }
-
     public void setVisits(List<Visit> visits) {
         this.visits = visits;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
     }
 
     public List<Visit> getOrderedVisits(){

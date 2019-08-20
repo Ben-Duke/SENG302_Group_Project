@@ -217,9 +217,9 @@ public class HomeController {
                     //DB saving
                     UserFactory.replaceProfilePicture(user.getUserid(), newPhoto);
                     UploadPhotoCommand uploadPhotoCommand = new UploadPhotoCommand(UserPhotoAccessor.getUserPhotoByUrl(unusedPhotoUrl), file, user,
-                            user.getFName()+"'s "+"Profile Pictures");
+                            user.getFName() + " " + user.getLName() + "'s "+"Profile Pictures");
                     uploadPhotoCommand.addUploadToAlbum(user, UserPhotoAccessor.getUserPhotoByUrl(unusedPhotoUrl),
-                            user.getFName()+"'s "+"Profile Pictures");
+                            user.getFName() + " " + user.getLName() +"'s "+"Profile Pictures");
                     return redirect(routes.HomeController.showhome());
                 }
             }

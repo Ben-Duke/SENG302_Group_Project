@@ -1,4 +1,4 @@
-getEventsData(-43.53, 172.620278, 'Christchurch', 1);
+getEventsData(-43.53, 172.620278, '', 1);
 
 function getEventsData(latitude, longitude, place, pageNum) {
 
@@ -69,10 +69,7 @@ function displayEvents(events) {
         mediaRow.appendChild(mediaBody);
         mediaRow.appendChild(document.createElement("hr"));
         document.getElementById("events-results").appendChild(mediaRow);
-        document.getElementById("events-results").style.display = "block";
-        document.getElementById("search-container").style.display = "block";
-        window.scrollTo(0, 0);
-        document.getElementById("loader").style.display = "none";
+        unLoader();
     }
 }
 
@@ -81,7 +78,7 @@ function addPagination(count, pageNum) {
     pageNumbers = [];
     latitudes = -43.53;
     longitudes = 172.620278;
-    places = 'Christchurch';
+    places = '';
     const pagination = document.createElement("ul");
     pagination.classList.add("pagination");
     for (let i=0; i < count; i+=20) {
@@ -106,20 +103,23 @@ function addPagination(count, pageNum) {
     } else {
         pageNumbers = numOfPages;
     }
-    console.log(pageNumbers);
     let item = document.createElement("li");
     pageButton = document.createElement("a");
     currentPageNum = pageNumbers[0];
     pageButton.innerText = "First";
-    pageButton.setAttribute("onClick", `getEventsData(-43.53, 172.620278, 'Christchurch', ${currentPageNum})`);
+    pageButton.setAttribute("onClick", `getEventsData(-43.53, 172.620278, '', ${currentPageNum})`);
     item.appendChild(pageButton);
     pagination.appendChild(item);
 
     item = document.createElement("li");
     pageButton = document.createElement("a");
-    currentPageNum = pageNum-1;
+    if (pageNum<2) {
+        currentPageNum = 1;
+    } else {
+        currentPageNum = pageNum-1;
+    }
     pageButton.innerText = "<";
-    pageButton.setAttribute("onClick", `getEventsData(-43.53, 172.620278, 'Christchurch', ${currentPageNum})`);
+    pageButton.setAttribute("onClick", `getEventsData(-43.53, 172.620278, '', ${currentPageNum})`);
     item.appendChild(pageButton);
     pagination.appendChild(item);
     for (let i=0; i < pageNumbers.length; i++) {
@@ -130,15 +130,20 @@ function addPagination(count, pageNum) {
         if (currentPageNum==pageNum) {
             pageButton.classList.add("active");
         }
-        pageButton.setAttribute("onClick", `getEventsData(-43.53, 172.620278, 'Christchurch', ${currentPageNum})`);
+        pageButton.setAttribute("onClick", `getEventsData(-43.53, 172.620278, '', ${currentPageNum})`);
         item.appendChild(pageButton);
         pagination.appendChild(item);
     }
     item = document.createElement("li");
     pageButton = document.createElement("a");
+    if (pageNum>numOfPages.length) {
+        currentPageNum = numOfPages.length;
+    } else {
+        currentPageNum = pageNum+1;
+    }
     currentPageNum = pageNum+1;
     pageButton.innerText = ">";
-    pageButton.setAttribute("onClick", `getEventsData(-43.53, 172.620278, 'Christchurch', ${currentPageNum})`);
+    pageButton.setAttribute("onClick", `getEventsData(-43.53, 172.620278, '', ${currentPageNum})`);
     item.appendChild(pageButton);
     pagination.appendChild(item);
     document.getElementById("events-results").appendChild(pagination);
@@ -147,14 +152,23 @@ function addPagination(count, pageNum) {
     pageButton = document.createElement("a");
     currentPageNum = numOfPages.length;
     pageButton.innerText = "Last";
-    pageButton.setAttribute("onClick", `getEventsData(-43.53, 172.620278, 'Christchurch', ${currentPageNum})`);
+    pageButton.setAttribute("onClick", `getEventsData(-43.53, 172.620278, '', ${currentPageNum})`);
     item.appendChild(pageButton);
     pagination.appendChild(item);
-    document.getElementById("events-results").appendChild(pagination);
+    document.getElementById("eventsPage").appendChild(pagination);
 }
 
 function loader() {
     document.getElementById("search-container").style.display = "none";
     document.getElementById("events-results").style.display = "none";
+    document.getElementById("eventsPage").style.display = "none";
     document.getElementById("loader").style.display = "block";
+}
+
+function unLoader() {
+    document.getElementById("events-results").style.display = "block";
+    document.getElementById("search-container").style.display = "block";
+    document.getElementById("eventsPage").style.display = "block";
+    window.scrollTo(0, 0);
+    document.getElementById("loader").style.display = "none";
 }

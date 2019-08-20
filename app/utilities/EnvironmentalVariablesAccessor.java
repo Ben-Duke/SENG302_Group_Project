@@ -148,13 +148,15 @@ public class EnvironmentalVariablesAccessor {
      * If keys are duplicated the resulting value will be the last value for that key
      * in the file.
      *
+     * Leading and trailing whitespace on each line is trimmed.
+     * Any whitespace around the equals sign is also trimmed.
+     *
+     *
      * @param rawInputLines A List<String> of input lines, that are delimited by
      *                      an equals sign.
      * @return An AbstractMap (implemented as a subclass) mapping keys to values.
-     * @throws ParserException Thrown if any line in the file does not conform to
-     *          the regex "*=*".
      */
-    private AbstractMap<String, String> getParsedKeyValuePairs(List<String> rawInputLines) throws ParserException {
+    private AbstractMap<String, String> getParsedKeyValuePairs(List<String> rawInputLines) {
         AbstractMap<String, String> environmentalVariables = new HashMap<String, String>();
 
         String key;
@@ -164,19 +166,17 @@ public class EnvironmentalVariablesAccessor {
             boolean notEmptyLine = ! line.isEmpty();
 
             if (notEmptyLine) {
+                line = line.trim();
                 boolean notCommentedOutLine = line.charAt(0) != this.commentSymbol;
 
                 if (notCommentedOutLine) {
                     List<String> delimitedLineStrings = Arrays.asList(line.split(this.envFileDelimiter));
-                    if (delimitedLineStrings.size() != 2) {
-                        throw new ParserException("ERROR: line in .env contains invalid " +
-                                "number of delimited strings: " + delimitedLineStrings.size());
+                    if (delimitedLineStrings.size() == 2) {
+                        key = delimitedLineStrings.get(0).trim();
+                        value = delimitedLineStrings.get(1).trim();
+
+                        environmentalVariables.put(key, value);
                     }
-
-                    key = delimitedLineStrings.get(0);
-                    value = delimitedLineStrings.get(1);
-
-                    environmentalVariables.put(key, value);
                 }
             }
         }
@@ -187,5 +187,13 @@ public class EnvironmentalVariablesAccessor {
     public static void main(String[] args) {
         System.out.println("google api key=" +
                 EnvironmentalVariablesAccessor.getEnvVariable("GOOGLE_MAPS_API_KEY"));
+        System.out.println("eventfinda username=" +
+                EnvironmentalVariablesAccessor.getEnvVariable("EVENTFINDA_API_KEY_USERNAME"));
+        System.out.println("eventfinda password=" +
+                EnvironmentalVariablesAccessor.getEnvVariable("EVENTFINDA_API_KEY_PASSWORD"));
+
+        System.out.println("test key=" +
+                EnvironmentalVariablesAccessor.getEnvVariable("test"));
+
     }
 }

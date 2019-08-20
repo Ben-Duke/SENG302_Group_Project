@@ -12,7 +12,8 @@ import java.util.Map;
 
 
 import com.fasterxml.jackson.databind.JsonNode;
-import org.apache.commons.lang3.tuple.Pair;
+//import org.apache.commons.lang3.tuple.Pair;
+import models.Destination;
 import org.slf4j.Logger;
 import play.libs.Json;
 
@@ -92,6 +93,41 @@ public class EventFindaUtilities {
         return eventFindaGetResponse(url);
     }
 
+    public static JsonNode getEvents(String keyword, String category, String artist, String startDate,
+                                     String endDate, String minPrice, String maxPrice, Destination destination, String sortBy) {
+
+        int locationId = getLocationId(-43.53, 172.620278, "Christchurch");
+        if (locationId == -1) {
+            return null;
+        }
+        String url = "events.json?location="+locationId+ "&rows=20" + "&offset=" + 0;
+
+        if (!category.isEmpty()) {
+            url += "&category="+category;
+        }
+        if (!artist.isEmpty()) {
+            url += "&artist="+artist;
+        }
+        if (!startDate.isEmpty()) {
+            url += "&start_date="+startDate;
+        }
+        if (!endDate.isEmpty()) {
+            url += "&end_date="+endDate;
+        }
+        if (!minPrice.isEmpty()) {
+            url += "&price_min="+minPrice;
+        }
+        if (!maxPrice.isEmpty()) {
+            url += "&price_max="+maxPrice;
+        }
+        if (!sortBy.isEmpty()) {
+            url += "&order="+sortBy;
+        }
+
+
+        return eventFindaGetResponse(url);
+    }
+
     /**
      * Gets the location id of the passed place name.
      * @param latitude
@@ -122,6 +158,12 @@ public class EventFindaUtilities {
         String url = "locations.json?point=" + latitude + "," + longitude +"&rows=20" + "&offset=" + offset + "&q=" + query;
         return eventFindaGetResponse(url);
     }
+
+    public static JsonNode getCategories() {
+        String url = "categories.json?order=name";
+        return eventFindaGetResponse(url);
+    }
+
 
     private static String addLocationFilterToQuery() {
         return null;
@@ -157,31 +199,31 @@ public class EventFindaUtilities {
      * @param freeText the free text, which is a pair of a list of a list of pairs of strings and a string.
      * @return the updated query
      */
-    private static String addFreeTextFilterToQuery(String currentQuery, List<Pair<List<Pair<String, String>>,String>> freeText) {
-        String updatedQuery = currentQuery;
-        updatedQuery += "q=";
-        for (Pair<List<Pair<String, String>>,String> bracketPair : freeText) {
-            List<Pair<String, String>> bracketStrings = bracketPair.getLeft();
-            String bracketConjunction = bracketPair.getRight();
-
-            updatedQuery += "(";
-            for (Pair<String,String> bracketString : bracketStrings) {
-                updatedQuery += bracketString.getLeft();
-                updatedQuery += "+";
-                updatedQuery += bracketString.getRight();
-                updatedQuery += "+";
-            }
-            updatedQuery = removeLastChar(updatedQuery);
-            updatedQuery += ")+";
-            updatedQuery += bracketConjunction;
-        }
-        updatedQuery = removeLastChar(updatedQuery);
-        return updatedQuery;
-    }
-
-    private static String removeLastChar(String str) {
-        return str.substring(0, str.length() - 1);
-    }
+//    private static String addFreeTextFilterToQuery(String currentQuery, List<Pair<List<Pair<String, String>>,String>> freeText) {
+//        String updatedQuery = currentQuery;
+//        updatedQuery += "q=";
+//        for (Pair<List<Pair<String, String>>,String> bracketPair : freeText) {
+//            List<Pair<String, String>> bracketStrings = bracketPair.getLeft();
+//            String bracketConjunction = bracketPair.getRight();
+//
+//            updatedQuery += "(";
+//            for (Pair<String,String> bracketString : bracketStrings) {
+//                updatedQuery += bracketString.getLeft();
+//                updatedQuery += "+";
+//                updatedQuery += bracketString.getRight();
+//                updatedQuery += "+";
+//            }
+//            updatedQuery = removeLastChar(updatedQuery);
+//            updatedQuery += ")+";
+//            updatedQuery += bracketConjunction;
+//        }
+//        updatedQuery = removeLastChar(updatedQuery);
+//        return updatedQuery;
+//    }
+//
+//    private static String removeLastChar(String str) {
+//        return str.substring(0, str.length() - 1);
+//    }
 }
 
 

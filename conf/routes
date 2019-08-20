@@ -348,7 +348,7 @@ GET /googlemap  controllers.DestinationController.renderMap(request : Request)
 
 GET     /users/events/search            controllers.EventsController.indexEvents(request : Request)
 
-GET     /events     controllers.EventsController.getEventsData(request : Request, latitude : Double, longitude : Double, place : String, offset : Integer)
+GET     /users/events     controllers.EventsController.getEventsData(request : Request, keyword: String, category : String, artist : String, startDate: String, endDate: String, minPrice: String, maxPrice: String, destination: String, sortBy: String)
 
 
 

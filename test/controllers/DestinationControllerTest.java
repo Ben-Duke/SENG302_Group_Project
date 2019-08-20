@@ -1453,7 +1453,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
     }
 
     @Test
-    @Ignore
+
     public void checkRemoveTag(){
         Destination destination;
         destination = new Destination

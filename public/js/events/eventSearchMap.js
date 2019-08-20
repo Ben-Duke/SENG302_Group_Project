@@ -157,6 +157,10 @@ function getMapInfoWindowHTML(destination) {
     const destinationCountry = destination.country;
     const destinationDistrict = destination.district;
 
+    let nameString = "'" + destinationName + "'";
+
+
+
 
     let infoWindowHTML;
     // uses a ES6 template string
@@ -168,7 +172,22 @@ function getMapInfoWindowHTML(destination) {
                       <div>District: ${destinationDistrict}</div>
                       <div>${destinationCountry}</div>
                       <div>
-                      <button id="selectDestination" onclick="selectDestination(${destination.destId}, false)">Select Destination</button>
-                      </div>`;
+                      <button id="selectDestination-${destination.destId}" onclick="selectDestination(${destination.destId}, ${nameString})">Select Destination</button>
+                      </div>
+                      
+`;
+
+    //console.log(infoWindowHTML);
+
     return infoWindowHTML;
+}
+
+
+function selectDestination(id, name) {
+
+    let destinationInput = document.getElementById("destination-search-input");
+    destinationInput.setAttribute("name", id);
+    destinationInput.value = name;
+
+
 }

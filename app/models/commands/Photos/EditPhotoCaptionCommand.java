@@ -11,7 +11,7 @@ public class EditPhotoCaptionCommand extends UndoableCommand {
     private UserPhoto actualPhoto;
 
     public EditPhotoCaptionCommand(UserPhoto editedPhoto) {
-        super(CommandPage.HOME);
+        super(CommandPage.ALBUM);
         this.editedPhoto = new UserPhoto();
         this.actualPhoto = editedPhoto;
         this.editedPhoto.applyEditChanges(actualPhoto);

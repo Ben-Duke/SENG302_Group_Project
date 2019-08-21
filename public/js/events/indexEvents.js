@@ -114,7 +114,7 @@ function addPagination(count, pageNum) {
     for (let i=0; i < count; i+=20) {
         numOfPages.push((i/20)+1);
     }
-    console.log(numOfPages);
+    // console.log(numOfPages);
     if (numOfPages.length > 10) {
         if (pageNum > 5) {
             if (numOfPages.length >= pageNum+5) {
@@ -181,7 +181,7 @@ function addPagination(count, pageNum) {
     item = document.createElement("li");
     pageButton = document.createElement("a");
     currentPageNum = numOfPages.length;
-    console.log(currentPageNum);
+    // console.log(currentPageNum);
     pageButton.innerText = "Last";
     pageButton.setAttribute("onClick", `searchEvents(${currentPageNum})`);
     item.appendChild(pageButton);

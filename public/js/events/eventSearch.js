@@ -45,7 +45,7 @@ function searchEvents(pageNum) {
                 type: 'GET',
                 url: url,
                 success: function (data) {
-                    console.log(data);
+                    // console.log(data);
                     getEventsFromApiResponse(data, url, pageNum);
                 }
             });

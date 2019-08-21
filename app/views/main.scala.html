@@ -1,5 +1,6 @@
 @import accessors.UserAccessor
 
+@import factories.UserFactory
 @(user : User, title: String)(content: Html)
 
 <!DOCTYPE html>
@@ -66,7 +67,13 @@
                             <li><a id="redoButton" class="@getUndoRedoButtonClass(false)"><span class="glyphicon glyphicon-repeat"></span> Redo</a></li>
                             <li class="dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                @if(UserFactory.getUserProfilePicture(user.getUserid()) != null){
+                                    <span>
+                                        <img id="thumbnailProfilePic" class="img-circle"  width = "22" height="22" src="@{routes.HomeController.serveProfilePicture(user.getUserid())}">
+                                    </span>
+                                } else {
                                     <span class="glyphicon glyphicon-user"></span> 
+                                }
                                     <strong>@user.getFName()</strong>
                                     <span class="glyphicon glyphicon-chevron-down"></span>
                                 </a>
@@ -76,7 +83,11 @@
                                             <div class="row">
                                                 <div class="col-lg-4">
                                                     <p class="text-center">
+                                                    @if(UserFactory.getUserProfilePicture(user.getUserid()) != null){
+                                                        <img id="thumbnailProfilePic" class="img-circle"  width = "80" height="80" src="@{routes.HomeController.serveProfilePicture(user.getUserid())}">
+                                                    } else {
                                                         <span class="glyphicon glyphicon-user icon-size"></span>
+                                                    }
                                                     </p>
                                                 </div>
                                                 <div class="col-lg-8">

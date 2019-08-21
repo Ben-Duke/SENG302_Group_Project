@@ -27,7 +27,8 @@ public class CommandManagerAccessorTest extends BaseTestWithApplicationAndDataba
      */
     @Override
     public void populateDatabase() {
-        TestDatabaseManager.clearAllData();
+        TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
+        testDatabaseManager.clearAllData();
 
         User user = new User("gon12_2@uclive.ac.nz", "hunter22");
         user.save();

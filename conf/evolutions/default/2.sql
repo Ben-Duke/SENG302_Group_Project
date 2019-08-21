@@ -469,7 +469,7 @@ INSERT INTO `visit` (`visitid`, `visitorder`, `destination`, `trip`, `arrival`,
 (14, 2, 9, 5, NULL, NULL, 'Lincoln Memorial'),
 (15, 3, 8, 5, NULL, NULL, 'Vatican City'),
 (16, 1, 7, 6, NULL, NULL, 'Niagara Falls'),
-(17, 2, 9, 6, NULL, NULL, 'Lincoln Memorial drop table user');
+(17, 2, 9, 6, NULL, NULL, 'Lincoln Memorial');
 
 
 -- -------------------------------------------------

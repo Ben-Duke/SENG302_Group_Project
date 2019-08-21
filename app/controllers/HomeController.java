@@ -163,7 +163,7 @@ public class HomeController {
             UploadPhotoCommand uploadPhotoCommand = new UploadPhotoCommand(newPhoto, fileObject, user, albumName, tags);
             user.getCommandManager().executeCommand(uploadPhotoCommand);
             TagAccessor.removePendingTagsFromUserId(user.getUserid());
-            return redirect(routes.HomeController.showhome());
+            return ok();
         } else {
             return badRequest();
         }

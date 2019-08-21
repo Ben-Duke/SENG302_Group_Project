@@ -311,7 +311,7 @@
                             <h4 id="tripName_@trip.getTripid()" style="cursor: pointer;" onclick="toggleEditTripName(true)">
                             @trip.getTripName()</h4>
                             <input style="display: none;" type="text" id="tripNameInput_@trip.getTripid()" value="@trip.getTripName()" onblur="updateTripName(this.value)">
-                            <p class="dateError" style="color: red">Arrival date must be before departure date</p>
+                            <p class="dateError" style="color: red; display: none">Arrival date must be before departure date</p>
                         </div>
 
                         <table class="table table-hover" id="tripTable_@trip.getTripid()">

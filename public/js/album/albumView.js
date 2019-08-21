@@ -1088,9 +1088,9 @@ $('#photo-upload').click(function (eve){
             data: formData,
             success: function (data, textStatus, xhr) {
                 if (xhr.status == 200) {
-                    window.location = ('/users/albums/' + albumId)
+                    document.getElementById('undoButton').classList.remove('disabled');
                 } else {
-                    window.location = ('/users/albums/' + albumId)
+                    document.getElementById('undoButton').classList.remove('disabled');
                 }
             }
         })

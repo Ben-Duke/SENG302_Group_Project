@@ -469,7 +469,7 @@ INSERT INTO `visit` (`visitid`, `visitorder`, `destination`, `trip`, `arrival`,
 (14, 2, 9, 5, NULL, NULL, 'Lincoln Memorial'),
 (15, 3, 8, 5, NULL, NULL, 'Vatican City'),
 (16, 1, 7, 6, NULL, NULL, 'Niagara Falls'),
-(17, 2, 9, 6, NULL, NULL, 'Lincoln Memorial');
+(17, 2, 9, 6, NULL, NULL, 'Lincoln Memorial drop table user');
 
 
 -- -------------------------------------------------
@@ -491,11 +491,13 @@ delete from tag_user;
 
 delete from tag;
 
-delete from album_media;
-
 delete from destination_media;
 
+delete from album_media;
+
 delete from media;
+
+delete from album;
 
 delete from user_treasure_hunt;
 
@@ -516,8 +518,6 @@ delete from destination_modification_request;
 delete from destination_traveller_type;
 
 delete from traveller_type;
-
-delete from album;
 
 delete from destination;
 

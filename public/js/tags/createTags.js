@@ -179,16 +179,21 @@ function addTagLabel(name) {
     let newRemove = document.createElement("a");
     let newIcon = document.createElement("i");
     let input = document.getElementById("tag-add");
+
     input.value = "";
 
     newTag.className = "tag label label-info";
     newTag.id = name;
-    newText.innerHTML = name;
+    newText.innerHTML = `<a style="color: black">${name}</a>`;
     newIcon.className = "remove glyphicon glyphicon-remove-sign glyphicon-white";
+
     newRemove.onclick = function() {
         tagList.removeChild(newTag);
         toAddTagList.delete(name.toLowerCase());
         removeTagFromItem(name);
+    };
+    newText.onclick = function() {
+        window.location.href = '/tags/display/' + name.toLowerCase();
     };
     newRemove.appendChild(newIcon);
     newTag.appendChild(newText);

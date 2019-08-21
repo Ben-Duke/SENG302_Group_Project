@@ -60,6 +60,14 @@
     display: block;
 }
 
+#tag-list {
+    margin: 10px 100px 10px 165px;
+    z-index: 2;
+    text-align: center;
+    position: relative;
+    font-size: 18px;
+}
+
 .preview-wrapper{
     width: 100px;
     height:100px;

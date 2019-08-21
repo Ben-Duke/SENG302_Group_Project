@@ -279,7 +279,7 @@ public class DestinationController extends Controller {
             return errorForm;
         }
 
-        Destination newDestination = getDestinationFromRequest(request);
+        Destination newDestination = getDestinationFromRequest(request, user, destId);
 
         if(DestinationFactory.checkIfDestinationIsAPublicDuplicate(newDestination.getDestName(),
                 newDestination.getCountry(),
@@ -287,17 +287,20 @@ public class DestinationController extends Controller {
             logger.debug("Should block this and merge them");
             DestinationFactory destFactory = new DestinationFactory();
 
-            destFactory.mergeDestinations(destFactory.getMatching(newDestination), newDestination);
+            destFactory.editDestinationMerge(destFactory.getMatching(newDestination).get(0), newDestination);
+        } else {
+
+            oldDestination.applyEditChanges(newDestination);
+
+            EditDestinationCommand editDestinationCommand =
+                    new EditDestinationCommand(oldDestination);
+            user.getCommandManager().executeCommand(editDestinationCommand);
+
+
+            return redirect(routes.DestinationController.viewDestination(destId));
         }
+        return redirect(routes.HomeController.mainMapPage());
 
-        oldDestination.applyEditChanges(newDestination);
-
-        EditDestinationCommand editDestinationCommand =
-                new EditDestinationCommand(oldDestination);
-        user.getCommandManager().executeCommand(editDestinationCommand);
-
-
-        return redirect(routes.DestinationController.viewDestination(destId));
     }
 
 
@@ -330,7 +333,7 @@ public class DestinationController extends Controller {
             return errorForm;
         }
 
-        Destination newDestination = getDestinationFromRequest(request);
+        Destination newDestination = getDestinationFromRequest(request, user, destId);
 
         if (newDestination.isSame(destination)) {
             return badRequest("No changes suggested");
@@ -371,11 +374,13 @@ public class DestinationController extends Controller {
      * @param request
      * @return
      */
-    private Destination getDestinationFromRequest(Http.Request request) {
+    private Destination getDestinationFromRequest(Http.Request request, User user, int destId) {
         Map<String, String> map = new HashMap<>();
         fillDataWith(map, request.body().asFormUrlEncoded());
 
         Destination destination = formFactory.form(Destination.class).bind(map).get();
+        destination.setUser(user);
+        destination.setDestId(destId);
 
         Set<TravellerType> travellerTypes = TravellerTypeFactory
                 .formNewTravellerTypes(destination.getTravellerTypes());
@@ -580,7 +585,8 @@ public class DestinationController extends Controller {
                         newDestination.getDestName(),
                         newDestination,
                         null);
-                cmd.execute();
+                user.getCommandManager().executeCommand(cmd);
+                newDestination.update();
 
                 return redirect(routes.HomeController.mainMapPage());
             }

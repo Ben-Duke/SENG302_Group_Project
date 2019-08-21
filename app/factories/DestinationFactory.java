@@ -2,6 +2,8 @@ package factories;
 
 import accessors.AlbumAccessor;
 import accessors.DestinationAccessor;
+import accessors.TagAccessor;
+import accessors.TreasureHuntAccessor;
 import formdata.DestinationFormData;
 import models.*;
 import org.slf4j.Logger;
@@ -31,9 +33,9 @@ public class DestinationFactory {
 
     public static boolean checkIfDestinationIsAPublicDuplicate(Destination destination){
         boolean valid = true;
-        for(Destination dest : Destination.find().query().where().eq("destName", destination.getDestName().toLowerCase()).findList()){
-            if((dest.getDestName().equals(destination.getDestName().toLowerCase())) &
-                    (dest.getDistrict().equals(destination.getDistrict())) &
+        for(Destination dest : Destination.find().query().where().eq("destName", destination.getDestName()).findList()){
+            if((dest.getDestName().equals(destination.getDestName())) &&
+                    (dest.getDistrict().equals(destination.getDistrict())) &&
                     (dest.getCountry() == destination.getCountry())){
                 valid = false;
             }
@@ -43,9 +45,9 @@ public class DestinationFactory {
 
     public static boolean checkIfDestinationIsAPublicDuplicate(String destname, String destCountry, String destDistrict){
         boolean valid = true;
-        for(Destination dest : Destination.find().query().where().eq("destName", destname.toLowerCase()).findList()){
-            if((dest.getDestName().equals(destname.toLowerCase())) &
-                    (dest.getDistrict().toLowerCase().equals(destDistrict.toLowerCase())) &
+        for(Destination dest : Destination.find().query().where().eq("destName", destname).findList()){
+            if((dest.getDestName().equals(destname)) &&
+                    (dest.getDistrict().equals(destDistrict)) &&
                     (dest.getCountry() == destCountry)){
                 valid = false;
             }
@@ -56,10 +58,10 @@ public class DestinationFactory {
     public ArrayList<Destination> getMatching(Destination destination){
         ArrayList<Destination> destinations = new ArrayList<Destination>();
 
-        for(Destination dest : Destination.find().query().where().eq("destName", destination.getDestName().toLowerCase()).findList()){
-            if((dest.getDestName().equals(destination.getDestName().toLowerCase())) &
-                    (dest.getDistrict().equals(destination.getDistrict())) &
-                    (dest.getCountry() == destination.getCountry())){
+        for(Destination dest : Destination.find().query().where().eq("destName", destination.getDestName()).findList()){
+            if((dest.getDestName().equals(destination.getDestName())) &&
+                    (dest.getDistrict().equals(destination.getDistrict())) &&
+                    (dest.getCountry().equals(destination.getCountry()))){
                 destinations.add(dest);
             }
         }
@@ -238,14 +240,17 @@ public class DestinationFactory {
      * @param destinationTwo the new destination which will hold new photos
      */
     private void movePhotosToAnotherDestination(Destination destinationOne, Destination destinationTwo) {
-        while(!destinationOne.getPrimaryAlbum().getMedia().isEmpty()) {
-            Media changingPhoto = destinationOne.getPrimaryAlbum().getMedia().get(0);
+        int count = 0;
+        while(!AlbumAccessor.getAlbumsByOwner(destinationOne).get(0).getMedia().isEmpty()) {
+            Media changingPhoto = AlbumAccessor.getAlbumsByOwner(destinationOne).get(0).getMedia().get(count);
 
-            destinationOne.getPrimaryAlbum().removeMedia(changingPhoto);
-            AlbumAccessor.update(destinationOne.getPrimaryAlbum());
+            AlbumAccessor.getAlbumsByOwner(destinationOne).get(0).removeMedia(changingPhoto);
+            AlbumAccessor.update(AlbumAccessor.getAlbumsByOwner(destinationOne).get(0));
 
-            destinationTwo.getPrimaryAlbum().addMedia(changingPhoto);
-            AlbumAccessor.update(destinationTwo.getPrimaryAlbum());
+            AlbumAccessor.getAlbumsByOwner(destinationTwo).get(0).addMedia(changingPhoto);
+            AlbumAccessor.update(AlbumAccessor.getAlbumsByOwner(destinationTwo).get(0));
+
+            count++;
         }
     }
 
@@ -269,20 +274,87 @@ public class DestinationFactory {
         }
     }
 
+    /**
+     * Move the visits from one destination to being linked to another
+     * @param destinationOne the original destination which will no longer hold visits
+     * @param destinationTwo the new destination which will hold new visits
+     */
+    private void moveTagsToAnotherDestination(Destination destinationOne, Destination destinationTwo){
+        Set<Tag> tagForm = destinationOne.getTags();
+        if (!tagForm.isEmpty()) {
+            System.out.println(tagForm);
+            for(Tag tag : tagForm) {
+                destinationOne.removeTag(tag);
+                destinationOne.update();
+                tag.delete();
+                Tag newTag = new Tag(tag.getName());
+                newTag.save();
+                destinationTwo.addTag(newTag);
+                try {
+                    tag.update();
+                } catch (Exception e) {
+                    logger.error(e.getMessage(), e);
+                }
+            }
+        }
+    }
 
     /**
-     * Merges all matching destination when one private destination is made public, will not merge if destination is used in trip
-     * @param destinationList list of all matching private destinations
-     * @param destination destination of user making private destination public
+     * Move the visits from one destination to being linked to another
+     * @param destinationOne the original destination which will no longer hold visits
+     * @param destinationTwo the new destination which will hold new visits
      */
+    private void moveTreasureToAnotherDestination(Destination destinationOne, Destination destinationTwo){
+        List<TreasureHunt> treasurehunts = TreasureHuntAccessor.getAllByDestination(destinationOne);
+        if (!treasurehunts.isEmpty()) {
+            for(TreasureHunt treasureHunt : treasurehunts) {
+                TreasureHuntAccessor.delete(treasureHunt);
+                destinationOne.update();
+                TreasureHunt newTreasureHunt = new TreasureHunt(treasureHunt.getTitle(), treasureHunt.getRiddle(),
+                        treasureHunt.getDestination(), treasureHunt.getStartDate(), treasureHunt.getEndDate(), destinationTwo.getUser());
+                newTreasureHunt.save();
+                TreasureHuntAccessor.insert(newTreasureHunt);
+                try {
+                    destinationTwo.update();
+                } catch (Exception e) {
+                    logger.error(e.getMessage(), e);
+                }
+            }
+        }
+    }
+
+    public void editDestinationMerge(Destination publicDestination, Destination destination) {
+        if(publicDestination.getUser() != destination.getUser()) {
+            try {
+                moveVisitsToAnotherDestination(destination, publicDestination);
+                moveTagsToAnotherDestination(destination, publicDestination);
+                moveTreasureToAnotherDestination(destination, publicDestination);
+                destination.setVisits(new ArrayList<>());
+                movePhotosToAnotherDestination(destination, publicDestination);
+                AlbumAccessor.delete(AlbumAccessor.getAlbumsByOwner(destination).get(0));
+                DestinationAccessor.delete(destination);
+            } catch (Exception e) {
+                logger.error("merge destinations 2", e);
+            }
+        }
+    }
+
+
+
+        /**
+         * Merges all matching destination when one private destination is made public, will not merge if destination is used in trip
+         * @param destinationList list of all matching private destinations
+         * @param destination destination of user making private destination public
+         */
     public void mergeDestinations(List<Destination> destinationList, Destination destination) {
         Admin defaultAdmin = Admin.find().query().where().eq("isDefault", true).findOne();
         User defaultAdminUser = User.find().query().where().eq("userid", defaultAdmin.getUserId()).findOne();
         destinationList.add(destination);
         for (Destination otherDestination : destinationList) {
-            System.out.println(otherDestination);
             if(otherDestination.getUser() != destination.getUser()) {
                 moveVisitsToAnotherDestination(otherDestination, destination);
+                moveTagsToAnotherDestination(otherDestination, destination);
+                moveTreasureToAnotherDestination(otherDestination, destination);
                 otherDestination.setVisits(new ArrayList<>());
                 try {
                     DestinationAccessor.update(otherDestination);

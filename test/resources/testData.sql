@@ -1,5 +1,6 @@
 -- Automated test data
--- Does not populate passports/nationalities
+-- Should not include any delete statements or #Ups/#downs comments
+-- i.e. only includes '--' comments and inserts
 
 -- Disable inspection for checking tables exist as they are in another file
 -- noinspection SqlResolveForFile

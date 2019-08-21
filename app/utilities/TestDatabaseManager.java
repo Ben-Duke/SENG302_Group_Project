@@ -61,10 +61,9 @@ public class TestDatabaseManager {
 
     /**
      * Runs the sql script containing the automated testing data
-     * @param connection A connection to the database
      */
     private static void populateAutomatedTestData() {
-        SqlFileReader fileReader = new SqlFileReader("testData.sql");
+        SqlFileReader fileReader = new SqlFileReader("test/resources/testData.sql");
         String sql = fileReader.readFile();
 
         Ebean.createSqlUpdate(sql).execute();

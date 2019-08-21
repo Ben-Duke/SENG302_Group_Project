@@ -7,15 +7,15 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Paths;
 
-public class SqlFileReader {
+class SqlFileReader {
     private String filepath;
     private final Logger logger = UtilityFunctions.getLogger();
 
-    public SqlFileReader(String filename) {
+    SqlFileReader(String filename) {
         filepath = Paths.get(".").toAbsolutePath().normalize().toString() + '/' + filename;
     }
 
-    public String readFile() {
+    String readFile() {
         String output = "";
         try (FileReader fileReader = new FileReader(this.filepath);) {
             BufferedReader bufferedReader = new BufferedReader(fileReader, 8192);

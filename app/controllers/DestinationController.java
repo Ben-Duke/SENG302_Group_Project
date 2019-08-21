@@ -280,6 +280,16 @@ public class DestinationController extends Controller {
         }
 
         Destination newDestination = getDestinationFromRequest(request);
+
+        if(DestinationFactory.checkIfDestinationIsAPublicDuplicate(newDestination.getDestName(),
+                newDestination.getCountry(),
+                newDestination.getDistrict())){
+            logger.debug("Should block this and merge them");
+            DestinationFactory destFactory = new DestinationFactory();
+
+            destFactory.mergeDestinations(destFactory.getMatching(newDestination), newDestination);
+        }
+
         oldDestination.applyEditChanges(newDestination);
 
         EditDestinationCommand editDestinationCommand =
@@ -472,8 +482,15 @@ public class DestinationController extends Controller {
                     "The destination can not be made public");
         }
 
-
         DestinationFactory destFactory = new DestinationFactory();
+
+        if(destFactory.checkIfDestinationIsAPublicDuplicate(destination)){
+            logger.debug("Failed a check ");
+            destFactory.mergeDestinations(destFactory.getMatching(destination), destination);
+            return badRequest(destinationPage.render(user, destination, false,
+                    null, null, null, null));
+        }
+
 
         List<Destination> matchingDestinations = destFactory
                 .getOtherUsersMatchingPrivateDestinations(user.getUserid(), destination);

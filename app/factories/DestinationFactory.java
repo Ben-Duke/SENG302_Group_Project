@@ -29,6 +29,43 @@ public class DestinationFactory {
                 .where().eq("destIsPublic", true).findList();
     }
 
+    public static boolean checkIfDestinationIsAPublicDuplicate(Destination destination){
+        boolean valid = true;
+        for(Destination dest : Destination.find().query().where().eq("destName", destination.getDestName().toLowerCase()).findList()){
+            if((dest.getDestName().equals(destination.getDestName().toLowerCase())) &
+                    (dest.getDistrict().equals(destination.getDistrict())) &
+                    (dest.getCountry() == destination.getCountry())){
+                valid = false;
+            }
+        }
+        return valid;
+    }
+
+    public static boolean checkIfDestinationIsAPublicDuplicate(String destname, String destCountry, String destDistrict){
+        boolean valid = true;
+        for(Destination dest : Destination.find().query().where().eq("destName", destname.toLowerCase()).findList()){
+            if((dest.getDestName().equals(destname.toLowerCase())) &
+                    (dest.getDistrict().toLowerCase().equals(destDistrict.toLowerCase())) &
+                    (dest.getCountry() == destCountry)){
+                valid = false;
+            }
+        }
+        return valid;
+    }
+
+    public ArrayList<Destination> getMatching(Destination destination){
+        ArrayList<Destination> destinations = new ArrayList<Destination>();
+
+        for(Destination dest : Destination.find().query().where().eq("destName", destination.getDestName().toLowerCase()).findList()){
+            if((dest.getDestName().equals(destination.getDestName().toLowerCase())) &
+                    (dest.getDistrict().equals(destination.getDistrict())) &
+                    (dest.getCountry() == destination.getCountry())){
+                destinations.add(dest);
+            }
+        }
+        return destinations;
+    }
+
     /**
      * Gets the destination's primary photo
      * @param destID the id of the destination
@@ -243,6 +280,7 @@ public class DestinationFactory {
         User defaultAdminUser = User.find().query().where().eq("userid", defaultAdmin.getUserId()).findOne();
         destinationList.add(destination);
         for (Destination otherDestination : destinationList) {
+            System.out.println(otherDestination);
             if(otherDestination.getUser() != destination.getUser()) {
                 moveVisitsToAnotherDestination(otherDestination, destination);
                 otherDestination.setVisits(new ArrayList<>());
@@ -264,6 +302,7 @@ public class DestinationFactory {
                     logger.error("merge destinations 3", e);
                 }
             }
+            logger.debug("looping");
         }
         destination.setIsPublic(true);
         destination.setUser(defaultAdminUser);

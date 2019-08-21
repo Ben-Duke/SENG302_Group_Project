@@ -2,6 +2,7 @@ package accessors;
 
 import models.Destination;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -35,6 +36,8 @@ public class DestinationAccessor {
                 .eq("destName", name)
                 .findOne();
     }
+
+
 
     /**
      * Returns all destination in the database

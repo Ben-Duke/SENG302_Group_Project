@@ -21,7 +21,7 @@ public class EditDestinationCommandTest extends BaseTestWithApplicationAndDataba
     @Override
     /* Populate the database */
     public void populateDatabase() {
-        TestDatabaseManager.populateDatabase();
+        super.populateDatabase();
 
         //ApplicationManager.setMediaPath("/test/resources/test_photos/user_");
         //ApplicationManager.setIsTest(true);

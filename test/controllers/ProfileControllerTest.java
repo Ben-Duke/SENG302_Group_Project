@@ -28,8 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.*;
 import static play.mvc.Http.Status.*;
 import static play.test.Helpers.GET;
 import static play.test.Helpers.contentAsString;
@@ -96,35 +95,6 @@ public class ProfileControllerTest extends BaseTestWithApplicationAndDatabase {
         Result result = route(app, request);
         assertEquals(OK, result.status());
     }
-
-//    @Test
-//    public void updateprofile() {
-//        User user = User.find.byId(1);
-//        user.setAdmin(true);
-//        user.update();
-//        assertEquals("Gavin", user.getFName());
-//        assertEquals("Ong", user.getLName());
-//        assertEquals("Male", user.getGender());
-//        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-//        LocalDate expectedBirthDate = LocalDate.parse("1998-08-23", formatter);
-//        assertEquals(expectedBirthDate, user.getDateOfBirth());
-//        Map<String, String> formData = new HashMap<>();
-//        formData.put("firstName", "John");
-//        formData.put("lastName", "Cena");
-//        formData.put("gender", "Female");
-//        formData.put("dateOfBirth", "1969-04-20");
-//        formData.put("admin", "true");
-//        Http.RequestBuilder request = Helpers.fakeRequest().bodyForm(formData).method(Helpers.POST).uri("/users/profile/update").session("connected", "1");
-//        CSRFTokenHelper.addCSRFToken(request);
-//        Result result = route(app, request);
-//        assertEquals(SEE_OTHER, result.status());
-//        user = User.find.byId(1);
-//        assertEquals("John", user.getFName());
-//        assertEquals("Cena", user.getLName());
-//        assertEquals("Female", user.getGender());
-//        LocalDate expectedBirthDate2 = LocalDate.parse("1969-04-20", formatter);
-//        assertEquals(expectedBirthDate2, user.getDateOfBirth());
-//    }
 
     @Test
     public void showProfileWithNoLoginSession() {
@@ -260,6 +230,6 @@ public class ProfileControllerTest extends BaseTestWithApplicationAndDatabase {
                 .session("connected", "1");
         Result result = route(app, request);
         JsonNode jsonJacksonObject = Json.parse(contentAsString(result));
-        assertEquals(true, jsonJacksonObject.get("isProfilePicSet").asBoolean());
+        assertTrue(jsonJacksonObject.get("isProfilePicSet").asBoolean());
     }
 }

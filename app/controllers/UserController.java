@@ -9,7 +9,6 @@ import org.slf4j.Logger;
 import play.libs.Json;
 import play.mvc.Http;
 import play.mvc.Result;
-import utilities.CountryUtils;
 import utilities.TestDatabaseManager;
 import utilities.UtilityFunctions;
 import views.html.users.userIndex;
@@ -50,7 +49,7 @@ public class UserController {
             ApplicationManager.setMediaPath("/../media_");
 //            ApplicationManager.getMediaPath()
 
-            TestDatabaseManager.populateDatabase(initCompleteLatch);
+            TestDatabaseManager.populateDatabaseWithLatch(initCompleteLatch);
         } else {
             try {
                 initCompleteLatch.await();

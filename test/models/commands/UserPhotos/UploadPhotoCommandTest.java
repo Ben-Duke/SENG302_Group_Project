@@ -1,27 +1,19 @@
 package models.commands.UserPhotos;
 
-import controllers.ApplicationManager;
 
 import models.User;
 import models.UserPhoto;
 import models.commands.Photos.UploadPhotoCommand;
-import org.junit.After;
-import org.junit.Before;
+
 import org.junit.Test;
 import org.slf4j.Logger;
 import play.db.Database;
-import play.db.Databases;
-import play.db.evolutions.Evolution;
-import play.db.evolutions.Evolutions;
+
 import play.libs.Files;
 import testhelpers.BaseTestWithApplicationAndDatabase;
-import utilities.TestDatabaseManager;
 import utilities.UtilityFunctions;
-
-import java.io.File;
 import java.nio.file.Paths;
 
-import static org.apache.commons.io.FileUtils.getFile;
 import static org.junit.Assert.assertEquals;
 
 
@@ -37,7 +29,7 @@ public class UploadPhotoCommandTest extends BaseTestWithApplicationAndDatabase {
 
     @Override
     public void populateDatabase() {
-        TestDatabaseManager.populateDatabase();
+        super.populateDatabase();
 
         user = User.find().byId(1);
         userPhoto =  new UserPhoto("imagetest.png", false, false, user);

@@ -1,9 +1,13 @@
 package controllers;
 
 import org.slf4j.Logger;
+import play.Application;
+import play.db.Database;
 import utilities.UtilityFunctions;
 
 import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Enum for the two databases used by the application
@@ -34,6 +38,7 @@ public class ApplicationManager {
 
     /** Current database app is using saved as the name of the database */
     private static DatabaseName databaseName = DatabaseName.DEFAULT;
+
 
     /**
      * Method to get the media path.

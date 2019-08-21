@@ -3,19 +3,13 @@ package models.commands.Destinations;
 import accessors.AlbumAccessor;
 import accessors.DestinationAccessor;
 import accessors.UserPhotoAccessor;
-import controllers.ApplicationManager;
 import models.Destination;
 import models.User;
 import models.UserPhoto;
-import org.junit.After;
-import org.junit.Before;
+
 import org.junit.Test;
 import play.db.Database;
-import play.db.Databases;
-import play.db.evolutions.Evolution;
-import play.db.evolutions.Evolutions;
 import testhelpers.BaseTestWithApplicationAndDatabase;
-import utilities.TestDatabaseManager;
 import static org.junit.Assert.assertEquals;
 
 
@@ -28,7 +22,7 @@ public class UnlinkingPhotosToDestinationsCommandTest extends BaseTestWithApplic
 
     @Override
     public void populateDatabase() {
-        TestDatabaseManager.populateDatabase();
+        super.populateDatabase();
 
         user = User.find().byId(1);
 

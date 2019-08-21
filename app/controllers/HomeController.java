@@ -24,6 +24,8 @@ import play.libs.Json;
 import play.mvc.Http;
 import play.mvc.Result;
 import utilities.CountryUtils;
+import utilities.EnvVariableKeys;
+import utilities.EnvironmentalVariablesAccessor;
 import utilities.UtilityFunctions;
 import views.html.home.*;
 
@@ -74,7 +76,10 @@ public class HomeController {
 
         Map<String, Boolean> countryList = CountryUtils.getCountriesMap();
 
-        return ok(mapHome.render(user, trips, userAccessibleDestinations, destFormData, countryList, Destination.getTypeList()));
+        String googleApiKey = EnvironmentalVariablesAccessor.getEnvVariable(
+                EnvVariableKeys.GOOGLE_MAPS_API_KEY.toString());
+        return ok(mapHome.render(user, trips, userAccessibleDestinations,
+                destFormData, countryList, Destination.getTypeList(), googleApiKey));
 
     }
 

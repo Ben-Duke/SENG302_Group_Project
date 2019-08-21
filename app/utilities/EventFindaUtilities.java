@@ -39,7 +39,12 @@ public class EventFindaUtilities {
             URL obj = new URL(url);
             HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 
-            String userCredentials = "travelea:kq4mf8czrp92";
+            String eventfindaUserName = EnvironmentalVariablesAccessor.getEnvVariable(
+                    EnvVariableKeys.EVENTFINDA_API_KEY_USERNAME.toString());
+            String eventfindaPassword = EnvironmentalVariablesAccessor.getEnvVariable(
+                    EnvVariableKeys.EVENTFINDA_API_KEY_PASSWORD.toString());
+
+            String userCredentials = eventfindaUserName + ":" + eventfindaPassword;
             String credentials = "Basic " + new String(Base64.getEncoder().encode(userCredentials.getBytes()));
 
 

@@ -1,4 +1,4 @@
-@(tripForm : Form[formdata.TripFormData], user : User)
+@(tripForm : Form[formdata.TripFormData], user : User, googleApiKey : String)
 @import helper._
 @import views.html.bootstrap3._
 <style>
@@ -61,7 +61,7 @@
     }
 
     <script async defer src="@routes.Assets.at("js/map/map.js")"></script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDCyC_ON0GgSmJIfPlL7oke5PZgbR8TLbg&callback=initMap&libraries=drawing,places"
+    <script src="https://maps.googleapis.com/maps/api/js?key=@googleApiKey&callback=initMap&libraries=drawing,places"
     ></script>
 
 

@@ -1,0 +1,10 @@
+# All variables below are required and must be set for correct program operation.
+# Hash denotes a commented out line.
+# Empty lines are ignored.
+# Whitespace is trimmed at both ends of a line and also around the equals sign.
+
+GOOGLE_MAPS_API_KEY=[insert value here]
+EVENTFINDA_API_KEY_USERNAME=[insert value here]
+EVENTFINDA_API_KEY_PASSWORD=[insert value here]
+ADMIN_USER_PASSWORD_DEFAULT=[insert value here]
+TEST_USER_PASSWORD_DEFAULT=[insert value here]

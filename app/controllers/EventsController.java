@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import models.User;
 import play.mvc.Http;
 import play.mvc.Result;
+import utilities.EnvVariableKeys;
+import utilities.EnvironmentalVariablesAccessor;
 import utilities.EventFindaUtilities;
 import views.html.users.events.*;
 
@@ -16,7 +18,9 @@ public class EventsController {
 
         if (user == null) { return redirect(routes.UserController.userindex()); }
 
-        return ok(eventSearch.render(user));
+        String googleApiKey = EnvironmentalVariablesAccessor.getEnvVariable(
+                EnvVariableKeys.GOOGLE_MAPS_API_KEY.toString());
+        return ok(eventSearch.render(user, googleApiKey));
     }
 
     public Result getEventsData(Http.Request request, double latitude, double longitude, String place, int offset) {

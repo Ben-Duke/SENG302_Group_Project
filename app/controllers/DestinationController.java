@@ -32,6 +32,8 @@ import play.mvc.Http;
 import play.mvc.Result;
 
 import utilities.CountryUtils;
+import utilities.EnvVariableKeys;
+import utilities.EnvironmentalVariablesAccessor;
 import views.html.users.destination.*;
 
 import javax.inject.Inject;
@@ -110,8 +112,10 @@ public class DestinationController extends Controller {
     }
 
     public Result getPlacesDetailsRequest(Http.Request request, String placeId) throws Exception {
+        String googleApiKey = EnvironmentalVariablesAccessor.getEnvVariable(
+                EnvVariableKeys.GOOGLE_MAPS_API_KEY.toString());
         String url = "https://maps.googleapis.com/maps/api/place/details/json?placeid="+ placeId +
-                "&key=AIzaSyC9Z1g5p2rQtS0nHgDudzCCXVl2HJl3NPI";
+                "&key=" + googleApiKey;
         URL obj = new URL(url);
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 
@@ -187,8 +191,11 @@ public class DestinationController extends Controller {
 
         boolean inEditMode = false;
 
+        String googleApiKey = EnvironmentalVariablesAccessor.getEnvVariable(
+                EnvVariableKeys.GOOGLE_MAPS_API_KEY.toString());
         return ok(destinationPage.render(user, destination, inEditMode,
-                null, null, null, null));
+                null, null, null, null,
+                 googleApiKey));
     }
 
     /**
@@ -248,8 +255,10 @@ public class DestinationController extends Controller {
             }
         }
 
+        String googleApiKey = EnvironmentalVariablesAccessor.getEnvVariable(
+                EnvVariableKeys.GOOGLE_MAPS_API_KEY.toString());
         return ok(destinationPage.render(user, destination, inEditMode,
-                destForm, countries, types, travellerTypes));
+                destForm, countries, types, travellerTypes, googleApiKey));
     }
 
     /**
@@ -329,8 +338,11 @@ public class DestinationController extends Controller {
 
         boolean inEditMode = false;
 
+        String googleApiKey = EnvironmentalVariablesAccessor.getEnvVariable(
+                EnvVariableKeys.GOOGLE_MAPS_API_KEY.toString());
         return ok(destinationPage.render(user, destination, inEditMode,
-                null, null, null, null));
+                null, null, null, null,
+                googleApiKey));
     }
 
     /**
@@ -484,8 +496,11 @@ public class DestinationController extends Controller {
             destFactory.mergeDestinations(matchingDestinations, destination);
         }
 
+        String googleApiKey = EnvironmentalVariablesAccessor.getEnvVariable(
+                EnvVariableKeys.GOOGLE_MAPS_API_KEY.toString());
         return ok(destinationPage.render(user, destination, false,
-                null, null, null, null));
+                null, null, null, null,
+                googleApiKey));
 
     }
 
@@ -1078,7 +1093,9 @@ public class DestinationController extends Controller {
     public Result renderMap(Http.Request request) {
         User user = User.getCurrentUser(request);
 //        return ok(googlePlacesMapDocumentationExample.render(user));
-        return ok(googlePlacesMapDocumentationExample.render(user));
+        String googleApiKey = EnvironmentalVariablesAccessor.getEnvVariable(
+                EnvVariableKeys.GOOGLE_MAPS_API_KEY.toString());
+        return ok(googlePlacesMapDocumentationExample.render(user, googleApiKey));
     }
 
 }

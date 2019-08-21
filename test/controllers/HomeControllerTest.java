@@ -12,6 +12,7 @@ import models.*;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
 import play.Application;
 import play.api.test.CSRFTokenHelper;
 import play.db.Database;
@@ -52,6 +53,8 @@ import static play.mvc.Http.Status.UNAUTHORIZED;
 import static play.test.Helpers.*;
 
 public class HomeControllerTest extends BaseTestWithApplicationAndDatabase {
+
+    Logger logger = UtilityFunctions.getLogger();
 
     /**
      * Test to render home with no login session
@@ -144,7 +147,7 @@ public class HomeControllerTest extends BaseTestWithApplicationAndDatabase {
                         app.asScala().materializer());
         CSRFTokenHelper.addCSRFToken(request);
         Result result = route(app, request);
-        System.out.println(result.body());
+
         assertEquals(SEE_OTHER, result.status());
     }
 
@@ -472,14 +475,14 @@ public class HomeControllerTest extends BaseTestWithApplicationAndDatabase {
         user3.save();
     }
 
-    public String convertResultFileToString(Result result){
+    private String convertResultFileToString(Result result){
         ActorSystem actorSystem = ActorSystem.create("TestSystem");
         try {
             Materializer mat = ActorMaterializer.create(actorSystem);
             String contentAsString = Helpers.contentAsString(result, mat);
             return contentAsString;
         } catch (Exception e){
-            e.printStackTrace();
+            logger.error(e.toString());
             fail();
         }
         finally {
@@ -487,7 +490,7 @@ public class HomeControllerTest extends BaseTestWithApplicationAndDatabase {
             try {
                 Await.result(future, Duration.create("5s"));
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error(e.toString());
                 fail();
             }
         }

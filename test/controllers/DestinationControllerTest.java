@@ -3,12 +3,15 @@ package controllers;
 import accessors.AlbumAccessor;
 import accessors.DestinationAccessor;
 import accessors.TravellerTypeAccessor;
+import accessors.TagAccessor;
 import accessors.TreasureHuntAccessor;
 import accessors.VisitAccessor;
 import com.fasterxml.jackson.databind.JsonNode;
+import io.ebean.DuplicateKeyException;
 import models.*;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import play.Application;
@@ -909,7 +912,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
         Destination destination = Destination.find().byId(destId);
 
         assertEquals(303, result.status());
-        System.out.println(destination.getDestName());
+
         assert(destination.getDestName().equals("Test Dest2"));
         assert(destination.getDestType().equals("Town2"));
         assert(destination.getDistrict().equals("Test District2"));
@@ -1412,5 +1415,69 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
 
         assertEquals(destPhotosSize-1,
                 destinationAfterDelete.getPrimaryAlbum().getMedia().size());
+    }
+
+    /**
+     *
+     */
+    @Test
+    public void checkAddTag(){
+        Destination destination;
+        destination = new Destination
+                ("Ben's Happy place", "Attraction","Unknown", "The Void", 25.00, 71.00,null,true);
+        DestinationAccessor.insert(destination);
+        Tag tag = new Tag("Places to see");
+        TagAccessor.insert(tag);
+        destination.addTag(tag);
+        DestinationAccessor.update(destination);
+        Destination clone = DestinationAccessor.getDestinationById(destination.getDestId());
+        assertEquals(1, clone.getTags().size());
+    }
+
+    @Test(expected = DuplicateKeyException.class)
+    public void checkAddingSameTag(){
+
+        Tag tag = new Tag("Clone");
+        TagAccessor.insert(tag);
+        Tag tagClone = new Tag("Clone");
+        TagAccessor.insert(tagClone);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void checkAddingNullTag(){
+        Destination destination;
+        destination = new Destination
+                ("Ben's Happy place", "Attraction","Unknown", "The Void", 25.00, 71.00,null,true);
+        DestinationAccessor.insert(destination);
+        new Tag(null); //This will throw an exception
+    }
+
+    @Test
+
+    public void checkRemoveTag(){
+        Destination destination;
+        destination = new Destination
+                ("Ben's Happy place", "Attraction","Unknown", "The Void", 25.00, 71.00,null,true);
+        DestinationAccessor.insert(destination);
+        Tag tag = new Tag("Delete me");
+        TagAccessor.insert(tag);
+
+        destination.addTag(tag);
+        DestinationAccessor.update(destination);
+
+        destination.removeTag(tag);
+        DestinationAccessor.update(destination);
+
+        assertEquals(0, DestinationAccessor.getDestinationById(destination.getDestId()).getTags().size());
+    }
+
+    @Test
+    public void checkRemoveTagOnEmptySet(){
+        Destination destination = new Destination
+                ("Ben's Happy place", "Attraction","Unknown", "The Void", 25.00, 71.00,null,true);
+
+        Tag tag = new Tag("Test");
+
+        assertEquals(false, destination.removeTag(tag));
     }
 }

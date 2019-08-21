@@ -27,19 +27,6 @@ public class AlbumTest extends BaseTestWithApplicationAndDatabase {
 
         Media media = MediaAccessor.getMediaById(photo.getMediaId());
 
-
-//        Album album = new Album(photo, null, "title");
-//        album.save();
-
-//        System.out.println(album.getMedia());
-
-//        Album newAlbum = AlbumAccessor.getAlbumById(album.getAlbumId());
-////
-//
-//        System.out.println(newAlbum.getMedia().get(0));
-//
-//        assert(album.getMedia().size() == 1);
-
     }
 
     @Test

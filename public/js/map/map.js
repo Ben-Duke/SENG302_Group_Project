@@ -21,9 +21,8 @@ function initMap() {
             style: google.maps.MapTypeControlStyle.HORIZONTAL_BAR,
             position: google.maps.ControlPosition.TOP_RIGHT
         },
+    });
 
-
-    })
     geoCoder = new google.maps.Geocoder;
 
     initPlacesAutocompleteSearch();
@@ -31,7 +30,7 @@ function initMap() {
     initMapLegend();
     initTripRoutes();
     initMapPositionListeners();
-
+    hideTagEditor();
 }
 
 
@@ -210,7 +209,9 @@ function addSelectedToVisitToTrip(destId, startTrip){
                 tripLink.appendChild(formCheckDiv);
                 listGroup.appendChild(tripLink);
 
-
+                //Update tags
+                changeTaggableModel(data.tripId, "trip");
+                showTagEditor();
 
                 for (let i in tripRoutes) {
                     tripRoutes[i].setMap(null);
@@ -698,6 +699,10 @@ function displayTrip(tripId, startLat, startLng) {
     currentlyDisplayedTripId = tripId;
     window.globalMap.setCenter(tripStartLatLng);
     window.globalMap.setZoom(9);
+
+    //Update tags
+    changeTaggableModel(tripId, "trip");
+    showTagEditor();
 }
 
 
@@ -1234,8 +1239,6 @@ function initMapPositionListeners() {
                 var latlng = new google.maps.LatLng(
                     document.getElementById("latitude").value,
                     window.globalMap.center.lng());
-
-
             }
         });
 
@@ -1246,7 +1249,6 @@ function initMapPositionListeners() {
                 var latlng = new google.maps.LatLng(
                     window.globalMap.center.lat(),
                     document.getElementById("longitude").value);
-
             }
         });
 

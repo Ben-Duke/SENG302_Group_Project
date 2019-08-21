@@ -583,7 +583,7 @@ public class TreasureHuntControllerTest extends BaseTestWithApplicationAndDataba
         Http.RequestBuilder fakeRequest = Helpers.fakeRequest().method(Helpers.GET).uri("/users/treasurehunts/delete/" + tHuntId).session("connected", "2");
         Helpers.route(app, fakeRequest);
         user = UserAccessor.getById(2);
-        System.out.println(user.getTreasureHunts().size());
+
         // Undo the delete
         Http.RequestBuilder undoRequest = Helpers.fakeRequest()
                 .method(PUT)
@@ -591,7 +591,7 @@ public class TreasureHuntControllerTest extends BaseTestWithApplicationAndDataba
         Helpers.route(app, undoRequest);
 
         user = UserAccessor.getById(2);
-        System.out.println(user.getTreasureHunts().size());
+
 
         // Redo the delete
         Http.RequestBuilder redoRequest = Helpers.fakeRequest()
@@ -600,7 +600,7 @@ public class TreasureHuntControllerTest extends BaseTestWithApplicationAndDataba
         Helpers.route(app, redoRequest);
 
         user = UserAccessor.getById(2);
-        System.out.println(user.getTreasureHunts().size());
+
 
         user = UserAccessor.getById(2);
         assertEquals(nTreasureHunts-1, user.getTreasureHunts().size());

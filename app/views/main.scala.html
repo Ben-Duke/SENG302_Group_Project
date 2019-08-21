@@ -53,6 +53,12 @@
                         @if(user.userIsAdmin) {
                             <li><a href="@routes.AdminController.indexAdmin()">Admin</a></li>
                         }
+                        <li>
+                            <div>
+                                <input id="tag-search" list="tag-results" name="Tag Search" title="Tag Search" placeholder="Search Tags">
+                                <datalist id="tag-results"></datalist>
+                            </div>
+                        </li>
                     </ul>
                         <ul class="nav navbar-nav navbar-right"><!-- Use a button to open the snackbar -->
                             <div id="snackbar"></div>

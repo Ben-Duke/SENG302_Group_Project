@@ -46,19 +46,11 @@ public class ProfileController extends Controller {
      * @return will delete the given photo and return to index page
      */
     public Result deletePhoto(Http.Request request, Integer photoId, Boolean userInput){
-        UserFactory factory = new UserFactory();
         UserPhoto photo = (UserPhoto) MediaAccessor.getMediaById(photoId);
         User user = User.getCurrentUser(request);
         if (photo != null && photo.getIsProfile() && (!userInput)) {
             return badRequest("Is profile picture ask user");
         }
-
-        //TODO AC11 albums. Implement it here
-        /*
-        if (photo.getDestinations().size() > 0) {
-            return badRequest("Failed to delete image");
-        }
-        */
 
         DeletePhotoCommand deletePhotoCommand = new DeletePhotoCommand((UserPhoto) MediaAccessor.getMediaById(photoId));
         user.getCommandManager().executeCommand(deletePhotoCommand);
@@ -75,7 +67,7 @@ public class ProfileController extends Controller {
      */
     public Result updateProfile(Http.Request request){
         List<User> users = User.getCurrentUser(request, true);
-        Boolean isAdmin = false;
+        boolean isAdmin = false;
         if (users.size() != 0) {
             User user = users.get(0);
             //Clear the command stack before starting otherwise can undo profile edits from this page

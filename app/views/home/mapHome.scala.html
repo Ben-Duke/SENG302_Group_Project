@@ -52,12 +52,14 @@
     }
     #destinationList {
         margin-top: 10px;
+        height: 45%;
+        overflow-y: auto;
         position: relative;
     }
     .createDestBtn {
         color: white;
         position: absolute;
-        top: -8px;
+        top: 0;
         right: 0;
     }
 
@@ -303,7 +305,6 @@
                             </tr>
                         </thead>
                     </table>
-
                     @for(trip <- trips) {
 
                     <div id="singleTrip_@trip.getTripid()" class="singleTrip">
@@ -348,10 +349,12 @@
                     </div>
                     }
                 </div>
+                <div id="tagEditor">
+                @users.tag.createSearchTags(user,"trip", null)
+                </div>
                 <datalist id="tripListDeletion"></datalist>
                 <hr>
                 <div id="tripList">
-
                 <div id="trip-list-group"class="list-group">
                     @for(trip <- trips) {
 

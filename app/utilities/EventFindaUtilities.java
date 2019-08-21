@@ -3,15 +3,20 @@ package utilities;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.ProtocolException;
 import java.net.URL;
-import java.util.Base64;
+import java.net.URLDecoder;
+import java.util.*;
 
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import models.Destination;
 import org.slf4j.Logger;
 import play.libs.Json;
+import scala.collection.concurrent.Debug;
 
 
 /**
@@ -94,6 +99,94 @@ public class EventFindaUtilities {
         return eventFindaGetResponse(url);
     }
 
+    public static JsonNode getEvents(String keyword, String category, String startDate,
+                                     String endDate, String minPrice, String maxPrice,
+                                     Destination destination, String sortBy, Integer offset) {
+
+        int locationId = getLocationId(-43.53, 172.620278, "");
+        if (locationId == -1) {
+            return null;
+        }
+        String url = "events.json?location="+locationId+ "&rows=20" + "&offset=" + 0;
+
+        if (!category.isEmpty()) {
+            url += "&category="+category;
+        }
+        if (!startDate.isEmpty()) {
+            url += "&start_date="+startDate;
+        }
+        if (!endDate.isEmpty()) {
+            url += "&end_date="+endDate;
+        }
+        if (!minPrice.isEmpty()) {
+            url += "&price_min="+minPrice;
+        }
+        if (!maxPrice.isEmpty()) {
+            url += "&price_max="+maxPrice;
+        }
+        if (!sortBy.isEmpty()) {
+            url += "&order="+sortBy;
+        }
+        if (!keyword.isEmpty()) {
+            url = addKeyWordFilterToQuery(url, keyword);
+        }
+        if (offset != null) {
+            url += "&offset="+offset;
+        }
+//        System.out.println(url);
+        return eventFindaGetResponse(url);
+    }
+
+
+
+    /**
+     * Adds keyword parameter to the API given query.
+     *
+     * The "keywords" parameter should be a string of one or more keywords.
+     * If they are separated by "," then an "OR" search is performed, and
+     * if they are separated by spaces then an "AND" search is performed.
+     * For example:
+     * Input: addKeyWordFilterToQuery("currentUrl", "cycling    Southland    ,   running, alpha")
+     * Output: currentUrl&q=(cycling+AND+Southland)+OR+(running)+OR+(alpha)
+     * @param currentQuery String
+     * @param keywords String
+     * @return returns the id of given place name.
+     */
+    public static String addKeyWordFilterToQuery(String currentQuery, String keywords){
+        String updatedQuery = currentQuery;
+        keywords = keywords.trim();
+        try {
+            keywords = URLDecoder.decode(keywords, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            Debug.log(e.getStackTrace());
+        }
+        String[] qParams = keywords.split("\\s*,\\s*");
+        List<String[]> ors = new ArrayList<>();
+        for (String words: qParams) {
+            String[] splitWords = words.split("\\s+");
+            ors.add(splitWords);
+        }
+        String stringToAdd = "";
+        int index = 0;
+        for (String[] str : ors) {
+            if (str.length > 0) {
+                String andString = "(";
+                for (String word : str) {
+                    andString = andString.concat(word + "+AND+");
+                }
+                andString = removeCharsFromEnd(andString, 5);
+                andString = andString.concat(")");
+                stringToAdd = stringToAdd.concat(andString);
+            }
+            stringToAdd = stringToAdd.concat("+OR+");
+            index++;
+        }
+        stringToAdd = removeCharsFromEnd(stringToAdd, 4);
+        updatedQuery = updatedQuery.concat("&q=" + stringToAdd);
+
+        return updatedQuery;
+    }
+
     /**
      * Gets the location id of the passed place name.
      * @param latitude
@@ -125,7 +218,32 @@ public class EventFindaUtilities {
         return eventFindaGetResponse(url);
     }
 
+    public static Map<Integer, String> getMainCategories() {
+        String categoryQuery = "categories.json?rows=6";
 
+
+        JsonNode categoryResults =  eventFindaGetResponse(categoryQuery);
+
+        Map<Integer, String> categoryIdsToNames = new TreeMap<>();
+        for (JsonNode result : categoryResults.get("categories")) {
+            Integer artistId = new ObjectMapper().convertValue(result.get("id"), Integer.class);
+            String artistName = new ObjectMapper().convertValue(result.get("name"), String.class);
+            categoryIdsToNames.put(artistId, artistName);
+        }
+
+        System.out.println(categoryIdsToNames);
+
+        return categoryIdsToNames;
+    }
+
+
+    private static String removeCharsFromEnd(String str, int numOfChars) {
+        return str.substring(0, str.length() - numOfChars);
+    }
+
+    public static void main(String [] args) {
+        System.out.println(addKeyWordFilterToQuery("currentUrl", "cycling    Southland    ,   running, alpha"));
+    }
 }
 
 

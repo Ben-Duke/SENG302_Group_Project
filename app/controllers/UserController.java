@@ -49,7 +49,8 @@ public class UserController {
             ApplicationManager.setMediaPath("/../media_");
 //            ApplicationManager.getMediaPath()
 
-            TestDatabaseManager.populateDatabaseWithLatch(initCompleteLatch);
+            TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
+            testDatabaseManager.populateDatabaseWithLatch(initCompleteLatch);
         } else {
             try {
                 initCompleteLatch.await();

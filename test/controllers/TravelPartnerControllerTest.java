@@ -43,7 +43,8 @@ public class TravelPartnerControllerTest extends BaseTestWithApplicationAndDatab
      * Populate the test data
      */
     public void populateDatabase() {
-        TestDatabaseManager.clearMostData();    // keep nats/pass/ttypes
+        TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
+        testDatabaseManager.clearMostData();    // keep nats/pass/ttypes
 
         TravellerType travellerType1 = TravellerType.find().byId(1);
         TravellerType travellerType2 = TravellerType.find().byId(2);

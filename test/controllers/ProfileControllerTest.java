@@ -44,7 +44,8 @@ public class ProfileControllerTest extends BaseTestWithApplicationAndDatabase {
      * Runs before each test and cleared afterwards
      */
     public void populateDatabase() {
-        TestDatabaseManager.clearMostData();    // keep nats/pass/ttypes
+        TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
+        testDatabaseManager.clearMostData();    // keep nats/pass/ttypes
 
         TravellerType travellerType1 = TravellerType.find().byId(1);
         TravellerType travellerType2 = TravellerType.find().byId(2);

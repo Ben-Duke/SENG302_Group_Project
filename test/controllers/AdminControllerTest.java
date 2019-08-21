@@ -40,7 +40,8 @@ public class AdminControllerTest extends BaseTestWithApplicationAndDatabase {
      */
     @Override
     public void populateDatabase() {
-        TestDatabaseManager.clearAllData();
+        TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
+        testDatabaseManager.clearAllData();
 
         //Initialises test users and default admin and saves it to the database.
         User user = new User("testAdmin");

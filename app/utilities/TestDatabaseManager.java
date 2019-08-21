@@ -21,11 +21,6 @@ public class TestDatabaseManager {
 
     private static final Logger logger = UtilityFunctions.getLogger();
 
-    // Private constructor to hide the implicit public one
-    private TestDatabaseManager() {
-        throw new IllegalStateException("Utility class");
-    }
-
     /**
      * Completes the database population that is done by the sql evolutions
      * when the application is first started.
@@ -33,7 +28,7 @@ public class TestDatabaseManager {
      * @param initCompleteLatch A CountDownLatch to call back and unlock when the
      *                          database has been populated.
      */
-    public static void populateDatabaseWithLatch(CountDownLatch initCompleteLatch) {
+    public void populateDatabaseWithLatch(CountDownLatch initCompleteLatch) {
         populateDatabase();    // not testing so no need to pass a connection
         initCompleteLatch.countDown();
     }
@@ -41,7 +36,7 @@ public class TestDatabaseManager {
     /**
      * Completes the database population that is done by the sql evolutions
      */
-    public static void populateDatabase() {
+    public void populateDatabase() {
         logger.info("Making programmatic database population changes");
 
         // If testing - replace original data with test data
@@ -62,7 +57,7 @@ public class TestDatabaseManager {
     /**
      * Runs the sql script containing the automated testing data
      */
-    private static void populateAutomatedTestData() {
+    private void populateAutomatedTestData() {
         SqlFileReader fileReader = new SqlFileReader("test/resources/testData.sql");
         String sql = fileReader.readFile();
 
@@ -73,7 +68,7 @@ public class TestDatabaseManager {
      *  Add in test user photos - only occurs during testing.
      *  Only adds file paths not actual photo files
      */
-    private static void addUserPhotos() {
+    private void addUserPhotos() {
         // only populate photos for the tests
         if (!ApplicationManager.isIsTest()) {
             return;
@@ -112,7 +107,7 @@ public class TestDatabaseManager {
     /**
      * Sets the passwords of all test users and admins
      */
-    private static void setUserPasswords() {
+    private void setUserPasswords() {
         List<User> users = UserAccessor.getAll();
         for (User user : users) {
             if (user.userIsAdmin()) {
@@ -126,7 +121,7 @@ public class TestDatabaseManager {
     }
 
     /** Clear data from all tables except nationality, passport and traveller type */
-    public static void clearMostData() {
+    public void clearMostData() {
         List<TableName> persisted = Arrays.asList(
                 TableName.nationality,
                 TableName.passport,
@@ -136,7 +131,7 @@ public class TestDatabaseManager {
     }
 
     /** Clear all data from the database */
-    public static void clearAllData() {
+    public void clearAllData() {
         clearData(new ArrayList<TableName>());  // pass an empty list
     }
 
@@ -149,7 +144,7 @@ public class TestDatabaseManager {
      * Always runs on DEFAULT database not a database with a different name which
      * the application is connected to
      */
-    private static void clearData(List<TableName> persisted) {
+    private void clearData(List<TableName> persisted) {
         logger.info("Clearing database data");
 
         for (TableName tableName : TableName.values()) {

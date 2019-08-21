@@ -436,7 +436,7 @@ INSERT INTO `destination_tag`(`destination_destid`, `tag_tag_id`) VALUES
 (1,3);
 
 INSERT INTO `trip_tag`(`trip_tripid`,`tag_tag_id`) VALUES
-(1,4);
+(1,1);
 
 -- media_tag
 

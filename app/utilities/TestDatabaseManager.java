@@ -63,6 +63,7 @@ public class TestDatabaseManager {
             return;
         }
 
+
         UserPhoto userPhoto1 = new UserPhoto("shrek.jpeg", true, true,
                 User.find().byId(2));
         userPhoto1.setCaption("Get out of my swamp");

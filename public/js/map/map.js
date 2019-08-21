@@ -361,6 +361,7 @@ function createTripTable(data) {
     errorMsg.classList.add('text-center');
     errorMsg.id = 'dateError_' + data[0];
     errorMsg.style.color = 'red';
+    errorMsg.style.display = 'none';
     errorMsg.innerText = 'Arrival date must be before departure date';
     deleteButton.appendChild(deleteButtonText);
     tableDataDeparture.appendChild(departureDateInput);

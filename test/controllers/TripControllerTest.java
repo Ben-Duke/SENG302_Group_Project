@@ -1,5 +1,6 @@
 package controllers;
 
+import accessors.TagAccessor;
 import accessors.TripAccessor;
 import accessors.UserAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -7,12 +8,10 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import factories.TripFactory;
 import factories.VisitFactory;
 import formdata.VisitFormData;
-import models.Destination;
-import models.Trip;
-import models.User;
-import models.Visit;
+import models.*;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import play.Application;
 import play.api.test.CSRFTokenHelper;
@@ -555,7 +554,7 @@ public class TripControllerTest extends BaseTestWithApplicationAndDatabase {
                 .method(GET)
                 .uri("/users/trips/table/edit/2/2").session("connected", "1");
         Result result = route(app, request);
-        System.out.println(contentAsString(result));
+
         assertEquals(SEE_OTHER, result.status());
         assertEquals(5, Trip.find().byId(2).getVisits().size());
         //5th visit should be the newly added one (Wellington)
@@ -752,5 +751,22 @@ public class TripControllerTest extends BaseTestWithApplicationAndDatabase {
         Result result = route(app, request);
         assertEquals(OK, result.status());
     }
+    
+    @Test
+    public void getTripPhoto() {
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/trips/2/tripPicture").session("connected", "1");
+        Result result = route(app, request);
+        assertEquals(OK, result.status());
+    }
 
+    @Test
+    public void getTripPhotoNotFound() {
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/trips/15/tripPicture").session("connected", "1");
+        Result result = route(app, request);
+        assertEquals(NOT_FOUND, result.status());
+    }
 }

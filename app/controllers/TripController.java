@@ -1,6 +1,8 @@
 package controllers;
 
+import accessors.DestinationAccessor;
 import accessors.TripAccessor;
+import accessors.UserAccessor;
 import accessors.VisitAccessor;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -10,10 +12,7 @@ import factories.TripFactory;
 import factories.VisitFactory;
 import formdata.TripFormData;
 import formdata.VisitFormData;
-import models.Destination;
-import models.Trip;
-import models.User;
-import models.Visit;
+import models.*;
 import models.commands.General.CommandPage;
 import models.commands.Visits.EditVisitCommand;
 import models.commands.Trips.DeleteTripCommand;
@@ -27,10 +26,10 @@ import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
 import utilities.UtilityFunctions;
-import views.html.home.mapHome;
 import views.html.users.trip.*;
 
 import javax.inject.Inject;
+import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -145,6 +144,15 @@ public class TripController extends Controller {
             }
             TripFormData created = incomingForm.get();
             int tripid = tripFactory.createTrip(created, user);
+
+
+            if (incomingForm.get().tags != null && incomingForm.get().tags.length() > 0) {
+                List<String> tags = Arrays.asList(incomingForm.get().tags.split(","));
+                Set<Tag> uniqueTags = UtilityFunctions.tagLiteralsAsSet(tags);
+                Trip trip = TripAccessor.getTripById(tripid);
+                trip.setTags(uniqueTags);
+                TripAccessor.update(trip);
+            }
             return redirect(routes.TripController.addTripDestinations(tripid));
         }
         else{
@@ -180,6 +188,7 @@ public class TripController extends Controller {
             return redirect(routes.UserController.userindex());
         }
     }
+
 
     /**
      * Handles the update visit request. Updates a visit with the given form details. If the updated visit would cause
@@ -375,6 +384,13 @@ public class TripController extends Controller {
 
             }
 
+            // If public dest and user not owner and user not admin
+            if (destination.getIsPublic() && destination.getUser().getUserid()
+                    != user.getUserid() && !user.userIsAdmin()) {
+                destination.setUser(UserAccessor.getById(1)); // change ownership to admin
+                DestinationAccessor.update(destination);
+            }
+
 
             VisitFactory visitFactory = new VisitFactory();
             Visit newVisit = visitFactory.createVisitByJSRequest(destination, trip);
@@ -419,6 +435,14 @@ public class TripController extends Controller {
                 return forbidden("2");
 
             }
+
+            // If public dest and user not owner and user not admin
+            if (destination.getIsPublic() && destination.getUser().getUserid()
+                    != user.getUserid() && !user.userIsAdmin()) {
+                destination.setUser(UserAccessor.getById(1)); // change ownership to admin
+                DestinationAccessor.update(destination);
+            }
+
             Trip trip = new Trip("Trip to " + destination.getDestName(),false, user);
             Visit visit = new Visit(null, null, trip, destination);
 
@@ -665,6 +689,31 @@ public class TripController extends Controller {
         } else {
             return redirect(routes.UserController.userindex());
         }
+    }
+
+    /**
+     * Get the trip photo being the photo of the first destination visited (or a placeholder)
+     * @param request the http request
+     * @param tripId the id of the trip which needs its photo to be retrieved
+     * @return
+     */
+    public Result getTripPhoto(Http.Request request, Integer tripId) {
+        User user = User.getCurrentUser(request);
+        if (user != null) {
+            Trip trip = TripAccessor.getTripById(tripId);
+            if (trip == null) {
+                return notFound();
+            }
+            Destination startDestination = trip.getOrderedVisits().get(0).getDestination();
+            UserPhoto startPhoto = startDestination.getPrimaryAlbum().getPrimaryPhoto();
+            if (startPhoto != null) {
+                return ok(new File(startPhoto.getUrlWithPath()));
+            } else {
+                return ok(new File(ApplicationManager.getDefaultDestinationPhotoFullURL()));
+            }
+
+        }
+        return redirect(routes.UserController.userindex());
     }
 
 

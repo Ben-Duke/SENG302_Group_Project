@@ -23,3 +23,36 @@ function searchAlbum(){
     }
 }
 
+$('#photo-upload').click(function (eve){
+    let searchBar = document.getElementById("album-search-photo");
+    let privateInput = document.getElementById("private").checked;
+    let filePath = document.getElementById("photoUpload");
+    if (searchBar.value === null || searchBar.value === "") {
+        document.getElementById("photoAlbumMessage").style.display = "block";
+    } else {
+        var formData = new FormData();
+        formData.append('picture', filePath.files[0]);
+        formData.append('private', privateInput);
+        formData.append('album', searchBar.value);
+        var token = $('input[name="csrfToken"]').attr('value');
+        $.ajaxSetup({
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader('Csrf-Token', token);
+            }
+        });
+        $.ajax({
+            type: 'POST',
+            processData: false,
+            contentType: false,
+            url: '/users/home/photo',
+            data: formData,
+            success: function (data, textStatus, xhr) {
+                if (xhr.status == 200) {
+                    window.location = '/users/albums'
+                } else {
+                    window.location = '/users/albums'
+                }
+            }
+        })
+    }
+});

@@ -871,7 +871,7 @@ public class AlbumControllerTest extends BaseTestWithApplicationAndDatabase {
         Result result = route(app, request);
 
         JsonNode jsonJacksonArray = play.libs.Json.parse(contentAsString(result));
-        System.out.println(jsonJacksonArray);
+
         assertEquals(1, jsonJacksonArray.size());
     }
 
@@ -1114,6 +1114,62 @@ public class AlbumControllerTest extends BaseTestWithApplicationAndDatabase {
                 .session("connected", userId);
         Result result = route(app, request);
 
+        assertEquals(BAD_REQUEST, result.status());
+    }
+
+    @Test
+    public void getFirstAlbumIdFromMediaIdSuccessfulRetrieval() {
+        User user = UserAccessor.getUserByEmail("testuser1@uclive.ac.nz");
+        String userId = Integer.toString(user.getUserid());
+
+        Album album = new Album(user, "testTitle", false);
+        AlbumAccessor.insert(album);
+
+        Media media = new UserPhoto("/test", false, false, user);
+        MediaAccessor.insert(media);
+
+        Http.RequestBuilder requestOne = Helpers.fakeRequest()
+                .bodyJson(Json.parse("{\"mediaIds\":["+media.getMediaId()+"]}"))
+                .method(Helpers.PUT)
+                .uri("/users/albums/add_media/"+album.getAlbumId())
+                .session("connected", Integer.toString(user.getUserid()));
+
+        route(app, requestOne);
+
+
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/albums/getAlbumFromMediaId/" + media.mediaId)
+                .session("connected", userId);
+        Result result = route(app, request);
+        assertEquals(OK, result.status());
+    }
+
+    @Test
+    public void getFirstAlbumIdFromMediaIdUnsuccessfulRetrieval() {
+        User user = UserAccessor.getUserByEmail("testuser1@uclive.ac.nz");
+        String userId = Integer.toString(user.getUserid());
+
+        Album album = new Album(user, "testTitle", false);
+        AlbumAccessor.insert(album);
+
+        Media media = new UserPhoto("/test", false, false, user);
+        MediaAccessor.insert(media);
+
+        Http.RequestBuilder requestOne = Helpers.fakeRequest()
+                .bodyJson(Json.parse("{\"mediaIds\":["+media.getMediaId()+"]}"))
+                .method(Helpers.PUT)
+                .uri("/users/albums/add_media/"+album.getAlbumId())
+                .session("connected", Integer.toString(user.getUserid()));
+
+        route(app, requestOne);
+
+
+        Http.RequestBuilder requestTwo = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/albums/getAlbumFromMediaId/" + media.mediaId + 1)
+                .session("connected", userId);
+        Result result = route(app, requestTwo);
         assertEquals(BAD_REQUEST, result.status());
     }
 

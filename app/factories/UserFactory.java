@@ -59,6 +59,8 @@ public class UserFactory {
      * @param photoId Id of photo being deleted
      */
     public void deletePhoto(int photoId){
+        UserPhoto photo = UserPhotoAccessor.getUserPhotoById(photoId);
+        UserPhotoAccessor.unlinkAllTags(photo);
         UserPhotoAccessor.deleteById(photoId);
     }
 

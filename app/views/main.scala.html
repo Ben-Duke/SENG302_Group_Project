@@ -32,8 +32,6 @@
                     <a class="navbar-brand" href="@routes.HomeController.mainMapPage()">TravelEA</a>
                 </div>
                 <ul class="nav navbar-nav">
-                    <li><a href="@routes.HomeController.mainMapPage()">Home</a></li>
-                    <li><a href="@routes.HomeController.showhome()">Profile</a></li>
                     @if(user != null) {
                         @if(user.isUndoRedoError()) {
                             <script>
@@ -42,11 +40,23 @@
                             @user.setUndoRedoError(false);
                             @UserAccessor.update(user);
                         }
+                        <li><a href="@routes.HomeController.mainMapPage()">Home</a></li>
+                        <li><a href="@routes.AlbumController.indexAlbum()">Media</a></li>
+                        <li>
+                            <a href="@routes.TravelPartnerController.renderFilterPage()">
+                                <i class="glyphicon glyphicon-search"></i> &nbsp; Travellers
+                            </a>
+                        </li>
                         <li><a href="@routes.TreasureHuntController.indexTreasureHunt()" >Treasure hunts</a></li>
-                        <li><a href="@routes.AlbumController.indexAlbum()">My Media</a></li>
                         @if(user.userIsAdmin) {
                             <li><a href="@routes.AdminController.indexAdmin()">Admin</a></li>
                         }
+                        <li>
+                            <div>
+                                <input id="tag-search" list="tag-results" name="Tag Search" title="Tag Search" placeholder="Search Tags">
+                                <datalist id="tag-results"></datalist>
+                            </div>
+                        </li>
                     </ul>
                         <ul class="nav navbar-nav navbar-right"><!-- Use a button to open the snackbar -->
                             <div id="snackbar"></div>

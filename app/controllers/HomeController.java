@@ -1,17 +1,13 @@
 package controllers;
 
 import accessors.DestinationAccessor;
+import accessors.TagAccessor;
 import accessors.UserAccessor;
 import accessors.UserPhotoAccessor;
 import factories.UserFactory;
 import formdata.DestinationFormData;
 import io.ebean.DuplicateKeyException;
-import models.Destination;
-import models.Trip;
-import models.Album;
-import models.Media;
-import models.User;
-import models.UserPhoto;
+import models.*;
 import models.commands.General.CommandPage;
 import models.commands.Albums.AddMediaToAlbumCommand;
 import models.commands.Albums.CreateAlbumCommand;
@@ -33,9 +29,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static play.mvc.Results.*;
 
@@ -126,7 +120,6 @@ public class HomeController {
             if (dataPart.get("private")[0].equals("false")) {
                 isPublic = true;
             }
-
             //Get the photo data from the multipart form data encoding
             Http.MultipartFormData<Files.TemporaryFile> body = request.body().asMultipartFormData();
             Http.MultipartFormData.FilePart<Files.TemporaryFile> picture = body.getFile("picture");
@@ -165,8 +158,10 @@ public class HomeController {
             UserPhoto newPhoto = new UserPhoto(originalFilePath, isPublic, false, user);
             String unusedPhotoUrl = newPhoto.getUnusedUserPhotoFileName();
             newPhoto.setUrl(unusedPhotoUrl);
-            UploadPhotoCommand uploadPhotoCommand = new UploadPhotoCommand(newPhoto, fileObject, user, albumName);
+            Set<Tag> tags = TagAccessor.findPendingTagsFromUserId(user.getUserid());
+            UploadPhotoCommand uploadPhotoCommand = new UploadPhotoCommand(newPhoto, fileObject, user, albumName, tags);
             user.getCommandManager().executeCommand(uploadPhotoCommand);
+            TagAccessor.removePendingTagsFromUserId(user.getUserid());
             return redirect(routes.HomeController.showhome());
         } else {
             return badRequest();
@@ -217,9 +212,9 @@ public class HomeController {
                     //DB saving
                     UserFactory.replaceProfilePicture(user.getUserid(), newPhoto);
                     UploadPhotoCommand uploadPhotoCommand = new UploadPhotoCommand(UserPhotoAccessor.getUserPhotoByUrl(unusedPhotoUrl), file, user,
-                            user.getFName()+"'s "+"Profile Pictures");
+                            user.getFName() + " " + user.getLName() + "'s "+"Profile Pictures");
                     uploadPhotoCommand.addUploadToAlbum(user, UserPhotoAccessor.getUserPhotoByUrl(unusedPhotoUrl),
-                            user.getFName()+"'s "+"Profile Pictures");
+                            user.getFName() + " " + user.getLName() +"'s "+"Profile Pictures");
                     return redirect(routes.HomeController.showhome());
                 }
             }
@@ -291,8 +286,13 @@ public class HomeController {
         }
     }
 
-    public Result getGenericProfileImage(Http.Request request){
-        return ok((new File("public/images/Generic.png")).getPath());
+    /**
+     * Get a placeholder image
+     * @param request
+     * @return
+     */
+    public Result getPlaceholderImage(Http.Request request, String filename){
+        return ok(new File(ApplicationManager.getDefaultDestinationPhotoFullURL()));
     }
 
     /**

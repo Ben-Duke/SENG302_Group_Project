@@ -1,5 +1,4 @@
 -- SQL file for mysql databases
--- Differences from play generated sql files
 --   1. WILL NOT WORK if varchars are > 191
 --   2. Does not have line talking about DDL Generation
 
@@ -30,6 +29,8 @@ create table album_media (
 
 create table destination (
   destid                        integer auto_increment not null,
+  user                          integer,
+  is_public                     boolean default false not null,
   dest_name                     varchar(191),
   dest_type                     varchar(191),
   district                      varchar(191),
@@ -39,8 +40,13 @@ create table destination (
   longitude                     double not null,
   dest_is_public                boolean default false not null,
   primary_photo_media_id        integer,
-  user                          integer,
   constraint pk_destination primary key (destid)
+);
+
+create table destination_tag (
+  destination_destid            integer not null,
+  tag_tag_id                    integer not null,
+  constraint pk_destination_tag primary key (destination_destid,tag_tag_id)
 );
 
 create table destination_media (
@@ -78,13 +84,20 @@ create table destination_modification_request_traveller_type (
 create table media (
   dtype                         varchar(31) not null,
   media_id                      integer auto_increment not null,
-  url                           varchar(191),
   user                          integer,
+  is_public                     boolean default false not null,
+  url                           varchar(191),
   is_media_public               boolean default false not null,
   caption                       varchar(191),
   is_profile                    boolean default false not null,
   constraint uq_media_url unique (url),
   constraint pk_media primary key (media_id)
+);
+
+create table media_tag (
+  media_media_id                integer not null,
+  tag_tag_id                    integer not null,
+  constraint pk_media_tag primary key (media_media_id,tag_tag_id)
 );
 
 create table nationality (
@@ -101,6 +114,19 @@ create table passport (
   passport_name                 varchar(191),
   constraint uq_passport_passport_name unique (passport_name),
   constraint pk_passport primary key (passid)
+);
+
+create table tag (
+  tag_id                        integer auto_increment not null,
+  name                          varchar(191),
+  constraint uq_tag_name unique (name),
+  constraint pk_tag primary key (tag_id)
+);
+
+create table tag_user (
+  tag_tag_id                    integer not null,
+  user_userid                   integer not null,
+  constraint pk_tag_user primary key (tag_tag_id,user_userid)
 );
 
 create table traveller_type (
@@ -123,11 +149,17 @@ create table treasure_hunt (
 
 create table trip (
   tripid                        integer auto_increment not null,
+  user                          integer,
+  is_public                     boolean default false not null,
   trip_name                     varchar(191),
   removed_visits                integer default 0,
-  is_public                     boolean default false not null,
-  user                          integer,
   constraint pk_trip primary key (tripid)
+);
+
+create table trip_tag (
+  trip_tripid                   integer not null,
+  tag_tag_id                    integer not null,
+  constraint pk_trip_tag primary key (trip_tripid,tag_tag_id)
 );
 
 create table user (
@@ -195,11 +227,17 @@ alter table album_media add constraint fk_album_media_album foreign key (album_a
 create index ix_album_media_media on album_media (media_media_id);
 alter table album_media add constraint fk_album_media_media foreign key (media_media_id) references media (media_id) on delete restrict on update restrict;
 
+create index ix_destination_user on destination (user);
+alter table destination add constraint fk_destination_user foreign key (user) references user (userid) on delete restrict on update restrict;
+
 create index ix_destination_primary_photo_media_id on destination (primary_photo_media_id);
 alter table destination add constraint fk_destination_primary_photo_media_id foreign key (primary_photo_media_id) references media (media_id) on delete restrict on update restrict;
 
-create index ix_destination_user on destination (user);
-alter table destination add constraint fk_destination_user foreign key (user) references user (userid) on delete restrict on update restrict;
+create index ix_destination_tag_destination on destination_tag (destination_destid);
+alter table destination_tag add constraint fk_destination_tag_destination foreign key (destination_destid) references destination (destid) on delete restrict on update restrict;
+
+create index ix_destination_tag_tag on destination_tag (tag_tag_id);
+alter table destination_tag add constraint fk_destination_tag_tag foreign key (tag_tag_id) references tag (tag_id) on delete restrict on update restrict;
 
 create index ix_destination_media_destination on destination_media (destination_destid);
 alter table destination_media add constraint fk_destination_media_destination foreign key (destination_destid) references destination (destid) on delete restrict on update restrict;
@@ -228,6 +266,18 @@ alter table destination_modification_request_traveller_type add constraint fk_de
 create index ix_media_user on media (user);
 alter table media add constraint fk_media_user foreign key (user) references user (userid) on delete restrict on update restrict;
 
+create index ix_media_tag_media on media_tag (media_media_id);
+alter table media_tag add constraint fk_media_tag_media foreign key (media_media_id) references media (media_id) on delete restrict on update restrict;
+
+create index ix_media_tag_tag on media_tag (tag_tag_id);
+alter table media_tag add constraint fk_media_tag_tag foreign key (tag_tag_id) references tag (tag_id) on delete restrict on update restrict;
+
+create index ix_tag_user_tag on tag_user (tag_tag_id);
+alter table tag_user add constraint fk_tag_user_tag foreign key (tag_tag_id) references tag (tag_id) on delete restrict on update restrict;
+
+create index ix_tag_user_user on tag_user (user_userid);
+alter table tag_user add constraint fk_tag_user_user foreign key (user_userid) references user (userid) on delete restrict on update restrict;
+
 create index ix_treasure_hunt_destination_destid on treasure_hunt (destination_destid);
 alter table treasure_hunt add constraint fk_treasure_hunt_destination_destid foreign key (destination_destid) references destination (destid) on delete restrict on update restrict;
 
@@ -236,6 +286,12 @@ alter table treasure_hunt add constraint fk_treasure_hunt_user foreign key (user
 
 create index ix_trip_user on trip (user);
 alter table trip add constraint fk_trip_user foreign key (user) references user (userid) on delete restrict on update restrict;
+
+create index ix_trip_tag_trip on trip_tag (trip_tripid);
+alter table trip_tag add constraint fk_trip_tag_trip foreign key (trip_tripid) references trip (tripid) on delete restrict on update restrict;
+
+create index ix_trip_tag_tag on trip_tag (tag_tag_id);
+alter table trip_tag add constraint fk_trip_tag_tag foreign key (tag_tag_id) references tag (tag_id) on delete restrict on update restrict;
 
 create index ix_user_nationality_user on user_nationality (user_userid);
 alter table user_nationality add constraint fk_user_nationality_user foreign key (user_userid) references user (userid) on delete restrict on update restrict;
@@ -285,11 +341,17 @@ drop index if exists ix_album_media_album;
 alter table album_media drop constraint if exists fk_album_media_media;
 drop index if exists ix_album_media_media;
 
+alter table destination drop constraint if exists fk_destination_user;
+drop index if exists ix_destination_user;
+
 alter table destination drop constraint if exists fk_destination_primary_photo_media_id;
 drop index if exists ix_destination_primary_photo_media_id;
 
-alter table destination drop constraint if exists fk_destination_user;
-drop index if exists ix_destination_user;
+alter table destination_tag drop constraint if exists fk_destination_tag_destination;
+drop index if exists ix_destination_tag_destination;
+
+alter table destination_tag drop constraint if exists fk_destination_tag_tag;
+drop index if exists ix_destination_tag_tag;
 
 alter table destination_media drop constraint if exists fk_destination_media_destination;
 drop index if exists ix_destination_media_destination;
@@ -318,6 +380,18 @@ drop index if exists ix_destination_modification_request_traveller_type_travel_2
 alter table media drop constraint if exists fk_media_user;
 drop index if exists ix_media_user;
 
+alter table media_tag drop constraint if exists fk_media_tag_media;
+drop index if exists ix_media_tag_media;
+
+alter table media_tag drop constraint if exists fk_media_tag_tag;
+drop index if exists ix_media_tag_tag;
+
+alter table tag_user drop constraint if exists fk_tag_user_tag;
+drop index if exists ix_tag_user_tag;
+
+alter table tag_user drop constraint if exists fk_tag_user_user;
+drop index if exists ix_tag_user_user;
+
 alter table treasure_hunt drop constraint if exists fk_treasure_hunt_destination_destid;
 drop index if exists ix_treasure_hunt_destination_destid;
 
@@ -326,6 +400,12 @@ drop index if exists ix_treasure_hunt_user;
 
 alter table trip drop constraint if exists fk_trip_user;
 drop index if exists ix_trip_user;
+
+alter table trip_tag drop constraint if exists fk_trip_tag_trip;
+drop index if exists ix_trip_tag_trip;
+
+alter table trip_tag drop constraint if exists fk_trip_tag_tag;
+drop index if exists ix_trip_tag_tag;
 
 alter table user_nationality drop constraint if exists fk_user_nationality_user;
 drop index if exists ix_user_nationality_user;
@@ -365,6 +445,8 @@ drop table if exists album_media;
 
 drop table if exists destination;
 
+drop table if exists destination_tag;
+
 drop table if exists destination_media;
 
 drop table if exists destination_traveller_type;
@@ -375,15 +457,23 @@ drop table if exists destination_modification_request_traveller_type;
 
 drop table if exists media;
 
+drop table if exists media_tag;
+
 drop table if exists nationality;
 
 drop table if exists passport;
+
+drop table if exists tag;
+
+drop table if exists tag_user;
 
 drop table if exists traveller_type;
 
 drop table if exists treasure_hunt;
 
 drop table if exists trip;
+
+drop table if exists trip_tag;
 
 drop table if exists user;
 

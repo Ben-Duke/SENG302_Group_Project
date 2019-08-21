@@ -190,7 +190,11 @@ function addPagination(count, pageNum) {
     while (eventsPagination.childNodes.length > 0) {
         eventsPagination.childNodes[0].remove();
     }
+    eventFindaLogo = document.createElement("img");
+    eventFindaLogo.setAttribute("src", "https://www.eventfinda.co.nz/images/global/attribution.gif?pwiomi");
+    eventFindaLogo.setAttribute("style", "margin-right:10px; width:170px; height:25px; position: absolute; bottom:0; right:0");
     document.getElementById("eventsPage").appendChild(pagination);
+    document.getElementById("eventsPage").appendChild(eventFindaLogo);
 }
 
 function loader() {

@@ -307,10 +307,11 @@
 
                     <div id="singleTrip_@trip.getTripid()" class="singleTrip">
 
-                        <div style="margin-top: 15px; height: 30px;">
+                        <div style="margin-top: 15px; height: 40px;">
                             <h4 id="tripName_@trip.getTripid()" style="cursor: pointer;" onclick="toggleEditTripName(true)">
                             @trip.getTripName()</h4>
                             <input style="display: none;" type="text" id="tripNameInput_@trip.getTripid()" value="@trip.getTripName()" onblur="updateTripName(this.value)">
+                            <p class="dateError" style="color: red; display: none">Arrival date must be before departure date</p>
                         </div>
 
                         <table class="table table-hover" id="tripTable_@trip.getTripid()">
@@ -328,9 +329,9 @@
                                 <tr id="@visit.getVisitid()">
                                     <th scope ="row">@visit.getDestination().getDestName()</th>
                                     <td>@visit.getDestination().getDestType()</td>
-                                    <td><input id="arrival_@visit.getVisitid()" class="tripDateInput" type="date"
+                                    <td><input id="arrival_@visit.getVisitid()" class="tripDateInput arrivalDate" type="date"
                                     onblur="updateVisitDate(@visit.getVisitid())" value="@visit.getArrival()"></td>
-                                    <td><input id="departure_@visit.getVisitid()" class="tripDateInput" type="date"
+                                    <td><input id="departure_@visit.getVisitid()" class="tripDateInput departureDate" type="date"
                                     onblur="updateVisitDate(@visit.getVisitid())" value="@visit.getDeparture()" onsubmit="updateVisitDate(@visit.getVisitid())"></td>
                                     <td><a onclick="sendDeleteVisitRequest(
                                             '@routes.TripController.deletevisit(visit.getVisitid())',
@@ -338,16 +339,11 @@
                                         &#10060</a>
                                     </td>
                                 </tr>
-                                }
+                            }
                             </tbody>
                         </table>
 
                         <button class="btn btn-danger deleteTripBtn" onclick="deleteTripRequest(@trip.getTripid(), '@routes.HomeController.mainMapPage()')">Delete trip</button>
-                        <div id="tag-line">
-                        @for(tag <- trip.getTags()){
-                            <button onclick="location.href= '/tags/display/@tag.getName().toLowerCase()'" class="tag">@tag.getName()</button>
-                        }
-                        </div>
                     </div>
                     }
                 </div>

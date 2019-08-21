@@ -98,10 +98,6 @@ public class EventFindaUtilities {
                                      String endDate, String minPrice, String maxPrice,
                                      Destination destination, String sortBy, Integer offset) {
 
-        /*int locationId = getLocationId(-43.53, 172.620278, "");
-        if (locationId == -1) {
-            return null;
-        }*/
         String url = "events.json?rows=20" + "&offset=" + offset;
 
         if (!category.isEmpty()) {
@@ -136,9 +132,6 @@ public class EventFindaUtilities {
 
         if (!keyword.isEmpty()) {
             url = addKeyWordFilterToQuery(url, keyword);
-        }
-        if (offset != null) {
-            url += "&offset="+offset;
         }
         System.out.println(url);
         return eventFindaGetResponse(url);
@@ -238,8 +231,6 @@ public class EventFindaUtilities {
             categoryIdsToNames.put(artistId, artistName);
         }
 
-        System.out.println(categoryIdsToNames);
-
         return categoryIdsToNames;
     }
 
@@ -248,9 +239,6 @@ public class EventFindaUtilities {
         return str.substring(0, str.length() - numOfChars);
     }
 
-    public static void main(String [] args) {
-        System.out.println(addKeyWordFilterToQuery("currentUrl", "cycling    Southland    ,   running, alpha"));
-    }
 }
 
 

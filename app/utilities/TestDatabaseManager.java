@@ -21,11 +21,6 @@ public class TestDatabaseManager {
 
     private static final Logger logger = UtilityFunctions.getLogger();
 
-    // Private constructor to hide the implicit public one
-    public TestDatabaseManager() {
-        throw new IllegalStateException("Utility class");
-    }
-
     /**
      * Completes the database population that is done by the sql evolutions
      * when the application is first started.

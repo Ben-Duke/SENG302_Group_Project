@@ -37,13 +37,10 @@ public abstract class Media extends TaggableModel {
     @ManyToMany(mappedBy = "media")
     public List<Album> albums;
 
-    public boolean isMediaPublic;
-
     private String caption = "";
 
     public Media(String url, boolean isPublic, User user, String caption) {
         this.url = url;
-        this.isMediaPublic = isPublic;
         this.isPublic = isPublic;
         this.user = user;
         this.caption = caption;
@@ -51,7 +48,6 @@ public abstract class Media extends TaggableModel {
 
     public Media(String url, boolean isPublic, User user) {
         this.url = url;
-        this.isMediaPublic = isPublic;
         this.isPublic = isPublic;
         this.user = user;
     }

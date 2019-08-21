@@ -10,13 +10,24 @@
 
         <link rel="stylesheet" href="@routes.Assets.at("stylesheets/events.css")">
         <style>
+            body {
+                overflow-y: hidden;
+            }
             #map {
                 margin: 10px 20px 10px 20px;
                 height: 30vh;
             }
 
             #search-container {
-            border-right: 1px inset;
+                border-right: 1px inset;
+            }
+
+            .searchButton {
+                width: 100%;
+            }
+            #events-results {
+                max-height: calc(100vh - 150px);
+                overflow-y: auto;
             }
 
             
@@ -155,7 +166,7 @@
 
                 <div class="form-group">
                     <div class="col-sm-12">
-                        <button class='btn btn-primary' onclick="searchEvents(1)">Search</button>
+                        <button class='searchButton btn btn-primary' onclick="searchEvents(1)">Search</button>
                     </div>
                 </div>
 

@@ -10,6 +10,9 @@
 
         <link rel="stylesheet" href="@routes.Assets.at("stylesheets/events.css")">
         <style>
+            body {
+                overflow-y: hidden;
+            }
             #map {
                 margin: 10px 20px 10px 20px;
                 height: 30vh;
@@ -21,6 +24,10 @@
 
             .searchButton {
                 width: 100%;
+            }
+            #events-results {
+                max-height: calc(100vh - 150px);
+                overflow-y: auto;
             }
 
             

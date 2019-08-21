@@ -180,4 +180,4 @@ fabric.properties
 # Code Recommenders
 .recommenders/
 
-.env
+*.env

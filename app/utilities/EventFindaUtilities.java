@@ -98,11 +98,11 @@ public class EventFindaUtilities {
                                      String endDate, String minPrice, String maxPrice,
                                      Destination destination, String sortBy, Integer offset) {
 
-        int locationId = getLocationId(-43.53, 172.620278, "");
+        /*int locationId = getLocationId(-43.53, 172.620278, "");
         if (locationId == -1) {
             return null;
-        }
-        String url = "events.json?location="+locationId+ "&rows=20" + "&offset=" + 0;
+        }*/
+        String url = "events.json?rows=20" + "&offset=" + 0;
 
         if (!category.isEmpty()) {
             url += "&category="+category;
@@ -119,16 +119,28 @@ public class EventFindaUtilities {
         if (!maxPrice.isEmpty()) {
             url += "&price_max="+maxPrice;
         }
-        if (!sortBy.isEmpty()) {
-            url += "&order="+sortBy;
+        if(destination != null) {
+            String point = Double.toString(destination.getLatitude()) + "," + Double.toString(destination.getLongitude());
+            url += "&point=" + point;
+            url += "&radius=30";
         }
+        if (!sortBy.isEmpty()) {
+
+            if (sortBy.equals("distance") && destination == null) {
+                url += "&order=date";
+
+            } else {
+                url += "&order="+sortBy;
+            }
+        }
+
         if (!keyword.isEmpty()) {
             url = addKeyWordFilterToQuery(url, keyword);
         }
         if (offset != null) {
             url += "&offset="+offset;
         }
-//        System.out.println(url);
+        System.out.println(url);
         return eventFindaGetResponse(url);
     }
 

@@ -337,10 +337,10 @@ public class HomeController {
                 if(user.getUserid() == photo.getUser().getUserid() || user.userIsAdmin()) {
                     if (setPublic == 0) {
                         UserFactory.makePicturePublic(user.getUserid(), photo, false);
-                        return redirect(routes.HomeController.showhome());
+                        return ok();
                     } else if (setPublic == 1) {
                         UserFactory.makePicturePublic(user.getUserid(), photo, true);
-                        return redirect(routes.HomeController.showhome());
+                        return ok();
                     } else {
                         return badRequest("Invalid request.");
                     }

@@ -6,10 +6,18 @@ import io.ebean.Ebean;
 import models.*;
 import org.slf4j.Logger;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
+
+import utilities.ScriptRunner;
 
 
 
@@ -34,16 +42,24 @@ public class TestDatabaseManager {
      * @param initCompleteLatch A CountDownLatch to call back and unlock when the
      *                          database has been populated.
      */
-    public static void populateDatabase(CountDownLatch initCompleteLatch) {
-        populateDatabase();
+    public static void populateDatabaseWithLatch(CountDownLatch initCompleteLatch) {
+        populateDatabase(null);
         initCompleteLatch.countDown();
     }
 
     /**
      * Completes the database population that is done by the sql evolutions
      */
-    public static void populateDatabase() {
+    public static void populateDatabase(Connection connection) {
         logger.info("Making programmatic database population changes");
+
+        // If testing - replace original data with test data
+        if (ApplicationManager.isIsTest()) {
+            clearAllData();
+            populateAutomatedTestData(connection);
+        }
+
+        // Setup which is run for tests and sbt run
 
         CountryUtils.updateCountries();
         CountryUtils.validateUsedCountries();
@@ -51,6 +67,24 @@ public class TestDatabaseManager {
         setUserPasswords();
 
         addUserPhotos();
+    }
+
+    /**
+     * Runs the sql script containing the automated testing data
+     * @param connection A connection to the database
+     */
+    private static void populateAutomatedTestData(Connection connection) {
+        ScriptRunner runner = new ScriptRunner(connection, true, true);
+        runner.setDelimiter(";", true);
+        try {
+            runner.runScript(new BufferedReader(new FileReader("testData.sql")));
+        } catch(FileNotFoundException e) {
+            logger.error("Sql testing data file not found\n Running tests without data, expect Failures");
+            logger.error(e.toString());
+        } catch(IOException | SQLException e) {
+            logger.error("Error running sql test data file");
+            logger.error(e.toString());
+        }
     }
 
     /**
@@ -155,52 +189,3 @@ public class TestDatabaseManager {
         }
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

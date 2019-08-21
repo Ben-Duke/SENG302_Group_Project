@@ -176,7 +176,7 @@ function setSlideListeners(i) {
     const albumId = dataset.album;
     const hidePrivate = !isOwner;
 
-    $.ajax({
+    return $.ajax({
         type: 'GET',
         url: '/users/albums/get/' + hidePrivate + '/' + albumId,
         contentType: 'application/json',
@@ -262,6 +262,7 @@ async function addAlbum(albumData, userId) {
         showSlides(slideIndex);
 }
 
+/** Called when displaying the grid of photos */
 async function displayGrid(i, albumData, path) {
     let url = albumData[i]["urlWithPath"];
     let imgContainer = document.createElement("div");
@@ -313,9 +314,11 @@ async function displaySlides(i, albumData, path) {
     captionInput.setAttribute("captionMediaId", mediaId);
     captionInput.setAttribute("contenteditable", "true");
     captionInput.setAttribute("style", "color: white;");
+
     mySlidesDiv.classList.add("mySlides");
     mySlidesDiv.setAttribute("data-privacy", albumData[i]["isMediaPublic"]);
     mySlidesDiv.setAttribute("data-mediaId", mediaId);
+
     var img1 = document.createElement("img");
 
     img1.setAttribute("id", "img"+(i+1));
@@ -584,6 +587,7 @@ function currentSlide(n) {
     showSlides(slideIndex = n);
 }
 
+/** Called when displaying a photo modal */
 function showSlides(n) {
     var i;
     var slides = document.getElementsByClassName("mySlides");
@@ -1084,9 +1088,9 @@ $('#photo-upload').click(function (eve){
             data: formData,
             success: function (data, textStatus, xhr) {
                 if (xhr.status == 200) {
-                    window.location = ('/users/albums/' + albumId)
+                    document.getElementById('undoButton').classList.remove('disabled');
                 } else {
-                    window.location = ('/users/albums/' + albumId)
+                    document.getElementById('undoButton').classList.remove('disabled');
                 }
             }
         })

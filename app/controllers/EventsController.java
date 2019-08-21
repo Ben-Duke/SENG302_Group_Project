@@ -54,17 +54,11 @@ public class EventsController {
         if (user == null) {
             return unauthorized();
         }
-        Destination destinationRetrieved;
-        if(destination.isEmpty()) {
-           //TODO change to a default destination if none selected
-            //return badRequest();
-            //Temporary default destination is christchurc, does nothing right now
-            int DEFAULT_DESTINATION = 1;
-            destinationRetrieved = DestinationAccessor.getDestinationById(DEFAULT_DESTINATION);
-        }
-        else {
+        Destination destinationRetrieved = null;
+        if(!destination.isEmpty()) {
             destinationRetrieved = DestinationAccessor.getDestinationById(Integer.parseInt(destination));
         }
+
 
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 

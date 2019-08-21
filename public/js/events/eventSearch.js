@@ -37,16 +37,21 @@ function searchEvents(pageNum) {
 
 
     // POST to server using $.post or $.ajax
-    $.ajax({
-        type: 'GET',
-        url: url,
-        success: function (data) {
-            console.log(data);
-            getEventsFromApiResponse(data, url, pageNum);
-            // createEventsResultsElements(data);
 
-        }
+    $.ajax({
+        url: loader(),
+        success: function () {
+            $.ajax({
+                type: 'GET',
+                url: url,
+                success: function (data) {
+                    // console.log(data);
+                    getEventsFromApiResponse(data, url, pageNum);
+                }
+            });
+        },
     });
+
 }
 
 function createEventsResultsElements(data) {

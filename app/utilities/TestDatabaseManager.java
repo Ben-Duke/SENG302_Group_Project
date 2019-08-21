@@ -70,6 +70,7 @@ public class TestDatabaseManager {
             return;
         }
 
+
         UserPhoto userPhoto1 = new UserPhoto("shrek.jpeg", true, true,
                 User.find().byId(2));
         userPhoto1.setCaption("Get out of my swamp");
@@ -159,7 +160,6 @@ public class TestDatabaseManager {
         logger.info("Clearing database data");
 
         for (TableName tableName : TableName.values()) {
-            logger.debug(tableName.toString());
             if (persisted.contains(tableName)) {
                 continue;   // do not clear tables in persisted
             }

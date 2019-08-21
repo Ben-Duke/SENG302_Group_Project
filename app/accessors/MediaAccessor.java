@@ -16,19 +16,18 @@ public class MediaAccessor {
     public static void insert(Media media) { media.save(); }
 
     public static void delete(Media media) {
-        ArrayList<Tag> tags = new ArrayList<Tag>() ;
-
-        for(Tag tag : media.getTags()){
-            tags.add(tag);
-        }
-
-        for(Tag tag : tags){
-            media.removeTag(tag);
-            TagAccessor.update(tag);
-        }
+        // remove tags
+        media.getTags().clear();
         MediaAccessor.update(media);
-        media.delete();
+
+        // remove the media from the albums it is in
+        for (Album album : media.getAlbums()) {
+            album.getMedia().remove(media);
+            AlbumAccessor.update(album);
         }
+
+        media.delete();
+    }
 
     public static void update(Media media) { media.update(); }
 

@@ -5,10 +5,12 @@ import accessors.TagAccessor;
 import accessors.TripAccessor;
 import accessors.UserPhotoAccessor;
 import models.*;
+import org.slf4j.Logger;
 import play.libs.Json;
 import play.mvc.Http;
 import play.mvc.Result;
-import views.html.users.tag.displayTag;
+import utilities.UtilityFunctions;
+import views.html.users.tag.*;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -16,6 +18,8 @@ import java.util.stream.Collectors;
 import static play.mvc.Results.*;
 
 public class TagController {
+
+    Logger logger = UtilityFunctions.getLogger();
 
     /**
      * Displays the tag page for a particular tag

@@ -29,25 +29,19 @@ function getEventsData(latitude, longitude, place, pageNum) {
 }
 
 function getEventsFromApiResponse(eventData, url, pageNum) {
-    $.ajax({
-        url: loader(),
-        success: function () {
-            latestUrl = url;
-            const count = eventData["@attributes"].count;
-            const events = eventData.events;
-            let eventsPage = document.getElementById("events-results");
-            while (eventsPage.childNodes.length > 0) {
-                eventsPage.removeChild(eventsPage.childNodes[0]);
-            }
-            let eventsPagination = document.getElementById("eventsPage");
-            while (eventsPagination.childNodes.length > 0) {
-                eventsPagination.removeChild(eventsPagination.childNodes[0]);
-            }
-            displayEvents(events);
-            addPagination(count, pageNum);
-        },
-    });
-
+    latestUrl = url;
+    const count = eventData["@attributes"].count;
+    const events = eventData.events;
+    let eventsPage = document.getElementById("events-results");
+    while (eventsPage.childNodes.length > 0) {
+        eventsPage.removeChild(eventsPage.childNodes[0]);
+    }
+    let eventsPagination = document.getElementById("eventsPage");
+    while (eventsPagination.childNodes.length > 0) {
+        eventsPagination.removeChild(eventsPagination.childNodes[0]);
+    }
+    displayEvents(events);
+    addPagination(count, pageNum);
 }
 
 function displayEvents(events) {
@@ -120,7 +114,7 @@ function addPagination(count, pageNum) {
     for (let i=0; i < count; i+=20) {
         numOfPages.push((i/20)+1);
     }
-    console.log(numOfPages);
+    // console.log(numOfPages);
     if (numOfPages.length > 10) {
         if (pageNum > 5) {
             if (numOfPages.length >= pageNum+5) {
@@ -187,7 +181,7 @@ function addPagination(count, pageNum) {
     item = document.createElement("li");
     pageButton = document.createElement("a");
     currentPageNum = numOfPages.length;
-    console.log(currentPageNum);
+    // console.log(currentPageNum);
     pageButton.innerText = "Last";
     pageButton.setAttribute("onClick", `searchEvents(${currentPageNum})`);
     item.appendChild(pageButton);

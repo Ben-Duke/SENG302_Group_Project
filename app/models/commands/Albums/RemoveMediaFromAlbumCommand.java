@@ -63,9 +63,11 @@ public class RemoveMediaFromAlbumCommand extends UndoableCommand {
                 if (media instanceof UserPhoto) {
                     UserPhoto photo = (UserPhoto)media;
                     media = new UserPhoto(photo);
+                    media.setUser(album.getUser());
                 } else if (media instanceof UserVideo) {
                     UserVideo video = (UserVideo)media;
                     media = new UserVideo(video);
+                    media.setUser(album.getUser());
                 }
                 MediaAccessor.insert(media);
                 album.addMedia(media);
@@ -73,10 +75,9 @@ public class RemoveMediaFromAlbumCommand extends UndoableCommand {
             } else {
                 album.addMedia(media);
             }
-            AlbumAccessor.update(album);
-
             resurrectedMedia.add(media);
         }
+        AlbumAccessor.update(album);
         this.medias = resurrectedMedia;
 
     }

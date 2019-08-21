@@ -102,7 +102,7 @@ public class EventFindaUtilities {
         if (locationId == -1) {
             return null;
         }*/
-        String url = "events.json?rows=20" + "&offset=" + 0;
+        String url = "events.json?rows=20" + "&offset=" + offset;
 
         if (!category.isEmpty()) {
             url += "&category="+category;

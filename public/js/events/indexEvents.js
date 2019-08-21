@@ -29,25 +29,19 @@ function getEventsData(latitude, longitude, place, pageNum) {
 }
 
 function getEventsFromApiResponse(eventData, url, pageNum) {
-    $.ajax({
-        url: loader(),
-        success: function () {
-            latestUrl = url;
-            const count = eventData["@attributes"].count;
-            const events = eventData.events;
-            let eventsPage = document.getElementById("events-results");
-            while (eventsPage.childNodes.length > 0) {
-                eventsPage.removeChild(eventsPage.childNodes[0]);
-            }
-            let eventsPagination = document.getElementById("eventsPage");
-            while (eventsPagination.childNodes.length > 0) {
-                eventsPagination.removeChild(eventsPagination.childNodes[0]);
-            }
-            displayEvents(events);
-            addPagination(count, pageNum);
-        },
-    });
-
+    latestUrl = url;
+    const count = eventData["@attributes"].count;
+    const events = eventData.events;
+    let eventsPage = document.getElementById("events-results");
+    while (eventsPage.childNodes.length > 0) {
+        eventsPage.removeChild(eventsPage.childNodes[0]);
+    }
+    let eventsPagination = document.getElementById("eventsPage");
+    while (eventsPagination.childNodes.length > 0) {
+        eventsPagination.removeChild(eventsPagination.childNodes[0]);
+    }
+    displayEvents(events);
+    addPagination(count, pageNum);
 }
 
 function displayEvents(events) {

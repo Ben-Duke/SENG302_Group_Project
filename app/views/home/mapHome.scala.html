@@ -344,13 +344,18 @@
                         </table>
 
                         <button class="btn btn-danger deleteTripBtn" onclick="deleteTripRequest(@trip.getTripid(), '@routes.HomeController.mainMapPage()')">Delete trip</button>
-
+                        <div id="tag-line">
+                        @for(tag <- trip.getTags()){
+                            <button onclick="location.href= '/tags/display/@tag.getName().toLowerCase()'" class="tag">@tag.getName()</button>
+                        }
+                        </div>
                     </div>
                     }
                 </div>
                 <div id="tagEditor">
                 @users.tag.createSearchTags(user,"trip", null)
                 </div>
+
                 <datalist id="tripListDeletion"></datalist>
                 <hr>
                 <div id="tripList">

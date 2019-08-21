@@ -148,7 +148,7 @@ public class HomeControllerTest extends BaseTestWithApplicationAndDatabase {
         CSRFTokenHelper.addCSRFToken(request);
         Result result = route(app, request);
 
-        assertEquals(SEE_OTHER, result.status());
+        assertEquals(OK, result.status());
     }
 
     /**

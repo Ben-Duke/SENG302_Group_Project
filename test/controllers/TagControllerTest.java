@@ -1,11 +1,7 @@
 package controllers;
 
-import accessors.TagAccessor;
-import accessors.TripAccessor;
-import accessors.UserAccessor;
-import models.Tag;
-import models.Trip;
-import models.User;
+import accessors.*;
+import models.*;
 import org.junit.Test;
 import play.libs.Json;
 import play.mvc.Http;
@@ -14,7 +10,9 @@ import play.test.Helpers;
 import testhelpers.BaseTestWithApplicationAndDatabase;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static org.junit.Assert.*;
 import static play.mvc.Http.Status.FORBIDDEN;
@@ -159,6 +157,21 @@ public class TagControllerTest extends BaseTestWithApplicationAndDatabase {
     }
 
     @Test
+    // Add a tag to a user's photo
+    public void addPhotoTag() {
+        UserPhoto photo1 = UserPhotoAccessor.getUserPhotoById(1);
+        //System.out.println(Media.find.all().get(0).getMediaId());
+        Set<Tag> tags =  photo1.getTags();
+        int numTags = tags.size();
+
+        addRemovePhotoTagHelper(PUT, "Test1", 1,2);
+
+        photo1 = UserPhotoAccessor.getUserPhotoById(1);
+        tags =  photo1.getTags();
+        assertEquals(numTags + 1, tags.size());
+    }
+
+    @Test
     public void getPhotoTagSuccessCheckResponse() {
         Result result = getPhotoTagHelper(1, 2);
         assertEquals(OK, result.status());
@@ -275,7 +288,7 @@ public class TagControllerTest extends BaseTestWithApplicationAndDatabase {
 
     @Test
     public void removePhotoTag() {
-        Result result = addRemovePhotoTagHelper(DELETE, "Shrek", 1, 2);
+        Result result = addRemovePhotoTagHelper(DELETE, "Fun place to stay", 1, 2);
         assertEquals(OK, result.status());
     }
 
@@ -540,7 +553,7 @@ public class TagControllerTest extends BaseTestWithApplicationAndDatabase {
                 .uri("/trips/1/tags").session("connected", "2");
         Result result = route(app, request);
 
-        assertEquals("[{\"tagId\":4,\"name\":\"Best trip ever\"}]", contentAsString(result));
+        assertEquals("[{\"tagId\":1,\"name\":\"Fun place to stay\"}]", contentAsString(result));
     }
 
     @Test
@@ -618,9 +631,9 @@ public class TagControllerTest extends BaseTestWithApplicationAndDatabase {
     @Test
     public void checkAddTagThatAlreadyExists() {
         Map<String, String> tagData = new HashMap<>();
-        tagData.put("tag", "Best trip ever");
+        tagData.put("tag", "Fun place to stay");
         Result result = tripTagHelper("PUT", tagData,  1 , 2);
-        assertEquals("The tag Best trip ever appears to already be on this trip", contentAsString(result));
+        assertEquals("The tag Fun place to stay appears to already be on this trip", contentAsString(result));
     }
 
 
@@ -647,7 +660,7 @@ public class TagControllerTest extends BaseTestWithApplicationAndDatabase {
     @Test
     public void checkRemoveTripTag() {
         Map<String, String> tagData = new HashMap<>();
-        tagData.put("tag", "Best trip ever");
+        tagData.put("tag", "Fun place to stay");
         tripTagHelper("DELETE", tagData,  1 , 2);
         assertEquals(0, TripAccessor.getTripById(1).getTags().size());
     }

@@ -10,12 +10,12 @@ public enum TableName {
     trip_tag("", false),
     destination_tag("", false),
     media_tag("", false),
+    album_media("media_media_id", false),
     tag_user("", false),
     tag("tag_id"),
 
     visit("visitid"),
     destination_media("destination_destid", false),
-    album_media("media_media_id", false),
     user_treasure_hunt("user_userid", false),
     user_traveller_type("user_userid", false),
     user_passport("user_userid", false),

@@ -323,6 +323,9 @@ INSERT INTO `album`(`album_id`, `user`, `destination`, `primary_photo_media_id`,
 (12, null, 8, null, null,'Vatican City'),
 (13, null, 9, null, null,'Lincoln Memorial');
 
+-- media
+
+-- album_media
 
 -- Traveller Types
 -- Order will look a bit weird on phpMyAdmin as it sorts alphabetically by default
@@ -433,7 +436,9 @@ INSERT INTO `destination_tag`(`destination_destid`, `tag_tag_id`) VALUES
 (1,3);
 
 INSERT INTO `trip_tag`(`trip_tripid`,`tag_tag_id`) VALUES
-(1,4);
+(1,1);
+
+-- media_tag
 
 -- visit
 INSERT INTO `visit` (`visitid`, `visitorder`, `destination`, `trip`, `arrival`,
@@ -476,11 +481,13 @@ delete from tag_user;
 
 delete from tag;
 
-delete from album_media;
-
 delete from destination_media;
 
+delete from album_media;
+
 delete from media;
+
+delete from album;
 
 delete from user_treasure_hunt;
 
@@ -501,8 +508,6 @@ delete from destination_modification_request;
 delete from destination_traveller_type;
 
 delete from traveller_type;
-
-delete from album;
 
 delete from destination;
 

@@ -42,13 +42,13 @@ function getItemData(item) {
                 type: 'GET',
                 url: '/users/albums/getAlbumFromMediaId/' + item.mediaId,
                 success: function(albumData) {
-                    data.link = "/users/albums/" + albumData;
+                    data.link = "/users/albums/" + albumData.albumId;
                     data.header = item.caption;
                     if (item.caption === "") {
                         data.header = "Uncaptioned Photo"
                     }
                     data.type = 'Photo';
-                    data.body = '';
+                    data.body = 'Album: ' + albumData.title;
                     data.img = '/users/home/servePicture/' + encodeURIComponent(item.urlWithPath);
                     addItem(data);
                 },

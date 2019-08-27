@@ -1,6 +1,7 @@
 package models;
 
 import accessors.CommandManagerAccessor;
+import accessors.UserAccessor;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import controllers.ApplicationManager;
 import io.ebean.ExpressionList;
@@ -117,39 +118,37 @@ public class User extends BaseModel implements Comparable<User>, AlbumOwner, Med
     private Boolean isAdmin = false;
 
 
-    @JoinTable(
-            name = "follows",
-            joinColumns = @JoinColumn(
-                    name = "follower",
-                    referencedColumnName = "userid"
-            ),
-            inverseJoinColumns = @JoinColumn(
-                    name = "followed",
-                    referencedColumnName = "userid"
-            )
-    )
-    @ManyToMany
-    private Collection<User> following;
+    @OneToMany(mappedBy = "follower")
+    private List<Follow> following;
 
-    @ManyToMany(mappedBy = "following")
-    private Collection<User> followers;
+    @OneToMany(mappedBy = "followed")
+    private List<Follow> followers;
 
-    public void addFollower(User user) {
-        followers.add(user);
+
+    public void follow(User userToFollow) {
+        Follow newFollow = new Follow(this, userToFollow);
+        userToFollow.addToFollowers(newFollow);
+        this.addToFollowing(newFollow);
+        newFollow.save();
+        UserAccessor.update(this);
+        UserAccessor.update(userToFollow);
     }
 
-    public void follow(User user) {
-        user.addFollower(this);
-        following.add(user);
+    public void addToFollowers(Follow follow) {
+        this.followers.add(follow);
     }
 
-    public Collection<User> getFollowers() {
+    public void addToFollowing(Follow follow) {
+        this.following.add(follow);
+    }
+
+
+
+    public List<Follow> getFollowers() {
         return this.followers;
     }
 
-    public Collection<User> getFollowing() {
-        return this.following;
-    }
+    public List<Follow> getFollowing() {return  this.following;}
 
 
 

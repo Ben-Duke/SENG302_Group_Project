@@ -124,20 +124,26 @@ public class UserTest extends BaseTestWithApplicationAndDatabase {
                 LocalDate.now(),
                 "Male");
 
-        Integer followingSizeBefore = user1.getFollowing().size();
-        Integer followedSizeBefore = user2.getFollowers().size();
+
 
         UserAccessor.insert(user1);
         UserAccessor.insert(user2);
 
+        Integer followersBefore = user2.getFollowers().size();
+        Integer followingBefore = user1.getFollowing().size();
 
         user1.follow(user2);
 
-        User retrievedFollower = UserAccessor.getById(user1.getUserid());
-        User retrievedFollowed = UserAccessor.getById(user2.getUserid());
 
-        assertEquals(followingSizeBefore+ 1, retrievedFollower.getFollowing().size());
-        assertEquals(followedSizeBefore+ 1, retrievedFollowed.getFollowers().size());
+
+
+        User retrievedUser1 = UserAccessor.getById(user1.getUserid());
+        User retrievedUser2 = UserAccessor.getById(user2.getUserid());
+
+
+        assertEquals(followersBefore + 1, retrievedUser2.getFollowers().size());
+        assertEquals(followingBefore + 1, retrievedUser1.getFollowing().size());
+
 
     }
 

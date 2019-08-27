@@ -111,13 +111,58 @@ public class User extends BaseModel implements Comparable<User>, AlbumOwner, Med
     @OneToMany(mappedBy = "user")
     public List<Album> albums;
 
+
+
     @Deprecated
     private Boolean isAdmin = false;
+
+
+    @JoinTable(
+            name = "follows",
+            joinColumns = @JoinColumn(
+                    name = "follower",
+                    referencedColumnName = "userid"
+            ),
+            inverseJoinColumns = @JoinColumn(
+                    name = "followed",
+                    referencedColumnName = "userid"
+            )
+    )
+    @ManyToMany
+    private Collection<User> following;
+
+    @ManyToMany(mappedBy = "following")
+    private Collection<User> followers;
+
+    public void addFollower(User user) {
+        followers.add(user);
+    }
+
+    public void follow(User user) {
+        user.addFollower(this);
+        following.add(user);
+    }
+
+    public Collection<User> getFollowers() {
+        return this.followers;
+    }
+
+    public Collection<User> getFollowing() {
+        return this.following;
+    }
+
+
+
+
+
+
+
 
 
     // ^^^^^ Class attributes ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     //==========================================================================
     //       Class methods below
+
 
 
     /**
@@ -130,6 +175,8 @@ public class User extends BaseModel implements Comparable<User>, AlbumOwner, Med
         this.email = email.toLowerCase();
         this.hashAndSetPassword(plaintextPassword);
         this.isAdmin = false;
+        this.followers = new ArrayList<>();
+        this.following = new ArrayList<>();
     }
 
     /**
@@ -156,6 +203,8 @@ public class User extends BaseModel implements Comparable<User>, AlbumOwner, Med
         this.dateOfBirth = dateOfBirth;
         this.gender = gender;
         this.isAdmin = false;
+        this.followers = new ArrayList<>();
+        this.following = new ArrayList<>();
     }
 
     /**
@@ -165,6 +214,8 @@ public class User extends BaseModel implements Comparable<User>, AlbumOwner, Med
     public User(String email){
         this.email = email.toLowerCase();
         this.isAdmin = false;
+        this.followers = new ArrayList<>();
+        this.following = new ArrayList<>();
     }
 
     /**

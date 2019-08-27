@@ -177,6 +177,18 @@ create table user (
   constraint pk_user primary key (userid)
 );
 
+create table follows (
+  follower integer not null ,
+  followed integer not null ,
+  PRIMARY KEY (follower, followed),
+  CONSTRAINT fk_person_has_person_person
+  FOREIGN KEY (follower)
+  REFERENCES user,
+  CONSTRAINT fk_person_has_person_person1
+  FOREIGN KEY (followed)
+  REFERENCES user
+  );
+
 create table user_nationality (
   user_userid                   integer not null,
   nationality_natid             integer not null,

@@ -199,9 +199,9 @@ GET     /assets/*file               controllers.Assets.at(path="/public", file)
 
 #Followers
 
-POST    /users/follow/:userId           controllers.FollowController.follow(request:Request, userId:Integer)
+POST    /users/follow/:userId           controllers.FollowController.followUser(request:Request, userId:Integer)
 
-POST    /users/unfollow/:userId         controllers.FollowController.unfollow(request:Request, userId:Integer)
+POST    /users/unfollow/:userId         controllers.FollowController.unfollowUser(request:Request, userId:Integer)
 
 
 #Destinations

@@ -1,5 +1,6 @@
 package models;
 
+import accessors.UserAccessor;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import controllers.ApplicationManager;
 import io.ebean.Finder;

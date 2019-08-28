@@ -11,20 +11,50 @@ import static play.mvc.Results.*;
 
 public class FollowController {
 
-    public Result FollowUser(Http.Request request, User userToFollow) {
+    /**
+     * Follow the user with given Id
+     * @param request the http request
+     * @param userIdToFollow the id of the user to follow
+     * @return the http status according to what action has been made
+     */
+    public Result followUser(Http.Request request, Integer userIdToFollow) {
         User user = User.getCurrentUser(request);
+        User userToFollow = UserAccessor.getById(userIdToFollow);
 
         if (user == null) { return redirect(routes.UserController.userindex()); }
         if (userToFollow == null) { return badRequest();}
 
-        Follow newFollow = new Follow(user, userToFollow);
-        user.addToFollowing(newFollow);
-        userToFollow.addToFollowers(newFollow);
+        Follow newFollow = user.follow(userToFollow);
         FollowAccessor.insert(newFollow);
         UserAccessor.update(user);
         UserAccessor.update(userToFollow);
 
         return ok();
+    }
+
+    /**
+     * Unfollow the user with given Id
+     * @param request the http request
+     * @param userIdToUnfollow the id of the user to ufollow
+     * @return the http status according to what action has been made
+     */
+    public Result unfollowUser(Http.Request request, Integer userIdToUnfollow) {
+        User user = User.getCurrentUser(request);
+        User userToUnfollow = UserAccessor.getById(userIdToUnfollow);
+
+        if (user == null) { return redirect(routes.UserController.userindex()); }
+        if (userToUnfollow == null) { return badRequest();}
+
+        Follow removedFollow = user.unfollow(userToUnfollow);
+        if (removedFollow == null) {
+            return badRequest();
+        }
+        UserAccessor.update(user);
+        UserAccessor.update(userToUnfollow);
+        FollowAccessor.delete(removedFollow);
+        return ok();
+
+
     }
 
 }

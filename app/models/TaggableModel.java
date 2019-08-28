@@ -70,7 +70,7 @@ public abstract class TaggableModel extends BaseModel {
     /**
      * Removes a tag from the set of tags.
      * @param tag - tag to be removed
-     * @return true if the tag exists and was removed and false otherwise.
+     * @return true if the tag folllows and was removed and false otherwise.
      */
     public boolean removeTag(Tag tag){
         return tags.remove(tag);

@@ -4,6 +4,7 @@ import accessors.FollowAccessor;
 import accessors.UserAccessor;
 import models.Follow;
 import models.User;
+import play.libs.Json;
 import play.mvc.Http;
 import play.mvc.Result;
 
@@ -25,6 +26,15 @@ public class FollowController {
         UserAccessor.update(userToFollow);
 
         return ok();
+    }
+
+    public Result isFollowing(Http.Request request, int profileId) {
+        User user = User.getCurrentUser(request);
+        User other = UserAccessor.getById(profileId);
+        if (FollowAccessor.follows(user, other)) {
+            return ok(Json.toJson(true));
+        }
+        return ok(Json.toJson(false));
     }
 
 }

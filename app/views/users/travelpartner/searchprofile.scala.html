@@ -67,7 +67,14 @@
                                 <p>@travellerType.getTravellerTypeName()</p>
                             }</td>
                             <td><a class="btn btn-link" href="@routes.ProfileController.showProfile(profile.getUserid)">View</a></td>
-                            <td><a class="btn btn-link">Follow</a></td>
+                            <td class="followLink" data-profile="@profile.getUserid">
+                                <a class="btn btn-link" id="follow-@profile.getUserid" style="display: none;">
+                                    Follow
+                                </a>
+                                <a class="btn btn-link d-none" id="unfollow-@profile.getUserid" style="display: none;">
+                                    Unfollow
+                                </a>
+                            </td>
                         </tr>
                         }
                         </tbody>

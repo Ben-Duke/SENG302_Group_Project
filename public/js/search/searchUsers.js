@@ -1,3 +1,5 @@
+configureFollowLinks();
+
 //n = 0, sorting by email
 //n = 2, sorting by gender
 //n = 3, sorting by the travelers first nationality
@@ -58,7 +60,7 @@ function sortTable(n) {
             rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
             switching = true;
             // Each time a switch is done, increase this count by 1:
-            switchCount ++;
+            switchCount++;
         } else {
             /* If no switching has been done AND the direction is "asc",
             set the direction to "desc" and run the while loop again. */
@@ -68,4 +70,40 @@ function sortTable(n) {
             }
         }
     }
+}
+
+function configureFollowLinks() {
+    const linkContainers = document.getElementsByClassName("followLink");
+    for (let linkContainer of linkContainers) {
+        const profileId = linkContainer.dataset.profile;
+        setFollowLink(profileId)
+    }
+    // const linkButton = document.createElement('BUTTON');
+    // linkButton.setAttribute('id', `link-${destination.destId}`);
+    // linkButton.setAttribute('class', 'btn btn-primary');
+    // linkButton.innerText = 'Link to destination';
+    // linkButton.addEventListener('click', () => {
+    //     linkDestination(destination.destId, mediaId)
+    // });
+    //
+    // const unlinkButton = document.createElement('BUTTON');
+    // unlinkButton.setAttribute('id', `unlink-${destination.destId}`);
+    // unlinkButton.setAttribute('class', 'btn btn-danger');
+    // unlinkButton.innerText = 'Unlink from destination';
+    // unlinkButton.style.display = 'none';
+    // unlinkButton.addEventListener('click', () => {
+    //     unlinkDestination(destination.destId, mediaId)
+    //
+    // })
+}
+
+function setFollowLink(profileId) {
+    $.ajax({
+        type: 'GET',
+        url: `/users/follows/${profileId}`,
+        success: function(followResult) {
+            console.log(followResult)
+        }
+    });
+    console.log(profileId)
 }

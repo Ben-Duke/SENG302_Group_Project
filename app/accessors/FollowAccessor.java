@@ -1,6 +1,7 @@
 package accessors;
 
 import models.Follow;
+import models.User;
 
 import java.util.List;
 
@@ -18,5 +19,9 @@ public class FollowAccessor {
 
     public static List<Follow> getAll() {
         return Follow.find().all();
+    }
+
+    public static boolean follows(User follower, User followed) {
+        return Follow.find().query().where().eq("follower", follower).eq("followed",followed).findSet().size() != 0;
     }
 }

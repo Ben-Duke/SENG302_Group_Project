@@ -643,7 +643,7 @@ public class DestinationController extends Controller {
                 hasError = true;
             } else if (destinationFactory.doesPublicDestinationExist(destination)) {
                 flash("publicDestinationExists",
-                        "A matching public destination already exists!");
+                        "A matching public destination already folllows!");
                 hasError = true;
             }
         }

@@ -3,10 +3,22 @@
 
 @(user: User, actualUser : User)
 
+
 @main(actualUser, "Index") {
 
 
     <head>
+        <style>
+            #follow-button {width: 9em}
+            #follow-button:hover span {display:none}
+            #follow-button:hover:before {content:"Follow"}
+
+            #unfollow-button {width: 9em}
+            #unfollow-button:hover span {display:none}
+            #unfollow-button:hover:before {
+                content:"Unfollow";
+             }
+        </style>
         <title>View Profile</title>
     </head>
 
@@ -20,7 +32,10 @@
             @if(user.userIsAdmin) {
                 <img class="img"  width = "60" height="50" src="@{routes.Assets.at("images/key_2_small.png")}">
             }
+
         </h1>
+        <button id="follow-button" class="btn btn-default" data-profile="@user.getUserid()"  onclick="followUser(@user.getUserid)"><span>Not Following</span></button>
+        <button id="unfollow-button" class="btn btn-default" data-profile="@user.getUserid()"  onclick="unfollowUser(@user.getUserid)"><span>Following</span></button>
     </div>
 
 
@@ -140,3 +155,5 @@
     </div>
 
 }
+
+<script src="@routes.Assets.at("js/search/showProfile.js")"></script>

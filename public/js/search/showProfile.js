@@ -1,35 +1,37 @@
 setFollowLink();
-$('#follow-button').hover(
-    function() {
-        $('#follow-button').removeClass('btn-default').addClass('btn-primary');;
-    },
-    function() {
-        $('#follow-button').removeClass('btn-primary').addClass('btn-default');
-    }
-);
 
-$('#unfollow-button').hover(
+
+function setHover(btnType, btnTextMain, btnTextSecondary) {
+    let followText = document.getElementById("follow-text");
+    $('#follow-button').hover(
     function() {
-        $('#unfollow-button').removeClass('btn-default').addClass('btn-danger');;
-    },
+            $('#follow-button').removeClass().addClass(btnType);
+            followText.innerText = btnTextSecondary;
+        },
     function() {
-        $('#unfollow-button').removeClass('btn-danger').addClass('btn-default');
+        $('#follow-button').removeClass().addClass('btn btn-default');
+        followText.innerText = btnTextMain;
     }
-);
+    );
+}
+
+
 function setFollowLink() {
     let followButton = document.getElementById("follow-button");
-    let unfollowButton = document.getElementById("unfollow-button");
     let profileId = followButton.dataset.profile;
     $.ajax({
         type: 'GET',
         url: '/users/follows/' + profileId,
         success: function(followResult) {
             if(followResult == false) {
-                followButton.style.display = "block";
-                unfollowButton.style.display = "none";
+                document.getElementById("follow-text").innerText = "Not Following";
+                followButton.setAttribute("onclick", "followUser(" + profileId + ")");
+                setHover("btn btn-primary", "Not Following", "Follow");
+
             } else {
-                unfollowButton.style.display = "block";
-                followButton.style.display = "none";
+                document.getElementById("follow-text").innerText = "Following";
+                followButton.setAttribute("onclick", "unfollowUser(" + profileId + ")");
+                setHover("btn btn-danger", "Following", "Unfollow");
             }
         }
     });
@@ -38,7 +40,6 @@ function setFollowLink() {
 
 function followUser(profileId) {
     let followButton = document.getElementById("follow-button");
-    let unfollowButton = document.getElementById("unfollow-button");
     var token = $('input[name="csrfToken"]').attr('value');
     $.ajaxSetup({
         beforeSend: function (xhr) {
@@ -51,9 +52,11 @@ function followUser(profileId) {
         url: '/users/follow/' + profileId,
         success: function (data, textStatus, xhr) {
             if (xhr.status == 200) {
-                unfollowButton.style.display = "block";
-                followButton.style.display = "none";
-            } else {
+                console.log("followed");
+                document.getElementById("follow-text").innerText = "Following";
+                followButton.setAttribute("onclick", "unfollowUser(" + profileId + ")");
+                setHover("btn btn-danger", "Following", "Unfollow");
+                followButton.setAttribute("class", "btn btn-default");
             }
         }
     })
@@ -61,7 +64,6 @@ function followUser(profileId) {
 
 function unfollowUser(profileId) {
     let followButton = document.getElementById("follow-button");
-    let unfollowButton = document.getElementById("unfollow-button");
     var token = $('input[name="csrfToken"]').attr('value');
     $.ajaxSetup({
         beforeSend: function (xhr) {
@@ -74,9 +76,11 @@ function unfollowUser(profileId) {
         url: '/users/unfollow/' + profileId,
         success: function (data, textStatus, xhr) {
             if (xhr.status == 200) {
-                followButton.style.display = "block";
-                unfollowButton.style.display = "none";
-            } else {
+            console.log("unfollowed");
+            document.getElementById("follow-text").innerText = "Not Following";
+            followButton.setAttribute("onclick", "followUser(" + profileId + ")");
+            setHover("btn btn-primary", "Not Following", "Follow");
+            followButton.setAttribute("class", "btn btn-default");
             }
         }
     })

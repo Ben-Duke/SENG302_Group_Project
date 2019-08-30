@@ -155,6 +155,32 @@ public class TravelPartnerController {
         return results;
     }
 
+
+    /**
+     * From the form retrieve all users from the database that have the given keyword in their name
+     *
+     * @param filterForm the form object containing the users search selections
+     * @return A list of all users that match the name
+     */
+    private Set<User> travelerNameResults(DynamicForm filterForm) {
+        String name = filterForm.get("name");
+        String[] splitedName = name.split("\\s+");
+        if (name != null) {
+            if (name.equals("")) {
+                return new HashSet<>();
+            } else {
+                if (splitedName.length > 1) {
+                    return User.find().query().where().or().ilike("f_name", "%" + splitedName[0] + "%")
+                            .like("l_name", "%" + splitedName[1] + "%").findSet();
+                } else {
+                    return User.find().query().where().or().ilike("f_name", "%" + name + "%")
+                            .like("l_name", "%" + name + "%").findSet();
+                }
+            }
+        }
+        return new HashSet<>();
+    }
+
     /**
      * From the form retrieve all users from the database that have the given date range.
      * If one of the date selector has not been chosen then that field is not used as a bound
@@ -207,6 +233,11 @@ public class TravelPartnerController {
 
         if (user != null) {
             List<Set<User>> userLists = new ArrayList<>();
+
+            Set<User> nameMatches = travelerNameResults(filterForm);
+            if (!nameMatches.isEmpty()) {
+                userLists.add(nameMatches);
+            }
 
             Set<User> travelerTypeMatches = travelerTypeResults(filterForm);
             if (!travelerTypeMatches.isEmpty()) {

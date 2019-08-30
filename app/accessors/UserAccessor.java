@@ -3,6 +3,7 @@ package accessors;
 import models.*;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * A class to handle accessing Users from the database
@@ -114,4 +115,5 @@ public class UserAccessor {
                     new Throwable("Multiple profile photos."));
         }
     }
+
 }

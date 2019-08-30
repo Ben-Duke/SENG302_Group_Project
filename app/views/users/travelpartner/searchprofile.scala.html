@@ -13,6 +13,13 @@
 
         @form(action = helper.CSRF(routes.TravelPartnerController.searchByAttribute)) {
 
+            @text(
+                dynamicForm("name"),
+                label = "Search by name",
+                placeholder = "Search by name",
+                help = "Search travellers by name"
+            )
+
             @checkboxes(
                 dynamicForm("gender"),
                 label = "Gender selection",

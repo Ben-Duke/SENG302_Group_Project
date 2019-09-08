@@ -164,8 +164,8 @@ public class TravelPartnerController {
      */
     private Set<User> travelerNameResults(DynamicForm filterForm) {
         String name = filterForm.get("name");
-        String[] splitedName = name.split("\\s+");
         if (name != null) {
+            String[] splitedName = name.split("\\s+");
             if (name.equals("")) {
                 return new HashSet<>();
             } else {

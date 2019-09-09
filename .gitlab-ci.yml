@@ -8,6 +8,8 @@ tag_checker:
 junit:
   stage: test
   script:
+    - rm .env
+    - cp /var/sonarWorkspace/env/.env .env
     - sbt test
   except:
   - master@seng302-2019/team-800  # do not run on master as jacoco runs tests itself
@@ -43,6 +45,8 @@ release-artifacts:
 update-sonar:
     stage: deploy
     script:
+        - rm .env
+        - cp /var/sonarWorkspace/env/.env .env
         - sbt jacoco
         - /opt/sonar-scanner/bin/sonar-scanner --debug
     only:

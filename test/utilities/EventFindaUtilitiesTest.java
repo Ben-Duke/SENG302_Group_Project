@@ -1,22 +1,18 @@
 package utilities;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import models.Destination;
 import models.TravellerType;
 import org.junit.Test;
 import testhelpers.BaseTestWithApplicationAndDatabase;
+
+import java.util.Map;
 import java.util.regex.*;
 
 import static org.junit.Assert.*;
 
 public class EventFindaUtilitiesTest  extends BaseTestWithApplicationAndDatabase {
 
-    @Override
-    public void populateDatabase() {
-        // Clear the database of all data
-        // validateValidPassportCountry requires passport table being empty
-
-        TestDatabaseManager.clearAllData();
-    }
 
     @Test
     public void checkAtLeastOneItemEventFindaGetResponse(){
@@ -33,12 +29,10 @@ public class EventFindaUtilitiesTest  extends BaseTestWithApplicationAndDatabase
         String url_slugCheck = resultTest.get("url_slug").toString();
         String nameCheck = resultTest.get("name").toString();
         assertTrue((idCheck != null) & (urlCheck != null) & (url_slugCheck != null) & (nameCheck != null));
-
     }
 
     @Test
     public void nullResultOfBadInputEventFindaGetResponse(){
-        //TODO: FIX THIS
         assertNull(EventFindaUtilities.getEvents(43.5321,172.6362,"VERY VERY bad input 78", 0));
     }
 
@@ -80,4 +74,41 @@ public class EventFindaUtilitiesTest  extends BaseTestWithApplicationAndDatabase
         assertEquals("currentUrl&q=(cycling)", outputFromMethod);
     }
 
+
+    @Test
+    public void getLocations() {
+        JsonNode result = EventFindaUtilities.getLocations(43.5321, 172.6362, "Christchurch", 0);
+        assertTrue(result.get("locations").size() > 0);
+    }
+
+    @Test
+    public void getMainCategories() {
+        Map categoryIdsToName = EventFindaUtilities.getMainCategories();
+        assertTrue(categoryIdsToName.size()==6);
+    }
+
+    @Test
+    public void getEventsSearchTest() {
+        Destination destination = Destination.find().query().where().eq("dest_name", "Christchurch").findOne();
+        JsonNode result = EventFindaUtilities.getEvents("", "", "", "", "", "", destination, "",0);
+        System.out.println(result.get("@attributes").get("count").asText());
+        assertTrue(Integer.parseInt(result.get("@attributes").get("count").asText())>0);
+    }
+
+    @Test
+    public void getEventsSearchBadTest() {
+        Destination destination = Destination.find().query().where().eq("dest_name", "Lincoln Memorial").findOne();
+        System.out.println(destination);
+        JsonNode result = EventFindaUtilities.getEvents("", "", "", "", "", "", destination, "",0);
+        System.out.println(result.get("@attributes").get("count").asText());
+        assertTrue(Integer.parseInt(result.get("@attributes").get("count").asText())==0);
+    }
+
+    @Test
+    public void getEventsSearchByRandomAttributesTest() {
+        Destination destination = Destination.find().query().where().eq("dest_name", "Auckland").findOne();
+        JsonNode result = EventFindaUtilities.getEvents("", "1", "", "", "5", "20", destination, "",0);
+        System.out.println(result.get("@attributes").get("count").asText());
+        assertTrue(Integer.parseInt(result.get("@attributes").get("count").asText())>=0);
+    }
 }

@@ -32,7 +32,7 @@ public class TagAccessorTest extends BaseTestWithApplicationAndDatabase {
         int pendingTagsSizeAfter = TagAccessor.
                 findPendingTagsFromUserId(userId).size();
 
-        assertEquals(pendingTagsSizeAfter, pendingTagsSizeBefore + 1);
+        assertEquals(pendingTagsSizeBefore + 1, pendingTagsSizeAfter);
 
     }
 

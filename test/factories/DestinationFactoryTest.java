@@ -33,7 +33,8 @@ public class DestinationFactoryTest extends BaseTestWithApplicationAndDatabase {
     @Override
     /* Populate the database */
     public void populateDatabase() {
-        TestDatabaseManager.clearAllData();
+        TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
+        testDatabaseManager.clearAllData();
 
         //Initialises a test user with name "testUser" and saves it to the database.
         User user = new User("gon12@uclive.ac.nz", "hunter22");

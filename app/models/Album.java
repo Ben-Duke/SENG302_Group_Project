@@ -155,7 +155,7 @@ public class Album extends Model {
     private List<Media> filterOutPrivateMedia() {
         List<Media> publicList = new ArrayList<Media>();
         for(Media media: this.media) {
-            if(media.isMediaPublic) {
+            if(media.isPublic()) {
                 publicList.add(media);
             }
         }
@@ -181,7 +181,7 @@ public class Album extends Model {
     private Boolean getVisibility() {
         Boolean containsPublicMedia = false;
         for(Media media: this.media) {
-            if(media.isMediaPublic) {
+            if(media.isPublic()) {
                 containsPublicMedia = true;
             }
         }
@@ -217,7 +217,7 @@ public class Album extends Model {
             return true;
         }
         for (Media media : media) {
-            if(media.isMediaPublic) {
+            if(media.isPublic()) {
                 return true;
             }
         }

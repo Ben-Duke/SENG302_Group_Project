@@ -62,7 +62,8 @@ public class UserController {
                 }
             }
 
-            TestDatabaseManager.populateDatabase(initCompleteLatch);
+            TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
+            testDatabaseManager.populateDatabaseWithLatch(initCompleteLatch);
         } else {
             try {
                 initCompleteLatch.await();

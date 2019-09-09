@@ -33,7 +33,8 @@ public class LoginControllerTest extends BaseTestWithApplicationAndDatabase {
      * Populate test data
      */
     public void populateDatabase() {
-        TestDatabaseManager.clearAllData();
+        TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
+        testDatabaseManager.clearAllData();
 
         User user = new User("gon12@uclive.ac.nz", "hunter22");
         user.save();

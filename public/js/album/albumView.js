@@ -194,8 +194,8 @@ function setSlideListeners(i) {
                 document.querySelector('div[data-mediaId="'+mediaId+'"] [contenteditable]').innerHTML =
                 "Click to add caption, press enter to save.";
             }
-
-            if(albumData[i]["isMediaPublic"]) {setPrivacy=0;}
+            console.log(albumData[i]["isPublic"]);
+            if(albumData[i]["isPublic"]) {setPrivacy=0;}
             else {setPrivacy=1;}
             setPrivacyListener(setPrivacy, mediaId);
         }
@@ -208,6 +208,9 @@ function setSlideListeners(i) {
  * @param setPublic true to set to public, false to set to private
  */
 function setMediaPrivacy(mediaId, setPublic, link) {
+    console.log(mediaId);
+    console.log(setPublic);
+    console.log(link);
     const intPublic = setPublic ? 1 : 0;
     $.ajax({
         type: 'GET',
@@ -274,7 +277,7 @@ async function displayGrid(i, albumData, path) {
     icon.classList.add("icon");
     let privacyIcon = document.createElement("i");
     privacyIcon.setAttribute("data-privacyMediaId", albumData[i]["mediaId"]);
-    if (albumData[i]["isMediaPublic"]) {
+    if (albumData[i]["isPublic"]) {
         privacyIcon.classList.add("fa", "fa-eye-green");
     } else {
         privacyIcon.classList.add("fa", "fa-eye-red");
@@ -316,7 +319,7 @@ async function displaySlides(i, albumData, path) {
     captionInput.setAttribute("style", "color: white;");
 
     mySlidesDiv.classList.add("mySlides");
-    mySlidesDiv.setAttribute("data-privacy", albumData[i]["isMediaPublic"]);
+    mySlidesDiv.setAttribute("data-privacy", albumData[i]["isPublic"]);
     mySlidesDiv.setAttribute("data-mediaId", mediaId);
 
     var img1 = document.createElement("img");

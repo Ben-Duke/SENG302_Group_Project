@@ -31,6 +31,7 @@ import utilities.TestDatabaseManager;
 import utilities.UtilityFunctions;
 
 import javax.inject.Inject;
+import java.sql.Connection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -83,7 +84,8 @@ public class BaseTestWithApplicationAndDatabase extends WithApplication {
      * Can be overridden in subclasses if they want to provide their own test data
      */
     public void populateDatabase() {
-        TestDatabaseManager.populateDatabase();
+        TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
+        testDatabaseManager.populateDatabase();
     }
 
     /**

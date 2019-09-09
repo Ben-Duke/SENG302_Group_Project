@@ -1,5 +1,6 @@
 package utilities;
 
+import controllers.ApplicationManager;
 import jdk.nashorn.internal.runtime.ParserException;
 import org.slf4j.Logger;
 
@@ -96,10 +97,16 @@ public class EnvironmentalVariablesAccessor {
     /**
      * Gets an environmental variable.
      *
-     * @param key A String representing the key to look for in the .env file.
+     * @param key A String representing the key to look for in the .env file. If
+     *            running in test mode the value returned is always "test" and no
+     *            file is read.
      * @return A String representing the env variable, or null if not found.
      */
     public static String getEnvVariable(String key) {
+        if (ApplicationManager.isIsTest()) {
+            return "test";
+        }
+
         AbstractMap<String, String> envVariables = null;
 
         try {

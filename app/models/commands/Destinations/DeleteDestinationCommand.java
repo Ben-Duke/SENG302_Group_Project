@@ -1,9 +1,6 @@
 package models.commands.Destinations;
 
-import accessors.AlbumAccessor;
-import accessors.DestinationAccessor;
-import accessors.TreasureHuntAccessor;
-import accessors.VisitAccessor;
+import accessors.*;
 import models.*;
 import models.commands.General.CommandPage;
 import models.commands.General.UndoableCommand;
@@ -11,7 +8,9 @@ import org.slf4j.Logger;
 import utilities.UtilityFunctions;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /** Command to delete a destination */
 public class DeleteDestinationCommand extends UndoableCommand {
@@ -22,6 +21,7 @@ public class DeleteDestinationCommand extends UndoableCommand {
     private List<Visit> deletedVisits = new ArrayList<>();
     private List<TreasureHunt> deletedTreasureHunts = new ArrayList<>();
     private List<Album> deletedAlbums = new ArrayList<>();
+    private Set<Tag> deletedTags = new HashSet<>();
 
     private final Logger logger = UtilityFunctions.getLogger();
 
@@ -55,6 +55,9 @@ public class DeleteDestinationCommand extends UndoableCommand {
             deletedAlbums.add(new Album(album));
             AlbumAccessor.delete(album);
         }
+        for (Tag tag : destination.getTags()) {
+            deletedTags.add(tag);
+        }
         destination.getTags().clear();
         destination.update();
         DestinationAccessor.delete(destination);
@@ -65,7 +68,7 @@ public class DeleteDestinationCommand extends UndoableCommand {
      */
     public void undo() {
         this.destination = new Destination(destination, deletedVisits);
-        destination.save();
+        DestinationAccessor.insert(destination);
 
         for (TreasureHunt treasureHunt : deletedTreasureHunts) {
             treasureHunt.setDestination(destination);
@@ -81,6 +84,9 @@ public class DeleteDestinationCommand extends UndoableCommand {
             album.setOwner(destination);
             AlbumAccessor.insert(album);
         }
+        destination.setTags(deletedTags);
+        DestinationAccessor.update(destination);
+
     }
 
     /**

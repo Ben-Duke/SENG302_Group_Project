@@ -182,7 +182,7 @@ function addTagLabel(name) {
 
     input.value = "";
 
-    newTag.className = "tag label label-info";
+    newTag.className = "tag-label tag";
     newTag.id = name;
     newText.innerHTML = `<a style="color: black">${name}</a>`;
     newIcon.className = "remove glyphicon glyphicon-remove-sign glyphicon-white";

@@ -26,6 +26,12 @@
   margin-bottom: 2px;
 }
 
+.tag-label {
+    border-radius: .75em;
+    vertical-align: text-top;
+    background-color: #b94a77;
+}
+
 #tag-line {
       overflow: scroll; /* for CSS3 lacking browsers */
       overflow: scroll hidden;

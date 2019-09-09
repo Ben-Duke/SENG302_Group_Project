@@ -284,6 +284,8 @@ INSERT INTO `user` (`userid`, `email`, `password_hash`, `date_of_birth`, `gender
 (10, 'priyesh.shah@gmail.com', '$2a$10$GbadXoPxGghyCW6lPDTjIeNzS/JfiCIqmlauPNiDIyQFivees1oRq', '1996-06-13', 'Other', 'Priyesh', 'Shah', 0, 0, '2019-08-20 20:50:48'),
 (11, 'michael.shannon@gmail.com', '$2a$10$i0GWnSrk2HSU4ZoFeV5em.kplOnwRDI18RgvGQqFEJ5KMMNNAW66i', '1998-01-15', 'Male', 'Michael', 'Shannon', 0, 0, '2019-08-20 20:51:22');
 
+INSERT INTO `follow`(`follow_id`, `follower`, `followed`, `state`) VALUES
+(null,2,3,NULL );
 
 -- Admin
 INSERT INTO `admin` (`user_id`, `user_id_to_edit`, `is_default`) VALUES

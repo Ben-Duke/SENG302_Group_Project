@@ -4,9 +4,14 @@ import accessors.FollowAccessor;
 import accessors.UserAccessor;
 import models.Follow;
 import models.User;
+import play.Logger;
+import play.libs.Json;
 import play.mvc.Http;
 import play.mvc.Result;
 
+import java.util.*;
+
+import static java.util.Arrays.copyOfRange;
 import static play.mvc.Results.*;
 
 public class FollowController {
@@ -57,4 +62,40 @@ public class FollowController {
 
     }
 
+    /**
+     *
+     * @param userId
+     * @param offset
+     * @return
+     */
+    public Result getFollowers(Http.Request request, int userId, int offset){
+        User user = UserAccessor.getById(userId);
+        if(user != null){
+            List<Follow> followList = user.getFollowers();
+
+            int followCount = followList.size();
+            if (offset > 0){
+                return unauthorized("Place holder");
+            }else{
+                if(followCount < 10){
+                    List<String> users = new ArrayList<String>();
+                    //for(Follow follower:followList.subList(0, 9)){
+                    for(Follow follower:followList){
+                       users.add( UserAccessor.getJsonReadyStringOfUser(follower.getFolowerUserId()));
+
+                    }
+
+                    return ok(Json.toJson( users));
+                }
+                else{
+                    return ok(followList.toString());
+                }
+
+            }
+        }
+        else{
+            return notFound();
+        }
+
+    }
 }

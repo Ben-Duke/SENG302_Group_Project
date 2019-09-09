@@ -9,7 +9,7 @@ junit:
   stage: test
   script:
   - rm -f .env
-  - cp /var/sonarWorkspace/env/.env .env
+  - cp /var/shared/.env .env
   - sbt test
   except:
   - master@seng302-2019/team-800  # do not run on master as jacoco runs tests itself
@@ -46,7 +46,7 @@ update-sonar:
   stage: deploy
   script:
   - rm -f .env
-  - cp /var/sonarWorkspace/env/.env .env
+  - cp /var/shared/.env .env
   - sbt jacoco
   - /opt/sonar-scanner/bin/sonar-scanner --debug
   only:

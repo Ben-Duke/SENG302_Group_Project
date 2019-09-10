@@ -288,28 +288,36 @@ INSERT INTO `user` (`userid`, `email`, `password_hash`, `date_of_birth`, `gender
 (14, 'test3.shah@gmail.com', '$2a$10$GbadXoPxGghyCW6lPDTjIeNzS/JfiCIqmlauPNiDIyQFivees1oRq', '1996-06-13', 'Other', 'test3', 'Shah', 0, 0, '2019-08-20 20:50:48'),
 (15, 'test4.shah@gmail.com', '$2a$10$GbadXoPxGghyCW6lPDTjIeNzS/JfiCIqmlauPNiDIyQFivees1oRq', '1996-06-13', 'Other', 'test4', 'Shah', 0, 0, '2019-08-20 20:50:48'),
 (16, 'test5.shah@gmail.com', '$2a$10$GbadXoPxGghyCW6lPDTjIeNzS/JfiCIqmlauPNiDIyQFivees1oRq', '1996-06-13', 'Other', 'test5', 'Shah', 0, 0, '2019-08-20 20:50:48');
-
-
-
--- Follow
+--
+-- follow
 INSERT INTO `follow`(`follow_id`, `follower`, `followed`, `state`) VALUES
-(null,2,3,NULL ),
-(null,4,3,NULL ),
-(null,5,3,NULL ),
-(null,6,3,NULL ),
-(null,7,3,NULL ),
-(null,8,3,NULL ),
-(null,9,3,NULL ),
-(null,10,3,NULL ),
-(null,11,3,NULL ),
-(null,12,3,NULL ),
-(null,13,3,NULL ),
-(null,14,3,NULL ),
-(null,15,3,NULL ),
-(null,16,3,NULL );
-
-
-
+(NULL,2,3,NULL ),
+(NULL,2,4,NULL ),
+(NULL,2,5,NULL ),
+(NULL,2,6,NULL ),
+(NULL,2,7,NULL ),
+(NULL,2,8,NULL ),
+(NULL,2,9,NULL ),
+(NULL,2,10,NULL ),
+(NULL,2,11,NULL ),
+(NULL,2,12,NULL ),
+(NULL,2,13,NULL ),
+(NULL,2,14,NULL ),
+(NULL,2,15,NULL ),
+(NULL,2,16,NULL ),
+(NULL,2,6,NULL ),
+(NULL,3,6,NULL ),
+(NULL,4,6,NULL ),
+(NULL,5,6,NULL ),
+(NULL,7,6,NULL ),
+(NULL,8,6,NULL ),
+(NULL,9,6,NULL ),
+(NULL,10,6,NULL ),
+(NULL,11,6,NULL ),
+(NULL,12,6,NULL ),
+(NULL,13,6,NULL ),
+(NULL,14,6,NULL ),
+(NULL,15,6,NULL );
 -- Admin
 INSERT INTO `admin` (`user_id`, `user_id_to_edit`, `is_default`) VALUES
 (1, NULL, 1);
@@ -577,7 +585,6 @@ INSERT INTO `visit` (`visitid`, `visitorder`, `destination`, `trip`, `arrival`, 
 (48, 2, 20, 17, NULL, NULL, 'Cromwell'),
 (49, 3, 13, 17, NULL, NULL, 'Wanaka');
 
-
 -- -------------------------------------------------
 
 
@@ -585,9 +592,9 @@ INSERT INTO `visit` (`visitid`, `visitorder`, `destination`, `trip`, `arrival`, 
 -- Delete in reverse order to the order data was added to avoid violating
 -- foreign key constraints
 
-delete from visit;
-
 delete from follow;
+
+delete from visit;
 
 delete from destination_tag;
 
@@ -636,5 +643,6 @@ delete from user;
 delete from nationality;
 
 delete from passport;
+
 
 

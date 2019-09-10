@@ -62,4 +62,8 @@ public class Follow extends BaseModel{
     public int getFolowerUserId(){
         return this.follower.getUserid();
     }
+
+    public int getFolowedUserId(){
+        return this.followed.getUserid();
+    }
 }

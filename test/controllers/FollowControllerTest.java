@@ -1,8 +1,11 @@
 package controllers;
 
 import accessors.UserAccessor;
+import io.ebeaninternal.server.type.ScalarTypeJsonMapPostgres;
+import junit.framework.TestCase;
 import models.User;
 import org.junit.Test;
+import play.libs.Json;
 import play.mvc.Http;
 import play.mvc.Result;
 import play.test.Helpers;
@@ -10,6 +13,7 @@ import testhelpers.BaseTestWithApplicationAndDatabase;
 
 import java.time.LocalDate;
 
+import static junit.framework.TestCase.fail;
 import static org.junit.Assert.assertEquals;
 import static play.test.Helpers.*;
 
@@ -95,7 +99,62 @@ public class FollowControllerTest extends BaseTestWithApplicationAndDatabase {
         assertEquals(followersBefore, updatedUserFollowed.getFollowers().size());
     }
 
+    @Test
+    public void testGetFirstTenFollowing(){
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/getfollowing/2?offset=0").session("connected", "1");
+        Result result = route(app, request);
+        int followingCount = (Json.parse (contentAsString(result)).size());
+        TestCase.assertEquals(10,followingCount);
+    }
 
+    @Test
+    public void testGetFollowingWithOffset(){
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/getfollowing/2?offset=10").session("connected", "1");
+        Result result = route(app, request);
+        int followingCount = (Json.parse (contentAsString(result)).size());
+        TestCase.assertEquals(5,followingCount);
+    }
 
+    @Test
+    public void testGetFollowingWithOffsetOutOfRange(){
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/getfollowing/6?offset=100").session("connected", "1");
+        Result result = route(app, request);
+        TestCase.assertEquals("Offset was larger than the amount of people following",contentAsString(result));
+    }
+
+    @Test
+    public void testGetFirstTenFollowers(){
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/getfollowers/6?offset=0").session("connected", "1");
+        Result result = route(app, request);
+        int followingCount = (Json.parse (contentAsString(result)).size());
+        TestCase.assertEquals(10,followingCount);
+    }
+
+    @Test
+    public void testGetFollowersWithOffset(){
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/getfollowers/6?offset=10").session("connected", "1");
+        Result result = route(app, request);
+        int followingCount = (Json.parse (contentAsString(result)).size());
+        TestCase.assertEquals(4,followingCount);
+    }
+
+    @Test
+    public void testGetFollowersWithOffsetOutOfRange(){
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/getfollowers/6?offset=100").session("connected", "1");
+        Result result = route(app, request);
+        TestCase.assertEquals("Offset was larger than the amount of followers",contentAsString(result));
+    }
 
 }

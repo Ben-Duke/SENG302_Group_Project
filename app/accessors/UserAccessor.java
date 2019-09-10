@@ -37,7 +37,8 @@ public class UserAccessor {
      */
     public static String getJsonReadyStringOfUser(int userId){
         User user = getById(userId);
-        return "{userId:" + user.getUserid() + ",firstname:" + user.getFName() +",lastname:" + user.getLName()+"}";
+
+        return "{'userId':'" + user.getUserid() + "','firstname':'" + user.getFName() +"','lastname':'" + user.getLName()+"'}";
     }
 
 

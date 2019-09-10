@@ -604,8 +604,12 @@ delete from destination;
 
 delete from admin;
 
+delete from follow;
+
 delete from user;
 
 delete from nationality;
 
 delete from passport;
+
+

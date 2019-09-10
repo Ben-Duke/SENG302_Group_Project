@@ -1,5 +1,6 @@
 package controllers;
 
+import accessors.FollowAccessor;
 import models.Nationality;
 import utilities.UtilityFunctions;
 import models.TravellerType;
@@ -36,7 +37,7 @@ public class TravelPartnerController {
      * @param user The User currently logged in
      * @return renders the search profile page
      */
-    private Result displayRenderedFilterPage(Set<User> resultProfiles, User user) {
+    private Result displayRenderedFilterPage(Set<User> resultProfiles, Set<User> followingProfiles, Set<User> followerProfiles, User user) {
 
         DynamicForm dynamicForm = formFactory.form();
 
@@ -58,8 +59,10 @@ public class TravelPartnerController {
         genderMap.put("Male", true);
         genderMap.put("Female", true);
         genderMap.put("Other", true);
+        followingProfiles = FollowAccessor.getAllUsersFollowed(user);
+        followerProfiles = FollowAccessor.getAllUsersFollowing(user);
 
-        return ok(searchprofile.render(dynamicForm, convertedTravellerTypes, convertedNationalities, genderMap, resultProfiles, user));
+        return ok(searchprofile.render(dynamicForm, convertedTravellerTypes, convertedNationalities, genderMap, resultProfiles, followingProfiles, followerProfiles, user));
     }
 
 
@@ -74,8 +77,9 @@ public class TravelPartnerController {
         User user = User.getCurrentUser(request);
         if (user != null) {
             Set<User> resultProfiles = new TreeSet<>();
-
-            return displayRenderedFilterPage(resultProfiles, user);
+            Set<User> followingProfiles = new TreeSet<>();
+            Set<User> followerProfiles = new TreeSet<>();
+            return displayRenderedFilterPage(resultProfiles, followingProfiles, followerProfiles, user);
         }
         else{
             return redirect(routes.UserController.userindex());
@@ -209,7 +213,6 @@ public class TravelPartnerController {
         } catch (ParseException e) {
             //Do Nothing
         }
-
         if(date1 != null && date2 != null){
             return User.find().query().where().gt("dateOfBirth", date1).lt("dateOfBirth", date2).findSet();
         }
@@ -249,15 +252,22 @@ public class TravelPartnerController {
                 userLists.add(nationalityMatches);
             }
 
-            userLists.add(genderResults(filterForm));
+            Set<User> genderMatches = genderResults(filterForm);
+            if (!genderMatches.isEmpty()) {
+                userLists.add(genderMatches);
+            }
 
             Set<User> ageRangeMatches = ageRangeResults(filterForm);
             if (!ageRangeMatches.isEmpty()) {
                 userLists.add(ageRangeMatches);
             }
-
             //Gets all common users from each search
-            Set<User> resultProfiles = UtilityFunctions.retainFromLists(userLists);
+            Set<User> resultProfiles = new HashSet<>();
+            Set<User> followingProfiles = new HashSet<>();
+            Set<User> followerProfiles = new HashSet<>();
+            if (userLists.size() > 0) {
+                resultProfiles = UtilityFunctions.retainFromLists(userLists);
+            }
 
 
             //remove the current user from the list
@@ -265,7 +275,7 @@ public class TravelPartnerController {
 
 
             //Redisplay the page, but this time with the search results
-            return displayRenderedFilterPage(resultProfiles,user);
+            return displayRenderedFilterPage(resultProfiles, followingProfiles, followerProfiles,user);
 
         } else{
             return redirect(routes.UserController.userindex());

@@ -1,6 +1,7 @@
 package models;
 
 import accessors.CommandManagerAccessor;
+import accessors.UserAccessor;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import controllers.ApplicationManager;
 import io.ebean.ExpressionList;
@@ -111,13 +112,23 @@ public class User extends BaseModel implements Comparable<User>, AlbumOwner, Med
     @OneToMany(mappedBy = "user")
     public List<Album> albums;
 
+
+
     @Deprecated
     private Boolean isAdmin = false;
+
+
+    @OneToMany(mappedBy = "follower")
+    private List<Follow> following;
+
+    @OneToMany(mappedBy = "followed")
+    private List<Follow> followers;
 
 
     // ^^^^^ Class attributes ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     //==========================================================================
     //       Class methods below
+
 
 
     /**
@@ -130,6 +141,8 @@ public class User extends BaseModel implements Comparable<User>, AlbumOwner, Med
         this.email = email.toLowerCase();
         this.hashAndSetPassword(plaintextPassword);
         this.isAdmin = false;
+        this.followers = new ArrayList<>();
+        this.following = new ArrayList<>();
     }
 
     /**
@@ -156,6 +169,8 @@ public class User extends BaseModel implements Comparable<User>, AlbumOwner, Med
         this.dateOfBirth = dateOfBirth;
         this.gender = gender;
         this.isAdmin = false;
+        this.followers = new ArrayList<>();
+        this.following = new ArrayList<>();
     }
 
     /**
@@ -165,6 +180,8 @@ public class User extends BaseModel implements Comparable<User>, AlbumOwner, Med
     public User(String email){
         this.email = email.toLowerCase();
         this.isAdmin = false;
+        this.followers = new ArrayList<>();
+        this.following = new ArrayList<>();
     }
 
     /**
@@ -210,6 +227,88 @@ public class User extends BaseModel implements Comparable<User>, AlbumOwner, Med
                 ", isAdmin=" + isAdmin +
                 '}';
     }
+
+    /**
+     * Follow another user and return the follow that has been made
+     * @param userToFollow the user to follow
+     * @return the follow that has been made
+     */
+    public Follow follow(User userToFollow) {
+        Follow newFollow = new Follow(this, userToFollow);
+        this.addToFollowing(newFollow);
+        userToFollow.addToFollowers(newFollow);
+        return newFollow;
+    }
+
+    /**
+     * Unfollow another user and return the removed follow
+     * @param userToUnfollow the user to unfollow
+     * @return The removed follow
+     */
+    public Follow unfollow(User userToUnfollow) {
+        Follow followToRemove = null;
+        for (Follow follow : this.getFollowing()) {
+            if (follow.getFollowed().getUserid() == userToUnfollow.getUserid() &&
+                    follow.getFollower().getUserid() == this.getUserid()) {
+                followToRemove = follow;
+                break;
+            }
+        }
+        if (followToRemove != null) {
+            this.removeFromFollowing(followToRemove);
+            userToUnfollow.removeFromFollowers(followToRemove);
+            return followToRemove;
+        }
+        return null;
+    }
+
+    /**
+     * Add a follow to the users list of followers
+     * @param follow
+     */
+    public void addToFollowers(Follow follow) {
+        this.followers.add(follow);
+    }
+
+    /**
+     * Add a follow to the users list of followings
+     * @param follow the follow to remove
+     */
+    public void addToFollowing(Follow follow) {
+        this.following.add(follow);
+    }
+
+    /**
+     * Remove a follow from the users list of followers
+     * @param follow the follow to remove
+     */
+    public void removeFromFollowers(Follow follow) {
+        this.followers.remove(follow);
+    }
+
+    /**
+     * Remove a follow from the users list of following
+     * @param follow the follow to remove
+     */
+    public void removeFromFollowing(Follow follow) {
+        this.following.remove(follow);
+    }
+
+
+    /**
+     * Get the follows that are the users followers
+     * @return the list of follows that is the followers of the user
+     */
+    public List<Follow> getFollowers() {
+        return this.followers;
+    }
+
+    /**
+     * Get the follows that is the users following of other users
+     * @return the follows that is the users following of other users
+     */
+    public List<Follow> getFollowing() {return  this.following;}
+
 
     /**
      * Sets the Users password. Automatically hashes the password.

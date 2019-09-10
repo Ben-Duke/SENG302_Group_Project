@@ -26,7 +26,6 @@ public class Follow extends BaseModel{
     @Id
     private Integer followId;
 
-
     private static Finder<Integer,Follow> find = new Finder<>(Follow.class, ApplicationManager.getDatabaseName());
 
     /**
@@ -58,5 +57,13 @@ public class Follow extends BaseModel{
 
     public User getFollowed() {
         return this.followed;
+    }
+
+    public int getFolowerUserId(){
+        return this.follower.getUserid();
+    }
+
+    public int getFolowedUserId(){
+        return this.followed.getUserid();
     }
 }

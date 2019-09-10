@@ -203,6 +203,9 @@ POST    /users/follow/:userId           controllers.FollowController.followUser(
 
 POST    /users/unfollow/:userId         controllers.FollowController.unfollowUser(request:Request, userId:Integer)
 
+GET     /users/getfollowers/:userId      controllers.FollowController.getFollowers(request:Request, userId:Integer, offset:Integer)
+
+GET     /users/getfollowing/:userId      controllers.FollowController.getFollowing(request:Request, userId:Integer, offset:Integer)
 
 #Destinations
 

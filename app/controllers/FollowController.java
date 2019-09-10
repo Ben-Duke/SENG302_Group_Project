@@ -128,7 +128,7 @@ public class FollowController {
             }
         }
         else{
-            return notFound();
+            return notFound("Not found");
         }
 
     }
@@ -186,7 +186,7 @@ public class FollowController {
             }
         }
         else{
-            return notFound();
+            return notFound("Not found");
         }
 
     }

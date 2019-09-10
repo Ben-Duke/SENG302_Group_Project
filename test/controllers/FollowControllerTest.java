@@ -157,4 +157,22 @@ public class FollowControllerTest extends BaseTestWithApplicationAndDatabase {
         TestCase.assertEquals("Offset was larger than the amount of followers",contentAsString(result));
     }
 
+
+    @Test
+    public void testOutOfRangeUserIdFollowers(){
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/getfollowers/10000?offset=100").session("connected", "1");
+        Result result = route(app, request);
+        assertEquals(NOT_FOUND, result.status());
+    }
+
+    @Test
+    public void testOutOfRangeUserIdFollowing(){
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/getfollowing/10000?offset=100").session("connected", "1");
+        Result result = route(app, request);
+        assertEquals(NOT_FOUND, result.status());
+    }
 }

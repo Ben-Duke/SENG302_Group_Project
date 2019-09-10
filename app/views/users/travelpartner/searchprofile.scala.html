@@ -6,6 +6,20 @@
 @(dynamicForm : DynamicForm, travellerTypes : java.util.List[String], nationalities : java.util.List[String], genderMap: java.util.Map[String, java.lang.Boolean], resultProfiles : java.util.Set[User], user : User)
 
 
+<style>
+        #searchResultsTable {
+            height: calc(100% - 50px)%;
+        }
+
+        #followingTab {
+            height: calc(100% - 50px)%;
+        }
+
+        #followersTab {
+            height: calc(100% - 50px)%;
+        }
+</style>
+
 @main(user, "Search") {
 
     <div class="container-fluid">
@@ -45,11 +59,15 @@
             <input type="submit" value="Search by filters">
 
     </div>
+    <ul class="nav nav-tabs nav-justified">
+        <li class="active" id="travellerTabListItem"><a data-toggle="tab" href="#searchResultsTable">Travellers</a></li>
+        <li id="followingTabListItem"><a data-toggle="tab" href="#followingTab">Following</a></li>
+        <li id="followersTabListItem"><a data-toggle="tab" href="#followersTab">Followers</a></li>
+    </ul>
 
-
+    <div class="tab-content">
+        <table id="searchResultsTable" class="table table-hover" >
         @if(resultProfiles.nonEmpty) {
-
-            <table class="table" id="searchResultsTable">
                 <thead class="thead-dark">
                     <tr>
                         <th scope="col" onClick="sortTable(0)" style="cursor: pointer;">Name</th>
@@ -61,25 +79,25 @@
                     </tr>
                 </thead>
                 <tbody>
-                @if(! resultProfiles.isEmpty) {
-                    @for(profile <- resultProfiles) {
-                        <tr>
-                            <td scope="row">@profile.getFName().substring(0, 1).toUpperCase()@profile.getFName().substring(1).toLowerCase() @profile.getLName().substring(0, 1).toUpperCase()@profile.getLName().substring(1).toLowerCase()</td>
-                            <td>@profile.getGender()</td>
-                            <td>@for(nationality <- profile.getNationality()) {
-                                <p>@nationality.getNationalityName()</p>
-                            }</td>
-                            <td>@profile.getDateOfBirth()</td>
-                            <td>@for(travellerType <- profile.getTravellerTypes()) {
-                                <p>@travellerType.getTravellerTypeName()</p>
-                            }</td>
-                            <td><a class="btn btn-link" href="@routes.ProfileController.showProfile(profile.getUserid)">View</a></td>
-                        </tr>
+                    @if(! resultProfiles.isEmpty) {
+                        @for(profile <- resultProfiles) {
+                            <tr>
+                                <td scope="row">@profile.getFName().substring(0, 1).toUpperCase()@profile.getFName().substring(1).toLowerCase() @profile.getLName().substring(0, 1).toUpperCase()@profile.getLName().substring(1).toLowerCase()</td>
+                                <td>@profile.getGender()</td>
+                                <td>@for(nationality <- profile.getNationality()) {
+                                    <p>@nationality.getNationalityName()</p>
+                                }</td>
+                                <td>@profile.getDateOfBirth()</td>
+                                <td>@for(travellerType <- profile.getTravellerTypes()) {
+                                    <p>@travellerType.getTravellerTypeName()</p>
+                                }</td>
+                                <td><a class="btn btn-link" href="@routes.ProfileController.showProfile(profile.getUserid)">View</a></td>
+                            </tr>
                         }
                         </tbody>
                     </table>
-                } else {
-                </tbody>
+                    } else {
+                        </tbody>
             </table>
             <h2 align="center">No results found</h2>
             }
@@ -87,6 +105,7 @@
         } else {
             <h2 align="center">No results displayed</h2>
         }
+    </div>
 
     }
 }

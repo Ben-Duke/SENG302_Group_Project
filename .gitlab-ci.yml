@@ -44,7 +44,7 @@ release-artifacts:
 update-sonar:
   stage: deploy
   script:
-  - python envCreator.py $GOOGLE_MAPS_API_KEY $EVENTFINDA_API_KEY_USERNAME $EVENTFINDA_API_KEY_PASSWORD $ADMIN_USER_PASSWORD_DEFAULT $TEST_USER_PASSWORD_DEFAULT
+  - python3 envCreator.py $GOOGLE_MAPS_API_KEY $EVENTFINDA_API_KEY_USERNAME $EVENTFINDA_API_KEY_PASSWORD $ADMIN_USER_PASSWORD_DEFAULT $TEST_USER_PASSWORD_DEFAULT
   - sbt jacoco
   - /opt/sonar-scanner/bin/sonar-scanner --debug
   only:

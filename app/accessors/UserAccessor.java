@@ -30,6 +30,11 @@ public class UserAccessor {
         return Passport.find().query().where().eq("passid", id).findOne();
     }
 
+    /**
+     * Get a json ready string of the user that can be converted into json
+     * @param userId
+     * @return a String of user details
+     */
     public static String getJsonReadyStringOfUser(int userId){
         User user = getById(userId);
         return "{userId:" + user.getUserid() + ",firstname:" + user.getFName() +",lastname:" + user.getLName()+"}";

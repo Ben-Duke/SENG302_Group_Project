@@ -63,7 +63,20 @@ public class FollowController {
     }
 
     /**
-     *
+     * Returns the followers for a given user
+     * @param request
+     * @param userId
+     * @return
+     */
+    public Result getFollowersCount(Http.Request request, int userId){
+        //Stub
+        return ok();
+    }
+
+
+    /**
+     *Method returns a paginated list based on an offset, if the offset is 0 the first 10 are given.
+     * With an offset the list will be items after he given offset
      * @param userId
      * @param offset
      * @return
@@ -75,22 +88,44 @@ public class FollowController {
 
             int followCount = followList.size();
             if (offset > 0){
-                return unauthorized("Place holder");
-            }else{
-                if(followCount < 10){
-                    List<String> users = new ArrayList<String>();
-                    //for(Follow follower:followList.subList(0, 9)){
-                    for(Follow follower:followList){
-                       users.add( UserAccessor.getJsonReadyStringOfUser(follower.getFolowerUserId()));
+                int size =  followList.size();
+                if ( size < offset){
+                    return ok("Offset was larger than the amount of followers");
+                }
 
+                List<String> users = new ArrayList<>();
+                //Used to get the end of the batch and to see if less than 10 should be given back
+                int endCheck = offset + 11;
+                if ( endCheck > size){
+                    //Give back offset till end of follower list
+                    for(Follow follower:followList.subList(offset, size)){
+                        users.add( UserAccessor.getJsonReadyStringOfUser(follower.getFolowerUserId()));
                     }
+                    return ok(Json.toJson( users ));
+                }else{
+                    //loop through till 10
+                    for(Follow follower:followList.subList(offset, offset + 11)){
+                        users.add( UserAccessor.getJsonReadyStringOfUser(follower.getFolowerUserId()));
+                    }
+                    return ok(Json.toJson( users ));
+                }
 
-                    return ok(Json.toJson( users));
+            }else{
+                List<String> users = new ArrayList<>();
+                //With no offset give back the first 10
+                if(followCount > 10){
+                    for(Follow follower:followList.subList(0, 11)){
+                       users.add( UserAccessor.getJsonReadyStringOfUser(follower.getFolowerUserId()));
+                    }
+                    return ok(Json.toJson( users ));
                 }
                 else{
-                    return ok(followList.toString());
+                    //Reaching this point means there was less than 10 to give back so send all followers
+                    for(Follow follower:followList){
+                        users.add( UserAccessor.getJsonReadyStringOfUser(follower.getFolowerUserId()));
+                    }
+                    return ok(Json.toJson( users ));
                 }
-
             }
         }
         else{

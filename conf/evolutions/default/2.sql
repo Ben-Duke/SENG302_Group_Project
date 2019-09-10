@@ -282,10 +282,33 @@ INSERT INTO `user` (`userid`, `email`, `password_hash`, `date_of_birth`, `gender
 (8, 'logan.shaw@gmail.com', '$2a$10$gxxqY2u7DYUEQVcRK6jHJuYVMSRhViIekaHbMjh79kpqOrS135rXq', '1999-02-12', 'Male', 'Logan ', 'Shaw', 0, 0, '2019-08-20 20:49:17'),
 (9, 'jason.little@gmail.com', '$2a$10$Kv59.oawFqlGJEVa3wyMfengJOxDZb.JDzHXeFn/Bhw5zqQR.mSUa', '1994-07-13', 'Male', 'Jason', 'Little', 0, 0, '2019-08-20 20:50:10'),
 (10, 'priyesh.shah@gmail.com', '$2a$10$GbadXoPxGghyCW6lPDTjIeNzS/JfiCIqmlauPNiDIyQFivees1oRq', '1996-06-13', 'Other', 'Priyesh', 'Shah', 0, 0, '2019-08-20 20:50:48'),
-(11, 'michael.shannon@gmail.com', '$2a$10$i0GWnSrk2HSU4ZoFeV5em.kplOnwRDI18RgvGQqFEJ5KMMNNAW66i', '1998-01-15', 'Male', 'Michael', 'Shannon', 0, 0, '2019-08-20 20:51:22');
+(11, 'michael.shannon@gmail.com', '$2a$10$i0GWnSrk2HSU4ZoFeV5em.kplOnwRDI18RgvGQqFEJ5KMMNNAW66i', '1998-01-15', 'Male', 'Michael', 'Shannon', 0, 0, '2019-08-20 20:51:22'),
+(12, 'test.shah@gmail.com', '$2a$10$GbadXoPxGghyCW6lPDTjIeNzS/JfiCIqmlauPNiDIyQFivees1oRq', '1996-06-13', 'Other', 'test', 'Shah', 0, 0, '2019-08-20 20:50:48'),
+(13, 'test2.shah@gmail.com', '$2a$10$GbadXoPxGghyCW6lPDTjIeNzS/JfiCIqmlauPNiDIyQFivees1oRq', '1996-06-13', 'Other', 'test2', 'Shah', 0, 0, '2019-08-20 20:50:48'),
+(14, 'test3.shah@gmail.com', '$2a$10$GbadXoPxGghyCW6lPDTjIeNzS/JfiCIqmlauPNiDIyQFivees1oRq', '1996-06-13', 'Other', 'test3', 'Shah', 0, 0, '2019-08-20 20:50:48'),
+(15, 'test4.shah@gmail.com', '$2a$10$GbadXoPxGghyCW6lPDTjIeNzS/JfiCIqmlauPNiDIyQFivees1oRq', '1996-06-13', 'Other', 'test4', 'Shah', 0, 0, '2019-08-20 20:50:48'),
+(16, 'test5.shah@gmail.com', '$2a$10$GbadXoPxGghyCW6lPDTjIeNzS/JfiCIqmlauPNiDIyQFivees1oRq', '1996-06-13', 'Other', 'test5', 'Shah', 0, 0, '2019-08-20 20:50:48');
 
+
+
+-- Follow
 INSERT INTO `follow`(`follow_id`, `follower`, `followed`, `state`) VALUES
-(null,2,3,NULL );
+(null,2,3,NULL ),
+(null,4,3,NULL ),
+(null,5,3,NULL ),
+(null,6,3,NULL ),
+(null,7,3,NULL ),
+(null,8,3,NULL ),
+(null,9,3,NULL ),
+(null,10,3,NULL ),
+(null,11,3,NULL ),
+(null,12,3,NULL ),
+(null,13,3,NULL ),
+(null,14,3,NULL ),
+(null,15,3,NULL ),
+(null,16,3,NULL );
+
+
 
 -- Admin
 INSERT INTO `admin` (`user_id`, `user_id_to_edit`, `is_default`) VALUES
@@ -564,6 +587,8 @@ INSERT INTO `visit` (`visitid`, `visitorder`, `destination`, `trip`, `arrival`, 
 
 delete from visit;
 
+delete from follow;
+
 delete from destination_tag;
 
 delete from media_tag;
@@ -605,8 +630,6 @@ delete from album;
 delete from destination;
 
 delete from admin;
-
-delete from follow;
 
 delete from user;
 

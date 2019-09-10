@@ -57,11 +57,11 @@
                 <table class="table" id="search-table">
                     <thead class="thead-dark">
                         <tr>
-                            <th scope="col" onClick="sortTable(0)" style="cursor: pointer;">Name</th>
-                            <th scope="col" onClick="sortTable(1)" style="cursor: pointer;">Gender</th>
-                            <th scope="col" onClick="sortTable(2)" style="cursor: pointer;">Nationalities</th>
-                            <th scope="col" onClick="sortTable(3)" style="cursor: pointer;">DOB</th>
-                            <th scope="col" onClick="sortTable(4)" style="cursor: pointer;">Traveller types</th>
+                            <th scope="col" onClick="sortTable(0, 'search-table')" style="cursor: pointer;">Name</th>
+                            <th scope="col" onClick="sortTable(1, 'search-table')" style="cursor: pointer;">Gender</th>
+                            <th scope="col" onClick="sortTable(2, 'search-table')" style="cursor: pointer;">Nationalities</th>
+                            <th scope="col" onClick="sortTable(3, 'search-table')" style="cursor: pointer;">DOB</th>
+                            <th scope="col" onClick="sortTable(4, 'search-table')" style="cursor: pointer;">Traveller types</th>
                             <th scope="col" style="cursor: pointer;"></th>
                             <th scope="col"></th>
                         </tr>
@@ -108,11 +108,11 @@
                 <table class="table" id="follower-table">
                     <thead class="thead-dark">
                         <tr>
-                            <th scope="col" onClick="sortTable(0)" style="cursor: pointer;">Name</th>
-                            <th scope="col" onClick="sortTable(1)" style="cursor: pointer;">Gender</th>
-                            <th scope="col" onClick="sortTable(2)" style="cursor: pointer;">Nationalities</th>
-                            <th scope="col" onClick="sortTable(3)" style="cursor: pointer;">DOB</th>
-                            <th scope="col" onClick="sortTable(4)" style="cursor: pointer;">Traveller types</th>
+                            <th scope="col" onClick="sortTable(0, 'follower-table')" style="cursor: pointer;">Name</th>
+                            <th scope="col" onClick="sortTable(1, 'follower-table')" style="cursor: pointer;">Gender</th>
+                            <th scope="col" onClick="sortTable(2, 'follower-table')" style="cursor: pointer;">Nationalities</th>
+                            <th scope="col" onClick="sortTable(3, 'follower-table')" style="cursor: pointer;">DOB</th>
+                            <th scope="col" onClick="sortTable(4, 'follower-table')" style="cursor: pointer;">Traveller types</th>
                             <th scope="col" style="cursor: pointer;"></th>
                             <th scope="col"></th>
                         </tr>
@@ -130,11 +130,11 @@
                                 <td>@for(travellerType <- profile.getTravellerTypes()) {
                                     <p>@travellerType.getTravellerTypeName()</p>
                                 }</td>
-                                <td class="followLink" data-profile="@profile.getUserid">
-                                    <a class="btn btn-link" id="follow-@profile.getUserid" onclick="followUser(@profile.getUserid)" style="display: none;">
+                                <td class="followingTabLink" data-profile="@profile.getUserid">
+                                    <a class="btn btn-link" id="followTab-follow-@profile.getUserid" onclick="followUser(@profile.getUserid, 'followTab-')" style="display: none;">
                                         Follow
                                     </a>
-                                    <a class="btn btn-link d-none" id="unfollow-@profile.getUserid" onclick="unfollowUser(@profile.getUserid)" style="display: none;">
+                                    <a class="btn btn-link d-none" id="followTab-unfollow-@profile.getUserid" onclick="unfollowUser(@profile.getUserid, 'followTab-')" style="display: block;">
                                         Unfollow
                                     </a>
                                 </td>
@@ -159,11 +159,11 @@
             <table class="table" id="follower-table">
                 <thead class="thead-dark">
                     <tr>
-                        <th scope="col" onClick="sortTable(0)" style="cursor: pointer;">Name</th>
-                        <th scope="col" onClick="sortTable(1)" style="cursor: pointer;">Gender</th>
-                        <th scope="col" onClick="sortTable(2)" style="cursor: pointer;">Nationalities</th>
-                        <th scope="col" onClick="sortTable(3)" style="cursor: pointer;">DOB</th>
-                        <th scope="col" onClick="sortTable(4)" style="cursor: pointer;">Traveller types</th>
+                        <th scope="col" onClick="sortTable(0, 'follower-table')" style="cursor: pointer;">Name</th>
+                        <th scope="col" onClick="sortTable(1, 'follower-table')" style="cursor: pointer;">Gender</th>
+                        <th scope="col" onClick="sortTable(2, 'follower-table')" style="cursor: pointer;">Nationalities</th>
+                        <th scope="col" onClick="sortTable(3, 'follower-table')" style="cursor: pointer;">DOB</th>
+                        <th scope="col" onClick="sortTable(4, 'follower-table')" style="cursor: pointer;">Traveller types</th>
                         <th scope="col" style="cursor: pointer;"></th>
                         <th scope="col"></th>
                     </tr>
@@ -181,11 +181,11 @@
                             <td>@for(travellerType <- profile.getTravellerTypes()) {
                                 <p>@travellerType.getTravellerTypeName()</p>
                             }</td>
-                            <td class="followLink" data-profile="@profile.getUserid">
-                                <a class="btn btn-link" id="follow-@profile.getUserid" onclick="followUser(@profile.getUserid)" style="display: none;">
+                            <td class="followerTabLink" data-profile="@profile.getUserid">
+                                <a class="btn btn-link" id="followingTab-follow-@profile.getUserid" onclick="followUser(@profile.getUserid, 'followingTab-')" style="display: none;">
                                         Follow
                                 </a>
-                                <a class="btn btn-link d-none" id="unfollow-@profile.getUserid" onclick="unfollowUser(@profile.getUserid)" style="display: none;">
+                                <a class="btn btn-link d-none" id="followingTab-unfollow-@profile.getUserid" onclick="unfollowUser(@profile.getUserid, 'followingTab-')" style="display: none;">
                                         Unfollow
                                 </a>
                             </td>

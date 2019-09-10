@@ -68,4 +68,13 @@ public class FollowController {
         return ok(Json.toJson(false));
     }
 
+    public Result isFollowed(Http.Request request, int profileId) {
+        User user = User.getCurrentUser(request);
+        User other = UserAccessor.getById(profileId);
+        if (FollowAccessor.follows(other, user)) {
+            return ok(Json.toJson(true));
+        }
+        return ok(Json.toJson(false));
+    }
+
 }

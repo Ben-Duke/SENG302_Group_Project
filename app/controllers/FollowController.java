@@ -34,6 +34,7 @@ public class FollowController {
         UserAccessor.update(user);
         UserAccessor.update(userToFollow);
 
+
         return ok();
     }
 
@@ -61,6 +62,17 @@ public class FollowController {
 
 
     }
+
+    public Result isFollowing(Http.Request request, int profileId) {
+        User user = User.getCurrentUser(request);
+        User other = UserAccessor.getById(profileId);
+        if (FollowAccessor.follows(user, other)) {
+            return ok(Json.toJson(true));
+        }
+        return ok(Json.toJson(false));
+    }
+
+
 
     /**
      * Returns the followers for a given user
@@ -115,7 +127,7 @@ public class FollowController {
                 //With no offset give back the first 10
                 if(followCount > 10){
                     for(Follow follower:followList.subList(0, 11)){
-                       users.add( UserAccessor.getJsonReadyStringOfUser(follower.getFolowerUserId()));
+                        users.add( UserAccessor.getJsonReadyStringOfUser(follower.getFolowerUserId()));
                     }
                     return ok(Json.toJson( users ));
                 }

@@ -7,8 +7,12 @@ import os
 #ADMIN_USER_PASSWORD_DEFAULT=
 #TEST_USER_PASSWORD_DEFAULT=
 
-if (len(sys.argv) != 5):
+NUMBER_ENV_VARIABLES = 5;
+
+if (len(sys.argv) != NUMBER_ENV_VARIABLES + 1):
     sys.exit(1)
+    
+print("Successfully read ({}) env variables".format(len(sys.argv) - 1))
 
 google_api_key = sys.argv[0]
 eventfinda_username = sys.argv[1]
@@ -26,6 +30,8 @@ if (not os.path.exists(".env")):
         envFile.write("EVENTFINDA_API_KEY_PASSWORD={}\n".format(eventfinda_password))
         envFile.write("ADMIN_USER_PASSWORD_DEFAULT={}\n".format(admin_password))
         envFile.write("TEST_USER_PASSWORD_DEFAULT={}\n".format(test_user_password))
+        
+        print("Successfully creater .env")
         
 
 sys.exit(0)        

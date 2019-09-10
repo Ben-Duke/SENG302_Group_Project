@@ -15,11 +15,11 @@ if (len(sys.argv) != NUMBER_ENV_VARIABLES + 1):
     
 print("Successfully read ({}) env variables".format(len(sys.argv) - 1))
 
-google_api_key = sys.argv[0]
-eventfinda_username = sys.argv[1]
-eventfinda_password = sys.argv[2]
-admin_password = sys.argv[3]
-test_user_password = sys.argv[4]
+google_api_key = sys.argv[1]
+eventfinda_username = sys.argv[2]
+eventfinda_password = sys.argv[3]
+admin_password = sys.argv[4]
+test_user_password = sys.argv[5]
 
 if (os.path.exists(".env")):
     os.remove(".env")

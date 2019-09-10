@@ -752,4 +752,24 @@ public class TripController extends Controller {
 
         return ok(tripNodes);
     }
+
+    /**
+     * Controller function to retrieve a list of trips matching the given name
+     * @param request the HTTP request
+     * @param name the name of the trip to match
+     * @return the list of trips that match the name
+     */
+    public Result getTripsByName(Http.Request request, String name) {
+        User user = User.getCurrentUser(request);
+        if (user == null) { return redirect(routes.UserController.userindex()); }
+        List<Trip> trips = TripAccessor.getTripsByName(name, user.getUserid());
+
+        if(trips != null && trips.size() > 0) {
+            return ok(Json.toJson(trips));
+        } else {
+            return ok(Json.toJson(new ArrayList<>()));
+        }
+
+
+    }
 }

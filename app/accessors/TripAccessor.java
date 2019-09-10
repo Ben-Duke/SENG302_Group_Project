@@ -16,6 +16,15 @@ public class TripAccessor {
     }
 
     /** Return the trip matching the id passed
+     * @param name name of a trip to find in the database
+     * @return Trip
+     */
+    public static List<Trip> getTripsByName(String name, int id) {
+        return Trip.find().query().where().eq("user", id).like("trip_name", name).findList();
+    }
+
+
+    /** Return the trip matching the id passed
      * @param id Id of a trip to find in the database
      * @return Trip
      */

@@ -4,10 +4,14 @@ import accessors.FollowAccessor;
 import accessors.UserAccessor;
 import models.Follow;
 import models.User;
+import play.Logger;
 import play.libs.Json;
 import play.mvc.Http;
 import play.mvc.Result;
 
+import java.util.*;
+
+import static java.util.Arrays.copyOfRange;
 import static play.mvc.Results.*;
 
 public class FollowController {
@@ -68,13 +72,122 @@ public class FollowController {
         return ok(Json.toJson(false));
     }
 
-    public Result isFollowed(Http.Request request, int profileId) {
-        User user = User.getCurrentUser(request);
-        User other = UserAccessor.getById(profileId);
-        if (FollowAccessor.follows(other, user)) {
-            return ok(Json.toJson(true));
+    /**
+     *Method returns a paginated list of people the user is following based on an offset, if the offset is 0 the first 10 are given.
+     * With an offset the list will be items after he given offset
+     * @param userId
+     * @param offset
+     * @return
+     */
+    public Result getFollowing(Http.Request request, int userId, int offset){
+        User user = UserAccessor.getById(userId);
+        if(user != null){
+            List<Follow> followingList = user.getFollowing();
+
+            int followCount = followingList.size();
+            if (offset > 0){
+                int size =  followingList.size();
+                if ( size < offset){
+                    return ok("Offset was larger than the amount of people following");
+                }
+
+                List<String> users = new ArrayList<>();
+                //Used to get the end of the batch and to see if less than 10 should be given back
+                int endCheck = offset + 11;
+                if ( endCheck > size){
+                    //Give back offset till end of follower list
+                    for(Follow follower:followingList.subList(offset, size)){
+                        users.add( UserAccessor.getJsonReadyStringOfUser(follower.getFolowedUserId()));
+                    }
+                    return ok(Json.toJson( users ));
+                }else{
+                    //loop through till 10
+                    for(Follow follower:followingList.subList(offset, offset + 10)){
+                        users.add( UserAccessor.getJsonReadyStringOfUser(follower.getFolowedUserId()));
+                    }
+                    return ok(Json.toJson( users ));
+                }
+
+            }else{
+                List<String> users = new ArrayList<>();
+                //With no offset give back the first 10
+                if(followCount > 10){
+                    for(Follow follower:followingList.subList(0, 10)){
+                        users.add( UserAccessor.getJsonReadyStringOfUser(follower.getFolowedUserId()));
+                    }
+                    return ok(Json.toJson( users ));
+                }
+                else{
+                    //Reaching this point means there was less than 10 to give back so send all followers
+                    for(Follow follower:followingList){
+                        users.add( UserAccessor.getJsonReadyStringOfUser(follower.getFolowedUserId()));
+                    }
+
+                }
+                return ok(Json.toJson( users ));
+            }
         }
-        return ok(Json.toJson(false));
+        else{
+            return notFound("Not found");
+        }
+
     }
 
+    /**
+     *Method returns a paginated list based on an offset, if the offset is 0 the first 10 are given.
+     * With an offset the list will be items after he given offset
+     * @param userId
+     * @param offset
+     * @return
+     */
+    public Result getFollowers(Http.Request request, int userId, int offset){
+        User user = UserAccessor.getById(userId);
+        if(user != null){
+            List<Follow> followList = user.getFollowers();
+            List<String> users = new ArrayList<>();
+            int followCount = followList.size();
+            if (offset > 0){
+                int size =  followList.size();
+                if ( size < offset){
+                    return ok("Offset was larger than the amount of followers");
+                }
+
+
+                //Used to get the end of the batch and to see if less than 10 should be given back
+                int endCheck = offset + 11;
+                if ( endCheck > size){
+                    //Give back offset till end of follower list
+                    for(Follow follower:followList.subList(offset, size)){
+                        users.add( UserAccessor.getJsonReadyStringOfUser(follower.getFolowerUserId()));
+                    }
+                    return ok(Json.toJson( users ));
+                }else{
+                    //loop through till 10
+                    for(Follow follower:followList.subList(offset, offset + 10)){
+                        users.add( UserAccessor.getJsonReadyStringOfUser(follower.getFolowerUserId()));
+                    }
+
+                }
+                return ok(Json.toJson( users ));
+            }else{
+                //With no offset give back the first 10
+                if(followCount > 10){
+                    for(Follow follower:followList.subList(0, 10)){
+                        users.add( UserAccessor.getJsonReadyStringOfUser(follower.getFolowerUserId()));
+                    }
+                }
+                else{
+                    //Reaching this point means there was less than 10 to give back so send all followers
+                    for(Follow follower:followList){
+                        users.add( UserAccessor.getJsonReadyStringOfUser(follower.getFolowerUserId()));
+                    }
+                }
+                return ok(Json.toJson( users ));
+            }
+        }
+        else{
+            return notFound("Not found");
+        }
+
+    }
 }

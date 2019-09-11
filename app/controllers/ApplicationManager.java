@@ -1,9 +1,13 @@
 package controllers;
 
 import org.slf4j.Logger;
+import play.Application;
+import play.db.Database;
 import utilities.UtilityFunctions;
 
 import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Enum for the two databases used by the application
@@ -35,6 +39,7 @@ public class ApplicationManager {
     /** Current database app is using saved as the name of the database */
     private static DatabaseName databaseName = DatabaseName.DEFAULT;
 
+
     /**
      * Method to get the media path.
      *
@@ -54,6 +59,18 @@ public class ApplicationManager {
     public final static String getDefaultUserPhotoFullURL() {
         String urlToRoot = Paths.get(".").toAbsolutePath().normalize().toString();
         return urlToRoot + "/public/images/Generic.png";
+    }
+
+    /**
+     * Gets the full url to the default destination photo.
+     *
+     * Used for new File(fullPath).
+     *
+     * @return The full url to the placeholder destination image.
+     */
+    public final static String getDefaultDestinationPhotoFullURL() {
+        String urlToRoot = Paths.get(".").toAbsolutePath().normalize().toString();
+        return urlToRoot + "/public/images/destinationPlaceHolder.png";
     }
 
     /**

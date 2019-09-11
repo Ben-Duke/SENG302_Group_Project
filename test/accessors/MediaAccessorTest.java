@@ -14,7 +14,6 @@ import javax.validation.constraints.AssertTrue;
 
 public class MediaAccessorTest extends BaseTestWithApplicationAndDatabase {
 
-
    @Test
    public void testPhotoCanBeDeletedWithTag(){
        UserPhoto photo = UserPhoto.find().byId(1);

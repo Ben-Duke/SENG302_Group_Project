@@ -117,6 +117,7 @@ public class HomeController {
         if(user != null) {
             Map<String, String[]> dataPart = request.body().asMultipartFormData().asFormUrlEncoded();
             boolean isPublic = false;
+            ArrayList<String> tags = new ArrayList<>();
             if (dataPart.get("private")[0].equals("false")) {
                 isPublic = true;
             }
@@ -124,7 +125,7 @@ public class HomeController {
             Http.MultipartFormData<Files.TemporaryFile> body = request.body().asMultipartFormData();
             Http.MultipartFormData.FilePart<Files.TemporaryFile> picture = body.getFile("picture");
             String albumName = dataPart.get("album")[0];
-            if (picture != null) {
+            if ((picture != null) && (!albumName.isEmpty())) {
                 return getResultFromSaveUserPhoto(user, isPublic, picture, albumName);
             } else {
                 return redirect(routes.HomeController.showhome());
@@ -162,7 +163,7 @@ public class HomeController {
             UploadPhotoCommand uploadPhotoCommand = new UploadPhotoCommand(newPhoto, fileObject, user, albumName, tags);
             user.getCommandManager().executeCommand(uploadPhotoCommand);
             TagAccessor.removePendingTagsFromUserId(user.getUserid());
-            return redirect(routes.HomeController.showhome());
+            return ok();
         } else {
             return badRequest();
         }
@@ -286,8 +287,13 @@ public class HomeController {
         }
     }
 
-    public Result getGenericProfileImage(Http.Request request){
-        return ok((new File("public/images/Generic.png")).getPath());
+    /**
+     * Get a placeholder image
+     * @param request
+     * @return
+     */
+    public Result getPlaceholderImage(Http.Request request, String filename){
+        return ok(new File(ApplicationManager.getDefaultDestinationPhotoFullURL()));
     }
 
     /**
@@ -331,10 +337,10 @@ public class HomeController {
                 if(user.getUserid() == photo.getUser().getUserid() || user.userIsAdmin()) {
                     if (setPublic == 0) {
                         UserFactory.makePicturePublic(user.getUserid(), photo, false);
-                        return redirect(routes.HomeController.showhome());
+                        return ok();
                     } else if (setPublic == 1) {
                         UserFactory.makePicturePublic(user.getUserid(), photo, true);
-                        return redirect(routes.HomeController.showhome());
+                        return ok();
                     } else {
                         return badRequest("Invalid request.");
                     }

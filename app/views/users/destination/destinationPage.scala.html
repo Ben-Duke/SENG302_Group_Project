@@ -90,6 +90,21 @@
         max-width: 120px;
         max-height: 120px;
     }
+    #tag-line {
+        overflow: scroll; /* for CSS3 lacking browsers */
+
+        width:600px;
+        height:200px;
+    }
+    .tag {
+        background-color: white;
+        border-color: white;
+        color: #2e6da4;
+        padding: 5px;
+        border-radius: 10px;
+        display: inline;
+        margin-bottom: 10px;
+    }
 
 </style>
 
@@ -206,15 +221,17 @@
                     <span>@destination.getLongitude()</span>
                 </div>
             </div>
+
+@*            Tag Editor *@
             @if(destination.isUserOwner(user) || user.userIsAdmin()) {
                 <div class="row">
                     @users.tag.createSearchTags(user, "destination", destination.getDestId())
                 </div>
             }
+
             <a class="btn btn-primary" href="@routes.DestinationController.editDestination(destination.getDestId())" role="button">
                 Edit
             </a>
-
         }
 
         </div>
@@ -349,7 +366,7 @@
 
     <script src="@routes.Assets.at("js/destination/viewDestination.js")"></script>
     <script>setLatLng(@destination.getLatitude(), @destination.getLongitude());</script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=&libraries=drawing&callback=initMap"
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC9Z1g5p2rQtS0nHgDudzCCXVl2HJl3NPI&libraries=drawing&callback=initMap"
     async defer></script>
 
 

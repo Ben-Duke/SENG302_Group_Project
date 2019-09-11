@@ -356,6 +356,13 @@ function createTripTable(data) {
     let urlForDelete = '/users/trips/edit/' + data.visitId;//data.tripId;
     deleteButtonText.setAttribute('onclick', 'sendDeleteVisitRequest(' + '"' + urlForDelete + '"' + ','
         + data.visitId + ')');
+    let errorMsg = document.createElement('td');
+    errorMsg.colspan = '4';
+    errorMsg.classList.add('text-center');
+    errorMsg.id = 'dateError_' + data[0];
+    errorMsg.style.color = 'red';
+    errorMsg.style.display = 'none';
+    errorMsg.innerText = 'Arrival date must be before departure date';
     deleteButton.appendChild(deleteButtonText);
     tableDataDeparture.appendChild(departureDateInput);
     newRow.appendChild(tableHeader);
@@ -671,6 +678,7 @@ let currentlyDisplayedTripId;
  * @param startLng the longitude to zoom to
  */
 function displayTrip(tripId, startLat, startLng) {
+    thereIsAnError.errors = [];
     if(tripId !== currentlyDisplayedTripId && currentlyDisplayedTripId !== undefined) {
         if(document.getElementById("singleTrip_" + currentlyDisplayedTripId) != undefined) {
             document.getElementById("singleTrip_" + currentlyDisplayedTripId).style.display = "none";
@@ -944,8 +952,10 @@ function sendDeleteVisitRequest(url, visitId) {
         }
     });
 }
-
-
+function isValidDate(d) {
+    return d instanceof Date && !isNaN(d);
+}
+let thereIsAnError = {errors: []};
 function updateVisitDate(visitId) {
     let arrival = document.getElementById("arrival_" + visitId).value;
     let departure = document.getElementById("departure_" + visitId).value;
@@ -954,35 +964,44 @@ function updateVisitDate(visitId) {
         arrival: arrival,
         departure: departure
     };
-
-    let token = $('input[name="csrfToken"]').attr('value');
-    $.ajaxSetup({
-        beforeSend: function (xhr) {
-            xhr.setRequestHeader('Csrf-Token', token);
+    const arrivalDate = new Date(data.arrival);
+    const departureDate = new Date(data.departure);
+    const errorMsgs = document.getElementsByClassName('dateError');
+    if (! isValidDate(arrivalDate) || ! isValidDate(departureDate) || (arrivalDate <= departureDate)) {
+        console.log(thereIsAnError);
+        if (thereIsAnError.errors.includes(visitId)) {
+            thereIsAnError.errors = thereIsAnError.errors.filter((value) => {
+                return value !== visitId;
+            });
         }
-    });
-    $.ajax({
-        url: updateVisitDateUrl + visitId,
-        method: "PATCH",
-        data: JSON.stringify(data),
-        contentType: 'application/json',
-        success: function (data, textStatus, xhr) {
-            if (xhr.status == 200) {
-                document.getElementById('undoButton').classList.remove('disabled');
+        if(! thereIsAnError.errors.length) {
+            for (let errorMsg of errorMsgs) {
+                errorMsg.style.display = 'None';
             }
-            else {
-
-            }
-        },
-        error: function (xhr, settings) {
-            if (xhr.status == 400) {
-            }
-            else if (xhr.status == 403) {
-            }
-            else {
-            }
+            let token = $('input[name="csrfToken"]').attr('value');
+            $.ajaxSetup({
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader('Csrf-Token', token);
+                }
+            });
+            $.ajax({
+                url: updateVisitDateUrl + visitId,
+                method: "PATCH",
+                data: JSON.stringify(data),
+                contentType: 'application/json',
+                success: function (data, textStatus, xhr) {
+                    if (xhr.status == 200) {
+                        document.getElementById('undoButton').classList.remove('disabled');
+                    }
+                }
+            });
         }
-    });
+    } else {
+        thereIsAnError.errors.push(visitId);
+        for (let errorMsg of errorMsgs) {
+            errorMsg.style.display = "inline";
+        }
+    }
 
 }
 

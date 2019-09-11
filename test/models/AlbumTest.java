@@ -54,7 +54,7 @@ public class AlbumTest extends BaseTestWithApplicationAndDatabase {
 
         List<Media> mediaList = album.viewAllMedia(true);
         Assert.assertEquals(1, mediaList.size());
-        Assert.assertTrue(mediaList.get(0).isMediaPublic);
+        Assert.assertTrue(mediaList.get(0).isPublic());
     }
 
     @Test
@@ -82,7 +82,7 @@ public class AlbumTest extends BaseTestWithApplicationAndDatabase {
 
         List<Media> mediaList = album.viewAllMedia(false);
         Assert.assertEquals(3, mediaList.size());
-        Assert.assertFalse(mediaList.get(0).isMediaPublic);
+        Assert.assertFalse(mediaList.get(0).isPublic());
     }
 
     @Test

@@ -1,5 +1,7 @@
 package utilities;
 
+import accessors.TagAccessor;
+import models.Tag;
 import models.TravellerType;
 import org.junit.Test;
 import play.db.Database;
@@ -9,7 +11,9 @@ import play.db.evolutions.Evolutions;
 import play.test.WithApplication;
 import testhelpers.BaseTestWithApplicationAndDatabase;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.Assert.*;
 
@@ -24,7 +28,8 @@ public class UtilityFunctionsTest extends BaseTestWithApplicationAndDatabase {
         // Do not populate the database with any data
         // addTravelTypes test needs empty Traveller Types table
 
-        TestDatabaseManager.clearAllData();
+        TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
+        testDatabaseManager.clearAllData();
     }
 
     /**
@@ -435,5 +440,53 @@ public class UtilityFunctionsTest extends BaseTestWithApplicationAndDatabase {
     @Test
     public void isEmailValidPeriodInUsername() {
         assertTrue(UtilityFunctions.isEmailValid("te.st@test.test"));
+    }
+
+    /**
+     * Create a new set of tags
+     */
+    private Set<Tag> addTags(List<String> tags) {
+        return UtilityFunctions.tagLiteralsAsSet(tags);
+    }
+
+    @Test
+    public void tagLiteralAsSet_checkTagsReturned() {
+        List<String> tagNames = Arrays.asList("Test", "Jack", "Noel");
+        Set<Tag> tags = addTags(tagNames);
+
+        assertEquals(tagNames.size(), tags.size());
+    }
+
+    @Test
+    /* Save some new tags, make sure they get saved*/
+    public void tagLiteralAsSet_newTags_checkTagsSaved() {
+        int initialNumTags = Tag.find.all().size();
+
+        List<String> tagNames = Arrays.asList("Test", "Jack", "Noel");
+        addTags(tagNames);
+
+        int finalNumTags = Tag.find.all().size();
+        assertEquals(initialNumTags + tagNames.size(), finalNumTags);
+    }
+
+    @Test
+    public void tagLiteralAsSet_existingTags_checkTagsReturned() {
+        List<String> tagNames = Arrays.asList("Test", "Jack", "Noel");
+        addTags(tagNames);
+        Set<Tag> tags = addTags(tagNames);  // call when tags already exist
+
+        assertEquals(tagNames.size(), tags.size());
+    }
+
+    @Test
+    public void tagLiteralAsSet_existingTags_checkTagsNotSaved() {
+        List<String> tagNames = Arrays.asList("Test", "Jack", "Noel");
+        addTags(tagNames);
+        int initialNumTags = Tag.find.all().size(); // check size after new ones added
+
+        addTags(tagNames);  // call when tags already exist
+
+        int finalNumTags = Tag.find.all().size();
+        assertEquals(initialNumTags, finalNumTags); // check size unchanged
     }
 }

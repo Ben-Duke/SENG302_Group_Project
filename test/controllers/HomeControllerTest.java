@@ -4,6 +4,7 @@ import akka.actor.ActorSystem;
 import akka.actor.Terminated;
 import akka.stream.ActorMaterializer;
 import akka.stream.Materializer;
+import akka.stream.impl.io.OutputStreamSourceStage;
 import akka.stream.javadsl.FileIO;
 import akka.stream.javadsl.Source;
 import akka.util.ByteString;
@@ -148,7 +149,7 @@ public class HomeControllerTest extends BaseTestWithApplicationAndDatabase {
         CSRFTokenHelper.addCSRFToken(request);
         Result result = route(app, request);
 
-        assertEquals(SEE_OTHER, result.status());
+        assertEquals(OK, result.status());
     }
 
     /**
@@ -385,7 +386,7 @@ public class HomeControllerTest extends BaseTestWithApplicationAndDatabase {
                 .uri(routes.HomeController.makePicturePublic(2,1).url()).session("connected", "2");
         CSRFTokenHelper.addCSRFToken(request);
         Result result = route(app, request);
-        assertEquals(SEE_OTHER, result.status());
+        assertEquals(OK, result.status());
         userPhoto = UserPhoto.find().byId(2);
         assertTrue(userPhoto.getIsPublic());
     }
@@ -399,7 +400,7 @@ public class HomeControllerTest extends BaseTestWithApplicationAndDatabase {
                 .uri(routes.HomeController.makePicturePublic(1,0).url()).session("connected", "2");
         CSRFTokenHelper.addCSRFToken(request);
         Result result = route(app, request);
-        assertEquals(SEE_OTHER, result.status());
+        assertEquals(OK, result.status());
         userPhoto = UserPhoto.find().byId(1);
         assertFalse(userPhoto.getIsPublic());
     }

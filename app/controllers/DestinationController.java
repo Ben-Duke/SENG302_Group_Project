@@ -1091,11 +1091,10 @@ public class DestinationController extends Controller {
         if (destId != null) {
             UserPhoto primaryPicture = DestinationFactory.getPrimaryPicture(destId);
             if (primaryPicture != null) {
-                logger.debug("Sending image back");
                 return ok(new File(primaryPicture.getUrlWithPath()));
             } else {
                 //should be 404 but then console logs an error
-                return ok();
+                return ok(new File(ApplicationManager.getDefaultDestinationPhotoFullURL()));
             }
         } else {
             return redirect(routes.UserController.userindex());

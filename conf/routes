@@ -122,6 +122,9 @@ DELETE    /users/trips/edit/:id    controllers.TripController.deletevisit(reques
 #Handles swapping visits in a trip
 PUT    /users/trips/edit/:id      controllers.TripController.swapvisits(request: Request, id:Integer)
 
+#Gets the trip photo or a placeholder
+GET     /users/trips/:id/tripPicture controllers.TripController.getTripPhoto(request: Request, id:Integer)
+
 #Renders page for editing a trip
 #GET     /users/trips/edit/:id        controllers.TripController.edittrip(request: Request, id:Integer)
 
@@ -150,6 +153,9 @@ GET     /users/home/serveDestPicture/:id               controllers.HomeControlle
 
 #Serve a file
 GET     /users/home/servePicture/:path                 controllers.HomeController.index(request: Request, path:String)
+
+#Serve a default file
+GET     /users/home/servePlaceholderPicture/:filename                 controllers.HomeController.getPlaceholderImage(request: Request, filename:String)
 
 #Unlinks the photo from destinations and deletes the UserPhoto with the photoID
 DELETE /users/unlinkAndDeletePicture/:photoId                  controllers.DestinationController.unlinkAndDelete(request: Request, photoId: Integer)
@@ -202,7 +208,7 @@ GET     /users/destinations             controllers.DestinationController.indexD
 POST     /users/destination/exists       controllers.DestinationController.doesDestinationExist(request: Request)
 
 #*************_*_*_*_*_*_*_*_*_*
-GET     /users/destinations/getprimaryphoto  controllers.DestinationController.servePrimaryPicture(request : Request, destId : Integer)
+GET     /users/destinations/getprimaryphoto/:destId  controllers.DestinationController.servePrimaryPicture(request : Request, destId : Integer)
 
 #Gets JSON of all public and private Destinations avaliable to a user.
 GET     /users/destinations/getalljson         controllers.DestinationController.getVisibleDestinationMarkersJSON(request : Request)
@@ -310,6 +316,9 @@ GET     /users/:id/albums/getFromTitle/:title    controllers.AlbumController.get
 #Albums index page
 GET     /users/albums   controllers.AlbumController.indexAlbum(request : Request)
 
+#Get the first available album ID of a media item if it exists
+GET     /users/albums/getAlbumFromMediaId/:mediaId      controllers.AlbumController.getFirstAlbumIdFromMediaId(request : Request, mediaId : Integer)
+
 
 #Get JSON of one album
 GET     /users/albums/get/:all/:id   controllers.AlbumController.getAlbum(request : Request, id : Integer, all : Boolean)
@@ -344,6 +353,13 @@ GET     /users/albums/photos/get_linked_destinations/:photoId controllers.AlbumC
 
 GET /googlemap  controllers.DestinationController.renderMap(request : Request)
 
+# ------ ALBUMS ------
+
+GET     /events             controllers.EventsController.getEventsDataByDestination(request : Request, latitude: Double, longitude: Double, place: String, offset: Integer)
+
+GET     /users/events/search            controllers.EventsController.indexEvents(request : Request)
+
+GET     /users/events       controllers.EventsController.getEventsData(request : Request, keyword: String, category : String, startDate: String, endDate: String, minPrice: String, maxPrice: String, destination: String, sortBy: String, offset: Integer)
 
 
 

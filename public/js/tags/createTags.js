@@ -86,6 +86,7 @@ function sendGetTagsRequest() {
         for (let tag of tags) {
             addTagLabel(tag.name)
         }
+        console.log(tags);
     }).fail((xhr, textStatus, errorThrown) => {
         console.log(xhr.status + " " + textStatus + " " + errorThrown);
     });
@@ -198,8 +199,9 @@ function addTagLabel(name) {
     newRemove.appendChild(newIcon);
     newTag.appendChild(newText);
     newTag.appendChild(newRemove);
-    if(!toAddTagList.has(name.toLowerCase())) {
-        toAddTagList.add(name.toLowerCase());
+
+    if(!toAddTagList.has(name)) {
+        toAddTagList.add(name);
         tagList.appendChild(newTag);
     }
 }

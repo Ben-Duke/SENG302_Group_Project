@@ -29,7 +29,6 @@ function getItemData(item) {
         data.link = "/users/map_home";
         addItem(data);
     } else if (item.hasOwnProperty('destName')) {
-        console.log(item);
         data.header = item.destName;
         data.type = 'Destination';
         data.body = item.district + ', ' + item.country;

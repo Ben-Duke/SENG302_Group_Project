@@ -2,6 +2,7 @@ package accessors;
 
 import models.Tag;
 import models.Trip;
+import models.User;
 
 import java.util.List;
 
@@ -19,8 +20,8 @@ public class TripAccessor {
      * @param name name of a trip to find in the database
      * @return Trip
      */
-    public static List<Trip> getTripsByName(String name, int id) {
-        return Trip.find().query().where().eq("user", id).like("trip_name", name).findList();
+    public static List<Trip> getTripsByName(String name, User user) {
+        return Trip.find().query().where().eq("user", user).like("trip_name", "%" + name + "%").findList();
     }
 
 

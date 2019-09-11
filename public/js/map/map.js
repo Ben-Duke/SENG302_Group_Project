@@ -1386,6 +1386,23 @@ function checkTripVisits() {
         })
 }
 
+$("#tripSearchInput").keyup(function()
+{
+    let searchInput = document.getElementById("tripSearchInput").value;
+    if(searchInput != " ") {
+        $.ajax({
+            url: '/users/trips/matching/' + searchInput,
+            method: "GET",
+            success: function (res) {
+                let listItems = document.getElementsByClassName("tripItem");
+                for (item in listItems) {
+                    console.log(item.id);
+                }
+            }
+        });
+    }
+});
+
 $("#formBody").submit(function(e){
     e.preventDefault();
 });

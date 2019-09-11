@@ -762,7 +762,7 @@ public class TripController extends Controller {
     public Result getTripsByName(Http.Request request, String name) {
         User user = User.getCurrentUser(request);
         if (user == null) { return redirect(routes.UserController.userindex()); }
-        List<Trip> trips = TripAccessor.getTripsByName(name, user.getUserid());
+        List<Trip> trips = TripAccessor.getTripsByName(name, user);
 
         if(trips != null && trips.size() > 0) {
             return ok(Json.toJson(trips));

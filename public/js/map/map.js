@@ -1389,17 +1389,30 @@ function checkTripVisits() {
 $("#tripSearchInput").keyup(function()
 {
     let searchInput = document.getElementById("tripSearchInput").value;
-    if(searchInput != " ") {
+    if(searchInput != "") {
         $.ajax({
             url: '/users/trips/matching/' + searchInput,
             method: "GET",
             success: function (res) {
-                let listItems = document.getElementsByClassName("tripItem");
-                for (item in listItems) {
-                    console.log(item.id);
+                let displayedIds = [];
+                for (let j=0; j < res.length; j++) {
+                    displayedIds.push("Button" + res[j].tripid);
+                }
+                let tripListChildren = document.getElementById("trip-list-group").children;
+                for(let i=0; i < tripListChildren.length; i++) {
+                    if (!displayedIds.includes(tripListChildren[i].id)) {
+                        tripListChildren[i].setAttribute("style", "display: none;");
+                    } else {
+                        tripListChildren[i].setAttribute("style", "display: block;");
+                    }
                 }
             }
         });
+    } else {
+         let tripListChildren = document.getElementById("trip-list-group").children;
+            for(let i=0; i < tripListChildren.length; i++) {
+                    tripListChildren[i].setAttribute("style", "display: block;");
+            }
     }
 });
 

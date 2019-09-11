@@ -364,7 +364,7 @@
                         <a onclick="displayTrip(@trip.getTripid(),
                             @trip.getOrderedVisits().get(0).getDestination().getLatitude(),
                                 @trip.getOrderedVisits().get(0).getDestination().getLongitude())"
-                            class="tripItem list-group-item list-group-item-action" id="Button@trip.getTripid()">
+                            class="list-group-item list-group-item-action" id="Button@trip.getTripid()">
                             @if(trip.getTripStart() != null){
                                 @trip.getTripName() | Arrival date: @trip.getTripStart()
                             } else{

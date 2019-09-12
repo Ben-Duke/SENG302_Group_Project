@@ -289,15 +289,15 @@ public class DestinationController extends Controller {
 
         Destination newDestination = getDestinationFromRequest(request, user, destId);
 
-        if(DestinationFactory.checkIfDestinationIsAPublicDuplicate(newDestination.getDestName(),
-                newDestination.getCountry(),
-                newDestination.getDistrict())){
+        DestinationFactory destFactory = new DestinationFactory();
+
+        List<Destination> matchingDestinations = destFactory.getMatching(newDestination);
+
+        if(matchingDestinations.size() > 0) {
+
             logger.debug("Should block this and merge them");
-            DestinationFactory destFactory = new DestinationFactory();
 
-
-
-            destFactory.editDestinationMerge(destFactory.getMatching(newDestination).get(0), oldDestination);
+            destFactory.editDestinationMerge(matchingDestinations.get(0), oldDestination);
         } else {
 
             oldDestination.applyEditChanges(newDestination);

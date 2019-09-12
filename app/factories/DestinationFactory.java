@@ -28,29 +28,6 @@ public class DestinationFactory {
                 .where().eq("destIsPublic", true).findList();
     }
 
-    public static boolean checkIfDestinationIsAPublicDuplicate(Destination destination){
-        boolean valid = true;
-        for(Destination dest : Destination.find().query().where().eq("destName", destination.getDestName()).findList()){
-            if((dest.getDestName().equals(destination.getDestName())) &&
-                    (dest.getDistrict().equals(destination.getDistrict())) &&
-                    (dest.getCountry() == destination.getCountry())){
-                valid = false;
-            }
-        }
-        return valid;
-    }
-
-    public static boolean checkIfDestinationIsAPublicDuplicate(String destname, String destCountry, String destDistrict){
-        boolean valid = true;
-        for(Destination dest : Destination.find().query().where().eq("destName", destname).findList()){
-            if((dest.getDestName().equals(destname)) &&
-                    (dest.getDistrict().equals(destDistrict)) &&
-                    (dest.getCountry() == destCountry)){
-                valid = false;
-            }
-        }
-        return valid;
-    }
 
     public ArrayList<Destination> getMatching(Destination destination){
         ArrayList<Destination> destinations = new ArrayList<Destination>();

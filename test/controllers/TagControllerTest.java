@@ -2,6 +2,7 @@ package controllers;
 
 import accessors.*;
 import models.*;
+import org.checkerframework.checker.units.qual.C;
 import org.junit.Test;
 import play.libs.Json;
 import play.mvc.Http;
@@ -51,7 +52,7 @@ public class TagControllerTest extends BaseTestWithApplicationAndDatabase {
     @Test
     public void addValidExistingRawTagCheckResponse() {
         Result result = addRawTagHelper("Vacation Spot", 2);
-        assertEquals(OK, result.status());
+        assertEquals(CREATED, result.status());
     }
 
     @Test

@@ -183,7 +183,6 @@ public class DestinationController extends Controller {
             }
         }
 
-//        user.getCommandManager().setAllowedPage(DestinationPageCommand.class);
 
         boolean inEditMode = false;
 
@@ -287,7 +286,9 @@ public class DestinationController extends Controller {
             logger.debug("Should block this and merge them");
             DestinationFactory destFactory = new DestinationFactory();
 
-            destFactory.editDestinationMerge(destFactory.getMatching(newDestination).get(0), newDestination);
+
+
+            destFactory.editDestinationMerge(destFactory.getMatching(newDestination).get(0), oldDestination);
         } else {
 
             oldDestination.applyEditChanges(newDestination);

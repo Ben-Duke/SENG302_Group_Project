@@ -1,9 +1,6 @@
 package factories;
 
-import accessors.AlbumAccessor;
-import accessors.DestinationAccessor;
-import accessors.TagAccessor;
-import accessors.TreasureHuntAccessor;
+import accessors.*;
 import formdata.DestinationFormData;
 import models.*;
 import org.slf4j.Logger;
@@ -240,18 +237,25 @@ public class DestinationFactory {
      * @param destinationTwo the new destination which will hold new photos
      */
     private void movePhotosToAnotherDestination(Destination destinationOne, Destination destinationTwo) {
-        int count = 0;
+
         while(!AlbumAccessor.getAlbumsByOwner(destinationOne).get(0).getMedia().isEmpty()) {
-            Media changingPhoto = AlbumAccessor.getAlbumsByOwner(destinationOne).get(0).getMedia().get(count);
+            Media changingPhoto = AlbumAccessor.getAlbumsByOwner(destinationOne).get(0).getMedia().get(0);
 
             AlbumAccessor.getAlbumsByOwner(destinationOne).get(0).removeMedia(changingPhoto);
-            AlbumAccessor.update(AlbumAccessor.getAlbumsByOwner(destinationOne).get(0));
+            changingPhoto.removeAlbum(AlbumAccessor.getAlbumsByOwner(destinationOne).get(0));
+            MediaAccessor.update(changingPhoto);
 
-            AlbumAccessor.getAlbumsByOwner(destinationTwo).get(0).addMedia(changingPhoto);
-            AlbumAccessor.update(AlbumAccessor.getAlbumsByOwner(destinationTwo).get(0));
+            if (!AlbumAccessor.getAlbumsByOwner(destinationTwo).get(0).getMedia().contains(changingPhoto)) {
 
-            count++;
+                AlbumAccessor.getAlbumsByOwner(destinationTwo).get(0).addMedia(changingPhoto);
+                changingPhoto.addAlbum(AlbumAccessor.getAlbumsByOwner(destinationTwo).get(0));
+                MediaAccessor.update(changingPhoto);
+
+            }
         }
+
+
+
     }
 
     /**
@@ -282,14 +286,12 @@ public class DestinationFactory {
     private void moveTagsToAnotherDestination(Destination destinationOne, Destination destinationTwo){
         Set<Tag> tagForm = destinationOne.getTags();
         if (!tagForm.isEmpty()) {
-            System.out.println(tagForm);
             for(Tag tag : tagForm) {
                 destinationOne.removeTag(tag);
-                destinationOne.update();
-                tag.delete();
-                Tag newTag = new Tag(tag.getName());
-                newTag.save();
-                destinationTwo.addTag(newTag);
+                DestinationAccessor.update(destinationOne);
+
+                destinationTwo.addTag(tag);
+                DestinationAccessor.update(destinationTwo);
                 try {
                     tag.update();
                 } catch (Exception e) {

@@ -1,4 +1,4 @@
--- Population file for automated testing
+-- Population file for manual testing/sbt run
 
 -- Disable inspection for checking tables exist as they are in another file
 -- noinspection SqlResolveForFile

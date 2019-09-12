@@ -29,7 +29,6 @@ class SqlFileReader {
             logger.error(String.format("Failed to read file %s", e.toString()));
         }
 
-        logger.debug(output);
         return output;
     }
 }

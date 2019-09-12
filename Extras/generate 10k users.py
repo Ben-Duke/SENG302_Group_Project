@@ -1,7 +1,28 @@
 import json
+import string
 
 #response = requests.get('https://randomuser.me/api/?results=3?nat=fr')
 #response.encoding = 'utf-8'
+
+
+def is_user_safe(user):
+    alphabetical_chars = set(list(string.ascii_letters))
+    digits = set(list(string.digits))
+    other_chars = {'.', '@', '-', ' '}
+
+    safe_chars = set()
+    safe_chars.update(alphabetical_chars)
+    safe_chars.update(digits)
+    safe_chars.update(other_chars)
+
+    user_chars = set(list(f"{user['email']}{user['dob']}{user['gender']}{user['first_name']}{user['last_name']}"))
+
+    for char in user_chars:
+        if char not in safe_chars:
+            return False
+
+    return True
+
 
 def generate_sql():
     with open('users_from_api.json') as my_file:
@@ -13,27 +34,23 @@ def generate_sql():
             user = users[i]
             filter_user_data(user)
 
-            user[''] = user['email'].replace("'", "\'")    # replace commas with
-            file.write(f"('{user['email']}', '', '{user['dob']}', '{user['gender']}', '{user['first_name']}', '{user['last_name']}', 0, 0, NULL)")
-            if i != len(users) - 1:
-                file.write(",\n")
-            else:
-                file.write(";\n")   # end of file
+            if is_user_safe(user):
+                file.write(
+                    f"('{user['email']}', '', '{user['dob']}', '{user['gender']}', '{user['first_name']}', '{user['last_name']}', 0, 0, '2019-01-01 00:00:00')")
+                if i != len(users) - 1:
+                    file.write(",\n")
+                else:
+                    file.write(";\n")  # end of file
 
 
 def filter_user_data(user):
     fields_to_filter = ['first_name', 'last_name']
     for field in fields_to_filter:
         user[field] = replace_apostrophes(user[field])
-        user[field] = remove_semicolons(user[field])
 
 
 def replace_apostrophes(input):
     return input.replace("'", "\\'")  # escape apostrophes
-
-
-def remove_semicolons(input):
-    return input.replace(";", "")
 
 
 def main():

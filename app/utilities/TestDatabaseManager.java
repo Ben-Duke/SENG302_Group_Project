@@ -108,7 +108,13 @@ public class TestDatabaseManager {
      * Sets the passwords of all test users and admins
      */
     private void setUserPasswords() {
-        List<User> users = UserAccessor.getAll();
+        List<String> emails = Arrays.asList("admin@admin.com",
+                "testuser1@uclive.ac.nz",
+                "testuser2@uclive.ac.nz",
+                "testuser3@uclive.ac.nz");
+
+        List<User> users = UserAccessor.getUsersByEmails(emails);
+
         for (User user : users) {
             if (user.userIsAdmin()) {
                 user.hashAndSetPassword("FancyRock08");

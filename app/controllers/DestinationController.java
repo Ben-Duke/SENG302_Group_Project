@@ -502,12 +502,6 @@ public class DestinationController extends Controller {
 
         DestinationFactory destFactory = new DestinationFactory();
 
-        if(destFactory.checkIfDestinationIsAPublicDuplicate(destination)){
-            logger.debug("Failed a check ");
-            destFactory.mergeDestinations(destFactory.getMatching(destination), destination);
-            return badRequest(destinationPage.render(user, destination, false,
-                    null, null, null, null));
-        }
 
 
         List<Destination> matchingDestinations = destFactory

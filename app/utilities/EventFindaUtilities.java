@@ -138,7 +138,6 @@ public class EventFindaUtilities {
         if (!keyword.isEmpty()) {
             url = addKeyWordFilterToQuery(url, keyword);
         }
-        System.out.println(url);
         return eventFindaGetResponse(url);
     }
 

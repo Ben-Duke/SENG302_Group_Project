@@ -36,7 +36,7 @@ public class FollowAccessor {
         Set<Follow> FollowSet = Follow.find().query().where().eq("followed", follower).findSet();
         Set<User> followedUser = new HashSet<>();
         for (Follow follow: FollowSet) {
-            followedUser.add(follow.getFollowed());
+            followedUser.add(follow.getFollower());
         }
         return followedUser;
     }

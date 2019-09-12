@@ -3,7 +3,7 @@
 
 @import play.data.DynamicForm
 
-@(dynamicForm : DynamicForm, travellerTypes : java.util.List[String], nationalities : java.util.List[String], genderMap: java.util.Map[String, java.lang.Boolean], resultProfiles : java.util.Set[User], followingProfiles : java.util.Set[User], followerProfiles : java.util.Set[User], user : User)
+@(dynamicForm : DynamicForm, travellerTypes : java.util.List[String], nationalities : java.util.List[String], genderMap: java.util.Map[String, java.lang.Boolean], followMap: java.util.Map[String, java.lang.Boolean], resultProfiles : java.util.Set[User], followingProfiles : java.util.Set[User], followerProfiles : java.util.Set[User], user : User)
 
 
 @main(user, "Search") {
@@ -25,6 +25,13 @@
                 label = "Gender selection",
                 checkboxMap = genderMap,
                 help = "Select the genders you would like to include in your search results"
+            )
+
+            @checkboxes(
+                dynamicForm("follow"),
+                label = "Search for:",
+                checkboxMap = followMap,
+                help = "Search for followers, people you are following or everyone else."
             )
 
             @helper.select(

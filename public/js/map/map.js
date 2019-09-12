@@ -216,7 +216,7 @@ function addSelectedToVisitToTrip(destId, startTrip){
                 for (let i in tripRoutes) {
                     tripRoutes[i].setMap(null);
                 }
-                tripRoutes =[];
+                tripRoutes = [];
                 initTripRoutes();
 
                 if (startTrip == true && currentlyDisplayedTripId != undefined) {
@@ -537,12 +537,11 @@ function tripVisitTableRefresh(data) {
     newRow.appendChild(deleteButton);
     targetTripBody.appendChild(newRow);
 
-    var tripStartLatLng = new google.maps.LatLng(
-        data.latitude, data.longitude
-    );
+    // var tripStartLatLng = new google.maps.LatLng(
+    //     data.latitude, data.longitude
+    // );
 
-    window.globalMap.setCenter(tripStartLatLng);
-    window.globalMap.setZoom(9);
+    // window.globalMap.setCenter(tripStartLatLng);
 }
 
 
@@ -601,7 +600,10 @@ function initTripRoutes() {
         .then(tripRoutes => {
             let color;
 
-        for (let tripId in tripRoutes) {
+            console.log(tripRoutes);
+
+            for (let tripId in tripRoutes) {
+
             color = colors[Math.floor(Math.random()*colors.length)];
 
             let flightPath = new google.maps.Polyline({
@@ -706,7 +708,7 @@ function displayTrip(tripId, startLat, startLng) {
     );
     currentlyDisplayedTripId = tripId;
     window.globalMap.setCenter(tripStartLatLng);
-    window.globalMap.setZoom(9);
+    window.globalMap.setZoom(7);
 
     //Update tags
     changeTaggableModel(tripId, "trip");
@@ -745,11 +747,14 @@ function swapVisitOnSort(tripId) {
 
             if(xhr.status == 200) {
                 //This is an inefficient way of update the route
-                for (let tripId in tripFlightPaths) {
-                    tripFlightPaths[tripId].setMap(null);
-                }
-                initTripRoutes();
 
+                console.log(1.2);
+
+                for (let i in tripRoutes) {
+                    tripRoutes[i].setMap(null);
+                }
+                tripRoutes = [];
+                initTripRoutes();
             }
             else{
             }
@@ -780,7 +785,7 @@ function displayDestination(destId, startLat, startLng) {
     );
 
     window.globalMap.setCenter(tripStartLatLng);
-    window.globalMap.setZoom(9);
+    window.globalMap.setZoom(8);
 
 }
 
@@ -1279,7 +1284,6 @@ function initMapPositionListeners() {
                 if (status === 'OK') {
                     if (results[0]) {
                         map.panTo(latlng);
-                        map.setZoom(11);
                         let placeId = results[0].place_id;
                         if (destMarker != undefined) {
                             destMarker.setMap(null);

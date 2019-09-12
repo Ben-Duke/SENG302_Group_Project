@@ -1105,4 +1105,24 @@ public class DestinationController extends Controller {
         return ok(googlePlacesMapDocumentationExample.render(user, googleApiKey));
     }
 
+    /**
+     * Controller function to retrieve a list of trips matching the given name
+     * @param request the HTTP request
+     * @param name the name of the trip to match
+     * @return the list of trips that match the name
+     */
+    public Result getDestinationsByName(Http.Request request, String name) {
+        User user = User.getCurrentUser(request);
+        if (user == null) { return redirect(routes.UserController.userindex()); }
+        List<Destination> destinations = DestinationAccessor.getDestinationsWithKeyword(name);
+
+        if(destinations != null && destinations.size() > 0) {
+            return ok(Json.toJson(destinations));
+        } else {
+            return ok(Json.toJson(new ArrayList<>()));
+        }
+
+
+    }
 }
+

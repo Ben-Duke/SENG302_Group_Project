@@ -51,6 +51,19 @@ public class DestinationAccessor {
                 .findList();
     }
 
+    /**
+     * Returns all destination in the database
+     * @return List of destinations
+     */
+    /**
+     * Return destinations that matches this keyword.
+     * Private destinations can share the same name so list size can be more than one
+     */
+    public static List<Destination> getDestinationsWithKeyword(String name) {
+        return Destination.find().query().where().like("destName", "%" + name +"%")
+                .findList();
+    }
+
     public static List<Destination> getAllDestinations() {
         return Destination.find().all();
     }

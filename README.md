@@ -26,7 +26,23 @@ Navigate to the unzipped directory root
 chmod +x ./bin/team-800
 ```
 
-And run the server 
+Create an environmental variable file .env in the same folder as the team-800 
+executable. 
+
+```bash
+touch ./bin/.env
+```
+See DOT_ENV_TEMPLATE in this projects root directory for a .env template (includes explanation of the .env file).
+Write to the .env file the following contents, with actual values where directed.
+```
+GOOGLE_MAPS_API_KEY=[insert value here]
+EVENTFINDA_API_KEY_USERNAME=[insert value here]
+EVENTFINDA_API_KEY_PASSWORD=[insert value here]
+ADMIN_USER_PASSWORD_DEFAULT=[insert value here]
+TEST_USER_PASSWORD_DEFAULT=[insert value here]
+```
+
+Now run the server 
 ```bash
 ./bin/team-800
 ```
@@ -39,13 +55,13 @@ And open <http://localhost:9000/>
 
         Email: admin@admin.com
 
-        Password: FancyRock08
+        Password: [set by ADMIN_USER_PASSWORD_DEFAULT .env key]
 
 * Test user:
 
         Email: testuser1@uclive.ac.nz
 
-        Password: TinyHumans57
+        Password: [set by TEST_USER_PASSWORD_DEFAULT .env key]
         
 ## How to use
 A detailed guide exists here: <https://eng-git.canterbury.ac.nz/seng302-2019/team-800/wikis/user-guide>

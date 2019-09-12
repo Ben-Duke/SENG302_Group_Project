@@ -1,6 +1,8 @@
 @import formdata.DestinationFormData
 @import views.html.bootstrap3._
-@(user : User, trips : List[Trip], destinations : List[Destination], destForm : Form[DestinationFormData], countryMap: Map[String, Boolean], typeMap: Map[String, Boolean])
+@(user : User, trips : List[Trip], destinations : List[Destination],
+        destForm : Form[DestinationFormData], countryMap: Map[String, Boolean],
+        typeMap: Map[String, Boolean], googleApiKey : String)
 
 <style>
 
@@ -402,7 +404,7 @@
 
     <script src="@routes.Assets.at("js/map/map.js")"></script>
     <script src="@routes.Assets.at("js/map/mapStyle.js")"></script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=&callback=initMap&libraries=drawing,places"
+    <script src="https://maps.googleapis.com/maps/api/js?key=@googleApiKey&callback=initMap&libraries=drawing,places"
     async defer></script>
 
 }

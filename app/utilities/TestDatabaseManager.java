@@ -117,9 +117,11 @@ public class TestDatabaseManager {
 
         for (User user : users) {
             if (user.userIsAdmin()) {
-                user.hashAndSetPassword("FancyRock08");
+                user.hashAndSetPassword(EnvironmentalVariablesAccessor.getEnvVariable(
+                        EnvVariableKeys.ADMIN_USER_PASSWORD_DEFAULT.toString()));
             } else {
-                user.hashAndSetPassword("TinyHumans57");
+                user.hashAndSetPassword(EnvironmentalVariablesAccessor.getEnvVariable(
+                        EnvVariableKeys.TEST_USER_PASSWORD_DEFAULT.toString()));
             }
 
             user.update();

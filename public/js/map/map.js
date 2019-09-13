@@ -599,8 +599,7 @@ function initTripRoutes() {
         .then(res => res.json())
         .then(tripRoutes => {
             let color;
-
-            console.log(tripRoutes);
+            
 
             for (let tripId in tripRoutes) {
 

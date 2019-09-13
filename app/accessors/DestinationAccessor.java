@@ -3,6 +3,7 @@ package accessors;
 import io.ebean.Query;
 import models.Destination;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static io.ebean.Expr.like;
@@ -47,6 +48,14 @@ public class DestinationAccessor {
      * @return A List<Destination> of destinations.
      */
     public static List<Destination> getPaginatedPublicDestinations(int offset, int quantity){
+        if (quantity < 1) {
+            return new ArrayList<Destination>();
+        }
+
+        if (offset < 0) {
+            offset = 0;
+        }
+
         Query<Destination> query = Destination.find().query()
                 .where()
                 .eq("destIsPublic", true)

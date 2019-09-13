@@ -1,7 +1,13 @@
 package accessors;
 
+import io.ebean.Ebean;
+import models.*;
 import org.junit.Test;
+import play.db.ebean.EBeanComponents;
 import testhelpers.BaseTestWithApplicationAndDatabase;
+import utilities.TestDatabaseManager;
+
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -16,7 +22,12 @@ public class DestinationAccessorTest extends BaseTestWithApplicationAndDatabase 
      * when the database has no destinations.
      */
     public void getPaginatedPublicDestinations_noDestinations_checkEmptyList() {
-        fail();
+
+        TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
+        testDatabaseManager.clearAllData();
+
+        List<Destination> destinations = DestinationAccessor.getPaginatedPublicDestinations(0, 10);
+        assertTrue(destinations.isEmpty());
     }
 
     @Test
@@ -25,7 +36,20 @@ public class DestinationAccessorTest extends BaseTestWithApplicationAndDatabase 
      * when the only destinations are private.
      */
     public void getPaginatedPublicDestinations_onlyPrivateDestinations_checkEmptyList() {
-        fail();
+        TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
+        testDatabaseManager.clearAllData();
+
+        User user = new User();
+        UserAccessor.insert(user);
+        int userId = user.getUserid();
+
+        Destination destination = new Destination("test",
+                "test", "test", "New Zealand",
+                32.2, 22.1, user);
+        DestinationAccessor.insert(destination);
+
+        List<Destination> destinations = DestinationAccessor.getPaginatedPublicDestinations(0, 10);
+        assertTrue(destinations.isEmpty());
     }
 
     @Test
@@ -34,7 +58,27 @@ public class DestinationAccessorTest extends BaseTestWithApplicationAndDatabase 
      * when there is a mixture of public and private destinations
      */
     public void getPaginatedPublicDestinations_mixturePublicPrivateDestinations_checkListLength() {
-        fail();
+        TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
+        testDatabaseManager.clearAllData();
+
+        User user = new User();
+        UserAccessor.insert(user);
+        int userId = user.getUserid();
+
+        Destination destination = new Destination("test",
+                "test", "test", "New Zealand",
+                32.2, 22.1, user);
+        DestinationAccessor.insert(destination);
+
+        Destination destinationTwo = new Destination("test",
+                "test", "test", "New Zealand",
+                32.2, 22.1, user);
+        DestinationAccessor.insert(destinationTwo);
+        destinationTwo.setIsPublic(true);
+        DestinationAccessor.update(destinationTwo);
+
+        List<Destination> destinations = DestinationAccessor.getPaginatedPublicDestinations(0, 10);
+        assertEquals(1, destinations.size());
     }
 
     @Test
@@ -43,7 +87,23 @@ public class DestinationAccessorTest extends BaseTestWithApplicationAndDatabase 
      * acts like an offset of 0.
      */
     public void getPaginatedPublicDestinations_negativeOffset_checkActsLikeOffsetIsZero() {
-        fail();
+        TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
+        testDatabaseManager.clearAllData();
+
+        User user = new User();
+        UserAccessor.insert(user);
+
+        for (int i = 0; i < 20; i++) {
+            Destination destination = new Destination("test",
+                    "test", "test", "New Zealand",
+                    32.2, 22.1, user);
+            DestinationAccessor.insert(destination);
+            destination.setIsPublic(true);
+            DestinationAccessor.update(destination);
+        }
+
+        List<Destination> destinations = DestinationAccessor.getPaginatedPublicDestinations(-1, 10);
+        assertEquals(10, destinations.size());
     }
 
     @Test
@@ -52,7 +112,8 @@ public class DestinationAccessorTest extends BaseTestWithApplicationAndDatabase 
      * returns an empty list.
      */
     public void getPaginatedPublicDestinations_negativeQuantity_checkEmptyList() {
-        fail();
+        List<Destination> destinations = DestinationAccessor.getPaginatedPublicDestinations(0, -1);
+        assertEquals(0, destinations.size());
     }
 
     @Test
@@ -61,7 +122,8 @@ public class DestinationAccessorTest extends BaseTestWithApplicationAndDatabase 
      * returns an empty list.
      */
     public void getPaginatedPublicDestinations_zeroQuantity_checkEmptyList() {
-        fail();
+        List<Destination> destinations = DestinationAccessor.getPaginatedPublicDestinations(0, 0);
+        assertEquals(0, destinations.size());
     }
 
     @Test
@@ -71,15 +133,7 @@ public class DestinationAccessorTest extends BaseTestWithApplicationAndDatabase 
      * quantity.
      */
     public void getPaginatedPublicDestinations_positiveQuantity_checkList() {
-        fail();
-    }
-
-    @Test
-    /**
-     * Checks that getPaginatedPublicDestinations method with a positive quantity
-     * and a positive offset correctly skips and limits results.
-     */
-    public void getPaginatedPublicDestinations_offsetAndLimit_checkList() {
-        fail();
+        List<Destination> destinations = DestinationAccessor.getPaginatedPublicDestinations(0, 5);
+        assertEquals(5, destinations.size());
     }
 }

@@ -19,6 +19,7 @@ import factories.DestinationFactory;
 import factories.TravellerTypeFactory;
 import factories.UserFactory;
 import formdata.DestinationFormData;
+import io.ebean.Ebean;
 import models.*;
 
 
@@ -1054,7 +1055,6 @@ public class DestinationController extends Controller {
      * @return a Result object containing the destinations JSON in it's body
      */
     public Result getPaginatedPublicDestinations(Http.Request request, int offset, int quantity) {
-
         int MAX_QUANTITY = 1000;
 
         User user = User.getCurrentUser(request);
@@ -1071,10 +1071,16 @@ public class DestinationController extends Controller {
             jsonError.put("quantityLimit", MAX_QUANTITY);
             return badRequest(Json.toJson(jsonError));
         }
-        List<Destination> destinations = DestinationAccessor
-                    .getPaginatedPublicDestinations(offset, quantity);
 
-        return ok(Json.toJson(destinations));
+        List<Destination> destinations = DestinationAccessor
+                .getPaginatedPublicDestinations(offset, quantity);
+
+        ObjectNode result = (new ObjectMapper()).createObjectNode();
+        result.set("destinations", Json.toJson(destinations));
+        result.put("totalCountPublic", Ebean.find(Destination.class).where()
+                .eq("destIsPublic", true) .findCount());
+
+        return ok(Json.toJson(result));
     }
 
     /**

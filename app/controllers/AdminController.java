@@ -1,10 +1,15 @@
 package controllers;
 
+import accessors.UserAccessor;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import models.Admin;
 import models.DestinationModificationRequest;
 import models.User;
 import org.slf4j.Logger;
 import play.data.FormFactory;
+import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
@@ -39,15 +44,44 @@ public class AdminController extends Controller {
             if (currentUser != null) {
                 Admin currentAdmin = Admin.find().query().where().eq("userId", currentUser.getUserid()).findOne();
                 if (currentAdmin != null) {
-                    List<User> users = User.find().all();
                     List<DestinationModificationRequest> allReqs = DestinationModificationRequest.find().all();
-                    return ok(indexAdmin.render(currentUser, userList.get(1), users,allReqs));
+                    return ok(indexAdmin.render(currentUser, userList.get(1), allReqs));
                 }
             } else {
                 return redirect(routes.UserController.userindex());
             }
         }
         return unauthorized("Oops, you are not authorised.");
+    }
+
+
+    public Result getUserData(Http.Request request, Integer offset, Integer quantity) {
+        logger.debug("Hit user data route");
+
+        User currentUser = User.getCurrentUser(request);
+        // Redirect non-logged in and non-admin users
+        if (currentUser == null || !currentUser.userIsAdmin()) { return redirect(routes.UserController.userindex()); }
+
+        List<User> users = UserAccessor.getPaginatedUsers(offset, quantity);
+
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        ArrayNode userNodes = objectMapper.createArrayNode();
+
+        for (User user : users) {
+           ObjectNode userNode = objectMapper.createObjectNode();
+           userNode.put("userId", user.getUserid());
+           userNode.put("email", user.getEmail());
+           userNode.put("firstName", user.getFName());
+           userNode.put("lastName", user.getLName());
+           userNode.put("gender", user.getGender());
+//           userNode.put("dob", user.getDateOfBirth());
+
+//           logger.debug(user.toString());
+           userNodes.add(userNode);
+        }
+
+        return ok(userNodes);
     }
 
     /**
@@ -176,6 +210,5 @@ public class AdminController extends Controller {
         } else {
             return unauthorized("Unauthorized: You are not an Admin");
         }
-
     }
 }

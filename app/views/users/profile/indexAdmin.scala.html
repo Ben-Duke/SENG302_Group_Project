@@ -1,4 +1,4 @@
-@(currentUser: User, adminUser: User, users: List[User], allReqs: List[DestinationModificationRequest])
+@(currentUser: User, adminUser: User, allReqs: List[DestinationModificationRequest])
 
 @main(currentUser, "Admin") {
     <head>
@@ -22,28 +22,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                    @for(user <- users) {
-                        @if(user.getUserid != currentUser.getUserid){
-                            <tr>
-                                <th scope ="row">@user.getUserid()</th>
-                                <td>@user.getEmail()</td>
-                                <td>@user.getFName()</td>
-                                <td>@user.getLName()</td>
-                                <td>@user.getGender()</td>
-                                <td>@user.getDateOfBirth</td>
-                                @if(user.userIsAdmin()) {
-                                    <td><a class="btn btn-link" href="@routes.AdminController.adminToUser(user.getUserid)" role="button">Revoke Admin</a></td>
-                                } else {
-                                    <td><a class="btn btn-link" href="@routes.AdminController.userToAdmin(user.getUserid)" role="button">Make Admin</a></td>
-                                }
-                                @if(currentUser.getUserid == adminUser.getUserid) {
-                                    <td><a class="btn btn-link" href="@routes.AdminController.setUserToActAs(user.getUserid)" role="button">Act as user</a></td>
-                                } else {
-                                    <td><a class="btn btn-link" href="@routes.AdminController.setUserToActAs(user.getUserid)" role="button" disabled>Act as user</a></td>
-                                }
-                            </tr>
-                         }
-                    }
+
                     </tbody>
                 </table>
             </div>
@@ -79,10 +58,6 @@
         </div>
     </div>
     </div>
-    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.js"></script>
-    <script>
-        $(document).ready(function() {
-            $('#userTable').DataTable();
-        });
-    </script>
+    <script src="@routes.Assets.at("js/admin/indexAdmin.js")"></script>
+
 }

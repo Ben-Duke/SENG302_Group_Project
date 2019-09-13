@@ -19,6 +19,7 @@ import factories.DestinationFactory;
 import factories.TravellerTypeFactory;
 import factories.UserFactory;
 import formdata.DestinationFormData;
+import io.ebean.Ebean;
 import models.*;
 
 
@@ -1073,7 +1074,13 @@ public class DestinationController extends Controller {
 
         List<Destination> destinations = DestinationAccessor
                 .getPaginatedPublicDestinations(offset, quantity);
-        return ok(Json.toJson(destinations));
+
+        ObjectNode result = (new ObjectMapper()).createObjectNode();
+        result.set("destinations", Json.toJson(destinations));
+        result.put("totalCountPublic", Ebean.find(Destination.class).where()
+                .eq("destIsPublic", true) .findCount());
+
+        return ok(Json.toJson(result));
     }
 
     /**

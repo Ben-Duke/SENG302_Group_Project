@@ -1,6 +1,10 @@
 package controllers;
 
+import accessors.UserAccessor;
+import io.ebean.Query;
+import models.Destination;
 import models.Nationality;
+import play.libs.Json;
 import utilities.UtilityFunctions;
 import models.TravellerType;
 import models.User;
@@ -62,7 +66,6 @@ public class TravelPartnerController {
         return ok(searchprofile.render(dynamicForm, convertedTravellerTypes, convertedNationalities, genderMap, resultProfiles, user));
     }
 
-
     /**
      * This method is called when the user first hits the searchprofile page.
      * Initialises an empty User list as there user has not searched anything yet.
@@ -105,6 +108,25 @@ public class TravelPartnerController {
         }
         return new HashSet<>();
     }
+
+    public Result travellerTypePaginated(Http.Request request, int offset, int quantity, String travellerType){
+        User user = User.getCurrentUser(request);
+        if(user == null){
+            return unauthorized();
+        }
+        if(travellerType.equals("")){
+            return badRequest();
+        }
+
+        List<User> users = UserAccessor.getUsersByQuery(travellerType, offset,quantity);
+
+        for(User userTemp : users){
+            System.out.println(userTemp.toString());
+        }
+
+        return ok(Json.toJson(users));
+    }
+
 
     /**
      * From the form retrieve all users from the database that have the given nationality

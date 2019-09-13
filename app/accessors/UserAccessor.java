@@ -1,5 +1,9 @@
 package accessors;
 
+import io.ebean.Ebean;
+import io.ebean.Expression;
+import io.ebean.ExpressionList;
+import io.ebean.Query;
 import models.*;
 
 import java.util.List;
@@ -114,4 +118,20 @@ public class UserAccessor {
                     new Throwable("Multiple profile photos."));
         }
     }
+    //Try one first then get the list
+   public static List<User> getUsersByQuery(String travellerType, int offset, int quantity){
+
+       ExpressionList<User> query = Ebean.find(User.class)
+               .select("userid")
+               //Use this to get connected traveller types
+               .fetch("travellerTypes","*")
+               .where()
+               //Need the type id to get this to work, doesn't work with * currently
+               .eq("ttypeid", "1");
+
+        //List<User> users = User.find().query().where("travellerTypes", )
+
+       System.out.println("Query is "+query.toString());
+       return query.findList();
+   }
 }

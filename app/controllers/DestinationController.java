@@ -1054,6 +1054,7 @@ public class DestinationController extends Controller {
      * @return a Result object containing the destinations JSON in it's body
      */
     public Result getPaginatedPublicDestinations(Http.Request request, int offset, int quantity) {
+
         int MAX_QUANTITY = 1000;
 
         User user = User.getCurrentUser(request);
@@ -1070,9 +1071,9 @@ public class DestinationController extends Controller {
             jsonError.put("quantityLimit", MAX_QUANTITY);
             return badRequest(Json.toJson(jsonError));
         }
-
         List<Destination> destinations = DestinationAccessor
-                .getPaginatedPublicDestinations(offset, quantity);
+                    .getPaginatedPublicDestinations(offset, quantity);
+
         return ok(Json.toJson(destinations));
     }
 

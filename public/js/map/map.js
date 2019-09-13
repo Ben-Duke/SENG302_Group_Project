@@ -1516,7 +1516,6 @@ $("#submit").click(function(e){
     });
 });
 
-let count;
 function getPublicDestinations(pageNum, quantity){
     const offset = (pageNum - 1) * 20;
     let data = {offset: offset,
@@ -1528,14 +1527,14 @@ function getPublicDestinations(pageNum, quantity){
         data: data,
         contentType: 'application/json',
         success: (destData) => {
-            count = destData.length;
+            let count = destData["total"];
             let destinationData = document.getElementById("publicDestinationList");
             if (pageNum > 1) {
                 while (destinationData.childNodes.length > 0) {
                     destinationData.removeChild(destinationData.childNodes[0]);
                 }
             }
-            for (let i=0; i < 20; i++) {
+            for (let i=0; i < destData.length; i++) {
                 let destination= destData[i];
                 let destElement = document.createElement('a');
                 destElement.setAttribute("onClick", `displayDestination(${destination.destid}, ${destination.latitude}, ${destination.longitude})`);
@@ -1657,6 +1656,7 @@ function searchDestinations(pageNum) {
 }
 
 function getDestinationsFromApiResponse(destData, pageNum) {
+    let count = destData["total"];
     let destinationData = document.getElementById("publicDestinationList");
     while (destinationData.childNodes.length > 0) {
         destinationData.removeChild(destinationData.childNodes[0]);
@@ -1676,7 +1676,7 @@ function getDestinationsFromApiResponse(destData, pageNum) {
 
 window.onload = function() {
     checkTripVisits();
-    getPublicDestinations(1, -1);
+    getPublicDestinations(1, 20);
 
 };
 

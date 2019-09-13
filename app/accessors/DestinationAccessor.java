@@ -1,5 +1,6 @@
 package accessors;
 
+import io.ebean.Query;
 import models.Destination;
 
 import java.util.ArrayList;
@@ -38,6 +39,21 @@ public class DestinationAccessor {
     }
 
 
+
+    /**
+     * Gets a paginated List of public destinations, with an offset and quantity to fetch.
+     *
+     * @param offset an integer representing the number of destinations to skip before sending
+     * @param quantity an integer representing the maximum length of the jsonArray
+     * @return A List<Destination> of destinations.
+     */
+    public static List<Destination> getPaginatedPublicDestinations(int offset, int quantity){
+        Query<Destination> query = Destination.find().query()
+                .where()
+                .eq("destIsPublic", true)
+                .setFirstRow(offset).setMaxRows(quantity);
+        return query.findList();
+    }
 
     /**
      * Returns all destination in the database

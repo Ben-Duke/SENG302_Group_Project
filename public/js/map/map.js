@@ -216,7 +216,7 @@ function addSelectedToVisitToTrip(destId, startTrip){
                 for (let i in tripRoutes) {
                     tripRoutes[i].setMap(null);
                 }
-                tripRoutes =[];
+                tripRoutes = [];
                 initTripRoutes();
 
                 if (startTrip == true && currentlyDisplayedTripId != undefined) {
@@ -537,12 +537,11 @@ function tripVisitTableRefresh(data) {
     newRow.appendChild(deleteButton);
     targetTripBody.appendChild(newRow);
 
-    var tripStartLatLng = new google.maps.LatLng(
-        data.latitude, data.longitude
-    );
+    // var tripStartLatLng = new google.maps.LatLng(
+    //     data.latitude, data.longitude
+    // );
 
-    window.globalMap.setCenter(tripStartLatLng);
-    window.globalMap.setZoom(9);
+    // window.globalMap.setCenter(tripStartLatLng);
 }
 
 
@@ -601,42 +600,44 @@ function initTripRoutes() {
         .then(tripRoutes => {
             let color;
 
-        for (let tripId in tripRoutes) {
-            color = colors[Math.floor(Math.random()*colors.length)];
 
-            let flightPath = new google.maps.Polyline({
-                path: tripRoutes[tripId],
-                geodesic: true,
-                strokeColor: '#' + color,
-                strokeOpacity: 1.0,
-                strokeWeight: 2
-            });
-            flightPath.path = tripRoutes[tripId];
+            for (let tripId in tripRoutes) {
 
-            google.maps.event.addListener(flightPath, 'click', function(e) {
+                color = colors[Math.floor(Math.random()*colors.length)];
 
-                displayTrip(tripId, tripRoutes[tripId][0]['lat'], tripRoutes[tripId][0]['lng'])
-            });
+                let flightPath = new google.maps.Polyline({
+                    path: tripRoutes[tripId],
+                    geodesic: true,
+                    strokeColor: '#' + color,
+                    strokeOpacity: 1.0,
+                    strokeWeight: 2
+                });
+                flightPath.path = tripRoutes[tripId];
 
-            if (tripFlightPaths[tripId] != null) {
-                if (tripFlightPaths[tripId].path.length !== flightPath.path.length) {
-                    tripFlightPaths[tripId].setMap(null);
+                google.maps.event.addListener(flightPath, 'click', function(e) {
+
+                    displayTrip(tripId, tripRoutes[tripId][0]['lat'], tripRoutes[tripId][0]['lng'])
+                });
+
+                if (tripFlightPaths[tripId] != null) {
+                    // if (tripFlightPaths[tripId].path.length !== flightPath.path.length) {
+                        tripFlightPaths[tripId].setMap(null);
+                        tripFlightPaths[tripId] = flightPath;
+                    // }
+                }
+                else {
                     tripFlightPaths[tripId] = flightPath;
                 }
-            }
-            else{
-                tripFlightPaths[tripId] = flightPath;
-            }
-            const checkBox = document.getElementById("Toggle" + tripId);
-            if (checkBox.checked === false) {
-                tripFlightPaths[tripId].setMap(null);
-            } else {
-                if (tripFlightPaths[tripId].getMap() == null) {
-                    tripFlightPaths[tripId].setMap(window.globalMap);
+                const checkBox = document.getElementById("Toggle" + tripId);
+                if (checkBox.checked === false) {
+                    tripFlightPaths[tripId].setMap(null);
+                } else {
+                    if (tripFlightPaths[tripId].getMap() == null) {
+                        tripFlightPaths[tripId].setMap(window.globalMap);
+                    }
                 }
             }
-        }
-    });
+        });
 }
 
 function addTripRoutes(newTripId) {
@@ -706,7 +707,7 @@ function displayTrip(tripId, startLat, startLng) {
     );
     currentlyDisplayedTripId = tripId;
     window.globalMap.setCenter(tripStartLatLng);
-    window.globalMap.setZoom(9);
+    window.globalMap.setZoom(7);
 
     //Update tags
     changeTaggableModel(tripId, "trip");
@@ -745,13 +746,12 @@ function swapVisitOnSort(tripId) {
 
             if(xhr.status == 200) {
                 //This is an inefficient way of update the route
-                for (let tripId in tripFlightPaths) {
-                    tripFlightPaths[tripId].setMap(null);
-                }
-                initTripRoutes();
 
-            }
-            else{
+                for (let i in tripRoutes) {
+                    tripRoutes[i].setMap(null);
+                }
+                tripRoutes = [];
+                initTripRoutes();
             }
         },
         error: function(xhr, textStatus, errorThrown){
@@ -780,7 +780,7 @@ function displayDestination(destId, startLat, startLng) {
     );
 
     window.globalMap.setCenter(tripStartLatLng);
-    window.globalMap.setZoom(9);
+    window.globalMap.setZoom(8);
 
 }
 
@@ -935,6 +935,13 @@ function sendDeleteVisitRequest(url, visitId) {
             if (xhr.status == 200) {
                 document.getElementById(visitId).remove();
                 document.getElementById('undoButton').classList.remove('disabled');
+
+                for (let i in tripRoutes) {
+                    tripRoutes[i].setMap(null);
+                }
+                tripRoutes = [];
+                initTripRoutes();
+
             }
             else {
                 console.log("error in success function");
@@ -1064,9 +1071,19 @@ function initPlacesAutocompleteSearch() {
 
                     window.globalMap.setCenter(destLatLng);
                     window.globalMap.setZoom(10);
+                    if (document.getElementById('createDestination').style.display = 'block') {
+                        document.getElementById('createDestination').style.display = 'none';
+                    }
+                    $('[href="#destinationsTab"]').tab('show');
+                    displayDestination(data, coordinates.lat(), coordinates.lng());
                 }
                 else if (xhr.status == 201) {
                     $('[href="#destinationsTab"]').tab('show');
+                    for (let childNode of document.getElementById('singleDestinationContainer').children) {
+                        if(childNode.style.display == "block") {
+                            childNode.style.display = "none";
+                        }
+                    }
                     document.getElementById('createDestination').style.display = 'block';
 
                     document.getElementById("destName").value = place.name;
@@ -1279,7 +1296,6 @@ function initMapPositionListeners() {
                 if (status === 'OK') {
                     if (results[0]) {
                         map.panTo(latlng);
-                        map.setZoom(11);
                         let placeId = results[0].place_id;
                         if (destMarker != undefined) {
                             destMarker.setMap(null);
@@ -1419,6 +1435,51 @@ $("#tripSearchInput").keyup(function()
 $("#formBody").submit(function(e){
     e.preventDefault();
 });
+
+$("#destSearchInput").keyup(function()
+{
+    let searchInput = document.getElementById("destSearchInput").value;
+    if(searchInput != "") {
+        $.ajax({
+            url: '/users/destinations/matching/' + searchInput,
+            method: "GET",
+            success: function (res) {
+                let displayedIds = [];
+                for (let j=0; j < res.length; j++) {
+                    displayedIds.push("destButton" + res[j].destid);
+                }
+                let privateListChildren = document.getElementById("privateDestinationList").children;
+                let publicListChildren = document.getElementById("publicDestinationList").children;
+
+                for(let i=0; i < privateListChildren.length; i++) {
+                    if (!displayedIds.includes(privateListChildren[i].id)) {
+                        privateListChildren[i].setAttribute("style", "display: none;");
+                    } else {
+                        privateListChildren[i].setAttribute("style", "display: block;");
+                    }
+                }
+
+                for(let i=0; i < publicListChildren.length; i++) {
+                    if (!displayedIds.includes(publicListChildren[i].id)) {
+                        publicListChildren[i].setAttribute("style", "display: none;");
+                    } else {
+                        publicListChildren[i].setAttribute("style", "display: block;");
+                    }
+                }
+            }
+        });
+    } else {
+        let privateListChildren = document.getElementById("privateDestinationList").children;
+        let publicListChildren = document.getElementById("publicDestinationList").children;
+        for(let i=0; i < privateListChildren.length; i++) {
+            privateListChildren[i].setAttribute("style", "display: block;");
+        }
+        for(let i=0; i < publicListChildren.length; i++) {
+            publicListChildren[i].setAttribute("style", "display: block;");
+        }
+    }
+});
+
 
 
 /**

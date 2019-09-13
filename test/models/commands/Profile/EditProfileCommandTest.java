@@ -15,6 +15,8 @@ import play.db.Databases;
 import play.db.evolutions.Evolution;
 import play.db.evolutions.Evolutions;
 import testhelpers.BaseTestWithApplicationAndDatabase;
+import utilities.EnvVariableKeys;
+import utilities.EnvironmentalVariablesAccessor;
 import utilities.TestDatabaseManager;
 
 import java.time.LocalDate;
@@ -37,7 +39,8 @@ public class EditProfileCommandTest extends BaseTestWithApplicationAndDatabase {
         User user = User.find().byId(2);
 
         assertTrue(loginFactory.isPasswordMatch(user.getEmail(),
-                "TinyHumans57"));
+                EnvironmentalVariablesAccessor.getEnvVariable(
+                        EnvVariableKeys.TEST_USER_PASSWORD_DEFAULT.toString())));
         Album album = new Album(user, user.getFName() + " " + user.getLName() +"'s "+"Profile Pictures", false);
         AlbumAccessor.insert(album);
 
@@ -78,7 +81,8 @@ public class EditProfileCommandTest extends BaseTestWithApplicationAndDatabase {
         assertEquals(expectedBirthdate, undoUser.getDateOfBirth());
         assertEquals("testuser1@uclive.ac.nz", undoUser.getEmail());
         assertTrue(loginFactory.isPasswordMatch(undoUser.getEmail(),
-                "TinyHumans57"));
+                EnvironmentalVariablesAccessor.getEnvVariable(
+                        EnvVariableKeys.TEST_USER_PASSWORD_DEFAULT.toString())));
         Album newAlbum  = AlbumAccessor.getAlbumByTitle(undoUser.getFName() + " " + undoUser.getLName() +"'s "+"Profile Pictures");
         assertNotNull(newAlbum);
     }

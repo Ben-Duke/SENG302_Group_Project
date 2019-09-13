@@ -1,11 +1,14 @@
 @import formdata.DestinationFormData
 @import views.html.bootstrap3._
-@(user : User, trips : List[Trip], destinations : List[Destination], destForm : Form[DestinationFormData], countryMap: Map[String, Boolean], typeMap: Map[String, Boolean])
+@(user : User, trips : List[Trip], destinations : List[Destination],
+        destForm : Form[DestinationFormData], countryMap: Map[String, Boolean],
+        typeMap: Map[String, Boolean], googleApiKey : String)
 
 <style>
 
     body{
         overflow-y: hidden;
+        overflow-x: hidden;
     }
     #map {
         top: -10px;
@@ -50,7 +53,7 @@
     }
     #destinationList {
         margin-top: 10px;
-        height: 45%;
+        height: 35%;
         overflow-y: auto;
         position: relative;
     }
@@ -65,7 +68,7 @@
         height: calc(100% - 50px)%;
     }
     #singleTripContainer {
-        height: 55%;
+        height: 45%;
     }
     .singleTrip {
         overflow-y: auto;
@@ -256,29 +259,33 @@
 
                 <hr>
                 <div id="destinationList">
+                    <div id="dest-search-container">
+                        <input type="text" id="destSearchInput" placeholder="Search for Destination">
+                    </div>
+                    <br>
                     <h4 style="text-align: left">My Destinations</h4>
                     <a class="btn btn-primary createDestBtn" onclick="viewCreatePanel()">
                         &#10133</a>
-                    <div class="list-group">
+                    <div class="list-group" id="privateDestinationList">
                         @for(destination <- destinations) {
                             @if(!destination.getIsPublic()) {
                                 <a onclick="displayDestination(@destination.getDestId(),
                                         @destination.getLatitude(),
                                         @destination.getLongitude())"
-                                class="list-group-item list-group-item-action">
+                                class="list-group-item list-group-item-action" id = "destButton@destination.getDestId">
                                 @destination.getDestName()
                                 </a>
                             }
                         }
                     </div>
                     <h4 style="text-align: left">Public Destinations</h4>
-                    <div class="list-group">
+                    <div class="list-group" id="publicDestinationList">
                         @for(destination <- destinations) {
                             @if(destination.getIsPublic()) {
                                 <a onclick="displayDestination(@destination.getDestId(),
                                         @destination.getLatitude(),
                                         @destination.getLongitude())"
-                                    class="list-group-item list-group-item-action">
+                                    class="list-group-item list-group-item-action" id = "destButton@destination.getDestId">
                                 @destination.getDestName() | @destination.getDestType() | @destination.getCountry()
                                 </a>
                             }
@@ -406,7 +413,7 @@
 
     <script src="@routes.Assets.at("js/map/map.js")"></script>
     <script src="@routes.Assets.at("js/map/mapStyle.js")"></script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC9Z1g5p2rQtS0nHgDudzCCXVl2HJl3NPI&callback=initMap&libraries=drawing,places"
+    <script src="https://maps.googleapis.com/maps/api/js?key=@googleApiKey&callback=initMap&libraries=drawing,places"
     async defer></script>
 
 }
@@ -460,4 +467,4 @@
     <span class="text-danger" id="existingMessage"></span>
 
 
-}git
+}

@@ -604,41 +604,41 @@ function initTripRoutes() {
 
             for (let tripId in tripRoutes) {
 
-            color = colors[Math.floor(Math.random()*colors.length)];
+                color = colors[Math.floor(Math.random()*colors.length)];
 
-            let flightPath = new google.maps.Polyline({
-                path: tripRoutes[tripId],
-                geodesic: true,
-                strokeColor: '#' + color,
-                strokeOpacity: 1.0,
-                strokeWeight: 2
-            });
-            flightPath.path = tripRoutes[tripId];
+                let flightPath = new google.maps.Polyline({
+                    path: tripRoutes[tripId],
+                    geodesic: true,
+                    strokeColor: '#' + color,
+                    strokeOpacity: 1.0,
+                    strokeWeight: 2
+                });
+                flightPath.path = tripRoutes[tripId];
 
-            google.maps.event.addListener(flightPath, 'click', function(e) {
+                google.maps.event.addListener(flightPath, 'click', function(e) {
 
-                displayTrip(tripId, tripRoutes[tripId][0]['lat'], tripRoutes[tripId][0]['lng'])
-            });
+                    displayTrip(tripId, tripRoutes[tripId][0]['lat'], tripRoutes[tripId][0]['lng'])
+                });
 
-            if (tripFlightPaths[tripId] != null) {
-                if (tripFlightPaths[tripId].path.length !== flightPath.path.length) {
-                    tripFlightPaths[tripId].setMap(null);
+                if (tripFlightPaths[tripId] != null) {
+                    // if (tripFlightPaths[tripId].path.length !== flightPath.path.length) {
+                        tripFlightPaths[tripId].setMap(null);
+                        tripFlightPaths[tripId] = flightPath;
+                    // }
+                }
+                else {
                     tripFlightPaths[tripId] = flightPath;
                 }
-            }
-            else{
-                tripFlightPaths[tripId] = flightPath;
-            }
-            const checkBox = document.getElementById("Toggle" + tripId);
-            if (checkBox.checked === false) {
-                tripFlightPaths[tripId].setMap(null);
-            } else {
-                if (tripFlightPaths[tripId].getMap() == null) {
-                    tripFlightPaths[tripId].setMap(window.globalMap);
+                const checkBox = document.getElementById("Toggle" + tripId);
+                if (checkBox.checked === false) {
+                    tripFlightPaths[tripId].setMap(null);
+                } else {
+                    if (tripFlightPaths[tripId].getMap() == null) {
+                        tripFlightPaths[tripId].setMap(window.globalMap);
+                    }
                 }
             }
-        }
-    });
+        });
 }
 
 function addTripRoutes(newTripId) {
@@ -748,15 +748,11 @@ function swapVisitOnSort(tripId) {
             if(xhr.status == 200) {
                 //This is an inefficient way of update the route
 
-                console.log(1.2);
-
                 for (let i in tripRoutes) {
                     tripRoutes[i].setMap(null);
                 }
                 tripRoutes = [];
                 initTripRoutes();
-            }
-            else{
             }
         },
         error: function(xhr, textStatus, errorThrown){
@@ -940,6 +936,13 @@ function sendDeleteVisitRequest(url, visitId) {
             if (xhr.status == 200) {
                 document.getElementById(visitId).remove();
                 document.getElementById('undoButton').classList.remove('disabled');
+
+                for (let i in tripRoutes) {
+                    tripRoutes[i].setMap(null);
+                }
+                tripRoutes = [];
+                initTripRoutes();
+
             }
             else {
                 console.log("error in success function");
@@ -1390,7 +1393,7 @@ function checkTripVisits() {
         })
 }
 
-$("#formBody").submit(function(e){
+$("#formBody").submit(function(e) {
     e.preventDefault();
 });
 

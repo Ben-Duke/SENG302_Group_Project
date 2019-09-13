@@ -1064,9 +1064,19 @@ function initPlacesAutocompleteSearch() {
 
                     window.globalMap.setCenter(destLatLng);
                     window.globalMap.setZoom(10);
+                    if (document.getElementById('createDestination').style.display = 'block') {
+                        document.getElementById('createDestination').style.display = 'none';
+                    }
+                    $('[href="#destinationsTab"]').tab('show');
+                    displayDestination(data, coordinates.lat(), coordinates.lng());
                 }
                 else if (xhr.status == 201) {
                     $('[href="#destinationsTab"]').tab('show');
+                    for (let childNode of document.getElementById('singleDestinationContainer').children) {
+                        if(childNode.style.display == "block") {
+                            childNode.style.display = "none";
+                        }
+                    }
                     document.getElementById('createDestination').style.display = 'block';
 
                     document.getElementById("destName").value = place.name;

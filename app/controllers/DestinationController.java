@@ -628,7 +628,7 @@ public class DestinationController extends Controller {
 
         for (Destination existingDestination : userAccessibleDestinations) {
             if (destination.isSimilar(existingDestination)) {
-                return ok();
+                return ok(Json.toJson(existingDestination.getDestId()));
             }
         }
         return created();

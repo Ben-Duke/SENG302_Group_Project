@@ -1,6 +1,7 @@
 package controllers;
 
 import models.Nationality;
+import play.libs.Json;
 import utilities.UtilityFunctions;
 import models.TravellerType;
 import models.User;
@@ -27,7 +28,7 @@ public class TravelPartnerController {
     FormFactory formFactory;
 
     /**
-     * Initiates the form teh will take the search parameters.
+     * Initiates the form that will take the search parameters.
      * Retrieves a list of all traveler types and all nationalities.
      * Renders the searchprofile page.
      *
@@ -113,20 +114,20 @@ public class TravelPartnerController {
      * @return A list of all users that match the nationality
      */
     private Set<User> nationalityResults(DynamicForm filterForm) {
+        System.out.println(filterForm.get("nationality"));
 
         String nationality = filterForm.get("nationality");
-        if (nationality != null) {
-            if (nationality.equals("")) {
-                return new HashSet<>();
 
-            } else {
-                List<Nationality> nationalities = Nationality.find().query().where().eq("nationalityName", nationality).findList();
-                if (nationalities.size() > 0) {
-                    return Nationality.find().byId(nationalities.get(0).getNatId()).getUsers();
-                }
-            }
+        if (nationality.equals("") || nationality == null) {
+            return new HashSet<User>();
         }
-        return new HashSet<>();
+
+        List<Nationality> nationalities = Nationality.find().query().where().eq("nationalityName", nationality).findList();
+        if (nationalities.isEmpty()) {
+            return new HashSet<User>();
+        }
+
+        return Nationality.find().byId(nationalities.get(0).getNatId()).getUsers();
     }
 
     /**
@@ -199,46 +200,43 @@ public class TravelPartnerController {
      * @return List of users or error message
      */
     public Result searchByAttribute(Http.Request request){
-
-        DynamicForm filterForm = formFactory.form().bindFromRequest();
-
-
         User user = User.getCurrentUser(request);
-
-        if (user != null) {
-            List<Set<User>> userLists = new ArrayList<>();
-
-            Set<User> travelerTypeMatches = travelerTypeResults(filterForm);
-            if (!travelerTypeMatches.isEmpty()) {
-                userLists.add(travelerTypeMatches);
-            }
-
-            Set<User> nationalityMatches = nationalityResults(filterForm);
-            if (!nationalityMatches.isEmpty()) {
-                userLists.add(nationalityMatches);
-            }
-
-            userLists.add(genderResults(filterForm));
-
-            Set<User> ageRangeMatches = ageRangeResults(filterForm);
-            if (!ageRangeMatches.isEmpty()) {
-                userLists.add(ageRangeMatches);
-            }
-
-            //Gets all common users from each search
-            Set<User> resultProfiles = UtilityFunctions.retainFromLists(userLists);
-
-
-            //remove the current user from the list
-            resultProfiles.remove(user);
-
-
-            //Redisplay the page, but this time with the search results
-            return displayRenderedFilterPage(resultProfiles,user);
-
-        } else{
+        if (user == null) {
             return redirect(routes.UserController.userindex());
         }
+        // Check for authenticated user complete
+
+
+        DynamicForm filterForm = formFactory.form().bindFromRequest();
+        List<Set<User>> userLists = new ArrayList<>();
+
+        Set<User> travelerTypeMatches = travelerTypeResults(filterForm);
+        if (!travelerTypeMatches.isEmpty()) {
+            userLists.add(travelerTypeMatches);
+        }
+
+        Set<User> nationalityMatches = nationalityResults(filterForm);
+        if (!nationalityMatches.isEmpty()) {
+            userLists.add(nationalityMatches);
+        }
+
+        userLists.add(genderResults(filterForm));
+
+        Set<User> ageRangeMatches = ageRangeResults(filterForm);
+        if (!ageRangeMatches.isEmpty()) {
+            userLists.add(ageRangeMatches);
+        }
+
+        //Gets all common users from each search
+        Set<User> resultProfiles = UtilityFunctions.retainFromLists(userLists);
+
+
+        //remove the current user from the list
+        resultProfiles.remove(user);
+
+
+        //Redisplay the page, but this time with the search results
+        return displayRenderedFilterPage(resultProfiles,user);
     }
 
 

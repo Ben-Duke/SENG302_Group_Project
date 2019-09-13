@@ -64,17 +64,21 @@ public class UtilityFunctions {
 
     /**
      * Makes a set of all the users to be retained
-     * @param lists A set of user as a list
+     * @param userSets A set of user as a list
      * @return A set of all retained users
      */
-    public static Set<User> retainFromLists(List<Set<User>> lists) {
-        int count = 0;
-        Set<User> retainedList = lists.get(count);
-        while (count < (lists.size() - 1)) {
-            retainedList.retainAll(lists.get(count + 1));
-            count += 1;
+    public static Set<User> retainFromLists(List<Set<User>> userSets) {
+        Set<User> retainedUsers = new HashSet<User>();
+        if (userSets.isEmpty()) {
+            return retainedUsers;
         }
-        return retainedList;
+
+        retainedUsers.addAll(userSets.get(0));
+        for (int i = 1; i < userSets.size(); i++) {
+            retainedUsers.retainAll(userSets.get(i));
+        }
+
+        return retainedUsers;
     }
 
     /**

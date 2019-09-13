@@ -295,15 +295,12 @@ public class DestinationController extends Controller {
 
         Destination newDestination = getDestinationFromRequest(request, user, destId);
 
-        DestinationFactory destFactory = new DestinationFactory();
+        DestinationFactory destinationFactory = new DestinationFactory();
 
-        List<Destination> matchingDestinations = destFactory.getMatching(newDestination);
+        List<Destination> matchingDestinations = destinationFactory.getMatching(newDestination);
 
-        if(matchingDestinations.size() > 0) {
-
-            logger.debug("Should block this and merge them");
-
-            destFactory.editDestinationMerge(matchingDestinations.get(0), oldDestination);
+        if(!matchingDestinations.isEmpty()) {
+            destinationFactory.editDestinationMerge(matchingDestinations.get(0), oldDestination);
         } else {
 
             oldDestination.applyEditChanges(newDestination);

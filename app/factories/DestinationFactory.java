@@ -353,7 +353,6 @@ public class DestinationFactory {
                     logger.error("merge destinations 3", e);
                 }
             }
-            logger.debug("looping");
         }
         destination.setIsPublic(true);
         destination.setUser(defaultAdminUser);

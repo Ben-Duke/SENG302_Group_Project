@@ -118,7 +118,7 @@ public class TravelPartnerController {
 
         String nationality = filterForm.get("nationality");
 
-        if (nationality.equals("") || nationality == null) {
+        if (nationality == null || nationality.equals("")) {
             return new HashSet<User>();
         }
 

@@ -685,15 +685,13 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(GET)
                 .uri("/users/destinations/update/make_public/3").session("connected", "2");
-        Result result = route(app, request);
-        assertEquals(OK, result.status());
 
         Trip trip = new Trip("testTrip", true, User.find().byId(2));
         trip.save();
         request = Helpers.fakeRequest()
                 .method(GET)
                 .uri("/users/trips/table/edit/1/3").session("connected", "2");
-        result = route(app, request);
+        Result result = route(app, request);
         assertEquals(REDIRECT_HTTP_STATUS, result.status());
 
         Map<String, String> formData = new HashMap<>();
@@ -709,13 +707,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
 
         assertEquals(REDIRECT_HTTP_STATUS, result2.status());
     }
-
-    /*
-    @Test
-    public void setPrimaryPhotoWithLoginSessionAndValidDestinationAndValidUser(){
-
-    }
-    */
+    
 
     /**
      * Unit test for ajax request to get the owner of a destination given by a destination id

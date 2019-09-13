@@ -193,7 +193,6 @@ public class DestinationController extends Controller {
             }
         }
 
-//        user.getCommandManager().setAllowedPage(DestinationPageCommand.class);
 
         boolean inEditMode = false;
 
@@ -294,15 +293,27 @@ public class DestinationController extends Controller {
             return errorForm;
         }
 
-        Destination newDestination = getDestinationFromRequest(request);
-        oldDestination.applyEditChanges(newDestination);
+        Destination newDestination = getDestinationFromRequest(request, user, destId);
 
-        EditDestinationCommand editDestinationCommand =
-                new EditDestinationCommand(oldDestination);
-        user.getCommandManager().executeCommand(editDestinationCommand);
+        DestinationFactory destinationFactory = new DestinationFactory();
+
+        List<Destination> matchingDestinations = destinationFactory.getMatching(newDestination);
+
+        if(!matchingDestinations.isEmpty()) {
+            destinationFactory.editDestinationMerge(matchingDestinations.get(0), oldDestination);
+        } else {
+
+            oldDestination.applyEditChanges(newDestination);
+
+            EditDestinationCommand editDestinationCommand =
+                    new EditDestinationCommand(oldDestination);
+            user.getCommandManager().executeCommand(editDestinationCommand);
 
 
-        return redirect(routes.DestinationController.viewDestination(destId));
+            return redirect(routes.DestinationController.viewDestination(destId));
+        }
+        return redirect(routes.HomeController.mainMapPage());
+
     }
 
 

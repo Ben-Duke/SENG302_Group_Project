@@ -48,6 +48,10 @@ GET     /users/admin/back_to_admin/:id      controllers.AdminController.setUserB
 
 GET     /users/admin/data           controllers.AdminController.getUserData(request: Request, offset: Integer, quantity: Integer)
 
+GET     /users/admin/userCount           controllers.AdminController.getUserCount(request: Request)
+
+
+
 
 GET /users/destination/placeid/:placeId   controllers.DestinationController.getPlacesDetailsRequest(request: Request, placeId:String)
 

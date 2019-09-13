@@ -319,7 +319,6 @@ public class AdminControllerTest extends BaseTestWithApplicationAndDatabase {
 
     @Test
     public void getUserData_asUser() {
-        User user = UserAccessor.getById(3);
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(GET).uri("/users/admin/data?offset=0&quantity=10")
                 .session("connected", "2");

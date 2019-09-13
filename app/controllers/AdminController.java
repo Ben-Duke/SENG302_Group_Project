@@ -54,10 +54,18 @@ public class AdminController extends Controller {
         return unauthorized("Oops, you are not authorised.");
     }
 
+    public Result getUserCount(Http.Request request) {
+        int userCount = UserAccessor.getAll().size();
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        ObjectNode userCountNode = objectMapper.createObjectNode();
+        userCountNode.put("count", userCount);
+
+        return ok(userCountNode);
+    }
+
 
     public Result getUserData(Http.Request request, Integer offset, Integer quantity) {
-        logger.debug("Hit user data route");
-
         User currentUser = User.getCurrentUser(request);
         // Redirect non-logged in and non-admin users
         if (currentUser == null || !currentUser.userIsAdmin()) { return redirect(routes.UserController.userindex()); }
@@ -75,9 +83,8 @@ public class AdminController extends Controller {
            userNode.put("firstName", user.getFName());
            userNode.put("lastName", user.getLName());
            userNode.put("gender", user.getGender());
-//           userNode.put("dob", user.getDateOfBirth());
+           userNode.put("dob", user.getDateOfBirth().toString());
 
-//           logger.debug(user.toString());
            userNodes.add(userNode);
         }
 

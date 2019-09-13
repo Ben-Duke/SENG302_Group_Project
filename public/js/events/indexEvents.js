@@ -87,20 +87,8 @@ function displayEvents(events) {
         mediaRow.appendChild(document.createElement("hr"));
         document.getElementById("events-results").appendChild(mediaRow);
     }
-    // if (events.length === 0) {
-    //     if (document.getElementById("no-results") == null) {
-    //         let noResults = document.createElement("div");
-    //         noResults.innerText = "No results were found for this search.";
-    //         noResults.setAttribute("id", "no-results");
-    //         document.body.appendChild(noResults);
-    //     }
-    // } else {
-    //     if (document.getElementById("no-results") != null) {
-    //         document.getElementById("no-results").remove();
-    //     }
-    // }
-    unLoader();
 
+    unLoader();
 }
 
 function addPagination(count, pageNum) {
@@ -114,7 +102,7 @@ function addPagination(count, pageNum) {
     for (let i=0; i < count; i+=20) {
         numOfPages.push((i/20)+1);
     }
-    // console.log(numOfPages);
+
     if (numOfPages.length > 10) {
         if (pageNum > 5) {
             if (numOfPages.length >= pageNum+5) {

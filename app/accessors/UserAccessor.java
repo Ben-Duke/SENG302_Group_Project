@@ -129,8 +129,6 @@ public class UserAccessor {
                //Need the type id to get this to work, doesn't work with * currently
                .eq("ttypeid", "1");
 
-        //List<User> users = User.find().query().where("travellerTypes", )
-
        System.out.println("Query is "+query.toString());
        return query.findList();
    }

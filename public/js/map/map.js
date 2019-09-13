@@ -1390,6 +1390,51 @@ $("#formBody").submit(function(e){
     e.preventDefault();
 });
 
+$("#destSearchInput").keyup(function()
+{
+    let searchInput = document.getElementById("destSearchInput").value;
+    if(searchInput != "") {
+        $.ajax({
+            url: '/users/destinations/matching/' + searchInput,
+            method: "GET",
+            success: function (res) {
+                let displayedIds = [];
+                for (let j=0; j < res.length; j++) {
+                    displayedIds.push("destButton" + res[j].destid);
+                }
+                let privateListChildren = document.getElementById("privateDestinationList").children;
+                let publicListChildren = document.getElementById("publicDestinationList").children;
+
+                for(let i=0; i < privateListChildren.length; i++) {
+                    if (!displayedIds.includes(privateListChildren[i].id)) {
+                        privateListChildren[i].setAttribute("style", "display: none;");
+                    } else {
+                        privateListChildren[i].setAttribute("style", "display: block;");
+                    }
+                }
+
+                for(let i=0; i < publicListChildren.length; i++) {
+                    if (!displayedIds.includes(publicListChildren[i].id)) {
+                        publicListChildren[i].setAttribute("style", "display: none;");
+                    } else {
+                        publicListChildren[i].setAttribute("style", "display: block;");
+                    }
+                }
+            }
+        });
+    } else {
+        let privateListChildren = document.getElementById("privateDestinationList").children;
+        let publicListChildren = document.getElementById("publicDestinationList").children;
+        for(let i=0; i < privateListChildren.length; i++) {
+            privateListChildren[i].setAttribute("style", "display: block;");
+        }
+        for(let i=0; i < publicListChildren.length; i++) {
+            publicListChildren[i].setAttribute("style", "display: block;");
+        }
+    }
+});
+
+
 
 /**
  * Function used to submit destination creation.

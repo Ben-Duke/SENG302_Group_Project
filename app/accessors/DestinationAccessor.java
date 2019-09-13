@@ -5,6 +5,8 @@ import models.Destination;
 
 import java.util.List;
 
+import static io.ebean.Expr.like;
+
 /**
  * A class to handle accessing Destination from the database
  */
@@ -65,6 +67,18 @@ public class DestinationAccessor {
         return Destination.find().query().where()
                 .eq("destName", name)
                 .findList();
+    }
+
+    /**
+     * Returns all destination in the database
+     * @return List of destinations
+     */
+    /**
+     * Return destinations that matches this keyword.
+     * Private destinations can share the same name so list size can be more than one
+     */
+    public static List<Destination> getDestinationsWithKeyword(String name) {
+        return Destination.find().query().where().or(like("destName", "%" + name + "%"), like("destName", "%" + name.toUpperCase() + "%")).findList();
     }
 
     public static List<Destination> getAllDestinations() {

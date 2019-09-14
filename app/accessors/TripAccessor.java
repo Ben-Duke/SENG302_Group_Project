@@ -1,9 +1,11 @@
 package accessors;
 
+import io.ebean.Query;
 import models.Tag;
 import models.Trip;
 import models.User;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -22,6 +24,31 @@ public class TripAccessor {
      */
     public static List<Trip> getTripsByName(String name, User user) {
         return Trip.find().query().where().eq("user", user).like("trip_name", "%" + name + "%").findList();
+    }
+
+
+    /**
+     * Gets a paginated List of a users trips, with an offset and quantity to fetch.
+     *
+     * @param offset an integer representing the number of destinations to skip before sending
+     * @param quantity an integer representing the maximum length of the jsonArray
+     * @param user the user whose trips are to be retrieved
+     * @return A list of user trips matching the offset and quantity.
+     */
+    public static List<Trip> getPaginatedTrips(int offset, int quantity, User user){
+        if (quantity < 1) {
+            return new ArrayList<Trip>();
+        }
+
+        if (offset < 0) {
+            offset = 0;
+        }
+
+        Query<Trip> query = Trip.find().query()
+                .where()
+                .eq("user", user)
+                .setFirstRow(offset).setMaxRows(quantity);
+        return query.findList();
     }
 
 

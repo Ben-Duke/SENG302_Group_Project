@@ -780,4 +780,22 @@ public class TripController extends Controller {
 
 
     }
+
+    /**
+     * Get a paginated list of trips for a user based on offset and quantity
+     * @param request the HTTP request
+     * @param offset the offset being the number of trips to skip before returning results
+     * @param quantity an integer indicating the maximum length of the results
+     * @return A JSON object with the trip data
+     */
+    public Result getPaginatedUserTrips(Http.Request request, int offset, int quantity) {
+        User user = User.getCurrentUser(request);
+        if (user == null) {
+            return redirect(routes.UserController.userindex());
+        }
+        List<Trip> trips = TripAccessor.getPaginatedTrips(offset, quantity, user);
+        ObjectNode result = (new ObjectMapper()).createObjectNode();
+        result.set("trips", Json.toJson(trips));
+        return ok(Json.toJson(result));
+    }
 }

@@ -25,6 +25,8 @@ import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
+import utilities.EnvVariableKeys;
+import utilities.EnvironmentalVariablesAccessor;
 import utilities.UtilityFunctions;
 import views.html.users.trip.*;
 
@@ -62,7 +64,9 @@ public class TripController extends Controller {
         User user = User.getCurrentUser(request);
         if (user != null) {
             Form<TripFormData> incomingForm = formFactory.form(TripFormData.class);
-            return ok(createTrip.render(incomingForm, user));
+            String googleApiKey = EnvironmentalVariablesAccessor.getEnvVariable(
+                               EnvVariableKeys.GOOGLE_MAPS_API_KEY.toString());
+            return ok(createTrip.render(incomingForm, user, googleApiKey));
         }
         else{
             return redirect(routes.UserController.userindex());
@@ -131,15 +135,19 @@ public class TripController extends Controller {
      */
     public Result savetrip(Http.Request request){
         User user = User.getCurrentUser(request);
+        String googleApiKey = EnvironmentalVariablesAccessor.getEnvVariable(
+                EnvVariableKeys.GOOGLE_MAPS_API_KEY.toString());
+
         if (user != null) {
             Form<TripFormData> incomingForm = formFactory.form(TripFormData.class).bindFromRequest(request);
 
             if (incomingForm.hasErrors()) {
-                return badRequest(createTrip.render(incomingForm, user));
+
+                return badRequest(createTrip.render(incomingForm, user, googleApiKey));
             }
             for (Trip trip: user.getTrips()) {
                 if (incomingForm.get().tripName.equals(trip.getTripName())) {
-                    return ok(createTrip.render(incomingForm.withError("tripName", "Cannot have duplicate trip names"), user));
+                    return ok(createTrip.render(incomingForm.withError("tripName", "Cannot have duplicate trip names"), user, googleApiKey));
                 }
             }
             TripFormData created = incomingForm.get();

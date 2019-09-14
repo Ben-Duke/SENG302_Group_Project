@@ -1,11 +1,14 @@
 @import formdata.DestinationFormData
 @import views.html.bootstrap3._
-@(user : User, trips : List[Trip], destinations : List[Destination], destForm : Form[DestinationFormData], countryMap: Map[String, Boolean], typeMap: Map[String, Boolean])
+@(user : User, trips : List[Trip], destinations : List[Destination],
+        destForm : Form[DestinationFormData], countryMap: Map[String, Boolean],
+        typeMap: Map[String, Boolean], googleApiKey : String)
 
 <style>
 
     body{
         overflow-y: hidden;
+        overflow-x: hidden;
     }
     #map {
         top: -10px;
@@ -50,7 +53,7 @@
     }
     #destinationList {
         margin-top: 10px;
-        height: 45%;
+        height: 35%;
         overflow-y: auto;
         position: relative;
     }
@@ -65,7 +68,7 @@
         height: calc(100% - 50px)%;
     }
     #singleTripContainer {
-        height: 55%;
+        height: 45%;
     }
     .singleTrip {
         overflow-y: auto;
@@ -402,7 +405,7 @@
 
     <script src="@routes.Assets.at("js/map/map.js")"></script>
     <script src="@routes.Assets.at("js/map/mapStyle.js")"></script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC9Z1g5p2rQtS0nHgDudzCCXVl2HJl3NPI&callback=initMap&libraries=drawing,places"
+    <script src="https://maps.googleapis.com/maps/api/js?key=@googleApiKey&callback=initMap&libraries=drawing,places"
     async defer></script>
 
 }
@@ -456,4 +459,4 @@
     <span class="text-danger" id="existingMessage"></span>
 
 
-}git
+}

@@ -108,12 +108,20 @@ public class TestDatabaseManager {
      * Sets the passwords of all test users and admins
      */
     private void setUserPasswords() {
-        List<User> users = UserAccessor.getAll();
+        List<String> emails = Arrays.asList("admin@admin.com",
+                "testuser1@uclive.ac.nz",
+                "testuser2@uclive.ac.nz",
+                "testuser3@uclive.ac.nz");
+
+        List<User> users = UserAccessor.getUsersByEmails(emails);
+
         for (User user : users) {
             if (user.userIsAdmin()) {
-                user.hashAndSetPassword("FancyRock08");
+                user.hashAndSetPassword(EnvironmentalVariablesAccessor.getEnvVariable(
+                        EnvVariableKeys.ADMIN_USER_PASSWORD_DEFAULT.toString()));
             } else {
-                user.hashAndSetPassword("TinyHumans57");
+                user.hashAndSetPassword(EnvironmentalVariablesAccessor.getEnvVariable(
+                        EnvVariableKeys.TEST_USER_PASSWORD_DEFAULT.toString()));
             }
 
             user.update();

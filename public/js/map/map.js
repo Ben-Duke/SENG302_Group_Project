@@ -216,7 +216,7 @@ function addSelectedToVisitToTrip(destId, startTrip){
                 for (let i in tripRoutes) {
                     tripRoutes[i].setMap(null);
                 }
-                tripRoutes =[];
+                tripRoutes = [];
                 initTripRoutes();
 
                 if (startTrip == true && currentlyDisplayedTripId != undefined) {
@@ -537,12 +537,11 @@ function tripVisitTableRefresh(data) {
     newRow.appendChild(deleteButton);
     targetTripBody.appendChild(newRow);
 
-    var tripStartLatLng = new google.maps.LatLng(
-        data.latitude, data.longitude
-    );
+    // var tripStartLatLng = new google.maps.LatLng(
+    //     data.latitude, data.longitude
+    // );
 
-    window.globalMap.setCenter(tripStartLatLng);
-    window.globalMap.setZoom(9);
+    // window.globalMap.setCenter(tripStartLatLng);
 }
 
 
@@ -600,43 +599,45 @@ function initTripRoutes() {
         .then(res => res.json())
         .then(tripRoutes => {
             let color;
+            
 
-        for (let tripId in tripRoutes) {
-            color = colors[Math.floor(Math.random()*colors.length)];
+            for (let tripId in tripRoutes) {
 
-            let flightPath = new google.maps.Polyline({
-                path: tripRoutes[tripId],
-                geodesic: true,
-                strokeColor: '#' + color,
-                strokeOpacity: 1.0,
-                strokeWeight: 2
-            });
-            flightPath.path = tripRoutes[tripId];
+                color = colors[Math.floor(Math.random()*colors.length)];
 
-            google.maps.event.addListener(flightPath, 'click', function(e) {
+                let flightPath = new google.maps.Polyline({
+                    path: tripRoutes[tripId],
+                    geodesic: true,
+                    strokeColor: '#' + color,
+                    strokeOpacity: 1.0,
+                    strokeWeight: 2
+                });
+                flightPath.path = tripRoutes[tripId];
 
-                displayTrip(tripId, tripRoutes[tripId][0]['lat'], tripRoutes[tripId][0]['lng'])
-            });
+                google.maps.event.addListener(flightPath, 'click', function(e) {
 
-            if (tripFlightPaths[tripId] != null) {
-                if (tripFlightPaths[tripId].path.length !== flightPath.path.length) {
-                    tripFlightPaths[tripId].setMap(null);
+                    displayTrip(tripId, tripRoutes[tripId][0]['lat'], tripRoutes[tripId][0]['lng'])
+                });
+
+                if (tripFlightPaths[tripId] != null) {
+                    // if (tripFlightPaths[tripId].path.length !== flightPath.path.length) {
+                        tripFlightPaths[tripId].setMap(null);
+                        tripFlightPaths[tripId] = flightPath;
+                    // }
+                }
+                else {
                     tripFlightPaths[tripId] = flightPath;
                 }
-            }
-            else{
-                tripFlightPaths[tripId] = flightPath;
-            }
-            const checkBox = document.getElementById("Toggle" + tripId);
-            if (checkBox.checked === false) {
-                tripFlightPaths[tripId].setMap(null);
-            } else {
-                if (tripFlightPaths[tripId].getMap() == null) {
-                    tripFlightPaths[tripId].setMap(window.globalMap);
+                const checkBox = document.getElementById("Toggle" + tripId);
+                if (checkBox.checked === false) {
+                    tripFlightPaths[tripId].setMap(null);
+                } else {
+                    if (tripFlightPaths[tripId].getMap() == null) {
+                        tripFlightPaths[tripId].setMap(window.globalMap);
+                    }
                 }
             }
-        }
-    });
+        });
 }
 
 function addTripRoutes(newTripId) {
@@ -706,7 +707,7 @@ function displayTrip(tripId, startLat, startLng) {
     );
     currentlyDisplayedTripId = tripId;
     window.globalMap.setCenter(tripStartLatLng);
-    window.globalMap.setZoom(9);
+    window.globalMap.setZoom(7);
 
     //Update tags
     changeTaggableModel(tripId, "trip");
@@ -745,13 +746,12 @@ function swapVisitOnSort(tripId) {
 
             if(xhr.status == 200) {
                 //This is an inefficient way of update the route
-                for (let tripId in tripFlightPaths) {
-                    tripFlightPaths[tripId].setMap(null);
-                }
-                initTripRoutes();
 
-            }
-            else{
+                for (let i in tripRoutes) {
+                    tripRoutes[i].setMap(null);
+                }
+                tripRoutes = [];
+                initTripRoutes();
             }
         },
         error: function(xhr, textStatus, errorThrown){
@@ -780,7 +780,7 @@ function displayDestination(destId, startLat, startLng) {
     );
 
     window.globalMap.setCenter(tripStartLatLng);
-    window.globalMap.setZoom(9);
+    window.globalMap.setZoom(8);
 
 }
 
@@ -935,6 +935,13 @@ function sendDeleteVisitRequest(url, visitId) {
             if (xhr.status == 200) {
                 document.getElementById(visitId).remove();
                 document.getElementById('undoButton').classList.remove('disabled');
+
+                for (let i in tripRoutes) {
+                    tripRoutes[i].setMap(null);
+                }
+                tripRoutes = [];
+                initTripRoutes();
+
             }
             else {
                 console.log("error in success function");
@@ -1279,7 +1286,6 @@ function initMapPositionListeners() {
                 if (status === 'OK') {
                     if (results[0]) {
                         map.panTo(latlng);
-                        map.setZoom(11);
                         let placeId = results[0].place_id;
                         if (destMarker != undefined) {
                             destMarker.setMap(null);
@@ -1386,7 +1392,7 @@ function checkTripVisits() {
         })
 }
 
-$("#formBody").submit(function(e){
+$("#formBody").submit(function(e) {
     e.preventDefault();
 });
 

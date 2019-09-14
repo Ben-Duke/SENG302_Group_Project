@@ -7,9 +7,14 @@ import accessors.UserPhotoAccessor;
 import accessors.UserPhotoAccessor;
 import accessors.TreasureHuntAccessor;
 import accessors.UserPhotoAccessor;
+import com.fasterxml.jackson.core.*;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
+import com.fasterxml.jackson.databind.node.JsonNodeType;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import factories.DestinationFactory;
 import factories.TravellerTypeFactory;
 import factories.UserFactory;
@@ -32,11 +37,14 @@ import play.mvc.Http;
 import play.mvc.Result;
 
 import utilities.CountryUtils;
+import utilities.EnvVariableKeys;
+import utilities.EnvironmentalVariablesAccessor;
 import views.html.users.destination.*;
 
 import javax.inject.Inject;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -110,8 +118,10 @@ public class DestinationController extends Controller {
     }
 
     public Result getPlacesDetailsRequest(Http.Request request, String placeId) throws Exception {
+        String googleApiKey = EnvironmentalVariablesAccessor.getEnvVariable(
+                EnvVariableKeys.GOOGLE_MAPS_API_KEY.toString());
         String url = "https://maps.googleapis.com/maps/api/place/details/json?placeid="+ placeId +
-                "&key=AIzaSyC9Z1g5p2rQtS0nHgDudzCCXVl2HJl3NPI";
+                "&key=" + googleApiKey;
         URL obj = new URL(url);
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 
@@ -187,8 +197,11 @@ public class DestinationController extends Controller {
 
         boolean inEditMode = false;
 
+        String googleApiKey = EnvironmentalVariablesAccessor.getEnvVariable(
+                EnvVariableKeys.GOOGLE_MAPS_API_KEY.toString());
         return ok(destinationPage.render(user, destination, inEditMode,
-                null, null, null, null));
+                null, null, null, null,
+                 googleApiKey));
     }
 
     /**
@@ -248,8 +261,10 @@ public class DestinationController extends Controller {
             }
         }
 
+        String googleApiKey = EnvironmentalVariablesAccessor.getEnvVariable(
+                EnvVariableKeys.GOOGLE_MAPS_API_KEY.toString());
         return ok(destinationPage.render(user, destination, inEditMode,
-                destForm, countries, types, travellerTypes));
+                destForm, countries, types, travellerTypes, googleApiKey));
     }
 
     /**
@@ -331,8 +346,11 @@ public class DestinationController extends Controller {
 
         boolean inEditMode = false;
 
+        String googleApiKey = EnvironmentalVariablesAccessor.getEnvVariable(
+                EnvVariableKeys.GOOGLE_MAPS_API_KEY.toString());
         return ok(destinationPage.render(user, destination, inEditMode,
-                null, null, null, null));
+                null, null, null, null,
+                googleApiKey));
     }
 
     /**
@@ -486,8 +504,11 @@ public class DestinationController extends Controller {
             destFactory.mergeDestinations(matchingDestinations, destination);
         }
 
+        String googleApiKey = EnvironmentalVariablesAccessor.getEnvVariable(
+                EnvVariableKeys.GOOGLE_MAPS_API_KEY.toString());
         return ok(destinationPage.render(user, destination, false,
-                null, null, null, null));
+                null, null, null, null,
+                googleApiKey));
 
     }
 
@@ -1026,6 +1047,36 @@ public class DestinationController extends Controller {
     }
 
     /**
+     * Gets a paginated jsonArray of public destinations based on an offset and quantity
+     * @param request the HTTP request
+     * @param offset an integer representing the number of destinations to skip before sending
+     * @param quantity an integer representing the maximum length of the jsonArray
+     * @return a Result object containing the destinations JSON in it's body
+     */
+    public Result getPaginatedPublicDestinations(Http.Request request, int offset, int quantity) {
+        int MAX_QUANTITY = 1000;
+
+        User user = User.getCurrentUser(request);
+        if (user == null) {
+            return redirect(routes.UserController.userindex());
+        }
+
+        if (MAX_QUANTITY < quantity) {
+            String errorStr = "query parameter 'quantity' exceeded maximum " +
+                    "allowed int: " + MAX_QUANTITY;
+
+            ObjectNode jsonError = (new ObjectMapper()).createObjectNode();
+            jsonError.put("error", errorStr);
+            jsonError.put("quantityLimit", MAX_QUANTITY);
+            return badRequest(Json.toJson(jsonError));
+        }
+
+        List<Destination> destinations = DestinationAccessor
+                .getPaginatedPublicDestinations(offset, quantity);
+        return ok(Json.toJson(destinations));
+    }
+
+    /**
      * Adds a photo with a photo id to a destination with a destination id.
      * @param request the HTTP request
      * @param photoId the photoId of the photo to e added
@@ -1085,7 +1136,9 @@ public class DestinationController extends Controller {
     public Result renderMap(Http.Request request) {
         User user = User.getCurrentUser(request);
 //        return ok(googlePlacesMapDocumentationExample.render(user));
-        return ok(googlePlacesMapDocumentationExample.render(user));
+        String googleApiKey = EnvironmentalVariablesAccessor.getEnvVariable(
+                EnvVariableKeys.GOOGLE_MAPS_API_KEY.toString());
+        return ok(googlePlacesMapDocumentationExample.render(user, googleApiKey));
     }
 
 }

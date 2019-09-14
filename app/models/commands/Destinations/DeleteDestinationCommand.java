@@ -60,6 +60,9 @@ public class DeleteDestinationCommand extends UndoableCommand {
         }
         destination.getTags().clear();
         destination.update();
+        for (Tag tag: deletedTags) {
+            TagAccessor.update(tag);
+        }
         DestinationAccessor.delete(destination);
     }
 
@@ -84,8 +87,21 @@ public class DeleteDestinationCommand extends UndoableCommand {
             album.setOwner(destination);
             AlbumAccessor.insert(album);
         }
-        destination.setTags(deletedTags);
-        DestinationAccessor.update(destination);
+        for (Tag tag: deletedTags) {
+            Tag tagExisting = TagAccessor.getTagByName(tag.getName());
+            boolean exists = tagExisting != null;
+            if (!exists) {
+                tag = new Tag(tag.getName());
+                TagAccessor.insert(tag);
+            }
+            destination.addTag(tag);
+            TagAccessor.update(tag);
+            DestinationAccessor.update(destination);
+        }
+        deletedTags.clear();
+
+
+
 
     }
 

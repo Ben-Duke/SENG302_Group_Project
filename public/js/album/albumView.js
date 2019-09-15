@@ -192,9 +192,8 @@ function setSlideListeners(i) {
                 document.querySelector('div[data-mediaId="'+mediaId+'"] [contenteditable]').innerHTML = caption.toString();
             } else {
                 document.querySelector('div[data-mediaId="'+mediaId+'"] [contenteditable]').innerHTML =
-                "Click to add caption, press enter to save.";
+                "Click to add caption.";
             }
-            console.log(albumData[i]["isPublic"]);
             if(albumData[i]["isPublic"]) {setPrivacy=0;}
             else {setPrivacy=1;}
             setPrivacyListener(setPrivacy, mediaId);
@@ -208,9 +207,6 @@ function setSlideListeners(i) {
  * @param setPublic true to set to public, false to set to private
  */
 function setMediaPrivacy(mediaId, setPublic, link) {
-    console.log(mediaId);
-    console.log(setPublic);
-    console.log(link);
     const intPublic = setPublic ? 1 : 0;
     $.ajax({
         type: 'GET',
@@ -336,29 +332,24 @@ async function displaySlides(i, albumData, path) {
 
     lightBox.appendChild(mySlidesDiv);
     var content = document.querySelector('div[data-mediaId="'+mediaId+'"] [contenteditable]');
-    // 1. Listen for changes of the contenteditable element
-    content.addEventListener('keydown', function (event) {
-        var esc = event.which == 27,
-            enterKey = event.which == 13,
-            el = event.target,
+    // 1. Listen for changes of the content editable element
+    content.addEventListener('focus', function (event) {
+        var el = event.target,
             input = el.nodeName != 'INPUT',
             data = {};
+            el.value = "";
 
         if (input) {
-            if (esc) {
-                // restore state
-                document.execCommand('undo');
-                el.blur();
-            } else if (enterKey) {
-                // save
-                data[el.getAttribute('data-name')] = el.innerHTML;
+            content.addEventListener('blur', function (event) {
+                if (el.innerText != "Click to add caption.")
+                data[el.getAttribute('data-name')] = el.innerText;
                 // we could send an ajax request to update the field
                 submitEditCaption(content.innerHTML, mediaId);
                 el.blur();
                 event.preventDefault();
-            }
+            });
         }
-    }, true);
+    });
 }
 
 // Open the Modal
@@ -894,7 +885,6 @@ function submitEditCaption(caption, photoId) {
             'Content-Type': 'application/json'
         },
         success:function(){
-            console.log("caption edited");
             document.getElementById('undoButton').classList.remove('disabled');
         },
         error: function(xhr, textStatus, errorThrown){

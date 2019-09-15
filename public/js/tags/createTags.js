@@ -59,11 +59,9 @@ function changeTaggableModel(newTaggableId, newTaggableType) {
 function removeExistingTagLabels() {
     toAddTagList = new Set();
     const tagList = document.getElementById("tag-line");
-    const tagInput = document.getElementById('tag-add');
     while (tagList.firstChild) {
         tagList.removeChild(tagList.firstChild)
     }
-    tagList.appendChild(tagInput);
 }
 
 /**
@@ -184,7 +182,7 @@ function addTagLabel(name) {
 
     newTag.className = "tag-label tag";
     newTag.id = name;
-    newText.innerHTML = `<a style="color: black">${name}</a>`;
+    newText.innerHTML = `<a>${name}</a>`;
     newIcon.className = "remove glyphicon glyphicon-remove-sign glyphicon-white";
 
     newRemove.onclick = function() {

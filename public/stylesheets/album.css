@@ -330,3 +330,8 @@ img.hover-shadow {
     margin: 3px;
 }
 
+#tag-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

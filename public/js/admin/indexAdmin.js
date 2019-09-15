@@ -124,8 +124,44 @@ async function displayData(users) {
         dob.innerText = user.dob;
         row.appendChild(dob);
 
+        const changeAdmin = document.createElement("td");
 
-        tableBody.append(row)
+        if (!user.isCurrentUser) {
+
+            const changeAdminButton = document.createElement("a");
+            changeAdminButton.class = "btn btn-link";
+
+            if (user.isAdmin) {
+                changeAdminButton.href = "/users/admin/remove/" + user.userId;
+                changeAdminButton.innerText = "Revoke Admin";
+            } else {
+                changeAdminButton.href = "/users/admin/make/" + user.userId;
+                changeAdminButton.innerText = "Make Admin";
+            }
+            changeAdmin.appendChild(changeAdminButton);
+        }
+
+        row.appendChild(changeAdmin);
+
+        
+        const actAsUser = document.createElement("td");
+
+        if (!user.isCurrentUser) {
+
+            const actAsUserButton = document.createElement("a");
+            actAsUserButton.class = "btn btn-link";
+
+            actAsUserButton.href = "/users/admin/actasuser/" + user.userId;
+            actAsUserButton.innerText = "Act as user";
+
+            actAsUser.appendChild(actAsUserButton);
+        }
+
+        row.appendChild(actAsUser);
+
+
+        tableBody.append(row);
+
 
         // eventCategory.innerText = "Type: " + events[i].category.name
         //

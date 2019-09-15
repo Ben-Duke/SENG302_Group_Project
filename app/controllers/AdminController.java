@@ -84,6 +84,8 @@ public class AdminController extends Controller {
            userNode.put("lastName", user.getLName());
            userNode.put("gender", user.getGender());
            userNode.put("dob", user.getDateOfBirth().toString());
+           userNode.put("isAdmin", user.userIsAdmin());
+           userNode.put("isCurrentUser", user.getUserid() == currentUser.getUserid());
 
            userNodes.add(userNode);
         }

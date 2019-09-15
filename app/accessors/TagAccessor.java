@@ -2,6 +2,7 @@ package accessors;
 
 import models.*;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 
@@ -22,7 +23,7 @@ public class TagAccessor {
      * @return the first tag matching the name in the database if it exists. else null
      */
     public static Tag getTagByName(String name) {
-        return Tag.find.query().where().ieq("name", name).findOne();
+        return Tag.find.query().where().eq("name", name).findOne();
     }
 
     /**
@@ -74,10 +75,18 @@ public class TagAccessor {
      * @return the set of all taggable models tagged
      */
     public static Set<TaggableModel> findTaggedItems(Tag tag) {
+
+        List<Tag> equivalentTags = Tag.find.query().where().ieq("name", tag.getName()).findList();
+
+        Set<TaggableModel> taggedItems = new HashSet<>();
         String tagQuery = "tags.tagId";
-        Set<TaggableModel> taggedItems = new HashSet<>(Destination.find().query().where().eq(tagQuery, tag.getTagId()).findSet());
-        taggedItems.addAll(UserPhoto.find().query().where().eq(tagQuery, tag.getTagId()).findSet());
-        taggedItems.addAll(Trip.find().query().where().eq(tagQuery, tag.getTagId()).findSet());
+
+        for (Tag equivalentTag : equivalentTags) {
+            taggedItems.addAll(Destination.find().query().where().eq(tagQuery, equivalentTag.getTagId()).findSet());
+            taggedItems.addAll(UserPhoto.find().query().where().eq(tagQuery, equivalentTag.getTagId()).findSet());
+            taggedItems.addAll(Trip.find().query().where().eq(tagQuery, equivalentTag.getTagId()).findSet());
+        }
+
         return taggedItems;
     }
 

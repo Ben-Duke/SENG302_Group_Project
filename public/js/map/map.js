@@ -9,6 +9,7 @@ let tripFlightPaths = {};
 let isNewTrip = false;
 let geoCoder;
 let destMarker;
+let tripPageNum = 0;
 
 
 function initMap() {
@@ -1556,8 +1557,52 @@ $("#submit").click(function(e){
 
 
 
-window.onload = function() {
+window.onload = async function() {
     checkTripVisits();
+    tripPageNum = 1;
 };
+
+
+$("#next-trip").click(async function() {
+  tripPageNum += 1;
+  console.log(tripPageNum);
+  let newlyDisplayedTrips = await getPaginatedTripResults(tripPageNum, 3);
+  displayTripTablePage(newlyDisplayedTrips);
+});
+
+$("#previous-trip").click(async function() {
+  if(tripPageNum > 1) {
+    tripPageNum -= 1;
+  } else {
+    tripPageNum = 1;
+  }
+  console.log(tripPageNum);
+  let newlyDisplayedTrips = await getPaginatedTripResults(tripPageNum, 3);
+  displayTripTablePage(newlyDisplayedTrips);
+});
+
+
+
+/**
+ * Change the HTML elements to display a new page of trips given in the trips parameter.
+ */
+function displayTripTablePage(trips) {
+
+}
+
+/**
+ * Function used to get a paginated list of trips based on the quantity and page number
+ */
+async function getPaginatedTripResults(pageNum, quantity) {
+    const offset = (pageNum - 1) * quantity;
+
+    trips = await $.ajax({
+        type: 'GET',
+        url: '/users/trips/paginated/' + offset + '/' + quantity,
+        contentType: 'application/json',
+    });
+
+    return trips.trips;
+}
 
 

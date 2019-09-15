@@ -91,16 +91,13 @@ public class EventFindaUtilitiesTest  extends BaseTestWithApplicationAndDatabase
     public void getEventsSearchTest() {
         Destination destination = Destination.find().query().where().eq("dest_name", "Christchurch").findOne();
         JsonNode result = EventFindaUtilities.getEvents("", "", "", "", "", "", destination, "",0);
-        System.out.println(result.get("@attributes").get("count").asText());
         assertTrue(Integer.parseInt(result.get("@attributes").get("count").asText())>0);
     }
 
     @Test
     public void getEventsSearchBadTest() {
         Destination destination = Destination.find().query().where().eq("dest_name", "Lincoln Memorial").findOne();
-        System.out.println(destination);
         JsonNode result = EventFindaUtilities.getEvents("", "", "", "", "", "", destination, "",0);
-        System.out.println(result.get("@attributes").get("count").asText());
         assertTrue(Integer.parseInt(result.get("@attributes").get("count").asText())==0);
     }
 
@@ -108,7 +105,6 @@ public class EventFindaUtilitiesTest  extends BaseTestWithApplicationAndDatabase
     public void getEventsSearchByRandomAttributesTest() {
         Destination destination = Destination.find().query().where().eq("dest_name", "Auckland").findOne();
         JsonNode result = EventFindaUtilities.getEvents("", "1", "", "", "5", "20", destination, "",0);
-        System.out.println(result.get("@attributes").get("count").asText());
         assertTrue(Integer.parseInt(result.get("@attributes").get("count").asText())>=0);
     }
 }

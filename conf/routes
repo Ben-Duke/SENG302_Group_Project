@@ -291,7 +291,7 @@ POST    /users/destinations/save        controllers.DestinationController.saveDe
 GET     /users/destinations/delete/:id   controllers.DestinationController.deleteDestination(request : Request, id : Integer)
 
 #Handles searching for  a destination
-GET     /users/destinations/matching/:name         controllers.DestinationController.getDestinationsByName(request : Request, name: String)
+GET     /users/destinations/matching/:name        controllers.DestinationController.getDestinationsByName(request : Request, name: String, offset: Integer, quantity: Integer)
 
 
 #Treasure Hunts

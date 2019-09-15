@@ -54,6 +54,8 @@ import java.util.*;
 
 import utilities.UtilityFunctions;
 
+import static io.ebean.Expr.like;
+
 /**
  * A controller class for handing destination actions..
  */
@@ -1154,18 +1156,33 @@ public class DestinationController extends Controller {
      * @param name the name of the trip to match
      * @return the list of trips that match the name
      */
-    public Result getDestinationsByName(Http.Request request, String name) {
+    public Result getDestinationsByName(Http.Request request, String name, int offset, int quantity) {
+        int MAX_QUANTITY = 1000;
         User user = User.getCurrentUser(request);
-        if (user == null) { return redirect(routes.UserController.userindex()); }
-        List<Destination> destinations = DestinationAccessor.getDestinationsWithKeyword(name);
-
-        if(destinations != null && destinations.size() > 0) {
-            return ok(Json.toJson(destinations));
-        } else {
-            return ok(Json.toJson(new ArrayList<>()));
+        if (user == null) {
+            return redirect(routes.UserController.userindex());
         }
 
+        if (MAX_QUANTITY < quantity) {
+            String errorStr = "query parameter 'quantity' exceeded maximum " +
+                    "allowed int: " + MAX_QUANTITY;
 
+            ObjectNode jsonError = (new ObjectMapper()).createObjectNode();
+            jsonError.put("error", errorStr);
+            jsonError.put("quantityLimit", MAX_QUANTITY);
+            return badRequest(Json.toJson(jsonError));
+        }
+
+        List<Destination> destinations = DestinationAccessor
+                .getDestinationsWithKeyword(name, quantity ,offset);
+        System.out.println(destinations);
+
+        ObjectNode result = (new ObjectMapper()).createObjectNode();
+        result.set("destinations", Json.toJson(destinations));
+        result.put("totalCountPublic", Destination.find().query().where().or(like("destName", "%" + name + "%"),
+                like("destName", "%" + name.toUpperCase() + "%")).findCount());
+
+        return ok(Json.toJson(result));
     }
 }
 

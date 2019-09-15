@@ -86,8 +86,8 @@ public class DestinationAccessor {
      * Return destinations that matches this keyword.
      * Private destinations can share the same name so list size can be more than one
      */
-    public static List<Destination> getDestinationsWithKeyword(String name) {
-        return Destination.find().query().where().or(like("destName", "%" + name + "%"), like("destName", "%" + name.toUpperCase() + "%")).findList();
+    public static List<Destination> getDestinationsWithKeyword(String name,int quantity, int offset) {
+        return Destination.find().query().where().or(like("destName", "%" + name + "%"), like("destName", "%" + name.toUpperCase() + "%")).setFirstRow(offset).setMaxRows(quantity).findList();
     }
 
     public static List<Destination> getAllDestinations() {

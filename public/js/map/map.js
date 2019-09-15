@@ -1404,20 +1404,29 @@ $("#formBody").submit(function(e) {
     e.preventDefault();
 });
 
-$("#destSearchInput").keyup(function()
+$("#destSearchInput").keyup(function ()
 {
+    searchByKeyword(1)
+});
+
+function searchByKeyword(currentPageNum) {
+    const offset = (currentPageNum - 1) * 20;
     let searchInput = document.getElementById("destSearchInput").value;
     if(searchInput != "") {
+        let data = {offset: offset,
+        quantity: 20};
         $.ajax({
             url: '/users/destinations/matching/' + searchInput,
+            data: data,
             method: "GET",
             success: function (res) {
                 let displayedIds = [];
-                for (let j=0; j < res.length; j++) {
-                    displayedIds.push("destButton" + res[j].destid);
+                for (let j=0; j < res.destinations.length; j++) {
+                    if(res.destinations[j].isPublic === false) {
+                        displayedIds.push("destButton" + res.destinations[j].destid);
+                    }
                 }
                 let privateListChildren = document.getElementById("privateDestinationList").children;
-                let publicListChildren = document.getElementById("publicDestinationList").children;
 
                 for(let i=0; i < privateListChildren.length; i++) {
                     if (!displayedIds.includes(privateListChildren[i].id)) {
@@ -1426,27 +1435,18 @@ $("#destSearchInput").keyup(function()
                         privateListChildren[i].setAttribute("style", "display: block;");
                     }
                 }
+                getDestinationsFromApiResponse(res, currentPageNum, searchInput);
 
-                for(let i=0; i < publicListChildren.length; i++) {
-                    if (!displayedIds.includes(publicListChildren[i].id)) {
-                        publicListChildren[i].setAttribute("style", "display: none;");
-                    } else {
-                        publicListChildren[i].setAttribute("style", "display: block;");
-                    }
-                }
             }
         });
     } else {
+        searchDestinations(1, 20, null);
         let privateListChildren = document.getElementById("privateDestinationList").children;
-        let publicListChildren = document.getElementById("publicDestinationList").children;
         for(let i=0; i < privateListChildren.length; i++) {
             privateListChildren[i].setAttribute("style", "display: block;");
         }
-        for(let i=0; i < publicListChildren.length; i++) {
-            publicListChildren[i].setAttribute("style", "display: block;");
-        }
     }
-});
+}
 
 
 
@@ -1533,15 +1533,14 @@ function getPublicDestinations(pageNum, quantity){
         data: data,
         contentType: 'application/json',
         success: (destData) => {
-            let count = destData["total"];
+            let count = destData.totalCountPublic;
             let destinationData = document.getElementById("publicDestinationList");
             if (pageNum > 1) {
                 while (destinationData.childNodes.length > 0) {
                     destinationData.removeChild(destinationData.childNodes[0]);
                 }
             }
-            for (let i=0; i < destData.length; i++) {
-                let destination= destData[i];
+            for (let destination of destData.destinations) {
                 let destElement = document.createElement('a');
                 destElement.setAttribute("onClick", `displayDestination(${destination.destid}, ${destination.latitude}, ${destination.longitude})`);
                 destElement.setAttribute('class', "list-group-item list-group-item-action");
@@ -1549,34 +1548,34 @@ function getPublicDestinations(pageNum, quantity){
                 destElement.innerText = destination.destName + " | " + destination.destType + " | " + destination.country
                 destinationData.appendChild(destElement);
             }
-            addPagination(count, pageNum);
+            addPagination(count, pageNum, null);
         }, error: function (error) {
             console.log(error);
         }
     })
 }
 
-function addPagination(count, pageNum) {
+function addPagination(count, pageNum, search) {
     let numOfPages = [];
     let pageNumbers = [];
     const pagination = document.createElement("ul");
     pagination.classList.add("pagination");
-    for (let i=0; i < count; i+=20) {
-        numOfPages.push((i/20)+1);
+    for (let i = 0; i < count; i += 20) {
+        numOfPages.push((i / 20) + 1);
     }
     if (numOfPages.length > 10) {
         if (pageNum > 5) {
-            if (numOfPages.length >= pageNum+5) {
-                pageNumbers = [pageNum-3,pageNum-2, pageNum-1, pageNum, pageNum+1, pageNum+2, pageNum+3, pageNum+4];
+            if (numOfPages.length >= pageNum + 5) {
+                pageNumbers = [pageNum - 3, pageNum - 2, pageNum - 1, pageNum, pageNum + 1, pageNum + 2, pageNum + 3, pageNum + 4];
             } else {
-                let lastPage = numOfPages.length-0;
+                let lastPage = numOfPages.length - 0;
                 pageNumbers = []
-                for (let j=lastPage-7; (j<lastPage+1 && j>0); j++) {
+                for (let j = lastPage - 7; (j < lastPage + 1 && j > 0); j++) {
                     pageNumbers.push(j);
                 }
             }
         } else {
-            for (let k=0; k<10; k++) {
+            for (let k = 0; k < 10; k++) {
                 pageNumbers.push(numOfPages[k]);
             }
         }
@@ -1587,19 +1586,29 @@ function addPagination(count, pageNum) {
     let pageButton = document.createElement("a");
     let currentPageNum = 1;
     pageButton.innerText = "First";
-    pageButton.setAttribute("onClick", `searchDestinations(${currentPageNum})`);
+    if (search == null) {
+        pageButton.setAttribute("onClick", `searchDestinations(${currentPageNum})`);
+    } else {
+        pageButton.setAttribute("onClick", `searchByKeyword("${currentPageNum})`);
+
+    }
     item.appendChild(pageButton);
     pagination.appendChild(item);
 
     item = document.createElement("li");
     pageButton = document.createElement("a");
-    if (pageNum<2) {
+    if (pageNum < 2) {
         currentPageNum = 1;
     } else {
-        currentPageNum = pageNum-1;
+        currentPageNum = pageNum - 1;
     }
     pageButton.innerText = "<";
-    pageButton.setAttribute("onClick", `searchDestinations(${currentPageNum})`);
+    if (search == null) {
+        pageButton.setAttribute("onClick", `searchDestinations(${currentPageNum})`);
+    } else {
+        pageButton.setAttribute("onClick", `searchByKeyword(${currentPageNum})`);
+
+    }
     item.appendChild(pageButton);
     pagination.appendChild(item);
     for (let i=0; i < pageNumbers.length; i++) {
@@ -1608,9 +1617,14 @@ function addPagination(count, pageNum) {
         const currentPageNum = pageNumbers[i];
         pageButton.innerText = pageNumbers[i];
         if (currentPageNum==pageNum) {
-            pageButton.classList.add("active");
+            item.classList.add("active");
         }
-        pageButton.setAttribute("onClick", `searchDestinations(${currentPageNum})`);
+        if (search == null) {
+            pageButton.setAttribute("onClick", `searchDestinations(${currentPageNum})`);
+        } else {
+            pageButton.setAttribute("onClick", `searchByKeyword(${currentPageNum})`);
+
+        }
         item.appendChild(pageButton);
         pagination.appendChild(item);
     }
@@ -1622,7 +1636,12 @@ function addPagination(count, pageNum) {
         currentPageNum = pageNum+1;
     }
     pageButton.innerText = ">";
-    pageButton.setAttribute("onClick", `searchDestinations(${currentPageNum})`);
+    if (search == null) {
+        pageButton.setAttribute("onClick", `searchDestinations(${currentPageNum})`);
+    } else {
+        pageButton.setAttribute("onClick", `searchByKeyword(${currentPageNum})`);
+
+    }
     item.appendChild(pageButton);
     pagination.appendChild(item);
     document.getElementById("publicDestinationList").appendChild(pagination);
@@ -1631,7 +1650,12 @@ function addPagination(count, pageNum) {
     pageButton = document.createElement("a");
     currentPageNum = numOfPages.length;
     pageButton.innerText = "Last";
-    pageButton.setAttribute("onClick", `searchDestinations(${currentPageNum})`);
+    if (search == null) {
+        pageButton.setAttribute("onClick", `searchDestinations(${currentPageNum})`);
+    } else {
+        pageButton.setAttribute("onClick", `searchByKeyword(${currentPageNum})`);
+
+    }
     item.appendChild(pageButton);
     pagination.appendChild(item);
 }
@@ -1653,7 +1677,7 @@ function searchDestinations(pageNum) {
                 data: data,
                 success: function (data) {
                     // console.log(data);
-                    getDestinationsFromApiResponse(data, pageNum);
+                    getDestinationsFromApiResponse(data, pageNum, null);
                 }
             });
         },
@@ -1661,13 +1685,13 @@ function searchDestinations(pageNum) {
 
 }
 
-function getDestinationsFromApiResponse(destData, pageNum) {
-    let count = destData["total"];
+function getDestinationsFromApiResponse(destData, pageNum, search) {
+    let count = destData.totalCountPublic;
     let destinationData = document.getElementById("publicDestinationList");
     while (destinationData.childNodes.length > 0) {
         destinationData.removeChild(destinationData.childNodes[0]);
     }
-    for (let destination of destData) {
+    for (let destination of destData.destinations) {
         let destElement = document.createElement('a');
         destElement.setAttribute("onClick", `displayDestination(${destination.destid}, ${destination.latitude}, ${destination.longitude})`);
         destElement.setAttribute('class', "list-group-item list-group-item-action");
@@ -1675,14 +1699,14 @@ function getDestinationsFromApiResponse(destData, pageNum) {
         destElement.innerText = destination.destName + " | " + destination.destType + " | " + destination.country
         destinationData.appendChild(destElement);
     }
-    addPagination(count, pageNum);
+    addPagination(count, pageNum, search);
 }
 
 
 
 window.onload = function() {
     checkTripVisits();
-    getPublicDestinations(1, 20);
+    getPublicDestinations(1, 20, null);
 
 };
 

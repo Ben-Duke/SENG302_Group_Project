@@ -1,4 +1,6 @@
 let userCount;
+const usersPerPage = 10;
+let currentPageNum;
 
 initUsers();
 
@@ -6,10 +8,20 @@ async function initUsers() {
 
     let count = await getUserCount();
     userCount = count.count;
+    currentPageNum = 1;
 
-    getUserData(1, 10);
+    await renderPaginatedData();
+}
 
-    addPagination(10, 0);
+async function onPaginate(currentPage) {
+    currentPageNum = currentPage;
+    await renderPaginatedData();
+}
+
+async function renderPaginatedData() {
+    await renderUserData(currentPageNum, usersPerPage);
+
+    addPagination(userCount, currentPageNum);
 }
 
 async function getUserCount() {
@@ -28,11 +40,9 @@ async function getUserCount() {
             return res;
         }
     });
-
-
 }
 
-async function getUserData(pageNum, quantity) {
+async function renderUserData(pageNum, quantity) {
 
     const offset = (pageNum - 1) * quantity;
 
@@ -50,8 +60,9 @@ async function getUserData(pageNum, quantity) {
         contentType: 'application/json',
     });
 
-    displayData(users)
+    console.log(users);
 
+    await displayData(users);
 }
 
 // @for(user <- users) {
@@ -77,12 +88,13 @@ async function getUserData(pageNum, quantity) {
 //         }
 //     }
 
-function displayData(users) {
+async function displayData(users) {
     const tableBody = document.getElementById('user-table-body');
 
-    // remove existing rows
-    for (let child of tableBody.children) {
-        child.remove()
+    console.log(1.2, JSON.stringify(tableBody.childNodes));
+
+    while (tableBody.childNodes.length > 0) {
+        tableBody.childNodes[0].remove();
     }
 
     for (let user of users) {
@@ -125,15 +137,21 @@ function displayData(users) {
 }
 
 function addPagination(count, pageNum) {
-    numOfPages = [];
-    pageNumbers = [];
-    latitudes = -43.53;
-    longitudes = 172.620278;
-    places = '';
+    // remove existing pagination
+    let eventsPagination = document.getElementById("admin-user-pagination");
+    while (eventsPagination.childNodes.length > 0) {
+        eventsPagination.childNodes[0].remove();
+    }
+
+    console.log(count, pageNum);
+    let numOfPages = [];
+    let pageNumbers = [];
+    let places = '';
+    const maxPages = Math.ceil(count/usersPerPage);   // round up as there may be more total users than a multiple of 10
     const pagination = document.createElement("ul");
     pagination.classList.add("pagination");
-    for (let i = 0; i < count; i += 20) {
-        numOfPages.push((i / 20) + 1);
+    for (let i = 0; i < maxPages; i++) {
+        numOfPages.push(i + 1);
     }
 
     if (numOfPages.length > 10) {
@@ -159,7 +177,7 @@ function addPagination(count, pageNum) {
     pageButton = document.createElement("a");
     currentPageNum = 1;
     pageButton.innerText = "First";
-    pageButton.setAttribute("onClick", `searchEvents(${currentPageNum})`);
+    pageButton.setAttribute("onClick", `onPaginate(${1})`);
     item.appendChild(pageButton);
     pagination.appendChild(item);
 
@@ -171,18 +189,18 @@ function addPagination(count, pageNum) {
         currentPageNum = pageNum - 1;
     }
     pageButton.innerText = "<";
-    pageButton.setAttribute("onClick", `searchEvents(${currentPageNum})`);
+    pageButton.setAttribute("onClick", `onPaginate(${currentPageNum - 1})`);
     item.appendChild(pageButton);
     pagination.appendChild(item);
-    for (let i = 0; i < pageNumbers.length; i++) {
+    for (let i = 0; i < pageNumbers.length; i++  ) {
         let item = document.createElement("li");
         const pageButton = document.createElement("a");
         const currentPageNum = pageNumbers[i];
         pageButton.innerText = pageNumbers[i];
-        if (currentPageNum == pageNum) {
+        if (currentPageNum === pageNum) {
             pageButton.classList.add("active");
         }
-        pageButton.setAttribute("onClick", `searchEvents(${currentPageNum})`);
+        pageButton.setAttribute("onClick", `onPaginate(${pageNumbers[i]})`);
         item.appendChild(pageButton);
         pagination.appendChild(item);
     }
@@ -194,21 +212,16 @@ function addPagination(count, pageNum) {
         currentPageNum = pageNum + 1;
     }
     pageButton.innerText = ">";
-    pageButton.setAttribute("onClick", `searchEvents(${currentPageNum})`);
+    pageButton.setAttribute("onClick", `onPaginate(${currentPageNum + 1})`);
     item.appendChild(pageButton);
     pagination.appendChild(item);
-    document.getElementById("events-results").appendChild(pagination);
+    document.getElementById("admin-user-pagination").appendChild(pagination);
 
     item = document.createElement("li");
     pageButton = document.createElement("a");
-    currentPageNum = numOfPages.length;
-    // console.log(currentPageNum);
+
     pageButton.innerText = "Last";
-    pageButton.setAttribute("onClick", `searchEvents(${currentPageNum})`);
+    pageButton.setAttribute("onClick", `onPaginate(${maxPages})`);
     item.appendChild(pageButton);
     pagination.appendChild(item);
-    let eventsPagination = document.getElementById("eventsPage");
-    while (eventsPagination.childNodes.length > 0) {
-        eventsPagination.childNodes[0].remove();
-    }
 }

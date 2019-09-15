@@ -82,30 +82,6 @@
 
         </div>
 
-        <div class="col-md-6">
-            <h2>Trips
-                <a class="btn btn-default btn-outline btn-lg sharp" href="@routes.TripController.createtrip()"> <i class="glyphicon glyphicon-plane"></i> &nbsp; Create Trip</a>
-            </h2>
-            <form>
-                @if(user.getTripsSorted.isEmpty()) {
-                    <div class="well" style="height: 50px">
-                        <p>You don't have any trips yet.</p>
-                    </div>
-                }
-                <div class="list-group">
-                    @for(trip <- user.getTripsSorted) {
-                    <a href="@routes.TripController.displaytrip(trip.getTripid)" class="list-group-item list-group-item-action">
-                        @if(trip.getTripStart() != null){
-                        @trip.getTripName | Arrival date: @trip.getTripStart()
-                        } else{
-                        @trip.getTripName | No arrival dates
-                        }
-                    </a>
-                    }
-                </div>
-            </form>
-        </div>
-
         <!-- Modal to upload a new profile picture -->
         <div id="addProfilePhoto" class="modal fade" role="dialog">
             <div class="modal-dialog">

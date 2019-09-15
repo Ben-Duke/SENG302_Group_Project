@@ -109,7 +109,9 @@ public class TravelPartnerController {
         return new HashSet<>();
     }
 
-    public Result travellerTypePaginated(Http.Request request, int offset, int quantity, String travellerType){
+    public Result travellerTypePaginated(
+            Http.Request request, int offset, int quantity, String travellerType, String nationality){
+
         User user = User.getCurrentUser(request);
         if(user == null){
             return unauthorized();
@@ -118,7 +120,7 @@ public class TravelPartnerController {
             return badRequest();
         }
 
-        List<User> users = UserAccessor.getUsersByQuery(travellerType, offset,quantity);
+        List<User> users = UserAccessor.getUsersByQuery(travellerType, offset,quantity,nationality);
 
         for(User userTemp : users){
             System.out.println(userTemp.toString());

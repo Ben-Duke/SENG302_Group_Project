@@ -80,7 +80,7 @@ POST    /users/profile/update/natpass/delpass       controllers.ProfileControlle
 GET     /users/profile/search       controllers.TravelPartnerController.renderFilterPage(request: Request)
 
 #Get Users based on search params
-GET /users/profile/searchprofiles    controllers.TravelPartnerController.travellerTypePaginated(request: Request, offset: Integer, quantity: Integer, travellertype:String)
+GET /users/profile/searchprofiles    controllers.TravelPartnerController.travellerTypePaginated(request: Request, offset: Int ?= 0, quantity: Int ?= 10, travellertype:String ?= "", nationality:String ?= "")
 
 #Handles searching for travel partners
 POST    /users/profile/search       controllers.TravelPartnerController.searchByAttribute(request: Request)

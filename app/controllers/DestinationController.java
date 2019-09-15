@@ -293,7 +293,7 @@ public class DestinationController extends Controller {
             return errorForm;
         }
 
-        Destination newDestination = getDestinationFromRequest(request, user, destId);
+        Destination newDestination = getDestinationFromRequest(request);
 
         DestinationFactory destinationFactory = new DestinationFactory();
 

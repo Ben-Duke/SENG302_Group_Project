@@ -161,7 +161,6 @@ public class TagControllerTest extends BaseTestWithApplicationAndDatabase {
     // Add a tag to a user's photo
     public void addPhotoTag() {
         UserPhoto photo1 = UserPhotoAccessor.getUserPhotoById(1);
-        //System.out.println(Media.find.all().get(0).getMediaId());
         Set<Tag> tags =  photo1.getTags();
         int numTags = tags.size();
 

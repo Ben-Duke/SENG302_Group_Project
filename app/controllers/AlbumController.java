@@ -453,12 +453,10 @@ public class AlbumController extends Controller {
         }
         Media mediaItem = MediaAccessor.getMediaById(mediaId);
         if (mediaItem == null) {
-            System.out.println("no existo media");
             return badRequest("Media does not exist");
         }
         List<Album> mediaItemAlbums = mediaItem.getAlbums();
         if( mediaItemAlbums == null || mediaItemAlbums.size() < 1) {
-            System.out.println("no existo album");
             return badRequest("Album does not exist");
         }
         ObjectNode data =  (ObjectNode) Json.toJson(mediaItemAlbums.get(0));

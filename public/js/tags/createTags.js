@@ -192,7 +192,7 @@ function addTagLabel(name) {
         removeTagFromItem(name);
     };
     newText.onclick = function() {
-        window.location.href = '/tags/display/' + name.toLowerCase();
+        window.location.href = '/tags/display/' + encodeURIComponent(name.toLowerCase());
     };
     newRemove.appendChild(newIcon);
     newTag.appendChild(newText);

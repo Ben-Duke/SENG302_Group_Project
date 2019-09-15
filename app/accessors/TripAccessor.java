@@ -26,6 +26,11 @@ public class TripAccessor {
         return Trip.find().query().where().eq("user", user).like("trip_name", "%" + name + "%").findList();
     }
 
+    public static Integer getTotalUserTripCount(User user) {
+        return Trip.find().query().where().eq("user", user) .findCount();
+
+    }
+
 
     /**
      * Gets a paginated List of a users trips, with an offset and quantity to fetch.

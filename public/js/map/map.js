@@ -1560,26 +1560,42 @@ $("#submit").click(function(e){
 window.onload = async function() {
     checkTripVisits();
     tripPageNum = 1;
+    let tripJSON = await getPaginatedTripResults(tripPageNum, 5);
+    let trips  = tripJSON.trips;
+    let tripCount = tripJSON.tripCount;
+    setTripPaginationLinks(tripCount, 5);
+
 };
 
 
-$("#next-trip").click(async function() {
-  tripPageNum += 1;
-  console.log(tripPageNum);
-  let newlyDisplayedTrips = await getPaginatedTripResults(tripPageNum, 3);
-  displayTripTablePage(newlyDisplayedTrips);
-});
+async function nextTripPage() {
+    document.getElementById("trip-pagination-link-" + tripPageNum).removeAttribute("class");
+    tripPageNum += 1;
+    document.getElementById("trip-pagination-link-" + tripPageNum).setAttribute("class", "active");
+    let newlyDisplayedTrips = await getPaginatedTripResults(tripPageNum, 5);
+    displayTripTablePage(newlyDisplayedTrips.trips);
+}
 
-$("#previous-trip").click(async function() {
-  if(tripPageNum > 1) {
+async function previousTripPage() {
+    document.getElementById("trip-pagination-link-" + tripPageNum).removeAttribute("class");
+    if(tripPageNum > 1) {
     tripPageNum -= 1;
-  } else {
+    } else {
     tripPageNum = 1;
-  }
-  console.log(tripPageNum);
-  let newlyDisplayedTrips = await getPaginatedTripResults(tripPageNum, 3);
-  displayTripTablePage(newlyDisplayedTrips);
-});
+    }
+    document.getElementById("trip-pagination-link-" + tripPageNum).setAttribute("class", "active");
+    let newlyDisplayedTrips = await getPaginatedTripResults(tripPageNum, 5);
+    displayTripTablePage(newlyDisplayedTrips.trips);
+}
+
+async function jumpToTripPage(pageNumber) {
+    document.getElementById("trip-pagination-link-" + tripPageNum).removeAttribute("class");
+    tripPageNum = pageNumber;
+    document.getElementById("trip-pagination-link-" + tripPageNum).setAttribute("class", "active");
+    let newlyDisplayedTrips = await getPaginatedTripResults(tripPageNum, 5);
+    console.log(newlyDisplayedTrips);
+    displayTripTablePage(newlyDisplayedTrips.trips);
+}
 
 
 
@@ -1587,8 +1603,46 @@ $("#previous-trip").click(async function() {
  * Change the HTML elements to display a new page of trips given in the trips parameter.
  */
 function displayTripTablePage(trips) {
+    let tripListGroup = document.getElementById("trip-list-group");
+    while (tripListGroup.firstChild) {
+        tripListGroup.removeChild(tripListGroup.firstChild);
+    }
 
+
+    for(let i = 0; i < trips.length; i++) {
+        let trip = trips[i];
+        let tripListItem = document.createElement("a");
+        tripListItem.setAttribute("id", "Button" + trip.tripid);
+        tripListItem.setAttribute("class", "list-group-item list-group-item-action");
+        tripListItem.setAttribute("onclick", "displayTrip(" + trip.tripid + "," + trip.visits[0].lat + "," + trip.visits[0].long + ")");
+        if(trip.startDate != null) {
+            tripListItem.innerText = trip.tripName + " | Arrival date: " + trip.startDate;
+        } else {
+            tripListItem.innerText = trip.tripName + " | No arrival dates";
+        }
+
+        let formCheckDiv = document.createElement("div");
+        formCheckDiv.setAttribute("class", "form-check");
+        let tripCheckBox = document.createElement('input');
+        tripCheckBox.setAttribute('type', 'checkbox');
+        tripCheckBox.setAttribute('id',"Toggle"+trip.tripid);
+        tripCheckBox.setAttribute('checked', 'true');
+        tripCheckBox.setAttribute('onchange', 'toggleTrips(' + trip.tripid + ')');
+        tripCheckBox.setAttribute('class', 'form-check-input map-check');
+        tripCheckBox.setAttribute('autocomplete', 'off');
+        let mapLabel = document.createElement('label');
+        mapLabel.setAttribute('class', 'form-check-label');
+        mapLabel.setAttribute('for', "toggleMap");
+        mapLabel.innerText = 'Show on map';
+        formCheckDiv.appendChild(tripCheckBox);
+        formCheckDiv.appendChild(mapLabel);
+
+        tripListItem.appendChild(formCheckDiv);
+
+        tripListGroup.appendChild(tripListItem);
+    }
 }
+
 
 /**
  * Function used to get a paginated list of trips based on the quantity and page number
@@ -1596,13 +1650,58 @@ function displayTripTablePage(trips) {
 async function getPaginatedTripResults(pageNum, quantity) {
     const offset = (pageNum - 1) * quantity;
 
-    trips = await $.ajax({
+    let trips = await $.ajax({
         type: 'GET',
         url: '/users/trips/paginated/' + offset + '/' + quantity,
         contentType: 'application/json',
     });
 
-    return trips.trips;
+    return trips;
 }
+
+function setTripPaginationLinks(tripCount, perPage) {
+    let paginationList = document.getElementById("trip-pagination-list");
+    let previousArrowLink = document.createElement("li");
+    let previousArrow = document.createElement("a");
+    previousArrow.setAttribute("id", "previous-trip");
+    previousArrow.setAttribute("onclick","previousTripPage()");
+    previousArrow.innerHTML = "&laquo";
+    previousArrowLink.appendChild(previousArrow);
+    let nextArrowLink = document.createElement("li");
+    let nextArrow = document.createElement("a");
+    nextArrow.setAttribute("id", "next-trip");
+    nextArrow.setAttribute("onclick","nextTripPage()");
+    nextArrow.innerHTML = "&raquo";
+    nextArrowLink.appendChild(nextArrow);
+    paginationList.appendChild(previousArrowLink);
+
+    let numPages = Math.ceil(tripCount/perPage);
+    let lastPageCount = tripCount % perPage;
+    if (lastPageCount == 0) {
+        lastPageCount = perPage;
+    }
+
+    for (let i=1; i < numPages+1; i++) {
+        let pageNumber = document.createElement("li");
+        pageNumber.setAttribute("id", "trip-pagination-link-" + i);
+        if (i==1) {
+            pageNumber.setAttribute("class", "active");
+        }
+        let pageNumberLink = document.createElement("a");
+        pageNumberLink.innerText = i.toString();
+
+        pageNumberLink.setAttribute("onclick", "jumpToTripPage(" + i + ")");
+        pageNumber.appendChild(pageNumberLink);
+        paginationList.appendChild(pageNumber);
+    }
+
+
+    paginationList.appendChild(nextArrowLink);
+
+
+
+
+}
+
 
 

@@ -47,7 +47,7 @@ public class HomeController {
         // Clear the command stack
         user.getCommandManager().setAllowedPage(CommandPage.MAP);
 
-        List<Trip> trips = TripAccessor.getPaginatedTrips(0,3, user);
+        List<Trip> trips = TripAccessor.getPaginatedTrips(0,5, user);
 
         List<Destination> allDestinations = DestinationAccessor.getAllDestinations();
 

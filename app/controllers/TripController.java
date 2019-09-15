@@ -794,8 +794,31 @@ public class TripController extends Controller {
             return redirect(routes.UserController.userindex());
         }
         List<Trip> trips = TripAccessor.getPaginatedTrips(offset, quantity, user);
-        ObjectNode result = (new ObjectMapper()).createObjectNode();
-        result.set("trips", Json.toJson(trips));
+        ObjectMapper objectMapper = new ObjectMapper();
+        ObjectNode result = objectMapper.createObjectNode();
+        ArrayNode tripsListNode = objectMapper.createArrayNode();
+        for (Trip trip : trips) {
+            ObjectNode tripNode = objectMapper.createObjectNode();
+            ArrayNode visitNodes = objectMapper.createArrayNode();
+
+            for (Visit visit : trip.getOrderedVisits()) {
+                ObjectNode visitNode = objectMapper.createObjectNode();
+
+                Destination destination = visit.getDestination();
+
+                visitNode.put("lat", destination.getLatitude());
+                visitNode.put("lng", destination.getLongitude());
+
+                visitNodes.add(visitNode);
+            }
+            tripNode.put("tripid", trip.getTripid());
+            tripNode.put("tripName", trip.getTripName());
+            tripNode.put("startDate", trip.getTripStart());
+            tripNode.put("visits", visitNodes);
+            tripsListNode.add(tripNode);
+        }
+        result.put("trips", tripsListNode);
+        result.put("tripCount", TripAccessor.getTotalUserTripCount(user));
         return ok(Json.toJson(result));
     }
 }

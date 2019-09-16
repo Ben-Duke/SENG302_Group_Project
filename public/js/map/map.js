@@ -1593,7 +1593,6 @@ async function jumpToTripPage(pageNumber) {
     tripPageNum = pageNumber;
     document.getElementById("trip-pagination-link-" + tripPageNum).setAttribute("class", "active");
     let newlyDisplayedTrips = await getPaginatedTripResults(tripPageNum, 5);
-    console.log(newlyDisplayedTrips);
     displayTripTablePage(newlyDisplayedTrips.trips);
 }
 
@@ -1609,9 +1608,11 @@ function displayTripTablePage(trips) {
     }
 
     let tripNodes = document.getElementsByClassName("singleTrip");
-    for (let i = 0; i < tripNodes.length; i++) {
-        tripNodes[i].parentNode.removeChild(tripNodes[i]);
+    while (tripNodes[0]) {
+        document.getElementById("singleTripContainer").removeChild(tripNodes[0]);
     }
+
+    document.getElementById("tag-container").setAttribute("style", "visibility: hidden;");
 
 
     for(let i = 0; i < trips.length; i++) {
@@ -1660,8 +1661,23 @@ function displayTripTablePage(trips) {
 
 
         //Handle Table
-        let newTable = createTripTable(trip);
+        let newTable = updateTripPageTable(trip);
         outerTripDiv.appendChild(newTable);
+
+
+        for (let i in tripRoutes) {
+            tripRoutes[i].setMap(null);
+        }
+        tripRoutes = [];
+        initTripRoutes();
+
+
+        $('tbody').sortable({
+            axis: 'y',
+            update: function (event, ui) {
+                swapVisitOnSort();
+            }
+        });
 
         //Handle delete button
         let deleteButton = document.createElement("button");
@@ -1724,7 +1740,58 @@ function updateTripPageTable(data) {
 
     for (let i = 0; i < visits.length; i++) {
         let visit = visits[i];
+        let newRow = document.createElement('tr');
+        newRow.setAttribute('id', visit.visitId);
+        newRow.setAttribute('class', "ui-sortable-handle");
+        let tableHeader = document.createElement('th');
+        tableHeader.setAttribute('scope', 'row');
+        tableHeader.innerText = visit.visitName;
+        let tableDataDestType = document.createElement('td');
+        tableDataDestType.innerText = visit.destType;
+        let tableDataArrival = document.createElement('td');
+        let arrivalDateInput = document.createElement('input');
+        arrivalDateInput.setAttribute('type', 'date');
+        arrivalDateInput.setAttribute('class', 'tripDateInput arrivalDate');
+        arrivalDateInput.setAttribute('onblur', "updateVisitDate(" + visit.visitId+")");
+        arrivalDateInput.setAttribute('id', 'arrival_'+visit.visitId);
+        if(visit.arrivalDate != null) {
+            arrivalDateInput.setAttribute('value', visit.arrivalDate);
+        }
+        tableDataArrival.appendChild(arrivalDateInput);
+        let tableDataDeparture = document.createElement('td');
+        let departureDateInput = document.createElement('input');
+        departureDateInput.setAttribute('id', 'departure_'+visit.visitId);
+        departureDateInput.setAttribute('type', 'date');
+        departureDateInput.setAttribute('class', 'tripDateInput departureDate');
+        departureDateInput.setAttribute('onblur', "updateVisitDate(" + visit.visitId+")");
+        if(visit.departureDate != null) {
+            departureDateInput.setAttribute('value', visit.departureDate);
+        }
+        let deleteButton = document.createElement('td');
+        let deleteButtonText = document.createElement('a');
+        deleteButtonText.innerText = '❌';
+        deleteButtonText.setAttribute('style', 'deleteButton');
+        let urlForDelete = '/users/trips/edit/' + visit.visitId;//data.tripId;
+        deleteButtonText.setAttribute('onclick', 'sendDeleteVisitRequest(' + '"' + urlForDelete + '"' + ','
+            + visit.visitId + ')');
+        let errorMsg = document.createElement('td');
+        errorMsg.colspan = '4';
+        errorMsg.classList.add('text-center');
+        errorMsg.id = 'dateError_' + visit.visitId;
+        errorMsg.style.color = 'red';
+        errorMsg.style.display = 'none';
+        errorMsg.innerText = 'Arrival date must be before departure date';
+        deleteButton.appendChild(deleteButtonText);
+        tableDataDeparture.appendChild(departureDateInput);
+        newRow.appendChild(tableHeader);
+        newRow.appendChild(tableDataDestType);
+        newRow.appendChild(tableDataArrival);
+        newRow.appendChild(tableDataDeparture);
+        newRow.appendChild(deleteButton);
+        tableBody.appendChild(newRow);
     }
+
+    newTable.appendChild(tableBody);
 
 
     return newTable;

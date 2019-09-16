@@ -806,8 +806,14 @@ public class TripController extends Controller {
 
                 Destination destination = visit.getDestination();
 
+                visitNode.put("visitId", visit.getVisitid());
+                visitNode.put("visitName", visit.getVisitName());
+                visitNode.put("destType", destination.getDestType());
+                visitNode.put("lat", destination.getLatitude());
                 visitNode.put("lat", destination.getLatitude());
                 visitNode.put("lng", destination.getLongitude());
+                visitNode.put("arrivalDate", visit.getArrival());
+                visitNode.put("departureDate", visit.getDeparture());
 
                 visitNodes.add(visitNode);
             }

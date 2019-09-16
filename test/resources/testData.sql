@@ -287,6 +287,45 @@ INSERT INTO `user` (`userid`, `email`, `password_hash`, `date_of_birth`, `gender
  '2006-06-09', 'Male', 'John', 'Smith', 0, 0, '2019-07-26 03:59:17');
 
 
+
+INSERT INTO `user` (`email`, `password_hash`, `date_of_birth`, `gender`,`f_name`, `l_name`, `undo_redo_error`, `is_admin`, `creation_date`) VALUES
+('tgerardot0@netlog.com', '', '2008-11-04', 'Female', 'Tammi', 'Gerardot', 0, 0, '2019-01-01 00:00:00'),
+('pmackelworth1@is.gd', '', '1982-11-08', 'Female', 'Peggie', 'Mackelworth', 0, 0, '2019-01-01 00:00:00'),
+('bskermer2@prlog.org', '', '1996-03-12', 'Female', 'Betteann', 'Skermer', 0, 0, '2019-01-01 00:00:00'),
+('dheinz3@arizona.edu', '', '1983-08-07', 'Male', 'Dalt', 'Heinz', 0, 0, '2019-01-01 00:00:00'),
+('nborne4@over-blog.com', '', '1972-10-09', 'Male', 'Neils', 'Borne', 0, 0, '2019-01-01 00:00:00'),
+('dhamber5@mediafire.com', '', '2005-06-07', 'Male', 'Derk', 'Hamber', 0, 0, '2019-01-01 00:00:00'),
+('mblench6@wix.com', '', '1990-08-15', 'Female', 'Melamie', 'Blench', 0, 0, '2019-01-01 00:00:00'),
+('lkennelly7@thetimes.co.uk', '', '2005-04-14', 'Male', 'Levon', 'Kennelly', 0, 0, '2019-01-01 00:00:00'),
+('aborzoni8@people.com.cn', '', '1991-05-11', 'Female', 'Annetta', 'Borzoni', 0, 0, '2019-01-01 00:00:00'),
+('cjovicevic9@cam.ac.uk', '', '2012-10-31', 'Female', 'Carita', 'Jovicevic', 0, 0, '2019-01-01 00:00:00'),
+('ebougourda@umn.edu', '', '2007-01-15', 'Male', 'Ephrem', 'Bougourd', 0, 0, '2019-01-01 00:00:00'),
+('nmcglaudb@blog.com', '', '1983-06-14', 'Female', 'Nonnah', 'McGlaud', 0, 0, '2019-01-01 00:00:00'),
+('cricioppoc@un.org', '', '1983-05-20', 'Male', 'Colas', 'Ricioppo', 0, 0, '2019-01-01 00:00:00'),
+('apickeringd@ft.com', '', '1974-04-17', 'Female', 'Alisun', 'Pickering', 0, 0, '2019-01-01 00:00:00'),
+('aetchese@com.com', '', '2018-12-25', 'Male', 'Algernon', 'Etches', 0, 0, '2019-01-01 00:00:00'),
+('nbessellf@cbc.ca', '', '1997-09-10', 'Male', 'Nicolas', 'Bessell', 0, 0, '2019-01-01 00:00:00'),
+('mrudgerdg@gnu.org', '', '2013-08-08', 'Female', 'Maris', 'Rudgerd', 0, 0, '2019-01-01 00:00:00'),
+('mbarshamh@ebay.com', '', '1975-04-07', 'Male', 'Morgen', 'Barsham', 0, 0, '2019-01-01 00:00:00'),
+('cstotharti@abc.net.au', '', '1989-08-31', 'Female', 'Clemence', 'Stothart', 0, 0, '2019-01-01 00:00:00'),
+('dromansj@stumbleupon.com', '', '2004-02-19', 'Female', 'Dulsea', 'Romans', 0, 0, '2019-01-01 00:00:00'),
+('sluetchfordk@techcrunch.com', '', '1970-12-11', 'Male', 'Scarface', 'Luetchford', 0, 0, '2019-01-01 00:00:00'),
+('dhayhoel@sciencedirect.com', '', '1982-05-12', 'Female', 'Deb', 'Hayhoe', 0, 0, '2019-01-01 00:00:00'),
+('mhunem@rakuten.co.jp', '', '2011-11-14', 'Female', 'Mona', 'Hune', 0, 0, '2019-01-01 00:00:00'),
+('aeskrickn@amazon.com', '', '2010-05-05', 'Male', 'Aube', 'Eskrick', 0, 0, '2019-01-01 00:00:00'),
+('glabatieo@over-blog.com', '', '2011-04-14', 'Male', 'Gram', 'La Batie', 0, 0, '2019-01-01 00:00:00'),
+('acurnokp@facebook.com', '', '1982-01-01', 'Female', 'Austina', 'Curnok', 0, 0, '2019-01-01 00:00:00'),
+('wlandisq@acquirethisname.com', '', '2009-05-24', 'Male', 'Walt', 'Landis', 0, 0, '2019-01-01 00:00:00'),
+('slightmanr@engadget.com', '', '2010-10-28', 'Male', 'Saunder', 'Lightman', 0, 0, '2019-01-01 00:00:00'),
+('hlowerys@dedecms.com', '', '1988-08-18', 'Female', 'Hermina', 'Lowery', 0, 0, '2019-01-01 00:00:00'),
+('eweblint@ucsd.edu', '', '1983-08-31', 'Female', 'Eilis', 'Weblin', 0, 0, '2019-01-01 00:00:00'),
+('lbastableu@free.fr', '', '2005-07-25', 'Female', 'Liz', 'Bastable', 0, 0, '2019-01-01 00:00:00'),
+('tthewlessv@free.fr', '', '2004-07-10', 'Female', 'Teriann', 'Thewless', 0, 0, '2019-01-01 00:00:00'),
+('mburdenw@csmonitor.com', '', '1989-01-01', 'Female', 'Mallissa', 'Burden', 0, 0, '2019-01-01 00:00:00'),
+('iattewellx@sphinn.com', '', '2018-05-21', 'Female', 'Ilene', 'Attewell', 0, 0, '2019-01-01 00:00:00'),
+('smaroy@google.com.hk', '', '1987-02-17', 'Female', 'Sabina', 'Maro', 0, 0, '2019-01-01 00:00:00'),
+('dkerswillz@businesswire.com', '', '1993-02-07', 'Female', 'Dehlia', 'Kerswill', 0, 0, '2019-01-01 00:00:00'),
+('kkinnier10@twitter.com', '', '1972-01-25', 'Female', 'Kaela', 'Kinnier', 0, 0, '2019-01-01 00:00:00');
 -- Admin
 INSERT INTO `admin` (`user_id`, `user_id_to_edit`, `is_default`) VALUES
 (1, NULL, 1);

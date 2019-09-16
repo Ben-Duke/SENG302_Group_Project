@@ -1,5 +1,6 @@
 package controllers;
 
+import com.sun.javafx.binding.SelectBinding;
 import models.Nationality;
 import models.Passport;
 import models.TravellerType;
@@ -14,6 +15,7 @@ import play.db.Databases;
 import play.db.evolutions.Evolution;
 import play.db.evolutions.Evolutions;
 import play.inject.guice.GuiceApplicationBuilder;
+import play.libs.Json;
 import play.mvc.Http;
 import play.mvc.Result;
 import play.test.Helpers;
@@ -28,10 +30,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
-import static play.mvc.Http.Status.OK;
-import static play.mvc.Http.Status.SEE_OTHER;
-import static play.mvc.Http.Status.UNAUTHORIZED;
+import static play.mvc.Http.Status.*;
 import static play.test.Helpers.GET;
+import static play.test.Helpers.contentAsString;
 import static play.test.Helpers.route;
 
 
@@ -77,6 +78,62 @@ public class TravelPartnerControllerTest extends BaseTestWithApplicationAndDatab
         user2.getPassport().add(passport3);
         user2.save();
     }
+    @Test
+    public void testTravellerTypePaginatedDefault(){
+
+        super.populateDatabase();
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/profile/searchprofiles?").session("connected", "2");
+        Result result = route(app, request);
+        int jsonSize = Json.parse(contentAsString(result)).size();
+        assertEquals(10, jsonSize );
+    }
+
+    @Test
+    public void testTravellerTypePaginatedNegativeQuantity(){
+
+        super.populateDatabase();
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/profile/searchprofiles?quantity=-1").session("connected", "2");
+        Result result = route(app, request);
+        int jsonSize = Json.parse(contentAsString(result)).size();
+        assertEquals(0, jsonSize );
+    }
+
+    @Test
+    public void testTravellerTypePaginatedNationality(){
+
+        super.populateDatabase();
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/profile/searchprofiles?nationality=Afghanistan").session("connected", "2");
+        Result result = route(app, request);
+        int jsonSize = Json.parse(contentAsString(result)).size();
+        assertEquals(1, jsonSize );
+    }
+
+    @Test
+    public void testTravellerTypePaginatedTooManyRequested(){
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/profile/searchprofiles?quantity=1001").session("connected", "2");
+        Result result = route(app, request);
+
+        assertEquals(BAD_REQUEST, result.status() );
+    }
+
+    @Test
+    public void testTravellerTypePaginatedNoUserLoggedIn(){
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/profile/searchprofiles").session("connected", null);
+        Result result = route(app, request);
+
+        assertEquals(UNAUTHORIZED, result.status() );
+    }
+
 
     /**
      * Unit test for rendering the search profile page

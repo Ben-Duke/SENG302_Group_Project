@@ -6,6 +6,7 @@ import io.ebean.ExpressionList;
 import io.ebean.Query;
 import models.*;
 
+import javax.jws.soap.SOAPBinding;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -137,11 +138,27 @@ public class UserAccessor {
                     new Throwable("Multiple profile photos."));
         }
     }
-    //Try one first then get the list
+
+    /**
+     * Sends a request to ebeans to get a list of users based on pass parameters
+     * @param travellerType a String which can be can be used to search the travellerType
+     * @param offset an integer of how many users to skip in returned users
+     * @param quantity an integer of how many users to be returned
+     * @param queryNationality a String which can be can be used to search the nationality
+     * @return a list of users returns empty if none are found
+     */
    public static List<User> getUsersByQuery(String travellerType, int offset, int quantity, String queryNationality){
         TravellerType type = null;
         Nationality nationality = null;
         List<List<Object>> equalsfields = new ArrayList<>();
+
+       if(quantity < 1) {
+           return new ArrayList<User>();
+       }
+
+       if(offset < 0) {
+           offset = 0;
+       }
 
        List<Object> queryValues = new ArrayList<>();
        if (! (travellerType == null)) {
@@ -171,12 +188,13 @@ public class UserAccessor {
                .select("userid")
                //Use this to get connected traveller types
                .fetch(TRAVELLER_TYPE_COLUMN_NAME,"*")
-               .where()
-               //Need the type id to get this to work, doesn't work with * currently
-               .eq((String) equalsfields.get(0).get(0),  equalsfields.get(0).get(1))
-                       .select("userid")
                        .fetch("nationality", "*")
-                       .where()
+               .where()
+
+               .eq((String) equalsfields.get(0).get(0),  equalsfields.get(0).get(1))
+
+
+                       .and()
                        .eq((String) equalsfields.get(1).get(0), equalsfields.get(1).get(1))
                .setFirstRow(offset).setMaxRows(quantity);
 

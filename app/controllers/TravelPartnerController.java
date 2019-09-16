@@ -110,12 +110,29 @@ public class TravelPartnerController {
         return new HashSet<>();
     }
 
+    /**
+     * This function returns a paginated list of users based on passed parameters
+     * @param request
+     * @param offset
+     * @param quantity
+     * @param travellerType
+     * @param nationality
+     * @return returns a Json response with any users that match the passed parameters
+     */
     public Result travellerTypePaginated(
             Http.Request request, int offset, int quantity, String travellerType, String nationality){
 
         User user = User.getCurrentUser(request);
         if(user == null){
-            return unauthorized();
+            return unauthorized("You need to be logged in to use this api");
+        }
+
+        if(quantity > 1000){
+            return badRequest("Limit is 1000 users per request");
+        }
+
+        if(quantity < 0){
+
         }
 
         List<User> users = UserAccessor.getUsersByQuery(travellerType, offset,quantity,nationality);

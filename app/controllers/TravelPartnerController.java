@@ -16,6 +16,7 @@ import utilities.UtilityFunctions;
 import views.html.users.travelpartner.searchprofile;
 
 import javax.inject.Inject;
+import javax.swing.text.html.Option;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -115,9 +116,6 @@ public class TravelPartnerController {
         User user = User.getCurrentUser(request);
         if(user == null){
             return unauthorized();
-        }
-        if(travellerType.equals("")){
-            return badRequest();
         }
 
         List<User> users = UserAccessor.getUsersByQuery(travellerType, offset,quantity,nationality);

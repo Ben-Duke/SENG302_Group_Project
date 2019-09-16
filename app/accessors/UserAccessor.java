@@ -140,47 +140,31 @@ public class UserAccessor {
     //Try one first then get the list
    public static List<User> getUsersByQuery(String travellerType, int offset, int quantity, String queryNationality){
         TravellerType type = null;
-        Nationality nationality = Nationality.find().query().where().eq("nationalityName", queryNationality).findOne();
-        List<List<String>> equalsfields = new ArrayList<>();
-        /*
-        for(int i = 0; i < QUERY_SIZE; i++){
-            List<String> queryValues = new ArrayList<>();
-            switch (i) {
-                //Traveller types
-                case 0:
-                    if (travellerType != "") {
-                        queryValues.add("travellerTypes");
-                        queryValues.add(travellerType);
-                    }
-                    break;
-                    //
-                case 1:
-                    if (travellerType != "") {
-                        queryValues.add("nationality");
-                        queryValues.add(travellerType);
-                    }
-                    break;
-            }
-            if(queryValues.isEmpty()) {
-                queryValues.add("1");
-                queryValues.add("1");
-            }
+        Nationality nationality = null;
+        List<List<Object>> equalsfields = new ArrayList<>();
 
-            equalsfields.add(queryValues);
-
-        }
-        */
-       List<String> queryValues = new ArrayList<>();
-       if (! travellerType.equals("")) {
+       List<Object> queryValues = new ArrayList<>();
+       if (! (travellerType == null)) {
            queryValues.add(TRAVELLER_TYPE_COLUMN_NAME);
            type = TravellerType.find().query().where().eq("travellerTypeName", travellerType).findOne();
-           equalsfields.add(queryValues);
+           queryValues.add(type);
        }
        else{
            queryValues.add("1");
            queryValues.add("1");
        }
-       System.out.println("Yeetus");
+       equalsfields.add(queryValues);
+       queryValues = new ArrayList<>();
+       if (! (nationality == null)) {
+           queryValues.add("nationality");
+           nationality = Nationality.find().query().where().eq("nationalityName", queryNationality).findOne();
+           queryValues.add(nationality);
+       }
+       else{
+           queryValues.add("1");
+           queryValues.add("1");
+       }
+       equalsfields.add(queryValues);
        Query<User> query = //Ebean.find(User.class)
                User.find().query()
 
@@ -189,11 +173,11 @@ public class UserAccessor {
                .fetch(TRAVELLER_TYPE_COLUMN_NAME,"*")
                .where()
                //Need the type id to get this to work, doesn't work with * currently
-               .eq("1",  "1")
+               .eq((String) equalsfields.get(0).get(0),  equalsfields.get(0).get(1))
                        .select("userid")
                        .fetch("nationality", "*")
                        .where()
-                       .eq("nationality", nationality)
+                       .eq((String) equalsfields.get(1).get(0), equalsfields.get(1).get(1))
                .setFirstRow(offset).setMaxRows(quantity);
 
        System.out.println("Query is "+query.toString());

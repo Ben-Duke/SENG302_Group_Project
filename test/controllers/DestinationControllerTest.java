@@ -1490,4 +1490,177 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
         assertEquals(OK, result.status());
     }
 
+    @Test
+    /**
+     * Checks the getPaginatedPublicDestinations method returns 200 status under
+     * normal conditions.
+     */
+    public void getPaginatedPublicDestinations_check_200_status() {
+        String urlFormat = "/users/destinations/getpublicpaginatedjson?offset=%d&quantity=%d";
+        String url = String.format(urlFormat, 0, 10);
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri(url)
+                .session("connected", "2");
+        Result result = route(app, request);
+        assertEquals(OK, result.status());
+    }
+
+    @Test
+    /**
+     * Checks a negative quantity for the getPaginatedPublicDestinations parameter
+     * results in zero destinations send in the json body.
+     */
+    public void getPaginatedPublicDestinations_negativeQuantity_checkZeroDestinations() {
+        String urlFormat = "/users/destinations/getpublicpaginatedjson?offset=%d&quantity=%d";
+        String url = String.format(urlFormat, 0, -1);
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri(url)
+                .session("connected", "2");
+        Result result = route(app, request);
+
+
+        JsonNode json = Json.parse(contentAsString(result));
+        JsonNode destinations = json.get("destinations");
+        assertEquals(0, destinations.size());
+    }
+
+    @Test
+    /**
+     * Checks a zero quantity for the getPaginatedPublicDestinations parameter
+     * results in zero destinations send in the json body.
+     */
+    public void getPaginatedPublicDestinations_zeroQuantity_checkZeroDestinations() {
+        String urlFormat = "/users/destinations/getpublicpaginatedjson?offset=%d&quantity=%d";
+        String url = String.format(urlFormat, 0, 0);
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri(url)
+                .session("connected", "2");
+        Result result = route(app, request);
+
+
+        JsonNode json = Json.parse(contentAsString(result));
+        JsonNode destinations = json.get("destinations");
+        assertEquals(0, destinations.size());
+    }
+
+    @Test
+    /**
+     * Checks a positive quantity argument is respected by the getPaginatedPublicDestinations
+     * method (returns at most [quantity] destinations).
+     */
+    public void getPaginatedPublicDestinations_oneQuantity_oneDestintion() {
+        String urlFormat = "/users/destinations/getpublicpaginatedjson?offset=%d&quantity=%d";
+        String url = String.format(urlFormat, 0, 1);
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri(url)
+                .session("connected", "2");
+        Result result = route(app, request);
+
+
+        JsonNode json = Json.parse(contentAsString(result));
+        JsonNode destinations = json.get("destinations");
+        assertEquals(1, destinations.size());
+    }
+
+    @Test
+    /**
+     * Checks the offset works correctly in the getPaginatedPublicDestinations
+     * method, a huge offset should return zero destinations.
+     */
+    public void getPaginatedPublicDestinations_hugeOffset_checkZeroDestinations() {
+        String urlFormat = "/users/destinations/getpublicpaginatedjson?offset=%d&quantity=%d";
+        String url = String.format(urlFormat, 100000, 10);
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri(url)
+                .session("connected", "2");
+        Result result = route(app, request);
+
+
+        JsonNode json = Json.parse(contentAsString(result));
+        JsonNode destinations = json.get("destinations");
+        assertEquals(0, destinations.size());
+    }
+
+    @Test
+    /**
+     * Checks the getPaginatedPublicDestinations method returns a totalCountPublic
+     * key:value field in the json response, with a valid number. (non zero).
+     */
+    public void getPaginatedPublicDestinations_normal_checkHasTotalCount() {
+        String urlFormat = "/users/destinations/getpublicpaginatedjson?offset=%d&quantity=%d";
+        String url = String.format(urlFormat, 100000, 10);
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri(url)
+                .session("connected", "2");
+        Result result = route(app, request);
+
+
+        JsonNode json = Json.parse(contentAsString(result));
+        JsonNode countNode = json.get("totalCountPublic");
+        assertTrue(0 < countNode.asInt());
+    }
+
+    @Test
+    /**
+     * When giving a quantity above the MAX_QUANTITY allowable by the getPaginatedPublicDestinations
+     * method, check the response is 400 (bad request).
+     */
+    public void getPaginatedPublicDestinations_quantityAboveMax_checkBadReq() {
+        String urlFormat = "/users/destinations/getpublicpaginatedjson?offset=%d&quantity=%d";
+        String url = String.format(urlFormat, 0, 1000000000);
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri(url)
+                .session("connected", "2");
+        Result result = route(app, request);
+
+
+        assertEquals(BAD_REQUEST, result.status());
+    }
+
+    @Test
+    /**
+     * When giving a quantity above the MAX_QUANTITY allowable by the getPaginatedPublicDestinations
+     * method, check the response json body has a valid quantityLimit key and value.
+     */
+    public void getPaginatedPublicDestinations_badQuantity_checkHasQuantityLimit() {
+        String urlFormat = "/users/destinations/getpublicpaginatedjson?offset=%d&quantity=%d";
+        String url = String.format(urlFormat, 0, 1000000000);
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri(url)
+                .session("connected", "2");
+        Result result = route(app, request);
+
+
+        JsonNode json = Json.parse(contentAsString(result));
+        JsonNode quantityLimit = json.get("quantityLimit");
+        assertTrue(0 < quantityLimit.asInt());
+    }
+
+    @Test
+    /**
+     * When giving a quantity above the MAX_QUANTITY allowable by the getPaginatedPublicDestinations
+     * method, check the response json body has a valid error message key.
+     */
+    public void getPaginatedPublicDestinations_badQuantity_checkHasErrorStr() {
+        String urlFormat = "/users/destinations/getpublicpaginatedjson?offset=%d&quantity=%d";
+        String url = String.format(urlFormat, 0, 1000000000);
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri(url)
+                .session("connected", "2");
+        Result result = route(app, request);
+
+
+        JsonNode json = Json.parse(contentAsString(result));
+        String errorStr = json.get("error").asText();
+        assertTrue(0 < errorStr.length());
+    }
 }

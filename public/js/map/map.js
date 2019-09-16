@@ -1620,7 +1620,7 @@ function displayTripTablePage(trips) {
         let tripListItem = document.createElement("a");
         tripListItem.setAttribute("id", "Button" + trip.tripId);
         tripListItem.setAttribute("class", "list-group-item list-group-item-action");
-        tripListItem.setAttribute("onclick", "displayTrip(" + trip.tripId + "," + trip.visits[0].lat + "," + trip.visits[0].long + ")");
+        tripListItem.setAttribute("onclick", "displayTrip(" + trip.tripId + "," + trip.visits[0].lat + "," + trip.visits[0].lng + ")");
         if(trip.startDate != null) {
             tripListItem.innerText = trip.tripName + " | Arrival date: " + trip.startDate;
         } else {

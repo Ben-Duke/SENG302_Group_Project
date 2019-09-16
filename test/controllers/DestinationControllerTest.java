@@ -1492,7 +1492,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
                 .bodyJson(Json.toJson(bodyData))
                 .session("connected", "3");
         Result result = route(app, request);
-       // assertEquals(OK, result.status());
+        //assertEquals(OK, result.status());
     }
 
 }

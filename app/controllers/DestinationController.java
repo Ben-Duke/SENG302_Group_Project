@@ -54,7 +54,6 @@ import java.util.*;
 
 import utilities.UtilityFunctions;
 
-import static io.ebean.Expr.like;
 
 /**
  * A controller class for handing destination actions..
@@ -1179,8 +1178,7 @@ public class DestinationController extends Controller {
 
         ObjectNode result = (new ObjectMapper()).createObjectNode();
         result.set("destinations", Json.toJson(destinations));
-        result.put("totalCountPublic", Destination.find().query().where().or(like("destName", "%" + name + "%"),
-                like("destName", "%" + name.toUpperCase() + "%")).findCount());
+        result.put("totalCountPublic", Destination.find().query().where().like("destName", "%" + name + "%").where().eq("destIsPublic", true).findCount());
 
         return ok(Json.toJson(result));
     }

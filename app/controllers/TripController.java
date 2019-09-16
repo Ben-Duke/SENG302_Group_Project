@@ -112,9 +112,7 @@ public class TripController extends Controller {
             visits.sort(Comparator.comparing(Visit::getVisitOrder));
 
             if (trip.isUserOwner(user.getUserid())) {
-                List<Destination> destinations = user.getDestinations();
-                List<Destination> allDestinations = Destination.find().all();
-                return ok(AddTripDestinationsTable.render(trip, destinations, allDestinations,user));
+                return notFound("Page not found");
             } else {
                 return ok(displayTrip.render(trip, visits,user));
             }
@@ -161,7 +159,7 @@ public class TripController extends Controller {
                 trip.setTags(uniqueTags);
                 TripAccessor.update(trip);
             }
-            return redirect(routes.TripController.addTripDestinations(tripid));
+            return created();
         }
         else{
             return redirect(routes.UserController.userindex());
@@ -247,42 +245,6 @@ public class TripController extends Controller {
     }
 
     /**
-     * Renders the page to add destinations onto a new trip.
-     * This has to be separated with existing trips due to the cancel button which deletes the trip.
-     *
-     * @param request the HTTP request
-     * @param tripid the trip id of the trip
-     * @return Result Will redirect to userIndex if success or error otherwise
-     */
-    public Result addTripDestinations(Http.Request request, Integer tripid) {
-        Trip trip = Trip.find().byId(tripid);
-        User user = User.getCurrentUser(request);
-        Date today = new Date();
-        today.setTime(today.getTime());
-        if (user != null) {
-            if (trip != null) {
-                if (trip.isUserOwner(user.getUserid())) {
-                    List<Visit> visits = trip.getVisits();
-                    visits.sort(Comparator.comparing(Visit::getVisitOrder));
-                    List<Destination> destinations = user.getDestinations();
-                    List<Destination> allDestinations = Destination.find().all();
-                    request.flash().getOptional("error").orElse("test");
-                    return ok(AddTripDestinationsTable.render(trip, destinations, allDestinations,user)).flashing("error", request.flash().getOptional("error").orElse("test"));
-
-                } else {
-                    return unauthorized("Not your trip");
-                }
-            }
-            else{
-                return notFound("Oops, invalid trip ID");
-            }
-        }
-        else{
-            return redirect(routes.UserController.userindex());
-        }
-    }
-
-    /**
      * Handles the cancellation of a trip on the page to add destinations to a new trip.
      * All visits are removed from the trip and the trip is removed from the database.
      *
@@ -310,63 +272,6 @@ public class TripController extends Controller {
         else{
             return redirect(routes.UserController.userindex());
         }
-    }
-
-    /**
-     * Handles the request to add destinations to a new trip in the newly implemented table form.
-     * Destinations with an arrival and departure timestamp are stored in the form of a Visit, HOWEVER, they will default
-     * to null as a destination and arrival time is not specified on the table. This can be later edited.
-     * The user is then redirected to the edit trip page.
-     * If the user is not logged in, an error message is displayed.
-     * @param request The HTTP request
-     * @param tripid The trip id that the user is editing.
-     * @param destid The destination of the trip that the user is editing
-     * @return edit trip page or error page
-     */
-    public Result addVisitFromTable(Http.Request request, Integer tripid, Integer destid){
-        User user = User.getCurrentUser(request);
-
-        if(user == null) {
-            return redirect(routes.UserController.userindex());
-        }
-        Trip trip = Trip.find().byId(tripid);
-        if (!(trip.isUserOwner(user.getUserid()) || user.userIsAdmin())) {
-            return unauthorized("Oops, this is not your trip.");
-        }
-        Integer visitSize = 0;
-        if (trip.getVisits() != null) {
-            visitSize = trip.getVisits().size();
-        }
-        Integer removedVisits = 0;
-        if(trip.getRemovedVisits() != null) {
-            removedVisits = trip.getRemovedVisits();
-        }
-        Integer visitOrder = visitSize + 1 + removedVisits;
-        List<Visit> visits = trip.getVisits();
-        Destination destination = Destination.find().byId(destid);
-        if(destination == null) {
-            return notFound("Destination not found");
-        }
-        if(!(destination.getIsPublic() || destination.getUser().getUserid() == user.getUserid() || user.userIsAdmin())) {
-            return unauthorized("This private destination is owned by someone else. You may not use it.");
-        }
-        Visit visit = visitfactory.createVisitTable(trip, destination, visitOrder);
-        if (tripFactory.hasRepeatDest(visits, visit, "ADD")) {
-            //flash("danger", "You cannot have repeat destinations!");
-            return redirect(routes.TripController.addTripDestinations(tripid)).flashing("error", "You cannot have repeat destinations!");
-        }
-        //if the destination is public but the owner of the destination is not an admin, set the owner of the destination to the default admin
-        if (!(destination.getUser().isAdmin()) && destination.getIsPublic() && (destination.getUser().getUserid() != user.getUserid())) {
-            User admin = User.find().byId(1);
-            destination.setUser(admin);
-            destination.update();
-        }
-        visit.save();
-        return redirect(routes.TripController.addTripDestinations(tripid));
-
-
-
-
     }
 
     /**

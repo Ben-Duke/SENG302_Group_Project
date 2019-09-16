@@ -40,6 +40,8 @@ public class DestinationAccessor {
                 .findOne();
     }
 
+
+
     /**
      * Gets a paginated List of public destinations, with an offset and quantity to fetch.
      *

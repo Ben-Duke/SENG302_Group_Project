@@ -682,7 +682,12 @@ let currentlyDisplayedTripId;
  * @param startLng the longitude to zoom to
  */
 function displayTrip(tripId, startLat, startLng) {
-    thereIsAnError.errors = [];
+    const errorMsgs = document.getElementsByClassName('dateError')
+    if(currentlyDisplayedTripId !== undefined) {
+        for (let errorMsg of errorMsgs) {
+            errorMsg.style.display = "None";
+        }
+    }
     if(tripId !== currentlyDisplayedTripId && currentlyDisplayedTripId !== undefined) {
         if(document.getElementById("singleTrip_" + currentlyDisplayedTripId) != undefined) {
             document.getElementById("singleTrip_" + currentlyDisplayedTripId).style.display = "none";

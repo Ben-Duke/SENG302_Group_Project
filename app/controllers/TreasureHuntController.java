@@ -1,5 +1,7 @@
 package controllers;
 import accessors.TreasureHuntAccessor;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import factories.TreasureHuntFactory;
 import formdata.TreasureHuntFormData;
 import models.Destination;
@@ -10,9 +12,11 @@ import models.commands.General.UndoableCommand;
 import models.commands.Treasurehunts.DeleteTreasureHuntCommand;
 import play.data.Form;
 import play.data.FormFactory;
+import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
+import utilities.UtilityFunctions;
 import views.html.users.treasurehunt.*;
 
 import javax.inject.Inject;
@@ -71,6 +75,29 @@ public class TreasureHuntController extends Controller {
         else{
             return redirect(routes.UserController.userindex());
         }
+    }
+
+    /**
+     * Gets a paginated jsonArray of public treasure hunts based on an offset and quantity
+     * @param request the HTTP request
+     * @param offset an integer representing the number of treasurehunts to skip before sending
+     * @param quantity an integer representing the maximum length of the jsonArray
+     * @return a Result object containing the destinations JSON in it's body
+     */
+    public Result getPaginatedOpenTreasureHunts(Http.Request request, int offset, int quantity) {
+        int MAX_QUANTITY = 1000;
+        User user = User.getCurrentUser(request);
+        if (user == null) {
+            return redirect(routes.UserController.userindex());
+        }
+
+        if (quantity > MAX_QUANTITY) {
+            return badRequest(Json.toJson(UtilityFunctions.quantityError(MAX_QUANTITY)));
+        }
+
+        List<TreasureHunt> treasureHunts = TreasureHuntAccessor
+                .getPaginatedOpenDestinations(offset, quantity);
+        return ok(Json.toJson(treasureHunts));
     }
 
     /**

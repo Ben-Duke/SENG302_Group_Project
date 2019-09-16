@@ -2,6 +2,8 @@ package utilities;
 
 import accessors.TagAccessor;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import controllers.ApplicationManager;
 import controllers.routes;
 import models.*;
@@ -443,4 +445,13 @@ public class UtilityFunctions {
     }
 
 
+    public static ObjectNode quantityError(int maxQuantity) {
+        String errorStr = "query parameter 'quantity' exceeded maximum " +
+                "allowed int: " + maxQuantity;
+
+        ObjectNode jsonError = (new ObjectMapper()).createObjectNode();
+        jsonError.put("error", errorStr);
+        jsonError.put("quantityLimit", maxQuantity);
+        return jsonError;
+    }
 }

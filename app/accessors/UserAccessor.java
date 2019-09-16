@@ -2,6 +2,7 @@ package accessors;
 
 import models.*;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -59,6 +60,15 @@ public class UserAccessor {
     public static List<User> getUsersFromEmail(String email) {
         return  User.find().query()
                     .where().eq("email", email.toLowerCase()).findList();
+    }
+
+    /** Return a list of users with an email in emails
+     *
+     * @param emails a collection of string emails
+     * @return a list of users
+     */
+    public static List<User> getUsersByEmails(Collection<String> emails) {
+        return User.find().query().where().in("email", emails).findList();
     }
 
     /**

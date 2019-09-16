@@ -811,7 +811,7 @@ public class TripController extends Controller {
 
                 visitNodes.add(visitNode);
             }
-            tripNode.put("tripid", trip.getTripid());
+            tripNode.put("tripId", trip.getTripid());
             tripNode.put("tripName", trip.getTripName());
             tripNode.put("startDate", trip.getTripStart());
             tripNode.put("visits", visitNodes);

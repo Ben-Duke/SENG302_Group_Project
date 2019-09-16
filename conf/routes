@@ -324,7 +324,7 @@ GET     /users/albums/getAlbumFromMediaId/:mediaId      controllers.AlbumControl
 
 
 #Get JSON of one album
-GET     /users/albums/get/:all/:id   controllers.AlbumController.getAlbum(request : Request, id : Integer, all : Boolean)
+GET     /users/albums/get/:id/:offSet/:quantity   controllers.AlbumController.getAlbum(request : Request, id : Integer, offSet : Integer, quantity : Integer)
 
 #View one album
 GET     /users/albums/:id   controllers.AlbumController.viewAlbum(request : Request, id : Integer)

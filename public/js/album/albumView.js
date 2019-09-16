@@ -5,6 +5,9 @@ var user;
 let destinationsToUnlink_GLOBAL;
 let selectedMediaID_GLOBAL;
 
+const quantityToGet = 1;
+let offSet = 0;
+
 moveAlbumSearch();
 
 // Add event listener for closing the modal on clicking outside of it
@@ -53,7 +56,7 @@ function moveBetweenAlbums(oldAlbumId, newAlbumId) {
   var hidePrivate = false;
       $.ajax({
               type: 'GET',
-              url: '/users/albums/get/' + hidePrivate + '/' + oldAlbumId,
+              url: '/users/albums/get/'+oldAlbumId,
               contentType: 'application/json',
               success: (albumData) => {
                       let mediaId = albumData[slideIndex-1]["mediaId"];
@@ -178,7 +181,7 @@ function setSlideListeners(i) {
 
     return $.ajax({
         type: 'GET',
-        url: '/users/albums/get/' + hidePrivate + '/' + albumId,
+        url: '/users/albums/get/'+albumId+'/'+offSet+'/'+quantityToGet,
         contentType: 'application/json',
         success: (albumData) => {
             let setPrivacy;
@@ -194,7 +197,7 @@ function setSlideListeners(i) {
                 document.querySelector('div[data-mediaId="'+mediaId+'"] [contenteditable]').innerHTML =
                 "Click to add caption, press enter to save.";
             }
-            console.log(albumData[i]["isPublic"]);
+            // console.log(albumData[i]["isPublic"]);
             if(albumData[i]["isPublic"]) {setPrivacy=0;}
             else {setPrivacy=1;}
             setPrivacyListener(setPrivacy, mediaId);
@@ -208,9 +211,9 @@ function setSlideListeners(i) {
  * @param setPublic true to set to public, false to set to private
  */
 function setMediaPrivacy(mediaId, setPublic, link) {
-    console.log(mediaId);
-    console.log(setPublic);
-    console.log(link);
+    // console.log(mediaId);
+    // console.log(setPublic);
+    // console.log(link);
     const intPublic = setPublic ? 1 : 0;
     $.ajax({
         type: 'GET',
@@ -234,27 +237,35 @@ function setMediaPrivacy(mediaId, setPublic, link) {
 }
 
 
+
 /**
  * Function to search for albums.
  * Updates the rows of photos with album titles matching the search term
  */
-function getAlbum(userId, albumId, isOwner){
-    // Declare variables
-    var hidePrivate;
-    if(isOwner) {hidePrivate = false;}
-    else {hidePrivate = true}
+function getAlbum(userId, albumId){
+
     $.ajax({
         type: 'GET',
-        url: '/users/albums/get/' + hidePrivate + '/' + albumId,
+        url: '/users/albums/get/'+albumId+"/"+offSet+"/"+quantityToGet,
         contentType: 'application/json',
-        success: (albumData) => {
-            addAlbum(albumData, userId);
+        success: (data) => {
+
+            // const mediaData = data;
+
+            const mediaData = data.mediaData;
+            const totalMediaCount = data.totalMediaCount;
+
+            offSet += mediaData.length;
+
+            console.log(mediaData);
+            addAlbum(mediaData, userId);
         }
     });
 }
 
 
 async function addAlbum(albumData, userId) {
+
     var path = "/users/home/servePicture/";
     for (let i=0; i<albumData.length; i++) {
         if(!(albumData[i]["user"]["userid"] !== userId && albumData[i]["isPublic"] === false)) {

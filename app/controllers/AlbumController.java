@@ -2,19 +2,18 @@ package controllers;
 
 import accessors.*;
 import com.fasterxml.jackson.databind.JsonNode;
-import gherkin.deps.com.google.gson.JsonArray;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.ebean.Ebean;
 import models.*;
 import models.commands.Albums.*;
 import models.commands.General.CommandPage;
-import play.db.ebean.Transactional;
 import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
 import views.html.users.album.*;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -58,17 +57,56 @@ public class AlbumController extends Controller {
      * Method to get Media Urls from the album in a JSON for ajax requests.
      * @param request Request
      * @param albumId Id of the Album
-     * @param hidePrivate true if only private media is required, false otherwise
      * @return JSON object with media urls
      */
-    public Result getAlbum(Http.Request request, Integer albumId, Boolean hidePrivate) {
+    public Result getAlbum(Http.Request request, Integer albumId, Integer offSet, Integer quantity) {
+        User user = User.getCurrentUser(request);
+        if (user == null) { return redirect(routes.UserController.userindex()); }
+
         Album album = AlbumAccessor.getAlbumById(albumId);
-        List albumDetails = new ArrayList();
+        List nextAlbumMedia = new ArrayList();
+
+        int totalMediaCount = 0;
+
+        int count = 0;
+
         for(Media media: album.getMedia()) {
-            albumDetails.add(media);
+
+            System.out.println(1.2);
+
+            if (media.isOwner(user) || media.getIsPublic()) {
+                totalMediaCount++;
+
+                System.out.println(1.3);
+
+                if (nextAlbumMedia.size() <= quantity-1) {
+
+                    System.out.println(1.4);
+
+                    System.out.println(count);
+                    System.out.println(offSet);
+
+                    if (count >= offSet) {
+                        nextAlbumMedia.add(media);
+
+                        System.out.println(1.5);
+                    }
+                }
+                count++;
+            }
+            System.out.println();
         }
-        return ok(Json.toJson(albumDetails));
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        ObjectNode data = objectMapper.createObjectNode();
+
+        data.put("mediaData", Json.toJson(nextAlbumMedia));
+        data.put("totalMediaCount", totalMediaCount);
+
+        return ok(data);
     }
+
+
 
     /**
      * Process the ajax request to create album.

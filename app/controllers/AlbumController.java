@@ -2,6 +2,7 @@ package controllers;
 
 import accessors.*;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import gherkin.deps.com.google.gson.JsonArray;
 import io.ebean.Ebean;
 import models.*;
@@ -458,6 +459,7 @@ public class AlbumController extends Controller {
         if( mediaItemAlbums == null || mediaItemAlbums.size() < 1) {
             return badRequest("Album does not exist");
         }
-        return ok(Json.toJson(mediaItemAlbums.get(0).albumId));
+        ObjectNode data =  (ObjectNode) Json.toJson(mediaItemAlbums.get(0));
+        return ok(Json.toJson(data));
     }
 }

@@ -60,38 +60,12 @@ async function renderUserData(pageNum, quantity) {
         contentType: 'application/json',
     });
 
-    console.log(users);
-
     await displayData(users);
 }
 
-// @for(user <- users) {
-//     @if(user.getUserid != currentUser.getUserid){
-//         <tr>
-//             <th scope ="row">@user.getUserid()</th>
-//                 <td>@user.getEmail()</td>
-//                 <td>@user.getFName()</td>
-//                 <td>@user.getLName()</td>
-//                 <td>@user.getGender()</td>
-//                 <td>@user.getDateOfBirth</td>
-//         @if(user.userIsAdmin()) {
-//             <td><a class="btn btn-link" href="@routes.AdminController.adminToUser(user.getUserid)" role="button">Revoke Admin</a></td>
-//             } else {
-//             <td><a class="btn btn-link" href="@routes.AdminController.userToAdmin(user.getUserid)" role="button">Make Admin</a></td>
-//             }
-//         @if(currentUser.getUserid == adminUser.getUserid) {
-//             <td><a class="btn btn-link" href="@routes.AdminController.setUserToActAs(user.getUserid)" role="button">Act as user</a></td>
-//             } else {
-//             <td><a class="btn btn-link" href="@routes.AdminController.setUserToActAs(user.getUserid)" role="button" disabled>Act as user</a></td>
-//             }
-//         </tr>
-//         }
-//     }
 
 async function displayData(users) {
     const tableBody = document.getElementById('user-table-body');
-
-    console.log(1.2, JSON.stringify(tableBody.childNodes));
 
     while (tableBody.childNodes.length > 0) {
         tableBody.childNodes[0].remove();
@@ -161,14 +135,6 @@ async function displayData(users) {
 
 
         tableBody.append(row);
-
-
-        // eventCategory.innerText = "Type: " + events[i].category.name
-        //
-        // mediaBody.appendChild(eventLink);
-        //
-        //
-        // document.getElementById("events-results").appendChild(mediaRow);
     }
 }
 
@@ -179,7 +145,6 @@ function addPagination(count, pageNum) {
         eventsPagination.childNodes[0].remove();
     }
 
-    console.log(count, pageNum);
     let numOfPages = [];
     let pageNumbers = [];
     let places = '';
@@ -196,7 +161,7 @@ function addPagination(count, pageNum) {
                 pageNumbers = [pageNum - 3, pageNum - 2, pageNum - 1, pageNum, pageNum + 1, pageNum + 2, pageNum + 3, pageNum + 4];
             } else {
                 lastPage = numOfPages.length - 0;
-                pageNumbers = []
+                pageNumbers = [];
                 for (let j = lastPage - 7; (j < lastPage + 1 && j > 0); j++) {
                     pageNumbers.push(j);
                 }

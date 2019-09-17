@@ -427,6 +427,9 @@ GET /tags/display/:tagName                                            controller
 GET /tags/items/:tagId                                  controllers.TagController.getTagDetails(request: Request, tagId: Integer)
 
 
+# News feed
+PUT /events/respond/:eventId/:responseType                  controllers.EventResponseController.respondToEvent(request : Request, eventId : Integer, responseType : String)
+
 
 # Undo
 +nocsrf

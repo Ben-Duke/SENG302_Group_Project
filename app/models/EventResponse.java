@@ -26,10 +26,20 @@ public class EventResponse extends BaseModel {
 
     /**
      * Constructor for event response
-     * @param responseType The name of the traveller type being created
+     * @param responseType The name of the event reponse type being created
      */
     public EventResponse(String responseType){
         this.responseType = responseType;
+    }
+
+    /**
+     * Constructor for event response
+     * @param responseType The name of the event reponse type being created
+     */
+    public EventResponse(String responseType, Event event, User user){
+        this.responseType = responseType;
+        this.event = event;
+        this.user = user;
     }
 
     @Id

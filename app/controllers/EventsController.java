@@ -47,6 +47,19 @@ public class EventsController {
         }
     }
 
+    public Result getEventsDataByExternalId(Http.Request request, Integer eventId) {
+        User user = User.getCurrentUser(request);
+        if (user == null) {
+            return unauthorized();
+        }
+        JsonNode data = EventFindaUtilities.getEventById(eventId);
+        if (data != null) {
+            return ok(data);
+        } else {
+            return badRequest("EventFinda could not find anything matching your query");
+        }
+    }
+
 
     public Result getEventsData(Http.Request request, String keyword, String category, String startDate,
                                 String endDate, String minPrice, String maxPrice, String destination, String sortBy, Integer offset) {

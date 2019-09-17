@@ -16,18 +16,18 @@ public class EventResponseAccessor {
         throw new IllegalStateException("Utility class");
     }
 
-    /** Return a Treasure Hunt matching the id passed
-     * @param id Id value of a treasure hunt in the database
-     * @return Treasure Hunt
+    /** Return a Event Response matching the id passed
+     * @param id Id value of a Event Response in the database
+     * @return Event Response
      */
     public static EventResponse getById(int id) {
         return EventResponse.find().query().where().eq("eventResponseId", id).findOne();
     }
 
-    /** Return all Treasure Hunts
-     * @return List of Treasure Hunts
+    /** Return all Event Responses
+     * @return List of Event Responses
      */
-    public static List<EventResponse> getAll() {
+    public static List<EventResponse> getAllEventResponses() {
         return EventResponse.find().all();
     }
 

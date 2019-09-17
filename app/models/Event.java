@@ -20,6 +20,8 @@ public class Event extends Model {
     @Id
     private Integer eventId;
 
+    private Integer externalId;
+
     @Temporal(TemporalType.TIMESTAMP)
     @Formats.DateTime(pattern=DATE_PATTERN)
     //date was protected not public/private for some reason
@@ -32,6 +34,10 @@ public class Event extends Model {
     @CreatedTimestamp
     private LocalDateTime endTime;
 
+    private String name;
+    private String url;
+    private double latitude;
+    private double longitude;
     private String description;
 
     @ManyToOne
@@ -84,6 +90,50 @@ public class Event extends Model {
 
     public void setDestination(Destination destination) {
         this.destination = destination;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
+
+    public void setEventId(Integer eventId) {
+        this.eventId = eventId;
+    }
+
+    public Integer getExternalId() {
+        return externalId;
+    }
+
+    public void setExternalId(Integer externalId) {
+        this.externalId = externalId;
     }
 
 }

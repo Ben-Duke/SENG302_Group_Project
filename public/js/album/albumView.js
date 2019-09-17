@@ -319,10 +319,10 @@ async function displaySlides(i, albumData, path) {
     mySlidesDiv.setAttribute("data-mediaId", mediaId);
 
     var img1 = document.createElement("img");
-
     img1.setAttribute("id", "img"+(i+1));
     img1.classList.add("center-block");
     img1.src = path + encodeURIComponent(url);
+//    img1.setAttribute("onClick", "this.select();");
     var figure = document.createElement("figure");
     figure.appendChild(img1);
     var figureCaption = document.createElement("figcaption");
@@ -338,6 +338,14 @@ async function displaySlides(i, albumData, path) {
             input = el.nodeName != 'INPUT',
             data = {};
             el.value = "";
+
+        // This selects the caption text when clicked to edit
+        selection = window.getSelection();
+        range = document.createRange();
+        range.selectNodeContents(el);
+        selection.removeAllRanges();
+        selection.addRange(range);
+        //
 
         if (input) {
             content.addEventListener('blur', function (event) {

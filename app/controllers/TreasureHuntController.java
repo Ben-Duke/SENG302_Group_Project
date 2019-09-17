@@ -1,4 +1,5 @@
 package controllers;
+
 import accessors.TreasureHuntAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -45,15 +46,16 @@ public class TreasureHuntController extends Controller {
      */
     void createPublicDestinationsMap() {
         List<Destination> allDestinations = Destination.find().query().where().eq("dest_is_public", true).findList();
-        for (Destination destination: allDestinations) {
+        for (Destination destination : allDestinations) {
             destinationMap.put(destination.getDestName(), false);
         }
     }
 
     /**
      * Modifies the given destination name's (key) boolean value.
+     *
      * @param destName Name of the destination
-     * @param isTrue Boolean value to be changed to.
+     * @param isTrue   Boolean value to be changed to.
      */
     void modifyPublicDestinationsMap(String destName, boolean isTrue) {
         destinationMap.replace(destName, isTrue);
@@ -66,26 +68,26 @@ public class TreasureHuntController extends Controller {
      * @param request The HTTP request
      * @return index treasure hunt page or error page
      */
-    public Result indexTreasureHunt(Http.Request request){
+    public Result indexTreasureHunt(Http.Request request) {
         User user = User.getCurrentUser(request);
         if (user != null) {
             user.getCommandManager().setAllowedPage(CommandPage.TREASURE_HUNT); // clear stack
             return ok(indexTreasureHunt.render(user.getTreasureHunts(), getOpenTreasureHunts(), user));
-        }
-        else{
+        } else {
             return redirect(routes.UserController.userindex());
         }
     }
 
     /**
      * Gets a paginated jsonArray of public treasure hunts based on an offset and quantity
-     * @param request the HTTP request
-     * @param offset an integer representing the number of treasurehunts to skip before sending
+     *
+     * @param request  the HTTP request
+     * @param offset   an integer representing the number of TreasureHunts to skip before sending
      * @param quantity an integer representing the maximum length of the jsonArray
-     * @return a Result object containing the destinations JSON in it's body
+     * @return a Result object containing the TreasureHunt lis JSON in it's body
      */
     public Result getPaginatedOpenTreasureHunts(Http.Request request, int offset, int quantity) {
-        int MAX_QUANTITY = 1000;
+        final int MAX_QUANTITY = 1000;
         User user = User.getCurrentUser(request);
         if (user == null) {
             return redirect(routes.UserController.userindex());
@@ -101,20 +103,44 @@ public class TreasureHuntController extends Controller {
     }
 
     /**
+     * Gets a paginated jsonArray of a user's treasure hunts based on an offset and quantity
+     *
+     * @param request  the HTTP request, with the user logged in
+     * @param offset   an integer representing the number of TreasureHunts to skip before sending
+     * @param quantity an integer representing the maximum length of the jsonArray
+     * @return a Result object containing the TreasureHunt list JSON in it's body
+     */
+    public Result getPaginatedUserTreasureHunts(Http.Request request, int offset, int quantity) {
+        final int MAX_QUANTITY = 1000;
+        User user = User.getCurrentUser(request);
+        if (user == null) {
+            return redirect(routes.UserController.userindex());
+        }
+
+        if (quantity > MAX_QUANTITY) {
+            return badRequest(Json.toJson(UtilityFunctions.quantityError(MAX_QUANTITY)));
+        }
+
+        List<TreasureHunt> treasureHunts = TreasureHuntAccessor
+                .getPaginatedUsersTreasurehunts(user, offset, quantity);
+        return ok(Json.toJson(treasureHunts));
+    }
+
+    /**
      * Gets a list of open treasure hunts. A treasure hunt is open if its start date is before the current date
      * and the end date is after the current date.
      *
      * @return list of open treasure hunts
      */
-    public List<TreasureHunt> getOpenTreasureHunts(){
+    public List<TreasureHunt> getOpenTreasureHunts() {
         List<TreasureHunt> treasureHunts = TreasureHunt.find().all();
         List<TreasureHunt> openTreasureHunts = new ArrayList<>();
-        for(TreasureHunt treasureHunt : treasureHunts){
+        for (TreasureHunt treasureHunt : treasureHunts) {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             LocalDate startDate = LocalDate.parse(treasureHunt.getStartDate(), formatter);
             LocalDate endDate = LocalDate.parse(treasureHunt.getEndDate(), formatter);
             LocalDate currentDate = LocalDate.now(ZoneId.of("Pacific/Auckland"));
-            if(startDate.isBefore(currentDate) && endDate.isAfter(currentDate)){
+            if (startDate.isBefore(currentDate) && endDate.isAfter(currentDate)) {
                 openTreasureHunts.add(treasureHunt);
             }
         }
@@ -128,14 +154,13 @@ public class TreasureHuntController extends Controller {
      * @param request The HTTP request
      * @return create treasure hunt page or error page
      */
-    public Result createTreasureHunt(Http.Request request){
+    public Result createTreasureHunt(Http.Request request) {
         User user = User.getCurrentUser(request);
         if (user != null) {
             Form<TreasureHuntFormData> incomingForm = formFactory.form(TreasureHuntFormData.class);
             createPublicDestinationsMap();
             return ok(createTreasureHunt.render(incomingForm, user, destinationMap));
-        }
-        else{
+        } else {
             return redirect(routes.UserController.userindex());
         }
     }
@@ -147,7 +172,7 @@ public class TreasureHuntController extends Controller {
      * @param request The HTTP request
      * @return index treasure hunt page or create treasure hunt page if there are validation errors
      */
-    public Result createAndSaveTreasureHunt(Http.Request request){
+    public Result createAndSaveTreasureHunt(Http.Request request) {
         User user = User.getCurrentUser(request);
         if (user != null) {
             Form<TreasureHuntFormData> incomingForm = formFactory.form(TreasureHuntFormData.class).bindFromRequest(request);
@@ -160,7 +185,7 @@ public class TreasureHuntController extends Controller {
                 }
                 return badRequest(createTreasureHunt.render(incomingForm, user, destinationMap));
             }
-            for (TreasureHunt tHunt: TreasureHunt.find().all()) {
+            for (TreasureHunt tHunt : TreasureHunt.find().all()) {
                 if (incomingForm.get().getTitle().equals(tHunt.getTitle())) {
                     return badRequest(createTreasureHunt.render(incomingForm.withError("title", "Another Treasure Hunt with the same title exists in the system."), user, destinationMap));
                 }
@@ -168,8 +193,7 @@ public class TreasureHuntController extends Controller {
             TreasureHuntFormData created = incomingForm.get();
             treasureHuntFactory.createTreasureHunt(created, user);
             return redirect(routes.TreasureHuntController.indexTreasureHunt());
-        }
-        else{
+        } else {
             return redirect(routes.UserController.userindex());
         }
     }
@@ -178,11 +202,11 @@ public class TreasureHuntController extends Controller {
      * If the user is logged in, renders the edit treasure hunt page
      * If the user is not logged in, returns an error.
      *
-     * @param request The HTTP request
+     * @param request        The HTTP request
      * @param treasureHuntId The Id of the treasure hunt being edited
      * @return edit treasure hunt page or error page
      */
-    public Result editTreasureHunt(Http.Request request, Integer treasureHuntId){
+    public Result editTreasureHunt(Http.Request request, Integer treasureHuntId) {
         User user = User.getCurrentUser(request);
         if (user != null) {
             TreasureHunt treasureHunt = TreasureHunt.find().byId(treasureHuntId);
@@ -209,11 +233,11 @@ public class TreasureHuntController extends Controller {
      * If the user is logged in, creates and saves the treasure hunt and redirects to the index treasure hunt page
      * If the user is not logged in, returns an error.
      *
-     * @param request The HTTP request
+     * @param request        The HTTP request
      * @param treasureHuntId The Id of the treasure hunt being updated
      * @return index treasure hunt page or create treasure hunt page if there are validation errors
      */
-    public Result editAndSaveTreasureHunt(Http.Request request, Integer treasureHuntId){
+    public Result editAndSaveTreasureHunt(Http.Request request, Integer treasureHuntId) {
         User user = User.getCurrentUser(request);
         if (user == null) {
             return redirect(routes.UserController.userindex());
@@ -231,12 +255,12 @@ public class TreasureHuntController extends Controller {
         if (incomingForm.hasErrors()) {
             // Change the destination map to keep track of the current destination selected in the select
             String destName = incomingForm.rawData().get("destination");
-            if (destName !=null && !destName.isEmpty()) {
+            if (destName != null && !destName.isEmpty()) {
                 destinationMap.replace(destName, true);
             }
             return badRequest(editTreasureHunt.render(incomingForm, treasureHunt, user, destinationMap));
         }
-        for (TreasureHunt userTreasureHunt: TreasureHunt.find().all()) {
+        for (TreasureHunt userTreasureHunt : TreasureHunt.find().all()) {
             if (incomingForm.get().getTitle().equals(userTreasureHunt.getTitle())
                     && !incomingForm.get().getTitle().equals(treasureHunt.getTitle())) {
                 return badRequest(editTreasureHunt.render(incomingForm.withError("title", "Another Treasure Hunt with the same title exists in the system."), treasureHunt, user, destinationMap));
@@ -251,11 +275,11 @@ public class TreasureHuntController extends Controller {
      * If the user is logged in, deletes the treasure hunt and renders the index treasure hunt page.
      * If the user is not logged in, returns an error.
      *
-     * @param request The HTTP request
+     * @param request        The HTTP request
      * @param treasureHuntId The Id of the treasure hunt being deleted
      * @return index treasure hunt page or error page
      */
-    public Result deleteTreasureHunt(Http.Request request, Integer treasureHuntId){
+    public Result deleteTreasureHunt(Http.Request request, Integer treasureHuntId) {
         User user = User.getCurrentUser(request);
         if (user != null) {
             TreasureHunt treasureHunt = TreasureHuntAccessor.getById(treasureHuntId);

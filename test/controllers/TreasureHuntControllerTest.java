@@ -605,4 +605,22 @@ public class TreasureHuntControllerTest extends BaseTestWithApplicationAndDataba
         user = UserAccessor.getById(2);
         assertEquals(nTreasureHunts-1, user.getTreasureHunts().size());
     }
+
+    @Test
+    public void getPaginatedUserTreasureHuntsNoUser() {
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/treasurehunts/user?offset=0&quantity=20");
+        Result result = Helpers.route(app, request);
+        assertEquals(SEE_OTHER, result.status());
+    }
+
+    @Test
+    public void getPaginatedOpenTreasureHuntsNoUser() {
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/treasurehunts/open?offset=0&quantity=20");
+        Result result = Helpers.route(app, request);
+        assertEquals(SEE_OTHER, result.status());
+    }
 }

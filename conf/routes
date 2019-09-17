@@ -289,6 +289,10 @@ GET     /users/destinations/delete/:id   controllers.DestinationController.delet
 #Renders treasure hunt index page
 GET     /users/treasurehunts                    controllers.TreasureHuntController.indexTreasureHunt(request : Request)
 
+GET     /users/treasurehunts/open               controllers.TreasureHuntController.getPaginatedOpenTreasureHunts(request : Request, offset : Integer, quantity : Integer)
+
+GET     /users/treasurehunts/user               controllers.TreasureHuntController.getPaginatedUserTreasureHunts(request : Request, offset : Integer, quantity : Integer)
+
 #Open Create treasure hunt page
 GET     /users/treasurehunts/create             controllers.TreasureHuntController.createTreasureHunt(request : Request)
 

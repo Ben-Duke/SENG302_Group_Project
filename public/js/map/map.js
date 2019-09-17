@@ -413,7 +413,6 @@ function initDestinationMarkers() {
         .then(destinations => {
             let marker;
             let infoWindow;
-            // console.log(destinations);
             for (let index = 0; index < destinations.length; index++) {
                 marker = new google.maps.Marker({
                     position: {
@@ -980,7 +979,6 @@ function updateVisitDate(visitId) {
     const departureDate = new Date(data.departure);
     const errorMsgs = document.getElementsByClassName('dateError');
     if (! isValidDate(arrivalDate) || ! isValidDate(departureDate) || (arrivalDate <= departureDate)) {
-        console.log(thereIsAnError);
         if (thereIsAnError.errors.includes(visitId)) {
             thereIsAnError.errors = thereIsAnError.errors.filter((value) => {
                 return value !== visitId;
@@ -1076,9 +1074,19 @@ function initPlacesAutocompleteSearch() {
 
                     window.globalMap.setCenter(destLatLng);
                     window.globalMap.setZoom(10);
+                    if (document.getElementById('createDestination').style.display = 'block') {
+                        document.getElementById('createDestination').style.display = 'none';
+                    }
+                    $('[href="#destinationsTab"]').tab('show');
+                    displayDestination(data, coordinates.lat(), coordinates.lng());
                 }
                 else if (xhr.status == 201) {
                     $('[href="#destinationsTab"]').tab('show');
+                    for (let childNode of document.getElementById('singleDestinationContainer').children) {
+                        if(childNode.style.display == "block") {
+                            childNode.style.display = "none";
+                        }
+                    }
                     document.getElementById('createDestination').style.display = 'block';
 
                     document.getElementById("destName").value = place.name;
@@ -1409,6 +1417,51 @@ $("#formBody").submit(function(e) {
     e.preventDefault();
 });
 
+$("#destSearchInput").keyup(function ()
+{
+    searchByKeyword(1)
+});
+
+function searchByKeyword(currentPageNum) {
+    const offset = (currentPageNum - 1) * 20;
+    let searchInput = document.getElementById("destSearchInput").value;
+    if(searchInput != "") {
+        let data = {offset: offset,
+        quantity: 20};
+        $.ajax({
+            url: '/users/destinations/matching/' + searchInput,
+            data: data,
+            method: "GET",
+            success: function (res) {
+                let displayedIds = [];
+                for (let j=0; j < res.destinations.length; j++) {
+                    if(res.destinations[j].isPublic === false) {
+                        displayedIds.push("destButton" + res.destinations[j].destid);
+                    }
+                }
+                let privateListChildren = document.getElementById("privateDestinationList").children;
+
+                for(let i=0; i < privateListChildren.length; i++) {
+                    if (!displayedIds.includes(privateListChildren[i].id)) {
+                        privateListChildren[i].setAttribute("style", "display: none;");
+                    } else {
+                        privateListChildren[i].setAttribute("style", "display: block;");
+                    }
+                }
+                getDestinationsFromApiResponse(res, currentPageNum, searchInput);
+
+            }
+        });
+    } else {
+        searchDestinations(1, 20, null);
+        let privateListChildren = document.getElementById("privateDestinationList").children;
+        for(let i=0; i < privateListChildren.length; i++) {
+            privateListChildren[i].setAttribute("style", "display: block;");
+        }
+    }
+}
+
+
 
 /**
  * Function used to submit destination creation.
@@ -1482,10 +1535,192 @@ $("#submit").click(function(e){
     });
 });
 
+function getPublicDestinations(pageNum, quantity){
+    const offset = (pageNum - 1) * 20;
+    let data = {offset: offset,
+                quantity: quantity};
+
+    $.ajax({
+        type: 'GET',
+        url: "/users/destinations/getpublicpaginatedjson",
+        data: data,
+        contentType: 'application/json',
+        success: (destData) => {
+            let count = destData.totalCountPublic;
+            let destinationData = document.getElementById("publicDestinationList");
+            if (pageNum > 1) {
+                while (destinationData.childNodes.length > 0) {
+                    destinationData.removeChild(destinationData.childNodes[0]);
+                }
+            }
+            for (let destination of destData.destinations) {
+                let destElement = document.createElement('a');
+                destElement.setAttribute("onClick", `displayDestination(${destination.destid}, ${destination.latitude}, ${destination.longitude})`);
+                destElement.setAttribute('class', "list-group-item list-group-item-action");
+                destElement.setAttribute('id', "destButton" + destination.destid)
+                destElement.innerText = destination.destName + " | " + destination.destType + " | " + destination.country
+                destinationData.appendChild(destElement);
+            }
+            addPagination(count, pageNum, null);
+        }, error: function (error) {
+            console.log(error);
+        }
+    })
+}
+
+function addPagination(count, pageNum, search) {
+    let numOfPages = [];
+    let pageNumbers = [];
+    const pagination = document.createElement("ul");
+    pagination.classList.add("pagination");
+    for (let i = 0; i < count; i += 20) {
+        numOfPages.push((i / 20) + 1);
+    }
+    if (numOfPages.length > 10) {
+        if (pageNum > 5) {
+            if (numOfPages.length >= pageNum + 5) {
+                pageNumbers = [pageNum - 3, pageNum - 2, pageNum - 1, pageNum, pageNum + 1, pageNum + 2, pageNum + 3, pageNum + 4];
+            } else {
+                let lastPage = numOfPages.length - 0;
+                pageNumbers = []
+                for (let j = lastPage - 7; (j < lastPage + 1 && j > 0); j++) {
+                    pageNumbers.push(j);
+                }
+            }
+        } else {
+            for (let k = 0; k < 10; k++) {
+                pageNumbers.push(numOfPages[k]);
+            }
+        }
+    } else {
+        pageNumbers = numOfPages;
+    }
+    let item = document.createElement("li");
+    let pageButton = document.createElement("a");
+    let currentPageNum = 1;
+    pageButton.innerText = "First";
+    if (search == null) {
+        pageButton.setAttribute("onClick", `searchDestinations(${currentPageNum})`);
+    } else {
+        pageButton.setAttribute("onClick", `searchByKeyword("${currentPageNum})`);
+
+    }
+    item.appendChild(pageButton);
+    pagination.appendChild(item);
+
+    item = document.createElement("li");
+    pageButton = document.createElement("a");
+    if (pageNum < 2) {
+        currentPageNum = 1;
+    } else {
+        currentPageNum = pageNum - 1;
+    }
+    pageButton.innerText = "<";
+    if (search == null) {
+        pageButton.setAttribute("onClick", `searchDestinations(${currentPageNum})`);
+    } else {
+        pageButton.setAttribute("onClick", `searchByKeyword(${currentPageNum})`);
+
+    }
+    item.appendChild(pageButton);
+    pagination.appendChild(item);
+    for (let i=0; i < pageNumbers.length; i++) {
+        let item = document.createElement("li");
+        const pageButton = document.createElement("a");
+        const currentPageNum = pageNumbers[i];
+        pageButton.innerText = pageNumbers[i];
+        if (currentPageNum==pageNum) {
+            item.classList.add("active");
+        }
+        if (search == null) {
+            pageButton.setAttribute("onClick", `searchDestinations(${currentPageNum})`);
+        } else {
+            pageButton.setAttribute("onClick", `searchByKeyword(${currentPageNum})`);
+
+        }
+        item.appendChild(pageButton);
+        pagination.appendChild(item);
+    }
+    item = document.createElement("li");
+    pageButton = document.createElement("a");
+    if (pageNum>=numOfPages.length) {
+        currentPageNum = numOfPages.length;
+    } else {
+        currentPageNum = pageNum+1;
+    }
+    pageButton.innerText = ">";
+    if (search == null) {
+        pageButton.setAttribute("onClick", `searchDestinations(${currentPageNum})`);
+    } else {
+        pageButton.setAttribute("onClick", `searchByKeyword(${currentPageNum})`);
+
+    }
+    item.appendChild(pageButton);
+    pagination.appendChild(item);
+    document.getElementById("publicDestinationList").appendChild(pagination);
+
+    item = document.createElement("li");
+    pageButton = document.createElement("a");
+    currentPageNum = numOfPages.length;
+    pageButton.innerText = "Last";
+    if (search == null) {
+        pageButton.setAttribute("onClick", `searchDestinations(${currentPageNum})`);
+    } else {
+        pageButton.setAttribute("onClick", `searchByKeyword(${currentPageNum})`);
+
+    }
+    item.appendChild(pageButton);
+    pagination.appendChild(item);
+}
+
+function searchDestinations(pageNum) {
+    const offset = (pageNum-1)*20;
+
+    let data = {
+        offset: offset,
+        quantity: 20,
+    };
+
+
+    $.ajax({
+        success: function () {
+            $.ajax({
+                type: 'GET',
+                url:  "/users/destinations/getpublicpaginatedjson",
+                data: data,
+                success: function (data) {
+                    // console.log(data);
+                    getDestinationsFromApiResponse(data, pageNum, null);
+                }
+            });
+        },
+    });
+
+}
+
+function getDestinationsFromApiResponse(destData, pageNum, search) {
+    let count = destData.totalCountPublic;
+    let destinationData = document.getElementById("publicDestinationList");
+    while (destinationData.childNodes.length > 0) {
+        destinationData.removeChild(destinationData.childNodes[0]);
+    }
+    for (let destination of destData.destinations) {
+        let destElement = document.createElement('a');
+        destElement.setAttribute("onClick", `displayDestination(${destination.destid}, ${destination.latitude}, ${destination.longitude})`);
+        destElement.setAttribute('class', "list-group-item list-group-item-action");
+        destElement.setAttribute('id', "destButton" + destination.destid)
+        destElement.innerText = destination.destName + " | " + destination.destType + " | " + destination.country
+        destinationData.appendChild(destElement);
+    }
+    addPagination(count, pageNum, search);
+}
+
 
 
 window.onload = function() {
     checkTripVisits();
+    getPublicDestinations(1, 20, null);
+
 };
 
 

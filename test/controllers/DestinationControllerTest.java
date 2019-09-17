@@ -1384,4 +1384,5 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
 
         assertEquals(false, destination.removeTag(tag));
     }
+
 }

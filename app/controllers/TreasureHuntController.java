@@ -99,7 +99,13 @@ public class TreasureHuntController extends Controller {
 
         List<TreasureHunt> treasureHunts = TreasureHuntAccessor
                 .getPaginatedOpenDestinations(offset, quantity);
-        return ok(Json.toJson(treasureHunts));
+        long countTotalOpenHunts = TreasureHuntAccessor.getCountOpenTreasureHunts();
+
+        ObjectNode result = (new ObjectMapper()).createObjectNode();
+        result.set("openTreasureHunts", Json.toJson(treasureHunts));
+        result.put("totalCountOpenTreasureHunts", countTotalOpenHunts);
+
+        return ok(Json.toJson(result));
     }
 
     /**

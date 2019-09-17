@@ -1,5 +1,6 @@
 package accessors;
 
+import io.ebean.Ebean;
 import models.Destination;
 import models.TreasureHunt;
 import models.User;
@@ -7,6 +8,7 @@ import models.User;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -92,6 +94,14 @@ public class TreasureHuntAccessor {
      * @return A List<TreasureHunt> of treasure hunts.
      */
     public static List<TreasureHunt> getPaginatedOpenDestinations(int offset, int quantity) {
+        if (quantity < 1) {
+            return new ArrayList<TreasureHunt>();
+        }
+
+        if (offset < 0) {
+            offset = 0;
+        }
+
         List<TreasureHunt> allTreasureHunts = TreasureHunt.find()
                 .query()
                 .setFirstRow(offset)
@@ -101,7 +111,19 @@ public class TreasureHuntAccessor {
         return allTreasureHunts.stream()
                 // filter out the closed treasure hunts
                 .filter(TreasureHuntAccessor::isOpen).collect(Collectors.toList());
+    }
 
+    /**
+     * Gets the total count of all open treasure hunts.
+     *
+     * @return a long representing the number of open treasure hunts.
+     */
+    public static long getCountOpenTreasureHunts() {
+        return Ebean.find(TreasureHunt.class)
+                .findList()
+                .stream()
+                .filter(TreasureHuntAccessor::isOpen)
+                .count();
     }
 
     /**

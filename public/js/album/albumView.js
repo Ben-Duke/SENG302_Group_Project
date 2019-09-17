@@ -5,8 +5,9 @@ var user;
 let destinationsToUnlink_GLOBAL;
 let selectedMediaID_GLOBAL;
 
-const quantityToGet = 1;
+const quantityToGet = 4;
 let offSet = 0;
+let albumMediaData = [];
 
 moveAlbumSearch();
 
@@ -43,9 +44,6 @@ function moveAlbumSearch() {
                                 });
                           }
                       });
-
-
-
               }
           });
       }
@@ -173,36 +171,31 @@ function setPrivacyListener(setPrivacy, mediaId) {
  * Sets listeners for all buttons on the current slide
  * @param i the index of the current slide
  */
-function setSlideListeners(i) {
+function setSlideListeners(albumData, i) {
     const dataset = document.getElementById('myModal').dataset;
     const isOwner = dataset.isowner;
     const albumId = dataset.album;
     const hidePrivate = !isOwner;
 
-    return $.ajax({
-        type: 'GET',
-        url: '/users/albums/get/'+albumId+'/'+offSet+'/'+quantityToGet,
-        contentType: 'application/json',
-        success: (albumData) => {
-            let setPrivacy;
-            setDeletePhotoListener(albumData, i);
-            setDestinationLinkListener(albumData, i);
-            setMakeProfilePictureListener(albumData, i);
-            const mediaId = albumData[i]["mediaId"];
-            const caption = albumData[i]["caption"];
-            changeTaggableModel(mediaId, "photo");
-            if (caption != "") {
-                document.querySelector('div[data-mediaId="'+mediaId+'"] [contenteditable]').innerHTML = caption.toString();
-            } else {
-                document.querySelector('div[data-mediaId="'+mediaId+'"] [contenteditable]').innerHTML =
-                "Click to add caption, press enter to save.";
-            }
-            // console.log(albumData[i]["isPublic"]);
-            if(albumData[i]["isPublic"]) {setPrivacy=0;}
-            else {setPrivacy=1;}
-            setPrivacyListener(setPrivacy, mediaId);
-        }
-    });
+    let setPrivacy;
+    setDeletePhotoListener(albumData, i);
+    setDestinationLinkListener(albumData, i);
+    setMakeProfilePictureListener(albumData, i);
+
+    const mediaId = albumData[i]["mediaId"];
+
+    const caption = albumData[i]["caption"];
+    changeTaggableModel(mediaId, "photo");
+    if (caption != "") {
+        document.querySelector('div[data-mediaId="'+mediaId+'"] [contenteditable]').innerHTML = caption.toString();
+    } else {
+        document.querySelector('div[data-mediaId="'+mediaId+'"] [contenteditable]').innerHTML =
+        "Click to add caption, press enter to save.";
+    }
+    // console.log(albumData[i]["isPublic"]);
+    if(albumData[i]["isPublic"]) {setPrivacy=0;}
+    else {setPrivacy=1;}
+    setPrivacyListener(setPrivacy, mediaId);
 }
 
 /**
@@ -250,34 +243,41 @@ function getAlbum(userId, albumId){
         contentType: 'application/json',
         success: (data) => {
 
-            // const mediaData = data;
-
             const mediaData = data.mediaData;
             const totalMediaCount = data.totalMediaCount;
 
+            albumMediaData = albumMediaData.concat(mediaData);
+
+            // console.log(albumMediaData);
+
+            addAlbum(mediaData, userId, offSet);
+
             offSet += mediaData.length;
 
-            console.log(mediaData);
-            addAlbum(mediaData, userId);
+            const loadMoreBtn = document.getElementById('loadMoreBtn');
+            if (offSet >= totalMediaCount) {
+                loadMoreBtn.style.display = 'none';
+            } else {
+                loadMoreBtn.style.display = 'block';
+            }
         }
     });
 }
 
 
-async function addAlbum(albumData, userId) {
+async function addAlbum(albumData, userId, offSet) {
 
     var path = "/users/home/servePicture/";
     for (let i=0; i<albumData.length; i++) {
         if(!(albumData[i]["user"]["userid"] !== userId && albumData[i]["isPublic"] === false)) {
-            await displayGrid(i, albumData, path);
+            await displayGrid(i, albumData, path, offSet);
             await displaySlides(i, albumData, path);
         }
     }
-        showSlides(slideIndex);
 }
 
 /** Called when displaying the grid of photos */
-async function displayGrid(i, albumData, path) {
+async function displayGrid(i, albumData, path, offSet) {
     let url = albumData[i]["urlWithPath"];
     let imgContainer = document.createElement("div");
     imgContainer.classList.add("container");
@@ -300,8 +300,8 @@ async function displayGrid(i, albumData, path) {
     img1.classList.add("hover-shadow");
     img1.addEventListener('click', () => {
         openModal();
-        currentSlide(i+1);
-        setSlideListeners(i)
+        currentSlide(i+1+offSet);
+        setSlideListeners(albumData, i);
     });
     icon.appendChild(privacyIcon);
     overlay.appendChild(icon);
@@ -612,7 +612,7 @@ function showSlides(n) {
     }
     if(slides[slideIndex-1] !== undefined) {
         slides[slideIndex-1].style.display = "inline-block";
-        const privacyBtn = document.getElementById("privacyBtn")
+        const privacyBtn = document.getElementById("privacyBtn");
         if (privacyBtn != null) {
             if (slides[slideIndex - 1].getAttribute("data-privacy") === "true") {
                 document.getElementById("privacyBtn").innerHTML = "Make Private";
@@ -620,7 +620,7 @@ function showSlides(n) {
                 document.getElementById("privacyBtn").innerHTML = "Make Public";
             }
         }
-        setSlideListeners(slideIndex-1);
+        setSlideListeners(albumMediaData, slideIndex-1);
     }
 }
 
@@ -839,7 +839,7 @@ function deletePhotoRequest(photoId){
                                 deletePhotoFromUI(photoId);
                             },
                             error:function(res){
-                                console.log(res.responseText);
+                                // console.log(res.responseText);
                             }
                         });
                         $(document.getElementById('myModal')).modal('show')
@@ -867,7 +867,7 @@ function deletePhotoRequest(photoId){
                                 deletePhotoFromUI(photoId);
                             },
                             error: function (res) {
-                                console.log(JSON.stringify(res));
+                                // console.log(JSON.stringify(res));
                             }
                         })
                         $(document.getElementById('myModal')).modal('show')

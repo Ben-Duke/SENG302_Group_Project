@@ -29,7 +29,6 @@ function getItemData(item) {
         data.link = "/users/map_home";
         addItem(data);
     } else if (item.hasOwnProperty('destName')) {
-        console.log(item);
         data.header = item.destName;
         data.type = 'Destination';
         data.body = item.district + ', ' + item.country;
@@ -42,13 +41,13 @@ function getItemData(item) {
                 type: 'GET',
                 url: '/users/albums/getAlbumFromMediaId/' + item.mediaId,
                 success: function(albumData) {
-                    data.link = "/users/albums/" + albumData;
+                    data.link = "/users/albums/" + albumData.albumId;
                     data.header = item.caption;
                     if (item.caption === "") {
                         data.header = "Uncaptioned Photo"
                     }
                     data.type = 'Photo';
-                    data.body = '';
+                    data.body = 'Album: ' + albumData.title;
                     data.img = '/users/home/servePicture/' + encodeURIComponent(item.urlWithPath);
                     addItem(data);
                 },

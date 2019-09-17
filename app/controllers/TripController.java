@@ -767,13 +767,43 @@ public class TripController extends Controller {
      * @param name the name of the trip to match
      * @return the list of trips that match the name
      */
-    public Result getTripsByName(Http.Request request, String name) {
+    public Result getTripsByName(Http.Request request, String name, int offset, int quantity) {
         User user = User.getCurrentUser(request);
         if (user == null) { return redirect(routes.UserController.userindex()); }
-        List<Trip> trips = TripAccessor.getTripsByName(name, user);
+        List<Trip> trips = TripAccessor.getTripsByName(name, user, offset, quantity);
 
         if(trips != null && trips.size() > 0) {
-            return ok(Json.toJson(trips));
+            ObjectMapper objectMapper = new ObjectMapper();
+            ObjectNode result = objectMapper.createObjectNode();
+            ArrayNode tripsListNode = objectMapper.createArrayNode();
+            for (Trip trip : trips) {
+                ObjectNode tripNode = objectMapper.createObjectNode();
+                ArrayNode visitNodes = objectMapper.createArrayNode();
+
+                for (Visit visit : trip.getOrderedVisits()) {
+                    ObjectNode visitNode = objectMapper.createObjectNode();
+
+                    Destination destination = visit.getDestination();
+
+                    visitNode.put("visitId", visit.getVisitid());
+                    visitNode.put("visitName", visit.getVisitName());
+                    visitNode.put("destType", destination.getDestType());
+                    visitNode.put("lat", destination.getLatitude());
+                    visitNode.put("lng", destination.getLongitude());
+                    visitNode.put("arrivalDate", visit.getArrival());
+                    visitNode.put("departureDate", visit.getDeparture());
+
+                    visitNodes.add(visitNode);
+                }
+                tripNode.put("tripId", trip.getTripid());
+                tripNode.put("tripName", trip.getTripName());
+                tripNode.put("startDate", trip.getTripStart());
+                tripNode.put("visits", visitNodes);
+                tripsListNode.add(tripNode);
+            }
+            result.put("trips", tripsListNode);
+            result.put("tripCount", tripsListNode.size());
+            return ok(Json.toJson(result));
         } else {
             return ok(Json.toJson(new ArrayList<>()));
         }

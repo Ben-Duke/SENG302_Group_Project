@@ -8,6 +8,8 @@ import models.User;
 import java.util.ArrayList;
 import java.util.List;
 
+import static io.ebean.Expr.like;
+
 /**
  * A class to handle accessing Trips from the database
  */
@@ -22,8 +24,13 @@ public class TripAccessor {
      * @param name name of a trip to find in the database
      * @return Trip
      */
-    public static List<Trip> getTripsByName(String name, User user) {
-        return Trip.find().query().where().eq("user", user).like("trip_name", "%" + name + "%").findList();
+    public static List<Trip> getTripsByName(String name, User user, Integer offset, Integer quantity) {
+        return Trip.find().query().
+                where().eq("user", user)
+                .or(like("trip_name", "%" + name + "%"),
+                        like("trip_name", "%" + name.toUpperCase() + "%"))
+                .setFirstRow(offset).setMaxRows(quantity).findList();
+
     }
 
     public static Integer getTotalUserTripCount(User user) {

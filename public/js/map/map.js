@@ -1403,33 +1403,40 @@ function checkTripVisits() {
         })
 }
 
-$("#tripSearchInput").keyup(function()
+$("#tripSearchInput").keyup(async function()
 {
     let searchInput = document.getElementById("tripSearchInput").value;
     if(searchInput != "") {
+        let data = {offset: 0,
+                quantity: 5};
+
         $.ajax({
             url: '/users/trips/matching/' + searchInput,
+            data: data,
             method: "GET",
             success: function (res) {
-                let displayedIds = [];
-                for (let j=0; j < res.length; j++) {
-                    displayedIds.push("Button" + res[j].tripid);
+                let paginationList = document.getElementById("trip-pagination-list");
+                while (paginationList.firstChild) {
+                    paginationList.removeChild(paginationList.firstChild);
                 }
-                let tripListChildren = document.getElementById("trip-list-group").children;
-                for(let i=0; i < tripListChildren.length; i++) {
-                    if (!displayedIds.includes(tripListChildren[i].id)) {
-                        tripListChildren[i].setAttribute("style", "display: none;");
-                    } else {
-                        tripListChildren[i].setAttribute("style", "display: block;");
-                    }
-                }
+                setTripPaginationLinks(res.tripCount, 5, searchInput);
+                tripPageNum = 1;
+                displayTripTablePage(res.trips);
+
             }
         });
     } else {
-         let tripListChildren = document.getElementById("trip-list-group").children;
-            for(let i=0; i < tripListChildren.length; i++) {
-                    tripListChildren[i].setAttribute("style", "display: block;");
-            }
+        let paginationList = document.getElementById("trip-pagination-list");
+        while (paginationList.firstChild) {
+            paginationList.removeChild(paginationList.firstChild);
+        }
+        tripPageNum = 1;
+        let tripJSON = await getPaginatedTripResults(tripPageNum, 5);
+        let trips  = tripJSON.trips;
+        let tripCount = tripJSON.tripCount;
+        setTripPaginationLinks(tripCount, 5);
+        displayTripTablePage(trips);
+
     }
 });
 
@@ -1568,32 +1575,35 @@ window.onload = async function() {
 };
 
 
-async function nextTripPage() {
-    document.getElementById("trip-pagination-link-" + tripPageNum).removeAttribute("class");
+async function nextTripPage(search) {
     tripPageNum += 1;
-    document.getElementById("trip-pagination-link-" + tripPageNum).setAttribute("class", "active");
-    let newlyDisplayedTrips = await getPaginatedTripResults(tripPageNum, 5);
-    displayTripTablePage(newlyDisplayedTrips.trips);
+    jumpToTripPage(tripPageNum, search);
 }
 
-async function previousTripPage() {
-    document.getElementById("trip-pagination-link-" + tripPageNum).removeAttribute("class");
+async function previousTripPage(search) {
     if(tripPageNum > 1) {
     tripPageNum -= 1;
     } else {
     tripPageNum = 1;
     }
-    document.getElementById("trip-pagination-link-" + tripPageNum).setAttribute("class", "active");
-    let newlyDisplayedTrips = await getPaginatedTripResults(tripPageNum, 5);
-    displayTripTablePage(newlyDisplayedTrips.trips);
+    jumpToTripPage(tripPageNum, search);
 }
 
-async function jumpToTripPage(pageNumber) {
+async function jumpToTripPage(pageNumber, search) {
     document.getElementById("trip-pagination-link-" + tripPageNum).removeAttribute("class");
     tripPageNum = pageNumber;
     document.getElementById("trip-pagination-link-" + tripPageNum).setAttribute("class", "active");
-    let newlyDisplayedTrips = await getPaginatedTripResults(tripPageNum, 5);
-    displayTripTablePage(newlyDisplayedTrips.trips);
+    if (search == undefined) {
+        console.log("No search");
+        let newlyDisplayedTrips = await getPaginatedTripResults(tripPageNum, 5);
+        displayTripTablePage(newlyDisplayedTrips.trips);
+    } else {
+        console.log("search");
+        let newlyDisplayedTrips = await getPaginatedTripSearchResults(tripPageNum, 5, search);
+        displayTripTablePage(newlyDisplayedTrips.trips);
+    }
+
+
 }
 
 
@@ -1813,18 +1823,31 @@ async function getPaginatedTripResults(pageNum, quantity) {
     return trips;
 }
 
-function setTripPaginationLinks(tripCount, perPage) {
+async function getPaginatedTripSearchResults(pageNum, quantity, searchInput) {
+    const offset = (pageNum - 1) * quantity;
+    let data = {offset: offset,
+                    quantity: quantity};
+
+    let trips = await $.ajax({
+        url: '/users/trips/matching/' + searchInput,
+        data: data,
+        method: "GET"
+    });
+    return trips;
+}
+
+function setTripPaginationLinks(tripCount, perPage, search) {
     let paginationList = document.getElementById("trip-pagination-list");
     let previousArrowLink = document.createElement("li");
     let previousArrow = document.createElement("a");
     previousArrow.setAttribute("id", "previous-trip");
-    previousArrow.setAttribute("onclick","previousTripPage()");
+    previousArrow.setAttribute("onclick","previousTripPage(" + search + ")");
     previousArrow.innerHTML = "&laquo";
     previousArrowLink.appendChild(previousArrow);
     let nextArrowLink = document.createElement("li");
     let nextArrow = document.createElement("a");
     nextArrow.setAttribute("id", "next-trip");
-    nextArrow.setAttribute("onclick","nextTripPage()");
+    nextArrow.setAttribute("onclick","nextTripPage(" + search + ")");
     nextArrow.innerHTML = "&raquo";
     nextArrowLink.appendChild(nextArrow);
     paginationList.appendChild(previousArrowLink);
@@ -1844,7 +1867,7 @@ function setTripPaginationLinks(tripCount, perPage) {
         let pageNumberLink = document.createElement("a");
         pageNumberLink.innerText = i.toString();
 
-        pageNumberLink.setAttribute("onclick", "jumpToTripPage(" + i + ")");
+        pageNumberLink.setAttribute("onclick", "jumpToTripPage(" + i + "," + search + ")");
         pageNumber.appendChild(pageNumberLink);
         paginationList.appendChild(pageNumber);
     }

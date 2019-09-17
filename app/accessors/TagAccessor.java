@@ -23,7 +23,7 @@ public class TagAccessor {
      * @return the first tag matching the name in the database if it exists. else null
      */
     public static Tag getTagByName(String name) {
-        return Tag.find.query().where().eq("name", name).findOne();
+        return Tag.find.query().where().ieq("name", name).findOne();
     }
 
     /**

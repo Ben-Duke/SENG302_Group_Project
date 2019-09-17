@@ -136,4 +136,68 @@ public class DestinationAccessorTest extends BaseTestWithApplicationAndDatabase 
         List<Destination> destinations = DestinationAccessor.getPaginatedPublicDestinations(0, 5);
         assertEquals(5, destinations.size());
     }
+
+    @Test
+
+    /**
+     * Checks that getDestinationsWithKeyword method returns an empty list
+     * when the database has no destinations.
+     */
+    public void getPaginatedDestinations_ByKeyword_noDestinations_checkEmptyList() {
+
+        TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
+        testDatabaseManager.clearAllData();
+
+        List<Destination> destinations = DestinationAccessor.getDestinationsWithKeyword("G", 0, 10);
+        assertTrue(destinations.isEmpty());
+    }
+
+    @Test
+
+    /**
+     * Checks that getDestinationsWithKeyword method returns an empty list
+     * when there no matching destination with the keyword.
+     */
+    public void getPaginatedDestinations_ByKeyword_noDestinationsWithKeyword_checkEmptyList() {
+        TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
+        testDatabaseManager.clearAllData();
+
+        User user = new User();
+        UserAccessor.insert(user);
+        int userId = user.getUserid();
+
+        Destination destination = new Destination("test",
+                "test", "test", "New Zealand",
+                32.2, 22.1, user);
+        DestinationAccessor.insert(destination);
+
+        List<Destination> destinations = DestinationAccessor.getDestinationsWithKeyword("I", 0, 10);
+        assertTrue(destinations.isEmpty());
+    }
+
+    @Test
+
+    /**
+     * Checks that getDestinationsWithKeyword method returns the destinations
+     * that match the keyword
+     */
+    public void getPaginatedDestinations_ByKeyword_DestinationsWithKeyword_checkNonEmptyList() {
+        TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
+        testDatabaseManager.clearAllData();
+
+        User user = new User();
+        UserAccessor.insert(user);
+        int userId = user.getUserid();
+
+
+        Destination destination = new Destination("test",
+                "test", "test", "New Zealand",
+                32.2, 22.1, user);
+        DestinationAccessor.insert(destination);
+        destination.setIsPublic(true);
+        DestinationAccessor.update(destination);
+
+        List<Destination> destinations = DestinationAccessor.getDestinationsWithKeyword("e", 10, 0);
+        assertEquals(1, destinations.size());
+    }
 }

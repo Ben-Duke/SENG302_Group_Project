@@ -3,6 +3,7 @@ package accessors;
 import io.ebean.Query;
 import models.Destination;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -36,6 +37,8 @@ public class DestinationAccessor {
                 .eq("destName", name)
                 .findOne();
     }
+
+
 
     /**
      * Gets a paginated List of public destinations, with an offset and quantity to fetch.

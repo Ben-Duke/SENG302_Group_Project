@@ -1,5 +1,6 @@
 package utilities;
 
+import accessors.EventResponseAccessor;
 import accessors.UserAccessor;
 import controllers.ApplicationManager;
 import io.ebean.Ebean;
@@ -48,6 +49,8 @@ public class TestDatabaseManager {
         // Setup which is run for both tests and sbt run
         CountryUtils.updateCountries();
         CountryUtils.validateUsedCountries();
+
+        addEventResponseTypes();
 
         setUserPasswords();
 
@@ -126,6 +129,20 @@ public class TestDatabaseManager {
 
             user.update();
         }
+    }
+
+    /**
+     * Add event response types to the database.
+     */
+    public void addEventResponseTypes() {
+        EventResponse going = new EventResponse("Going");
+        EventResponse interested = new EventResponse("Interested");
+        EventResponse notInterested = new EventResponse("Not Interested");
+        EventResponse went = new EventResponse("Went");
+        EventResponseAccessor.insert(interested);
+        EventResponseAccessor.insert(notInterested);
+        EventResponseAccessor.insert(going);
+        EventResponseAccessor.insert(went);
     }
 
     /** Clear data from all tables except nationality, passport and traveller type */

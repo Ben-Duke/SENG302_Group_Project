@@ -7,7 +7,7 @@ import models.User;
 import java.util.List;
 
 /**
- * A class to handle accessing Treasure Hunts from the database
+ * A class to handle accessing Event Responses from the database
  */
 public class EventResponseAccessor {
 

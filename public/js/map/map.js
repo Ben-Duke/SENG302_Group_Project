@@ -23,7 +23,7 @@ function initMap() {
         },
     });
 
-    geoCoder = new google.maps.Geocoder;
+    // geoCoder = new google.maps.Geocoder;
 
     initPlacesAutocompleteSearch();
     initDestinationMarkers();
@@ -678,7 +678,12 @@ let currentlyDisplayedTripId;
  * @param startLng the longitude to zoom to
  */
 function displayTrip(tripId, startLat, startLng) {
-    thereIsAnError.errors = [];
+    const errorMsgs = document.getElementsByClassName('dateError')
+    if(currentlyDisplayedTripId !== undefined) {
+        for (let errorMsg of errorMsgs) {
+            errorMsg.style.display = "None";
+        }
+    }
     if(tripId !== currentlyDisplayedTripId && currentlyDisplayedTripId !== undefined) {
         if(document.getElementById("singleTrip_" + currentlyDisplayedTripId) != undefined) {
             document.getElementById("singleTrip_" + currentlyDisplayedTripId).style.display = "none";
@@ -1196,6 +1201,12 @@ function getAllMarkerIcons() {
     return icons;
 }
 
+async function closeAllInfoWindows() {
+    for (let marker of window.globalMarkers) {
+        marker.infoWindow.close(window.globalMap, marker.marker)
+    }
+}
+
 /**
  * Initiates all the event handlers for a google maps markers.
  *
@@ -1224,8 +1235,10 @@ function initMarkerEventHandlers(markerIndex) {
     // event handler to open infoWindow on click
     window.globalMarkers[markerIndex].marker.addListener('click', () => {
         window.globalMarkers[markerIndex].isClicked = true;
-        window.globalMarkers[markerIndex].infoWindow.open(window.globalMap,
-                                    window.globalMarkers[markerIndex].marker);
+        closeAllInfoWindows().then(() => {
+            window.globalMarkers[markerIndex].infoWindow.open(window.globalMap,
+                window.globalMarkers[markerIndex].marker);
+        });
     });
 }
 

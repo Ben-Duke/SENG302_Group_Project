@@ -59,11 +59,9 @@ function changeTaggableModel(newTaggableId, newTaggableType) {
 function removeExistingTagLabels() {
     toAddTagList = new Set();
     const tagList = document.getElementById("tag-line");
-    const tagInput = document.getElementById('tag-add');
     while (tagList.firstChild) {
         tagList.removeChild(tagList.firstChild)
     }
-    tagList.appendChild(tagInput);
 }
 
 /**
@@ -86,6 +84,7 @@ function sendGetTagsRequest() {
         for (let tag of tags) {
             addTagLabel(tag.name)
         }
+        console.log(tags);
     }).fail((xhr, textStatus, errorThrown) => {
         console.log(xhr.status + " " + textStatus + " " + errorThrown);
     });
@@ -182,9 +181,9 @@ function addTagLabel(name) {
 
     input.value = "";
 
-    newTag.className = "tag label label-info";
+    newTag.className = "tag-label tag";
     newTag.id = name;
-    newText.innerHTML = `<a style="color: black">${name}</a>`;
+    newText.innerHTML = `<a>${name}</a>`;
     newIcon.className = "remove glyphicon glyphicon-remove-sign glyphicon-white";
 
     newRemove.onclick = function() {
@@ -193,13 +192,14 @@ function addTagLabel(name) {
         removeTagFromItem(name);
     };
     newText.onclick = function() {
-        window.location.href = '/tags/display/' + name.toLowerCase();
+        window.location.href = '/tags/display/' + encodeURIComponent(name.toLowerCase());
     };
     newRemove.appendChild(newIcon);
     newTag.appendChild(newText);
     newTag.appendChild(newRemove);
-    if(!toAddTagList.has(name.toLowerCase())) {
-        toAddTagList.add(name.toLowerCase());
+
+    if(!toAddTagList.has(name)) {
+        toAddTagList.add(name);
         tagList.appendChild(newTag);
     }
 }

@@ -121,7 +121,7 @@ public class TravelPartnerController {
      * @return returns a Json response with any users that match the passed parameters
      */
     public Result travellerTypePaginated(
-            Http.Request request, int offset, int quantity, String travellerType, String nationality, String bornAfter, String bornBefore){
+            Http.Request request, int offset, int quantity, String travellerType, String nationality, String bornAfter, String bornBefore, String gender){
         System.out.println("traveller type is " + travellerType);
         User user = User.getCurrentUser(request);
         if(user == null){
@@ -141,7 +141,7 @@ public class TravelPartnerController {
         if (bornBefore == null) {
             bornBefore = "";
         }
-        Set<User> users = UserAccessor.getUsersByQuery(travellerType, offset,quantity,nationality, bornAfter, bornBefore);
+        Set<User> users = UserAccessor.getUsersByQuery(travellerType, offset,quantity,nationality, bornAfter, bornBefore, gender);
 
         for(User userTemp : users){
             System.out.println(userTemp.toString());

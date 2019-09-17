@@ -19,11 +19,12 @@ import java.util.*;
 public class UserAccessor {
     static int QUERY_SIZE =  2;
 
-    private static String TRAVELLER_TYPE_COLUMN_NAME = "travellerTypes";
-    private static String NATIONALITY_COLUMN_NAME = "nationality";
+    private static final String TRAVELLER_TYPE_COLUMN_NAME = "travellerTypes";
+    private static final String NATIONALITY_COLUMN_NAME = "nationality";
+    private static final String GENDER_COLUMN_NAME = "gender";
 
 
-    public enum QueryParameters {
+    public enum ColumnNames {
         TRAVELLER_TYPE,
         NATIONALITY,
     }
@@ -175,10 +176,12 @@ public class UserAccessor {
      * @param queryNationality a String which can be can be used to search the nationality
      * @return a list of users returns empty if none are found
      */
-   public static Set<User> getUsersByQuery(String travellerType, int offset, int quantity, String queryNationality, String agerange1, String agerange2){
+   public static Set<User> getUsersByQuery(String travellerType,
+                                           int offset, int quantity, String queryNationality,
+                                           String agerange1, String agerange2, String gender){
         TravellerType type = null;
         Nationality nationality = null;
-        List<List<Object>> equalsfields = new ArrayList<>();
+        List<List<Object>> equalsFields = new ArrayList<>();
 
        if(quantity < 1) {
            return new HashSet<User>();
@@ -199,7 +202,8 @@ public class UserAccessor {
            queryValues.add("1");
            queryValues.add("1");
        }
-       equalsfields.add(queryValues);
+
+       equalsFields.add(queryValues);
        queryValues = new ArrayList<>();
        if (queryNationality != null) {
            queryValues.add("nationality");
@@ -212,7 +216,7 @@ public class UserAccessor {
            queryValues.add("1");
        }
 
-       equalsfields.add(queryValues);
+       equalsFields.add(queryValues);
 
 
        Date date1 = null;
@@ -244,12 +248,12 @@ public class UserAccessor {
 
                            .where()
 
-                           .eq((String) equalsfields.get(0).get(0),  equalsfields.get(0).get(1))
+                           .eq((String) equalsFields.get(0).get(0),  equalsFields.get(0).get(1))
                            .select("userid")
                            .fetch(NATIONALITY_COLUMN_NAME, "*")
                            .where()
 
-                           .eq((String) equalsfields.get(1).get(0), equalsfields.get(1).get(1))
+                           .eq((String) equalsFields.get(1).get(0), equalsFields.get(1).get(1))
                            .setFirstRow(offset).setMaxRows(quantity);
        }
        else {
@@ -260,11 +264,11 @@ public class UserAccessor {
 
                            .where()
 
-                           .eq((String) equalsfields.get(0).get(0),  equalsfields.get(0).get(1))
+                           .eq((String) equalsFields.get(0).get(0),  equalsFields.get(0).get(1))
                            .select("userid")
                            .fetch(NATIONALITY_COLUMN_NAME, "*")
                            .where()
-                           .eq((String) equalsfields.get(1).get(0), equalsfields.get(1).get(1))
+                           .eq((String) equalsFields.get(1).get(0), equalsFields.get(1).get(1))
                            .setFirstRow(offset).setMaxRows(quantity);
        }
        return query.findSet();
@@ -284,5 +288,36 @@ public class UserAccessor {
                     .append(arr[i].substring(1)).append(" ");
         }
         return sb.toString().trim();
+    }
+
+    private static List<List<Object>> updateEqualsFields(String queryValue,
+                                                         String columnName,
+                                                         List<List<Object>> equalsFieldsToBeUpdated) {
+        List<Object> queryValues = new ArrayList<>();
+        if (queryValue != null) {
+            queryValue = toTitleCase(queryValue);
+
+            queryValues.add(columnName);
+            Object convertedQueryValue = null;
+            switch (columnName) {
+                case TRAVELLER_TYPE_COLUMN_NAME:
+                    convertedQueryValue = TravellerType.find().query().where().eq("travellerTypeName", queryValue).findOne();
+                    break;
+                case NATIONALITY_COLUMN_NAME:
+                    convertedQueryValue = Nationality.find().query().where().eq("nationalityName", queryValue).findOne();
+                    break;
+                case GENDER_COLUMN_NAME:
+                    convertedQueryValue = Nationality.find().query().where().eq("nationalityName", queryValue).findOne();
+                    break;
+            }
+            queryValues.add(convertedQueryValue);
+        }
+        else{
+            queryValues.add("1");
+            queryValues.add("1");
+        }
+
+        equalsFieldsToBeUpdated.add(queryValues);
+        return equalsFieldsToBeUpdated;
     }
 }

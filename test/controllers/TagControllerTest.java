@@ -52,7 +52,7 @@ public class TagControllerTest extends BaseTestWithApplicationAndDatabase {
     @Test
     public void addValidExistingRawTagCheckResponse() {
         Result result = addRawTagHelper("Vacation Spot", 2);
-        assertEquals(CREATED, result.status());
+        assertEquals(OK, result.status());
     }
 
     @Test

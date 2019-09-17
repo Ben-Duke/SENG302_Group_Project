@@ -5,11 +5,13 @@ import io.ebean.Expression;
 import io.ebean.ExpressionList;
 import io.ebean.Query;
 import models.*;
+import utilities.UtilityFunctions;
 
 import javax.jws.soap.SOAPBinding;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.util.*;
 
 /**
  * A class to handle accessing Users from the database
@@ -18,6 +20,8 @@ public class UserAccessor {
     static int QUERY_SIZE =  2;
 
     private static String TRAVELLER_TYPE_COLUMN_NAME = "travellerTypes";
+    private static String NATIONALITY_COLUMN_NAME = "nationality";
+
 
     public enum QueryParameters {
         TRAVELLER_TYPE,
@@ -139,6 +143,32 @@ public class UserAccessor {
         }
     }
 
+    public static Set<User> getUsersWithAgeRange (String agerange1, String agerange2) {
+        Date date1 = null;
+        Date date2 = null;
+        Boolean parseDate = (agerange1 != null && agerange2 != null) && (agerange1.equals("") || agerange2.equals(""));
+        try {
+            if (parseDate && agerange1.equals("") && !agerange2.equals("")) {
+                date1 = new Date(Long.MIN_VALUE);
+                date2 = new SimpleDateFormat("yyyy-MM-dd").parse(agerange2);
+            } else if (parseDate && agerange2.equals("") && !agerange1.equals("")) {
+                date1 = new SimpleDateFormat("yyyy-MM-dd").parse(agerange1);
+                date2 = new Date();
+            } else if (parseDate && !agerange1.equals("") && !agerange2.equals("")) {
+                date1 = new SimpleDateFormat("yyyy-MM-dd").parse(agerange1);
+                date2 = new SimpleDateFormat("yyyy-MM-dd").parse(agerange2);
+            }
+        } catch (ParseException e) {
+            //Do Nothing
+        }
+        System.out.println(date1);
+        System.out.println(date2);
+        if(date1 != null && date2 != null){
+            return User.find().query().where().gt("dateOfBirth", date1).lt("dateOfBirth", date2).findSet();
+        }
+        return new HashSet<>();
+    }
+
     /**
      * Sends a request to ebeans to get a list of users based on pass parameters
      * @param travellerType a String which can be can be used to search the travellerType
@@ -147,13 +177,13 @@ public class UserAccessor {
      * @param queryNationality a String which can be can be used to search the nationality
      * @return a list of users returns empty if none are found
      */
-   public static List<User> getUsersByQuery(String travellerType, int offset, int quantity, String queryNationality){
+   public static Set<User> getUsersByQuery(String travellerType, int offset, int quantity, String queryNationality, String agerange1, String agerange2){
         TravellerType type = null;
         Nationality nationality = null;
         List<List<Object>> equalsfields = new ArrayList<>();
 
        if(quantity < 1) {
-           return new ArrayList<User>();
+           return new HashSet<User>();
        }
 
        if(offset < 0) {
@@ -161,7 +191,8 @@ public class UserAccessor {
        }
 
        List<Object> queryValues = new ArrayList<>();
-       if (! (travellerType == null)) {
+       if (travellerType != null) {
+           travellerType = toTitleCase(travellerType);
            queryValues.add(TRAVELLER_TYPE_COLUMN_NAME);
            type = TravellerType.find().query().where().eq("travellerTypeName", travellerType).findOne();
            queryValues.add(type);
@@ -172,8 +203,9 @@ public class UserAccessor {
        }
        equalsfields.add(queryValues);
        queryValues = new ArrayList<>();
-       if (! (nationality == null)) {
+       if (queryNationality != null) {
            queryValues.add("nationality");
+           queryNationality = toTitleCase(queryNationality);
            nationality = Nationality.find().query().where().eq("nationalityName", queryNationality).findOne();
            queryValues.add(nationality);
        }
@@ -181,24 +213,48 @@ public class UserAccessor {
            queryValues.add("1");
            queryValues.add("1");
        }
+
        equalsfields.add(queryValues);
+
+       System.out.println(equalsfields);
        Query<User> query = //Ebean.find(User.class)
                User.find().query()
-
-               .select("userid")
                //Use this to get connected traveller types
                .fetch(TRAVELLER_TYPE_COLUMN_NAME,"*")
-                       .fetch("nationality", "*")
+
                .where()
 
                .eq((String) equalsfields.get(0).get(0),  equalsfields.get(0).get(1))
+                       .select("userid")
+                       .fetch(NATIONALITY_COLUMN_NAME, "*")
+                       .where()
 
-
-                       .and()
                        .eq((String) equalsfields.get(1).get(0), equalsfields.get(1).get(1))
                .setFirstRow(offset).setMaxRows(quantity);
 
        System.out.println("Query is "+query.toString());
-       return query.findList();
+       Set<User> queryUsers = query.findSet();
+
+       Set<User> ageRangeUsers = getUsersWithAgeRange(agerange1, agerange2);
+       List<Set<User>> userLists = new ArrayList<>();
+       userLists.add(queryUsers);
+       userLists.add(ageRangeUsers);
+       return UtilityFunctions.retainFromLists(userLists);
    }
+
+    /**
+     * Converts the first letter of each word in a sentence to a capital letter.
+     * @param givenString the sentence to convert
+     * @return the reformatted string
+     */
+    private static String toTitleCase(String givenString) {
+        String[] arr = givenString.split(" ");
+        StringBuffer sb = new StringBuffer();
+
+        for (int i = 0; i < arr.length; i++) {
+            sb.append(Character.toUpperCase(arr[i].charAt(0)))
+                    .append(arr[i].substring(1)).append(" ");
+        }
+        return sb.toString().trim();
+    }
 }

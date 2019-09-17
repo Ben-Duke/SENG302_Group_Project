@@ -21,6 +21,7 @@ import javax.swing.text.html.Option;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import static play.mvc.Results.*;
@@ -120,8 +121,8 @@ public class TravelPartnerController {
      * @return returns a Json response with any users that match the passed parameters
      */
     public Result travellerTypePaginated(
-            Http.Request request, int offset, int quantity, String travellerType, String nationality){
-
+            Http.Request request, int offset, int quantity, String travellerType, String nationality, String bornAfter, String bornBefore){
+        System.out.println("traveller type is " + travellerType);
         User user = User.getCurrentUser(request);
         if(user == null){
             return unauthorized("You need to be logged in to use this api");
@@ -135,7 +136,22 @@ public class TravelPartnerController {
 
         }
 
-        List<User> users = UserAccessor.getUsersByQuery(travellerType, offset,quantity,nationality);
+        LocalDate bornAfterDate = null;
+        LocalDate bornBeforeDate = null;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        try{
+            bornAfterDate = LocalDate.parse(bornAfter,formatter);
+        }catch(Exception e){
+
+        }
+        try{
+            bornBeforeDate = LocalDate.parse(bornBefore,formatter);
+        }catch(Exception e){
+
+        }
+
+
+        Set<User> users = UserAccessor.getUsersByQuery(travellerType, offset,quantity,nationality, bornAfter, bornBefore);
 
         for(User userTemp : users){
             System.out.println(userTemp.toString());
@@ -205,28 +221,7 @@ public class TravelPartnerController {
 
         String agerange1 = filterForm.get("agerange1");
         String agerange2 = filterForm.get("agerange2");
-        Date date1 = null;
-        Date date2 = null;
-        Boolean parseDate = (agerange1 != null && agerange2 != null) && (agerange1.equals("") || agerange2.equals(""));
-        try {
-            if (parseDate && agerange1.equals("") && !agerange2.equals("")) {
-                date1 = new Date(Long.MIN_VALUE);
-                date2 = new SimpleDateFormat("yyyy-MM-dd").parse(agerange2);
-            } else if (parseDate && agerange2.equals("") && !agerange1.equals("")) {
-                date1 = new SimpleDateFormat("yyyy-MM-dd").parse(agerange1);
-                date2 = new Date();
-            } else if (parseDate && !agerange1.equals("") && !agerange2.equals("")) {
-                date1 = new SimpleDateFormat("yyyy-MM-dd").parse(agerange1);
-                date2 = new SimpleDateFormat("yyyy-MM-dd").parse(agerange2);
-            }
-        } catch (ParseException e) {
-            //Do Nothing
-        }
-
-        if(date1 != null && date2 != null){
-            return User.find().query().where().gt("dateOfBirth", date1).lt("dateOfBirth", date2).findSet();
-        }
-        return new HashSet<>();
+        return UserAccessor.getUsersWithAgeRange(agerange1, agerange2);
     }
 
 

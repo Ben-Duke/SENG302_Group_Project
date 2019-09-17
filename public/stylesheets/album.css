@@ -336,3 +336,8 @@ img.hover-shadow {
     margin: 0 auto;
 }
 
+#tag-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

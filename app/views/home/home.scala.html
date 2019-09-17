@@ -15,13 +15,7 @@
     <div class="container">
     <div class="row">
         <div class="col-md-6">
-            <!-- The thumbnail in the else is being displayed to show the AC passing -->
             <h2>@user.getFName() @user.getLName
-                @if(UserFactory.getUserProfilePicture(user.getUserid()) != null){
-                <img id="thumbnailProfilePic" class="img-circle"  width = "50" height="50" src="@{routes.HomeController.serveProfilePicture(user.getUserid())}">
-                } else {
-                <img id="thumbnailProfilePic" class="img-circle"  width = "50" height="50" src="@{routes.Assets.at("images/Generic.png")}">
-                }
                 @if(user.userIsAdmin) {
                 <img class="img"  width = "60" height="50" src="../assets/images/key_2_small.png">
                 }
@@ -80,30 +74,6 @@
             </p>
             <p>Creation date: @user.getCreationDate</p>
 
-        </div>
-
-        <div class="col-md-6">
-            <h2>Trips
-                <a class="btn btn-default btn-outline btn-lg sharp" href="@routes.TripController.createtrip()"> <i class="glyphicon glyphicon-plane"></i> &nbsp; Create Trip</a>
-            </h2>
-            <form>
-                @if(user.getTripsSorted.isEmpty()) {
-                    <div class="well" style="height: 50px">
-                        <p>You don't have any trips yet.</p>
-                    </div>
-                }
-                <div class="list-group">
-                    @for(trip <- user.getTripsSorted) {
-                    <a href="@routes.TripController.displaytrip(trip.getTripid)" class="list-group-item list-group-item-action">
-                        @if(trip.getTripStart() != null){
-                        @trip.getTripName | Arrival date: @trip.getTripStart()
-                        } else{
-                        @trip.getTripName | No arrival dates
-                        }
-                    </a>
-                    }
-                </div>
-            </form>
         </div>
 
         <!-- Modal to upload a new profile picture -->

@@ -1,6 +1,7 @@
 package controllers;
 
 import accessors.AdminAccessor;
+import accessors.UserAccessor;
 import models.Admin;
 import models.User;
 import org.junit.After;
@@ -303,5 +304,29 @@ public class AdminControllerTest extends BaseTestWithApplicationAndDatabase {
         admin = Admin.find().byId(1);
         assertNull(admin.getUserIdToActAs());
     }
+
+    @Test
+    public void getUserData_asAdmin() {
+        Admin admin = AdminAccessor.getAdmin();
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET).uri("/users/admin/data?offset=0&quantity=10")
+                .session("connected", admin.getUserId().toString());
+
+        Result result = route(app, request);
+
+        assertEquals(OK, result.status());
+    }
+
+    @Test
+    public void getUserData_asUser() {
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET).uri("/users/admin/data?offset=0&quantity=10")
+                .session("connected", "2");
+
+        Result result = route(app, request);
+
+        assertEquals(SEE_OTHER, result.status());
+    }
+
 
 }

@@ -1,7 +1,10 @@
 package accessors;
 
 import io.ebean.Finder;
+import io.ebean.Query;
 import models.Admin;
+
+import java.util.List;
 
 public class AdminAccessor {
 

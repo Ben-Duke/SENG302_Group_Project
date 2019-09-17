@@ -23,7 +23,7 @@ function initMap() {
         },
     });
 
-    geoCoder = new google.maps.Geocoder;
+    // geoCoder = new google.maps.Geocoder;
 
     initPlacesAutocompleteSearch();
     initDestinationMarkers();
@@ -1193,6 +1193,12 @@ function getAllMarkerIcons() {
     return icons;
 }
 
+async function closeAllInfoWindows() {
+    for (let marker of window.globalMarkers) {
+        marker.infoWindow.close(window.globalMap, marker.marker)
+    }
+}
+
 /**
  * Initiates all the event handlers for a google maps markers.
  *
@@ -1221,8 +1227,10 @@ function initMarkerEventHandlers(markerIndex) {
     // event handler to open infoWindow on click
     window.globalMarkers[markerIndex].marker.addListener('click', () => {
         window.globalMarkers[markerIndex].isClicked = true;
-        window.globalMarkers[markerIndex].infoWindow.open(window.globalMap,
-                                    window.globalMarkers[markerIndex].marker);
+        closeAllInfoWindows().then(() => {
+            window.globalMarkers[markerIndex].infoWindow.open(window.globalMap,
+                window.globalMarkers[markerIndex].marker);
+        });
     });
 }
 

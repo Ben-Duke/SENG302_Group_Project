@@ -3,6 +3,7 @@ package models;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import controllers.ApplicationManager;
 import io.ebean.Finder;
+import io.ebean.Model;
 import io.ebean.annotation.CreatedTimestamp;
 import play.data.format.Formats;
 
@@ -12,8 +13,9 @@ import java.util.Set;
 
 /** The model class for EventResponse construction */
 @Entity
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = "responseType"))
-public class EventResponse extends BaseModel {
+@Table(name = "event_response",
+        uniqueConstraints = @UniqueConstraint(columnNames = "response_type"))
+public class EventResponse extends BaseModel{
 
     private static final String DATE_PATTERN = "dd-MM-yyyy HH:mm:ss";
 
@@ -26,7 +28,7 @@ public class EventResponse extends BaseModel {
 
     /**
      * Constructor for event response
-     * @param responseType The name of the event reponse type being created
+     * @param responseType The name of the event response type being created
      */
     public EventResponse(String responseType){
         this.responseType = responseType;
@@ -34,7 +36,7 @@ public class EventResponse extends BaseModel {
 
     /**
      * Constructor for event response
-     * @param responseType The name of the event reponse type being created
+     * @param responseType The name of the event response type being created
      */
     public EventResponse(String responseType, Event event, User user){
         this.responseType = responseType;

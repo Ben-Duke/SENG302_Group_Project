@@ -126,7 +126,6 @@ public class TestDatabaseManager {
                 user.hashAndSetPassword(EnvironmentalVariablesAccessor.getEnvVariable(
                         EnvVariableKeys.TEST_USER_PASSWORD_DEFAULT.toString()));
             }
-
             user.update();
         }
     }

@@ -32,7 +32,7 @@ public class EventResponseAccessor {
     }
 
     public static List<EventResponse> getAllByResponseType(EventResponse eventResponseName) {
-        return EventResponse.find().query().where().eq("responseType", eventResponseName).findList();
+        return EventResponse.find().query().where().eq("response_type", eventResponseName).findList();
     }
 
     /** Return a list of Event Responses that are for a given event
@@ -51,7 +51,7 @@ public class EventResponseAccessor {
      */
     public static List<EventResponse> getByEventandType(Event event, String responseType) {
         return EventResponse.find().query().where().eq(
-                "event", event).eq("responseType", responseType).findList();
+                "event", event).eq("response_type", responseType).findList();
     }
 
     /** Return a list of Event Responses by a given user
@@ -70,7 +70,7 @@ public class EventResponseAccessor {
      */
     public static List<EventResponse> getByUserandType(User user, String responseType) {
         return EventResponse.find().query().where().eq(
-                "user", user).eq("responseType", responseType).findList();
+                "user", user).eq("response_type", responseType).findList();
     }
 
     /** Insert the EventResponse  */
@@ -78,6 +78,10 @@ public class EventResponseAccessor {
      * @param eventResponse EventResponse to insert into database
      */
     public static void insert(EventResponse eventResponse) {
+        eventResponse.save();
+    }
+
+    public static void save(EventResponse eventResponse) {
         eventResponse.save();
     }
 

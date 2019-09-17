@@ -46,6 +46,13 @@ GET     /users/admin/actasuser/:id      controllers.AdminController.setUserToAct
 #Handles setting a user back to the admin after acting as a user
 GET     /users/admin/back_to_admin/:id      controllers.AdminController.setUserBackToAdmin(request: Request, id: Integer)
 
+GET     /users/admin/data           controllers.AdminController.getUserData(request: Request, offset: Integer, quantity: Integer)
+
+GET     /users/admin/userCount           controllers.AdminController.getUserCount(request: Request)
+
+
+
+
 GET /users/destination/placeid/:placeId   controllers.DestinationController.getPlacesDetailsRequest(request: Request, placeId:String)
 
 #Handles view a destination modification request

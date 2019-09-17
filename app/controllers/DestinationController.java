@@ -1185,7 +1185,6 @@ public class DestinationController extends Controller {
 
         List<Destination> destinations = DestinationAccessor
                 .getDestinationsWithKeyword(name, quantity ,offset);
-        System.out.println(destinations);
 
         ObjectNode result = (new ObjectMapper()).createObjectNode();
         result.set("destinations", Json.toJson(destinations));

@@ -1386,15 +1386,6 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
     }
 
     @Test
-    public void getDestinationByName () {
-        Http.RequestBuilder request = Helpers.fakeRequest()
-                .method(GET)
-                .uri("/users/destinations/matching/Great").session("connected", "2");
-        Result result = route(app, request);
-        assertEquals(OK, result.status());
-    }
-
-    @Test
     /**
      * Checks the getPaginatedPublicDestinations method returns 200 status under
      * normal conditions.

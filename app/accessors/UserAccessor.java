@@ -146,7 +146,7 @@ public class UserAccessor {
     public static Set<User> getUsersWithAgeRange (String agerange1, String agerange2) {
         Date date1 = null;
         Date date2 = null;
-        Boolean parseDate = (agerange1 != null && agerange2 != null) && (agerange1.equals("") || agerange2.equals(""));
+        Boolean parseDate = (agerange1 != null && agerange2 != null) && (!agerange1.equals("") || !agerange2.equals(""));
         try {
             if (parseDate && agerange1.equals("") && !agerange2.equals("")) {
                 date1 = new Date(Long.MIN_VALUE);
@@ -161,8 +161,6 @@ public class UserAccessor {
         } catch (ParseException e) {
             //Do Nothing
         }
-        System.out.println(date1);
-        System.out.println(date2);
         if(date1 != null && date2 != null){
             return User.find().query().where().gt("dateOfBirth", date1).lt("dateOfBirth", date2).findSet();
         }
@@ -216,30 +214,60 @@ public class UserAccessor {
 
        equalsfields.add(queryValues);
 
-       System.out.println(equalsfields);
-       Query<User> query = //Ebean.find(User.class)
-               User.find().query()
-               //Use this to get connected traveller types
-               .fetch(TRAVELLER_TYPE_COLUMN_NAME,"*")
 
-               .where()
+       Date date1 = null;
+       Date date2 = null;
+       Boolean parseDate = (agerange1 != null && agerange2 != null) && (!agerange1.equals("") || !agerange2.equals(""));
+       try {
+           if (parseDate && agerange1.equals("") && !agerange2.equals("")) {
+               date1 = new Date(Long.MIN_VALUE);
+               date2 = new SimpleDateFormat("yyyy-MM-dd").parse(agerange2);
+           } else if (parseDate && agerange2.equals("") && !agerange1.equals("")) {
+               date1 = new SimpleDateFormat("yyyy-MM-dd").parse(agerange1);
+               date2 = new Date();
+           } else if (parseDate && !agerange1.equals("") && !agerange2.equals("")) {
+               date1 = new SimpleDateFormat("yyyy-MM-dd").parse(agerange1);
+               date2 = new SimpleDateFormat("yyyy-MM-dd").parse(agerange2);
+           }
+       } catch (ParseException e) {
+           //Do Nothing
+       }
+       Query<User> query = null;
+       if(date1 != null && date2 != null){
+           query = //Ebean.find(User.class)
+                   User.find().query()
+                           .where().gt("dateOfBirth", date1)
+                           .lt("dateOfBirth", date2)
+                           .select("uesrid")
+                           //Use this to get connected traveller types
+                           .fetch(TRAVELLER_TYPE_COLUMN_NAME,"*")
 
-               .eq((String) equalsfields.get(0).get(0),  equalsfields.get(0).get(1))
-                       .select("userid")
-                       .fetch(NATIONALITY_COLUMN_NAME, "*")
-                       .where()
+                           .where()
 
-                       .eq((String) equalsfields.get(1).get(0), equalsfields.get(1).get(1))
-               .setFirstRow(offset).setMaxRows(quantity);
+                           .eq((String) equalsfields.get(0).get(0),  equalsfields.get(0).get(1))
+                           .select("userid")
+                           .fetch(NATIONALITY_COLUMN_NAME, "*")
+                           .where()
 
-       System.out.println("Query is "+query.toString());
-       Set<User> queryUsers = query.findSet();
+                           .eq((String) equalsfields.get(1).get(0), equalsfields.get(1).get(1))
+                           .setFirstRow(offset).setMaxRows(quantity);
+       }
+       else {
+           query = //Ebean.find(User.class)
+                   User.find().query()
+                           //Use this to get connected traveller types
+                           .fetch(TRAVELLER_TYPE_COLUMN_NAME,"*")
 
-       Set<User> ageRangeUsers = getUsersWithAgeRange(agerange1, agerange2);
-       List<Set<User>> userLists = new ArrayList<>();
-       userLists.add(queryUsers);
-       userLists.add(ageRangeUsers);
-       return UtilityFunctions.retainFromLists(userLists);
+                           .where()
+
+                           .eq((String) equalsfields.get(0).get(0),  equalsfields.get(0).get(1))
+                           .select("userid")
+                           .fetch(NATIONALITY_COLUMN_NAME, "*")
+                           .where()
+                           .eq((String) equalsfields.get(1).get(0), equalsfields.get(1).get(1))
+                           .setFirstRow(offset).setMaxRows(quantity);
+       }
+       return query.findSet();
    }
 
     /**

@@ -135,22 +135,12 @@ public class TravelPartnerController {
         if(quantity < 0){
 
         }
-
-        LocalDate bornAfterDate = null;
-        LocalDate bornBeforeDate = null;
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        try{
-            bornAfterDate = LocalDate.parse(bornAfter,formatter);
-        }catch(Exception e){
-
+        if (bornAfter == null) {
+            bornAfter = "";
         }
-        try{
-            bornBeforeDate = LocalDate.parse(bornBefore,formatter);
-        }catch(Exception e){
-
+        if (bornBefore == null) {
+            bornBefore = "";
         }
-
-
         Set<User> users = UserAccessor.getUsersByQuery(travellerType, offset,quantity,nationality, bornAfter, bornBefore);
 
         for(User userTemp : users){

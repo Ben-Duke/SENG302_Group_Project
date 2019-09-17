@@ -72,29 +72,17 @@ public class AlbumController extends Controller {
 
         for(Media media: album.getMedia()) {
 
-//            System.out.println(1.2);
-
             if (media.isOwner(user) || media.getIsPublic()) {
                 totalMediaCount++;
 
-//                System.out.println(1.3);
-
                 if (nextAlbumMedia.size() <= quantity-1) {
-
-//                    System.out.println(1.4);
-
-//                    System.out.println(count);
-//                    System.out.println(offSet);
 
                     if (count >= offSet) {
                         nextAlbumMedia.add(media);
-
-//                        System.out.println(1.5);
                     }
                 }
                 count++;
             }
-//            System.out.println();
         }
 
         ObjectMapper objectMapper = new ObjectMapper();

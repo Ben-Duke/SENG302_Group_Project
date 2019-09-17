@@ -5,7 +5,7 @@ var user;
 let destinationsToUnlink_GLOBAL;
 let selectedMediaID_GLOBAL;
 
-const quantityToGet = 4;
+const quantityToGet = 8;
 let offSet = 0;
 let albumMediaData = [];
 
@@ -192,7 +192,6 @@ function setSlideListeners(albumData, i) {
         document.querySelector('div[data-mediaId="'+mediaId+'"] [contenteditable]').innerHTML =
         "Click to add caption, press enter to save.";
     }
-    // console.log(albumData[i]["isPublic"]);
     if(albumData[i]["isPublic"]) {setPrivacy=0;}
     else {setPrivacy=1;}
     setPrivacyListener(setPrivacy, mediaId);
@@ -204,9 +203,6 @@ function setSlideListeners(albumData, i) {
  * @param setPublic true to set to public, false to set to private
  */
 function setMediaPrivacy(mediaId, setPublic, link) {
-    // console.log(mediaId);
-    // console.log(setPublic);
-    // console.log(link);
     const intPublic = setPublic ? 1 : 0;
     $.ajax({
         type: 'GET',
@@ -247,8 +243,6 @@ function getAlbum(userId, albumId){
             const totalMediaCount = data.totalMediaCount;
 
             albumMediaData = albumMediaData.concat(mediaData);
-
-            // console.log(albumMediaData);
 
             addAlbum(mediaData, userId, offSet);
 
@@ -839,7 +833,7 @@ function deletePhotoRequest(photoId){
                                 deletePhotoFromUI(photoId);
                             },
                             error:function(res){
-                                // console.log(res.responseText);
+                                console.log(res.responseText);
                             }
                         });
                         $(document.getElementById('myModal')).modal('show')
@@ -867,9 +861,9 @@ function deletePhotoRequest(photoId){
                                 deletePhotoFromUI(photoId);
                             },
                             error: function (res) {
-                                // console.log(JSON.stringify(res));
+                                console.log(JSON.stringify(res));
                             }
-                        })
+                        });
                         $(document.getElementById('myModal')).modal('show')
                     };
                 document.getElementById('noCloseDeletePhotoButton').onclick =
@@ -904,8 +898,7 @@ function submitEditCaption(caption, photoId) {
         headers: {
             'Content-Type': 'application/json'
         },
-        success:function(){
-            console.log("caption edited");
+        success:function (){
             document.getElementById('undoButton').classList.remove('disabled');
         },
         error: function(xhr, textStatus, errorThrown){
@@ -925,8 +918,7 @@ function openSelectDestinationsToUnlinkPhotoModal(mediaId) {
         url: '/users/albums/photos/get_linked_destinations/' + mediaId,
         success:function(res){
             destinationsToUnlink_GLOBAL = res;
-            console.log('destinations: ');
-            console.log(destinationsToUnlink_GLOBAL);
+
             resetSelectDestinationsToUnlinkPhotoModal();
             setDestinationSelectionsForBulkPhotoLeaving();
             $('#selectDestinationsToUnlinkPhotoModal').modal('show');
@@ -1086,7 +1078,6 @@ $('#photo-upload').click(function (eve){
         var formData = new FormData();
         formData.append('picture', filePath.files[0]);
         formData.append('private', privateInput);
-        console.log(searchBar.value);
         formData.append('album', searchBar.value);
         var token = $('input[name="csrfToken"]').attr('value');
         $.ajaxSetup({

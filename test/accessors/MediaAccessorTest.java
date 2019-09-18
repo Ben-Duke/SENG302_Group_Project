@@ -31,7 +31,6 @@ public class MediaAccessorTest extends BaseTestWithApplicationAndDatabase {
     public void testCreationDateIsNotNull(){
         UserPhoto photo = new UserPhoto("", true, true, null, null,
                 null);
-        System.out.println(MediaAccessor.getMediaCreationDate(photo));
         Assert.assertNotNull(MediaAccessor.getMediaCreationDate(photo));
     }
 

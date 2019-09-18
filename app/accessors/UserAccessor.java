@@ -179,11 +179,30 @@ public class UserAccessor {
 
     /**
      * Sends a request to ebeans to get a list of users based on pass parameters
+     * Usage examples:
+     *
+     * Example 1: Search for a user born after 22nd August 1998 and before 24th August 1998
+     * where their gender can be either male or female
+     * /users/profile/searchprofiles?bornafter=1998-08-22&bornbefore=1998-08-24&gender1=male&gender2=female
+     *
+     *
+     * Example 2: Search for a user with a nationality of Afghanistan and gender of male
+     * /users/profile/searchprofiles?nationality=afghanistan&gender1=male
+     *
+     * Example 3: Search for a user with a nationality of Czechoslovakia
+     * and gender of male or other and Traveller Type of gap year
+     * /users/profile/searchprofiles?nationality=czechoslovakia&gender1=male&gender2=other&travellertype=gap%20year
+     *
      * @param travellerType a String which can be can be used to search the travellerType
      * @param offset an integer of how many users to skip in returned users
      * @param quantity an integer of how many users to be returned
      * @param queryNationality a String which can be can be used to search the nationality
-     * @return a list of users returns empty if none are found
+     * @param agerange1 the lower bound of age range, passed in as a string with the format yyyy-MM-dd
+     * @param agerange2 the upper bound of age range, passed in as a string with the format yyyy-MM-dd
+     * @param gender1 The first gender union to search for: Valid values are Male, Female, Other
+     * @param gender2 The second gender union to search for: Valid values are Male, Female, Other
+     * @param gender3 The third gender union to search for: Valid values are Male, Female, Other
+     * @return a list of users, returns empty if none are found
      */
    public static Set<User> getUsersByQuery(String travellerType,
                                            int offset, int quantity, String queryNationality,
@@ -288,6 +307,17 @@ public class UserAccessor {
         return sb.toString().trim();
     }
 
+    /**
+     * Updates and returns the updated equal fields. The equal fields are used by the sql query
+     * to give optional fields the value of [1,1] (which evaluates to true) when they are not used,
+     * or [Column name, value] when the optional field is used to search for something.
+     * This is then processed by the getUsersByQuery method to filter.
+     *
+     * @param queryValue the query value to search for (ie male or female)
+     * @param columnName the column (attribute) to filter by, eg gender or nationality
+     * @param equalsFieldsToBeUpdated the equalField object to update
+     * @return
+     */
     private static List<List<Object>> updateEqualsFields(String queryValue,
                                                          String columnName,
                                                          List<List<Object>> equalsFieldsToBeUpdated) {
@@ -308,7 +338,14 @@ public class UserAccessor {
                     convertedQueryValue = queryValue;
                     break;
             }
-            queryValues.add(convertedQueryValue);
+            if(convertedQueryValue != null) {
+                queryValues.add(convertedQueryValue);
+            }
+            else {
+                //If the searched entity is invalid, return no results.
+                queryValues.set(0, "0");
+                queryValues.add("1");
+            }
         }
         else{
             if(! columnName.equalsIgnoreCase(GENDER_COLUMN_NAME)) {

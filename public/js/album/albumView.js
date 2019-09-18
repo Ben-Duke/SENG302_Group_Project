@@ -331,7 +331,6 @@ async function displaySlides(i, albumData, path) {
     img1.setAttribute("id", "img"+(i+1));
     img1.classList.add("center-block");
     img1.src = path + encodeURIComponent(url);
-//    img1.setAttribute("onClick", "this.select();");
     var figure = document.createElement("figure");
     figure.appendChild(img1);
     var figureCaption = document.createElement("figcaption");
@@ -343,7 +342,7 @@ async function displaySlides(i, albumData, path) {
     var content = document.querySelector('div[data-mediaId="'+mediaId+'"] [contenteditable]');
     // 1. Listen for changes of the content editable element
     content.addEventListener('focus', function (event) {
-        var el = event.target,
+        const el = event.target,
             input = el.nodeName != 'INPUT',
             data = {};
             el.value = "";

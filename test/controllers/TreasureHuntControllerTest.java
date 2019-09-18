@@ -25,6 +25,7 @@ import play.test.Helpers;
 import play.test.WithApplication;
 import testhelpers.BaseTestWithApplicationAndDatabase;
 import utilities.TestDatabaseManager;
+import utilities.exceptions.EbeanDateParseException;
 
 import java.util.HashMap;
 import java.util.List;
@@ -509,7 +510,7 @@ public class TreasureHuntControllerTest extends BaseTestWithApplicationAndDataba
     }
 
     @Test
-    public void redoEditTreasureHunt() {
+    public void redoEditTreasureHunt() throws EbeanDateParseException {
         User user = UserAccessor.getById(2);
         int tHuntId = user.getTreasureHunts().get(0).getThuntid();
         Map<String, String> formData = new HashMap<>();
@@ -543,7 +544,7 @@ public class TreasureHuntControllerTest extends BaseTestWithApplicationAndDataba
         assertEquals(treasureHunt, new TreasureHunt(user.getTreasureHunts().get(0)));
     }
 
-    private TreasureHunt getTreasureHuntFromMap(Map<String, String> formMap) {
+    private TreasureHunt getTreasureHuntFromMap(Map<String, String> formMap) throws EbeanDateParseException {
         TreasureHunt treasureHunt = new TreasureHunt();
         treasureHunt.setTitle( formMap.get("title"));
         treasureHunt.setDestination(

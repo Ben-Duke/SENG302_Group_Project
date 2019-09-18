@@ -318,7 +318,6 @@ INSERT INTO `follow`(`follow_id`, `follower`, `followed`, `state`) VALUES
 (NULL,13,6,NULL ),
 (NULL,14,6,NULL ),
 (NULL,15,6,NULL );
-(11, 'michael.shannon@gmail.com', '$2a$10$i0GWnSrk2HSU4ZoFeV5em.kplOnwRDI18RgvGQqFEJ5KMMNNAW66i', '1998-01-15', 'Male', 'Michael', 'Shannon', 0, 0, '2019-08-20 20:51:22');
 
 INSERT INTO `user` (`email`, `password_hash`, `date_of_birth`, `gender`,`f_name`, `l_name`, `undo_redo_error`, `is_admin`, `creation_date`) VALUES
 ('tgerardot0@netlog.com', '', '2008-11-04', 'Female', 'Tammi', 'Gerardot', 0, 0, '2019-01-01 00:00:00'),

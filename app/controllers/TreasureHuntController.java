@@ -178,7 +178,7 @@ public class TreasureHuntController extends Controller {
      * @param treasureHunts List of treasure hunts to convert to json.
      * @return An ArrayNode representing the json to send to client.
      */
-    private ArrayNode getJsonForTreasureHunts(List<TreasureHunt> treasureHunts) { //TODO  test
+    private ArrayNode getJsonForTreasureHunts(List<TreasureHunt> treasureHunts) {
         ArrayNode treasureHuntsJson = (new ObjectMapper()).createArrayNode();
 
         for (TreasureHunt treasureHunt: treasureHunts) {

@@ -10,6 +10,7 @@ import utilities.TestDatabaseManager;
 import utilities.exceptions.EbeanDateParseException;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -326,5 +327,122 @@ public class TreasureHuntAccessorTest extends BaseTestWithApplicationAndDatabase
         TreasureHuntAccessor.insert(tHunt);
 
         assertEquals(1, TreasureHuntAccessor.getCountOpenTreasureHunts());
+    }
+
+    @Test
+    /**
+     * Checks getPaginatedUsersTreasurehunts returns an empty list when there are no
+     * treasure hunts.
+     */
+    public void getPaginatedUsersTreasurehunts_zeroTreasureHunts_checkEmptyList() {
+        TestDatabaseManager dbManager = new TestDatabaseManager();
+        dbManager.clearAllData();
+
+        User user = new User("test@test.com", "sasdsad");
+        UserAccessor.insert(user);
+
+        List<TreasureHunt> hunts = TreasureHuntAccessor.getPaginatedUsersTreasurehunts(user, 0, 10);
+        assertTrue(hunts.isEmpty());
+    }
+
+    /**
+     * Checks getPaginatedUsersTreasurehunts returns an empty list when only
+     * other users have treasure hunts.
+     */
+    @Test
+    public void getPaginatedUsersTreasurehunts_otheruserhasHunt_checkEmptyList() throws EbeanDateParseException {
+        TestDatabaseManager dbManager = new TestDatabaseManager();
+        dbManager.clearAllData();
+
+        User user = new User("test@test.com", "sasdsad");
+        UserAccessor.insert(user);
+
+        User userOther = new User("other@test.com", "sasdsad");
+        UserAccessor.insert(userOther);
+
+        Destination destination = new Destination("test",
+                "test", "test", "New Zealand",
+                32.2, 22.1, user);
+        DestinationAccessor.insert(destination);
+
+        TreasureHunt tHunt = new TreasureHunt("test", "test",
+                destination, "2019-01-01", "2019-12-12", userOther);
+        TreasureHuntAccessor.insert(tHunt);
+
+        assertTrue(
+                TreasureHuntAccessor
+                .getPaginatedUsersTreasurehunts(user, 0, 10)
+                .isEmpty()
+        );
+
+    }
+
+    /**
+     * Checks getPaginatedUsersTreasurehunts returns a list of 1 when the user has
+     * 1 treasure hunt (and no other users do).
+     */
+    @Test
+    public void getPaginatedUsersTreasurehunts_onlyCurrentuserhasHunt_checkListSizeOne()
+                                                    throws EbeanDateParseException {
+        TestDatabaseManager dbManager = new TestDatabaseManager();
+        dbManager.clearAllData();
+
+        User user = new User("test@test.com", "sasdsad");
+        UserAccessor.insert(user);
+
+        User userOther = new User("other@test.com", "sasdsad");
+        UserAccessor.insert(userOther);
+
+        Destination destination = new Destination("test",
+                "test", "test", "New Zealand",
+                32.2, 22.1, user);
+        DestinationAccessor.insert(destination);
+
+        TreasureHunt ownTHunt = new TreasureHunt("test", "test",
+                destination, "2019-01-01", "2019-12-12", user);
+        TreasureHuntAccessor.insert(ownTHunt);
+
+        assertEquals(1,
+                TreasureHuntAccessor
+                        .getPaginatedUsersTreasurehunts(user, 0, 10)
+                        .size()
+        );
+
+    }
+
+    /**
+     * Checks getPaginatedUsersTreasurehunts returns a list of one when another
+     * user has a treasure hunt and the current user also has a treasure hunt.
+     */
+    @Test
+    public void getPaginatedUsersTreasurehunts_mixedCurrentOtherusersHaveHunts_checkSizeOne()
+                                                throws EbeanDateParseException {
+        TestDatabaseManager dbManager = new TestDatabaseManager();
+        dbManager.clearAllData();
+
+        User user = new User("test@test.com", "sasdsad");
+        UserAccessor.insert(user);
+
+        User userOther = new User("other@test.com", "sasdsad");
+        UserAccessor.insert(userOther);
+
+        Destination destination = new Destination("test",
+                "test", "test", "New Zealand",
+                32.2, 22.1, user);
+        DestinationAccessor.insert(destination);
+
+        TreasureHunt tHunt = new TreasureHunt("test", "test",
+                destination, "2019-01-01", "2019-12-12", userOther);
+        TreasureHuntAccessor.insert(tHunt);
+
+        TreasureHunt ownTHunt = new TreasureHunt("test", "test",
+                destination, "2019-01-01", "2019-12-12", user);
+        TreasureHuntAccessor.insert(ownTHunt);
+
+        assertEquals(1,
+                TreasureHuntAccessor
+                        .getPaginatedUsersTreasurehunts(user, 0, 10)
+                        .size()
+        );
     }
 }

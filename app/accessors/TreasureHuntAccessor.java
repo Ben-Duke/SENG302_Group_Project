@@ -143,7 +143,9 @@ public class TreasureHuntAccessor {
      * @param quantity an integer representing the maximum length of the list
      * @return A List<TreasureHunt> of treasure hunts.
      */
-    public static List<TreasureHunt> getPaginatedUsersTreasurehunts(User user, int offset, int quantity) { //TODO test
+    public static List<TreasureHunt> getPaginatedUsersTreasurehunts(User user,
+                                                                    int offset,
+                                                                    int quantity) {
         if (quantity < 1) {
             return new ArrayList<TreasureHunt>();
         }

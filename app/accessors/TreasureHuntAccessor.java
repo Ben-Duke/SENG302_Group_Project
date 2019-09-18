@@ -1,9 +1,16 @@
 package accessors;
 
+import io.ebean.Ebean;
 import models.Destination;
 import models.TreasureHunt;
+import models.User;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * A class to handle accessing Treasure Hunts from the database
@@ -64,5 +71,76 @@ public class TreasureHuntAccessor {
     public static List<TreasureHunt> getByDestination(Destination destination) {
         return TreasureHunt.find().query().where().eq(
                 "destination", destination).findList();
+    }
+
+    /**
+     * Checks if a treasure hunt is currently active.
+     * @param treasureHunt the treasure hunt to check for
+     * @return true if the treasure hunt is currently open, else false
+     */
+    private static boolean isOpen(TreasureHunt treasureHunt) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate startDate = LocalDate.parse(treasureHunt.getStartDate(), formatter);
+        LocalDate endDate = LocalDate.parse(treasureHunt.getEndDate(), formatter);
+        LocalDate currentDate = LocalDate.now(ZoneId.of("Pacific/Auckland"));
+        return startDate.isBefore(currentDate) && endDate.isAfter(currentDate);
+    }
+
+    /**
+     * Gets a paginated list of treasure hunts that are currently open, with an offset and quantity to fetch.
+     *
+     * @param offset an integer representing the number of treasure hunts to skip before sending
+     * @param quantity an integer representing the maximum length of the list
+     * @return A List<TreasureHunt> of treasure hunts.
+     */
+    public static List<TreasureHunt> getPaginatedOpenDestinations(int offset, int quantity) {
+        if (quantity < 1) {
+            return new ArrayList<TreasureHunt>();
+        }
+
+        if (offset < 0) {
+            offset = 0;
+        }
+
+        List<TreasureHunt> allTreasureHunts = TreasureHunt.find()
+                .query()
+                .setFirstRow(offset)
+                .setMaxRows(quantity)
+                .findList();
+
+        return allTreasureHunts.stream()
+                // filter out the closed treasure hunts
+                .filter(TreasureHuntAccessor::isOpen).collect(Collectors.toList());
+    }
+
+    /**
+     * Gets the total count of all open treasure hunts.
+     *
+     * @return a long representing the number of open treasure hunts.
+     */
+    public static long getCountOpenTreasureHunts() {
+        return Ebean.find(TreasureHunt.class)
+                .findList()
+                .stream()
+                .filter(TreasureHuntAccessor::isOpen)
+                .count();
+    }
+
+    /**
+     * Gets a paginated list of treasure hunts that match the current user, with an offset and quantity to fetch.
+     *
+     * @param user the user that the treasure hunts belong to
+     * @param offset an integer representing the number of treasure hunts to skip before sending
+     * @param quantity an integer representing the maximum length of the list
+     * @return A List<TreasureHunt> of treasure hunts.
+     */
+    public static List<TreasureHunt> getPaginatedUsersTreasurehunts(User user, int offset, int quantity) {
+        return TreasureHunt.find()
+                .query()
+                .where()
+                .eq("user", user)
+                .setFirstRow(offset)
+                .setMaxRows(quantity)
+                .findList();
     }
 }

@@ -1,3 +1,34 @@
+let openTreasureHuntCount = undefined;
+const openTreasureHuntsPerPage = 10;
+let currentPageNum = 1;
+
+/**
+ * Initilizes the openTreasureHunts paginated table.
+ *
+ * @param numOpenHuntsPerPage Number of open treasure hunts to show per page.
+ * @returns {Promise<void>}
+ */
+async function initOpenTreasureHunts(numOpenHuntsPerPage) {
+    const token =  $('input[name="csrfToken"]').attr('value');
+    $.ajaxSetup({
+        beforeSend: function(xhr) {
+            xhr.setRequestHeader('Csrf-Token', token);
+        }
+    });
+
+    $.ajax({
+        type: 'GET',
+        url: '/users/treasurehunts/open?offset=0&quantity=' + numOpenHuntsPerPage.toString(),
+        contentType: 'application/json',
+        success: (res) => {
+            console.log(res);
+        },
+        error: (err) => {
+            console.log(err);
+        }
+    });
+}
+
 
 /**
  * Function to search for private destinations.
@@ -51,3 +82,5 @@ $('#confirmTreasureHuntDeleteModal').on('show.bs.modal', function(e) {
         });
     });
 });
+
+initOpenTreasureHunts(openTreasureHuntsPerPage);

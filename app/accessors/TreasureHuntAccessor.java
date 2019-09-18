@@ -74,7 +74,8 @@ public class TreasureHuntAccessor {
     }
 
     /**
-     * Gets a paginated list of treasure hunts that are currently open, with an offset and quantity to fetch.
+     * Gets a paginated list of treasure hunts that are currently open, with an
+     * offset and quantity to fetch.
      *
      * @param offset an integer representing the number of treasure hunts to skip before sending
      * @param quantity an integer representing the maximum length of the list
@@ -89,28 +90,36 @@ public class TreasureHuntAccessor {
             offset = 0;
         }
 
+        LocalDate currentDate = LocalDate.now(ZoneId.of("Pacific/Auckland"));
+
         List<TreasureHunt> allTreasureHunts = TreasureHunt.find()
                 .query()
+                .where()
+                .le("startDate", currentDate)
+                .and()
+                .gt("endDate", currentDate)
                 .setFirstRow(offset)
                 .setMaxRows(quantity)
                 .findList();
 
-        return allTreasureHunts.stream()
-                // filter out the closed treasure hunts
-                .filter(TreasureHunt::isOpen).collect(Collectors.toList());
+        return allTreasureHunts;
     }
 
     /**
      * Gets the total count of all open treasure hunts.
      *
-     * @return a long representing the number of open treasure hunts.
+     * @return an int representing the number of open treasure hunts.
      */
-    public static long getCountOpenTreasureHunts() {
-        return Ebean.find(TreasureHunt.class)
-                .findList()
-                .stream()
-                .filter(TreasureHunt::isOpen)
-                .count();
+    public static int getCountOpenTreasureHunts() {
+        LocalDate currentDate = LocalDate.now(ZoneId.of("Pacific/Auckland"));
+
+        return TreasureHunt.find()
+                .query()
+                .where()
+                .le("startDate", currentDate)
+                .and()
+                .gt("endDate", currentDate)
+                .findCount();
     }
 
     /**

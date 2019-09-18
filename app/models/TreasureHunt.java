@@ -280,6 +280,10 @@ public class TreasureHunt extends BaseModel {
      */
     public boolean isOpen() {
         LocalDate currentDate = LocalDate.now(ZoneId.of("Pacific/Auckland"));
-        return this.getStartDate().isBefore(currentDate) && this.getEndDate().isAfter(currentDate);
+        boolean isStartBeforeOrOnCurrent = this.getStartDate().isBefore(currentDate)
+                                    || this.getStartDate().isEqual(currentDate);
+        boolean isEndAfterCurrentDate = this.getEndDate().isAfter(currentDate);
+
+        return isStartBeforeOrOnCurrent && isEndAfterCurrentDate;
     }
 }

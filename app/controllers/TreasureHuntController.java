@@ -110,6 +110,15 @@ public class TreasureHuntController extends Controller {
         return ok(Json.toJson(result));
     }
 
+    /**
+     * Get's JSON (ArrayNode) containing a list of treasure hunts, edited with
+     * an extra isHidden attribute and if isHidden is true then destName is always
+     * "Hidden".
+     *
+     * @param treasureHunts List of treasure hunts to convert to json.
+     * @param user User to check owns the hunts or is an admin.
+     * @return An ArrayNode representing the json to send to client.
+     */
     private ArrayNode getJsonForOpenTreasureHunts(List<TreasureHunt> treasureHunts, User user) {
         ArrayNode treasureHuntsJson = (new ObjectMapper()).createArrayNode();
 

@@ -225,7 +225,6 @@ public class UserAccessor {
        equalsFields = updateEqualsFields(gender1, GENDER_COLUMN_NAME, equalsFields);
        equalsFields = updateEqualsFields(gender2, GENDER_COLUMN_NAME, equalsFields);
        equalsFields = updateEqualsFields(gender3, GENDER_COLUMN_NAME, equalsFields);
-       System.out.println("Equals fields is " + equalsFields);
        Date date1 = null;
        Date date2 = null;
        Boolean parseDate = (agerange1 != null && agerange2 != null) && (!agerange1.equals("") || !agerange2.equals(""));

@@ -122,7 +122,6 @@ public class TravelPartnerController {
      */
     public Result travellerTypePaginated(
             Http.Request request, int offset, int quantity, String travellerType, String nationality, String bornAfter, String bornBefore, String gender1, String gender2, String gender3){
-        System.out.println("traveller type is " + travellerType);
         User user = User.getCurrentUser(request);
         if(user == null){
             return unauthorized("You need to be logged in to use this api");
@@ -142,10 +141,6 @@ public class TravelPartnerController {
             bornBefore = "";
         }
         Set<User> users = UserAccessor.getUsersByQuery(travellerType, offset,quantity,nationality, bornAfter, bornBefore, gender1, gender2, gender3);
-
-        for(User userTemp : users){
-            System.out.println(userTemp.toString());
-        }
 
         return ok(Json.toJson(users));
     }

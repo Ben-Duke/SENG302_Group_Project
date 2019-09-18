@@ -116,6 +116,52 @@ public class TravelPartnerControllerTest extends BaseTestWithApplicationAndDatab
         assertEquals(0, jsonSize );
     }
 
+    @Test
+    public void testTravellerSearchPaginatedBornAfterFilter(){
+        super.populateDatabase();
+
+        //There is more than 10 users born after 1900. The query should return the default size of 10.
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/profile/searchprofiles?bornafter=1900-01-22" +
+                        "&gender1=male&gender2=female&gender3=other").session("connected", "3");
+        Result result = route(app, request);
+        int jsonSize = Json.parse(contentAsString(result)).size();
+        assertEquals(10, jsonSize );
+
+        //There are no users born after 2025. The query will return 0 results.
+        request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/profile/searchprofiles?bornafter=2025-01-22" +
+                        "&gender1=male&gender2=female&gender3=other").session("connected", "3");
+        result = route(app, request);
+        jsonSize = Json.parse(contentAsString(result)).size();
+        assertEquals(0, jsonSize );
+    }
+
+    @Test
+    public void testTravellerSearchPaginatedBornBeforeFilter(){
+        super.populateDatabase();
+
+        //There are no users born before 1900. The query will return 0 results.
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/profile/searchprofiles?bornbefore=1900-01-22" +
+                        "&gender1=male&gender2=female&gender3=other").session("connected", "3");
+        Result result = route(app, request);
+        int jsonSize = Json.parse(contentAsString(result)).size();
+        assertEquals(0, jsonSize );
+
+        //There is more than 10 users born before 2025. The query should return the default size of 10.
+        request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/profile/searchprofiles?bornbefore=2025-01-22" +
+                        "&gender1=male&gender2=female&gender3=other").session("connected", "3");
+        result = route(app, request);
+        jsonSize = Json.parse(contentAsString(result)).size();
+        assertEquals(10, jsonSize );
+    }
+
     /**
      * Tests one particular user (testuser2) to see if the API can identify their gender.
      * WARNING: Adding user into the test database with a birthday of 1960-08-25 will

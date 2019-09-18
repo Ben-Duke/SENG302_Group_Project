@@ -6,6 +6,7 @@ import models.TreasureHunt;
 import models.User;
 import models.commands.General.UndoableCommand;
 import models.commands.Treasurehunts.EditTreasureHuntCommand;
+import utilities.exceptions.EbeanDateParseException;
 
 import java.util.List;
 
@@ -19,7 +20,7 @@ public class TreasureHuntFactory {
      * @param treasureHuntFormData TreasureHuntFormData
      * @param user The user who is the creator of this treasure hunt
      */
-    public void createTreasureHunt(TreasureHuntFormData treasureHuntFormData, User user) {
+    public void createTreasureHunt(TreasureHuntFormData treasureHuntFormData, User user) throws EbeanDateParseException {
         List<Destination> destinations = Destination.find().all();
         for (Destination destination: destinations) {
             if (destination.getIsPublic() && destination.getDestName().equals(treasureHuntFormData.destination)) {
@@ -36,7 +37,7 @@ public class TreasureHuntFactory {
      * @param treasureHuntId The id of the Treasure Hunt to be edited
      * @param treasureHuntFormData TreasureHuntFormData
      */
-    public void editTreasureHunt(User user, Integer treasureHuntId, TreasureHuntFormData treasureHuntFormData) {
+    public void editTreasureHunt(User user, Integer treasureHuntId, TreasureHuntFormData treasureHuntFormData) throws EbeanDateParseException {
         TreasureHunt treasureHunt = TreasureHunt.find().byId(treasureHuntId);
         if (treasureHunt != null) {
             treasureHunt.setTitle(treasureHuntFormData.title);

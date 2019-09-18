@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import play.libs.Json;
 import play.mvc.Http;
 import play.mvc.Result;
+import utilities.exceptions.EbeanDateParseException;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -22,6 +23,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -33,6 +37,10 @@ import static play.mvc.Results.unauthorized;
  * A class for methods which check user entered data for correctness.
  */
 public class UtilityFunctions {
+
+    private static final String DATE_PATTERN = "yyyy-MM-dd";
+    private static final DateTimeFormatter DATE_FORMATTER =
+            DateTimeFormatter.ofPattern(DATE_PATTERN);
 
     private static final Logger logger = getLogger();
 
@@ -453,5 +461,17 @@ public class UtilityFunctions {
         jsonError.put("error", errorStr);
         jsonError.put("quantityLimit", maxQuantity);
         return jsonError;
+    }
+
+    public static String getStringFromLocalDate(LocalDate localDate) {
+        return localDate.format(DATE_FORMATTER);
+    }
+
+    public static LocalDate parseLocalDate(String dateString) throws EbeanDateParseException {
+        try {
+            return LocalDate.parse(dateString, DATE_FORMATTER);
+        } catch (DateTimeParseException e) {
+            throw new EbeanDateParseException(e);
+        }
     }
 }

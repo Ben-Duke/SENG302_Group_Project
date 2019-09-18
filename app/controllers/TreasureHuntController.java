@@ -19,9 +19,11 @@ import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
 import utilities.UtilityFunctions;
+import utilities.exceptions.EbeanDateParseException;
 import views.html.users.treasurehunt.*;
 
 import javax.inject.Inject;
+import javax.rmi.CORBA.Util;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -115,7 +117,7 @@ public class TreasureHuntController extends Controller {
         for (TreasureHunt treasureHunt: treasureHunts) {
             ObjectNode treasureHuntJson = (new ObjectMapper()).createObjectNode();
             treasureHuntJson.put("title", treasureHunt.getTitle());
-            treasureHuntJson.put("endDate", treasureHunt.getEndDate());
+            treasureHuntJson.put("endDate", UtilityFunctions.getStringFromLocalDate(treasureHunt.getEndDate()));
             treasureHuntJson.put("riddle", treasureHunt.getRiddle());
 
             if (user.userIsAdmin() || treasureHunt.getUser().getUserid() == user.getUserid()) {
@@ -166,11 +168,7 @@ public class TreasureHuntController extends Controller {
         List<TreasureHunt> treasureHunts = TreasureHunt.find().all();
         List<TreasureHunt> openTreasureHunts = new ArrayList<>();
         for (TreasureHunt treasureHunt : treasureHunts) {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            LocalDate startDate = LocalDate.parse(treasureHunt.getStartDate(), formatter);
-            LocalDate endDate = LocalDate.parse(treasureHunt.getEndDate(), formatter);
-            LocalDate currentDate = LocalDate.now(ZoneId.of("Pacific/Auckland"));
-            if (startDate.isBefore(currentDate) && endDate.isAfter(currentDate)) {
+            if (treasureHunt.isOpen()) {
                 openTreasureHunts.add(treasureHunt);
             }
         }
@@ -221,7 +219,12 @@ public class TreasureHuntController extends Controller {
                 }
             }
             TreasureHuntFormData created = incomingForm.get();
-            treasureHuntFactory.createTreasureHunt(created, user);
+            try {
+                treasureHuntFactory.createTreasureHunt(created, user);
+            } catch (EbeanDateParseException e) {
+                UtilityFunctions.getLogger().error(e.getMessage());
+                return badRequest("Date formatted incorrectly");
+            }
             return redirect(routes.TreasureHuntController.indexTreasureHunt());
         } else {
             return redirect(routes.UserController.userindex());
@@ -244,7 +247,8 @@ public class TreasureHuntController extends Controller {
                 if (treasureHunt.getUser().getUserid() == (user.getUserid())) {
                     TreasureHuntFormData treasureHuntFormData = new TreasureHuntFormData(treasureHunt.getTitle(),
                             treasureHunt.getRiddle(), treasureHunt.getDestination().getDestName(),
-                            treasureHunt.getStartDate(), treasureHunt.getEndDate());
+                            UtilityFunctions.getStringFromLocalDate(treasureHunt.getStartDate()),
+                            UtilityFunctions.getStringFromLocalDate(treasureHunt.getEndDate()));
                     Form<TreasureHuntFormData> incomingForm = formFactory.form(TreasureHuntFormData.class).fill(treasureHuntFormData);
                     createPublicDestinationsMap();
                     modifyPublicDestinationsMap(treasureHunt.getDestination().getDestName(), true);
@@ -297,7 +301,12 @@ public class TreasureHuntController extends Controller {
             }
         }
         TreasureHuntFormData edited = incomingForm.get();
-        treasureHuntFactory.editTreasureHunt(user, treasureHuntId, edited);
+        try {
+            treasureHuntFactory.editTreasureHunt(user, treasureHuntId, edited);
+        } catch (EbeanDateParseException e) {
+            UtilityFunctions.getLogger().error(e.getMessage());
+            return badRequest("Time parse error");
+        }
         return redirect(routes.TreasureHuntController.indexTreasureHunt());
     }
 

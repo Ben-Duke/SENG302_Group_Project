@@ -74,19 +74,6 @@ public class TreasureHuntAccessor {
     }
 
     /**
-     * Checks if a treasure hunt is currently active.
-     * @param treasureHunt the treasure hunt to check for
-     * @return true if the treasure hunt is currently open, else false
-     */
-    private static boolean isOpen(TreasureHunt treasureHunt) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        LocalDate startDate = LocalDate.parse(treasureHunt.getStartDate(), formatter);
-        LocalDate endDate = LocalDate.parse(treasureHunt.getEndDate(), formatter);
-        LocalDate currentDate = LocalDate.now(ZoneId.of("Pacific/Auckland"));
-        return startDate.isBefore(currentDate) && endDate.isAfter(currentDate);
-    }
-
-    /**
      * Gets a paginated list of treasure hunts that are currently open, with an offset and quantity to fetch.
      *
      * @param offset an integer representing the number of treasure hunts to skip before sending
@@ -110,7 +97,7 @@ public class TreasureHuntAccessor {
 
         return allTreasureHunts.stream()
                 // filter out the closed treasure hunts
-                .filter(TreasureHuntAccessor::isOpen).collect(Collectors.toList());
+                .filter(TreasureHunt::isOpen).collect(Collectors.toList());
     }
 
     /**
@@ -122,7 +109,7 @@ public class TreasureHuntAccessor {
         return Ebean.find(TreasureHunt.class)
                 .findList()
                 .stream()
-                .filter(TreasureHuntAccessor::isOpen)
+                .filter(TreasureHunt::isOpen)
                 .count();
     }
 

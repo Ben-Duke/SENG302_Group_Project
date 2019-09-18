@@ -7,6 +7,7 @@ import models.User;
 import org.junit.Test;
 import testhelpers.BaseTestWithApplicationAndDatabase;
 import utilities.TestDatabaseManager;
+import utilities.exceptions.EbeanDateParseException;
 
 import java.time.LocalDate;
 
@@ -34,7 +35,7 @@ public class TreasureHuntAccessorTest extends BaseTestWithApplicationAndDatabase
      * Checks the getCountOpenTreasureHunts method returns zero when the database
      * contains only closed treasure hunts.
      */
-    public void getCountOpenTreasureHunts_onlyClosedTreasureHunts_checkReturnValueIsZero() {
+    public void getCountOpenTreasureHunts_onlyClosedTreasureHunts_checkReturnValueIsZero() throws EbeanDateParseException {
         TestDatabaseManager dbManager = new TestDatabaseManager();
         dbManager.clearAllData();
 
@@ -65,7 +66,7 @@ public class TreasureHuntAccessorTest extends BaseTestWithApplicationAndDatabase
      * Checks the getCountOpenTreasureHunts method returns 1 when the database
      * contains 1 open treasure hunt.
      */
-    public void getCountOpenTreasureHunts_oneOpenTreasureHunt_checkReturnValueIsOne() {
+    public void getCountOpenTreasureHunts_oneOpenTreasureHunt_checkReturnValueIsOne() throws EbeanDateParseException {
         TestDatabaseManager dbManager = new TestDatabaseManager();
         dbManager.clearAllData();
 

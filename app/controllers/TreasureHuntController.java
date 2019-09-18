@@ -2,6 +2,7 @@ package controllers;
 
 import accessors.TreasureHuntAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import factories.TreasureHuntFactory;
 import formdata.TreasureHuntFormData;
@@ -102,10 +103,33 @@ public class TreasureHuntController extends Controller {
         long countTotalOpenHunts = TreasureHuntAccessor.getCountOpenTreasureHunts();
 
         ObjectNode result = (new ObjectMapper()).createObjectNode();
-        result.set("openTreasureHunts", Json.toJson(treasureHunts));
+        result.set("openTreasureHunts", getJsonForOpenTreasureHunts(treasureHunts, user));
         result.put("totalCountOpenTreasureHunts", countTotalOpenHunts);
 
         return ok(Json.toJson(result));
+    }
+
+    private ArrayNode getJsonForOpenTreasureHunts(List<TreasureHunt> treasureHunts, User user) {
+        ArrayNode treasureHuntsJson = (new ObjectMapper()).createArrayNode();
+
+        for (TreasureHunt treasureHunt: treasureHunts) {
+            ObjectNode treasureHuntJson = (new ObjectMapper()).createObjectNode();
+            treasureHuntJson.put("title", treasureHunt.getTitle());
+            treasureHuntJson.put("endDate", treasureHunt.getEndDate());
+            treasureHuntJson.put("riddle", treasureHunt.getRiddle());
+
+            if (user.userIsAdmin() || treasureHunt.getUser().getUserid() == user.getUserid()) {
+                treasureHuntJson.put("destName", treasureHunt.getDestination().getDestName());
+                treasureHuntJson.put("isHidden", false);
+            } else {
+                treasureHuntJson.put("destName", "Hidden");
+                treasureHuntJson.put("isHidden", true);
+            }
+
+            treasureHuntsJson.add(treasureHuntJson);
+        }
+
+        return treasureHuntsJson;
     }
 
     /**

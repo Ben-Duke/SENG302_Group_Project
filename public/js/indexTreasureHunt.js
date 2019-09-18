@@ -8,7 +8,7 @@ let currentPageNum = 1;
  * @param numOpenHuntsPerPage Number of open treasure hunts to show per page.
  * @returns {Promise<void>}
  */
-async function initOpenTreasureHunts(numOpenHuntsPerPage) {
+function initOpenTreasureHunts(numOpenHuntsPerPage) {
     const token =  $('input[name="csrfToken"]').attr('value');
     $.ajaxSetup({
         beforeSend: function(xhr) {
@@ -21,12 +21,58 @@ async function initOpenTreasureHunts(numOpenHuntsPerPage) {
         url: '/users/treasurehunts/open?offset=0&quantity=' + numOpenHuntsPerPage.toString(),
         contentType: 'application/json',
         success: (res) => {
-            console.log(res);
+            importOpenTreasureHunts(res.openTreasureHunts);
         },
         error: (err) => {
             console.log(err);
         }
     });
+}
+
+function addTextToRow(row, text) {
+    const newCell = document.createElement("TD");
+    newCell.innerText = text;
+    row.appendChild(newCell);
+}
+
+function addDeleteButtonToRow(row, treasureHunt) {
+    const newCell = document.createElement("TD");
+
+    const deleteBtn = document.createElement("btn");
+    deleteBtn.classList.add("btn");
+    deleteBtn.classList.add("btn-danger");
+
+    if (treasureHunt.isHidden) {
+        deleteBtn.innerText = "Unauthorized";
+        deleteBtn.setAttribute('disabled', "")
+    } else {
+        deleteBtn.innerText = "Delete";
+        deleteBtn.setAttribute('data-toggle', 'modal');
+        deleteBtn.setAttribute('data-target', '#confirmTreasureHuntDeleteModal')
+    }
+    newCell.appendChild(deleteBtn);
+    row.appendChild(newCell);
+}
+
+function importOpenTreasureHunts(treasureHunts) {
+    console.log(treasureHunts);
+    const table = document.getElementById("openTreasureHuntTable");
+    for (let treasureHunt of treasureHunts) {
+        const row = document.createElement("TR");
+        row.classList.add("clickable");
+
+        const titleCell = document.createElement("TH");
+        titleCell.setAttribute("scope", "row");
+        titleCell.innerText = treasureHunt.title;
+        row.appendChild(titleCell);
+
+        addTextToRow(row, treasureHunt.endDate);
+        addTextToRow(row, treasureHunt.destName);
+        addTextToRow(row, treasureHunt.riddle);
+        addDeleteButtonToRow(row, treasureHunt);
+
+        table.appendChild(row);
+    }
 }
 
 

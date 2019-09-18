@@ -33,7 +33,6 @@ public class TreasureHunt extends BaseModel {
     /**
      * The destination that is the correct answer to the treasure hunt
      */
-    @JsonIgnore
     @ManyToOne
     private Destination destination;
 

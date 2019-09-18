@@ -81,14 +81,15 @@ create table destination_modification_request_traveller_type (
   constraint pk_destination_modification_request_traveller_type primary key (destination_modification_request_id,traveller_type_ttypeid)
 );
 
+
 create table media (
   dtype                         varchar(31) not null,
   media_id                      integer auto_increment not null,
   user                          integer,
   is_public                     boolean default false not null,
-  url                           varchar(191),
-  is_media_public               boolean default false not null,
-  caption                       varchar(191),
+  url                           varchar(255),
+  date_added                    date,
+  caption                       varchar(255),
   is_profile                    boolean default false not null,
   constraint uq_media_url unique (url),
   constraint pk_media primary key (media_id)

@@ -5,6 +5,7 @@ import models.Destination;
 import models.Media;
 import models.Tag;
 
+import java.time.LocalDate;
 import java.util.*;
 
 public class MediaAccessor {
@@ -30,6 +31,17 @@ public class MediaAccessor {
     }
 
     public static void update(Media media) { media.update(); }
+
+    /**
+     * Gets the creation date of the passed media
+     * @param media
+     * @return Local Date
+     */
+    public static LocalDate getMediaCreationDate(Media media){
+        return media.getDate_added();
+
+    }
+
 
     /**
      * Gets the list of destinations that has an album linked to the media

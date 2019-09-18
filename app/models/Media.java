@@ -8,6 +8,7 @@ import models.media.MediaOwner;
 
 import javax.persistence.*;
 import java.nio.file.Paths;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,6 +38,8 @@ public abstract class Media extends TaggableModel {
     @ManyToMany(mappedBy = "media")
     public List<Album> albums;
 
+    private LocalDate date_added;
+
     private String caption = "";
 
     public Media(String url, boolean isPublic, User user, String caption) {
@@ -44,12 +47,14 @@ public abstract class Media extends TaggableModel {
         this.isPublic = isPublic;
         this.user = user;
         this.caption = caption;
+        this.date_added = LocalDate.now();
     }
 
     public Media(String url, boolean isPublic, User user) {
         this.url = url;
         this.isPublic = isPublic;
         this.user = user;
+        this.date_added = LocalDate.now();
     }
 
     public static Finder<Integer,Media> find = new
@@ -59,6 +64,14 @@ public abstract class Media extends TaggableModel {
      * Default constructor for caption edit commands
      */
     protected Media() {
+    }
+
+    /**
+     * Returns the date that this Media object was created.
+     * @return A localDate format of when the object was created
+     */
+    public LocalDate getDate_added(){
+        return this.date_added;
     }
 
     public Integer getMediaId() { return mediaId; }

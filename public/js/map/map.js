@@ -10,9 +10,10 @@ let isNewTrip = false;
 let geoCoder;
 let destMarker;
 let tripPageNum = 0;
+let paginatedTripData;
 
 
-function initMap() {
+async function initMap() {
 
     map = window.globalMap = new google.maps.Map(document.getElementById('map'), {
         center: {lat: -43.522057156877615, lng: 172.62360347218828},
@@ -29,9 +30,17 @@ function initMap() {
     initPlacesAutocompleteSearch();
     initDestinationMarkers();
     initMapLegend();
-    initTripRoutes();
     initMapPositionListeners();
     hideTagEditor();
+
+    checkTripVisits();
+    tripPageNum = 1;
+    let tripJSON = await getPaginatedTripResults(tripPageNum, 5);
+    let trips  = tripJSON.trips;
+    let tripCount = tripJSON.tripCount;
+    setTripPaginationLinks(tripCount, 5);
+
+    initTripRoutes();
 }
 
 
@@ -595,50 +604,100 @@ function getAllChecksChecked(checkboxes) {
 
 function initTripRoutes() {
 
-    fetch('/users/trips/fetch/trips_routes_json', {
-        method: 'GET'})
-        .then(res => res.json())
-        .then(tripRoutes => {
-            let color;
+    // fetch('/users/trips/fetch/trips_routes_json', {
+    //     method: 'GET'})
+    //     .then(res => res.json())
+    //     .then(tripRoutes => {
+    //
+    //         for (let tripId in tripRoutes) {
+    //
+    //             color = colors[Math.floor(Math.random()*colors.length)];
+    //
+    //             console.log(tripRoutes[tripId]);
+    //
+    //             let flightPath = new google.maps.Polyline({
+    //                 path: tripRoutes[tripId],
+    //                 geodesic: true,
+    //                 strokeColor: '#' + color,
+    //                 strokeOpacity: 1.0,
+    //                 strokeWeight: 2
+    //             });
+    //             flightPath.path = tripRoutes[tripId];
+    //
+    //             google.maps.event.addListener(flightPath, 'click', function(e) {
+    //
+    //                 displayTrip(tripId, tripRoutes[tripId][0]['lat'], tripRoutes[tripId][0]['lng'])
+    //             });
+    //
+    //             if (tripFlightPaths[tripId] != null) {
+    //                 // if (tripFlightPaths[tripId].path.length !== flightPath.path.length) {
+    //                 tripFlightPaths[tripId].setMap(null);
+    //                 tripFlightPaths[tripId] = flightPath;
+    //                 // }
+    //             }
+    //             else {
+    //                 tripFlightPaths[tripId] = flightPath;
+    //             }
+    //             const checkBox = document.getElementById("Toggle" + tripId);
+    //             if (checkBox.checked === false) {
+    //                 tripFlightPaths[tripId].setMap(null);
+    //             } else {
+    //                 if (tripFlightPaths[tripId].getMap() == null) {
+    //                     tripFlightPaths[tripId].setMap(window.globalMap);
+    //                 }
+    //             }
+    //                 }
+    //         });
 
 
-            for (let tripId in tripRoutes) {
 
-                color = colors[Math.floor(Math.random()*colors.length)];
 
-                let flightPath = new google.maps.Polyline({
-                    path: tripRoutes[tripId],
-                    geodesic: true,
-                    strokeColor: '#' + color,
-                    strokeOpacity: 1.0,
-                    strokeWeight: 2
-                });
-                flightPath.path = tripRoutes[tripId];
 
-                google.maps.event.addListener(flightPath, 'click', function(e) {
+    let color;
 
-                    displayTrip(tripId, tripRoutes[tripId][0]['lat'], tripRoutes[tripId][0]['lng'])
-                });
 
-                if (tripFlightPaths[tripId] != null) {
-                    // if (tripFlightPaths[tripId].path.length !== flightPath.path.length) {
-                        tripFlightPaths[tripId].setMap(null);
-                        tripFlightPaths[tripId] = flightPath;
-                    // }
-                }
-                else {
-                    tripFlightPaths[tripId] = flightPath;
-                }
-                const checkBox = document.getElementById("Toggle" + tripId);
-                if (checkBox.checked === false) {
-                    tripFlightPaths[tripId].setMap(null);
-                } else {
-                    if (tripFlightPaths[tripId].getMap() == null) {
-                        tripFlightPaths[tripId].setMap(window.globalMap);
-                    }
+    for (let trip of paginatedTripData.trips) {
+
+        let tripVisitData = [];
+
+        for (let visit of trip.visits) {
+
+        }
+
+            color = colors[Math.floor(Math.random() * colors.length)];
+
+            let flightPath = new google.maps.Polyline({
+                path: {"lat": visit.lat, "lng": visit.lng},
+                geodesic: true,
+                strokeColor: '#' + color,
+                strokeOpacity: 1.0,
+                strokeWeight: 2
+            });
+            // flightPath.path = tripRoutes[tripId];
+
+            google.maps.event.addListener(flightPath, 'click', function (e) {
+
+                displayTrip(trip.tripId, paginatedTripData.trips.visits[0]['lat'], paginatedTripData.trips.visits[0]['lng']);
+            });
+
+            if (tripFlightPaths[trip.tripId] != null) {
+                tripFlightPaths[trip.tripId].setMap(null);
+                tripFlightPaths[trip.tripId] = flightPath;
+
+            } else {
+                tripFlightPaths[trip.tripId] = flightPath;
+            }
+
+            const checkBox = document.getElementById("Toggle" + trip.tripId);
+            if (checkBox.checked === false) {
+                tripFlightPaths[trip.tripId].setMap(null);
+            } else {
+                if (tripFlightPaths[trip.tripId].getMap() == null) {
+                    tripFlightPaths[trip.tripId].setMap(window.globalMap);
                 }
             }
-        });
+
+    }
 }
 
 function addTripRoutes(newTripId) {
@@ -1564,15 +1623,15 @@ $("#submit").click(function(e){
 
 
 
-window.onload = async function() {
-    checkTripVisits();
-    tripPageNum = 1;
-    let tripJSON = await getPaginatedTripResults(tripPageNum, 5);
-    let trips  = tripJSON.trips;
-    let tripCount = tripJSON.tripCount;
-    setTripPaginationLinks(tripCount, 5);
-
-};
+// window.onload = async function() {
+//     checkTripVisits();
+//     tripPageNum = 1;
+//     let tripJSON = await getPaginatedTripResults(tripPageNum, 5);
+//     let trips  = tripJSON.trips;
+//     let tripCount = tripJSON.tripCount;
+//     setTripPaginationLinks(tripCount, 5);
+//
+// };
 
 
 async function nextTripPage(search) {
@@ -1708,6 +1767,9 @@ function displayTripTablePage(trips) {
 }
 
 function updateTripPageTable(data) {
+
+    console.log(data);
+
     let newTable = document.createElement("table");
     newTable.setAttribute("id", "tripTable_" + data.tripId);
     newTable.setAttribute("class", "table table-hover");
@@ -1820,6 +1882,8 @@ async function getPaginatedTripResults(pageNum, quantity) {
         contentType: 'application/json',
     });
 
+    paginatedTripData = trips;
+
     return trips;
 }
 
@@ -1833,6 +1897,9 @@ async function getPaginatedTripSearchResults(pageNum, quantity, searchInput) {
         data: data,
         method: "GET"
     });
+
+    paginatedTripData = trips;
+
     return trips;
 }
 

@@ -46,6 +46,13 @@ GET     /users/admin/actasuser/:id      controllers.AdminController.setUserToAct
 #Handles setting a user back to the admin after acting as a user
 GET     /users/admin/back_to_admin/:id      controllers.AdminController.setUserBackToAdmin(request: Request, id: Integer)
 
+GET     /users/admin/data           controllers.AdminController.getUserData(request: Request, offset: Integer, quantity: Integer)
+
+GET     /users/admin/userCount           controllers.AdminController.getUserCount(request: Request)
+
+
+
+
 GET /users/destination/placeid/:placeId   controllers.DestinationController.getPlacesDetailsRequest(request: Request, placeId:String)
 
 #Handles view a destination modification request
@@ -142,6 +149,9 @@ POST    /users/trips/visit/edit/:id       controllers.TripController.updateVisit
 
 #Renders page that displays a given trip
 GET     /users/trips/:id            controllers.TripController.displaytrip(request: Request, id:Integer)
+
+#Get trips matching a given name
+GET     /users/trips/matching/:name     controllers.TripController.getTripsByName(request: Request, name: String)
 
 #Renders page that displays the home page where users can navigate to other pages
 GET     /users/home                 controllers.HomeController.showhome(request:Request)
@@ -288,6 +298,10 @@ POST    /users/destinations/save        controllers.DestinationController.saveDe
 #Handles deleting a destination
 GET     /users/destinations/delete/:id   controllers.DestinationController.deleteDestination(request : Request, id : Integer)
 
+#Handles searching for  a destination
+GET     /users/destinations/matching/:name        controllers.DestinationController.getDestinationsByName(request : Request, name: String, offset: Integer, quantity: Integer)
+
+
 #Treasure Hunts
 #Renders treasure hunt index page
 GET     /users/treasurehunts                    controllers.TreasureHuntController.indexTreasureHunt(request : Request)
@@ -322,7 +336,7 @@ GET     /users/albums/getAlbumFromMediaId/:mediaId      controllers.AlbumControl
 
 
 #Get JSON of one album
-GET     /users/albums/get/:all/:id   controllers.AlbumController.getAlbum(request : Request, id : Integer, all : Boolean)
+GET     /users/albums/get/:id/:offSet/:quantity   controllers.AlbumController.getAlbum(request : Request, id : Integer, offSet : Integer, quantity : Integer)
 
 #View one album
 GET     /users/albums/:id   controllers.AlbumController.viewAlbum(request : Request, id : Integer)

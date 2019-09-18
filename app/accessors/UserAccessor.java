@@ -1,5 +1,6 @@
 package accessors;
 
+import io.ebean.Query;
 import io.ebean.Ebean;
 import io.ebean.Expression;
 import io.ebean.ExpressionList;
@@ -142,6 +143,20 @@ public class UserAccessor {
             throw new io.ebean.DuplicateKeyException("Multiple profile photos.",
                     new Throwable("Multiple profile photos."));
         }
+    }
+
+
+    /**
+     * Gets a paginated List of Users, with an offset and quantity to fetch.
+     *
+     * @param offset an integer representing the number of Users to skip before sending
+     * @param quantity an integer representing the maximum length of the jsonArray
+     * @return A List<User> of Users.
+     */
+    public static List<User> getPaginatedUsers(int offset, int quantity){
+        Query<User> query = User.find().query()
+                .setFirstRow(offset).setMaxRows(quantity);
+        return query.findList();
     }
 
     public static Set<User> getUsersWithAgeRange (String agerange1, String agerange2) {

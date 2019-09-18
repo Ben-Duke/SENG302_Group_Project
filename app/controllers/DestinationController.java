@@ -926,6 +926,10 @@ public class DestinationController extends Controller {
         User user = User.getCurrentUser(request);
         if(user != null){
             Destination destination = Destination.find().byId(destId);
+            if (destination.getAlbums().isEmpty()) {
+                Album album = new Album(destination, destination.getDestName(), false);
+                AlbumAccessor.insert(album);
+            }
             List<Media> photos = Destination.find().byId(destId).getPrimaryAlbum().getMedia();
             if(destination.getIsPublic() && !user.userIsAdmin()) {
                 DestinationFactory destinationFactory = new DestinationFactory();

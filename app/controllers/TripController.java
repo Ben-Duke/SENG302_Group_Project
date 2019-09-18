@@ -771,11 +771,10 @@ public class TripController extends Controller {
         User user = User.getCurrentUser(request);
         if (user == null) { return redirect(routes.UserController.userindex()); }
         List<Trip> trips = TripAccessor.getTripsByName(name, user, offset, quantity);
-
+        ObjectMapper objectMapper = new ObjectMapper();
+        ObjectNode result = objectMapper.createObjectNode();
+        ArrayNode tripsListNode = objectMapper.createArrayNode();
         if(trips != null && trips.size() > 0) {
-            ObjectMapper objectMapper = new ObjectMapper();
-            ObjectNode result = objectMapper.createObjectNode();
-            ArrayNode tripsListNode = objectMapper.createArrayNode();
             for (Trip trip : trips) {
                 ObjectNode tripNode = objectMapper.createObjectNode();
                 ArrayNode visitNodes = objectMapper.createArrayNode();
@@ -805,7 +804,10 @@ public class TripController extends Controller {
             result.put("tripCount", tripsListNode.size());
             return ok(Json.toJson(result));
         } else {
-            return ok(Json.toJson(new ArrayList<>()));
+            result.put("trips", tripsListNode);
+            result.put("tripCount", 0);
+
+            return ok(Json.toJson(result));
         }
 
 

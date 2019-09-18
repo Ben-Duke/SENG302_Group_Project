@@ -1,13 +1,7 @@
 package accessors;
 
 import io.ebean.Query;
-import io.ebean.Ebean;
-import io.ebean.Expression;
-import io.ebean.ExpressionList;
-import io.ebean.Query;
 import models.*;
-import utilities.UtilityFunctions;
-
 import javax.jws.soap.SOAPBinding;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -193,7 +187,8 @@ public class UserAccessor {
      */
    public static Set<User> getUsersByQuery(String travellerType,
                                            int offset, int quantity, String queryNationality,
-                                           String agerange1, String agerange2, String gender){
+                                           String agerange1, String agerange2, String gender1,
+                                           String gender2, String gender3){
         TravellerType type = null;
         Nationality nationality = null;
         List<List<Object>> equalsFields = new ArrayList<>();
@@ -206,34 +201,12 @@ public class UserAccessor {
            offset = 0;
        }
 
-       List<Object> queryValues = new ArrayList<>();
-       if (travellerType != null) {
-           travellerType = toTitleCase(travellerType);
-           queryValues.add(TRAVELLER_TYPE_COLUMN_NAME);
-           type = TravellerType.find().query().where().eq("travellerTypeName", travellerType).findOne();
-           queryValues.add(type);
-       }
-       else{
-           queryValues.add("1");
-           queryValues.add("1");
-       }
-
-       equalsFields.add(queryValues);
-       queryValues = new ArrayList<>();
-       if (queryNationality != null) {
-           queryValues.add("nationality");
-           queryNationality = toTitleCase(queryNationality);
-           nationality = Nationality.find().query().where().eq("nationalityName", queryNationality).findOne();
-           queryValues.add(nationality);
-       }
-       else{
-           queryValues.add("1");
-           queryValues.add("1");
-       }
-
-       equalsFields.add(queryValues);
-
-
+       equalsFields = updateEqualsFields(travellerType, TRAVELLER_TYPE_COLUMN_NAME, equalsFields);
+       equalsFields = updateEqualsFields(queryNationality, NATIONALITY_COLUMN_NAME, equalsFields);
+       equalsFields = updateEqualsFields(gender1, GENDER_COLUMN_NAME, equalsFields);
+       equalsFields = updateEqualsFields(gender2, GENDER_COLUMN_NAME, equalsFields);
+       equalsFields = updateEqualsFields(gender3, GENDER_COLUMN_NAME, equalsFields);
+       System.out.println("Equals fields is " + equalsFields);
        Date date1 = null;
        Date date2 = null;
        Boolean parseDate = (agerange1 != null && agerange2 != null) && (!agerange1.equals("") || !agerange2.equals(""));
@@ -257,23 +230,33 @@ public class UserAccessor {
                    User.find().query()
                            .where().gt("dateOfBirth", date1)
                            .lt("dateOfBirth", date2)
-                           .select("uesrid")
+                           .or()
+                           .eq((String) equalsFields.get(2).get(0), equalsFields.get(2).get(1))
+                           .eq((String) equalsFields.get(3).get(0), equalsFields.get(3).get(1))
+                           .eq((String) equalsFields.get(4).get(0), equalsFields.get(4).get(1))
+                           .endOr()
+                           .select("userid")
                            //Use this to get connected traveller types
                            .fetch(TRAVELLER_TYPE_COLUMN_NAME,"*")
-
                            .where()
-
                            .eq((String) equalsFields.get(0).get(0),  equalsFields.get(0).get(1))
+
                            .select("userid")
                            .fetch(NATIONALITY_COLUMN_NAME, "*")
                            .where()
-
                            .eq((String) equalsFields.get(1).get(0), equalsFields.get(1).get(1))
                            .setFirstRow(offset).setMaxRows(quantity);
        }
        else {
            query = //Ebean.find(User.class)
                    User.find().query()
+                           .where()
+                           .or()
+                           .eq((String) equalsFields.get(2).get(0), equalsFields.get(2).get(1))
+                           .eq((String) equalsFields.get(3).get(0), equalsFields.get(3).get(1))
+                           .eq((String) equalsFields.get(4).get(0), equalsFields.get(4).get(1))
+                           .endOr()
+                           .select("userid")
                            //Use this to get connected traveller types
                            .fetch(TRAVELLER_TYPE_COLUMN_NAME,"*")
 
@@ -322,14 +305,20 @@ public class UserAccessor {
                     convertedQueryValue = Nationality.find().query().where().eq("nationalityName", queryValue).findOne();
                     break;
                 case GENDER_COLUMN_NAME:
-                    convertedQueryValue = Nationality.find().query().where().eq("nationalityName", queryValue).findOne();
+                    convertedQueryValue = queryValue;
                     break;
             }
             queryValues.add(convertedQueryValue);
         }
         else{
-            queryValues.add("1");
-            queryValues.add("1");
+            if(! columnName.equalsIgnoreCase(GENDER_COLUMN_NAME)) {
+                queryValues.add("1");
+                queryValues.add("1");
+            }
+            else {
+                queryValues.add("0");
+                queryValues.add("1");
+            }
         }
 
         equalsFieldsToBeUpdated.add(queryValues);

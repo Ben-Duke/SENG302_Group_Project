@@ -1,12 +1,12 @@
 let openTreasureHuntCount = undefined;
 const openTreasureHuntsPerPage = 10;
+const usersTreasureHuntsPerPage = 10;
 let currentPageNum = 1;
 
 /**
- * Initilizes the openTreasureHunts paginated table.
+ * Initializes the openTreasureHunts paginated table.
  *
  * @param numOpenHuntsPerPage Number of open treasure hunts to show per page.
- * @returns {Promise<void>}
  */
 function initOpenTreasureHunts(numOpenHuntsPerPage) {
     const token =  $('input[name="csrfToken"]').attr('value');
@@ -22,6 +22,32 @@ function initOpenTreasureHunts(numOpenHuntsPerPage) {
         contentType: 'application/json',
         success: (res) => {
             importOpenTreasureHunts(res.openTreasureHunts);
+        },
+        error: (err) => {
+            console.log(err);
+        }
+    });
+}
+
+/**
+ * Initializes the openTreasureHunts paginated table.
+ *
+ * @param numHuntsPerPage Number of treasure hunts to show per page.
+ */
+function initUsersTreasureHunts(numHuntsPerPage) {
+    const token =  $('input[name="csrfToken"]').attr('value');
+    $.ajaxSetup({
+        beforeSend: function(xhr) {
+            xhr.setRequestHeader('Csrf-Token', token);
+        }
+    });
+
+    $.ajax({
+        type: 'GET',
+        url: '/users/treasurehunts/user?offset=0&quantity=' + numHuntsPerPage.toString(),
+        contentType: 'application/json',
+        success: (res) => {
+            importUsersTreasureHunts(res.ownTreasureHunts);
         },
         error: (err) => {
             console.log(err);
@@ -54,8 +80,45 @@ function addDeleteButtonToRow(row, treasureHunt) {
     row.appendChild(newCell);
 }
 
+function addEditButtonToRow(row, treasureHunt) {
+    const newCell = document.createElement("TD");
+
+    const editBtn = document.createElement("A");
+    editBtn.classList.add("btn");
+    editBtn.classList.add("btn-primary");
+
+    editBtn.innerText = "Edit";
+    editBtn.href = `/users/treasurehunts/edit/${treasureHunt.id}`;
+
+    newCell.appendChild(editBtn);
+    row.appendChild(newCell);
+}
+
+function importUsersTreasureHunts(treasureHunts) {
+    const table = document.getElementById("ownTreasureHuntTable");
+    for (let treasureHunt of treasureHunts) {
+        const row = document.createElement("TR");
+        row.classList.add("clickable");
+
+        const titleCell = document.createElement("TH");
+        titleCell.setAttribute("scope", "row");
+        titleCell.innerText = treasureHunt.title;
+        row.appendChild(titleCell);
+
+        addTextToRow(row, treasureHunt.isOpen ? "Open" : "Closed");
+        addTextToRow(row, treasureHunt.startDate);
+        addTextToRow(row, treasureHunt.endDate);
+        addTextToRow(row, treasureHunt.destName);
+        addTextToRow(row, treasureHunt.riddle);
+        addEditButtonToRow(row, treasureHunt);
+        addDeleteButtonToRow(row, treasureHunt);
+
+        table.appendChild(row);
+    }
+}
+
+
 function importOpenTreasureHunts(treasureHunts) {
-    console.log(treasureHunts);
     const table = document.getElementById("openTreasureHuntTable");
     for (let treasureHunt of treasureHunts) {
         const row = document.createElement("TR");
@@ -74,7 +137,6 @@ function importOpenTreasureHunts(treasureHunts) {
         table.appendChild(row);
     }
 }
-
 
 /**
  * Function to search for private destinations.
@@ -130,3 +192,5 @@ $('#confirmTreasureHuntDeleteModal').on('show.bs.modal', function(e) {
 });
 
 initOpenTreasureHunts(openTreasureHuntsPerPage);
+
+initUsersTreasureHunts(usersTreasureHuntsPerPage);

@@ -18,7 +18,7 @@
                 </tr>
             </thead>
             <tbody id="openTreasureHuntTable">
-                <!-- Data added dynamically through js --->
+                <!-- Data added dynamically through js -->
             </tbody>
         </table>
 
@@ -39,27 +39,8 @@
                     <th scope="col">Delete</th>
                 </tr>
             </thead>
-            <tbody>
-            @for(treasureHunt <- treasureHunts) {
-                <tr data-toggle="modal" data-id="@treasureHunt.getThuntid" data-target="#info" class="clickable">
-                    <th scope ="row">@treasureHunt.getTitle</th>
-                    @if(openTreasureHunts.contains(treasureHunt)){
-                        <td>Open</td>
-                    } else{
-                        <td>Closed</td>
-                    }
-                    <td>@treasureHunt.getStartDate</td>
-                    <td>@treasureHunt.getEndDate</td>
-                    <td>@treasureHunt.getDestination.getDestName</td>
-                    <td>@treasureHunt.getRiddle</td>
-                    <td><a href="@routes.TreasureHuntController.editTreasureHunt(treasureHunt.getThuntid)" class="btn btn-primary">
-                        Edit</a></td>
-                    <td><a data-toggle="modal" data-target="#confirmTreasureHuntDeleteModal" class="btn btn-danger">
-                        Delete</a></td>
-                </tr>
-
-                }
-
+            <tbody id="ownTreasureHuntTable">
+                    <!-- Data added dynamically through js -->
             </tbody>
         </table>
         <!-- Modal -->

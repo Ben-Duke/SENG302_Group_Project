@@ -182,6 +182,7 @@ public class User extends BaseModel implements Comparable<User>, AlbumOwner, Med
         this.isAdmin = false;
         this.followers = new ArrayList<>();
         this.following = new ArrayList<>();
+        this.dateOfBirth = LocalDate.now();
     }
 
     /**

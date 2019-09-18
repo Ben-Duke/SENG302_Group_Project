@@ -46,10 +46,8 @@ public class UserController {
      * @return the user index page
      */
     public Result userindex(Http.Request request){
-
         if (!wasRun.getAndSet(true)) {
             ApplicationManager.setMediaPath("/../media_");
-//            ApplicationManager.getMediaPath()
 
             for (EnvVariableKeys requiredKeyEnum: EnvVariableKeys.getRequiredEnvVariables()) {
 
@@ -72,9 +70,7 @@ public class UserController {
                 Thread.currentThread().interrupt();
             }
         }
-        List<User> users = User.find().all();
-        List<Admin> admins = Admin.find().all();
-        return ok(userIndex.render(users, admins,User.getCurrentUser(request)));
+        return ok(userIndex.render(User.getCurrentUser(request)));
     }
 
     /**

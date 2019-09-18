@@ -65,6 +65,23 @@ public abstract class Media extends TaggableModel {
     public String getUrl() { return url; }
 
     /**
+     * Removes media from an album
+     * @param album
+     */
+    public void removeAlbum(Album album){
+        this.albums.remove(album);
+    }
+
+    /**
+     * Adds media to an album
+     * @param album
+     */
+    public void addAlbum(Album album){
+        this.albums.add(album);
+    }
+
+
+    /**
      * Required for failing test. If deleted, ViewPublicAlbum test will print:
      * java.lang.NoSuchMethodError: models.Media.getIsMediaPublic()Z
      * @return the isMediaPublic attribute

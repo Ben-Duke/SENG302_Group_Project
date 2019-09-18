@@ -7,13 +7,19 @@ import accessors.UserPhotoAccessor;
 import accessors.UserPhotoAccessor;
 import accessors.TreasureHuntAccessor;
 import accessors.UserPhotoAccessor;
+import com.fasterxml.jackson.core.*;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
+import com.fasterxml.jackson.databind.node.JsonNodeType;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import factories.DestinationFactory;
 import factories.TravellerTypeFactory;
 import factories.UserFactory;
 import formdata.DestinationFormData;
+import io.ebean.Ebean;
 import models.*;
 
 
@@ -39,6 +45,7 @@ import views.html.users.destination.*;
 import javax.inject.Inject;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -46,6 +53,7 @@ import java.util.*;
 
 
 import utilities.UtilityFunctions;
+
 
 /**
  * A controller class for handing destination actions..
@@ -187,7 +195,6 @@ public class DestinationController extends Controller {
             }
         }
 
-//        user.getCommandManager().setAllowedPage(DestinationPageCommand.class);
 
         boolean inEditMode = false;
 
@@ -289,14 +296,26 @@ public class DestinationController extends Controller {
         }
 
         Destination newDestination = getDestinationFromRequest(request);
-        oldDestination.applyEditChanges(newDestination);
 
-        EditDestinationCommand editDestinationCommand =
-                new EditDestinationCommand(oldDestination);
-        user.getCommandManager().executeCommand(editDestinationCommand);
+        DestinationFactory destinationFactory = new DestinationFactory();
+
+        List<Destination> matchingDestinations = destinationFactory.getMatching(newDestination);
+
+        if(!matchingDestinations.isEmpty()) {
+            destinationFactory.editDestinationMerge(matchingDestinations.get(0), oldDestination);
+        } else {
+
+            oldDestination.applyEditChanges(newDestination);
+
+            EditDestinationCommand editDestinationCommand =
+                    new EditDestinationCommand(oldDestination);
+            user.getCommandManager().executeCommand(editDestinationCommand);
 
 
-        return redirect(routes.DestinationController.viewDestination(destId));
+            return redirect(routes.DestinationController.viewDestination(destId));
+        }
+        return redirect(routes.HomeController.mainMapPage());
+
     }
 
 
@@ -622,7 +641,7 @@ public class DestinationController extends Controller {
 
         for (Destination existingDestination : userAccessibleDestinations) {
             if (destination.isSimilar(existingDestination)) {
-                return ok();
+                return ok(Json.toJson(existingDestination.getDestId()));
             }
         }
         return created();
@@ -1041,6 +1060,42 @@ public class DestinationController extends Controller {
     }
 
     /**
+     * Gets a paginated jsonArray of public destinations based on an offset and quantity
+     * @param request the HTTP request
+     * @param offset an integer representing the number of destinations to skip before sending
+     * @param quantity an integer representing the maximum length of the jsonArray
+     * @return a Result object containing the destinations JSON in it's body
+     */
+    public Result getPaginatedPublicDestinations(Http.Request request, int offset, int quantity) {
+        int MAX_QUANTITY = 1000;
+
+        User user = User.getCurrentUser(request);
+        if (user == null) {
+            return redirect(routes.UserController.userindex());
+        }
+
+        if (MAX_QUANTITY < quantity) {
+            String errorStr = "query parameter 'quantity' exceeded maximum " +
+                    "allowed int: " + MAX_QUANTITY;
+
+            ObjectNode jsonError = (new ObjectMapper()).createObjectNode();
+            jsonError.put("error", errorStr);
+            jsonError.put("quantityLimit", MAX_QUANTITY);
+            return badRequest(Json.toJson(jsonError));
+        }
+
+        List<Destination> destinations = DestinationAccessor
+                .getPaginatedPublicDestinations(offset, quantity);
+
+        ObjectNode result = (new ObjectMapper()).createObjectNode();
+        result.set("destinations", Json.toJson(destinations));
+        result.put("totalCountPublic", Ebean.find(Destination.class).where()
+                .eq("destIsPublic", true) .findCount());
+
+        return ok(Json.toJson(result));
+    }
+
+    /**
      * Adds a photo with a photo id to a destination with a destination id.
      * @param request the HTTP request
      * @param photoId the photoId of the photo to e added
@@ -1105,4 +1160,37 @@ public class DestinationController extends Controller {
         return ok(googlePlacesMapDocumentationExample.render(user, googleApiKey));
     }
 
+    /**
+     * Controller function to retrieve a list of trips matching the given name
+     * @param request the HTTP request
+     * @param name the name of the trip to match
+     * @return the list of trips that match the name
+     */
+    public Result getDestinationsByName(Http.Request request, String name, int offset, int quantity) {
+        int MAX_QUANTITY = 1000;
+        User user = User.getCurrentUser(request);
+        if (user == null) {
+            return redirect(routes.UserController.userindex());
+        }
+
+        if (MAX_QUANTITY < quantity) {
+            String errorStr = "query parameter 'quantity' exceeded maximum " +
+                    "allowed int: " + MAX_QUANTITY;
+
+            ObjectNode jsonError = (new ObjectMapper()).createObjectNode();
+            jsonError.put("error", errorStr);
+            jsonError.put("quantityLimit", MAX_QUANTITY);
+            return badRequest(Json.toJson(jsonError));
+        }
+
+        List<Destination> destinations = DestinationAccessor
+                .getDestinationsWithKeyword(name, quantity ,offset);
+
+        ObjectNode result = (new ObjectMapper()).createObjectNode();
+        result.set("destinations", Json.toJson(destinations));
+        result.put("totalCountPublic", Destination.find().query().where().like("destName", "%" + name + "%").where().eq("destIsPublic", true).findCount());
+
+        return ok(Json.toJson(result));
+    }
 }
+

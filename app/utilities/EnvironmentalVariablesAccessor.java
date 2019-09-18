@@ -189,17 +189,4 @@ public class EnvironmentalVariablesAccessor {
 
         return environmentalVariables;
     }
-
-    public static void main(String[] args) {
-        System.out.println("google api key=" +
-                EnvironmentalVariablesAccessor.getEnvVariable("GOOGLE_MAPS_API_KEY"));
-        System.out.println("eventfinda username=" +
-                EnvironmentalVariablesAccessor.getEnvVariable("EVENTFINDA_API_KEY_USERNAME"));
-        System.out.println("eventfinda password=" +
-                EnvironmentalVariablesAccessor.getEnvVariable("EVENTFINDA_API_KEY_PASSWORD"));
-
-        System.out.println("test key=" +
-                EnvironmentalVariablesAccessor.getEnvVariable("test"));
-
-    }
 }

@@ -105,6 +105,7 @@ public class TagController {
      *         Bad request if the tag name is invalid
      */
     public Result addRawTag(Http.Request request) {
+
         User user = User.getCurrentUser(request);
         if (user == null) {
             return unauthorized();
@@ -151,6 +152,7 @@ public class TagController {
      * @return Result from the associated tag add method
      */
     public Result addTagToTaggable(Http.Request request, int taggableId) {
+
         String taggableType = request.body().asJson().get("taggableType").asText();
         switch (taggableType){
             case "trip":
@@ -321,6 +323,7 @@ public class TagController {
             return badRequest();
         }
         Tag tag = TagAccessor.getTagByName(tagName);
+
         boolean exists = tag != null;
         if (!exists) {
             tag = new Tag(tagName);
@@ -330,6 +333,7 @@ public class TagController {
             // Tag is already linked to this destination
             return ok();
         }
+
         TagAccessor.update(tag);
         DestinationAccessor.update(destination);
         if (exists) {

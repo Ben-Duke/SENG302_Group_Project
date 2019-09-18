@@ -200,4 +200,52 @@ public class DestinationAccessorTest extends BaseTestWithApplicationAndDatabase 
         List<Destination> destinations = DestinationAccessor.getDestinationsWithKeyword("e", 10, 0);
         assertEquals(1, destinations.size());
     }
+
+    @Test
+    /**
+     * Checks that getAllPrivateDestinations method returns a non-empty list of the destinations
+     * that are private to the given user
+     */
+    public void getPaginatedPrivateDestinations_checkNonEmptyList() {
+        TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
+        testDatabaseManager.clearAllData();
+
+        User user = new User();
+        UserAccessor.insert(user);
+
+
+        Destination destination = new Destination("test",
+                "test", "test", "New Zealand",
+                32.2, 22.1, user);
+        DestinationAccessor.insert(destination);
+        destination.setIsPublic(false);
+        DestinationAccessor.update(destination);
+
+        List<Destination> destinations = DestinationAccessor.getAllPrivateDestinations(user);
+        assertEquals(1, destinations.size());
+    }
+
+    @Test
+    /**
+     * Checks that getAllPrivateDestinations method returns an empty list of the destinations
+     * that are private to the given user
+     */
+    public void getPaginatedPrivateDestinations_checkEmptyList() {
+        TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
+        testDatabaseManager.clearAllData();
+
+        User user = new User();
+        UserAccessor.insert(user);
+
+
+        Destination destination = new Destination("test",
+                "test", "test", "New Zealand",
+                32.2, 22.1, user);
+        DestinationAccessor.insert(destination);
+        destination.setIsPublic(true);
+        DestinationAccessor.update(destination);
+
+        List<Destination> destinations = DestinationAccessor.getAllPrivateDestinations(user);
+        assertEquals(0, destinations.size());
+    }
 }

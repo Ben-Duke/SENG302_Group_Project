@@ -147,6 +147,9 @@ POST    /users/trips/visit/edit/:id       controllers.TripController.updateVisit
 #Renders page that displays a given trip
 GET     /users/trips/:id            controllers.TripController.displaytrip(request: Request, id:Integer)
 
+#Get trips matching a given name
+GET     /users/trips/matching/:name     controllers.TripController.getTripsByName(request: Request, name: String)
+
 #Renders page that displays the home page where users can navigate to other pages
 GET     /users/home                 controllers.HomeController.showhome(request:Request)
 

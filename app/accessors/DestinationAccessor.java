@@ -2,6 +2,7 @@ package accessors;
 
 import io.ebean.Query;
 import models.Destination;
+import models.User;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -105,6 +106,13 @@ public class DestinationAccessor {
     public static List<Destination> getAllDestinations() {
         return Destination.find().all();
     }
+
+    public static List<Destination> getAllPrivateDestinations(User user) {
+        return Destination.find().query().where().eq("user", user).and().eq("destIsPublic", false).findList();
+    }
+
+
+
 
     /** Insert a destination
      * @param destination Destination to save

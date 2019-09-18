@@ -2,6 +2,9 @@
 
 @allMedia = {album.viewAllMedia(true)}
 
+<style>
+
+</style>
 @main(user, "View Album") {
 
 <head>
@@ -240,19 +243,21 @@
 
                     <h2>Public destinations</h2>
                     @*<input type="text" class="searchPublicDestinations" onkeyup="searchPublicDestination()" placeholder="Search for destinations">*@
-                    <table class="table publicDestinations">
-                        <thead class="thead-dark">
-                            <tr>
-                                <th scope="col">Name</th>
-                                <th scope="col">Type</th>
-                                <th scope="col">Country</th>
-                                <th scope="col">District</th>
-                            </tr>
-                        </thead>
-                        <tbody id="public-dest-tbody">
-                            <!-- All data for public destinations is loaded here -->
-                        </tbody>
-                    </table>
+                    <div id="publicDestinations">
+                        <table class="table publicDestinations">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Type</th>
+                                    <th scope="col">Country</th>
+                                    <th scope="col">District</th>
+                                </tr>
+                            </thead>
+                            <tbody id="public-dest-tbody">
+                                <!-- All data for public destinations is loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>

@@ -165,7 +165,6 @@ public class User extends BaseModel implements Comparable<User>, AlbumOwner, Med
     public User(String email){
         this.email = email.toLowerCase();
         this.isAdmin = false;
-        this.dateOfBirth = LocalDate.now();
     }
 
     /**

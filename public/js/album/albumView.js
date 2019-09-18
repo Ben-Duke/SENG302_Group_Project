@@ -418,7 +418,7 @@ function closeModal() {
  */
 function openDestinationModal(mediaId) {
     document.getElementById('destination-modal').style.display = "block";
-    getDestData(mediaId);
+    getDestData(mediaId, 1, 20);
 }
 
 /**
@@ -432,13 +432,17 @@ function closeDestinationModal() {
  * Gets the data of all destinations the user can see to populate the destination linking modal and then loads it
  * @param mediaId the id of the media to load destination data for
  */
-function getDestData(mediaId) {
+function getDestData(mediaId, pageNum, quantity) {
+    const offset = (pageNum - 1) * 20;
+    let data = {offset: offset,
+        quantity: quantity};
     $.ajax({
         type: 'GET',
-        url: '/users/destinations/getalljson',
+        url: "/users/destinations/getallpaginatedjson",
+        data: data,
         contentType: 'application/json',
         success: (destData) => {
-            loadDestTable(destData, mediaId)
+            loadDestTable(destData, mediaId, pageNum)
         }
     });
 }
@@ -448,16 +452,28 @@ function getDestData(mediaId) {
  * @param destData the data containing all destinations that the user can view
  * @param mediaId the id of the media to link destinations to
  */
-function loadDestTable(destData, mediaId) {
-    for (let destination of destData) {
-        const publicTable = document.getElementById('public-dest-tbody');
-        const privateTable = document.getElementById('private-dest-tbody');
+function loadDestTable(destData, mediaId, pageNum) {
+    let count = destData.totalCountPublic;
+    const publicTable = document.getElementById('public-dest-tbody');
+    const privateTable = document.getElementById('private-dest-tbody');
+    if (document.getElementById('paginationEl') != null) {
+        document.getElementById('paginationEl').remove();
+    }
+    while (publicTable.childNodes.length > 0) {
+        publicTable.removeChild(publicTable.childNodes[0]);
+    }
+    while (privateTable.childNodes.length > 0) {
+        privateTable.removeChild(privateTable.childNodes[0]);
+    }
+    for (let destination of destData.destinations) {
         if (destination.isPublic) {
             addDestRow(publicTable, destination, mediaId);
         } else {
             addDestRow(privateTable, destination, mediaId)
         }
     }
+    addPagination(mediaId, count, pageNum);
+
 }
 
 /**
@@ -511,6 +527,87 @@ function addDestRow(table, destination, mediaId) {
     row.appendChild(div);
 
     table.appendChild(row);
+}
+
+function addPagination(mediaId, count, pageNum) {
+    let numOfPages = [];
+    let pageNumbers = [];
+    const pagination = document.createElement("ul");
+    pagination.setAttribute("id", "paginationEl")
+    pagination.classList.add("pagination");
+    for (let i = 0; i < count; i += 20) {
+        numOfPages.push((i / 20) + 1);
+    }
+    if (numOfPages.length > 10) {
+        if (pageNum > 5) {
+            if (numOfPages.length >= pageNum + 5) {
+                pageNumbers = [pageNum - 3, pageNum - 2, pageNum - 1, pageNum, pageNum + 1, pageNum + 2, pageNum + 3, pageNum + 4];
+            } else {
+                let lastPage = numOfPages.length - 0;
+                pageNumbers = []
+                for (let j = lastPage - 7; (j < lastPage + 1 && j > 0); j++) {
+                    pageNumbers.push(j);
+                }
+            }
+        } else {
+            for (let k = 0; k < 10; k++) {
+                pageNumbers.push(numOfPages[k]);
+            }
+        }
+    } else {
+        pageNumbers = numOfPages;
+    }
+    let item = document.createElement("li");
+    let pageButton = document.createElement("a");
+    let currentPageNum = 1;
+    pageButton.innerText = "First";
+    pageButton.setAttribute("onClick", `getDestData(${mediaId}, ${currentPageNum} ,${20})`);
+    item.appendChild(pageButton);
+    pagination.appendChild(item);
+
+    item = document.createElement("li");
+    pageButton = document.createElement("a");
+    if (pageNum < 2) {
+        currentPageNum = 1;
+    } else {
+        currentPageNum = pageNum - 1;
+    }
+    pageButton.innerText = "<";
+    pageButton.setAttribute("onClick", `getDestData(${mediaId}, ${currentPageNum} ,${20})`);
+    item.appendChild(pageButton);
+    pagination.appendChild(item);
+    for (let i=0; i < pageNumbers.length; i++) {
+        let item = document.createElement("li");
+        const pageButton = document.createElement("a");
+        const currentPageNum = pageNumbers[i];
+        pageButton.innerText = pageNumbers[i];
+        if (currentPageNum==pageNum) {
+            item.classList.add("active");
+        }
+        pageButton.setAttribute("onClick", `getDestData(${mediaId}, ${currentPageNum} ,${20})`);
+        item.appendChild(pageButton);
+        pagination.appendChild(item);
+    }
+    item = document.createElement("li");
+    pageButton = document.createElement("a");
+    if (pageNum>=numOfPages.length) {
+        currentPageNum = numOfPages.length;
+    } else {
+        currentPageNum = pageNum+1;
+    }
+    pageButton.innerText = ">";
+    pageButton.setAttribute("onClick", `getDestData(${mediaId}, ${currentPageNum} ,${20})`);
+    item.appendChild(pageButton);
+    pagination.appendChild(item);
+    document.getElementById("publicDestinations").appendChild(pagination);
+
+    item = document.createElement("li");
+    pageButton = document.createElement("a");
+    currentPageNum = numOfPages.length;
+    pageButton.innerText = "Last";
+    pageButton.setAttribute("onClick", `getDestData(${mediaId}, ${currentPageNum} ,${20})`);
+    item.appendChild(pageButton);
+    pagination.appendChild(item);
 }
 
 /**

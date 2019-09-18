@@ -46,6 +46,13 @@ GET     /users/admin/actasuser/:id      controllers.AdminController.setUserToAct
 #Handles setting a user back to the admin after acting as a user
 GET     /users/admin/back_to_admin/:id      controllers.AdminController.setUserBackToAdmin(request: Request, id: Integer)
 
+GET     /users/admin/data           controllers.AdminController.getUserData(request: Request, offset: Integer, quantity: Integer)
+
+GET     /users/admin/userCount           controllers.AdminController.getUserCount(request: Request)
+
+
+
+
 GET /users/destination/placeid/:placeId   controllers.DestinationController.getPlacesDetailsRequest(request: Request, placeId:String)
 
 #Handles view a destination modification request
@@ -103,8 +110,6 @@ GET     /users/trips/json/:id         controllers.TripController.getTrip(request
 
 GET     /users/trips/userTrips         controllers.TripController.getLengthUserTrips(request: Request)
 
-GET     /users/trips/addDestinations/:id    controllers.TripController.addTripDestinations(request: Request, id:Integer)
-
 #GET     /users/trips/display/addDestinations    controllers.TripController.AddExistingTripDestinations(request: Request, id:Integer)
 
 #POST     /users/trips/display/addDestinations    controllers.TripController.addvisitExistingTrip(request: Request, id:Integer)
@@ -130,9 +135,6 @@ GET     /users/trips/:id/tripPicture controllers.TripController.getTripPhoto(req
 
 #Handles adding a visit to a trip
 #POST    /users/trips/edit/:id       controllers.TripController.addvisit(request: Request, id:Integer)
-
-#Handles adding a visit to a trip (table form)
-GET    /users/trips/table/edit/:tripid/:destid       controllers.TripController.addVisitFromTable(request: Request, tripid:Integer, destid:Integer)
 
 #Renders page for editing a visit of a trip
 GET    /users/trips/visit/edit/:id       controllers.TripController.editvisit(request: Request, id:Integer)
@@ -222,6 +224,9 @@ GET     /users/destinations/getprimaryphoto/:destId  controllers.DestinationCont
 #Gets JSON of all public and private Destinations avaliable to a user.
 GET     /users/destinations/getalljson         controllers.DestinationController.getVisibleDestinationMarkersJSON(request : Request)
 
+# Gets paginated json of public destinations.
+GET     /users/destinations/getpublicpaginatedjson     controllers.DestinationController.getPaginatedPublicDestinations(request : Request, offset : Integer, quantity : Integer)
+
 #Renders page for displaying a given destination
 GET     /users/destinations/view/:id         controllers.DestinationController.viewDestination(request : Request, id : Integer)
 
@@ -296,6 +301,10 @@ POST    /users/destinations/save        controllers.DestinationController.saveDe
 #Handles deleting a destination
 GET     /users/destinations/delete/:id   controllers.DestinationController.deleteDestination(request : Request, id : Integer)
 
+#Handles searching for  a destination
+GET     /users/destinations/matching/:name        controllers.DestinationController.getDestinationsByName(request : Request, name: String, offset: Integer, quantity: Integer)
+
+
 #Treasure Hunts
 #Renders treasure hunt index page
 GET     /users/treasurehunts                    controllers.TreasureHuntController.indexTreasureHunt(request : Request)
@@ -330,7 +339,7 @@ GET     /users/albums/getAlbumFromMediaId/:mediaId      controllers.AlbumControl
 
 
 #Get JSON of one album
-GET     /users/albums/get/:all/:id   controllers.AlbumController.getAlbum(request : Request, id : Integer, all : Boolean)
+GET     /users/albums/get/:id/:offSet/:quantity   controllers.AlbumController.getAlbum(request : Request, id : Integer, offSet : Integer, quantity : Integer)
 
 #View one album
 GET     /users/albums/:id   controllers.AlbumController.viewAlbum(request : Request, id : Integer)

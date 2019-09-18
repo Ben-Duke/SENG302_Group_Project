@@ -9,8 +9,7 @@ import org.slf4j.Logger;
 import play.libs.Json;
 import play.mvc.Http;
 import play.mvc.Result;
-import utilities.TestDatabaseManager;
-import utilities.UtilityFunctions;
+import utilities.*;
 import views.html.users.userIndex;
 
 import java.util.ArrayList;
@@ -40,14 +39,26 @@ public class UserController {
      * Only one thread gets into the if block and all other concurrent threads
      * wait in the else block for the if block free the lock.
      *
+     * Checks the .env file exists and has all required key/value pairs. Throws
+     * a runtime exception if one of these is missing.
+     *
      * @param request The HTTP request
      * @return the user index page
      */
     public Result userindex(Http.Request request){
-
         if (!wasRun.getAndSet(true)) {
             ApplicationManager.setMediaPath("/../media_");
-//            ApplicationManager.getMediaPath()
+
+            for (EnvVariableKeys requiredKeyEnum: EnvVariableKeys.getRequiredEnvVariables()) {
+
+                String value = EnvironmentalVariablesAccessor.getEnvVariable(requiredKeyEnum.toString());
+                if (value == null) {
+                    throw new RuntimeException("Either the .env file is missing " +
+                            "or the required key {" + requiredKeyEnum.toString() +
+                            "} is missing or does not have a corresponding value. " +
+                            "To get a more specific error check the logger error messages.");
+                }
+            }
 
             TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
             testDatabaseManager.populateDatabaseWithLatch(initCompleteLatch);
@@ -59,9 +70,7 @@ public class UserController {
                 Thread.currentThread().interrupt();
             }
         }
-        List<User> users = User.find().all();
-        List<Admin> admins = Admin.find().all();
-        return ok(userIndex.render(users, admins,User.getCurrentUser(request)));
+        return ok(userIndex.render(User.getCurrentUser(request)));
     }
 
     /**

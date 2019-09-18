@@ -1,8 +1,10 @@
 package accessors;
 
+import io.ebean.Query;
 import models.*;
 import play.libs.Json;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -74,6 +76,15 @@ public class UserAccessor {
                     .where().eq("email", email.toLowerCase()).findList();
     }
 
+    /** Return a list of users with an email in emails
+     *
+     * @param emails a collection of string emails
+     * @return a list of users
+     */
+    public static List<User> getUsersByEmails(Collection<String> emails) {
+        return User.find().query().where().in("email", emails).findList();
+    }
+
     /**
      * Return the User matching the id passed
      * @param id the id of the user
@@ -126,5 +137,19 @@ public class UserAccessor {
             throw new io.ebean.DuplicateKeyException("Multiple profile photos.",
                     new Throwable("Multiple profile photos."));
         }
+    }
+
+
+    /**
+     * Gets a paginated List of Users, with an offset and quantity to fetch.
+     *
+     * @param offset an integer representing the number of Users to skip before sending
+     * @param quantity an integer representing the maximum length of the jsonArray
+     * @return A List<User> of Users.
+     */
+    public static List<User> getPaginatedUsers(int offset, int quantity){
+        Query<User> query = User.find().query()
+                .setFirstRow(offset).setMaxRows(quantity);
+        return query.findList();
     }
 }

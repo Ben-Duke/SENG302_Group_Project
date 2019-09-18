@@ -74,7 +74,7 @@ public class TreasureHuntController extends Controller {
         User user = User.getCurrentUser(request);
         if (user != null) {
             user.getCommandManager().setAllowedPage(CommandPage.TREASURE_HUNT); // clear stack
-            return ok(indexTreasureHunt.render(user.getTreasureHunts(), getOpenTreasureHunts(), user));
+            return ok(indexTreasureHunt.render(user.getTreasureHunts(), getOpenTreasureHunts(), user)); //TODO remove lists
         } else {
             return redirect(routes.UserController.userindex());
         }
@@ -100,7 +100,7 @@ public class TreasureHuntController extends Controller {
         }
 
         List<TreasureHunt> treasureHunts = TreasureHuntAccessor
-                .getPaginatedOpenDestinations(offset, quantity);
+                .getPaginatedOpenTreasureHunts(offset, quantity);
         long countTotalOpenHunts = TreasureHuntAccessor.getCountOpenTreasureHunts();
 
         ObjectNode result = (new ObjectMapper()).createObjectNode();
@@ -150,7 +150,7 @@ public class TreasureHuntController extends Controller {
      * @param quantity an integer representing the maximum length of the jsonArray
      * @return a Result object containing the TreasureHunt list JSON in it's body
      */
-    public Result getPaginatedUserTreasureHunts(Http.Request request, int offset, int quantity) {
+    public Result getPaginatedUserTreasureHunts(Http.Request request, int offset, int quantity) { //TODO test
         final int MAX_QUANTITY = 1000;
         User user = User.getCurrentUser(request);
         if (user == null) {
@@ -163,7 +163,38 @@ public class TreasureHuntController extends Controller {
 
         List<TreasureHunt> treasureHunts = TreasureHuntAccessor
                 .getPaginatedUsersTreasurehunts(user, offset, quantity);
-        return ok(Json.toJson(treasureHunts));
+        int totalCountOwn = TreasureHuntAccessor.getCountUsersownTreasureHunts(user);
+
+        ObjectNode result = (new ObjectMapper()).createObjectNode();
+        result.set("ownTreasureHunts", this.getJsonForTreasureHunts(treasureHunts));
+        result.put("totalCountOpenTreasureHunts", totalCountOwn);
+        return ok(Json.toJson(result));
+    }
+
+    /**
+     * Get's JSON (ArrayNode) containing a paginated list of treasuer hunts.
+     * No isAdmin or isOwner checking is done.
+     *
+     * @param treasureHunts List of treasure hunts to convert to json.
+     * @return An ArrayNode representing the json to send to client.
+     */
+    private ArrayNode getJsonForTreasureHunts(List<TreasureHunt> treasureHunts) { //TODO  test
+        ArrayNode treasureHuntsJson = (new ObjectMapper()).createArrayNode();
+
+        for (TreasureHunt treasureHunt: treasureHunts) {
+            ObjectNode treasureHuntJson = (new ObjectMapper()).createObjectNode();
+            treasureHuntJson.put("title", treasureHunt.getTitle());
+            treasureHuntJson.put("isOpen", treasureHunt.isOpen());
+            treasureHuntJson.put("startDate", UtilityFunctions.getStringFromLocalDate(treasureHunt.getStartDate()));
+            treasureHuntJson.put("endDate", UtilityFunctions.getStringFromLocalDate(treasureHunt.getEndDate()));
+            treasureHuntJson.put("riddle", treasureHunt.getRiddle());
+            treasureHuntJson.put("destName", treasureHunt.getDestination().getDestName());
+
+
+            treasureHuntsJson.add(treasureHuntJson);
+        }
+
+        return treasureHuntsJson;
     }
 
     /**

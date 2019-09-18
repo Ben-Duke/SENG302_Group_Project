@@ -81,7 +81,7 @@ public class TreasureHuntAccessor {
      * @param quantity an integer representing the maximum length of the list
      * @return A List<TreasureHunt> of treasure hunts.
      */
-    public static List<TreasureHunt> getPaginatedOpenDestinations(int offset, int quantity) {
+    public static List<TreasureHunt> getPaginatedOpenTreasureHunts(int offset, int quantity) {
         if (quantity < 1) {
             return new ArrayList<TreasureHunt>();
         }
@@ -123,6 +123,19 @@ public class TreasureHuntAccessor {
     }
 
     /**
+     * Gets the total count of a users own treasure hunts.
+     *
+     * @param user The user to get the count for.
+     * @return An int representing the count.
+     */
+    public static int getCountUsersownTreasureHunts(User user) { //TODO test
+        return TreasureHunt.find().query()
+                .where()
+                .eq("user", user)
+                .findCount();
+    }
+
+    /**
      * Gets a paginated list of treasure hunts that match the current user, with an offset and quantity to fetch.
      *
      * @param user the user that the treasure hunts belong to
@@ -130,7 +143,15 @@ public class TreasureHuntAccessor {
      * @param quantity an integer representing the maximum length of the list
      * @return A List<TreasureHunt> of treasure hunts.
      */
-    public static List<TreasureHunt> getPaginatedUsersTreasurehunts(User user, int offset, int quantity) {
+    public static List<TreasureHunt> getPaginatedUsersTreasurehunts(User user, int offset, int quantity) { //TODO test
+        if (quantity < 1) {
+            return new ArrayList<TreasureHunt>();
+        }
+
+        if (offset < 0) {
+            offset = 0;
+        }
+
         return TreasureHunt.find()
                 .query()
                 .where()

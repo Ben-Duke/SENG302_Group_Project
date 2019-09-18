@@ -278,7 +278,7 @@ public class TreasureHunt extends BaseModel {
      * Checks if a treasure hunt is currently active.
      * @return true if the treasure hunt is currently open, else false
      */
-    public boolean isOpen() {
+    public boolean isOpen() { //TODO test
         LocalDate currentDate = LocalDate.now(ZoneId.of("Pacific/Auckland"));
         boolean isStartBeforeOrOnCurrent = this.getStartDate().isBefore(currentDate)
                                     || this.getStartDate().isEqual(currentDate);

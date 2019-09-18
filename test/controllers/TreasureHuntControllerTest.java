@@ -25,6 +25,7 @@ import play.test.Helpers;
 import play.test.WithApplication;
 import testhelpers.BaseTestWithApplicationAndDatabase;
 import utilities.TestDatabaseManager;
+import utilities.UtilityFunctions;
 import utilities.exceptions.EbeanDateParseException;
 
 import java.util.HashMap;
@@ -266,7 +267,7 @@ public class TreasureHuntControllerTest extends BaseTestWithApplicationAndDataba
      * Test for editing the treasure hunt.
      */
     @Test
-    public void editAndSaveTreasureHunt() {
+    public void editAndSaveTreasureHunt() throws EbeanDateParseException {
         //User with id 2 should have one trip
         assertEquals(1, User.find().byId(2).getTreasureHunts().size());
         int tHuntId = User.find().byId(2).getTreasureHunts().get(0).getThuntid();
@@ -286,8 +287,8 @@ public class TreasureHuntControllerTest extends BaseTestWithApplicationAndDataba
         assertEquals("test123", User.find().byId(2).getTreasureHunts().get(0).getTitle());
         assertEquals("The garden city", User.find().byId(2).getTreasureHunts().get(0).getRiddle());
         assertEquals("Christchurch", User.find().byId(2).getTreasureHunts().get(0).getDestination().getDestName());
-        assertEquals("2019-04-17", User.find().byId(2).getTreasureHunts().get(0).getStartDate());
-        assertEquals("2019-12-25", User.find().byId(2).getTreasureHunts().get(0).getEndDate());
+        assertEquals(UtilityFunctions.parseLocalDate("2019-04-17"), User.find().byId(2).getTreasureHunts().get(0).getStartDate());
+        assertEquals(UtilityFunctions.parseLocalDate("2019-12-25"), User.find().byId(2).getTreasureHunts().get(0).getEndDate());
     }
 
     /**

@@ -78,8 +78,9 @@ public class TravelPartnerControllerTest extends BaseTestWithApplicationAndDatab
         user2.getPassport().add(passport3);
         user2.save();
     }
+
     @Test
-    public void testTravellerTypePaginatedDefault(){
+    public void testTravellerSearchPaginatedNoGenderSelected(){
 
         super.populateDatabase();
         Http.RequestBuilder request = Helpers.fakeRequest()
@@ -87,11 +88,96 @@ public class TravelPartnerControllerTest extends BaseTestWithApplicationAndDatab
                 .uri("/users/profile/searchprofiles?").session("connected", "2");
         Result result = route(app, request);
         int jsonSize = Json.parse(contentAsString(result)).size();
-        assertEquals(10, jsonSize );
+        assertEquals(0, jsonSize );
+    }
+
+    /**
+     * Tests one particular user (testuser1) to see if the API can identify their gender.
+     * WARNING: Adding user into the test database with a birthday of 1998-08-23 will
+     * break this test.
+     * Checks the size of the search with the male parameter, then the female parameter.
+     */
+    @Test
+    public void testTravellerSearchPaginatedMaleGenderSelected(){
+        super.populateDatabase();
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/profile/searchprofiles?bornafter=1998-08-22" +
+                        "&bornbefore=1998-08-24&gender1=male").session("connected", "3");
+        Result result = route(app, request);
+        int jsonSize = Json.parse(contentAsString(result)).size();
+        assertEquals(1, jsonSize );
+        request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/profile/searchprofiles?bornafter=1998-08-22" +
+                        "&bornbefore=1998-08-24&gender1=female").session("connected", "3");
+        result = route(app, request);
+        jsonSize = Json.parse(contentAsString(result)).size();
+        assertEquals(0, jsonSize );
+    }
+
+    /**
+     * Tests one particular user (testuser2) to see if the API can identify their gender.
+     * WARNING: Adding user into the test database with a birthday of 1960-08-25 will
+     * break this test.
+     * Checks the size of the search with the male parameter, then the female parameter.
+     */
+    @Test
+    public void testTravellerSearchPaginatedFemaleGenderSelected(){
+        super.populateDatabase();
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/profile/searchprofiles?bornafter=1960-12-24" +
+                        "&bornbefore=1960-12-26&gender1=male").session("connected", "2");
+        Result result = route(app, request);
+        int jsonSize = Json.parse(contentAsString(result)).size();
+        assertEquals(0, jsonSize );
+        request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/profile/searchprofiles?bornafter=1960-12-24" +
+                        "&bornbefore=1960-12-26&gender1=female").session("connected", "2");
+        result = route(app, request);
+        jsonSize = Json.parse(contentAsString(result)).size();
+        assertEquals(1, jsonSize );
+    }
+
+    /**
+     * Tests one particular user (testuser1) to see if the API can identify multiple
+     * gender filters being used at once.
+     * WARNING: Adding user into the test database with a birthday of 1998-08-23 will
+     * break this test.
+     * Checks the size of the search with the male parameter, then the female parameter.
+     */
+    @Test
+    public void testTravellerSearchPaginatedMultipleGenderSelected(){
+        super.populateDatabase();
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/profile/searchprofiles?bornafter=1998-08-22" +
+                        "&bornbefore=1998-08-24&gender1=male").session("connected", "3");
+        Result result = route(app, request);
+        int jsonSize = Json.parse(contentAsString(result)).size();
+        assertEquals(1, jsonSize );
+
+        request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/profile/searchprofiles?bornafter=1998-08-22" +
+                        "&bornbefore=1998-08-24&gender1=female&gender2=male").session("connected", "3");
+        result = route(app, request);
+        jsonSize = Json.parse(contentAsString(result)).size();
+        assertEquals(1, jsonSize );
+
+        request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/profile/searchprofiles?bornafter=1998-08-22" +
+                        "&bornbefore=1998-08-24&gender1=female&gender2=other").session("connected", "3");
+        result = route(app, request);
+        jsonSize = Json.parse(contentAsString(result)).size();
+        assertEquals(0, jsonSize );
     }
 
     @Test
-    public void testTravellerTypePaginatedNegativeQuantity(){
+    public void testTravellerSearchPaginatedNegativeQuantity(){
 
         super.populateDatabase();
         Http.RequestBuilder request = Helpers.fakeRequest()
@@ -102,20 +188,79 @@ public class TravelPartnerControllerTest extends BaseTestWithApplicationAndDatab
         assertEquals(0, jsonSize );
     }
 
+    /**
+     * Test user 1 should be the only user with a nationality of Czechoslovakia
+     */
     @Test
-    public void testTravellerTypePaginatedNationality(){
+    public void testTravellerSearchPaginatedNationality(){
 
         super.populateDatabase();
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(GET)
-                .uri("/users/profile/searchprofiles?nationality=Afghanistan").session("connected", "2");
+                .uri("/users/profile/searchprofiles?nationality=Czechoslovakia&gender1=male&gender2=female&gender3=other").session("connected", "2");
         Result result = route(app, request);
         int jsonSize = Json.parse(contentAsString(result)).size();
         assertEquals(1, jsonSize );
     }
 
+    /**
+     * Test with an invalid nationality of Bbechoslovakia.
+     * The system should not return any results.
+     */
     @Test
-    public void testTravellerTypePaginatedTooManyRequested(){
+    public void testTravellerSearchPaginatedInvalidNationality(){
+
+        super.populateDatabase();
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/profile/searchprofiles?nationality=Bbechoslovakia&gender1=male&gender2=female&gender3=other").session("connected", "2");
+        Result result = route(app, request);
+        int jsonSize = Json.parse(contentAsString(result)).size();
+        assertEquals(0, jsonSize );
+    }
+
+    @Test
+    public void testTravellerSearchPaginatedTravellerType(){
+
+        super.populateDatabase();
+
+        //Test user 1 has a traveller type of gap year so this should return one result
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/profile/searchprofiles?nationality=Czechoslovakia&travellertype=gap%20year&gender1=male&gender2=female&gender3=other").session("connected", "2");
+        Result result = route(app, request);
+        int jsonSize = Json.parse(contentAsString(result)).size();
+        assertEquals(1, jsonSize );
+
+        //Test user 1 has a traveller type of gap year not groupie so this should return no results
+        request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/profile/searchprofiles?nationality=Czechoslovakia&travellertype=groupie&gender1=male&gender2=female&gender3=other").session("connected", "2");
+        result = route(app, request);
+        jsonSize = Json.parse(contentAsString(result)).size();
+        assertEquals(0, jsonSize );
+    }
+
+    /**
+     * Test with an invalid nationality of "yeet".
+     * The system should not return any results.
+     */
+    @Test
+    public void testTravellerSearchPaginatedInvalidTravellerType(){
+
+        super.populateDatabase();
+
+        //Test with a traveller type of
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/profile/searchprofiles?nationality=Czechoslovakia&travellertype=yeet&gender1=male&gender2=female&gender3=other").session("connected", "2");
+        Result result = route(app, request);
+        int jsonSize = Json.parse(contentAsString(result)).size();
+        assertEquals(0, jsonSize );
+    }
+
+    @Test
+    public void testTravellerSearchPaginatedTooManyRequested(){
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(GET)
                 .uri("/users/profile/searchprofiles?quantity=1001").session("connected", "2");
@@ -125,7 +270,7 @@ public class TravelPartnerControllerTest extends BaseTestWithApplicationAndDatab
     }
 
     @Test
-    public void testTravellerTypePaginatedNoUserLoggedIn(){
+    public void testTravellerSearchPaginatedNoUserLoggedIn(){
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(GET)
                 .uri("/users/profile/searchprofiles").session("connected", null);

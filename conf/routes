@@ -430,6 +430,7 @@ GET /tags/items/:tagId                                  controllers.TagControlle
 # News feed
 PUT /events/respond/:eventId/:responseType                  controllers.EventResponseController.respondToEvent(request : Request, eventId : Integer, responseType : String)
 
+GET /events/responses/get/all                               controllers.EventResponseController.getAllResponses(request : Request)
 
 # Undo
 +nocsrf

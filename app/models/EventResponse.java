@@ -13,8 +13,7 @@ import java.util.Set;
 
 /** The model class for EventResponse construction */
 @Entity
-@Table(name = "event_response",
-        uniqueConstraints = @UniqueConstraint(columnNames = "response_type"))
+@Table(name = "event_response")
 public class EventResponse extends BaseModel{
 
     private static final String DATE_PATTERN = "dd-MM-yyyy HH:mm:ss";
@@ -100,5 +99,16 @@ public class EventResponse extends BaseModel{
 
     public void setResponseType(String responseType) {
         this.responseType = responseType;
+    }
+
+    @Override
+    public String toString() {
+        return "EventResponse{" +
+                "eventResponseId=" + eventResponseId +
+                ", responseType='" + responseType + '\'' +
+                ", user=" + user +
+                ", event=" + event +
+                ", responseDateTime=" + responseDateTime +
+                '}';
     }
 }

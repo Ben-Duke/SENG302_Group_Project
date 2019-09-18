@@ -329,6 +329,12 @@ img.hover-shadow {
 #album-search-move {
     margin: 3px;
 }
+#loadMoreBtnContainer {
+    margin-top: 20px;
+}
+#loadMoreBtn {
+    margin: 0 auto;
+}
 
 #tag-container {
     display: flex;

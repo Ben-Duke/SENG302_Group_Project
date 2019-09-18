@@ -1,12 +1,11 @@
 package models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import controllers.ApplicationManager;
+import io.ebean.Finder;
 import io.ebean.Model;
 
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.MappedSuperclass;
+import javax.persistence.*;
 import java.util.*;
 
 @MappedSuperclass
@@ -75,5 +74,8 @@ public abstract class TaggableModel extends BaseModel {
     public boolean removeTag(Tag tag){
         return tags.remove(tag);
     }
+
+    public static Finder<Integer,TaggableModel> find = new
+            Finder<>(TaggableModel.class, ApplicationManager.getDatabaseName());
 
 }

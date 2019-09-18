@@ -24,18 +24,18 @@ public class FollowAccessor {
     }
 
     public static Set<User> getAllUsersFollowed(User follower) {
-        Set<Follow> FollowSet = Follow.find().query().where().eq("follower", follower).findSet();
+        Set<Follow> followSet = Follow.find().query().where().eq("follower", follower).findSet();
         Set<User> followedUser = new HashSet<>();
-        for (Follow follow: FollowSet) {
+        for (Follow follow: followSet) {
             followedUser.add(follow.getFollowed());
         }
         return followedUser;
     }
 
     public static Set<User> getAllUsersFollowing(User follower) {
-        Set<Follow> FollowSet = Follow.find().query().where().eq("followed", follower).findSet();
+        Set<Follow> followSet = Follow.find().query().where().eq("followed", follower).findSet();
         Set<User> followedUser = new HashSet<>();
-        for (Follow follow: FollowSet) {
+        for (Follow follow: followSet) {
             followedUser.add(follow.getFollower());
         }
         return followedUser;

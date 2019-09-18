@@ -11,7 +11,7 @@ public class TagAccessor {
     /**
      * Return the destination matching the id passed
      * @param id the id of the tag to retrieve
-     * @return the matching tag from the database if it folllows, else null
+     * @return the matching tag from the database if it exists, else null
      */
     public static Tag getTagById(int id) {
         return Tag.find.byId(id);
@@ -20,7 +20,7 @@ public class TagAccessor {
     /**
      * Return the tag matching the name passed
      * @param name the name of the tag to find
-     * @return the first tag matching the name in the database if it folllows. else null
+     * @return the first tag matching the name in the database if it exists. else null
      */
     public static Tag getTagByName(String name) {
         return Tag.find.query().where().ieq("name", name).findOne();

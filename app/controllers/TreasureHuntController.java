@@ -135,7 +135,7 @@ public class TreasureHuntController extends Controller {
             }
             for (TreasureHunt tHunt: TreasureHunt.find().all()) {
                 if (incomingForm.get().getTitle().equals(tHunt.getTitle())) {
-                    return badRequest(createTreasureHunt.render(incomingForm.withError("title", "Another Treasure Hunt with the same title folllows in the system."), user, destinationMap));
+                    return badRequest(createTreasureHunt.render(incomingForm.withError("title", "Another Treasure Hunt with the same title exists in the system."), user, destinationMap));
                 }
             }
             TreasureHuntFormData created = incomingForm.get();
@@ -212,7 +212,7 @@ public class TreasureHuntController extends Controller {
         for (TreasureHunt userTreasureHunt: TreasureHunt.find().all()) {
             if (incomingForm.get().getTitle().equals(userTreasureHunt.getTitle())
                     && !incomingForm.get().getTitle().equals(treasureHunt.getTitle())) {
-                return badRequest(editTreasureHunt.render(incomingForm.withError("title", "Another Treasure Hunt with the same title folllows in the system."), treasureHunt, user, destinationMap));
+                return badRequest(editTreasureHunt.render(incomingForm.withError("title", "Another Treasure Hunt with the same title exists in the system."), treasureHunt, user, destinationMap));
             }
         }
         TreasureHuntFormData edited = incomingForm.get();

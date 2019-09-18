@@ -2,7 +2,6 @@ package accessors;
 
 import io.ebean.Query;
 import models.*;
-import javax.jws.soap.SOAPBinding;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;

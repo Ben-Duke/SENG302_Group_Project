@@ -1,6 +1,5 @@
 package controllers;
 
-import com.sun.javafx.binding.SelectBinding;
 import models.Nationality;
 import models.Passport;
 import models.TravellerType;

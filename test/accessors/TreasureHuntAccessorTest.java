@@ -91,4 +91,85 @@ public class TreasureHuntAccessorTest extends BaseTestWithApplicationAndDatabase
         long count = TreasureHuntAccessor.getCountOpenTreasureHunts();
         assertEquals(1, count);
     }
+
+    @Test
+    public void getCountOpenTreasureHunts() {
+        fail();
+    }
+
+    @Test
+    /**
+     * Checks getCountUsersownTreasureHunts() returns 0 when there are no treasure hunts
+     * in the application.
+     */
+    public void getCountUsersownTreasureHunts_noHunts_checkReturnZero() {
+        TestDatabaseManager dbManager = new TestDatabaseManager();
+        dbManager.clearAllData();
+
+        User user = new User("test@test.com", "sasdsad");
+        UserAccessor.insert(user);
+
+        assertEquals(0, TreasureHuntAccessor.getCountUsersownTreasureHunts(user));
+    }
+
+    @Test
+    /**
+     * Checks getCountUsersownTreasureHunts() returns 0 when there are treasure hunts
+     * in the application, but not owned by the user.
+     */
+    public void getCountUsersownTreasureHunts_noOwnedHunts_checkReturnZero()
+                                                throws EbeanDateParseException {
+
+        TestDatabaseManager dbManager = new TestDatabaseManager();
+        dbManager.clearAllData();
+
+        User user = new User("test@test.com", "sasdsad");
+        UserAccessor.insert(user);
+
+        User userOther = new User("other@test.com", "sasdsad");
+        UserAccessor.insert(userOther);
+
+        Destination destination = new Destination("test",
+                "test", "test", "New Zealand",
+                32.2, 22.1, user);
+        DestinationAccessor.insert(destination);
+
+        TreasureHunt tHunt = new TreasureHunt("test", "test",
+                destination, "2019-01-01", "2019-12-12", userOther);
+        TreasureHuntAccessor.insert(tHunt);
+
+        assertEquals(0, TreasureHuntAccessor.getCountUsersownTreasureHunts(user));
+    }
+
+    @Test
+    /**
+     * Checks getCountUsersownTreasureHunts() returns 1 when the users owns 1 treasure hunt.
+     */
+    public void getCountUsersownTreasureHunts_ownsOne_checkReturnOne()
+            throws EbeanDateParseException {
+
+        TestDatabaseManager dbManager = new TestDatabaseManager();
+        dbManager.clearAllData();
+
+        User user = new User("test@test.com", "sasdsad");
+        UserAccessor.insert(user);
+
+        User userOther = new User("other@test.com", "sasdsad");
+        UserAccessor.insert(userOther);
+
+        Destination destination = new Destination("test",
+                "test", "test", "New Zealand",
+                32.2, 22.1, user);
+        DestinationAccessor.insert(destination);
+
+        TreasureHunt tHunt = new TreasureHunt("test", "test",
+                destination, "2019-01-01", "2019-12-12", userOther);
+        TreasureHuntAccessor.insert(tHunt);
+
+        TreasureHunt ownTHunt = new TreasureHunt("test", "test",
+                destination, "2019-01-01", "2019-12-12", user);
+        TreasureHuntAccessor.insert(ownTHunt);
+
+        assertEquals(1, TreasureHuntAccessor.getCountUsersownTreasureHunts(user));
+    }
 }

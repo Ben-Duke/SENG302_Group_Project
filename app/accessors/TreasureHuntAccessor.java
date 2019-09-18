@@ -128,7 +128,7 @@ public class TreasureHuntAccessor {
      * @param user The user to get the count for.
      * @return An int representing the count.
      */
-    public static int getCountUsersownTreasureHunts(User user) { //TODO test
+    public static int getCountUsersownTreasureHunts(User user) {
         return TreasureHunt.find().query()
                 .where()
                 .eq("user", user)

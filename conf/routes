@@ -202,6 +202,15 @@ GET     /users/profile/:id          controllers.ProfileController.showProfile(re
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
 
 
+#Followers
+
+POST    /users/follow/:userId           controllers.FollowController.followUser(request:Request, userId:Integer)
+
+POST    /users/unfollow/:userId         controllers.FollowController.unfollowUser(request:Request, userId:Integer)
+
+GET     /users/getfollowers/:userId      controllers.FollowController.getFollowers(request:Request, userId:Integer, offset:Integer)
+
+GET     /users/getfollowing/:userId      controllers.FollowController.getFollowing(request:Request, userId:Integer, offset:Integer)
 
 #Destinations
 
@@ -328,7 +337,7 @@ GET     /users/:id/albums/getFromTitle/:title    controllers.AlbumController.get
 #Albums index page
 GET     /users/albums   controllers.AlbumController.indexAlbum(request : Request)
 
-#Get the first available album ID of a media item if it exists
+#Get the first available album ID of a media item if it folllows
 GET     /users/albums/getAlbumFromMediaId/:mediaId      controllers.AlbumController.getFirstAlbumIdFromMediaId(request : Request, mediaId : Integer)
 
 
@@ -429,6 +438,8 @@ GET /tags/display/:tagName                                            controller
 
 GET /tags/items/:tagId                                  controllers.TagController.getTagDetails(request: Request, tagId: Integer)
 
+# Follower routes
+GET /users/follows/:profileId                           controllers.FollowController.isFollowing(request: Request, profileId: Integer)
 
 
 # Undo

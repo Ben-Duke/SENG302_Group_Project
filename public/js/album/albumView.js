@@ -573,7 +573,7 @@ $("#destSearchInput").keyup(function ()
     searchByKeyword(mediaId, 1)
 });
 
-function addPagination(mediaId, count, pageNum, search) {
+function addPagination(mediaId, count, pageNum, search, tab) {
     let numOfPages = [];
     let pageNumbers = [];
     const pagination = document.createElement("ul");
@@ -677,6 +677,9 @@ function addPagination(mediaId, count, pageNum, search) {
     }
     item.appendChild(pageButton);
     pagination.appendChild(item);
+    if(numOfPages < 1) {
+        pagination.remove()
+    }
 }
 
 /**

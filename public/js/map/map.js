@@ -1585,7 +1585,8 @@ function getPublicDestinations(pageNum, quantity){
         data: data,
         contentType: 'application/json',
         success: (destData) => {
-            let count = destData.totalCountPublic;
+            let publicCount = destData.totalCountPublic;
+            let privateCount = destData.destinations.length - publicCount
             let destinationData = document.getElementById("publicDestinationList");
             if (pageNum > 1) {
                 while (destinationData.childNodes.length > 0) {
@@ -1600,14 +1601,15 @@ function getPublicDestinations(pageNum, quantity){
                 destElement.innerText = destination.destName + " | " + destination.destType + " | " + destination.country
                 destinationData.appendChild(destElement);
             }
-            addPagination(count, pageNum, null);
+            addPagination(publicCount, pageNum, null, "publicDestinationList");
+            addPagination(privateCount, pageNum, null, "privateDestinationList");
         }, error: function (error) {
             console.log(error);
         }
     })
 }
 
-function addPagination(count, pageNum, search) {
+function addPagination(count, pageNum, search, tab) {
     let numOfPages = [];
     let pageNumbers = [];
     const pagination = document.createElement("ul");
@@ -1696,7 +1698,7 @@ function addPagination(count, pageNum, search) {
     }
     item.appendChild(pageButton);
     pagination.appendChild(item);
-    document.getElementById("publicDestinationList").appendChild(pagination);
+    document.getElementById(tab).appendChild(pagination);
 
     item = document.createElement("li");
     pageButton = document.createElement("a");
@@ -1710,6 +1712,9 @@ function addPagination(count, pageNum, search) {
     }
     item.appendChild(pageButton);
     pagination.appendChild(item);
+    if(numOfPages < 1) {
+        pagination.remove()
+    }
 }
 
 function searchDestinations(pageNum) {
@@ -1738,7 +1743,8 @@ function searchDestinations(pageNum) {
 }
 
 function getDestinationsFromApiResponse(destData, pageNum, search) {
-    let count = destData.totalCountPublic;
+    let publicCount = destData.totalCountPublic;
+    let privateCount = destData.destinations.length - publicCount
     let destinationData = document.getElementById("publicDestinationList");
     while (destinationData.childNodes.length > 0) {
         destinationData.removeChild(destinationData.childNodes[0]);
@@ -1751,7 +1757,8 @@ function getDestinationsFromApiResponse(destData, pageNum, search) {
         destElement.innerText = destination.destName + " | " + destination.destType + " | " + destination.country
         destinationData.appendChild(destElement);
     }
-    addPagination(count, pageNum, search);
+    addPagination(publicCount, pageNum, null, "publicDestinationList");
+    addPagination(privateCount, pageNum, null, "privateDestinationList");;
 }
 
 

@@ -1,12 +1,12 @@
 const treasureHuntsPerPage = 5;
 let currentOpenPageNum = 1;
+let currentOwnPageNum = 1;
 
 /**
  * Initializes the openTreasureHunts paginated table.
  *
- * @param numOpenHuntsPerPage Number of open treasure hunts to show per page.
  */
-function initOpenTreasureHunts(numOpenHuntsPerPage) {
+function initOpenTreasureHunts() {
     const offset = (currentOpenPageNum - 1) * treasureHuntsPerPage;
     const token =  $('input[name="csrfToken"]').attr('value');
     $.ajaxSetup({
@@ -17,7 +17,7 @@ function initOpenTreasureHunts(numOpenHuntsPerPage) {
 
     $.ajax({
         type: 'GET',
-        url: `/users/treasurehunts/open?offset=${offset}&quantity=${numOpenHuntsPerPage}`,
+        url: `/users/treasurehunts/open?offset=${offset}&quantity=${treasureHuntsPerPage}`,
         contentType: 'application/json',
         success: (res) => {
             importOpenTreasureHunts(res.openTreasureHunts,
@@ -34,7 +34,9 @@ function initOpenTreasureHunts(numOpenHuntsPerPage) {
  *
  * @param numHuntsPerPage Number of treasure hunts to show per page.
  */
-function initUsersTreasureHunts(numHuntsPerPage) {
+function initUsersTreasureHunts() {
+    const offset = (currentOwnPageNum - 1) * treasureHuntsPerPage;
+
     const token =  $('input[name="csrfToken"]').attr('value');
     $.ajaxSetup({
         beforeSend: function(xhr) {
@@ -44,7 +46,7 @@ function initUsersTreasureHunts(numHuntsPerPage) {
 
     $.ajax({
         type: 'GET',
-        url: '/users/treasurehunts/user?offset=0&quantity=' + numHuntsPerPage.toString(),
+        url: `/users/treasurehunts/user?offset=${offset}&quantity=${treasureHuntsPerPage}`,
         contentType: 'application/json',
         success: (res) => {
             importUsersTreasureHunts(res.ownTreasureHunts, res.totalCountOpenTreasureHunts);
@@ -96,6 +98,9 @@ function addEditButtonToRow(row, treasureHunt) {
 
 function importUsersTreasureHunts(treasureHunts, count) {
     const table = document.getElementById("ownTreasureHuntTable");
+    while (table.firstChild) {
+        table.removeChild(table.firstChild)
+    }
     for (let treasureHunt of treasureHunts) {
         const row = document.createElement("TR");
         row.classList.add("clickable");
@@ -116,16 +121,14 @@ function importUsersTreasureHunts(treasureHunts, count) {
         table.appendChild(row);
 
     }
-    addPagination(table, count, currentOpenPageNum);
+    addPagination(table, count, currentOwnPageNum);
 }
 
 
-function importOpenTreasureHunts(treasureHunts, count) {
+function importOpenTreasureHunts(treasureHunts, count, ) {
     const table = document.getElementById("openTreasureHuntTable");
-    if (currentOpenPageNum > 1) {
-        while (table.firstChild) {
-            table.removeChild(table.firstChild)
-        }
+    while (table.firstChild) {
+        table.removeChild(table.firstChild)
     }
     for (let treasureHunt of treasureHunts) {
         const row = document.createElement("TR");
@@ -147,12 +150,26 @@ function importOpenTreasureHunts(treasureHunts, count) {
 }
 
 function addPagination(table, count, pageNum) {
-    function addPaginationButton(pagination, text, isCurrent) {
+    function addPaginationButton(table, pagination, text, isCurrent) {
         const item = document.createElement("li");
         const pageButton = document.createElement("a");
         pageButton.innerText = text;
         if (isCurrent) {
             item.classList.add("active");
+        }
+
+        if (typeof text === "number") {
+            if (table.id === "openTreasureHuntTable") {
+                item.onclick = function () {
+                    currentOpenPageNum = text;
+                    initOpenTreasureHunts()
+                }
+            } else {
+                item.onclick = function () {
+                    currentOwnPageNum = text;
+                    initUsersTreasureHunts()
+                }
+            }
         }
 
         item.appendChild(pageButton);
@@ -186,17 +203,17 @@ function addPagination(table, count, pageNum) {
         pageNumbers = numOfPages;
     }
 
-    addPaginationButton(pagination, "First");
-    addPaginationButton(pagination, "<");
+    addPaginationButton(table, pagination, "First");
+    addPaginationButton(table, pagination, "<");
 
     for (let currentPageNum of pageNumbers) {
         const isCurrent = currentPageNum === pageNum;
-        addPaginationButton(pagination, currentPageNum, isCurrent);
+        addPaginationButton(table, pagination, currentPageNum, isCurrent);
     }
-    addPaginationButton(pagination, ">");
-    addPaginationButton(pagination, "Last");
+    addPaginationButton(table, pagination, ">");
+    addPaginationButton(table, pagination, "Last");
 
-    table.parentElement.appendChild(pagination);
+    table.appendChild(pagination);
 }
 
 /**
@@ -252,6 +269,6 @@ $('#confirmTreasureHuntDeleteModal').on('show.bs.modal', function(e) {
     });
 });
 
-initOpenTreasureHunts(treasureHuntsPerPage);
+initOpenTreasureHunts();
 
-initUsersTreasureHunts(treasureHuntsPerPage);
+initUsersTreasureHunts();

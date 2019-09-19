@@ -22,7 +22,7 @@ public class NewsfeedController {
 
     /**
      * This method is called when the user requests their newsfeed and
-     * returns a
+     * returns a json of data
      * @param request
      * @return
      */

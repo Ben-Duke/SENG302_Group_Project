@@ -96,6 +96,8 @@ GET     /users/profilepicture/isSet     controllers.ProfileController.isProfileP
 GET     /users/map_home     controllers.HomeController.mainMapPage(request : Request)
 
 
+#Route to get the users newsfeed
+GET /users/newsfeed  controllers.NewsfeedController.getUserNewsFeed(request : Request)
 
 #Add route for adding a trip with AJAX
 

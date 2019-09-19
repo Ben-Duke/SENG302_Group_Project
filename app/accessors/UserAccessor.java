@@ -207,12 +207,11 @@ public class UserAccessor {
                                            int offset, int quantity, String queryNationality,
                                            String agerange1, String agerange2, String gender1,
                                            String gender2, String gender3){
-        TravellerType type = null;
-        Nationality nationality = null;
+
         List<List<Object>> equalsFields = new ArrayList<>();
 
        if(quantity < 1) {
-           return new HashSet<User>();
+           return new HashSet<>();
        }
 
        if(offset < 0) {
@@ -286,6 +285,7 @@ public class UserAccessor {
                            .eq((String) equalsFields.get(1).get(0), equalsFields.get(1).get(1))
                            .setFirstRow(offset).setMaxRows(quantity);
        }
+
        return query.findSet();
    }
 

@@ -88,7 +88,7 @@ create table event (
   url                           varchar(191),
   latitude                      double not null,
   longitude                     double not null,
-  description                   varchar(191),
+  description                   TEXT,
   destination_destid            integer,
   start_time                    timestamp not null,
   end_time                      timestamp not null,

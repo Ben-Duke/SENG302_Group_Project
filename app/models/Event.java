@@ -38,6 +38,8 @@ public class Event extends Model {
     private String url;
     private double latitude;
     private double longitude;
+
+    @Column(columnDefinition = "TEXT")
     private String description;
 
     @ManyToOne

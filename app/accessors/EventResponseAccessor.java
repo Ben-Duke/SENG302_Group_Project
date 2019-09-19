@@ -31,7 +31,7 @@ public class EventResponseAccessor {
         return EventResponse.find().all();
     }
 
-    public static List<EventResponse> getAllByResponseType(EventResponse eventResponseName) {
+    public static List<EventResponse> getAllByResponseType(String eventResponseName) {
         return EventResponse.find().query().where().eq("response_type", eventResponseName).findList();
     }
 

@@ -143,7 +143,7 @@ public class UndoRedoControllerTest extends BaseTestWithApplicationAndDatabase {
         //delete as admin
         deleteDestination(concurrencyDestId, adminId);
 
-        // redo as user - should fail as dest no longer exists
+        // redo as user - should fail as dest no longer folllows
         redo(concurrencyUserId);
     }
 

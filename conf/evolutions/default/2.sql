@@ -282,7 +282,42 @@ INSERT INTO `user` (`userid`, `email`, `password_hash`, `date_of_birth`, `gender
 (8, 'logan.shaw@gmail.com', '$2a$10$gxxqY2u7DYUEQVcRK6jHJuYVMSRhViIekaHbMjh79kpqOrS135rXq', '1999-02-12', 'Male', 'Logan ', 'Shaw', 0, 0, '2019-08-20 20:49:17'),
 (9, 'jason.little@gmail.com', '$2a$10$Kv59.oawFqlGJEVa3wyMfengJOxDZb.JDzHXeFn/Bhw5zqQR.mSUa', '1994-07-13', 'Male', 'Jason', 'Little', 0, 0, '2019-08-20 20:50:10'),
 (10, 'priyesh.shah@gmail.com', '$2a$10$GbadXoPxGghyCW6lPDTjIeNzS/JfiCIqmlauPNiDIyQFivees1oRq', '1996-06-13', 'Other', 'Priyesh', 'Shah', 0, 0, '2019-08-20 20:50:48'),
-(11, 'michael.shannon@gmail.com', '$2a$10$i0GWnSrk2HSU4ZoFeV5em.kplOnwRDI18RgvGQqFEJ5KMMNNAW66i', '1998-01-15', 'Male', 'Michael', 'Shannon', 0, 0, '2019-08-20 20:51:22');
+(11, 'michael.shannon@gmail.com', '$2a$10$i0GWnSrk2HSU4ZoFeV5em.kplOnwRDI18RgvGQqFEJ5KMMNNAW66i', '1998-01-15', 'Male', 'Michael', 'Shannon', 0, 0, '2019-08-20 20:51:22'),
+(12, 'test.shah@gmail.com', '$2a$10$GbadXoPxGghyCW6lPDTjIeNzS/JfiCIqmlauPNiDIyQFivees1oRq', '1996-06-13', 'Other', 'test', 'Shah', 0, 0, '2019-08-20 20:50:48'),
+(13, 'test2.shah@gmail.com', '$2a$10$GbadXoPxGghyCW6lPDTjIeNzS/JfiCIqmlauPNiDIyQFivees1oRq', '1996-06-13', 'Other', 'test2', 'Shah', 0, 0, '2019-08-20 20:50:48'),
+(14, 'test3.shah@gmail.com', '$2a$10$GbadXoPxGghyCW6lPDTjIeNzS/JfiCIqmlauPNiDIyQFivees1oRq', '1996-06-13', 'Other', 'test3', 'Shah', 0, 0, '2019-08-20 20:50:48'),
+(15, 'test4.shah@gmail.com', '$2a$10$GbadXoPxGghyCW6lPDTjIeNzS/JfiCIqmlauPNiDIyQFivees1oRq', '1996-06-13', 'Other', 'test4', 'Shah', 0, 0, '2019-08-20 20:50:48'),
+(16, 'test5.shah@gmail.com', '$2a$10$GbadXoPxGghyCW6lPDTjIeNzS/JfiCIqmlauPNiDIyQFivees1oRq', '1996-06-13', 'Other', 'test5', 'Shah', 0, 0, '2019-08-20 20:50:48');
+--
+-- follow
+INSERT INTO `follow`(`follow_id`, `follower`, `followed`, `state`) VALUES
+(NULL,2,3,NULL ),
+(NULL,2,4,NULL ),
+(NULL,2,5,NULL ),
+(NULL,2,6,NULL ),
+(NULL,2,7,NULL ),
+(NULL,2,8,NULL ),
+(NULL,2,9,NULL ),
+(NULL,2,10,NULL ),
+(NULL,2,11,NULL ),
+(NULL,2,12,NULL ),
+(NULL,2,13,NULL ),
+(NULL,2,14,NULL ),
+(NULL,2,15,NULL ),
+(NULL,2,16,NULL ),
+(NULL,2,6,NULL ),
+(NULL,3,6,NULL ),
+(NULL,4,6,NULL ),
+(NULL,5,6,NULL ),
+(NULL,7,6,NULL ),
+(NULL,8,6,NULL ),
+(NULL,9,6,NULL ),
+(NULL,10,6,NULL ),
+(NULL,11,6,NULL ),
+(NULL,12,6,NULL ),
+(NULL,13,6,NULL ),
+(NULL,14,6,NULL ),
+(NULL,15,6,NULL );
 
 INSERT INTO `user` (`email`, `password_hash`, `date_of_birth`, `gender`,`f_name`, `l_name`, `undo_redo_error`, `is_admin`, `creation_date`) VALUES
 ('tgerardot0@netlog.com', '', '2008-11-04', 'Female', 'Tammi', 'Gerardot', 0, 0, '2019-01-01 00:00:00'),
@@ -14005,13 +14040,14 @@ INSERT INTO `visit` (`visitid`, `visitorder`, `destination`, `trip`, `arrival`, 
 (48, 2, 20, 17, NULL, NULL, 'Cromwell'),
 (49, 3, 13, 17, NULL, NULL, 'Wanaka');
 
-
 -- -------------------------------------------------
 
 
 # --- !Downs
 -- Delete in reverse order to the order data was added to avoid violating
 -- foreign key constraints
+
+delete from follow;
 
 delete from visit;
 
@@ -14062,3 +14098,6 @@ delete from user;
 delete from nationality;
 
 delete from passport;
+
+
+

@@ -103,7 +103,7 @@ public class DestinationFactory {
      * Only checks public destinations (including the logged in users public destinations).
      *
      * @param destination The new Destination to check.
-     * @return A boolean, true if an equivalent public destination exists, false
+     * @return A boolean, true if an equivalent public destination folllows, false
      * otherwise.
      */
     public boolean doesPublicDestinationExist(Destination destination) {

@@ -33,6 +33,8 @@ import static play.mvc.Results.*;
 
 public class TravelPartnerController {
 
+    private final int PSEUDO_INFINITE_NUMBER = 100000;
+
     @Inject
     FormFactory formFactory;
 
@@ -121,6 +123,27 @@ public class TravelPartnerController {
             }
         }
         return new HashSet<>();
+    }
+
+    /**
+     * Returns the number of travellers that match the given filters, up to a maximum of 100,000
+     * @return
+     */
+    public Result getTravellerCountWithFilters (
+            Http.Request request, String travellerType, String nationality,
+            String bornAfter, String bornBefore, String gender1, String gender2, String gender3) {
+        User currentUser = User.getCurrentUser(request);
+        if(currentUser == null){
+            return unauthorized("You need to be logged in to use this api");
+        }
+        if (bornAfter == null) {
+            bornAfter = "";
+        }
+        if (bornBefore == null) {
+            bornBefore = "";
+        }
+        Set<User> users = UserAccessor.getUsersByQuery(travellerType, 0, PSEUDO_INFINITE_NUMBER, nationality, bornAfter, bornBefore, gender1, gender2, gender3);
+        return ok(Integer.toString(users.size()));
     }
 
     /**

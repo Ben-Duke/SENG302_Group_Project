@@ -38,7 +38,7 @@
     </div>
 
     <!-- The Modal/Lightbox -->
-    <div id="myModal" class="modal" data-album="@album.getAlbumId" data-isOwner="@album.userIsOwner(user)">
+    <div id="myModal" class="modal" data-album="@album.getAlbumId" data-isOwner="@album.userIsOwner(user)" data-isAdmin="@user.userIsAdmin">
         <div class="modal-content">
             <div id="snackbar"></div>
             <div id="lightbox-modal">

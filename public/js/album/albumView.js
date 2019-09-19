@@ -164,7 +164,7 @@ function setPrivacyListener(setPrivacy, mediaId) {
     }
     const original = document.getElementById('privacyBtn');
     const clone = replaceWithClone(original);
-    clone.addEventListener('click', privacyListener )
+    clone.addEventListener('click', privacyListener);
 }
 
 /**
@@ -175,26 +175,35 @@ function setSlideListeners(albumData, i) {
     const dataset = document.getElementById('myModal').dataset;
     const isOwner = dataset.isowner;
     const albumId = dataset.album;
+    const isAdmin = dataset.isadmin;
     const hidePrivate = !isOwner;
 
     let setPrivacy;
-    setDeletePhotoListener(albumData, i);
-    setDestinationLinkListener(albumData, i);
-    setMakeProfilePictureListener(albumData, i);
-
     const mediaId = albumData[i]["mediaId"];
-
     const caption = albumData[i]["caption"];
-    changeTaggableModel(mediaId, "photo");
-    if (caption != "") {
-        document.querySelector('div[data-mediaId="'+mediaId+'"] [contenteditable]').innerHTML = caption.toString();
+
+
+    if (isOwner === "true" || isAdmin === "true") {
+        setDeletePhotoListener(albumData, i);
+        setDestinationLinkListener(albumData, i);
+        setMakeProfilePictureListener(albumData, i);
+        if (caption != "") {
+            document.querySelector('div[data-mediaId="'+mediaId+'"] [contenteditable]').innerHTML = caption.toString();
+        } else {
+            document.querySelector('div[data-mediaId="'+mediaId+'"] [contenteditable]').innerHTML =
+            "Click to add caption, press enter to save.";
+        }
+        if(albumData[i]["isPublic"]) {setPrivacy=0;}
+        else {setPrivacy=1;}
+        setPrivacyListener(setPrivacy, mediaId);
     } else {
-        document.querySelector('div[data-mediaId="'+mediaId+'"] [contenteditable]').innerHTML =
-        "Click to add caption, press enter to save.";
+        if (caption != "") {
+            document.querySelector('div[data-mediaId="'+mediaId+'"] [data-editable]').innerHTML = caption.toString();
+        } else {
+            document.querySelector('div[data-mediaId="'+mediaId+'"] [data-editable]').innerHTML =
+            "No Caption";
+        }
     }
-    if(albumData[i]["isPublic"]) {setPrivacy=0;}
-    else {setPrivacy=1;}
-    setPrivacyListener(setPrivacy, mediaId);
 }
 
 /**
@@ -318,9 +327,17 @@ async function displaySlides(i, albumData, path) {
     var lightBox = document.getElementById("lightbox-modal");
     var mySlidesDiv = document.createElement("div");
     var captionInput = document.createElement("p");
+    const dataSet = document.getElementById('myModal').dataset;
+    const isOwner = dataSet.isowner;
+    const isAdmin = dataSet.isadmin;
+
     captionInput.setAttribute("id", "img-caption");
     captionInput.setAttribute("captionMediaId", mediaId);
-    captionInput.setAttribute("contenteditable", "true");
+    if (isOwner === "true" || isAdmin === "true") {
+        captionInput.setAttribute("contenteditable", "true");
+    } else {
+        captionInput.setAttribute("data-editable", "false");
+    }
     captionInput.setAttribute("style", "color: white;");
 
     mySlidesDiv.classList.add("mySlides");
@@ -338,34 +355,38 @@ async function displaySlides(i, albumData, path) {
     figure.appendChild(figureCaption);
     mySlidesDiv.appendChild(figure);
 
+    console.log(isAdmin);
     lightBox.appendChild(mySlidesDiv);
-    var content = document.querySelector('div[data-mediaId="'+mediaId+'"] [contenteditable]');
-    // 1. Listen for changes of the content editable element
-    content.addEventListener('focus', function (event) {
-        const el = event.target,
-            input = el.nodeName != 'INPUT',
-            data = {};
-            el.value = "";
+    if (isOwner === "true" || isAdmin === "true") {
+        var content = document.querySelector('div[data-mediaId="'+mediaId+'"] [contenteditable]');
+        // 1. Listen for changes of the content editable element
+        content.addEventListener('focus', function (event) {
+            const el = event.target,
+                input = el.nodeName != 'INPUT',
+                data = {};
+                el.value = "";
 
-        // This selects the caption text when clicked to edit
-        selection = window.getSelection();
-        range = document.createRange();
-        range.selectNodeContents(el);
-        selection.removeAllRanges();
-        selection.addRange(range);
-        //
+            // This selects the caption text when clicked to edit
+            selection = window.getSelection();
+            range = document.createRange();
+            range.selectNodeContents(el);
+            selection.removeAllRanges();
+            selection.addRange(range);
+            //
 
-        if (input) {
-            content.addEventListener('blur', function (event) {
-                if (el.innerText != "Click to add caption.")
-                data[el.getAttribute('data-name')] = el.innerText;
-                // we could send an ajax request to update the field
-                submitEditCaption(content.innerHTML, mediaId);
-                el.blur();
-                event.preventDefault();
-            });
-        }
-    });
+            if (input) {
+                content.addEventListener('blur', function (event) {
+                    if (el.innerText != "Click to add caption.")
+                    data[el.getAttribute('data-name')] = el.innerText;
+                    // we could send an ajax request to update the field
+                    submitEditCaption(content.innerHTML, mediaId);
+                    el.blur();
+                    event.preventDefault();
+                });
+            }
+        });
+    }
+
 }
 
 // Open the Modal

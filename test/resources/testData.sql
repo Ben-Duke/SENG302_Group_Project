@@ -284,7 +284,51 @@ INSERT INTO `user` (`userid`, `email`, `password_hash`, `date_of_birth`, `gender
  '1960-12-25', 'Female', 'Caitlyn', 'Jenner', 0, 0, '2019-07-26 03:59:17'),
 
 (4, 'testuser3@uclive.ac.nz', '',
- '2006-06-09', 'Male', 'John', 'Smith', 0, 0, '2019-07-26 03:59:17');
+ '2006-06-09', 'Male', 'John', 'Smith', 0, 0, '2019-07-26 03:59:17'),
+
+
+(5, 'noel.bisson@gmail.com', '$2a$10$HqfW8ovh02QgqlKL1IUFMORpIBoBP/Dcpqx5rrrcj0/B..Twy9Cx6', '1998-03-06', 'Male', 'Noel', 'Bisson', 0, 0, '2019-08-20 20:46:28'),
+(6, 'ben.duke@gmail.com', '$2a$10$cZsomtrMGR/Mq2xSgjb/oeicndQBrV092.j80O1M3uPD7x/UWOOZe', '1994-08-08', 'Male', 'Ben', 'Duke', 0, 0, '2019-08-20 20:47:47'),
+(7, 'jack.orchard@gmail.com', '$2a$10$vQAR2DFztO1vdOAD6vC17.wrCZRW5/I66c/tixpDN47KuQ1AtkA3O', '1997-05-16', 'Male', 'Jack', 'Orchard', 0, 0, '2019-08-20 20:48:44'),
+(8, 'logan.shaw@gmail.com', '$2a$10$gxxqY2u7DYUEQVcRK6jHJuYVMSRhViIekaHbMjh79kpqOrS135rXq', '1999-02-12', 'Male', 'Logan ', 'Shaw', 0, 0, '2019-08-20 20:49:17'),
+(9, 'jason.little@gmail.com', '$2a$10$Kv59.oawFqlGJEVa3wyMfengJOxDZb.JDzHXeFn/Bhw5zqQR.mSUa', '1994-07-13', 'Male', 'Jason', 'Little', 0, 0, '2019-08-20 20:50:10'),
+(10, 'priyesh.shah@gmail.com', '$2a$10$GbadXoPxGghyCW6lPDTjIeNzS/JfiCIqmlauPNiDIyQFivees1oRq', '1996-06-13', 'Other', 'Priyesh', 'Shah', 0, 0, '2019-08-20 20:50:48'),
+(11, 'michael.shannon@gmail.com', '$2a$10$i0GWnSrk2HSU4ZoFeV5em.kplOnwRDI18RgvGQqFEJ5KMMNNAW66i', '1998-01-15', 'Male', 'Michael', 'Shannon', 0, 0, '2019-08-20 20:51:22'),
+(12, 'test.shah@gmail.com', '$2a$10$GbadXoPxGghyCW6lPDTjIeNzS/JfiCIqmlauPNiDIyQFivees1oRq', '1996-06-13', 'Other', 'test', 'Shah', 0, 0, '2019-08-20 20:50:48'),
+(13, 'test2.shah@gmail.com', '$2a$10$GbadXoPxGghyCW6lPDTjIeNzS/JfiCIqmlauPNiDIyQFivees1oRq', '1996-06-13', 'Other', 'test2', 'Shah', 0, 0, '2019-08-20 20:50:48'),
+(14, 'test3.shah@gmail.com', '$2a$10$GbadXoPxGghyCW6lPDTjIeNzS/JfiCIqmlauPNiDIyQFivees1oRq', '1996-06-13', 'Other', 'test3', 'Shah', 0, 0, '2019-08-20 20:50:48'),
+(15, 'test4.shah@gmail.com', '$2a$10$GbadXoPxGghyCW6lPDTjIeNzS/JfiCIqmlauPNiDIyQFivees1oRq', '1996-06-13', 'Other', 'test4', 'Shah', 0, 0, '2019-08-20 20:50:48'),
+(16, 'test5.shah@gmail.com', '$2a$10$GbadXoPxGghyCW6lPDTjIeNzS/JfiCIqmlauPNiDIyQFivees1oRq', '1996-06-13', 'Other', 'test5', 'Shah', 0, 0, '2019-08-20 20:50:48');
+--
+-- follow
+INSERT INTO `follow`(`follow_id`, `follower`, `followed`, `state`) VALUES
+(NULL,2,3,NULL ),
+(NULL,2,4,NULL ),
+(NULL,2,5,NULL ),
+(NULL,2,6,NULL ),
+(NULL,2,7,NULL ),
+(NULL,2,8,NULL ),
+(NULL,2,9,NULL ),
+(NULL,2,10,NULL ),
+(NULL,2,11,NULL ),
+(NULL,2,12,NULL ),
+(NULL,2,13,NULL ),
+(NULL,2,14,NULL ),
+(NULL,2,15,NULL ),
+(NULL,2,16,NULL ),
+(NULL,2,6,NULL ),
+(NULL,3,6,NULL ),
+(NULL,4,6,NULL ),
+(NULL,5,6,NULL ),
+(NULL,7,6,NULL ),
+(NULL,8,6,NULL ),
+(NULL,9,6,NULL ),
+(NULL,10,6,NULL ),
+(NULL,11,6,NULL ),
+(NULL,12,6,NULL ),
+(NULL,13,6,NULL ),
+(NULL,14,6,NULL ),
+(NULL,15,6,NULL );
 
 
 

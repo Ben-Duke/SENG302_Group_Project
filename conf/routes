@@ -205,6 +205,15 @@ GET     /users/profile/:id          controllers.ProfileController.showProfile(re
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
 
 
+#Followers
+
+POST    /users/follow/:userId           controllers.FollowController.followUser(request:Request, userId:Integer)
+
+POST    /users/unfollow/:userId         controllers.FollowController.unfollowUser(request:Request, userId:Integer)
+
+GET     /users/getfollowers/:userId      controllers.FollowController.getFollowers(request:Request, userId:Integer, offset:Integer)
+
+GET     /users/getfollowing/:userId      controllers.FollowController.getFollowing(request:Request, userId:Integer, offset:Integer)
 
 #Destinations
 
@@ -431,6 +440,10 @@ PUT /tags/get/:taggableId                                                       
 GET /tags/display/:tagName                                            controllers.TagController.displayTags(request: Request, tagName: String)
 
 GET /tags/items/:tagId                                  controllers.TagController.getTagDetails(request: Request, tagId: Integer)
+
+# Follower routes
+GET /users/follows/:profileId                           controllers.FollowController.isFollowing(request: Request, profileId: Integer)
+
 
 
 

@@ -397,5 +397,44 @@ public class TravelPartnerControllerTest extends BaseTestWithApplicationAndDatab
 
     }
 
+    @Test
+    public void searchByLastName() {
+        Map<String, String> formData = new HashMap<>();
+        formData.put("name", "Ong");
+
+        Http.RequestBuilder fakeRequest = Helpers.fakeRequest().bodyForm(formData).method(Helpers.POST).uri("/users/profile/search").session("connected", "1");
+        CSRFTokenHelper.addCSRFToken(fakeRequest);
+        Result result = Helpers.route(app, fakeRequest);
+
+        assertEquals(OK, result.status());
+
+    }
+
+    @Test
+    public void searchByFirstName() {
+        Map<String, String> formData = new HashMap<>();
+        formData.put("name", "Gavin");
+
+        Http.RequestBuilder fakeRequest = Helpers.fakeRequest().bodyForm(formData).method(Helpers.POST).uri("/users/profile/search").session("connected", "1");
+        CSRFTokenHelper.addCSRFToken(fakeRequest);
+        Result result = Helpers.route(app, fakeRequest);
+
+        assertEquals(OK, result.status());
+
+    }
+
+    @Test
+    public void searchByFullName() {
+        Map<String, String> formData = new HashMap<>();
+        formData.put("name", "Gavin Ong");
+
+        Http.RequestBuilder fakeRequest = Helpers.fakeRequest().bodyForm(formData).method(Helpers.POST).uri("/users/profile/search").session("connected", "1");
+        CSRFTokenHelper.addCSRFToken(fakeRequest);
+        Result result = Helpers.route(app, fakeRequest);
+
+        assertEquals(OK, result.status());
+    }
+
+
 
 }

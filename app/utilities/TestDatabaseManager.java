@@ -140,7 +140,7 @@ public class TestDatabaseManager {
 
     /** Clear all data from the database */
     public void clearAllData() {
-        clearData(new ArrayList<TableName>());  // pass an empty list
+        clearData(new ArrayList<>());  // pass an empty list
     }
 
     /**

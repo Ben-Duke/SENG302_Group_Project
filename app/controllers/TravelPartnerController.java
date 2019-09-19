@@ -1,5 +1,6 @@
 package controllers;
 
+import accessors.FollowAccessor;
 import accessors.UserAccessor;
 import io.ebean.Query;
 import models.Destination;
@@ -42,7 +43,7 @@ public class TravelPartnerController {
      * @param user The User currently logged in
      * @return renders the search profile page
      */
-    private Result displayRenderedFilterPage(Set<User> resultProfiles, User user) {
+    private Result displayRenderedFilterPage(Set<User> resultProfiles, Set<User> followingProfiles, Set<User> followerProfiles, User user) {
 
         DynamicForm dynamicForm = formFactory.form();
 
@@ -65,7 +66,14 @@ public class TravelPartnerController {
         genderMap.put("Female", true);
         genderMap.put("Other", true);
 
-        return ok(searchprofile.render(dynamicForm, convertedTravellerTypes, convertedNationalities, genderMap, resultProfiles, user));
+        Map<String, Boolean> followMap = new TreeMap<>();
+        followMap.put("Following", true);
+        followMap.put("Followers", true);
+        followMap.put("Others", true);
+        followingProfiles = FollowAccessor.getAllUsersFollowed(user);
+        followerProfiles = FollowAccessor.getAllUsersFollowing(user);
+
+        return ok(searchprofile.render(dynamicForm, convertedTravellerTypes, convertedNationalities, genderMap, followMap, resultProfiles, followingProfiles, followerProfiles, user));
     }
 
     /**
@@ -79,8 +87,9 @@ public class TravelPartnerController {
         User user = User.getCurrentUser(request);
         if (user != null) {
             Set<User> resultProfiles = new TreeSet<>();
-
-            return displayRenderedFilterPage(resultProfiles, user);
+            Set<User> followingProfiles = new TreeSet<>();
+            Set<User> followerProfiles = new TreeSet<>();
+            return displayRenderedFilterPage(resultProfiles, followingProfiles, followerProfiles, user);
         }
         else{
             return redirect(routes.UserController.userindex());
@@ -196,6 +205,75 @@ public class TravelPartnerController {
     }
 
     /**
+     * From the form retrieve all users from the database based on follow filters where:
+     * having "following" checked will return a list of all the users that this user is following
+     * having "followed" checked will return a list of all the users following this user
+     * having "other" will return a list of all the users not following this user and
+     * not being followed by this user
+     *
+     * @param filterForm the form object containing the users search selections
+     * @return A list of all users that match the follow filters
+     */
+    private Set<User> followResults(DynamicForm filterForm, User user) {
+
+        List<String> followSelections = new ArrayList<>();
+        followSelections.add(filterForm.get("follow[0"));
+        followSelections.add(filterForm.get("follow[1"));
+        followSelections.add(filterForm.get("follow[2"));
+
+        Set<User> results = new TreeSet<>();
+
+        for (String follow: followSelections) {
+            if (follow != null) {
+                Set<User> query = new HashSet<>();
+                if(follow.equalsIgnoreCase("following")) {
+                    query = FollowAccessor.getAllUsersFollowed(user);
+                }
+                else if(follow.equalsIgnoreCase("followers")) {
+                    query = FollowAccessor.getAllUsersFollowing(user);
+                }
+                else if(follow.equalsIgnoreCase("others")) {
+                    Set<User> follows = FollowAccessor.getAllUsersFollowed(user);
+                    Set<User> followers = FollowAccessor.getAllUsersFollowing(user);
+                    follows.addAll(followers);
+                    List<User> users = User.find().all();
+                    query = new HashSet<>(users);
+                    query.removeAll(follows);
+                }
+                results.addAll(query);
+            }
+        }
+
+        return results;
+    }
+
+
+    /**
+     * From the form retrieve all users from the database that have the given keyword in their name
+     *
+     * @param filterForm the form object containing the users search selections
+     * @return A list of all users that match the name
+     */
+    private Set<User> travelerNameResults(DynamicForm filterForm) {
+        String name = filterForm.get("name");
+        if (name != null) {
+            String[] splitedName = name.split("\\s+");
+            if (name.equals("")) {
+                return new HashSet<>();
+            } else {
+                if (splitedName.length > 1) {
+                    return User.find().query().where().or().ilike("f_name", "%" + splitedName[0] + "%")
+                            .like("l_name", "%" + splitedName[1] + "%").findSet();
+                } else {
+                    return User.find().query().where().or().ilike("f_name", "%" + name + "%")
+                            .like("l_name", "%" + name + "%").findSet();
+                }
+            }
+        }
+        return new HashSet<>();
+    }
+
+    /**
      * From the form retrieve all users from the database that have the given date range.
      * If one of the date selector has not been chosen then that field is not used as a bound
      *
@@ -227,6 +305,11 @@ public class TravelPartnerController {
         if (user != null) {
             List<Set<User>> userLists = new ArrayList<>();
 
+            Set<User> nameMatches = travelerNameResults(filterForm);
+            if (!nameMatches.isEmpty()) {
+                userLists.add(nameMatches);
+            }
+
             Set<User> travelerTypeMatches = travelerTypeResults(filterForm);
             if (!travelerTypeMatches.isEmpty()) {
                 userLists.add(travelerTypeMatches);
@@ -237,15 +320,27 @@ public class TravelPartnerController {
                 userLists.add(nationalityMatches);
             }
 
-            userLists.add(genderResults(filterForm));
+            Set<User> genderMatches = genderResults(filterForm);
+            if (!genderMatches.isEmpty()) {
+                userLists.add(genderMatches);
+            }
+
+            Set<User> followMatches = followResults(filterForm, user);
+            if (!followMatches.isEmpty()) {
+                userLists.add(followMatches);
+            }
 
             Set<User> ageRangeMatches = ageRangeResults(filterForm);
             if (!ageRangeMatches.isEmpty()) {
                 userLists.add(ageRangeMatches);
             }
-
             //Gets all common users from each search
-            Set<User> resultProfiles = UtilityFunctions.retainFromLists(userLists);
+            Set<User> resultProfiles = new HashSet<>();
+            Set<User> followingProfiles = new HashSet<>();
+            Set<User> followerProfiles = new HashSet<>();
+            if (userLists.size() > 0) {
+                resultProfiles = UtilityFunctions.retainFromLists(userLists);
+            }
 
 
             //remove the current user from the list
@@ -253,7 +348,7 @@ public class TravelPartnerController {
 
 
             //Redisplay the page, but this time with the search results
-            return displayRenderedFilterPage(resultProfiles,user);
+            return displayRenderedFilterPage(resultProfiles, followingProfiles, followerProfiles,user);
 
         } else{
             return redirect(routes.UserController.userindex());

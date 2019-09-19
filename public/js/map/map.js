@@ -5,6 +5,7 @@ const colors = ['6b5b95', 'feb236', 'd64161', 'ff7b25',
 
 let map;
 window.globalMarkers = [];
+let markerCluster;
 let tripFlightPaths = {};
 let isNewTrip = false;
 let geoCoder;
@@ -31,6 +32,8 @@ function initMap() {
     initTripRoutes();
     initMapPositionListeners();
     hideTagEditor();
+        
+
 }
 
 
@@ -598,7 +601,7 @@ function initTripRoutes() {
         .then(res => res.json())
         .then(tripRoutes => {
             let color;
-            
+
 
             for (let tripId in tripRoutes) {
 
@@ -1132,6 +1135,7 @@ function initDestinationMarkers() {
         method: 'GET'})
         .then(res => res.json())
         .then(destinations => {
+            let markers = [];
             let marker;
             let infoWindow;
             for (let index = 0; index < destinations.length; index++) {
@@ -1148,6 +1152,8 @@ function initDestinationMarkers() {
                     content: getMapInfoWindowHTML(destinations[index])
                 });
 
+                markers.push(marker);
+
                 //make the marker and infoWindow globals (persist in browser session)
                 window.globalMarkers.push({
                     marker: marker,
@@ -1158,6 +1164,9 @@ function initDestinationMarkers() {
                 initMarkerEventHandlers(index);
                 initInforWindowEventHandlers(index);
             }
+
+            markerCluster = new MarkerClusterer(window.globalMap, markers,
+                {imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'});
         });
 }
 
@@ -1413,7 +1422,37 @@ function checkTripVisits() {
         })
 }
 
-$("#formBody").submit(function(e) {
+$("#tripSearchInput").keyup(function()
+{
+    let searchInput = document.getElementById("tripSearchInput").value;
+    if(searchInput != "") {
+        $.ajax({
+            url: '/users/trips/matching/' + searchInput,
+            method: "GET",
+            success: function (res) {
+                let displayedIds = [];
+                for (let j=0; j < res.length; j++) {
+                    displayedIds.push("Button" + res[j].tripid);
+                }
+                let tripListChildren = document.getElementById("trip-list-group").children;
+                for(let i=0; i < tripListChildren.length; i++) {
+                    if (!displayedIds.includes(tripListChildren[i].id)) {
+                        tripListChildren[i].setAttribute("style", "display: none;");
+                    } else {
+                        tripListChildren[i].setAttribute("style", "display: block;");
+                    }
+                }
+            }
+        });
+    } else {
+         let tripListChildren = document.getElementById("trip-list-group").children;
+            for(let i=0; i < tripListChildren.length; i++) {
+                    tripListChildren[i].setAttribute("style", "display: block;");
+            }
+    }
+});
+
+$("#formBody").submit(function(e){
     e.preventDefault();
 });
 

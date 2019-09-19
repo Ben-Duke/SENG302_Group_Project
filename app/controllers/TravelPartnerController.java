@@ -2,6 +2,9 @@ package controllers;
 
 import accessors.FollowAccessor;
 import accessors.UserAccessor;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.ebean.Query;
 import models.Destination;
 import models.Nationality;
@@ -73,7 +76,7 @@ public class TravelPartnerController {
         followingProfiles = FollowAccessor.getAllUsersFollowed(user);
         followerProfiles = FollowAccessor.getAllUsersFollowing(user);
 
-        return ok(searchprofile.render(dynamicForm, convertedTravellerTypes, convertedNationalities, genderMap, followMap, resultProfiles, followingProfiles, followerProfiles, user));
+        return ok(searchprofile.render(user));
     }
 
     /**
@@ -121,18 +124,13 @@ public class TravelPartnerController {
     }
 
     /**
-     * This function returns a paginated list of users based on passed parameters
-     * @param request
-     * @param offset
-     * @param quantity
-     * @param travellerType
-     * @param nationality
+     * This function returns a Json object containing paginated travel partner search user data
      * @return returns a Json response with any users that match the passed parameters
      */
-    public Result travellerTypePaginated(
+    public Result travellerSearchPaginated (
             Http.Request request, int offset, int quantity, String travellerType, String nationality, String bornAfter, String bornBefore, String gender1, String gender2, String gender3){
-        User user = User.getCurrentUser(request);
-        if(user == null){
+        User currentUser = User.getCurrentUser(request);
+        if(currentUser == null){
             return unauthorized("You need to be logged in to use this api");
         }
 
@@ -140,18 +138,39 @@ public class TravelPartnerController {
             return badRequest("Limit is 1000 users per request");
         }
 
-        if(quantity < 0){
-
-        }
         if (bornAfter == null) {
             bornAfter = "";
         }
         if (bornBefore == null) {
             bornBefore = "";
         }
-        Set<User> users = UserAccessor.getUsersByQuery(travellerType, offset,quantity,nationality, bornAfter, bornBefore, gender1, gender2, gender3);
 
-        return ok(Json.toJson(users));
+        Set<User> users = UserAccessor.getUsersByQuery(travellerType, offset,quantity,nationality, bornAfter, bornBefore, gender1, gender2, gender3);
+        ObjectMapper objectMapper = new ObjectMapper();
+        ArrayNode userNodes = objectMapper.createArrayNode();
+
+        for (User user : users) {
+            ObjectNode userNode = objectMapper.createObjectNode();
+            userNode.put("userId", user.getUserid());
+            userNode.put("name", user.getFName() + " " + user.getLName());
+            userNode.put("gender", user.getGender());
+            userNode.put("dob", user.getDateOfBirth().toString());
+
+            ArrayNode nationalityNodes = objectMapper.createArrayNode();
+            for (Nationality userNationality : user.getNationality()) {
+                nationalityNodes.add(userNationality.getNationalityName());
+            }
+            userNode.put("nationalities", nationalityNodes);
+
+            ArrayNode travellerTypeNodes = objectMapper.createArrayNode();
+            for (TravellerType userTravellerType : user.getTravellerTypes()) {
+                travellerTypeNodes.add(userTravellerType.getTravellerTypeName());
+            }
+            userNode.put("travellerTypes", travellerTypeNodes);
+
+            userNodes.add(userNode);
+        }
+        return ok(userNodes);
     }
 
 

@@ -5,6 +5,8 @@ import accessors.DestinationAccessor;
 import accessors.TreasureHuntAccessor;
 import accessors.UserAccessor;
 import accessors.UserAccessor;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import models.Destination;
 import models.TreasureHunt;
 import models.User;
@@ -34,6 +36,7 @@ import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static play.mvc.Http.Status.BAD_REQUEST;
 import static play.mvc.Http.Status.NOT_FOUND;
 import static play.mvc.Http.Status.OK;
@@ -624,5 +627,212 @@ public class TreasureHuntControllerTest extends BaseTestWithApplicationAndDataba
                 .uri("/users/treasurehunts/open?offset=0&quantity=20");
         Result result = Helpers.route(app, request);
         assertEquals(SEE_OTHER, result.status());
+    }
+
+    /**
+     * Checks that a user with one treasure hunt, with users other other treasure hunts,
+     * gets back their treasure hunt when calling getPaginatedUserTreasureHunts.
+     */
+    @Test
+    public void getPaginatedUserTreasureHunts_mixedUsersHaveHunts_checkHuntSame()
+            throws EbeanDateParseException {
+        TestDatabaseManager dbManager = new TestDatabaseManager();
+        dbManager.clearAllData();
+
+        User user = new User("test@test.com", "sasdsad");
+        UserAccessor.insert(user);
+
+        User userOther = new User("other@test.com", "sasdsad");
+        UserAccessor.insert(userOther);
+
+        Destination destination = new Destination("test",
+                "test", "test", "New Zealand",
+                32.2, 22.1, user);
+        DestinationAccessor.insert(destination);
+
+        TreasureHunt tHunt = new TreasureHunt("test", "test",
+                destination, "2019-01-01", "2019-12-12", userOther);
+        TreasureHuntAccessor.insert(tHunt);
+
+        TreasureHunt ownTHunt = new TreasureHunt("ownHunt", "test",
+                destination, "2019-01-01", "2019-12-12", user);
+        TreasureHuntAccessor.insert(ownTHunt);
+
+
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/treasurehunts/user?offset=0&quantity=20")
+                .session("connected", Integer.toString(user.getUserid()));
+        Result result = route(app, request);
+
+        JsonNode json = Json.parse(contentAsString(result));
+        JsonNode treasureHunts = json.get("ownTreasureHunts");
+
+        assertEquals(1, treasureHunts.size());
+        assertTrue("ownHunt".equals(treasureHunts.get(0).get("title").asText()));
+    }
+
+    /**
+     * Checks that a user with one treasure hunt, with users other other treasure hunts,
+     * gets a count of 1 in the json response.
+     */
+    @Test
+    public void getPaginatedUserTreasureHunts_mixedUsersHaveHunts_checkCountOne()
+            throws EbeanDateParseException {
+        TestDatabaseManager dbManager = new TestDatabaseManager();
+        dbManager.clearAllData();
+
+        User user = new User("test@test.com", "sasdsad");
+        UserAccessor.insert(user);
+
+        User userOther = new User("other@test.com", "sasdsad");
+        UserAccessor.insert(userOther);
+
+        Destination destination = new Destination("test",
+                "test", "test", "New Zealand",
+                32.2, 22.1, user);
+        DestinationAccessor.insert(destination);
+
+        TreasureHunt tHunt = new TreasureHunt("test", "test",
+                destination, "2019-01-01", "2019-12-12", userOther);
+        TreasureHuntAccessor.insert(tHunt);
+
+        TreasureHunt ownTHunt = new TreasureHunt("ownHunt", "test",
+                destination, "2019-01-01", "2019-12-12", user);
+        TreasureHuntAccessor.insert(ownTHunt);
+
+
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/treasurehunts/user?offset=0&quantity=20")
+                .session("connected", Integer.toString(user.getUserid()));
+        Result result = route(app, request);
+
+        JsonNode json = Json.parse(contentAsString(result));
+        int countOwnHunts = json.get("totalCountOpenTreasureHunts").asInt();
+
+        assertEquals(1, countOwnHunts);
+    }
+
+    /**
+     * Checks that getPaginatedUsersTreasureHunts returns a list of size 0
+     * when the application has no treasure hunts.
+     */
+    @Test
+    public void getPaginatedUserTreasureHunts_noHunts_checkListEmpty() {
+        TestDatabaseManager dbManager = new TestDatabaseManager();
+        dbManager.clearAllData();
+
+        User user = new User("test@test.com", "sasdsad");
+        UserAccessor.insert(user);
+
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/treasurehunts/user?offset=0&quantity=20")
+                .session("connected", Integer.toString(user.getUserid()));
+        Result result = route(app, request);
+
+        JsonNode json = Json.parse(contentAsString(result));
+        JsonNode treasureHunts = json.get("ownTreasureHunts");
+
+        assertEquals(0, treasureHunts.size());
+    }
+
+    /**
+     * Checks that getPaginatedUsersTreasureHunts returns a count of 0
+     * when the application has no treasure hunts.
+     */
+    @Test
+    public void getPaginatedUserTreasureHunts_noHunts_checkCountZero() {
+        TestDatabaseManager dbManager = new TestDatabaseManager();
+        dbManager.clearAllData();
+
+        User user = new User("test@test.com", "sasdsad");
+        UserAccessor.insert(user);
+
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/treasurehunts/user?offset=0&quantity=20")
+                .session("connected", Integer.toString(user.getUserid()));
+        Result result = route(app, request);
+
+        JsonNode json = Json.parse(contentAsString(result));
+        int countOwnHunts = json.get("totalCountOpenTreasureHunts").asInt();
+
+        assertEquals(0, countOwnHunts);
+    }
+
+    /**
+     * Checks that a user with no treasure hunts, but other users do have them,
+     * returns an empty list.
+     */
+    @Test
+    public void getPaginatedUserTreasureHunts_onlyOtherHasHunts_checkListEmpty()
+            throws EbeanDateParseException {
+        TestDatabaseManager dbManager = new TestDatabaseManager();
+        dbManager.clearAllData();
+
+        User user = new User("test@test.com", "sasdsad");
+        UserAccessor.insert(user);
+
+        User userOther = new User("other@test.com", "sasdsad");
+        UserAccessor.insert(userOther);
+
+        Destination destination = new Destination("test",
+                "test", "test", "New Zealand",
+                32.2, 22.1, user);
+        DestinationAccessor.insert(destination);
+
+        TreasureHunt tHunt = new TreasureHunt("test", "test",
+                destination, "2019-01-01", "2019-12-12", userOther);
+        TreasureHuntAccessor.insert(tHunt);
+
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/treasurehunts/user?offset=0&quantity=20")
+                .session("connected", Integer.toString(user.getUserid()));
+        Result result = route(app, request);
+
+        JsonNode json = Json.parse(contentAsString(result));
+        JsonNode treasureHunts = json.get("ownTreasureHunts");
+
+        assertEquals(0, treasureHunts.size());
+    }
+
+    /**
+     * Checks that a user with zero treasure hunts, but other users have them,
+     * returns a count of zero.
+     */
+    @Test
+    public void getPaginatedUserTreasureHunts_onlyOtherHasHunts_checkCountZero()
+            throws EbeanDateParseException {
+        TestDatabaseManager dbManager = new TestDatabaseManager();
+        dbManager.clearAllData();
+
+        User user = new User("test@test.com", "sasdsad");
+        UserAccessor.insert(user);
+
+        User userOther = new User("other@test.com", "sasdsad");
+        UserAccessor.insert(userOther);
+
+        Destination destination = new Destination("test",
+                "test", "test", "New Zealand",
+                32.2, 22.1, user);
+        DestinationAccessor.insert(destination);
+
+        TreasureHunt tHunt = new TreasureHunt("test", "test",
+                destination, "2019-01-01", "2019-12-12", userOther);
+        TreasureHuntAccessor.insert(tHunt);
+
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/treasurehunts/user?offset=0&quantity=20")
+                .session("connected", Integer.toString(user.getUserid()));
+        Result result = route(app, request);
+
+        JsonNode json = Json.parse(contentAsString(result));
+        int countOwnHunts = json.get("totalCountOpenTreasureHunts").asInt();
+
+        assertEquals(0, countOwnHunts);
     }
 }

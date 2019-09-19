@@ -150,7 +150,7 @@ public class TreasureHuntController extends Controller {
      * @param quantity an integer representing the maximum length of the jsonArray
      * @return a Result object containing the TreasureHunt list JSON in it's body
      */
-    public Result getPaginatedUserTreasureHunts(Http.Request request, int offset, int quantity) { //TODO test
+    public Result getPaginatedUserTreasureHunts(Http.Request request, int offset, int quantity) {
         final int MAX_QUANTITY = 1000;
         User user = User.getCurrentUser(request);
         if (user == null) {

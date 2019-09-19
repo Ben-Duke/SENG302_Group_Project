@@ -329,7 +329,6 @@ async function displaySlides(i, albumData, path) {
     mySlidesDiv.setAttribute("data-mediaId", mediaId);
 
     var img1 = document.createElement("img");
-
     img1.setAttribute("id", "img"+(i+1));
     img1.classList.add("center-block");
     img1.src = path + encodeURIComponent(url);
@@ -342,29 +341,32 @@ async function displaySlides(i, albumData, path) {
 
     lightBox.appendChild(mySlidesDiv);
     var content = document.querySelector('div[data-mediaId="'+mediaId+'"] [contenteditable]');
-    // 1. Listen for changes of the contenteditable element
-    content.addEventListener('keydown', function (event) {
-        var esc = event.which == 27,
-            enterKey = event.which == 13,
-            el = event.target,
+    // 1. Listen for changes of the content editable element
+    content.addEventListener('focus', function (event) {
+        const el = event.target,
             input = el.nodeName != 'INPUT',
             data = {};
+            el.value = "";
+
+        // This selects the caption text when clicked to edit
+        selection = window.getSelection();
+        range = document.createRange();
+        range.selectNodeContents(el);
+        selection.removeAllRanges();
+        selection.addRange(range);
+        //
 
         if (input) {
-            if (esc) {
-                // restore state
-                document.execCommand('undo');
-                el.blur();
-            } else if (enterKey) {
-                // save
-                data[el.getAttribute('data-name')] = el.innerHTML;
+            content.addEventListener('blur', function (event) {
+                if (el.innerText != "Click to add caption.")
+                data[el.getAttribute('data-name')] = el.innerText;
                 // we could send an ajax request to update the field
                 submitEditCaption(content.innerHTML, mediaId);
                 el.blur();
                 event.preventDefault();
-            }
+            });
         }
-    }, true);
+    });
 }
 
 // Open the Modal

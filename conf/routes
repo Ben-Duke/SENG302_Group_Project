@@ -378,6 +378,8 @@ GET     /users/events       controllers.EventsController.getEventsData(request :
 
 GET /users/trips/fetch/trips_routes_json  controllers.TripController.getTripsRoutesJson(request : Request)
 
+GET /users/trips/:tripId/asJson controllers.TripController.getTripsAsJson(request : Request, tripId : Integer)
+
 POST /users/trips/:tripId/addVisit/:destId   controllers.TripController.addVisitToTripJSRequest(request : Request, tripId:Integer, destId:Integer)
 
 #Get photo tags

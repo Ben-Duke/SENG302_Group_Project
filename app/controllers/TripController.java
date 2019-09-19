@@ -761,6 +761,35 @@ public class TripController extends Controller {
         return ok(tripNodes);
     }
 
+    private ObjectNode convertTripToJson(Trip trip) {
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        ObjectNode tripNode = objectMapper.createObjectNode();
+        ArrayNode visitNodes = objectMapper.createArrayNode();
+
+        for (Visit visit : trip.getOrderedVisits()) {
+            ObjectNode visitNode = objectMapper.createObjectNode();
+
+            Destination destination = visit.getDestination();
+
+            visitNode.put("visitId", visit.getVisitid());
+            visitNode.put("visitName", visit.getVisitName());
+            visitNode.put("destType", destination.getDestType());
+            visitNode.put("lat", destination.getLatitude());
+            visitNode.put("lng", destination.getLongitude());
+            visitNode.put("arrivalDate", visit.getArrival());
+            visitNode.put("departureDate", visit.getDeparture());
+
+            visitNodes.add(visitNode);
+        }
+        tripNode.put("tripId", trip.getTripid());
+        tripNode.put("tripName", trip.getTripName());
+        tripNode.put("startDate", trip.getTripStart());
+        tripNode.put("visits", visitNodes);
+
+        return tripNode;
+    }
+
     /**
      * Controller function to retrieve a list of trips matching the given name
      * @param request the HTTP request
@@ -776,28 +805,9 @@ public class TripController extends Controller {
         ArrayNode tripsListNode = objectMapper.createArrayNode();
         if(trips != null && trips.size() > 0) {
             for (Trip trip : trips) {
-                ObjectNode tripNode = objectMapper.createObjectNode();
-                ArrayNode visitNodes = objectMapper.createArrayNode();
 
-                for (Visit visit : trip.getOrderedVisits()) {
-                    ObjectNode visitNode = objectMapper.createObjectNode();
+                ObjectNode tripNode = convertTripToJson(trip);
 
-                    Destination destination = visit.getDestination();
-
-                    visitNode.put("visitId", visit.getVisitid());
-                    visitNode.put("visitName", visit.getVisitName());
-                    visitNode.put("destType", destination.getDestType());
-                    visitNode.put("lat", destination.getLatitude());
-                    visitNode.put("lng", destination.getLongitude());
-                    visitNode.put("arrivalDate", visit.getArrival());
-                    visitNode.put("departureDate", visit.getDeparture());
-
-                    visitNodes.add(visitNode);
-                }
-                tripNode.put("tripId", trip.getTripid());
-                tripNode.put("tripName", trip.getTripName());
-                tripNode.put("startDate", trip.getTripStart());
-                tripNode.put("visits", visitNodes);
                 tripsListNode.add(tripNode);
             }
             result.put("trips", tripsListNode);
@@ -830,32 +840,39 @@ public class TripController extends Controller {
         ObjectNode result = objectMapper.createObjectNode();
         ArrayNode tripsListNode = objectMapper.createArrayNode();
         for (Trip trip : trips) {
-            ObjectNode tripNode = objectMapper.createObjectNode();
-            ArrayNode visitNodes = objectMapper.createArrayNode();
 
-            for (Visit visit : trip.getOrderedVisits()) {
-                ObjectNode visitNode = objectMapper.createObjectNode();
+            ObjectNode tripNode = convertTripToJson(trip);
 
-                Destination destination = visit.getDestination();
-
-                visitNode.put("visitId", visit.getVisitid());
-                visitNode.put("visitName", visit.getVisitName());
-                visitNode.put("destType", destination.getDestType());
-                visitNode.put("lat", destination.getLatitude());
-                visitNode.put("lng", destination.getLongitude());
-                visitNode.put("arrivalDate", visit.getArrival());
-                visitNode.put("departureDate", visit.getDeparture());
-
-                visitNodes.add(visitNode);
-            }
-            tripNode.put("tripId", trip.getTripid());
-            tripNode.put("tripName", trip.getTripName());
-            tripNode.put("startDate", trip.getTripStart());
-            tripNode.put("visits", visitNodes);
             tripsListNode.add(tripNode);
         }
         result.put("trips", tripsListNode);
         result.put("tripCount", TripAccessor.getTotalUserTripCount(user));
         return ok(Json.toJson(result));
     }
+
+
+
+    public Result getTripsAsJson(Http.Request request, Integer tripId) {
+
+        User user = User.getCurrentUser(request);
+        if (user == null) {
+            return redirect(routes.UserController.userindex());
+        }
+
+        Trip trip = TripAccessor.getTripById(tripId);
+        if (trip == null) {
+            return badRequest();
+        }
+
+        if (!trip.isUserOwner(user.getUserid())) {
+            return forbidden();
+        }
+
+        ObjectNode tripNode = convertTripToJson(trip);
+
+        return ok(tripNode);
+    }
+
+
+
 }

@@ -125,6 +125,42 @@ function initMapLegend() {
     window.globalMap.controls[google.maps.ControlPosition.LEFT_BOTTOM].push(legend);
 }
 
+async function createNewPaginatedTrip() {
+    let paginationList = document.getElementById("trip-pagination-list");
+    while (paginationList.firstChild) {
+        paginationList.removeChild(paginationList.firstChild);
+    }
+
+
+    let tripJSON = await getPaginatedTripResults(tripPageNum, 5);
+
+
+    let tripCount = tripJSON.tripCount;
+    let numPages = Math.ceil(tripCount/5);
+
+    tripJSON = await getPaginatedTripResults(numPages, 5);
+    let trips  = tripJSON.trips;
+
+    setTripPaginationLinks(tripCount, 5);
+
+    let trip = trips[trips.length-1];
+    let data = trip;
+
+    await jumpToTripPage(numPages);
+
+
+    $('tbody').sortable({
+        axis: 'y',
+        update: function (event, ui) {
+            swapVisitOnSort();
+        }
+    });
+
+
+    displayTrip(trip.tripId, trip.visits[0].lat, trip.visits[0].lng);
+
+}
+
 function createNewTrip(destId) {
     if(currentlyDisplayedTripId === undefined) {
         addSelectedToVisitToTrip(destId, false)
@@ -145,100 +181,90 @@ function addSelectedToVisitToTrip(destId, startTrip){
             contentType : 'application/json',
             type: 'POST',
             url: url,
-            success: function(data){
+            success: async function(data) {
 
-                if (currentlyDisplayedTripId === undefined) {
-                    currentlyDisplayedTripId = data.tripId;
-                }
-
-                document.getElementById("placeholderTripTable").style.display = "none";
-
-                let destTab = document.getElementById("destinationsTabListItem");
-                let tripsTab = document.getElementById("tripsTabListItem");
-                let tripsDiv = document.getElementById("tripsTab");
-                let destDiv = document .getElementById("destinationsTab");
-                tripsDiv.setAttribute("class", "tab-pane fade in active");
-                destDiv.setAttribute("class", "tab-pane fade");
-                destTab.setAttribute('class', "");
-                tripsTab.setAttribute('class', "active");
-
-                //Handle outer div
-                let singleTripContainer = document.getElementById("singleTripContainer");
-                let outerTripDiv = document.createElement("div");
-                outerTripDiv.setAttribute("id", "singleTrip_" + data.tripId);
-                outerTripDiv.setAttribute("class", "singleTrip");
-                outerTripDiv.setAttribute("style", "display: block;");
-
-                //Handle title div
-                let titleDiv = createTripTitleDiv(data);
-                outerTripDiv.appendChild(titleDiv);
+                isNewTrip = false;
+                createNewPaginatedTrip();
 
 
-                //Handle Table
-                let newTable = createTripTable(data);
-                outerTripDiv.appendChild(newTable);
+                // document.getElementById("placeholderTripTable").style.display = "none";
+                //
+                // let destTab = document.getElementById("destinationsTabListItem");
+                // let tripsTab = document.getElementById("tripsTabListItem");
+                // let tripsDiv = document.getElementById("tripsTab");
+                // let destDiv = document .getElementById("destinationsTab");
+                // tripsDiv.setAttribute("class", "tab-pane fade in active");
+                // destDiv.setAttribute("class", "tab-pane fade");
+                // destTab.setAttribute('class', "");
+                // tripsTab.setAttribute('class', "active");
+                //
+                // //Handle outer div
+                // let singleTripContainer = document.getElementById("singleTripContainer");
+                // let outerTripDiv = document.createElement("div");
+                // outerTripDiv.setAttribute("id", "singleTrip_" + data.tripId);
+                // outerTripDiv.setAttribute("class", "singleTrip");
+                // outerTripDiv.setAttribute("style", "display: block;");
+                //
+                // //Handle title div
+                // let titleDiv = createTripTitleDiv(data);
+                // outerTripDiv.appendChild(titleDiv);
+                //
+                //
+                // //Handle Table
+                // let newTable = createTripTable(data);
+                // outerTripDiv.appendChild(newTable);
+                //
+                // //Handle delete button
+                // let deleteButton = document.createElement("button");
+                // deleteButton.setAttribute("class", "btn btn-danger deleteTripBtn");
+                // deleteButton.setAttribute("onclick", "deleteTripRequest(" + data.tripId + ", 'map_home')");
+                // deleteButton.innerText = "Delete trip";
+                // outerTripDiv.appendChild(deleteButton);
+                //
+                // // Handle checking the show/hide all button
+                // document.getElementById('show-hide-all-btn').style.display = 'block';
+                //
+                // //Add outer div to single trip view
+                // singleTripContainer.appendChild(outerTripDiv);
+                //
+                //
+                // //Handle List Group
+                // let listGroup = document.getElementById('trip-list-group');
+                // let tripLink = document.createElement('a');
+                // tripLink.setAttribute('class', "list-group-item list-group-item-action");
+                // tripLink.innerText = data.tripName + ' | No arrival dates';
+                // tripLink.setAttribute("onclick", "displayTrip(" + data.tripId + ", " + data.latitude+ ", "+ data.longitude + ")");
+                //
+                // let formCheckDiv = document.createElement("div");
+                // formCheckDiv.setAttribute("class", "form-check");
+                //
+                // let tripCheckBox = document.createElement('input');
+                // tripCheckBox.setAttribute('type', 'checkbox');
+                // tripCheckBox.setAttribute('id',"Toggle"+data.tripId);
+                // tripCheckBox.setAttribute('checked', 'true');
+                // tripCheckBox.setAttribute('onchange', 'toggleTrips(' + data.tripId + ')');
+                // tripCheckBox.setAttribute('class', 'form-check-input map-check');
+                // tripCheckBox.setAttribute('autocomplete', 'off');
+                // let mapLabel = document.createElement('label');
+                // mapLabel.setAttribute('class', 'form-check-label');
+                // mapLabel.setAttribute('for', "toggleMap");
+                // mapLabel.innerText = 'Show on map';
+                // formCheckDiv.appendChild(tripCheckBox);
+                // formCheckDiv.appendChild(mapLabel);
+                // tripLink.appendChild(formCheckDiv);
+                // listGroup.appendChild(tripLink);
+                //
+                // //Update tags
+                // changeTaggableModel(data.tripId, "trip");
+                // showTagEditor();
 
-                //Handle delete button
-                let deleteButton = document.createElement("button");
-                deleteButton.setAttribute("class", "btn btn-danger deleteTripBtn");
-                deleteButton.setAttribute("onclick", "deleteTripRequest(" + data.tripId + ", 'map_home')");
-                deleteButton.innerText = "Delete trip";
-                outerTripDiv.appendChild(deleteButton);
-
-                // Handle checking the show/hide all button
-                document.getElementById('show-hide-all-btn').style.display = 'block';
-
-                //Add outer div to single trip view
-                singleTripContainer.appendChild(outerTripDiv);
+                //
+                //
+                //
+                //
 
 
 
-                //Handle List Group
-                let listGroup = document.getElementById('trip-list-group');
-                let tripLink = document.createElement('a');
-                tripLink.setAttribute('class', "list-group-item list-group-item-action");
-                tripLink.innerText = data.tripName + ' | No arrival dates';
-                tripLink.setAttribute("onclick", "displayTrip(" + data.tripId + ", " + data.latitude+ ", "+ data.longitude + ")");
-
-                let formCheckDiv = document.createElement("div");
-                formCheckDiv.setAttribute("class", "form-check");
-
-                let tripCheckBox = document.createElement('input');
-                tripCheckBox.setAttribute('type', 'checkbox');
-                tripCheckBox.setAttribute('id',"Toggle"+data.tripId);
-                tripCheckBox.setAttribute('checked', 'true');
-                tripCheckBox.setAttribute('onchange', 'toggleTrips(' + data.tripId + ')');
-                tripCheckBox.setAttribute('class', 'form-check-input map-check');
-                tripCheckBox.setAttribute('autocomplete', 'off');
-                let mapLabel = document.createElement('label');
-                mapLabel.setAttribute('class', 'form-check-label');
-                mapLabel.setAttribute('for', "toggleMap");
-                mapLabel.innerText = 'Show on map';
-                formCheckDiv.appendChild(tripCheckBox);
-                formCheckDiv.appendChild(mapLabel);
-                tripLink.appendChild(formCheckDiv);
-                listGroup.appendChild(tripLink);
-
-                //Update tags
-                changeTaggableModel(data.tripId, "trip");
-                showTagEditor();
-
-                for (let i in tripRoutes) {
-                    tripRoutes[i].setMap(null);
-                }
-                tripRoutes = [];
-                initTripRoutes();
-
-                if (startTrip == true && currentlyDisplayedTripId != undefined) {
-                    displayTrip(data.tripId, data.latitude, data.longitude)
-                }
-
-                $('tbody').sortable({
-                    axis: 'y',
-                    update: function (event, ui) {
-                        swapVisitOnSort();
-                    }
-                });
 
             },
             error: function(xhr, textStatus, errorThrown){
@@ -257,12 +283,7 @@ function addSelectedToVisitToTrip(destId, startTrip){
             success: function(data){
                 tripVisitTableRefresh(data);
 
-
-                for (let i in tripRoutes) {
-                    tripRoutes[i].setMap(null);
-                }
-                tripRoutes =[];
-                initTripRoutes();
+                updatePaginatedTripData(currentlyDisplayedTripId);
 
             },
             error: function(xhr, textStatus, errorThrown){
@@ -736,7 +757,25 @@ $('tbody').sortable({
     }
 });
 
-function swapVisitOnSort(tripId) {
+function updatePaginatedTripData(tripId) {
+
+    $.ajax({
+        type: 'GET',
+        url: '/users/trips/'+ tripId + '/asJson',
+        success: function(data) {
+
+            for (let i=0; i < paginatedTripData.trips.length; i++) {
+                let trip = paginatedTripData.trips[i];
+                if(trip.tripId == tripId) {
+                    paginatedTripData.trips[i] = data;
+                }
+            }
+            initTripRoutes();
+        }
+    });
+}
+
+function swapVisitOnSort() {
     var token =  $('input[name="csrfToken"]').attr('value');
     $.ajaxSetup({
         beforeSend: function(xhr) {
@@ -757,15 +796,7 @@ function swapVisitOnSort(tripId) {
         url: url,
         success: function(data, textStatus, xhr) {
 
-            if(xhr.status == 200) {
-                //This is an inefficient way of update the route
-
-                for (let i in tripRoutes) {
-                    tripRoutes[i].setMap(null);
-                }
-                tripRoutes = [];
-                initTripRoutes();
-            }
+            updatePaginatedTripData(currentlyDisplayedTripId);
         },
         error: function(xhr, textStatus, errorThrown){
             $('tbody').sortable('cancel');
@@ -949,11 +980,7 @@ function sendDeleteVisitRequest(url, visitId) {
                 document.getElementById(visitId).remove();
                 document.getElementById('undoButton').classList.remove('disabled');
 
-                for (let i in tripRoutes) {
-                    tripRoutes[i].setMap(null);
-                }
-                tripRoutes = [];
-                initTripRoutes();
+                updatePaginatedTripData(currentlyDisplayedTripId);
 
             }
             else {
@@ -1596,8 +1623,10 @@ async function previousTripPage(search) {
 
 async function jumpToTripPage(pageNumber, search) {
     document.getElementById("trip-pagination-link-" + tripPageNum).removeAttribute("class");
+
     tripPageNum = pageNumber;
     document.getElementById("trip-pagination-link-" + tripPageNum).setAttribute("class", "active");
+
     if (search == undefined) {
         let newlyDisplayedTrips = await getPaginatedTripResults(tripPageNum, 5);
         displayTripTablePage(newlyDisplayedTrips.trips);
@@ -1707,7 +1736,6 @@ function displayTripTablePage(trips) {
 }
 
 function updateTripPageTable(data) {
-
     let newTable = document.createElement("table");
     newTable.setAttribute("id", "tripTable_" + data.tripId);
     newTable.setAttribute("class", "table table-hover");
@@ -1867,6 +1895,7 @@ function setTripPaginationLinks(tripCount, perPage, search) {
         let pageNumber = document.createElement("li");
         pageNumber.setAttribute("id", "trip-pagination-link-" + i);
         if (i==1) {
+            tripPageNum = 1;
             pageNumber.setAttribute("class", "active");
         }
         let pageNumberLink = document.createElement("a");

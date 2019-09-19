@@ -22,9 +22,7 @@ import play.mvc.Result;
 import utilities.EventFindaUtilities;
 import views.html.users.events.eventSearch;
 
-import static play.mvc.Results.badRequest;
-import static play.mvc.Results.ok;
-import static play.mvc.Results.unauthorized;
+import static play.mvc.Results.*;
 
 public class EventResponseController {
 
@@ -41,12 +39,12 @@ public class EventResponseController {
      */
     public Result respondToEvent(Http.Request request, Integer externalEventId, String responseType) {
         User user = User.getCurrentUser(request);
-//        if (user == null) {return unauthorized();}
+        if (user == null) {return redirect(routes.UserController.userindex());}
         Event event = Event.find().query().where().eq("externalId", externalEventId).findOne();
         if (event == null) {
             JsonNode jsonData = EventFindaUtilities.getEventById(externalEventId).get("events");
             if (jsonData.size() == 0) {return badRequest();}
-            JsonNode eventData = jsonData.get("events").get(0);
+            JsonNode eventData = jsonData.get(0);
             event = new Event(eventData.get("name").toString());
             event.setExternalId(eventData.get("id").asInt());
             event.setUrl(eventData.get("url").toString());

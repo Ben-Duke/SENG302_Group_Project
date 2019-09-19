@@ -49,7 +49,7 @@ public class EventResponseAccessor {
      * @param responseType String
      * @return List of Event Responses
      */
-    public static List<EventResponse> getByEventandType(Event event, String responseType) {
+    public static List<EventResponse> getByEventAndType(Event event, String responseType) {
         return EventResponse.find().query().where().eq(
                 "event", event).eq("response_type", responseType).findList();
     }
@@ -68,7 +68,7 @@ public class EventResponseAccessor {
      * @param responseType String
      * @return List of Event Responses
      */
-    public static List<EventResponse> getByUserandType(User user, String responseType) {
+    public static List<EventResponse> getByUserAndType(User user, String responseType) {
         return EventResponse.find().query().where().eq(
                 "user", user).eq("response_type", responseType).findList();
     }

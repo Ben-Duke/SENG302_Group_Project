@@ -5,6 +5,10 @@ var user;
 let destinationsToUnlink_GLOBAL;
 let selectedMediaID_GLOBAL;
 
+const quantityToGet = 8;
+let offSet = 0;
+let albumMediaData = [];
+
 moveAlbumSearch();
 
 // Add event listener for closing the modal on clicking outside of it
@@ -40,9 +44,6 @@ function moveAlbumSearch() {
                                 });
                           }
                       });
-
-
-
               }
           });
       }
@@ -53,7 +54,7 @@ function moveBetweenAlbums(oldAlbumId, newAlbumId) {
   var hidePrivate = false;
       $.ajax({
               type: 'GET',
-              url: '/users/albums/get/' + hidePrivate + '/' + oldAlbumId,
+              url: '/users/albums/get/'+oldAlbumId,
               contentType: 'application/json',
               success: (albumData) => {
                       let mediaId = albumData[slideIndex-1]["mediaId"];
@@ -170,36 +171,30 @@ function setPrivacyListener(setPrivacy, mediaId) {
  * Sets listeners for all buttons on the current slide
  * @param i the index of the current slide
  */
-function setSlideListeners(i) {
+function setSlideListeners(albumData, i) {
     const dataset = document.getElementById('myModal').dataset;
     const isOwner = dataset.isowner;
     const albumId = dataset.album;
     const hidePrivate = !isOwner;
 
-    return $.ajax({
-        type: 'GET',
-        url: '/users/albums/get/' + hidePrivate + '/' + albumId,
-        contentType: 'application/json',
-        success: (albumData) => {
-            let setPrivacy;
-            setDeletePhotoListener(albumData, i);
-            setDestinationLinkListener(albumData, i);
-            setMakeProfilePictureListener(albumData, i);
-            const mediaId = albumData[i]["mediaId"];
-            const caption = albumData[i]["caption"];
-            changeTaggableModel(mediaId, "photo");
-            if (caption != "") {
-                document.querySelector('div[data-mediaId="'+mediaId+'"] [contenteditable]').innerHTML = caption.toString();
-            } else {
-                document.querySelector('div[data-mediaId="'+mediaId+'"] [contenteditable]').innerHTML =
-                "Click to add caption, press enter to save.";
-            }
-            console.log(albumData[i]["isPublic"]);
-            if(albumData[i]["isPublic"]) {setPrivacy=0;}
-            else {setPrivacy=1;}
-            setPrivacyListener(setPrivacy, mediaId);
-        }
-    });
+    let setPrivacy;
+    setDeletePhotoListener(albumData, i);
+    setDestinationLinkListener(albumData, i);
+    setMakeProfilePictureListener(albumData, i);
+
+    const mediaId = albumData[i]["mediaId"];
+
+    const caption = albumData[i]["caption"];
+    changeTaggableModel(mediaId, "photo");
+    if (caption != "") {
+        document.querySelector('div[data-mediaId="'+mediaId+'"] [contenteditable]').innerHTML = caption.toString();
+    } else {
+        document.querySelector('div[data-mediaId="'+mediaId+'"] [contenteditable]').innerHTML =
+        "Click to add caption, press enter to save.";
+    }
+    if(albumData[i]["isPublic"]) {setPrivacy=0;}
+    else {setPrivacy=1;}
+    setPrivacyListener(setPrivacy, mediaId);
 }
 
 /**
@@ -208,9 +203,6 @@ function setSlideListeners(i) {
  * @param setPublic true to set to public, false to set to private
  */
 function setMediaPrivacy(mediaId, setPublic, link) {
-    console.log(mediaId);
-    console.log(setPublic);
-    console.log(link);
     const intPublic = setPublic ? 1 : 0;
     $.ajax({
         type: 'GET',
@@ -234,39 +226,52 @@ function setMediaPrivacy(mediaId, setPublic, link) {
 }
 
 
+
 /**
  * Function to search for albums.
  * Updates the rows of photos with album titles matching the search term
  */
-function getAlbum(userId, albumId, isOwner){
-    // Declare variables
-    var hidePrivate;
-    if(isOwner) {hidePrivate = false;}
-    else {hidePrivate = true}
+function getAlbum(userId, albumId){
+
     $.ajax({
         type: 'GET',
-        url: '/users/albums/get/' + hidePrivate + '/' + albumId,
+        url: '/users/albums/get/'+albumId+"/"+offSet+"/"+quantityToGet,
         contentType: 'application/json',
-        success: (albumData) => {
-            addAlbum(albumData, userId);
+        success: (data) => {
+
+            const mediaData = data.mediaData;
+            const totalMediaCount = data.totalMediaCount;
+
+            albumMediaData = albumMediaData.concat(mediaData);
+
+            addAlbum(mediaData, userId, offSet);
+
+            offSet += mediaData.length;
+
+            const loadMoreBtn = document.getElementById('loadMoreBtn');
+            if (offSet >= totalMediaCount) {
+                loadMoreBtn.style.display = 'none';
+            } else {
+                loadMoreBtn.style.display = 'block';
+            }
         }
     });
 }
 
 
-async function addAlbum(albumData, userId) {
+async function addAlbum(albumData, userId, offSet) {
+
     var path = "/users/home/servePicture/";
     for (let i=0; i<albumData.length; i++) {
         if(!(albumData[i]["user"]["userid"] !== userId && albumData[i]["isPublic"] === false)) {
-            await displayGrid(i, albumData, path);
+            await displayGrid(i, albumData, path, offSet);
             await displaySlides(i, albumData, path);
         }
     }
-        showSlides(slideIndex);
 }
 
 /** Called when displaying the grid of photos */
-async function displayGrid(i, albumData, path) {
+async function displayGrid(i, albumData, path, offSet) {
     let url = albumData[i]["urlWithPath"];
     let imgContainer = document.createElement("div");
     imgContainer.classList.add("container");
@@ -289,8 +294,8 @@ async function displayGrid(i, albumData, path) {
     img1.classList.add("hover-shadow");
     img1.addEventListener('click', () => {
         openModal();
-        currentSlide(i+1);
-        setSlideListeners(i)
+        currentSlide(i+1+offSet);
+        setSlideListeners(albumData, i);
     });
     icon.appendChild(privacyIcon);
     overlay.appendChild(icon);
@@ -323,7 +328,6 @@ async function displaySlides(i, albumData, path) {
     mySlidesDiv.setAttribute("data-mediaId", mediaId);
 
     var img1 = document.createElement("img");
-
     img1.setAttribute("id", "img"+(i+1));
     img1.classList.add("center-block");
     img1.src = path + encodeURIComponent(url);
@@ -336,29 +340,32 @@ async function displaySlides(i, albumData, path) {
 
     lightBox.appendChild(mySlidesDiv);
     var content = document.querySelector('div[data-mediaId="'+mediaId+'"] [contenteditable]');
-    // 1. Listen for changes of the contenteditable element
-    content.addEventListener('keydown', function (event) {
-        var esc = event.which == 27,
-            enterKey = event.which == 13,
-            el = event.target,
+    // 1. Listen for changes of the content editable element
+    content.addEventListener('focus', function (event) {
+        const el = event.target,
             input = el.nodeName != 'INPUT',
             data = {};
+            el.value = "";
+
+        // This selects the caption text when clicked to edit
+        selection = window.getSelection();
+        range = document.createRange();
+        range.selectNodeContents(el);
+        selection.removeAllRanges();
+        selection.addRange(range);
+        //
 
         if (input) {
-            if (esc) {
-                // restore state
-                document.execCommand('undo');
-                el.blur();
-            } else if (enterKey) {
-                // save
-                data[el.getAttribute('data-name')] = el.innerHTML;
+            content.addEventListener('blur', function (event) {
+                if (el.innerText != "Click to add caption.")
+                data[el.getAttribute('data-name')] = el.innerText;
                 // we could send an ajax request to update the field
                 submitEditCaption(content.innerHTML, mediaId);
                 el.blur();
                 event.preventDefault();
-            }
+            });
         }
-    }, true);
+    });
 }
 
 // Open the Modal
@@ -601,7 +608,7 @@ function showSlides(n) {
     }
     if(slides[slideIndex-1] !== undefined) {
         slides[slideIndex-1].style.display = "inline-block";
-        const privacyBtn = document.getElementById("privacyBtn")
+        const privacyBtn = document.getElementById("privacyBtn");
         if (privacyBtn != null) {
             if (slides[slideIndex - 1].getAttribute("data-privacy") === "true") {
                 document.getElementById("privacyBtn").innerHTML = "Make Private";
@@ -609,7 +616,7 @@ function showSlides(n) {
                 document.getElementById("privacyBtn").innerHTML = "Make Public";
             }
         }
-        setSlideListeners(slideIndex-1);
+        setSlideListeners(albumMediaData, slideIndex-1);
     }
 }
 
@@ -858,7 +865,7 @@ function deletePhotoRequest(photoId){
                             error: function (res) {
                                 console.log(JSON.stringify(res));
                             }
-                        })
+                        });
                         $(document.getElementById('myModal')).modal('show')
                     };
                 document.getElementById('noCloseDeletePhotoButton').onclick =
@@ -893,8 +900,7 @@ function submitEditCaption(caption, photoId) {
         headers: {
             'Content-Type': 'application/json'
         },
-        success:function(){
-            console.log("caption edited");
+        success:function (){
             document.getElementById('undoButton').classList.remove('disabled');
         },
         error: function(xhr, textStatus, errorThrown){
@@ -914,8 +920,7 @@ function openSelectDestinationsToUnlinkPhotoModal(mediaId) {
         url: '/users/albums/photos/get_linked_destinations/' + mediaId,
         success:function(res){
             destinationsToUnlink_GLOBAL = res;
-            console.log('destinations: ');
-            console.log(destinationsToUnlink_GLOBAL);
+
             resetSelectDestinationsToUnlinkPhotoModal();
             setDestinationSelectionsForBulkPhotoLeaving();
             $('#selectDestinationsToUnlinkPhotoModal').modal('show');
@@ -1075,7 +1080,6 @@ $('#photo-upload').click(function (eve){
         var formData = new FormData();
         formData.append('picture', filePath.files[0]);
         formData.append('private', privateInput);
-        console.log(searchBar.value);
         formData.append('album', searchBar.value);
         var token = $('input[name="csrfToken"]').attr('value');
         $.ajaxSetup({

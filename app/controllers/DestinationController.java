@@ -1227,8 +1227,8 @@ public class DestinationController extends Controller {
             return badRequest(Json.toJson(jsonError));
         }
 
-        List<Destination> destinations = DestinationAccessor
-                .getDestinationsWithKeyword(name, quantity ,offset);
+        Set<Destination> destinations = DestinationAccessor
+                .getDestinationsWithKeyword(name, quantity ,offset, user);
 
         ObjectNode result = (new ObjectMapper()).createObjectNode();
         result.set("destinations", Json.toJson(destinations));

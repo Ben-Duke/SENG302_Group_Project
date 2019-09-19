@@ -5,7 +5,9 @@ import models.Destination;
 import models.User;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static io.ebean.Expr.like;
 
@@ -89,18 +91,26 @@ public class DestinationAccessor {
      * Return destinations that matches this keyword.
      * Private destinations can share the same name so list size can be more than one
      */
-    public static List<Destination> getDestinationsWithKeyword(String name,int quantity, int offset) {
+    public static Set<Destination> getDestinationsWithKeyword(String name,int quantity, int offset, User user) {
         if (quantity < 1) {
-            return new ArrayList<Destination>();
+            return new HashSet<Destination>();
         }
 
         if (offset < 0) {
             offset = 0;
         }
-        return Destination.find().query().where().like("destName", "%" + name + "%")
+        Set<Destination> publicDestinations = Destination.find().query().where().ilike("destName", "%" + name + "%").and().eq("isPublic", true)
                 .setFirstRow(offset)
                 .setMaxRows(quantity)
-                .findList();
+                .findSet();
+
+        Set<Destination> privateDestinations = Destination.find().query().where().ilike("destName", "%" + name + "%").and().eq("user", user)
+                .setFirstRow(offset)
+                .setMaxRows(quantity)
+                .findSet();
+        publicDestinations.addAll(privateDestinations);
+        return publicDestinations;
+
     }
 
     public static List<Destination> getAllDestinations() {

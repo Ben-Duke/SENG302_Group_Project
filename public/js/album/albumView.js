@@ -8,6 +8,7 @@ let selectedMediaID_GLOBAL;
 const quantityToGet = 8;
 let offSet = 0;
 let albumMediaData = [];
+let mediaId;
 
 moveAlbumSearch();
 
@@ -57,7 +58,7 @@ function moveBetweenAlbums(oldAlbumId, newAlbumId) {
               url: '/users/albums/get/'+oldAlbumId,
               contentType: 'application/json',
               success: (albumData) => {
-                      let mediaId = albumData[slideIndex-1]["mediaId"];
+                      mediaId = albumData[slideIndex-1]["mediaId"];
                       var token =  $('input[name="csrfToken"]').attr('value');
                       $.ajaxSetup({
                           beforeSend: function(xhr) {
@@ -105,7 +106,7 @@ function replaceWithClone(original) {
  */
 function setDeletePhotoListener(albumData, i) {
     function deletePhotoListener() {
-        const mediaId = albumData[i]["mediaId"];
+        mediaId = albumData[i]["mediaId"];
         selectedMediaID_GLOBAL = mediaId;
         openSelectDestinationsToUnlinkPhotoModal(mediaId);
     }
@@ -122,7 +123,7 @@ function setDeletePhotoListener(albumData, i) {
  */
 function setMakeProfilePictureListener(albumData, i) {
     function makeProfilePictureListener() {
-        const mediaId = albumData[i]["mediaId"];
+        mediaId = albumData[i]["mediaId"];
         setProfilePictureRequest(mediaId);
     }
     const original = document.getElementById('profilePictureBtn');
@@ -139,7 +140,7 @@ function setMakeProfilePictureListener(albumData, i) {
  */
 function setDestinationLinkListener(albumData, i) {
     function destinationLinkListener() {
-        const mediaId = albumData[i]["mediaId"];
+        mediaId = albumData[i]["mediaId"];
         openDestinationModal(mediaId);
     }
     const original = document.getElementById('linkDestinationBtn');
@@ -182,7 +183,7 @@ function setSlideListeners(albumData, i) {
     setDestinationLinkListener(albumData, i);
     setMakeProfilePictureListener(albumData, i);
 
-    const mediaId = albumData[i]["mediaId"];
+    mediaId = albumData[i]["mediaId"];
 
     const caption = albumData[i]["caption"];
     changeTaggableModel(mediaId, "photo");
@@ -314,7 +315,7 @@ async function displayGrid(i, albumData, path, offSet) {
 
 async function displaySlides(i, albumData, path) {
     var url = albumData[i]["urlWithPath"];
-    var mediaId = albumData[i]["mediaId"];
+    mediaId = albumData[i]["mediaId"];
     var lightBox = document.getElementById("lightbox-modal");
     var mySlidesDiv = document.createElement("div");
     var captionInput = document.createElement("p");
@@ -442,7 +443,7 @@ function getDestData(mediaId, pageNum, quantity) {
         data: data,
         contentType: 'application/json',
         success: (destData) => {
-            loadDestTable(destData, mediaId, pageNum)
+            loadDestTable(destData, mediaId, pageNum, null)
         }
     });
 }
@@ -452,7 +453,7 @@ function getDestData(mediaId, pageNum, quantity) {
  * @param destData the data containing all destinations that the user can view
  * @param mediaId the id of the media to link destinations to
  */
-function loadDestTable(destData, mediaId, pageNum) {
+function loadDestTable(destData, mediaId, pageNum, search) {
     let count = destData.totalCountPublic;
     const publicTable = document.getElementById('public-dest-tbody');
     const privateTable = document.getElementById('private-dest-tbody');
@@ -472,8 +473,47 @@ function loadDestTable(destData, mediaId, pageNum) {
             addDestRow(privateTable, destination, mediaId)
         }
     }
-    addPagination(mediaId, count, pageNum);
+    addPagination(mediaId, count, pageNum ,search);
 
+}
+
+function searchByKeyword(mediaId, currentPageNum) {
+    const offset = (currentPageNum - 1) * 20;
+    let searchInput = document.getElementById("destSearchInput").value;
+    if(searchInput != "") {
+        let data = {offset: offset,
+            quantity: 20};
+        $.ajax({
+            url: '/users/destinations/matching/' + searchInput,
+            data: data,
+            method: "GET",
+            success: function (res) {
+                let displayedIds = [];
+                for (let j=0; j < res.destinations.length; j++) {
+                    if(res.destinations[j].isPublic === false) {
+                        displayedIds.push("destButton" + res.destinations[j].destId);
+                    }
+                }
+                let privateListChildren = document.getElementById("private-dest-tbody").children;
+
+                for(let i=0; i < privateListChildren.length; i++) {
+                    if (!displayedIds.includes(privateListChildren[i].id)) {
+                        [i].setAttribute("style", "display: none;");
+                    } else {
+                        privateListChildren[i].setAttribute("style", "display: block;");
+                    }
+                }
+                loadDestTable(res, mediaId, currentPageNum, searchInput)
+
+            }
+        });
+    } else {
+        getDestData(mediaId, 1, 20);
+        let privateListChildren = document.getElementById("private-dest-tbody").children;
+        for(let i=0; i < privateListChildren.length; i++) {
+            privateListChildren[i].setAttribute("style", "display: block;");
+        }
+    }
 }
 
 /**
@@ -484,7 +524,6 @@ function loadDestTable(destData, mediaId, pageNum) {
  */
 function addDestRow(table, destination, mediaId) {
     const row = document.createElement("TR");
-
     const name = document.createElement("TH");
     name.setAttribute('scope', 'row');
     name.innerText = destination.destName;
@@ -529,7 +568,12 @@ function addDestRow(table, destination, mediaId) {
     table.appendChild(row);
 }
 
-function addPagination(mediaId, count, pageNum) {
+$("#destSearchInput").keyup(function ()
+{
+    searchByKeyword(mediaId, 1)
+});
+
+function addPagination(mediaId, count, pageNum, search) {
     let numOfPages = [];
     let pageNumbers = [];
     const pagination = document.createElement("ul");
@@ -561,7 +605,12 @@ function addPagination(mediaId, count, pageNum) {
     let pageButton = document.createElement("a");
     let currentPageNum = 1;
     pageButton.innerText = "First";
-    pageButton.setAttribute("onClick", `getDestData(${mediaId}, ${currentPageNum} ,${20})`);
+    if (search == null) {
+        pageButton.setAttribute("onClick", `getDestData(${mediaId}, ${currentPageNum} ,${20})`);
+    } else {
+        pageButton.setAttribute("onClick", `searchByKeyword(${mediaId}, ${currentPageNum})`);
+
+    }
     item.appendChild(pageButton);
     pagination.appendChild(item);
 
@@ -573,7 +622,12 @@ function addPagination(mediaId, count, pageNum) {
         currentPageNum = pageNum - 1;
     }
     pageButton.innerText = "<";
-    pageButton.setAttribute("onClick", `getDestData(${mediaId}, ${currentPageNum} ,${20})`);
+    if (search == null) {
+        pageButton.setAttribute("onClick", `getDestData(${mediaId}, ${currentPageNum} ,${20})`);
+    } else {
+        pageButton.setAttribute("onClick", `searchByKeyword(${mediaId}, ${currentPageNum})`);
+
+    }
     item.appendChild(pageButton);
     pagination.appendChild(item);
     for (let i=0; i < pageNumbers.length; i++) {
@@ -584,7 +638,12 @@ function addPagination(mediaId, count, pageNum) {
         if (currentPageNum==pageNum) {
             item.classList.add("active");
         }
-        pageButton.setAttribute("onClick", `getDestData(${mediaId}, ${currentPageNum} ,${20})`);
+        if (search == null) {
+            pageButton.setAttribute("onClick", `getDestData(${mediaId}, ${currentPageNum} ,${20})`);
+        } else {
+            pageButton.setAttribute("onClick", `searchByKeyword(${mediaId}, ${currentPageNum})`);
+
+        }
         item.appendChild(pageButton);
         pagination.appendChild(item);
     }
@@ -596,7 +655,12 @@ function addPagination(mediaId, count, pageNum) {
         currentPageNum = pageNum+1;
     }
     pageButton.innerText = ">";
-    pageButton.setAttribute("onClick", `getDestData(${mediaId}, ${currentPageNum} ,${20})`);
+    if (search == null) {
+        pageButton.setAttribute("onClick", `getDestData(${mediaId}, ${currentPageNum} ,${20})`);
+    } else {
+        pageButton.setAttribute("onClick", `searchByKeyword(${mediaId}, ${currentPageNum})`);
+
+    }
     item.appendChild(pageButton);
     pagination.appendChild(item);
     document.getElementById("publicDestinations").appendChild(pagination);
@@ -605,7 +669,12 @@ function addPagination(mediaId, count, pageNum) {
     pageButton = document.createElement("a");
     currentPageNum = numOfPages.length;
     pageButton.innerText = "Last";
-    pageButton.setAttribute("onClick", `getDestData(${mediaId}, ${currentPageNum} ,${20})`);
+    if (search == null) {
+        pageButton.setAttribute("onClick", `getDestData(${mediaId}, ${currentPageNum} ,${20})`);
+    } else {
+        pageButton.setAttribute("onClick", `searchByKeyword(${mediaId}, ${currentPageNum})`);
+
+    }
     item.appendChild(pageButton);
     pagination.appendChild(item);
 }

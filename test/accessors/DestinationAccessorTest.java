@@ -8,6 +8,7 @@ import testhelpers.BaseTestWithApplicationAndDatabase;
 import utilities.TestDatabaseManager;
 
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.Assert.*;
 
@@ -147,8 +148,10 @@ public class DestinationAccessorTest extends BaseTestWithApplicationAndDatabase 
 
         TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
         testDatabaseManager.clearAllData();
+        User user = new User();
+        UserAccessor.insert(user);
 
-        List<Destination> destinations = DestinationAccessor.getDestinationsWithKeyword("G", 0, 10);
+        Set<Destination> destinations = DestinationAccessor.getDestinationsWithKeyword("G", 10, 0, user);
         assertTrue(destinations.isEmpty());
     }
 
@@ -171,8 +174,8 @@ public class DestinationAccessorTest extends BaseTestWithApplicationAndDatabase 
                 32.2, 22.1, user);
         DestinationAccessor.insert(destination);
 
-        List<Destination> destinations = DestinationAccessor.getDestinationsWithKeyword("I", 0, 10);
-        assertTrue(destinations.isEmpty());
+        Set<Destination> destinations = DestinationAccessor.getDestinationsWithKeyword("I", 10, 0, user);
+        assertEquals(0, destinations.size());
     }
 
     @Test
@@ -197,7 +200,7 @@ public class DestinationAccessorTest extends BaseTestWithApplicationAndDatabase 
         destination.setIsPublic(true);
         DestinationAccessor.update(destination);
 
-        List<Destination> destinations = DestinationAccessor.getDestinationsWithKeyword("e", 10, 0);
+        Set<Destination> destinations = DestinationAccessor.getDestinationsWithKeyword("e", 10, 0, user);
         assertEquals(1, destinations.size());
     }
 

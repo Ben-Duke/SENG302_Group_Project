@@ -1,7 +1,5 @@
-let openTreasureHuntCount = undefined;
-const openTreasureHuntsPerPage = 10;
-const usersTreasureHuntsPerPage = 10;
-let currentPageNum = 1;
+const treasureHuntsPerPage = 5;
+let currentOpenPageNum = 1;
 
 /**
  * Initializes the openTreasureHunts paginated table.
@@ -9,6 +7,7 @@ let currentPageNum = 1;
  * @param numOpenHuntsPerPage Number of open treasure hunts to show per page.
  */
 function initOpenTreasureHunts(numOpenHuntsPerPage) {
+    const offset = (currentOpenPageNum - 1) * treasureHuntsPerPage;
     const token =  $('input[name="csrfToken"]').attr('value');
     $.ajaxSetup({
         beforeSend: function(xhr) {
@@ -18,10 +17,11 @@ function initOpenTreasureHunts(numOpenHuntsPerPage) {
 
     $.ajax({
         type: 'GET',
-        url: '/users/treasurehunts/open?offset=0&quantity=' + numOpenHuntsPerPage.toString(),
+        url: `/users/treasurehunts/open?offset=${offset}&quantity=${numOpenHuntsPerPage}`,
         contentType: 'application/json',
         success: (res) => {
-            importOpenTreasureHunts(res.openTreasureHunts);
+            importOpenTreasureHunts(res.openTreasureHunts,
+                res.totalCountOpenTreasureHunts);
         },
         error: (err) => {
             console.log(err);
@@ -47,7 +47,7 @@ function initUsersTreasureHunts(numHuntsPerPage) {
         url: '/users/treasurehunts/user?offset=0&quantity=' + numHuntsPerPage.toString(),
         contentType: 'application/json',
         success: (res) => {
-            importUsersTreasureHunts(res.ownTreasureHunts);
+            importUsersTreasureHunts(res.ownTreasureHunts, res.totalCountOpenTreasureHunts);
         },
         error: (err) => {
             console.log(err);
@@ -94,7 +94,7 @@ function addEditButtonToRow(row, treasureHunt) {
     row.appendChild(newCell);
 }
 
-function importUsersTreasureHunts(treasureHunts) {
+function importUsersTreasureHunts(treasureHunts, count) {
     const table = document.getElementById("ownTreasureHuntTable");
     for (let treasureHunt of treasureHunts) {
         const row = document.createElement("TR");
@@ -114,12 +114,19 @@ function importUsersTreasureHunts(treasureHunts) {
         addDeleteButtonToRow(row, treasureHunt);
 
         table.appendChild(row);
+
     }
+    addPagination(table, count, currentOpenPageNum);
 }
 
 
-function importOpenTreasureHunts(treasureHunts) {
+function importOpenTreasureHunts(treasureHunts, count) {
     const table = document.getElementById("openTreasureHuntTable");
+    if (currentOpenPageNum > 1) {
+        while (table.firstChild) {
+            table.removeChild(table.firstChild)
+        }
+    }
     for (let treasureHunt of treasureHunts) {
         const row = document.createElement("TR");
         row.classList.add("clickable");
@@ -136,6 +143,60 @@ function importOpenTreasureHunts(treasureHunts) {
 
         table.appendChild(row);
     }
+    addPagination(table, count, currentOpenPageNum);
+}
+
+function addPagination(table, count, pageNum) {
+    function addPaginationButton(pagination, text, isCurrent) {
+        const item = document.createElement("li");
+        const pageButton = document.createElement("a");
+        pageButton.innerText = text;
+        if (isCurrent) {
+            item.classList.add("active");
+        }
+
+        item.appendChild(pageButton);
+        pagination.appendChild(item);
+    }
+    let numOfPages = [];
+    let pageNumbers = [];
+    const pagination = document.createElement("ul");
+    pagination.classList.add("pagination");
+    for (let i = 0; i < count; i += treasureHuntsPerPage) {
+        numOfPages.push((i / treasureHuntsPerPage) + 1);
+    }
+
+    if (numOfPages.length > 10) {
+        if (pageNum > 5) {
+            if (numOfPages.length >= pageNum + 5) {
+                pageNumbers = [pageNum - 3, pageNum - 2, pageNum - 1, pageNum, pageNum + 1, pageNum + 2, pageNum + 3, pageNum + 4];
+            } else {
+                let lastPage = numOfPages.length;
+                pageNumbers = [];
+                for (let j = lastPage - 7; (j < lastPage + 1 && j > 0); j++) {
+                    pageNumbers.push(j);
+                }
+            }
+        } else {
+            for (let k = 0; k < 10; k++) {
+                pageNumbers.push(numOfPages[k]);
+            }
+        }
+    } else {
+        pageNumbers = numOfPages;
+    }
+
+    addPaginationButton(pagination, "First");
+    addPaginationButton(pagination, "<");
+
+    for (let currentPageNum of pageNumbers) {
+        const isCurrent = currentPageNum === pageNum;
+        addPaginationButton(pagination, currentPageNum, isCurrent);
+    }
+    addPaginationButton(pagination, ">");
+    addPaginationButton(pagination, "Last");
+
+    table.parentElement.appendChild(pagination);
 }
 
 /**
@@ -191,6 +252,6 @@ $('#confirmTreasureHuntDeleteModal').on('show.bs.modal', function(e) {
     });
 });
 
-initOpenTreasureHunts(openTreasureHuntsPerPage);
+initOpenTreasureHunts(treasureHuntsPerPage);
 
-initUsersTreasureHunts(usersTreasureHuntsPerPage);
+initUsersTreasureHunts(treasureHuntsPerPage);

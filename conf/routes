@@ -221,6 +221,8 @@ GET     /users/destinations/getalljson         controllers.DestinationController
 # Gets paginated json of public destinations.
 GET     /users/destinations/getpublicpaginatedjson     controllers.DestinationController.getPaginatedPublicDestinations(request : Request, offset : Integer, quantity : Integer)
 
+GET     /users/destinations/getprivatepaginatedjson     controllers.DestinationController.getPaginatedPrivateDestinations(request : Request, offset : Integer, quantity : Integer)
+
 GET     /users/destinations/getallpaginatedjson     controllers.DestinationController.getAllDestinationForUserPaginated(request : Request, offset : Integer, quantity : Integer)
 
 

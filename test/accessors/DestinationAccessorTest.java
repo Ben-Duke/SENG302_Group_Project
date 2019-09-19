@@ -209,7 +209,7 @@ public class DestinationAccessorTest extends BaseTestWithApplicationAndDatabase 
      * Checks that getAllPrivateDestinations method returns a non-empty list of the destinations
      * that are private to the given user
      */
-    public void getPaginatedPrivateDestinations_checkNonEmptyList() {
+    public void getPrivateDestinations_checkNonEmptyList() {
         TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
         testDatabaseManager.clearAllData();
 
@@ -233,7 +233,7 @@ public class DestinationAccessorTest extends BaseTestWithApplicationAndDatabase 
      * Checks that getAllPrivateDestinations method returns an empty list of the destinations
      * that are private to the given user
      */
-    public void getPaginatedPrivateDestinations_checkEmptyList() {
+    public void getPrivateDestinations_checkEmptyList() {
         TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
         testDatabaseManager.clearAllData();
 
@@ -251,4 +251,6 @@ public class DestinationAccessorTest extends BaseTestWithApplicationAndDatabase 
         List<Destination> destinations = DestinationAccessor.getAllPrivateDestinations(user);
         assertEquals(0, destinations.size());
     }
+
+
 }

@@ -121,6 +121,12 @@ public class DestinationAccessor {
         return Destination.find().query().where().eq("user", user).and().eq("destIsPublic", false).findList();
     }
 
+    public static List<Destination> getAllPrivateDestinationsPaginated(User user, int offset, int quantity) {
+        return Destination.find().query().where().eq("user", user).and().eq("destIsPublic", false)
+                .setFirstRow(offset)
+                .setMaxRows(quantity).findList();
+    }
+
 
 
 

@@ -182,6 +182,7 @@ function setSlideListeners(albumData, i) {
     const mediaId = albumData[i]["mediaId"];
     const caption = albumData[i]["caption"];
 
+
     if (isOwner === "true" || isAdmin === "true") {
         setDeletePhotoListener(albumData, i);
         setDestinationLinkListener(albumData, i);

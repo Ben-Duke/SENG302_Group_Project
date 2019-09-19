@@ -4,7 +4,8 @@ import models.Album;
 import models.Destination;
 import models.Media;
 import models.Tag;
-
+import models.*;
+import java.lang.reflect.Array;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -42,6 +43,11 @@ public class MediaAccessor {
 
     }
 
+    public static List<Media> getAllMediaForUser(User user){
+
+        return Media.find.query().where().select("*").fetch("user").where().eq("user", user).findList();
+
+    }
 
     /**
      * Gets the list of destinations that has an album linked to the media

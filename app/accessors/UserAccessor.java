@@ -1,8 +1,15 @@
 package accessors;
 
+import com.fasterxml.jackson.core.*;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
+import com.fasterxml.jackson.databind.node.JsonNodeType;
 import io.ebean.Query;
 import models.*;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -126,6 +133,20 @@ public class UserAccessor {
         }
     }
 
+
+    /**
+     * Gets the urls and creation datetime from media and returns an ArrayList of these pairings
+     * @param user
+     * @return
+     */
+    public static ArrayList<String> getUserMediaData(User user){
+        ArrayList<String> urls = new ArrayList<>();
+        List<Media> media = MediaAccessor.getAllMediaForUser(user);
+        for(int i =0; i < media.size(); i++){
+            urls.add( media.get(i).getUrl());
+        }
+        return urls;
+    }
 
     /**
      * Gets a paginated List of Users, with an offset and quantity to fetch.

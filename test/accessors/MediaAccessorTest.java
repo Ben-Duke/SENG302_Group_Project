@@ -1,6 +1,6 @@
 package accessors;
 
-
+import models.*;
 import models.Album;
 import models.Tag;
 import models.UserPhoto;
@@ -12,6 +12,11 @@ import testhelpers.BaseTestWithApplicationAndDatabase;
 import utilities.TestDatabaseManager;
 
 import javax.validation.constraints.AssertTrue;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
 
 public class MediaAccessorTest extends BaseTestWithApplicationAndDatabase {
 
@@ -34,5 +39,18 @@ public class MediaAccessorTest extends BaseTestWithApplicationAndDatabase {
         Assert.assertNotNull(MediaAccessor.getMediaCreationDate(photo));
     }
 
+    @Test
+    public void testGetAllMediaForUser(){
+        User user = UserAccessor.getById(2);
+        UserPhoto photo = new UserPhoto("Test1", true, true, user, null,
+                null);
+        UserPhoto photo1 = new UserPhoto("Test2", true, true, user, null,
+                null);
+        MediaAccessor.insert(photo);
+        MediaAccessor.insert(photo);
+        List<Media> urls = MediaAccessor.getAllMediaForUser(user);
+        System.out.println();
+        assertEquals(2, urls.size());
+    }
 
 }

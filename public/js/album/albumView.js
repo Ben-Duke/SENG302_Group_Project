@@ -191,7 +191,7 @@ function setSlideListeners(albumData, i) {
             document.querySelector('div[data-mediaId="'+mediaId+'"] [contenteditable]').innerHTML = caption.toString();
         } else {
             document.querySelector('div[data-mediaId="'+mediaId+'"] [contenteditable]').innerHTML =
-            "Click to add caption, press enter to save.";
+            "Click to add caption.";
         }
         if(albumData[i]["isPublic"]) {setPrivacy=0;}
         else {setPrivacy=1;}
@@ -355,7 +355,6 @@ async function displaySlides(i, albumData, path) {
     figure.appendChild(figureCaption);
     mySlidesDiv.appendChild(figure);
 
-    console.log(isAdmin);
     lightBox.appendChild(mySlidesDiv);
     if (isOwner === "true" || isAdmin === "true") {
         var content = document.querySelector('div[data-mediaId="'+mediaId+'"] [contenteditable]');

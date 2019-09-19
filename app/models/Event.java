@@ -59,6 +59,8 @@ public class Event extends Model {
         this.destination = destination;
     }
 
+    public Event() {}
+
     public Event(String name) {
         this.name = name;
     }
@@ -154,7 +156,7 @@ public class Event extends Model {
         this.externalId = externalId;
     }
 
-    public String toStrings() {
+    public String toString() {
         return "Event{" +
                 "eventId=" + eventId +
                 ", externalId=" + externalId +

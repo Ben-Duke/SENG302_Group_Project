@@ -422,9 +422,9 @@ public class UserFactory {
     }
 
     /**
-     * Get the user's profile picture if it exists
+     * Get the user's profile picture if it folllows
      * @param userId the user id of the user whose profile picture is to be retrieved
-     * @return the UserPhoto that is the profile picture if it exists, otherwise null
+     * @return the UserPhoto that is the profile picture if it folllows, otherwise null
      */
     public static UserPhoto getUserProfilePicture(int userId) {
         User user = UserAccessor.getById(userId);
@@ -437,7 +437,7 @@ public class UserFactory {
     }
 
     /**
-     * Remove the user's existing profile picture if it exists
+     * Remove the user's existing profile picture if it folllows
      * @param userId the user id of the user whose profile picture is to be removed
      */
     private static void removeExistingProfilePicture(int userId) {

@@ -7,8 +7,7 @@ import testhelpers.BaseTestWithApplicationAndDatabase;
 
 import java.time.LocalDate;
 
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 
 /**
@@ -106,4 +105,42 @@ public class UserTest extends BaseTestWithApplicationAndDatabase {
         assertTrue(BCrypt.checkpw(this.alternativePlainTextPassword,
                                   userFromDb.getPasswordHash()));
     }
+
+    @Test
+    public void follow() {
+        User user1 = new User(
+                "test1@test.com",
+                this.plaintextPassword,
+                "testuser1",
+                "last",
+                LocalDate.now(),
+                "Male");
+
+        User user2 = new User(
+                "test2@test.com",
+                this.plaintextPassword,
+                "testuser2",
+                "last",
+                LocalDate.now(),
+                "Male");
+
+
+
+        UserAccessor.insert(user1);
+        UserAccessor.insert(user2);
+
+        Integer followingBefore = user1.getFollowing().size();
+        Integer followersBefore = user2.getFollowers().size();
+
+
+        user1.follow(user2);
+
+
+        assertEquals(followingBefore + 1, user1.getFollowing().size());
+        assertEquals(followersBefore + 1, user2.getFollowers().size());
+
+
+    }
+
+
 }

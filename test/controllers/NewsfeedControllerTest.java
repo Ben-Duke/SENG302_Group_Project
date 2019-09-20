@@ -1,5 +1,9 @@
 package controllers;
 
+import accessors.MediaAccessor;
+import accessors.UserAccessor;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import models.Tag;
 import models.User;
 import models.UserPhoto;
@@ -42,5 +46,23 @@ public class NewsfeedControllerTest extends BaseTestWithApplicationAndDatabase{
                     .uri("/users/newsfeed").session("connected", null);
             Result result = route(app, request);
             assertEquals(UNAUTHORIZED, result.status());
+    }
+
+    @Test
+    public void checkContentForFollowingUserIsThere(){
+
+
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(POST)
+                .uri("/users/follow/2").session("connected", "1");
+        route(app, request);
+
+        Http.RequestBuilder newsfeedRequest = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/users/newsfeed").session("connected", "1");
+        Result newsfeedResult = route(app, newsfeedRequest);
+        JsonNode newsfeedResponse = Json.parse( contentAsString( newsfeedResult));
+
+        assertEquals(2,newsfeedResponse.size());
     }
 }

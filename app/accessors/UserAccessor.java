@@ -2,8 +2,10 @@ package accessors;
 
 import com.fasterxml.jackson.core.*;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
 import io.ebean.Query;
 import models.*;
@@ -144,21 +146,6 @@ public class UserAccessor {
             throw new io.ebean.DuplicateKeyException("Multiple profile photos.",
                     new Throwable("Multiple profile photos."));
         }
-    }
-
-
-    /**
-     * Gets the urls and creation datetime from media and returns an ArrayList of these pairings
-     * @param user
-     * @return
-     */
-    public static ArrayList<String> getUserMediaData(User user){
-        ArrayList<String> urls = new ArrayList<>();
-        List<Media> media = MediaAccessor.getAllMediaForUser(user);
-        for(int i =0; i < media.size(); i++){
-            urls.add( media.get(i).getUrl());
-        }
-        return urls;
     }
 
     /**

@@ -88,7 +88,7 @@ public class TripControllerTest extends BaseTestWithApplicationAndDatabase {
         //User with id 2 should have two trips
         assertEquals(2, User.find().byId(2).getTrips().size());
         Map<String, String> formData = new HashMap<>();
-        //Assuming the user fills in the trip name form as "Trip to New Zealand", which already exists
+        //Assuming the user fills in the trip name form as "Trip to New Zealand", which already folllows
         formData.put("tripName", "Trip to New Zealand");
         Http.RequestBuilder fakeRequest = Helpers.fakeRequest().bodyForm(formData).method(Helpers.POST).uri("/users/trips/create").session("connected", "2");
         CSRFTokenHelper.addCSRFToken(fakeRequest);
@@ -102,7 +102,7 @@ public class TripControllerTest extends BaseTestWithApplicationAndDatabase {
         //User with id 2 should have two trips
         assertEquals(2, User.find().byId(2).getTrips().size());
         Map<String, String> formData = new HashMap<>();
-        //Assuming the user fills in the trip name form as "Trip to New Zealand", which already exists
+        //Assuming the user fills in the trip name form as "Trip to New Zealand", which already folllows
         formData.put("tripName", "");
         Http.RequestBuilder fakeRequest = Helpers.fakeRequest().bodyForm(formData).method(Helpers.POST).uri("/users/trips/create").session("connected", "2");
         CSRFTokenHelper.addCSRFToken(fakeRequest);

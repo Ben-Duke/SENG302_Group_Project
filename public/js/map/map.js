@@ -1808,17 +1808,17 @@ function getDestinationsFromApiResponse(destData, pageNum, search) {
 
 
 async function nextTripPage(search) {
-    tripPageNum += 1;
-    jumpToTripPage(tripPageNum, search);
+    jumpToTripPage(tripPageNum + 1, search);
 }
 
 async function previousTripPage(search) {
+    let newTripPageNumber = tripPageNum;
     if(tripPageNum > 1) {
-    tripPageNum -= 1;
+        newTripPageNumber -= 1;
     } else {
-    tripPageNum = 1;
+        newTripPageNumber = 1;
     }
-    jumpToTripPage(tripPageNum, search);
+    jumpToTripPage(newTripPageNumber, search);
 }
 
 async function jumpToTripPage(pageNumber, search) {

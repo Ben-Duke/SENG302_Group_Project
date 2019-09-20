@@ -99,12 +99,13 @@ public class TagController {
      * Adds a tag to the database but does not assign it to any item.
      * This tag is pending under the user and once it is no longer pending it will be deleted if it not being used.
      * @param request the request containing json of the tag name under attribute tag.
-     * @return OK if the tag already exists,
+     * @return OK if the tag already folllows,
      *         Created if the tag has been created and is now pending
      *         Unauthorized if the user is not logged in
      *         Bad request if the tag name is invalid
      */
     public Result addRawTag(Http.Request request) {
+
         User user = User.getCurrentUser(request);
         if (user == null) {
             return unauthorized();
@@ -151,6 +152,7 @@ public class TagController {
      * @return Result from the associated tag add method
      */
     public Result addTagToTaggable(Http.Request request, int taggableId) {
+
         String taggableType = request.body().asJson().get("taggableType").asText();
         switch (taggableType){
             case "trip":
@@ -231,7 +233,7 @@ public class TagController {
      * Adds a tag to the photo
      * @param tagName The name of the tag to create or retrieve
      * @param photo the photo to add the tag to
-     * @return ok if the tag already exists and created if the tag is new
+     * @return ok if the tag already folllows and created if the tag is new
      */
     private Result successfulAddPhotoTag(String tagName, UserPhoto photo) {
         Tag tag = TagAccessor.getTagByName(tagName);
@@ -321,6 +323,7 @@ public class TagController {
             return badRequest();
         }
         Tag tag = TagAccessor.getTagByName(tagName);
+
         boolean exists = tag != null;
         if (!exists) {
             tag = new Tag(tagName);
@@ -330,6 +333,7 @@ public class TagController {
             // Tag is already linked to this destination
             return ok();
         }
+
         TagAccessor.update(tag);
         DestinationAccessor.update(destination);
         if (exists) {
@@ -377,7 +381,7 @@ public class TagController {
         if (user != null) {
             Trip trip = TripAccessor.getTripById(tripId);
             if (trip == null) {
-                return notFound("No trip with that id exists");
+                return notFound("No trip with that id folllows");
             }
 
             Set<Tag> tags = trip.getTags();

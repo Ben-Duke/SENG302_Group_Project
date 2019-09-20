@@ -5,6 +5,7 @@ const colors = ['6b5b95', 'feb236', 'd64161', 'ff7b25',
 
 let map;
 window.globalMarkers = [];
+let markerCluster;
 let tripFlightPaths = {};
 let isNewTrip = false;
 let geoCoder;
@@ -25,13 +26,14 @@ async function initMap() {
         },
     });
 
-    geoCoder = new google.maps.Geocoder;
+    // geoCoder = new google.maps.Geocoder;
 
     initPlacesAutocompleteSearch();
     initDestinationMarkers();
     initMapLegend();
     initMapPositionListeners();
     hideTagEditor();
+    getPublicDestinations(1, 20, null);
 
     checkTripVisits();
     tripPageNum = 1;
@@ -713,7 +715,12 @@ let currentlyDisplayedTripId;
  * @param startLng the longitude to zoom to
  */
 function displayTrip(tripId, startLat, startLng) {
-    thereIsAnError.errors = [];
+    const errorMsgs = document.getElementsByClassName('dateError')
+    if(currentlyDisplayedTripId !== undefined) {
+        for (let errorMsg of errorMsgs) {
+            errorMsg.style.display = "None";
+        }
+    }
     if(tripId !== currentlyDisplayedTripId && currentlyDisplayedTripId !== undefined) {
         if(document.getElementById("singleTrip_" + currentlyDisplayedTripId) != undefined) {
             document.getElementById("singleTrip_" + currentlyDisplayedTripId).style.display = "none";
@@ -1015,7 +1022,6 @@ function updateVisitDate(visitId) {
     const departureDate = new Date(data.departure);
     const errorMsgs = document.getElementsByClassName('dateError');
     if (! isValidDate(arrivalDate) || ! isValidDate(departureDate) || (arrivalDate <= departureDate)) {
-        console.log(thereIsAnError);
         if (thereIsAnError.errors.includes(visitId)) {
             thereIsAnError.errors = thereIsAnError.errors.filter((value) => {
                 return value !== visitId;
@@ -1169,6 +1175,7 @@ function initDestinationMarkers() {
         method: 'GET'})
         .then(res => res.json())
         .then(destinations => {
+            let markers = [];
             let marker;
             let infoWindow;
             for (let index = 0; index < destinations.length; index++) {
@@ -1185,6 +1192,8 @@ function initDestinationMarkers() {
                     content: getMapInfoWindowHTML(destinations[index])
                 });
 
+                markers.push(marker);
+
                 //make the marker and infoWindow globals (persist in browser session)
                 window.globalMarkers.push({
                     marker: marker,
@@ -1195,6 +1204,9 @@ function initDestinationMarkers() {
                 initMarkerEventHandlers(index);
                 initInforWindowEventHandlers(index);
             }
+
+            markerCluster = new MarkerClusterer(window.globalMap, markers,
+                {imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'});
         });
 }
 
@@ -1238,6 +1250,12 @@ function getAllMarkerIcons() {
     return icons;
 }
 
+async function closeAllInfoWindows() {
+    for (let marker of window.globalMarkers) {
+        marker.infoWindow.close(window.globalMap, marker.marker)
+    }
+}
+
 /**
  * Initiates all the event handlers for a google maps markers.
  *
@@ -1266,8 +1284,10 @@ function initMarkerEventHandlers(markerIndex) {
     // event handler to open infoWindow on click
     window.globalMarkers[markerIndex].marker.addListener('click', () => {
         window.globalMarkers[markerIndex].isClicked = true;
-        window.globalMarkers[markerIndex].infoWindow.open(window.globalMap,
-                                    window.globalMarkers[markerIndex].marker);
+        closeAllInfoWindows().then(() => {
+            window.globalMarkers[markerIndex].infoWindow.open(window.globalMap,
+                window.globalMarkers[markerIndex].marker);
+        });
     });
 }
 
@@ -1487,20 +1507,29 @@ $("#formBody").submit(function(e){
     e.preventDefault();
 });
 
-$("#destSearchInput").keyup(function()
+$("#destSearchInput").keyup(function ()
 {
+    searchByKeyword(1)
+});
+
+function searchByKeyword(currentPageNum) {
+    const offset = (currentPageNum - 1) * 20;
     let searchInput = document.getElementById("destSearchInput").value;
     if(searchInput != "") {
+        let data = {offset: offset,
+        quantity: 20};
         $.ajax({
             url: '/users/destinations/matching/' + searchInput,
+            data: data,
             method: "GET",
             success: function (res) {
                 let displayedIds = [];
-                for (let j=0; j < res.length; j++) {
-                    displayedIds.push("destButton" + res[j].destid);
+                for (let j=0; j < res.destinations.length; j++) {
+                    if(res.destinations[j].isPublic === false) {
+                        displayedIds.push("destButton" + res.destinations[j].destid);
+                    }
                 }
                 let privateListChildren = document.getElementById("privateDestinationList").children;
-                let publicListChildren = document.getElementById("publicDestinationList").children;
 
                 for(let i=0; i < privateListChildren.length; i++) {
                     if (!displayedIds.includes(privateListChildren[i].id)) {
@@ -1509,27 +1538,18 @@ $("#destSearchInput").keyup(function()
                         privateListChildren[i].setAttribute("style", "display: block;");
                     }
                 }
+                getDestinationsFromApiResponse(res, currentPageNum, searchInput);
 
-                for(let i=0; i < publicListChildren.length; i++) {
-                    if (!displayedIds.includes(publicListChildren[i].id)) {
-                        publicListChildren[i].setAttribute("style", "display: none;");
-                    } else {
-                        publicListChildren[i].setAttribute("style", "display: block;");
-                    }
-                }
             }
         });
     } else {
+        searchDestinations(1, 20, null);
         let privateListChildren = document.getElementById("privateDestinationList").children;
-        let publicListChildren = document.getElementById("publicDestinationList").children;
         for(let i=0; i < privateListChildren.length; i++) {
             privateListChildren[i].setAttribute("style", "display: block;");
         }
-        for(let i=0; i < publicListChildren.length; i++) {
-            publicListChildren[i].setAttribute("style", "display: block;");
-        }
     }
-});
+}
 
 
 
@@ -1604,6 +1624,186 @@ $("#submit").click(function(e){
 
     });
 });
+
+function getPublicDestinations(pageNum, quantity){
+    const offset = (pageNum - 1) * 20;
+    let data = {offset: offset,
+                quantity: quantity};
+
+    $.ajax({
+        type: 'GET',
+        url: "/users/destinations/getpublicpaginatedjson",
+        data: data,
+        contentType: 'application/json',
+        success: (destData) => {
+            let count = destData.totalCountPublic;
+            let destinationData = document.getElementById("publicDestinationList");
+            if (pageNum > 1) {
+                while (destinationData.childNodes.length > 0) {
+                    destinationData.removeChild(destinationData.childNodes[0]);
+                }
+            }
+            for (let destination of destData.destinations) {
+                let destElement = document.createElement('a');
+                destElement.setAttribute("onClick", `displayDestination(${destination.destid}, ${destination.latitude}, ${destination.longitude})`);
+                destElement.setAttribute('class', "list-group-item list-group-item-action");
+                destElement.setAttribute('id', "destButton" + destination.destid)
+                destElement.innerText = destination.destName + " | " + destination.destType + " | " + destination.country
+                destinationData.appendChild(destElement);
+            }
+            addPagination(count, pageNum, null);
+        }, error: function (error) {
+            console.log(error);
+        }
+    })
+}
+
+function addPagination(count, pageNum, search) {
+    let numOfPages = [];
+    let pageNumbers = [];
+    const pagination = document.createElement("ul");
+    pagination.classList.add("pagination");
+    for (let i = 0; i < count; i += 20) {
+        numOfPages.push((i / 20) + 1);
+    }
+    if (numOfPages.length > 10) {
+        if (pageNum > 5) {
+            if (numOfPages.length >= pageNum + 5) {
+                pageNumbers = [pageNum - 3, pageNum - 2, pageNum - 1, pageNum, pageNum + 1, pageNum + 2, pageNum + 3, pageNum + 4];
+            } else {
+                let lastPage = numOfPages.length - 0;
+                pageNumbers = []
+                for (let j = lastPage - 7; (j < lastPage + 1 && j > 0); j++) {
+                    pageNumbers.push(j);
+                }
+            }
+        } else {
+            for (let k = 0; k < 10; k++) {
+                pageNumbers.push(numOfPages[k]);
+            }
+        }
+    } else {
+        pageNumbers = numOfPages;
+    }
+    let item = document.createElement("li");
+    let pageButton = document.createElement("a");
+    let currentPageNum = 1;
+    pageButton.innerText = "First";
+    if (search == null) {
+        pageButton.setAttribute("onClick", `searchDestinations(${currentPageNum})`);
+    } else {
+        pageButton.setAttribute("onClick", `searchByKeyword("${currentPageNum})`);
+
+    }
+    item.appendChild(pageButton);
+    pagination.appendChild(item);
+
+    item = document.createElement("li");
+    pageButton = document.createElement("a");
+    if (pageNum < 2) {
+        currentPageNum = 1;
+    } else {
+        currentPageNum = pageNum - 1;
+    }
+    pageButton.innerText = "<";
+    if (search == null) {
+        pageButton.setAttribute("onClick", `searchDestinations(${currentPageNum})`);
+    } else {
+        pageButton.setAttribute("onClick", `searchByKeyword(${currentPageNum})`);
+
+    }
+    item.appendChild(pageButton);
+    pagination.appendChild(item);
+    for (let i=0; i < pageNumbers.length; i++) {
+        let item = document.createElement("li");
+        const pageButton = document.createElement("a");
+        const currentPageNum = pageNumbers[i];
+        pageButton.innerText = pageNumbers[i];
+        if (currentPageNum==pageNum) {
+            item.classList.add("active");
+        }
+        if (search == null) {
+            pageButton.setAttribute("onClick", `searchDestinations(${currentPageNum})`);
+        } else {
+            pageButton.setAttribute("onClick", `searchByKeyword(${currentPageNum})`);
+
+        }
+        item.appendChild(pageButton);
+        pagination.appendChild(item);
+    }
+    item = document.createElement("li");
+    pageButton = document.createElement("a");
+    if (pageNum>=numOfPages.length) {
+        currentPageNum = numOfPages.length;
+    } else {
+        currentPageNum = pageNum+1;
+    }
+    pageButton.innerText = ">";
+    if (search == null) {
+        pageButton.setAttribute("onClick", `searchDestinations(${currentPageNum})`);
+    } else {
+        pageButton.setAttribute("onClick", `searchByKeyword(${currentPageNum})`);
+
+    }
+    item.appendChild(pageButton);
+    pagination.appendChild(item);
+    document.getElementById("publicDestinationList").appendChild(pagination);
+
+    item = document.createElement("li");
+    pageButton = document.createElement("a");
+    currentPageNum = numOfPages.length;
+    pageButton.innerText = "Last";
+    if (search == null) {
+        pageButton.setAttribute("onClick", `searchDestinations(${currentPageNum})`);
+    } else {
+        pageButton.setAttribute("onClick", `searchByKeyword(${currentPageNum})`);
+
+    }
+    item.appendChild(pageButton);
+    pagination.appendChild(item);
+}
+
+function searchDestinations(pageNum) {
+    const offset = (pageNum-1)*20;
+
+    let data = {
+        offset: offset,
+        quantity: 20,
+    };
+
+
+    $.ajax({
+        success: function () {
+            $.ajax({
+                type: 'GET',
+                url:  "/users/destinations/getpublicpaginatedjson",
+                data: data,
+                success: function (data) {
+                    // console.log(data);
+                    getDestinationsFromApiResponse(data, pageNum, null);
+                }
+            });
+        },
+    });
+
+}
+
+function getDestinationsFromApiResponse(destData, pageNum, search) {
+    let count = destData.totalCountPublic;
+    let destinationData = document.getElementById("publicDestinationList");
+    while (destinationData.childNodes.length > 0) {
+        destinationData.removeChild(destinationData.childNodes[0]);
+    }
+    for (let destination of destData.destinations) {
+        let destElement = document.createElement('a');
+        destElement.setAttribute("onClick", `displayDestination(${destination.destid}, ${destination.latitude}, ${destination.longitude})`);
+        destElement.setAttribute('class', "list-group-item list-group-item-action");
+        destElement.setAttribute('id', "destButton" + destination.destid)
+        destElement.innerText = destination.destName + " | " + destination.destType + " | " + destination.country
+        destinationData.appendChild(destElement);
+    }
+    addPagination(count, pageNum, search);
+}
 
 
 

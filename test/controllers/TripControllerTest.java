@@ -75,7 +75,7 @@ public class TripControllerTest extends BaseTestWithApplicationAndDatabase {
         Http.RequestBuilder fakeRequest = Helpers.fakeRequest().bodyForm(formData).method(Helpers.POST).uri("/users/trips/create").session("connected", "2");
         Result result = Helpers.route(app, fakeRequest);
         //User should be redirected to the create profile page
-        assertEquals(SEE_OTHER, result.status());
+        assertEquals(CREATED, result.status());
         //User with id 2 should have three trips
         assertEquals(3, User.find().byId(2).getTrips().size());
         //Trip with name "triptest123" should be the user's third trip
@@ -90,7 +90,7 @@ public class TripControllerTest extends BaseTestWithApplicationAndDatabase {
         //User with id 2 should have two trips
         assertEquals(2, User.find().byId(2).getTrips().size());
         Map<String, String> formData = new HashMap<>();
-        //Assuming the user fills in the trip name form as "Trip to New Zealand", which already exists
+        //Assuming the user fills in the trip name form as "Trip to New Zealand", which already folllows
         formData.put("tripName", "Trip to New Zealand");
         Http.RequestBuilder fakeRequest = Helpers.fakeRequest().bodyForm(formData).method(Helpers.POST).uri("/users/trips/create").session("connected", "2");
         CSRFTokenHelper.addCSRFToken(fakeRequest);
@@ -104,7 +104,7 @@ public class TripControllerTest extends BaseTestWithApplicationAndDatabase {
         //User with id 2 should have two trips
         assertEquals(2, User.find().byId(2).getTrips().size());
         Map<String, String> formData = new HashMap<>();
-        //Assuming the user fills in the trip name form as "Trip to New Zealand", which already exists
+        //Assuming the user fills in the trip name form as "Trip to New Zealand", which already folllows
         formData.put("tripName", "");
         Http.RequestBuilder fakeRequest = Helpers.fakeRequest().bodyForm(formData).method(Helpers.POST).uri("/users/trips/create").session("connected", "2");
         CSRFTokenHelper.addCSRFToken(fakeRequest);
@@ -323,16 +323,6 @@ public class TripControllerTest extends BaseTestWithApplicationAndDatabase {
         assertTrue(contentAsString(result).contains("displayTrip.scala.html"));
     }
 
-    @Test
-    public void displayTripWithValidLoginSessionAndValidOwner() {
-        Http.RequestBuilder request = Helpers.fakeRequest()
-                .method(GET)
-                .uri("/users/trips/1").session("connected", "2");
-        Result result = route(app, request);
-        assertEquals(OK, result.status());
-        assertTrue(contentAsString(result).contains("AddTripDestinationsTable.scala.html"));
-    }
-
     /**
      * Unit test for deleting a visit from a new trip
      * TO ADD: VALIDATION FOR BACK TO BACK OF THE SAME VISITS REMOVE (might want to refactor first though?)
@@ -401,167 +391,6 @@ public class TripControllerTest extends BaseTestWithApplicationAndDatabase {
         assertEquals(3, Trip.find().byId(4).getVisits().size());
     }
 
-
-    @Test
-    public void addTripDestinationsWithInvalidLoginSession(){
-        Http.RequestBuilder request = Helpers.fakeRequest()
-                .method(GET)
-                .uri("/users/trips/addDestinations/1").session("connected", null);
-        Result result = route(app, request);
-        assertEquals(SEE_OTHER, result.status());
-    }
-
-    @Test
-    public void addTripDestinationsWithValidLoginSessionWithInvalidOwner(){
-        Http.RequestBuilder request = Helpers.fakeRequest()
-                .method(GET)
-                .uri("/users/trips/addDestinations/1").session("connected", "3");
-        Result result = route(app, request);
-        assertEquals(UNAUTHORIZED, result.status());
-    }
-
-    @Test
-    public void addTripDestinationsWithValidLoginSessionWithValidOwner(){
-        Http.RequestBuilder request = Helpers.fakeRequest()
-                .method(GET)
-                .uri("/users/trips/addDestinations/1").session("connected", "2");
-        Result result = route(app, request);
-        assertEquals(OK, result.status());
-    }
-
-    @Test
-    public void addTripDestinationsWithInvalidTrip(){
-        Http.RequestBuilder request = Helpers.fakeRequest()
-                .method(GET)
-                .uri("/users/trips/addDestinations/420").session("connected", "2");
-        Result result = route(app, request);
-        assertEquals(NOT_FOUND, result.status());
-    }
-
-    @Test
-    public void addVisitFromTableWithInvalidLoginSession(){
-        assertEquals(2, Trip.find().byId(1).getVisits().size());
-        Http.RequestBuilder request = Helpers.fakeRequest()
-                .method(GET)
-                .uri("/users/trips/table/edit/1/1").session("connected", null);
-        Result result = route(app, request);
-        assertEquals(SEE_OTHER, result.status());
-        assertEquals(2, Trip.find().byId(1).getVisits().size());
-    }
-
-    @Test
-    public void addVisitFromTableWithValidLoginSessionWithPrivateDestinationWithInvalidOwner(){
-        assertEquals(2, Trip.find().byId(1).getVisits().size());
-        assertFalse(Destination.find().byId(5).getIsPublic());
-        Http.RequestBuilder request = Helpers.fakeRequest()
-                .method(GET)
-                .uri("/users/trips/table/edit/1/5").session("connected", "2");
-        Result result = route(app, request);
-        assertEquals(UNAUTHORIZED, result.status());
-        assertEquals(2, Trip.find().byId(1).getVisits().size());
-    }
-
-    @Test
-    public void addVisitFromTableWithValidLoginSessionWithPrivateDestinationWithValidOwner(){
-        assertEquals(4, Trip.find().byId(2).getVisits().size());
-        assertFalse(Destination.find().byId(2).getIsPublic());
-        //add Wellington to Christchurch to Wellington, to The Wok and back
-        Http.RequestBuilder request = Helpers.fakeRequest()
-                .method(GET)
-                .uri("/users/trips/table/edit/2/2").session("connected", "2");
-        Result result = route(app, request);
-        assertEquals(SEE_OTHER, result.status());
-        assertEquals(5, Trip.find().byId(2).getVisits().size());
-        //5th visit should be the newly added one (Wellington)
-        assertEquals("Wellington", Trip.find().byId(2).getVisits().get(4).getVisitName());
-    }
-
-    @Test
-    public void addVisitFromTableWithValidLoginSessionWithPublicDestinationWithValidOwnerRepeatDestination(){
-        assertEquals(4, Trip.find().byId(2).getVisits().size());
-        assertTrue(Destination.find().byId(1).getIsPublic());
-        //add Christchurch to Christchurch to Wellington, to The Wok and back
-        Http.RequestBuilder request = Helpers.fakeRequest()
-                .method(GET)
-                .uri("/users/trips/table/edit/2/1").session("connected", "2");
-        Result result = route(app, request);
-        //User should be redirected to the same page
-        assertEquals(SEE_OTHER, result.status());
-        //Visit should not be added
-        assertEquals(4, Trip.find().byId(2).getVisits().size());
-    }
-
-    @Test
-    public void addVisitFromTableWithValidLoginSessionWithPublicDestinationWithValidOwner(){
-        assertEquals(2, Trip.find().byId(1).getVisits().size());
-        assertTrue(Destination.find().byId(1).getIsPublic());
-        //add Wellington to Christchurch to Wellington, to The Wok and back
-        Http.RequestBuilder request = Helpers.fakeRequest()
-                .method(GET)
-                .uri("/users/trips/table/edit/1/1").session("connected", "2");
-        Result result = route(app, request);
-        assertEquals(SEE_OTHER, result.status());
-        assertEquals(3, Trip.find().byId(1).getVisits().size());
-        //3rd visit should be the newly added one (Christchurch)
-        assertEquals("Christchurch", Trip.find().byId(1).getVisits().get(2).getVisitName());
-    }
-
-    @Test
-    public void addVisitFromTableWithValidLoginSessionWithPublicDestinationWithInvalidOwner(){
-        assertEquals(3, Trip.find().byId(3).getVisits().size());
-        assertTrue(Destination.find().byId(1).getIsPublic());
-        //add Wellington to Christchurch to Wellington, to The Wok and back
-        Http.RequestBuilder request = Helpers.fakeRequest()
-                .method(GET)
-                .uri("/users/trips/table/edit/3/1").session("connected", "3");
-        Result result = route(app, request);
-        assertEquals(SEE_OTHER, result.status());
-        assertEquals(4, Trip.find().byId(3).getVisits().size());
-        //4th visit of World Tour should be the newly added one (Christchurch)
-        assertEquals("Christchurch", Trip.find().byId(3).getVisits().get(3).getVisitName());
-    }
-
-    @Test
-    public void addVisitFromTableWithValidLoginSessionWithInvalidDestination(){
-        assertEquals(3, Trip.find().byId(3).getVisits().size());
-        assertNull(Destination.find().byId(100));
-        //add Wellington to Christchurch to Wellington, to The Wok and back
-        Http.RequestBuilder request = Helpers.fakeRequest()
-                .method(GET)
-                .uri("/users/trips/table/edit/3/100").session("connected", "3");
-        Result result = route(app, request);
-        assertEquals(NOT_FOUND, result.status());
-        assertEquals(3, Trip.find().byId(3).getVisits().size());
-    }
-
-    @Test
-    public void addVisitFromTableWithValidLoginSessionWithPrivateDestinationWithValidDestinationOwnerWithInvalidTrip(){
-        assertEquals(3, Trip.find().byId(5).getVisits().size());
-        assertFalse(Destination.find().byId(2).getIsPublic());
-        //add Wellington to Christchurch to Wellington, to The Wok and back
-        Http.RequestBuilder request = Helpers.fakeRequest()
-                .method(GET)
-                .uri("/users/trips/table/edit/5/2").session("connected", "2");
-        Result result = route(app, request);
-        assertEquals(UNAUTHORIZED, result.status());
-        assertEquals(3, Trip.find().byId(5).getVisits().size());
-    }
-
-    @Test
-    public void addVisitFromTableWithValidLoginSessionWithPrivateDestinationWithAdmin(){
-        assertEquals(4, Trip.find().byId(2).getVisits().size());
-        assertFalse(Destination.find().byId(2).getIsPublic());
-        //add Wellington to Christchurch to Wellington, to The Wok and back
-        Http.RequestBuilder request = Helpers.fakeRequest()
-                .method(GET)
-                .uri("/users/trips/table/edit/2/2").session("connected", "1");
-        Result result = route(app, request);
-
-        assertEquals(SEE_OTHER, result.status());
-        assertEquals(5, Trip.find().byId(2).getVisits().size());
-        //5th visit should be the newly added one (Wellington)
-        assertEquals("Wellington", Trip.find().byId(2).getVisits().get(4).getVisitName());
-    }
 
     @Test
     public void swapVisitsWithValidSwap(){

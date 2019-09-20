@@ -31,6 +31,7 @@ public enum TableName {
     album("album_id"),
 
     destination("destid"),
+    follow("follow_id"),
     admin("user_id"),   // has an underscore but user primary key does not
     user("userid"),
 

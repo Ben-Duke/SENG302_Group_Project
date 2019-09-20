@@ -46,6 +46,13 @@ GET     /users/admin/actasuser/:id      controllers.AdminController.setUserToAct
 #Handles setting a user back to the admin after acting as a user
 GET     /users/admin/back_to_admin/:id      controllers.AdminController.setUserBackToAdmin(request: Request, id: Integer)
 
+GET     /users/admin/data           controllers.AdminController.getUserData(request: Request, offset: Integer, quantity: Integer)
+
+GET     /users/admin/userCount           controllers.AdminController.getUserCount(request: Request)
+
+
+
+
 GET /users/destination/placeid/:placeId   controllers.DestinationController.getPlacesDetailsRequest(request: Request, placeId:String)
 
 #Handles view a destination modification request
@@ -103,8 +110,6 @@ GET     /users/trips/json/:id         controllers.TripController.getTrip(request
 
 GET     /users/trips/userTrips         controllers.TripController.getLengthUserTrips(request: Request)
 
-GET     /users/trips/addDestinations/:id    controllers.TripController.addTripDestinations(request: Request, id:Integer)
-
 #GET     /users/trips/display/addDestinations    controllers.TripController.AddExistingTripDestinations(request: Request, id:Integer)
 
 #POST     /users/trips/display/addDestinations    controllers.TripController.addvisitExistingTrip(request: Request, id:Integer)
@@ -130,9 +135,6 @@ GET     /users/trips/:id/tripPicture controllers.TripController.getTripPhoto(req
 
 #Handles adding a visit to a trip
 #POST    /users/trips/edit/:id       controllers.TripController.addvisit(request: Request, id:Integer)
-
-#Handles adding a visit to a trip (table form)
-GET    /users/trips/table/edit/:tripid/:destid       controllers.TripController.addVisitFromTable(request: Request, tripid:Integer, destid:Integer)
 
 #Renders page for editing a visit of a trip
 GET    /users/trips/visit/edit/:id       controllers.TripController.editvisit(request: Request, id:Integer)
@@ -203,6 +205,15 @@ GET     /users/profile/:id          controllers.ProfileController.showProfile(re
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
 
 
+#Followers
+
+POST    /users/follow/:userId           controllers.FollowController.followUser(request:Request, userId:Integer)
+
+POST    /users/unfollow/:userId         controllers.FollowController.unfollowUser(request:Request, userId:Integer)
+
+GET     /users/getfollowers/:userId      controllers.FollowController.getFollowers(request:Request, userId:Integer, offset:Integer)
+
+GET     /users/getfollowing/:userId      controllers.FollowController.getFollowing(request:Request, userId:Integer, offset:Integer)
 
 #Destinations
 
@@ -297,7 +308,7 @@ POST    /users/destinations/save        controllers.DestinationController.saveDe
 GET     /users/destinations/delete/:id   controllers.DestinationController.deleteDestination(request : Request, id : Integer)
 
 #Handles searching for  a destination
-GET     /users/destinations/matching/:name         controllers.DestinationController.getDestinationsByName(request : Request, name: String)
+GET     /users/destinations/matching/:name        controllers.DestinationController.getDestinationsByName(request : Request, name: String, offset: Integer, quantity: Integer)
 
 
 #Treasure Hunts
@@ -329,12 +340,12 @@ GET     /users/:id/albums/getFromTitle/:title    controllers.AlbumController.get
 #Albums index page
 GET     /users/albums   controllers.AlbumController.indexAlbum(request : Request)
 
-#Get the first available album ID of a media item if it exists
+#Get the first available album ID of a media item if it folllows
 GET     /users/albums/getAlbumFromMediaId/:mediaId      controllers.AlbumController.getFirstAlbumIdFromMediaId(request : Request, mediaId : Integer)
 
 
 #Get JSON of one album
-GET     /users/albums/get/:all/:id   controllers.AlbumController.getAlbum(request : Request, id : Integer, all : Boolean)
+GET     /users/albums/get/:id/:offSet/:quantity   controllers.AlbumController.getAlbum(request : Request, id : Integer, offSet : Integer, quantity : Integer)
 
 #View one album
 GET     /users/albums/:id   controllers.AlbumController.viewAlbum(request : Request, id : Integer)
@@ -432,6 +443,8 @@ GET /tags/display/:tagName                                            controller
 
 GET /tags/items/:tagId                                  controllers.TagController.getTagDetails(request: Request, tagId: Integer)
 
+# Follower routes
+GET /users/follows/:profileId                           controllers.FollowController.isFollowing(request: Request, profileId: Integer)
 
 
 # Undo

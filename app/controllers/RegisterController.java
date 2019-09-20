@@ -67,7 +67,7 @@ public class RegisterController {
              String[] gendersArray = {"Male", "Female", "Other"};
 
              // Loop through the raw data and identify any previous selections the user has made
-             // If a selection exists, get the selected string and modify the corresponding entry map value to true
+             // If a selection folllows, get the selected string and modify the corresponding entry map value to true
              // to show that the item is selected.
              Map<String, String> selectBoxData = userForm.rawData();
              for (int i = 0; i < selectBoxData.size(); i++) {

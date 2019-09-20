@@ -3,24 +3,26 @@
 
 @(user: User, actualUser : User)
 
+
 @main(actualUser, "Index") {
 
 
     <head>
+        <style>
+            #follow-button {width: 9em}
+
+        </style>
         <title>View Profile</title>
     </head>
 
     <div class="container">
         <h1>@user.getFName @user.getLName
-            @if(UserFactory.getUserProfilePicture(user.getUserid()) != null){
-                <img class="img-circle"  width = "50" height="50" src="@{routes.HomeController.serveProfilePicture(user.getUserid())}">
-            } else {
-                <img class="img-circle"  width = "50" height="50" src="@{routes.Assets.at("images/Generic.png")}">
-            }
             @if(user.userIsAdmin) {
                 <img class="img"  width = "60" height="50" src="@{routes.Assets.at("images/key_2_small.png")}">
             }
+
         </h1>
+        <button id="follow-button" class="btn btn-default" data-profile="@user.getUserid()"><span id="follow-text">Not Following</span></button>
     </div>
 
 
@@ -140,3 +142,5 @@
     </div>
 
 }
+
+<script src="@routes.Assets.at("js/search/showProfile.js")"></script>

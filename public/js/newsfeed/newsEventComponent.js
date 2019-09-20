@@ -1,0 +1,6 @@
+
+function createNewsEventComponent(event) {
+
+
+
+}

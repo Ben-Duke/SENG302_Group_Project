@@ -1,55 +1,14 @@
 @import helper._
 @import views.html.bootstrap3._
 
-@import play.data.DynamicForm
-
-@(dynamicForm : DynamicForm, travellerTypes : java.util.List[String], nationalities : java.util.List[String], genderMap: java.util.Map[String, java.lang.Boolean], followMap: java.util.Map[String, java.lang.Boolean], resultProfiles : java.util.Set[User], followingProfiles : java.util.Set[User], followerProfiles : java.util.Set[User], user : User)
+@(user : User)
 
 
 @main(user, "Search") {
-
+    <div class="container">
     <div class="container-fluid">
         <h1>Search</h1>
 
-        @form(action = helper.CSRF(routes.TravelPartnerController.searchByAttribute)) {
-
-            @text(
-                dynamicForm("name"),
-                label = "Search by name",
-                placeholder = "Search by name",
-                help = "Search travellers by name"
-            )
-
-            @checkboxes(
-                dynamicForm("gender"),
-                label = "Gender selection",
-                checkboxMap = genderMap,
-                help = "Select the genders you would like to include in your search results"
-            )
-
-            @checkboxes(
-                dynamicForm("follow"),
-                label = "Search for:",
-                checkboxMap = followMap,
-                help = "Search for followers, people you are following or everyone else."
-            )
-
-            @helper.select(
-                field = dynamicForm("travellertype"),
-                options = travellerTypes.map(travellerType => travellerType -> travellerType),
-                '_label -> "Select a traveller type to add:"
-            )
-
-            @helper.select(
-                dynamicForm("nationality"),
-                options = nationalities.map(nationality => nationality -> nationality),
-                '_label -> "Select a nationality to add:"
-            )
-
-            @helper.inputDate(dynamicForm("agerange1"), '_label -> "Born after:")
-            @helper.inputDate(dynamicForm("agerange2"), '_label -> "Born before:")
-
-            <input type="submit" value="Search by filters">
 
     </div>
     <ul class="nav nav-tabs nav-justified">
@@ -57,10 +16,31 @@
         <li id="followingTabListItem"><a data-toggle="tab" href="#followingTab">Following</a></li>
         <li id="followersTabListItem"><a data-toggle="tab" href="#followerTab">Followers</a></li>
     </ul>
+        <br>
+        <label class="checkbox-inline"><input type="checkbox" value="" checked id="travel-partner-male-filter">Male</label>
+        <label class="checkbox-inline"><input type="checkbox" value="" checked id="travel-partner-female-filter">Female</label>
+        <label class="checkbox-inline"><input type="checkbox" value="" checked id="travel-partner-other-filter">Other</label>
+        <br><br>
+        <div class="form-group">
+            <label for="travel-partner-nationality-filter">Nationality</label>
+            <select class="form-control" id="travel-partner-nationality-filter">
 
+            </select>
+        </div>
+        <label for="travel-partner-born-after-filter">Born after:</label>
+
+        <input type="date" id="travel-partner-born-after-filter"
+        min="1900-01-01" max="2020-01-01">
+        <label for="travel-partner-born-before-filter">Born before:</label>
+
+        <input type="date" id="travel-partner-born-before-filter"
+        min="1900-01-01" max="2020-01-01">
+        <br><br>
+        <button type='button' class="btn btn-primary" onclick="searchUsers()">
+            Search travellers
+        </button>
     <div class="tab-content">
         <div id="searchResultsTable" class="tab-content tab-pane fade in active" >
-            @if(resultProfiles.nonEmpty) {
                 <table class="table" id="search-table">
                     <thead class="thead-dark">
                         <tr>
@@ -73,45 +53,13 @@
                             <th scope="col"></th>
                         </tr>
                     </thead>
-                    <tbody>
-                    @if(! resultProfiles.isEmpty) {
-                        @for(profile <- resultProfiles) {
-                            <tr>
-                                <td scope="row">@profile.getFName().substring(0, 1).toUpperCase()@profile.getFName().substring(1).toLowerCase() @profile.getLName().substring(0, 1).toUpperCase()@profile.getLName().substring(1).toLowerCase()</td>
-                                <td>@profile.getGender()</td>
-                                <td>@for(nationality <- profile.getNationality()) {
-                                    <p>@nationality.getNationalityName()</p>
-                                }</td>
-                                <td>@profile.getDateOfBirth()</td>
-                                <td>@for(travellerType <- profile.getTravellerTypes()) {
-                                    <p>@travellerType.getTravellerTypeName()</p>
-                                }</td>
-                                <td class="followLink" data-profile="@profile.getUserid">
-                                    <a class="btn btn-link" id="follow-@profile.getUserid" onclick="followUser(@profile.getUserid)" style="display: none;">
-                                        Follow
-                                    </a>
-                                    <a class="btn btn-link d-none" id="unfollow-@profile.getUserid" onclick="unfollowUser(@profile.getUserid)" style="display: none;">
-                                        Unfollow
-                                    </a>
-                                </td>
-
-                                <td><a class="btn btn-link" href="@routes.ProfileController.showProfile(profile.getUserid)">View</a></td>
-                            </tr>
-                            }
-                            </tbody>
-                        </table>
-                    } else {
+                    <tbody id="travel-partner-search-table-body">
                     </tbody>
-                    <h2 align="center">No results found</h2>
-                }
-
-            } else {
-                <h2 align="center">No results displayed</h2>
-            }
+                </table>
+                <div id="travel-partner-search-pagination"></div>
         </div>
 
         <div id="followingTab" class="tab-content tab-pane fade">
-            @if(followingProfiles.nonEmpty) {
                 <table class="table" id="follower-table">
                     <thead class="thead-dark">
                         <tr>
@@ -125,44 +73,10 @@
                         </tr>
                     </thead>
                     <tbody>
-                    @if(! followingProfiles.isEmpty) {
-                        @for(profile <- followingProfiles) {
-                            <tr>
-                                <td scope="row">@profile.getFName().substring(0, 1).toUpperCase()@profile.getFName().substring(1).toLowerCase() @profile.getLName().substring(0, 1).toUpperCase()@profile.getLName().substring(1).toLowerCase()</td>
-                                <td>@profile.getGender()</td>
-                                <td>@for(nationality <- profile.getNationality()) {
-                                    <p>@nationality.getNationalityName()</p>
-                                }</td>
-                                <td>@profile.getDateOfBirth()</td>
-                                <td>@for(travellerType <- profile.getTravellerTypes()) {
-                                    <p>@travellerType.getTravellerTypeName()</p>
-                                }</td>
-                                <td class="followingTabLink" data-profile="@profile.getUserid">
-                                    <a class="btn btn-link" id="followTab-follow-@profile.getUserid" onclick="followUser(@profile.getUserid, 'followTab-')" style="display: none;">
-                                        Follow
-                                    </a>
-                                    <a class="btn btn-link d-none" id="followTab-unfollow-@profile.getUserid" onclick="unfollowUser(@profile.getUserid, 'followTab-')" style="display: block;">
-                                        Unfollow
-                                    </a>
-                                </td>
-
-                                <td><a class="btn btn-link" href="@routes.ProfileController.showProfile(profile.getUserid)">View</a></td>
-                            </tr>
-                        }
                     </tbody>
                 </table>
-            } else {
-                    </tbody>
-                    <h2 align="center">No results found</h2>
-                }
-
-            } else {
-                <h2 align="center">No results displayed</h2>
-            }
         </div>
-    }
         <div id="followerTab" class="tab-content tab-pane fade">
-        @if(followerProfiles.nonEmpty) {
             <table class="table" id="follower-table">
                 <thead class="thead-dark">
                     <tr>
@@ -176,42 +90,12 @@
                     </tr>
                 </thead>
                 <tbody>
-                @if(! followerProfiles.isEmpty) {
-                    @for(profile <- followerProfiles) {
-                        <tr>
-                            <td scope="row">@profile.getFName().substring(0, 1).toUpperCase()@profile.getFName().substring(1).toLowerCase() @profile.getLName().substring(0, 1).toUpperCase()@profile.getLName().substring(1).toLowerCase()</td>
-                            <td>@profile.getGender()</td>
-                            <td>@for(nationality <- profile.getNationality()) {
-                                <p>@nationality.getNationalityName()</p>
-                            }</td>
-                            <td>@profile.getDateOfBirth()</td>
-                            <td>@for(travellerType <- profile.getTravellerTypes()) {
-                                <p>@travellerType.getTravellerTypeName()</p>
-                            }</td>
-                            <td class="followerTabLink" data-profile="@profile.getUserid">
-                                <a class="btn btn-link" id="followingTab-follow-@profile.getUserid" onclick="followUser(@profile.getUserid, 'followingTab-')" style="display: none;">
-                                        Follow
-                                </a>
-                                <a class="btn btn-link d-none" id="followingTab-unfollow-@profile.getUserid" onclick="unfollowUser(@profile.getUserid, 'followingTab-')" style="display: none;">
-                                        Unfollow
-                                </a>
-                            </td>
-
-                            <td><a class="btn btn-link" href="@routes.ProfileController.showProfile(profile.getUserid)">View</a></td>
-                        </tr>
-                    }
                 </tbody>
             </table>
-        } else {
-                </tbody>
-                <h2 align="center">No results found</h2>
-            }
-
-        } else {
-            <h2 align="center">No results displayed</h2>
-        }
         </div>
+    </div>
     </div>
 }
 
+    <script src="@routes.Assets.at("js/search/indexTravelPartnerSearch.js")"></script>
 <script src="@routes.Assets.at("js/search/searchUsers.js")"></script>

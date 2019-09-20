@@ -7,11 +7,26 @@ import play.libs.Json;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.util.*;
 
 /**
  * A class to handle accessing Users from the database
  */
 public class UserAccessor {
+    static int QUERY_SIZE =  2;
+
+    private static final String TRAVELLER_TYPE_COLUMN_NAME = "travellerTypes";
+    private static final String NATIONALITY_COLUMN_NAME = "nationality";
+    private static final String GENDER_COLUMN_NAME = "gender";
+
+
+    public enum ColumnNames {
+        TRAVELLER_TYPE,
+        NATIONALITY,
+    }
 
     public static void insert(User user) { user.save(); }
 
@@ -87,6 +102,26 @@ public class UserAccessor {
     }
 
     /**
+     * Gets a list of users by gender, used for unit tests.
+     * The gender can be either "male", "female" or "other". Returns null otherwise.
+     * @param gender the gender as a string
+     * @return a list of users by gender
+     */
+    public static Set<User> getUsersFromGender(String gender) {
+        Set<User> users = null;
+        if (gender.equalsIgnoreCase("male")) {
+            users = User.find().query().where().eq(GENDER_COLUMN_NAME, "Male").findSet();
+        }
+        if (gender.equalsIgnoreCase("female")) {
+            users = User.find().query().where().eq(GENDER_COLUMN_NAME, "Female").findSet();
+        }
+        if (gender.equalsIgnoreCase("other")) {
+            users = User.find().query().where().eq(GENDER_COLUMN_NAME, "Other").findSet();
+        }
+        return users;
+    }
+
+    /**
      * Return the User matching the id passed
      * @param id the id of the user
      * @return User
@@ -154,4 +189,211 @@ public class UserAccessor {
         return query.findList();
     }
 
+    public static Set<User> getUsersWithAgeRange (String agerange1, String agerange2) {
+        Date date1 = null;
+        Date date2 = null;
+        Boolean parseDate = (agerange1 != null && agerange2 != null) && (!agerange1.equals("") || !agerange2.equals(""));
+        try {
+            if (parseDate && agerange1.equals("") && !agerange2.equals("")) {
+                date1 = new Date(Long.MIN_VALUE);
+                date2 = new SimpleDateFormat("yyyy-MM-dd").parse(agerange2);
+            } else if (parseDate && agerange2.equals("") && !agerange1.equals("")) {
+                date1 = new SimpleDateFormat("yyyy-MM-dd").parse(agerange1);
+                date2 = new Date();
+            } else if (parseDate && !agerange1.equals("") && !agerange2.equals("")) {
+                date1 = new SimpleDateFormat("yyyy-MM-dd").parse(agerange1);
+                date2 = new SimpleDateFormat("yyyy-MM-dd").parse(agerange2);
+            }
+        } catch (ParseException e) {
+            //Do Nothing
+        }
+        if(date1 != null && date2 != null){
+            return User.find().query().where().gt("dateOfBirth", date1).lt("dateOfBirth", date2).findSet();
+        }
+        return new HashSet<>();
+    }
+
+    /**
+     * Sends a request to ebeans to get a list of users based on pass parameters
+     * Usage examples:
+     *
+     * Example 1: Search for a user born after 22nd August 1998 and before 24th August 1998
+     * where their gender can be either male or female
+     * /users/profile/searchprofiles?bornafter=1998-08-22&bornbefore=1998-08-24&gender1=male&gender2=female
+     *
+     *
+     * Example 2: Search for a user with a nationality of Afghanistan and gender of male
+     * /users/profile/searchprofiles?nationality=afghanistan&gender1=male
+     *
+     * Example 3: Search for a user with a nationality of Czechoslovakia
+     * and gender of male or other and Traveller Type of gap year
+     * /users/profile/searchprofiles?nationality=czechoslovakia&gender1=male&gender2=other&travellertype=gap%20year
+     *
+     * @param travellerType a String which can be can be used to search the travellerType
+     * @param offset an integer of how many users to skip in returned users
+     * @param quantity an integer of how many users to be returned
+     * @param queryNationality a String which can be can be used to search the nationality
+     * @param agerange1 the lower bound of age range, passed in as a string with the format yyyy-MM-dd
+     * @param agerange2 the upper bound of age range, passed in as a string with the format yyyy-MM-dd
+     * @param gender1 The first gender union to search for: Valid values are Male, Female, Other
+     * @param gender2 The second gender union to search for: Valid values are Male, Female, Other
+     * @param gender3 The third gender union to search for: Valid values are Male, Female, Other
+     * @return a list of users, returns empty if none are found
+     */
+   public static Set<User> getUsersByQuery(String travellerType,
+                                           int offset, int quantity, String queryNationality,
+                                           String agerange1, String agerange2, String gender1,
+                                           String gender2, String gender3){
+
+        List<List<Object>> equalsFields = new ArrayList<>();
+
+       if(quantity < 1) {
+           return new HashSet<>();
+       }
+
+       if(offset < 0) {
+           offset = 0;
+       }
+
+       equalsFields = updateEqualsFields(travellerType, TRAVELLER_TYPE_COLUMN_NAME, equalsFields);
+       equalsFields = updateEqualsFields(queryNationality, NATIONALITY_COLUMN_NAME, equalsFields);
+       equalsFields = updateEqualsFields(gender1, GENDER_COLUMN_NAME, equalsFields);
+       equalsFields = updateEqualsFields(gender2, GENDER_COLUMN_NAME, equalsFields);
+       equalsFields = updateEqualsFields(gender3, GENDER_COLUMN_NAME, equalsFields);
+       Date date1 = null;
+       Date date2 = null;
+       Boolean parseDate = (agerange1 != null && agerange2 != null) && (!agerange1.equals("") || !agerange2.equals(""));
+       try {
+           if (parseDate && agerange1.equals("") && !agerange2.equals("")) {
+               date1 = new Date(Long.MIN_VALUE);
+               date2 = new SimpleDateFormat("yyyy-MM-dd").parse(agerange2);
+           } else if (parseDate && agerange2.equals("") && !agerange1.equals("")) {
+               date1 = new SimpleDateFormat("yyyy-MM-dd").parse(agerange1);
+               date2 = new Date();
+           } else if (parseDate && !agerange1.equals("") && !agerange2.equals("")) {
+               date1 = new SimpleDateFormat("yyyy-MM-dd").parse(agerange1);
+               date2 = new SimpleDateFormat("yyyy-MM-dd").parse(agerange2);
+           }
+       } catch (ParseException e) {
+           //Do Nothing
+       }
+       Query<User> query = null;
+       if(date1 != null && date2 != null){
+           query = //Ebean.find(User.class)
+                   User.find().query()
+                           .where().gt("dateOfBirth", date1)
+                           .lt("dateOfBirth", date2)
+                           .or()
+                           .eq((String) equalsFields.get(2).get(0), equalsFields.get(2).get(1))
+                           .eq((String) equalsFields.get(3).get(0), equalsFields.get(3).get(1))
+                           .eq((String) equalsFields.get(4).get(0), equalsFields.get(4).get(1))
+                           .endOr()
+                           .select("userid")
+                           //Use this to get connected traveller types
+                           .fetch(TRAVELLER_TYPE_COLUMN_NAME,"*")
+                           .where()
+                           .eq((String) equalsFields.get(0).get(0),  equalsFields.get(0).get(1))
+
+                           .select("userid")
+                           .fetch(NATIONALITY_COLUMN_NAME, "*")
+                           .where()
+                           .eq((String) equalsFields.get(1).get(0), equalsFields.get(1).get(1))
+                           .setFirstRow(offset).setMaxRows(quantity);
+       }
+       else {
+           query = //Ebean.find(User.class)
+                   User.find().query()
+                           .where()
+                           .or()
+                           .eq((String) equalsFields.get(2).get(0), equalsFields.get(2).get(1))
+                           .eq((String) equalsFields.get(3).get(0), equalsFields.get(3).get(1))
+                           .eq((String) equalsFields.get(4).get(0), equalsFields.get(4).get(1))
+                           .endOr()
+                           .select("userid")
+                           //Use this to get connected traveller types
+                           .fetch(TRAVELLER_TYPE_COLUMN_NAME,"*")
+
+                           .where()
+
+                           .eq((String) equalsFields.get(0).get(0),  equalsFields.get(0).get(1))
+                           .select("userid")
+                           .fetch(NATIONALITY_COLUMN_NAME, "*")
+                           .where()
+                           .eq((String) equalsFields.get(1).get(0), equalsFields.get(1).get(1))
+                           .setFirstRow(offset).setMaxRows(quantity);
+       }
+
+       return query.findSet();
+   }
+
+    /**
+     * Converts the first letter of each word in a sentence to a capital letter.
+     * @param givenString the sentence to convert
+     * @return the reformatted string
+     */
+    private static String toTitleCase(String givenString) {
+        String[] arr = givenString.split(" ");
+        StringBuffer sb = new StringBuffer();
+
+        for (int i = 0; i < arr.length; i++) {
+            sb.append(Character.toUpperCase(arr[i].charAt(0)))
+                    .append(arr[i].substring(1)).append(" ");
+        }
+        return sb.toString().trim();
+    }
+
+    /**
+     * Updates and returns the updated equal fields. The equal fields are used by the sql query
+     * to give optional fields the value of [1,1] (which evaluates to true) when they are not used,
+     * or [Column name, value] when the optional field is used to search for something.
+     * This is then processed by the getUsersByQuery method to filter.
+     *
+     * @param queryValue the query value to search for (ie male or female)
+     * @param columnName the column (attribute) to filter by, eg gender or nationality
+     * @param equalsFieldsToBeUpdated the equalField object to update
+     * @return
+     */
+    private static List<List<Object>> updateEqualsFields(String queryValue,
+                                                         String columnName,
+                                                         List<List<Object>> equalsFieldsToBeUpdated) {
+        List<Object> queryValues = new ArrayList<>();
+        if (queryValue != null) {
+            queryValue = toTitleCase(queryValue);
+
+            queryValues.add(columnName);
+            Object convertedQueryValue = null;
+            switch (columnName) {
+                case TRAVELLER_TYPE_COLUMN_NAME:
+                    convertedQueryValue = TravellerType.find().query().where().eq("travellerTypeName", queryValue).findOne();
+                    break;
+                case NATIONALITY_COLUMN_NAME:
+                    convertedQueryValue = Nationality.find().query().where().eq("nationalityName", queryValue).findOne();
+                    break;
+                case GENDER_COLUMN_NAME:
+                    convertedQueryValue = queryValue;
+                    break;
+            }
+            if(convertedQueryValue != null) {
+                queryValues.add(convertedQueryValue);
+            }
+            else {
+                //If the searched entity is invalid, return no results.
+                queryValues.set(0, "0");
+                queryValues.add("1");
+            }
+        }
+        else{
+            if(! columnName.equalsIgnoreCase(GENDER_COLUMN_NAME)) {
+                queryValues.add("1");
+                queryValues.add("1");
+            }
+            else {
+                queryValues.add("0");
+                queryValues.add("1");
+            }
+        }
+
+        equalsFieldsToBeUpdated.add(queryValues);
+        return equalsFieldsToBeUpdated;
+    }
 }

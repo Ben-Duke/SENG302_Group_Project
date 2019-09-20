@@ -1,7 +1,14 @@
 package controllers;
 
 import accessors.FollowAccessor;
+import accessors.UserAccessor;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import io.ebean.Query;
+import models.Destination;
 import models.Nationality;
+import play.libs.Json;
 import utilities.UtilityFunctions;
 import models.TravellerType;
 import models.User;
@@ -13,16 +20,20 @@ import utilities.UtilityFunctions;
 import views.html.users.travelpartner.searchprofile;
 
 import javax.inject.Inject;
+import javax.swing.text.html.Option;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import static play.mvc.Results.*;
 
 
 public class TravelPartnerController {
+
+    private final int PSEUDO_INFINITE_NUMBER = 100000;
 
     @Inject
     FormFactory formFactory;
@@ -67,9 +78,8 @@ public class TravelPartnerController {
         followingProfiles = FollowAccessor.getAllUsersFollowed(user);
         followerProfiles = FollowAccessor.getAllUsersFollowing(user);
 
-        return ok(searchprofile.render(dynamicForm, convertedTravellerTypes, convertedNationalities, genderMap, followMap, resultProfiles, followingProfiles, followerProfiles, user));
+        return ok(searchprofile.render(user));
     }
-
 
     /**
      * This method is called when the user first hits the searchprofile page.
@@ -114,6 +124,78 @@ public class TravelPartnerController {
         }
         return new HashSet<>();
     }
+
+    /**
+     * Returns the number of travellers that match the given filters, up to a maximum of 100,000
+     * @return
+     */
+    public Result getTravellerCountWithFilters (
+            Http.Request request, String travellerType, String nationality,
+            String bornAfter, String bornBefore, String gender1, String gender2, String gender3) {
+        User currentUser = User.getCurrentUser(request);
+        if(currentUser == null){
+            return unauthorized("You need to be logged in to use this api");
+        }
+        if (bornAfter == null) {
+            bornAfter = "";
+        }
+        if (bornBefore == null) {
+            bornBefore = "";
+        }
+        Set<User> users = UserAccessor.getUsersByQuery(travellerType, 0, PSEUDO_INFINITE_NUMBER, nationality, bornAfter, bornBefore, gender1, gender2, gender3);
+        return ok(Integer.toString(users.size()));
+    }
+
+    /**
+     * This function returns a Json object containing paginated travel partner search user data
+     * @return returns a Json response with any users that match the passed parameters
+     */
+    public Result travellerSearchPaginated (
+            Http.Request request, int offset, int quantity, String travellerType, String nationality, String bornAfter, String bornBefore, String gender1, String gender2, String gender3){
+        User currentUser = User.getCurrentUser(request);
+        if(currentUser == null){
+            return unauthorized("You need to be logged in to use this api");
+        }
+
+        if(quantity > 1000){
+            return badRequest("Limit is 1000 users per request");
+        }
+
+        if (bornAfter == null) {
+            bornAfter = "";
+        }
+        if (bornBefore == null) {
+            bornBefore = "";
+        }
+
+        Set<User> users = UserAccessor.getUsersByQuery(travellerType, offset,quantity,nationality, bornAfter, bornBefore, gender1, gender2, gender3);
+        ObjectMapper objectMapper = new ObjectMapper();
+        ArrayNode userNodes = objectMapper.createArrayNode();
+
+        for (User user : users) {
+            ObjectNode userNode = objectMapper.createObjectNode();
+            userNode.put("userId", user.getUserid());
+            userNode.put("name", user.getFName() + " " + user.getLName());
+            userNode.put("gender", user.getGender());
+            userNode.put("dob", user.getDateOfBirth().toString());
+
+            ArrayNode nationalityNodes = objectMapper.createArrayNode();
+            for (Nationality userNationality : user.getNationality()) {
+                nationalityNodes.add(userNationality.getNationalityName());
+            }
+            userNode.put("nationalities", nationalityNodes);
+
+            ArrayNode travellerTypeNodes = objectMapper.createArrayNode();
+            for (TravellerType userTravellerType : user.getTravellerTypes()) {
+                travellerTypeNodes.add(userTravellerType.getTravellerTypeName());
+            }
+            userNode.put("travellerTypes", travellerTypeNodes);
+
+            userNodes.add(userNode);
+        }
+        return ok(userNodes);
+    }
+
 
     /**
      * From the form retrieve all users from the database that have the given nationality
@@ -244,27 +326,7 @@ public class TravelPartnerController {
 
         String agerange1 = filterForm.get("agerange1");
         String agerange2 = filterForm.get("agerange2");
-        Date date1 = null;
-        Date date2 = null;
-        Boolean parseDate = (agerange1 != null && agerange2 != null) && (agerange1.equals("") || agerange2.equals(""));
-        try {
-            if (parseDate && agerange1.equals("") && !agerange2.equals("")) {
-                date1 = new Date(Long.MIN_VALUE);
-                date2 = new SimpleDateFormat("yyyy-MM-dd").parse(agerange2);
-            } else if (parseDate && agerange2.equals("") && !agerange1.equals("")) {
-                date1 = new SimpleDateFormat("yyyy-MM-dd").parse(agerange1);
-                date2 = new Date();
-            } else if (parseDate && !agerange1.equals("") && !agerange2.equals("")) {
-                date1 = new SimpleDateFormat("yyyy-MM-dd").parse(agerange1);
-                date2 = new SimpleDateFormat("yyyy-MM-dd").parse(agerange2);
-            }
-        } catch (ParseException e) {
-            //Do Nothing
-        }
-        if(date1 != null && date2 != null){
-            return User.find().query().where().gt("dateOfBirth", date1).lt("dateOfBirth", date2).findSet();
-        }
-        return new HashSet<>();
+        return UserAccessor.getUsersWithAgeRange(agerange1, agerange2);
     }
 
 

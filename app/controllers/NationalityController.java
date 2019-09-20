@@ -14,6 +14,11 @@ import static play.mvc.Results.ok;
 
 public class NationalityController {
 
+    /**
+     * Returns a list of all nationalities in the database
+     * @param request the http request
+     * @return a list of all nationalities in the database
+     */
     public Result getAllNationalities (Http.Request request) {
         List<Nationality> nationalities = NationalityAccessor.getAll();
 

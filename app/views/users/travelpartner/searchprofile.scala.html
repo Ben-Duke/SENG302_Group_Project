@@ -16,15 +16,26 @@
         <li id="followingTabListItem"><a data-toggle="tab" href="#followingTab">Following</a></li>
         <li id="followersTabListItem"><a data-toggle="tab" href="#followerTab">Followers</a></li>
     </ul>
+        <br>
         <label class="checkbox-inline"><input type="checkbox" value="" checked id="travel-partner-male-filter">Male</label>
         <label class="checkbox-inline"><input type="checkbox" value="" checked id="travel-partner-female-filter">Female</label>
         <label class="checkbox-inline"><input type="checkbox" value="" checked id="travel-partner-other-filter">Other</label>
+        <br><br>
         <div class="form-group">
             <label for="travel-partner-nationality-filter">Nationality</label>
             <select class="form-control" id="travel-partner-nationality-filter">
 
             </select>
         </div>
+        <label for="travel-partner-born-after-filter">Born after:</label>
+
+        <input type="date" id="travel-partner-born-after-filter"
+        min="1900-01-01" max="2020-01-01">
+        <label for="travel-partner-born-before-filter">Born before:</label>
+
+        <input type="date" id="travel-partner-born-before-filter"
+        min="1900-01-01" max="2020-01-01">
+        <br><br>
         <button type='button' class="btn btn-primary" onclick="searchUsers()">
             Search travellers
         </button>

@@ -4,11 +4,18 @@ let currentPageNum;
 let filters;
 init();
 
+/**
+ * Initialise function called when the page is loaded
+ */
 async function init() {
-    await initNationalities()
+    await initNationalities();
+    initDates();
     searchUsers();
 }
 
+/**
+ * Initialises the nationalities by filling the nationality select form
+ */
 async function initNationalities() {
     let nationalitySelectBox = document.getElementById('travel-partner-nationality-filter');
 
@@ -28,6 +35,9 @@ async function initNationalities() {
 
 }
 
+/**
+ * Gets and returns a list of nationalities from the database
+ */
 async function getNationalities() {
     const token =  $('input[name="csrfToken"]').attr('value');
     $.ajaxSetup({
@@ -45,6 +55,11 @@ async function getNationalities() {
     });
 }
 
+/**
+ * Called when the user clicks on "Search travellers" and on initialises.
+ * Updates the filters that the user selected then searches the database for users
+ * based on the filters.
+ */
 async function searchUsers() {
     updateFilters();
     let count = await getUserCount();
@@ -53,15 +68,25 @@ async function searchUsers() {
     await renderPaginatedData();
 }
 
+/**
+ * Updates the filters based on what the user has selected
+ */
 function updateFilters() {
     filters = {
         male: document.getElementById("travel-partner-male-filter").checked,
         female: document.getElementById("travel-partner-female-filter").checked,
         other: document.getElementById("travel-partner-other-filter").checked,
         nationality: document.getElementById("travel-partner-nationality-filter").value,
+        bornAfter: document.getElementById("travel-partner-born-after-filter").value,
+        bornBefore: document.getElementById("travel-partner-born-before-filter").value,
     };
 }
 
+/**
+ * Adds query parameters to the given route based on the filters.
+ * The updated route is used to query the database.
+ * @param route the base route without any query parameters
+ */
 function appendQueryParameters(route) {
     if(filters["male"] === true) {
         route += "&gender1=male"
@@ -75,20 +100,35 @@ function appendQueryParameters(route) {
     if(filters["nationality"] !== "null") {
         route += `&nationality=${filters["nationality"]}`
     }
+    if(filters["bornAfter"] !== "") {
+        route += `&bornafter=${filters["bornAfter"]}`
+    }
+    if(filters["bornBefore"] !== "") {
+        route += `&bornbefore=${filters["bornBefore"]}`
+    }
     return route;
 }
 
+/**
+ * Called when the user clicks on a pagination button to switch pages.
+ */
 async function onPaginate(currentPage) {
     currentPageNum = currentPage;
     await renderPaginatedData();
 }
 
+/**
+ * Renders the new table elements based on pagination
+ */
 async function renderPaginatedData() {
     await renderUserData(currentPageNum, usersPerPage);
 
     addPagination(userCount, currentPageNum);
 }
 
+/**
+ * Gets the total count of users in the database based on query parameters
+ */
 async function getUserCount() {
 
     const token =  $('input[name="csrfToken"]').attr('value');
@@ -109,6 +149,11 @@ async function getUserCount() {
     });
 }
 
+/**
+ * Retrieves all users from the database that fits the filters, then displays the data
+ * @param pageNum the page number to retrieve
+ * @param quantity the quantity of users to retrieve
+ */
 async function renderUserData(pageNum, quantity) {
 
     const offset = (pageNum - 1) * quantity;
@@ -132,7 +177,13 @@ async function renderUserData(pageNum, quantity) {
     await displayData(users);
 }
 
-
+/**
+ * Displays the user data retrieved from the database as rows on a table
+ * Each row in the table represents the user.
+ * Displays the following attributes: Name, gender, nationalities, date of birth,
+ * traveller types
+ * @param users the user data retrieved from the database
+ */
 async function displayData(users) {
     const tableBody = document.getElementById('travel-partner-search-table-body');
     while (tableBody.childNodes.length > 0) {
@@ -202,6 +253,11 @@ async function displayData(users) {
     }
 }
 
+/**
+ * Adds pagination elements
+ * @param count the total number of data objects
+ * @param pageNum number of pages to add
+ */
 function addPagination(count, pageNum) {
     // remove existing pagination
     let eventsPagination = document.getElementById("travel-partner-search-pagination");
@@ -289,4 +345,24 @@ function addPagination(count, pageNum) {
     pageButton.setAttribute("onClick", `onPaginate(${maxPages})`);
     item.appendChild(pageButton);
     pagination.appendChild(item);
+}
+
+/**
+ * Sets the maximum date that can be picked from the date inputs to today's date
+ */
+function initDates() {
+    let today = new Date();
+    let dd = today.getDate();
+    let mm = today.getMonth()+1; //January is 0!
+    let yyyy = today.getFullYear();
+    if(dd<10){
+        dd='0'+dd
+    }
+    if(mm<10){
+        mm='0'+mm
+    }
+
+    today = yyyy+'-'+mm+'-'+dd;
+    document.getElementById("travel-partner-born-after-filter").setAttribute("max", today);
+    document.getElementById("travel-partner-born-before-filter").setAttribute("max", today);
 }

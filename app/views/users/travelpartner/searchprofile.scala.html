@@ -5,7 +5,7 @@
 
 
 @main(user, "Search") {
-
+    <div class="container">
     <div class="container-fluid">
         <h1>Search</h1>
 
@@ -16,7 +16,9 @@
         <li id="followingTabListItem"><a data-toggle="tab" href="#followingTab">Following</a></li>
         <li id="followersTabListItem"><a data-toggle="tab" href="#followerTab">Followers</a></li>
     </ul>
-
+        <label class="checkbox-inline"><input type="checkbox" value="" checked id="travel-partner-male-filter">Male</label>
+        <label class="checkbox-inline"><input type="checkbox" value="" checked id="travel-partner-female-filter">Female</label>
+        <label class="checkbox-inline"><input type="checkbox" value="" checked id="travel-partner-other-filter">Other</label>
     <div class="tab-content">
         <div id="searchResultsTable" class="tab-content tab-pane fade in active" >
                 <table class="table" id="search-table">
@@ -71,6 +73,7 @@
                 </tbody>
             </table>
         </div>
+    </div>
     </div>
 }
 

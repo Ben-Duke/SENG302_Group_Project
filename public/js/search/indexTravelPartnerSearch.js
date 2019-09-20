@@ -5,12 +5,34 @@ let currentPageNum;
 initUsers();
 
 async function initUsers() {
-
-    let count = await getUserCount();
+    let filters = getFilters();
+    let count = await getUserCount(filters);
     userCount = count.count;
     currentPageNum = 1;
 
     await renderPaginatedData();
+}
+
+function getFilters() {
+    let filters = {
+        male: document.getElementById("travel-partner-male-filter").checked,
+        female: document.getElementById("travel-partner-female-filter").checked,
+        other: document.getElementById("travel-partner-other-filter").checked,
+    };
+    return filters;
+}
+
+function appendQueryParameters(route, filters) {
+    if(filters["male"] === true) {
+        route += "&gender1=male"
+    }
+    if(filters["female"] === true) {
+        route += "&gender2=female"
+    }
+    if(filters["other"] === true) {
+        route += "&gender3=other"
+    }
+    return route;
 }
 
 async function onPaginate(currentPage) {
@@ -24,9 +46,11 @@ async function renderPaginatedData() {
     addPagination(userCount, currentPageNum);
 }
 
-async function getUserCount() {
+async function getUserCount(filters) {
 
     const token =  $('input[name="csrfToken"]').attr('value');
+    const userCountRoute = "/users/profile/searchprofiles/count?";
+    let filteredRoute = appendQueryParameters(userCountRoute, filters);
     $.ajaxSetup({
         beforeSend: function(xhr) {
             xhr.setRequestHeader('Csrf-Token', token);
@@ -34,7 +58,7 @@ async function getUserCount() {
     });
     return $.ajax({
         type: 'GET',
-        url: `/users/admin/userCount`,
+        url: filteredRoute,
         contentType: 'application/json',
         success: (res) => {
             return res;
@@ -65,7 +89,7 @@ async function renderUserData(pageNum, quantity) {
 
 
 async function displayData(users) {
-    const tableBody = document.getElementById('user-table-body');
+    const tableBody = document.getElementById('travel-partner-search-table-body');
 
     while (tableBody.childNodes.length > 0) {
         tableBody.childNodes[0].remove();

@@ -447,6 +447,10 @@ GET /tags/items/:tagId                                  controllers.TagControlle
 # Follower routes
 GET /users/follows/:profileId                           controllers.FollowController.isFollowing(request: Request, profileId: Integer)
 
+#Nationalities
+#Gets a list of all nationalities from the database
+GET /nationalities                                      controllers.NationalityController.getAllNationalities(request: Request)
+
 
 
 

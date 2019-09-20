@@ -2,10 +2,50 @@ let userCount;
 const usersPerPage = 10;
 let currentPageNum;
 let filters;
+init();
 
-initUsers();
+async function init() {
+    await initNationalities()
+    searchUsers();
+}
 
-async function initUsers() {
+async function initNationalities() {
+    let nationalitySelectBox = document.getElementById('travel-partner-nationality-filter');
+
+    //Default nationality of none
+    let opt = document.createElement('option');
+    opt.appendChild(document.createTextNode('Any nationality'));
+    opt.value = "null";
+    nationalitySelectBox.appendChild(opt);
+
+    let nationalities = await getNationalities();
+    for (let nationality of nationalities) {
+        let opt = document.createElement('option');
+        opt.appendChild(document.createTextNode(nationality));
+        opt.value = nationality;
+        nationalitySelectBox.appendChild(opt);
+    }
+
+}
+
+async function getNationalities() {
+    const token =  $('input[name="csrfToken"]').attr('value');
+    $.ajaxSetup({
+        beforeSend: function(xhr) {
+            xhr.setRequestHeader('Csrf-Token', token);
+        }
+    });
+    return $.ajax({
+        type: 'GET',
+        url: '/nationalities',
+        contentType: 'application/json',
+        success: (res) => {
+            return res;
+        }
+    });
+}
+
+async function searchUsers() {
     updateFilters();
     let count = await getUserCount();
     userCount = count;
@@ -18,6 +58,7 @@ function updateFilters() {
         male: document.getElementById("travel-partner-male-filter").checked,
         female: document.getElementById("travel-partner-female-filter").checked,
         other: document.getElementById("travel-partner-other-filter").checked,
+        nationality: document.getElementById("travel-partner-nationality-filter").value,
     };
 }
 
@@ -31,11 +72,13 @@ function appendQueryParameters(route) {
     if(filters["other"] === true) {
         route += "&gender3=other"
     }
+    if(filters["nationality"] !== "null") {
+        route += `&nationality=${filters["nationality"]}`
+    }
     return route;
 }
 
 async function onPaginate(currentPage) {
-    console.log("got here");
     currentPageNum = currentPage;
     await renderPaginatedData();
 }
@@ -51,7 +94,6 @@ async function getUserCount() {
     const token =  $('input[name="csrfToken"]').attr('value');
     const userCountRoute = "/users/profile/searchprofiles/count?";
     let filteredRoute = appendQueryParameters(userCountRoute);
-    console.log(filteredRoute);
     $.ajaxSetup({
         beforeSend: function(xhr) {
             xhr.setRequestHeader('Csrf-Token', token);
@@ -93,7 +135,6 @@ async function renderUserData(pageNum, quantity) {
 
 async function displayData(users) {
     const tableBody = document.getElementById('travel-partner-search-table-body');
-    console.log(users);
     while (tableBody.childNodes.length > 0) {
         tableBody.childNodes[0].remove();
     }

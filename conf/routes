@@ -441,6 +441,14 @@ GET /tags/items/:tagId                                  controllers.TagControlle
 # Follower routes
 GET /users/follows/:profileId                           controllers.FollowController.isFollowing(request: Request, profileId: Integer)
 
+# News feed
+PUT /events/respond/:eventId/:responseType                  controllers.EventResponseController.respondToEvent(request : Request, eventId : Integer, responseType : String)
+
+GET /events/responses/:eventId/:responseType                controllers.EventResponseController.getResponsesForEventByResponseType(request : Request, eventId : Integer, responseType : String)
+
+GET /events/responses/:responseType                         controllers.EventResponseController.getEventResponsesByResponseType(request : Request, responseType : String)
+
+GET /events/get/all                                         controllers.EventResponseController.getAllResponses(request : Request)
 
 # Undo
 +nocsrf

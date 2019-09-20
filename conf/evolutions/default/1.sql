@@ -81,6 +81,29 @@ create table destination_modification_request_traveller_type (
   constraint pk_destination_modification_request_traveller_type primary key (destination_modification_request_id,traveller_type_ttypeid)
 );
 
+create table event (
+  event_id                      integer auto_increment not null,
+  external_id                   integer,
+  name                          varchar(191),
+  url                           varchar(191),
+  latitude                      double not null,
+  longitude                     double not null,
+  description                   TEXT,
+  destination_destid            integer,
+  start_time                    timestamp not null,
+  end_time                      timestamp not null,
+  constraint pk_event primary key (event_id)
+);
+
+create table event_response (
+  event_response_id             integer auto_increment not null,
+  response_type                 varchar(191),
+  user_userid                   integer,
+  event_event_id                integer,
+  response_date_time            timestamp not null,
+  constraint pk_event_response primary key (event_response_id)
+);
+
 create table media (
   dtype                         varchar(31) not null,
   media_id                      integer auto_increment not null,
@@ -271,6 +294,15 @@ alter table destination_modification_request_traveller_type add constraint fk_de
 create index ix_destination_modification_request_traveller_type_travel_2 on destination_modification_request_traveller_type (traveller_type_ttypeid);
 alter table destination_modification_request_traveller_type add constraint fk_destination_modification_request_traveller_type_travel_2 foreign key (traveller_type_ttypeid) references traveller_type (ttypeid) on delete restrict on update restrict;
 
+create index ix_event_destination_destid on event (destination_destid);
+alter table event add constraint fk_event_destination_destid foreign key (destination_destid) references destination (destid) on delete restrict on update restrict;
+
+create index ix_event_response_user_userid on event_response (user_userid);
+alter table event_response add constraint fk_event_response_user_userid foreign key (user_userid) references user (userid) on delete restrict on update restrict;
+
+create index ix_event_response_event_event_id on event_response (event_event_id);
+alter table event_response add constraint fk_event_response_event_event_id foreign key (event_event_id) references event (event_id) on delete restrict on update restrict;
+
 create index ix_media_user on media (user);
 alter table media add constraint fk_media_user foreign key (user) references user (userid) on delete restrict on update restrict;
 
@@ -391,6 +423,15 @@ drop index if exists ix_destination_modification_request_traveller_type_destin_1
 alter table destination_modification_request_traveller_type drop constraint if exists fk_destination_modification_request_traveller_type_travel_2;
 drop index if exists ix_destination_modification_request_traveller_type_travel_2;
 
+alter table event drop constraint if exists fk_event_destination_destid;
+drop index if exists ix_event_destination_destid;
+
+alter table event_response drop constraint if exists fk_event_response_user_userid;
+drop index if exists ix_event_response_user_userid;
+
+alter table event_response drop constraint if exists fk_event_response_event_event_id;
+drop index if exists ix_event_response_event_event_id;
+
 alter table media drop constraint if exists fk_media_user;
 drop index if exists ix_media_user;
 
@@ -478,6 +519,10 @@ drop table if exists destination_traveller_type;
 drop table if exists destination_modification_request;
 
 drop table if exists destination_modification_request_traveller_type;
+
+drop table if exists event;
+
+drop table if exists event_response;
 
 drop table if exists media;
 

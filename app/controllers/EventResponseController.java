@@ -35,7 +35,7 @@ public class EventResponseController {
      */
     public Result respondToEvent(Http.Request request, Integer externalEventId, String responseType) {
         User user = User.getCurrentUser(request);
-//        if (user == null) {return unauthorized();}
+        if (user == null) {return unauthorized();}
         Event event = Event.find().query().where().eq("externalId", externalEventId).findOne();
         if (event == null) {
             JsonNode jsonData = EventFindaUtilities.getEventById(externalEventId).get("events");
@@ -49,22 +49,19 @@ public class EventResponseController {
                     eventData.get("url").toString(),
                     eventData.get("point").get("lat").asDouble(),
                     eventData.get("point").get("lng").asDouble(),
-                    eventData.get("description").toString(), null
+                    eventData.get("description").toString(),
+                    null
             );
-//            event.setName(eventData.get("name").asText());
-//            event.setExternalId(eventData.get("id").asInt());
-//            event.setUrl(eventData.get("url").toString());
-//            event.setLatitude(eventData.get("point").get("lat").asDouble());
-//            event.setLongitude(eventData.get("point").get("lng").asDouble());
-//            event.setStartTime(LocalDateTime.parse(eventData.get("datetime_start").toString().substring(1, 20), formatter));
-//            event.setEndTime(LocalDateTime.parse(eventData.get("datetime_end").toString().substring(1, 20), formatter));
-//            event.setDescription(eventData.get("description").toString());
+            newEvent.insert();
             newEvent.save();
             EventResponse eventResponse = new EventResponse(responseType, newEvent, user);
             EventResponseAccessor.insert(eventResponse);
+            EventResponseAccessor.save(eventResponse);
+            return ok();
         }
         EventResponse eventResponse = new EventResponse(responseType, event, user);
         EventResponseAccessor.insert(eventResponse);
+        EventResponseAccessor.save(eventResponse);
         return ok();
     }
 
@@ -94,7 +91,7 @@ public class EventResponseController {
      */
     public Result getResponsesForEventByResponseType(Http.Request request, Integer externalEventId, String responseType) {
         User user = User.getCurrentUser(request);
-        if (user == null) {return redirect(routes.UserController.userindex());}
+//        if (user == null) {return redirect(routes.UserController.userindex());}
         Event event = Event.find().query().where().eq("externalId", externalEventId).findOne();
         if (event == null) {return badRequest("No one has responded to this event yet.");}
         List<EventResponse> eventResponses = EventResponseAccessor.getByEventAndType(event, responseType);
@@ -104,7 +101,7 @@ public class EventResponseController {
             String json = "response: " + eventResponse.toString();
             jsonList.add(json);
         }
-        return ok(Json.toJson(jsonList));
+        return ok(Json.toJson(eventResponses));
     }
 
     public Result getAllResponses(Http.Request request) {

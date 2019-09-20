@@ -48,11 +48,9 @@ public class EventResponse extends BaseModel{
 
     private String responseType;
 
-    @JsonIgnore
     @ManyToOne
     private User user;
 
-    @JsonIgnore
     @ManyToOne
     private Event event;
 

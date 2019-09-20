@@ -222,6 +222,9 @@
                     <h1>Link and unlink photos to destinations</h1>
                 </div>
                 <div class="modal-body">
+                    <div id="dest-search-container">
+                        <input type="text" id="destSearchInput" placeholder="Search for Destination">
+                    </div>
                     <h2>Private destinations</h2>
                     @*<input type="text" class="searchDestinations" onkeyup="searchDestination" placeholder="Search for destinations">*@
                     <table class="table privateDestinations">
@@ -240,19 +243,21 @@
 
                     <h2>Public destinations</h2>
                     @*<input type="text" class="searchPublicDestinations" onkeyup="searchPublicDestination()" placeholder="Search for destinations">*@
-                    <table class="table publicDestinations">
-                        <thead class="thead-dark">
-                            <tr>
-                                <th scope="col">Name</th>
-                                <th scope="col">Type</th>
-                                <th scope="col">Country</th>
-                                <th scope="col">District</th>
-                            </tr>
-                        </thead>
-                        <tbody id="public-dest-tbody">
-                            <!-- All data for public destinations is loaded here -->
-                        </tbody>
-                    </table>
+                    <div id="publicDestinations">
+                        <table class="table publicDestinations">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Type</th>
+                                    <th scope="col">Country</th>
+                                    <th scope="col">District</th>
+                                </tr>
+                            </thead>
+                            <tbody id="public-dest-tbody">
+                                <!-- All data for public destinations is loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>

@@ -130,7 +130,7 @@ public class TravelPartnerController {
      * @return
      */
     public Result getTravellerCountWithFilters (
-            Http.Request request, String travellerType, String nationality,
+            Http.Request request, String queryName, String travellerType, String nationality,
             String bornAfter, String bornBefore, String gender1, String gender2, String gender3) {
         User currentUser = User.getCurrentUser(request);
         if(currentUser == null){
@@ -142,7 +142,10 @@ public class TravelPartnerController {
         if (bornBefore == null) {
             bornBefore = "";
         }
-        Set<User> users = UserAccessor.getUsersByQuery(travellerType, 0, PSEUDO_INFINITE_NUMBER, nationality, bornAfter, bornBefore, gender1, gender2, gender3);
+        if (queryName == null) {
+            queryName = "";
+        }
+        Set<User> users = UserAccessor.getUsersByQuery(travellerType, 0, PSEUDO_INFINITE_NUMBER, queryName, nationality, bornAfter, bornBefore, gender1, gender2, gender3);
         return ok(Integer.toString(users.size()));
     }
 
@@ -151,7 +154,7 @@ public class TravelPartnerController {
      * @return returns a Json response with any users that match the passed parameters
      */
     public Result travellerSearchPaginated (
-            Http.Request request, int offset, int quantity, String travellerType, String nationality, String bornAfter, String bornBefore, String gender1, String gender2, String gender3){
+            Http.Request request, int offset, int quantity, String queryName, String travellerType, String nationality, String bornAfter, String bornBefore, String gender1, String gender2, String gender3){
         User currentUser = User.getCurrentUser(request);
         if(currentUser == null){
             return unauthorized("You need to be logged in to use this api");
@@ -168,7 +171,11 @@ public class TravelPartnerController {
             bornBefore = "";
         }
 
-        Set<User> users = UserAccessor.getUsersByQuery(travellerType, offset,quantity,nationality, bornAfter, bornBefore, gender1, gender2, gender3);
+        if (queryName == null) {
+            queryName = "";
+        }
+
+        Set<User> users = UserAccessor.getUsersByQuery(travellerType,offset,quantity, queryName, nationality, bornAfter, bornBefore, gender1, gender2, gender3);
         ObjectMapper objectMapper = new ObjectMapper();
         ArrayNode userNodes = objectMapper.createArrayNode();
 

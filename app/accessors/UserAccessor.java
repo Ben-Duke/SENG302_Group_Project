@@ -241,11 +241,15 @@ public class UserAccessor {
      * @return a list of users, returns empty if none are found
      */
    public static Set<User> getUsersByQuery(String travellerType,
-                                           int offset, int quantity, String queryNationality,
+                                           int offset, int quantity, String queryName, String queryNationality,
                                            String agerange1, String agerange2, String gender1,
                                            String gender2, String gender3){
+       String[] splittedName = new String[] {queryName, queryName};
+       if (queryName.split("\\s+").length  > 1) {
+           splittedName = queryName.split("\\s+");
+       }
 
-        List<List<Object>> equalsFields = new ArrayList<>();
+       List<List<Object>> equalsFields = new ArrayList<>();
 
        if(quantity < 1) {
            return new HashSet<>();
@@ -254,7 +258,6 @@ public class UserAccessor {
        if(offset < 0) {
            offset = 0;
        }
-
        equalsFields = updateEqualsFields(travellerType, TRAVELLER_TYPE_COLUMN_NAME, equalsFields);
        equalsFields = updateEqualsFields(queryNationality, NATIONALITY_COLUMN_NAME, equalsFields);
        equalsFields = updateEqualsFields(gender1, GENDER_COLUMN_NAME, equalsFields);
@@ -288,6 +291,10 @@ public class UserAccessor {
                            .eq((String) equalsFields.get(3).get(0), equalsFields.get(3).get(1))
                            .eq((String) equalsFields.get(4).get(0), equalsFields.get(4).get(1))
                            .endOr()
+                           .where()
+                           .or()
+                           .ilike("f_name", "%" + splittedName[0] + "%")
+                           .ilike("l_name", "%" + splittedName[1] + "%")
                            .select("userid")
                            //Use this to get connected traveller types
                            .fetch(TRAVELLER_TYPE_COLUMN_NAME,"*")
@@ -299,6 +306,7 @@ public class UserAccessor {
                            .where()
                            .eq((String) equalsFields.get(1).get(0), equalsFields.get(1).get(1))
                            .setFirstRow(offset).setMaxRows(quantity);
+
        }
        else {
            query = //Ebean.find(User.class)
@@ -308,6 +316,11 @@ public class UserAccessor {
                            .eq((String) equalsFields.get(2).get(0), equalsFields.get(2).get(1))
                            .eq((String) equalsFields.get(3).get(0), equalsFields.get(3).get(1))
                            .eq((String) equalsFields.get(4).get(0), equalsFields.get(4).get(1))
+                           .endOr()
+                           .where()
+                           .or()
+                           .ilike("f_name", "%" + splittedName[0] + "%")
+                           .ilike("l_name", "%" + splittedName[1] + "%")
                            .endOr()
                            .select("userid")
                            //Use this to get connected traveller types

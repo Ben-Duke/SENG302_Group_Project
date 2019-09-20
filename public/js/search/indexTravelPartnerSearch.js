@@ -73,6 +73,7 @@ async function searchUsers() {
  */
 function updateFilters() {
     filters = {
+        name: document.getElementById("travel-partner-name-filter").value,
         male: document.getElementById("travel-partner-male-filter").checked,
         female: document.getElementById("travel-partner-female-filter").checked,
         other: document.getElementById("travel-partner-other-filter").checked,
@@ -88,6 +89,9 @@ function updateFilters() {
  * @param route the base route without any query parameters
  */
 function appendQueryParameters(route) {
+    if(filters["name"] !== " ") {
+        route += `&name=${filters["name"]}`
+    }
     if(filters["male"] === true) {
         route += "&gender1=male"
     }

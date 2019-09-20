@@ -102,6 +102,26 @@ public class UserAccessor {
     }
 
     /**
+     * Gets a list of users by gender, used for unit tests.
+     * The gender can be either "male", "female" or "other". Returns null otherwise.
+     * @param gender the gender as a string
+     * @return a list of users by gender
+     */
+    public static Set<User> getUsersFromGender(String gender) {
+        Set<User> users = null;
+        if (gender.equalsIgnoreCase("male")) {
+            users = User.find().query().where().eq(GENDER_COLUMN_NAME, "Male").findSet();
+        }
+        if (gender.equalsIgnoreCase("female")) {
+            users = User.find().query().where().eq(GENDER_COLUMN_NAME, "Female").findSet();
+        }
+        if (gender.equalsIgnoreCase("other")) {
+            users = User.find().query().where().eq(GENDER_COLUMN_NAME, "Other").findSet();
+        }
+        return users;
+    }
+
+    /**
      * Return the User matching the id passed
      * @param id the id of the user
      * @return User

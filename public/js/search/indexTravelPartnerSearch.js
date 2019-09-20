@@ -1,28 +1,27 @@
 let userCount;
 const usersPerPage = 10;
 let currentPageNum;
+let filters;
 
 initUsers();
 
 async function initUsers() {
-    let filters = getFilters();
-    let count = await getUserCount(filters);
-    userCount = count.count;
+    updateFilters();
+    let count = await getUserCount();
+    userCount = count;
     currentPageNum = 1;
-
     await renderPaginatedData();
 }
 
-function getFilters() {
-    let filters = {
+function updateFilters() {
+    filters = {
         male: document.getElementById("travel-partner-male-filter").checked,
         female: document.getElementById("travel-partner-female-filter").checked,
         other: document.getElementById("travel-partner-other-filter").checked,
     };
-    return filters;
 }
 
-function appendQueryParameters(route, filters) {
+function appendQueryParameters(route) {
     if(filters["male"] === true) {
         route += "&gender1=male"
     }
@@ -36,6 +35,7 @@ function appendQueryParameters(route, filters) {
 }
 
 async function onPaginate(currentPage) {
+    console.log("got here");
     currentPageNum = currentPage;
     await renderPaginatedData();
 }
@@ -46,11 +46,12 @@ async function renderPaginatedData() {
     addPagination(userCount, currentPageNum);
 }
 
-async function getUserCount(filters) {
+async function getUserCount() {
 
     const token =  $('input[name="csrfToken"]').attr('value');
     const userCountRoute = "/users/profile/searchprofiles/count?";
-    let filteredRoute = appendQueryParameters(userCountRoute, filters);
+    let filteredRoute = appendQueryParameters(userCountRoute);
+    console.log(filteredRoute);
     $.ajaxSetup({
         beforeSend: function(xhr) {
             xhr.setRequestHeader('Csrf-Token', token);
@@ -69,7 +70,9 @@ async function getUserCount(filters) {
 async function renderUserData(pageNum, quantity) {
 
     const offset = (pageNum - 1) * quantity;
-
+    const searchTravelPartnerRoute = "/users/profile/searchprofiles?";
+    let filteredRoute = appendQueryParameters(searchTravelPartnerRoute);
+    filteredRoute += `&offset=${offset}&quantity=${10}`;
 
     const token =  $('input[name="csrfToken"]').attr('value');
     $.ajaxSetup({
@@ -80,7 +83,7 @@ async function renderUserData(pageNum, quantity) {
 
     const users = await $.ajax({
         type: 'GET',
-        url: `/users/admin/data?offset=${offset}&quantity=${10}`,
+        url: filteredRoute,
         contentType: 'application/json',
     });
 
@@ -90,7 +93,7 @@ async function renderUserData(pageNum, quantity) {
 
 async function displayData(users) {
     const tableBody = document.getElementById('travel-partner-search-table-body');
-
+    console.log(users);
     while (tableBody.childNodes.length > 0) {
         tableBody.childNodes[0].remove();
     }
@@ -98,29 +101,25 @@ async function displayData(users) {
     for (let user of users) {
         const row = document.createElement("tr");
 
-        const userId = document.createElement("th");
-        userId.innerText = user.userId;
-        row.appendChild(userId);
-
-        const email = document.createElement("td");
-        email.innerText = user.email;
-        row.appendChild(email);
-
-        const firstName = document.createElement("td");
-        firstName.innerText = user.firstName;
-        row.appendChild(firstName);
-
-        const lastName = document.createElement("td");
-        lastName.innerText = user.lastName;
-        row.appendChild(lastName);
+        const name = document.createElement("th");
+        name.innerText = user.name;
+        row.appendChild(name);
 
         const gender = document.createElement("td");
         gender.innerText = user.gender;
         row.appendChild(gender);
 
+        const nationalities = document.createElement("td");
+        nationalities.innerText = user.nationalities;
+        row.appendChild(nationalities);
+
         const dob = document.createElement("td");
         dob.innerText = user.dob;
         row.appendChild(dob);
+
+        const travellerTypes = document.createElement("td");
+        travellerTypes.innerText = user.travellerTypes;
+        row.appendChild(travellerTypes);
 
         const changeAdmin = document.createElement("td");
 

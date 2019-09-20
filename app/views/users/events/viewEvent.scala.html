@@ -1,52 +1,63 @@
-@(user : User, event : Event, eventResponses : List[EventResponse], googleApiKey : String)
+@(user : User, event : Event, eventResponses : List[EventResponse], googleApiKey : String, isGoing : Boolean)
 
 @main(user, "Event") {
+    <head>
+        <style>
 
+                .userProfileImg {
+                    height: 50px;
+                    width: 50px;
+                }
+
+                .userPhotoImg {
+                    max-height: 30vh;
+                    max-width: 100%;
+                    display: block;
+                    margin: auto;
+                    border-radius: 4px;
+                }
+                .responseItem {
+                    margin-bottom: 8px;
+                    padding: 4px;
+                    border-radius: 4px;
+                    background-color: white;
+
+                }
+
+
+        </style>
+
+    </head>
     <a href="@event.getUrl()" target="_blank">
         <h2> @event.getName().substring(1, event.getName().length()-1)</h2>
     </a>
     <h4>@event.getDescription().substring(1, event.getDescription().length()-1)</h4>
-    @for(response <- eventResponses) {
-        @if(user == response.getUser) {
-            @if(response.getResponseType == "Going") {
-                <a class="btn btn-primary" role="button" onmouseover="this.innerText = 'Not Going'" onmouseout="this.innerText = 'Going'">
-                    @response.getResponseType
-                </a>
-            } else {
-                <a class="btn btn-primary" role="button" onmouseover="this.innerText = 'Going'" onmouseout="this.innerText = 'Not Going'" onclick="sendResponse(event, response.getResponseType)">
-                    @response.getResponseType
-                </a>
-            }
-            <a class="btn btn-primary" role="button">
+    @if(isGoing == false) {
+        <a class="btn btn-primary" role="button" onmouseover="this.innerText = 'Going'" onmouseout="this.innerText = 'Not Going'">
+            Not Going
+        </a>
+    } else {
+        <a class="btn btn-primary" role="button" onmouseover="this.innerText = 'Not Going'" onmouseout="this.innerText = 'Going'">
+            Going
+        </a>
+        <a class="btn btn-primary" role="button">
             Add Media
-            </a>
+        </a>
+    }
+    @for(response <- eventResponses) {
+        @if(user != response.getUser) {
+            <div class="responseItem">
+                @if(response.getUser().getUserPhotos.size() != 0) {
+                    <img class="img-circle userProfileImg" src="@{response.getUser().getUserPhotos.get(0)}")>
+                } else{
+                    <img class="img-circle userProfileImg" src="@{routes.Assets.at("images/Generic.png")}")>
+
+                }
+                <span class="responseType">@response.getUser.getFName @response.getUser.getLName is @response.getResponseType</span>
+                <span class="responseTime">@response.getResponseDateTime</span>
+            </div>
         }
     }
-
-
-
-    <div class="row">
-        <div class="col-sm-5">
-            <div id="map"></div>
-        </div>
-            <table class="table table-hover" id="responseTable">
-                <thead>
-                    <tr>
-                        <th scope="col">Name</th>
-                        <th scope="col">Response</th>
-                        <th scope="col">Response Date</th>
-                    </tr>
-                </thead>
-            @for(response <- eventResponses) {
-                <tr>
-                    <th scope ="row">@response.getUser().getFName @response.getUser().getLName</th>
-                    <td>@response.getResponseType()</td>
-                    <td>@response.getResponseDateTime()</td>
-                </tr>
-            }
-            </table>
-        </div>
-    </div>
 
 
 }

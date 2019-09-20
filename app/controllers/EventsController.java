@@ -129,8 +129,14 @@ public class EventsController {
                 EnvVariableKeys.GOOGLE_MAPS_API_KEY.toString());
         Event event = Event.find().byId(eventId);
         List<EventResponse> eventResponses = EventResponseAccessor.getByEvent(event);
+        boolean isGoing = false;
+        for (EventResponse userEvent : eventResponses) {
+            if(userEvent.getUser().getUserid() == user.getUserid()) {
+                isGoing = true;
+            }
+        }
 
-        return ok(viewEvent.render(user, event, eventResponses, googleApiKey));
+        return ok(viewEvent.render(user, event, eventResponses, googleApiKey, isGoing));
     }
 
     public Result checkEventExists(Http.Request request, int eventId) {

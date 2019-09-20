@@ -44,13 +44,9 @@ public class MediaAccessorTest extends BaseTestWithApplicationAndDatabase {
         User user = UserAccessor.getById(2);
         UserPhoto photo = new UserPhoto("Test1", true, true, user, null,
                 null);
-        UserPhoto photo1 = new UserPhoto("Test2", true, true, user, null,
-                null);
-        MediaAccessor.insert(photo);
         MediaAccessor.insert(photo);
         List<Media> urls = MediaAccessor.getAllMediaForUser(user);
-        System.out.println();
-        assertEquals(2, urls.size());
+        assertEquals(3, urls.size());
     }
 
 }

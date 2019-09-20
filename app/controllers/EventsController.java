@@ -1,9 +1,13 @@
 package controllers;
 
 import accessors.DestinationAccessor;
+import accessors.EventResponseAccessor;
 import com.fasterxml.jackson.databind.JsonNode;
 import models.Destination;
+import models.Event;
+import models.EventResponse;
 import models.User;
+import play.libs.Json;
 import play.mvc.Http;
 import play.mvc.Result;
 import utilities.EnvVariableKeys;
@@ -13,6 +17,7 @@ import views.html.users.events.*;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.List;
 import java.util.Map;
 
 import static play.mvc.Results.*;
@@ -115,7 +120,7 @@ public class EventsController {
         return ok(data);
     }
 
-    public Result indexEvent(Http.Request request, int eventId) {
+    public Result viewEvent(Http.Request request, int eventId) {
         User user = User.getCurrentUser(request);
 
         if (user == null) { return redirect(routes.UserController.userindex()); }
@@ -123,11 +128,22 @@ public class EventsController {
         String googleApiKey = EnvironmentalVariablesAccessor.getEnvVariable(
                 EnvVariableKeys.GOOGLE_MAPS_API_KEY.toString());
         Event event = Event.find().byId(eventId);
-        List<EventResponeses> eventRespones =
+        List<EventResponse> eventResponses = EventResponseAccessor.getByEvent(event);
 
-        Map<Integer, String> categoryIdsToNames = EventFindaUtilities.getMainCategories();
+        return ok(viewEvent.render(user, event, eventResponses, googleApiKey));
+    }
 
-        return ok(viewEvent.render(user, event, eventRespones, googleApiKey));
+    public Result checkEventExists(Http.Request request, int eventId) {
+        User user = User.getCurrentUser(request);
+
+        if (user == null) { return redirect(routes.UserController.userindex()); }
+        for(Event event: Event.find().all()) {
+            if (event.getExternalId() == eventId) {
+                return ok(Json.toJson(event.getEventId()));
+            }
+        }
+        return badRequest("Event does not exist");
+
     }
 
 }

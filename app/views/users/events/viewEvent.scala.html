@@ -2,4 +2,51 @@
 
 @main(user, "Event") {
 
+    <a href="@event.getUrl()" target="_blank">
+        <h2> @event.getName().substring(1, event.getName().length()-1)</h2>
+    </a>
+    <h4>@event.getDescription().substring(1, event.getDescription().length()-1)</h4>
+    @for(response <- eventResponses) {
+        @if(user == response.getUser) {
+            @if(response.getResponseType == "Going") {
+                <a class="btn btn-primary" role="button" onmouseover="this.innerText = 'Not Going'" onmouseout="this.innerText = 'Going'">
+                    @response.getResponseType
+                </a>
+            } else {
+                <a class="btn btn-primary" role="button" onmouseover="this.innerText = 'Going'" onmouseout="this.innerText = 'Not Going'" onclick="sendResponse(event, response.getResponseType)">
+                    @response.getResponseType
+                </a>
+            }
+            <a class="btn btn-primary" role="button">
+            Add Media
+            </a>
+        }
+    }
+
+
+
+    <div class="row">
+        <div class="col-sm-5">
+            <div id="map"></div>
+        </div>
+            <table class="table table-hover" id="responseTable">
+                <thead>
+                    <tr>
+                        <th scope="col">Name</th>
+                        <th scope="col">Response</th>
+                        <th scope="col">Response Date</th>
+                    </tr>
+                </thead>
+            @for(response <- eventResponses) {
+                <tr>
+                    <th scope ="row">@response.getUser().getFName @response.getUser().getLName</th>
+                    <td>@response.getResponseType()</td>
+                    <td>@response.getResponseDateTime()</td>
+                </tr>
+            }
+            </table>
+        </div>
+    </div>
+
+
 }

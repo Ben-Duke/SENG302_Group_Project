@@ -430,6 +430,8 @@ GET /tags/display/:tagName                                            controller
 GET /tags/items/:tagId                                  controllers.TagController.getTagDetails(request: Request, tagId: Integer)
 
 
+GET /users/newsfeed controllers.NewsfeedController.indexNewsfeed(request: Request)
+
 
 # Undo
 +nocsrf

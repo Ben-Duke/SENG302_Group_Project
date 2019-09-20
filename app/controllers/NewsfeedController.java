@@ -11,6 +11,7 @@ import utilities.EnvVariableKeys;
 import utilities.EnvironmentalVariablesAccessor;
 import utilities.EventFindaUtilities;
 import views.html.users.events.*;
+import views.html.users.newsfeed.newsfeed;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -26,15 +27,15 @@ public class NewsfeedController {
      * @param request
      * @return
      */
-    public Result getUserNewsFeed(Http.Request request){
+    public Result indexNewsfeed(Http.Request request) {
         User user = User.getCurrentUser(request);
-        if(user == null){
+        if (user == null) {
             return unauthorized("You need to be logged in");
         }
 
 
 
-        return ok();
+        return ok(newsfeed.render(user));
     }
 
 }

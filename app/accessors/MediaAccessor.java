@@ -55,7 +55,7 @@ public class MediaAccessor {
      */
     public static List<Media> getAllMediaForUser(User user){
 
-        return Media.find.query().where().select("*").fetch("user").where().eq("user", user).findList();
+        return Media.find.query().where().select("*").fetch("user").where().eq("user", user).and().eq("isPublic",true).findList();
 
     }
 

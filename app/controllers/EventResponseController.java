@@ -1,6 +1,7 @@
 package controllers;
 
 import accessors.EventResponseAccessor;
+import accessors.UserAccessor;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -20,6 +21,8 @@ import play.libs.Json;
 import play.mvc.Http;
 import play.mvc.Result;
 import utilities.EventFindaUtilities;
+import utilities.UtilityFunctions;
+import utilities.exceptions.EbeanDateParseException;
 
 import static play.mvc.Results.*;
 
@@ -44,6 +47,7 @@ public class EventResponseController {
             JsonNode jsonData = EventFindaUtilities.getEventById(externalEventId).get("events");
             if (jsonData.size() == 0) {return badRequest();}
             JsonNode eventData = jsonData.get(0);
+            System.out.println(eventData);
             Event newEvent = new Event(
                     eventData.get("id").asInt(),
                     LocalDateTime.parse(eventData.get("datetime_start").toString().substring(1, 20), formatter),
@@ -127,9 +131,62 @@ public class EventResponseController {
         return json;
     }
 
+    @SuppressWarnings("Duplicates")
+    public ObjectNode getEventResponsesComponentJson(List<EventResponse> eventResponses) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        ObjectNode json = objectMapper.createObjectNode();
+
+        ArrayNode responseJSON = objectMapper.createArrayNode();
+        for (EventResponse response : eventResponses) {
+            ObjectNode eventResponseNode = objectMapper.createObjectNode();
+
+            Event event = response.getEvent();
+            eventResponseNode.put("title", event.getName());
+            eventResponseNode.put("url", event.getUrl());
+            eventNode.put("id", event.getEventId());
+            eventNode.put("externalId", event.getExternalId());
+            eventNode.put("description", event.getDescription());
+            eventNode.put("lat", event.getLatitude());
+            eventNode.put("lng", event.getLongitude());
+            eventNode.put("startTime", event.getStartTime().format(formatter));
+            eventNode.put("endTime", event.getEndTime().format(formatter));
+
+            ObjectNode userNode = objectMapper.createObjectNode();
+            responseNode.put("responseId", response.getEventResponseId());
+            responseNode.put("responseType", response.getResponseType());
+            responseNode.put("userId", response.getUser().getUserid());
+            responseNode.put("event", eventNode);
+            responseNode.put("responseDateTime", response.getResponseDateTime().format(formatter));
+            responses.add(responseNode);
+        }
+        json.put("responses", responses);
+        return json;
+    }
+
     public Result getAllResponses(Http.Request request) {
         return ok(Json.toJson(EventResponseAccessor.getAllEventResponses()));
     }
 
+    public Result getEventResponses(Http.Request request, int offset, int limit, String localDateTime) {
+        User user = User.getCurrentUser(request);
+        if (user == null) {
+            return unauthorized("Must be logged in to use this API endpoint.");
+        }
 
+        LocalDateTime parsedLocalDateTime = null;
+        try {
+            parsedLocalDateTime = UtilityFunctions
+                    .parseLocalDateTime(localDateTime);
+        } catch (EbeanDateParseException e) {
+           //silent catch, handled below
+        }
+        if (parsedLocalDateTime == null) {
+            return badRequest("Invalid date time string");
+        }
+
+        List<EventResponse> eventResponses = EventResponseAccessor
+                .getEventResponses(offset, limit, parsedLocalDateTime);
+
+
+    }
 }

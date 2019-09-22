@@ -119,11 +119,11 @@ public class EventResponseController {
             responseNode.put("responseId", response.getEventResponseId());
             responseNode.put("responseType", response.getResponseType());
             responseNode.put("userId", response.getUser().getUserid());
-            responseNode.put("event", eventNode);
+            responseNode.set("event", eventNode);
             responseNode.put("responseDateTime", response.getResponseDateTime().format(formatter));
             responses.add(responseNode);
         }
-        json.put("responses", responses);
+        json.set("responses", responses);
         return json;
     }
 

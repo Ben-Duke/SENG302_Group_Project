@@ -42,9 +42,6 @@ public class Event extends Model {
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    @ManyToOne
-    private Destination destination;
-
     private static final Finder<Integer,Event> find = new Finder<>(Event.class, ApplicationManager.getDatabaseName());
 
     public Event(Integer externalId, LocalDateTime startTime, LocalDateTime endTime, String name, String url, double latitude, double longitude, String description, Destination destination) {
@@ -56,7 +53,6 @@ public class Event extends Model {
         this.latitude = latitude;
         this.longitude = longitude;
         this.description = description;
-        this.destination = destination;
     }
 
     public Event() {}
@@ -69,7 +65,6 @@ public class Event extends Model {
         this.startTime = startTime;
         this.endTime = endTime;
         this.description = description;
-        this.destination = destination;
     }
 
     public static Finder<Integer, Event> find() {
@@ -102,14 +97,6 @@ public class Event extends Model {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public Destination getDestination() {
-        return destination;
-    }
-
-    public void setDestination(Destination destination) {
-        this.destination = destination;
     }
 
     public String getName() {
@@ -167,7 +154,6 @@ public class Event extends Model {
                 ", latitude=" + latitude +
                 ", longitude=" + longitude +
                 ", description='" + description + '\'' +
-                ", destination=" + destination +
                 '}';
     }
 }

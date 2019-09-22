@@ -3,8 +3,10 @@ package controllers;
 import accessors.TagAccessor;
 import accessors.TripAccessor;
 import accessors.UserAccessor;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import play.libs.Json;
 import factories.TripFactory;
 import factories.VisitFactory;
 import formdata.VisitFormData;
@@ -600,11 +602,115 @@ public class TripControllerTest extends BaseTestWithApplicationAndDatabase {
     }
 
     @Test
-    public void getTripsbyName () {
+    public void getTripsByNameOne () {
+        String urlFormat = "/users/trips/matching/Trip?offset=%d&quantity=%d";
+        String url = String.format(urlFormat, 0, 1);
+
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(GET)
-                .uri("/users/trips/matching/Trip").session("connected", "2");
+                .uri(url).session("connected", "2");
         Result result = route(app, request);
+        JsonNode json = Json.parse(contentAsString(result));
+        JsonNode trips = json.get("trips");
+
+        assertEquals(1, trips.size());
         assertEquals(OK, result.status());
+    }
+
+    @Test
+    public void getPaginatedUserTripsOne () {
+        String url = "/users/trips/paginated/0/1";
+
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri(url).session("connected", "2");
+        Result result = route(app, request);
+        JsonNode json = Json.parse(contentAsString(result));
+        JsonNode trips = json.get("trips");
+
+        assertEquals(1, trips.size());
+        assertEquals(OK, result.status());
+    }
+
+    @Test
+    public void getPaginatedUserTripsMany () {
+        String url = "/users/trips/paginated/0/5";
+
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri(url).session("connected", "2");
+        Result result = route(app, request);
+        JsonNode json = Json.parse(contentAsString(result));
+        JsonNode trips = json.get("trips");
+        Integer numTrips = UserAccessor.getById(2).getTrips().size();
+        assertTrue(trips.size() <= numTrips);
+        assertTrue(trips.size() <= 5);
+        assertEquals(OK, result.status());
+    }
+
+    @Test
+    public void getPaginatedUserTripsNone () {
+        String url = "/users/trips/paginated/0/0";
+
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri(url).session("connected", "2");
+        Result result = route(app, request);
+        JsonNode json = Json.parse(contentAsString(result));
+        JsonNode trips = json.get("trips");
+
+        assertEquals(0, trips.size());
+        assertEquals(OK, result.status());
+    }
+
+    @Test
+    public void getPaginatedUserTripsTotalCount () {
+        String url = "/users/trips/paginated/0/5";
+
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri(url).session("connected", "2");
+        Result result = route(app, request);
+        JsonNode json = Json.parse(contentAsString(result));
+        JsonNode count = json.get("tripCount");
+
+        assertTrue(0 < count.asInt());
+        assertEquals(OK, result.status());
+    }
+
+    @Test
+    public void getTripsAsJson () {
+        String url = "/users/trips/1/asJson";
+
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri(url).session("connected", "2");
+        Result result = route(app, request);
+        JsonNode json = Json.parse(contentAsString(result));
+        Integer retrievedTripId = json.get("tripId").asInt();
+        assertTrue(retrievedTripId == 1);
+        assertEquals(OK, result.status());
+    }
+
+    @Test
+    public void getTripsAsJsonForbidden () {
+        String url = "/users/trips/1/asJson";
+
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri(url).session("connected", "3");
+        Result result = route(app, request);
+        assertEquals(FORBIDDEN, result.status());
+    }
+
+    @Test
+    public void getTripsAsJsonBadRequest () {
+        String url = "/users/trips/-1/asJson";
+
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET)
+                .uri(url).session("connected", "2");
+        Result result = route(app, request);
+        assertEquals(BAD_REQUEST, result.status());
     }
 }

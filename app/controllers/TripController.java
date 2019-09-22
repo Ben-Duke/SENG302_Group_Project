@@ -666,23 +666,118 @@ public class TripController extends Controller {
         return ok(tripNodes);
     }
 
+    private ObjectNode convertTripToJson(Trip trip) {
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        ObjectNode tripNode = objectMapper.createObjectNode();
+        ArrayNode visitNodes = objectMapper.createArrayNode();
+
+        for (Visit visit : trip.getOrderedVisits()) {
+            ObjectNode visitNode = objectMapper.createObjectNode();
+
+            Destination destination = visit.getDestination();
+
+            visitNode.put("visitId", visit.getVisitid());
+            visitNode.put("visitName", visit.getVisitName());
+            visitNode.put("destType", destination.getDestType());
+            visitNode.put("lat", destination.getLatitude());
+            visitNode.put("lng", destination.getLongitude());
+            visitNode.put("arrivalDate", visit.getArrival());
+            visitNode.put("departureDate", visit.getDeparture());
+
+            visitNodes.add(visitNode);
+        }
+        tripNode.put("tripId", trip.getTripid());
+        tripNode.put("tripName", trip.getTripName());
+        tripNode.put("startDate", trip.getTripStart());
+        tripNode.put("visits", visitNodes);
+
+        return tripNode;
+    }
+
     /**
      * Controller function to retrieve a list of trips matching the given name
      * @param request the HTTP request
      * @param name the name of the trip to match
      * @return the list of trips that match the name
      */
-    public Result getTripsByName(Http.Request request, String name) {
+    public Result getTripsByName(Http.Request request, String name, int offset, int quantity) {
         User user = User.getCurrentUser(request);
         if (user == null) { return redirect(routes.UserController.userindex()); }
-        List<Trip> trips = TripAccessor.getTripsByName(name, user);
-
+        List<Trip> trips = TripAccessor.getTripsByName(name, user, offset, quantity);
+        ObjectMapper objectMapper = new ObjectMapper();
+        ObjectNode result = objectMapper.createObjectNode();
+        ArrayNode tripsListNode = objectMapper.createArrayNode();
         if(trips != null && trips.size() > 0) {
-            return ok(Json.toJson(trips));
+            for (Trip trip : trips) {
+
+                ObjectNode tripNode = convertTripToJson(trip);
+
+                tripsListNode.add(tripNode);
+            }
+            result.put("trips", tripsListNode);
+            result.put("tripCount", tripsListNode.size());
+            return ok(Json.toJson(result));
         } else {
-            return ok(Json.toJson(new ArrayList<>()));
+            result.put("trips", tripsListNode);
+            result.put("tripCount", 0);
+
+            return ok(Json.toJson(result));
         }
 
 
     }
+
+    /**
+     * Get a paginated list of trips for a user based on offset and quantity
+     * @param request the HTTP request
+     * @param offset the offset being the number of trips to skip before returning results
+     * @param quantity an integer indicating the maximum length of the results
+     * @return A JSON object with the trip data
+     */
+    public Result getPaginatedUserTrips(Http.Request request, int offset, int quantity) {
+        User user = User.getCurrentUser(request);
+        if (user == null) {
+            return redirect(routes.UserController.userindex());
+        }
+        List<Trip> trips = TripAccessor.getPaginatedTrips(offset, quantity, user);
+        ObjectMapper objectMapper = new ObjectMapper();
+        ObjectNode result = objectMapper.createObjectNode();
+        ArrayNode tripsListNode = objectMapper.createArrayNode();
+        for (Trip trip : trips) {
+
+            ObjectNode tripNode = convertTripToJson(trip);
+
+            tripsListNode.add(tripNode);
+        }
+        result.put("trips", tripsListNode);
+        result.put("tripCount", TripAccessor.getTotalUserTripCount(user));
+        return ok(Json.toJson(result));
+    }
+
+
+
+    public Result getTripsAsJson(Http.Request request, Integer tripId) {
+
+        User user = User.getCurrentUser(request);
+        if (user == null) {
+            return redirect(routes.UserController.userindex());
+        }
+
+        Trip trip = TripAccessor.getTripById(tripId);
+        if (trip == null) {
+            return badRequest();
+        }
+
+        if (!trip.isUserOwner(user.getUserid())) {
+            return forbidden();
+        }
+
+        ObjectNode tripNode = convertTripToJson(trip);
+
+        return ok(tripNode);
+    }
+
+
+
 }

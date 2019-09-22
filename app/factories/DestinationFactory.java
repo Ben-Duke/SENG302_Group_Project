@@ -5,6 +5,7 @@ import formdata.DestinationFormData;
 import models.*;
 import org.slf4j.Logger;
 import utilities.UtilityFunctions;
+import utilities.exceptions.EbeanDateParseException;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -289,8 +290,11 @@ public class DestinationFactory {
             for(TreasureHunt treasureHunt : treasurehunts) {
                 TreasureHuntAccessor.delete(treasureHunt);
                 destinationOne.update();
-                TreasureHunt newTreasureHunt = new TreasureHunt(treasureHunt.getTitle(), treasureHunt.getRiddle(),
-                        treasureHunt.getDestination(), treasureHunt.getStartDate(), treasureHunt.getEndDate(), destinationTwo.getUser());
+                TreasureHunt newTreasureHunt = null;
+                newTreasureHunt = new TreasureHunt(treasureHunt.getTitle(),
+                        treasureHunt.getRiddle(), treasureHunt.getDestination(),
+                        treasureHunt.getStartDate(), treasureHunt.getEndDate(),
+                        destinationTwo.getUser());
                 newTreasureHunt.save();
                 TreasureHuntAccessor.insert(newTreasureHunt);
                 try {

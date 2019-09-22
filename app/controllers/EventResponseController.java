@@ -2,6 +2,9 @@ package controllers;
 
 import accessors.EventResponseAccessor;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import models.Event;
 import models.EventResponse;
 import models.User;
@@ -35,7 +38,7 @@ public class EventResponseController {
      */
     public Result respondToEvent(Http.Request request, Integer externalEventId, String responseType) {
         User user = User.getCurrentUser(request);
-        if (user == null) {return unauthorized();}
+//        if (user == null) {return unauthorized();}
         Event event = Event.find().query().where().eq("externalId", externalEventId).findOne();
         if (event == null) {
             JsonNode jsonData = EventFindaUtilities.getEventById(externalEventId).get("events");
@@ -75,11 +78,7 @@ public class EventResponseController {
         User user = User.getCurrentUser(request);
         if (user == null) {return redirect(routes.UserController.userindex());}
         List<EventResponse> eventResponses = EventResponseAccessor.getByUserAndType(user, responseType);
-        List<Event> respondedEvents = new ArrayList<>();
-        for (EventResponse response: eventResponses) {
-            respondedEvents.add(response.getEvent());
-        }
-        return ok(Json.toJson(eventResponses));
+        return ok(getJsonEventResponses(eventResponses));
     }
 
     /**
@@ -91,17 +90,41 @@ public class EventResponseController {
      */
     public Result getResponsesForEventByResponseType(Http.Request request, Integer externalEventId, String responseType) {
         User user = User.getCurrentUser(request);
-//        if (user == null) {return redirect(routes.UserController.userindex());}
+        if (user == null) {return redirect(routes.UserController.userindex());}
         Event event = Event.find().query().where().eq("externalId", externalEventId).findOne();
         if (event == null) {return badRequest("No one has responded to this event yet.");}
         List<EventResponse> eventResponses = EventResponseAccessor.getByEventAndType(event, responseType);
         if (eventResponses.isEmpty()) {return badRequest("No one has responded as " + responseType + " to this event.");}
-        List<String> jsonList = new ArrayList<>();
-        for (EventResponse eventResponse: eventResponses) {
-            String json = "response: " + eventResponse.toString();
-            jsonList.add(json);
+        return ok(getJsonEventResponses(eventResponses));
+    }
+
+    public ObjectNode getJsonEventResponses(List<EventResponse> eventResponses) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        ObjectNode json = objectMapper.createObjectNode();
+        ArrayNode responses = objectMapper.createArrayNode();
+        for (EventResponse response : eventResponses) {
+            ObjectNode responseNode = objectMapper.createObjectNode();
+            ObjectNode eventNode = objectMapper.createObjectNode();
+            Event event = response.getEvent();
+            eventNode.put("id", event.getEventId());
+            eventNode.put("externalId", event.getExternalId());
+            eventNode.put("name", event.getName());
+            eventNode.put("description", event.getDescription());
+            eventNode.put("url", event.getUrl());
+            eventNode.put("lat", event.getLatitude());
+            eventNode.put("lng", event.getLongitude());
+            eventNode.put("startTime", event.getStartTime().format(formatter));
+            eventNode.put("endTime", event.getEndTime().format(formatter));
+
+            responseNode.put("responseId", response.getEventResponseId());
+            responseNode.put("responseType", response.getResponseType());
+            responseNode.put("userId", response.getUser().getUserid());
+            responseNode.put("event", eventNode);
+            responseNode.put("responseDateTime", response.getResponseDateTime().format(formatter));
+            responses.add(responseNode);
         }
-        return ok(Json.toJson(eventResponses));
+        json.put("responses", responses);
+        return json;
     }
 
     public Result getAllResponses(Http.Request request) {

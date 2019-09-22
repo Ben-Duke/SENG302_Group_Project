@@ -8,6 +8,7 @@ let selectedMediaID_GLOBAL;
 const quantityToGet = 8;
 let offSet = 0;
 let albumMediaData = [];
+let mediaId;
 
 moveAlbumSearch();
 
@@ -57,7 +58,7 @@ function moveBetweenAlbums(oldAlbumId, newAlbumId) {
               url: '/users/albums/get/'+oldAlbumId,
               contentType: 'application/json',
               success: (albumData) => {
-                      let mediaId = albumData[slideIndex-1]["mediaId"];
+                      mediaId = albumData[slideIndex-1]["mediaId"];
                       var token =  $('input[name="csrfToken"]').attr('value');
                       $.ajaxSetup({
                           beforeSend: function(xhr) {
@@ -105,7 +106,7 @@ function replaceWithClone(original) {
  */
 function setDeletePhotoListener(albumData, i) {
     function deletePhotoListener() {
-        const mediaId = albumData[i]["mediaId"];
+        mediaId = albumData[i]["mediaId"];
         selectedMediaID_GLOBAL = mediaId;
         openSelectDestinationsToUnlinkPhotoModal(mediaId);
     }
@@ -122,7 +123,7 @@ function setDeletePhotoListener(albumData, i) {
  */
 function setMakeProfilePictureListener(albumData, i) {
     function makeProfilePictureListener() {
-        const mediaId = albumData[i]["mediaId"];
+        mediaId = albumData[i]["mediaId"];
         setProfilePictureRequest(mediaId);
     }
     const original = document.getElementById('profilePictureBtn');
@@ -139,7 +140,7 @@ function setMakeProfilePictureListener(albumData, i) {
  */
 function setDestinationLinkListener(albumData, i) {
     function destinationLinkListener() {
-        const mediaId = albumData[i]["mediaId"];
+        mediaId = albumData[i]["mediaId"];
         openDestinationModal(mediaId);
     }
     const original = document.getElementById('linkDestinationBtn');
@@ -164,7 +165,7 @@ function setPrivacyListener(setPrivacy, mediaId) {
     }
     const original = document.getElementById('privacyBtn');
     const clone = replaceWithClone(original);
-    clone.addEventListener('click', privacyListener )
+    clone.addEventListener('click', privacyListener);
 }
 
 /**
@@ -174,27 +175,34 @@ function setPrivacyListener(setPrivacy, mediaId) {
 function setSlideListeners(albumData, i) {
     const dataset = document.getElementById('myModal').dataset;
     const isOwner = dataset.isowner;
-    const albumId = dataset.album;
-    const hidePrivate = !isOwner;
+    const isAdmin = dataset.isadmin;
 
     let setPrivacy;
-    setDeletePhotoListener(albumData, i);
-    setDestinationLinkListener(albumData, i);
-    setMakeProfilePictureListener(albumData, i);
-
-    const mediaId = albumData[i]["mediaId"];
-
+    mediaId = albumData[i]["mediaId"];
     const caption = albumData[i]["caption"];
-    changeTaggableModel(mediaId, "photo");
-    if (caption != "") {
-        document.querySelector('div[data-mediaId="'+mediaId+'"] [contenteditable]').innerHTML = caption.toString();
+
+
+    if (isOwner === "true" || isAdmin === "true") {
+        setDeletePhotoListener(albumData, i);
+        setDestinationLinkListener(albumData, i);
+        setMakeProfilePictureListener(albumData, i);
+        if (caption !== "") {
+            document.querySelector('div[data-mediaId="'+mediaId+'"] [contenteditable]').innerText = caption.toString();
+        } else {
+            document.querySelector('div[data-mediaId="'+mediaId+'"] [contenteditable]').innerText =
+            "Click to add caption.";
+        }
+        if(albumData[i]["isPublic"]) {setPrivacy=0;}
+        else {setPrivacy=1;}
+        setPrivacyListener(setPrivacy, mediaId);
     } else {
-        document.querySelector('div[data-mediaId="'+mediaId+'"] [contenteditable]').innerHTML =
-        "Click to add caption, press enter to save.";
+        if (caption !== "") {
+            document.querySelector('div[data-mediaId="'+mediaId+'"] [data-editable]').innerText = caption.toString();
+        } else {
+            document.querySelector('div[data-mediaId="'+mediaId+'"] [data-editable]').innerText =
+            "No Caption";
+        }
     }
-    if(albumData[i]["isPublic"]) {setPrivacy=0;}
-    else {setPrivacy=1;}
-    setPrivacyListener(setPrivacy, mediaId);
 }
 
 /**
@@ -314,13 +322,21 @@ async function displayGrid(i, albumData, path, offSet) {
 
 async function displaySlides(i, albumData, path) {
     var url = albumData[i]["urlWithPath"];
-    var mediaId = albumData[i]["mediaId"];
+    mediaId = albumData[i]["mediaId"];
     var lightBox = document.getElementById("lightbox-modal");
     var mySlidesDiv = document.createElement("div");
     var captionInput = document.createElement("p");
+    const dataSet = document.getElementById('myModal').dataset;
+    const isOwner = dataSet.isowner;
+    const isAdmin = dataSet.isadmin;
+
     captionInput.setAttribute("id", "img-caption");
     captionInput.setAttribute("captionMediaId", mediaId);
-    captionInput.setAttribute("contenteditable", "true");
+    if (isOwner === "true" || isAdmin === "true") {
+        captionInput.setAttribute("contenteditable", "true");
+    } else {
+        captionInput.setAttribute("data-editable", "false");
+    }
     captionInput.setAttribute("style", "color: white;");
 
     mySlidesDiv.classList.add("mySlides");
@@ -339,33 +355,36 @@ async function displaySlides(i, albumData, path) {
     mySlidesDiv.appendChild(figure);
 
     lightBox.appendChild(mySlidesDiv);
-    var content = document.querySelector('div[data-mediaId="'+mediaId+'"] [contenteditable]');
-    // 1. Listen for changes of the content editable element
-    content.addEventListener('focus', function (event) {
-        const el = event.target,
-            input = el.nodeName != 'INPUT',
-            data = {};
-            el.value = "";
+    if (isOwner === "true" || isAdmin === "true") {
+        var content = document.querySelector('div[data-mediaId="'+mediaId+'"] [contenteditable]');
+        // 1. Listen for changes of the content editable element
+        content.addEventListener('focus', function (event) {
+            const el = event.target,
+                input = el.nodeName != 'INPUT',
+                data = {};
+                el.value = "";
 
-        // This selects the caption text when clicked to edit
-        selection = window.getSelection();
-        range = document.createRange();
-        range.selectNodeContents(el);
-        selection.removeAllRanges();
-        selection.addRange(range);
-        //
+            // This selects the caption text when clicked to edit
+            selection = window.getSelection();
+            range = document.createRange();
+            range.selectNodeContents(el);
+            selection.removeAllRanges();
+            selection.addRange(range);
+            //
 
-        if (input) {
-            content.addEventListener('blur', function (event) {
-                if (el.innerText != "Click to add caption.")
-                data[el.getAttribute('data-name')] = el.innerText;
-                // we could send an ajax request to update the field
-                submitEditCaption(content.innerHTML, mediaId);
-                el.blur();
-                event.preventDefault();
-            });
-        }
-    });
+            if (input) {
+                content.addEventListener('blur', function (event) {
+                    if (el.innerText != "Click to add caption.")
+                    data[el.getAttribute('data-name')] = el.innerText;
+                    // we could send an ajax request to update the field
+                    submitEditCaption(content.innerHTML, mediaId);
+                    el.blur();
+                    event.preventDefault();
+                });
+            }
+        });
+    }
+
 }
 
 // Open the Modal
@@ -420,7 +439,7 @@ function closeModal() {
  */
 function openDestinationModal(mediaId) {
     document.getElementById('destination-modal').style.display = "block";
-    getDestData(mediaId);
+    getDestData(mediaId, 1, 20);
 }
 
 /**
@@ -434,13 +453,17 @@ function closeDestinationModal() {
  * Gets the data of all destinations the user can see to populate the destination linking modal and then loads it
  * @param mediaId the id of the media to load destination data for
  */
-function getDestData(mediaId) {
+function getDestData(mediaId, pageNum, quantity) {
+    const offset = (pageNum - 1) * 20;
+    let data = {offset: offset,
+        quantity: quantity};
     $.ajax({
         type: 'GET',
-        url: '/users/destinations/getalljson',
+        url: "/users/destinations/getallpaginatedjson",
+        data: data,
         contentType: 'application/json',
         success: (destData) => {
-            loadDestTable(destData, mediaId)
+            loadDestTable(destData, mediaId, pageNum, null)
         }
     });
 }
@@ -450,14 +473,65 @@ function getDestData(mediaId) {
  * @param destData the data containing all destinations that the user can view
  * @param mediaId the id of the media to link destinations to
  */
-function loadDestTable(destData, mediaId) {
-    for (let destination of destData) {
-        const publicTable = document.getElementById('public-dest-tbody');
-        const privateTable = document.getElementById('private-dest-tbody');
+function loadDestTable(destData, mediaId, pageNum, search) {
+    let count = destData.totalCountPublic;
+    const publicTable = document.getElementById('public-dest-tbody');
+    const privateTable = document.getElementById('private-dest-tbody');
+    if (document.getElementById('paginationEl') != null) {
+        document.getElementById('paginationEl').remove();
+    }
+    while (publicTable.childNodes.length > 0) {
+        publicTable.removeChild(publicTable.childNodes[0]);
+    }
+    while (privateTable.childNodes.length > 0) {
+        privateTable.removeChild(privateTable.childNodes[0]);
+    }
+    for (let destination of destData.destinations) {
         if (destination.isPublic) {
             addDestRow(publicTable, destination, mediaId);
         } else {
             addDestRow(privateTable, destination, mediaId)
+        }
+    }
+    addPagination(mediaId, count, pageNum ,search);
+
+}
+
+function searchByKeyword(mediaId, currentPageNum) {
+    const offset = (currentPageNum - 1) * 20;
+    let searchInput = document.getElementById("destSearchInput").value;
+    if(searchInput != "") {
+        let data = {offset: offset,
+            quantity: 20};
+        $.ajax({
+            url: '/users/destinations/matching/' + searchInput,
+            data: data,
+            method: "GET",
+            success: function (res) {
+                let displayedIds = [];
+                for (let j=0; j < res.destinations.length; j++) {
+                    if(res.destinations[j].isPublic === false) {
+                        displayedIds.push("destButton" + res.destinations[j].destId);
+                    }
+                }
+                let privateListChildren = document.getElementById("private-dest-tbody").children;
+
+                for(let i=0; i < privateListChildren.length; i++) {
+                    if (!displayedIds.includes(privateListChildren[i].id)) {
+                        [i].setAttribute("style", "display: none;");
+                    } else {
+                        privateListChildren[i].setAttribute("style", "display: block;");
+                    }
+                }
+                loadDestTable(res, mediaId, currentPageNum, searchInput)
+
+            }
+        });
+    } else {
+        getDestData(mediaId, 1, 20);
+        let privateListChildren = document.getElementById("private-dest-tbody").children;
+        for(let i=0; i < privateListChildren.length; i++) {
+            privateListChildren[i].setAttribute("style", "display: block;");
         }
     }
 }
@@ -470,7 +544,6 @@ function loadDestTable(destData, mediaId) {
  */
 function addDestRow(table, destination, mediaId) {
     const row = document.createElement("TR");
-
     const name = document.createElement("TH");
     name.setAttribute('scope', 'row');
     name.innerText = destination.destName;
@@ -513,6 +586,120 @@ function addDestRow(table, destination, mediaId) {
     row.appendChild(div);
 
     table.appendChild(row);
+}
+
+$("#destSearchInput").keyup(function ()
+{
+    searchByKeyword(mediaId, 1)
+});
+
+function addPagination(mediaId, count, pageNum, search, tab) {
+    let numOfPages = [];
+    let pageNumbers = [];
+    const pagination = document.createElement("ul");
+    pagination.setAttribute("id", "paginationEl")
+    pagination.classList.add("pagination");
+    for (let i = 0; i < count; i += 20) {
+        numOfPages.push((i / 20) + 1);
+    }
+    if (numOfPages.length > 10) {
+        if (pageNum > 5) {
+            if (numOfPages.length >= pageNum + 5) {
+                pageNumbers = [pageNum - 3, pageNum - 2, pageNum - 1, pageNum, pageNum + 1, pageNum + 2, pageNum + 3, pageNum + 4];
+            } else {
+                let lastPage = numOfPages.length - 0;
+                pageNumbers = []
+                for (let j = lastPage - 7; (j < lastPage + 1 && j > 0); j++) {
+                    pageNumbers.push(j);
+                }
+            }
+        } else {
+            for (let k = 0; k < 10; k++) {
+                pageNumbers.push(numOfPages[k]);
+            }
+        }
+    } else {
+        pageNumbers = numOfPages;
+    }
+    let item = document.createElement("li");
+    let pageButton = document.createElement("a");
+    let currentPageNum = 1;
+    pageButton.innerText = "First";
+    if (search == null) {
+        pageButton.setAttribute("onClick", `getDestData(${mediaId}, ${currentPageNum} ,${20})`);
+    } else {
+        pageButton.setAttribute("onClick", `searchByKeyword(${mediaId}, ${currentPageNum})`);
+
+    }
+    item.appendChild(pageButton);
+    pagination.appendChild(item);
+
+    item = document.createElement("li");
+    pageButton = document.createElement("a");
+    if (pageNum < 2) {
+        currentPageNum = 1;
+    } else {
+        currentPageNum = pageNum - 1;
+    }
+    pageButton.innerText = "<";
+    if (search == null) {
+        pageButton.setAttribute("onClick", `getDestData(${mediaId}, ${currentPageNum} ,${20})`);
+    } else {
+        pageButton.setAttribute("onClick", `searchByKeyword(${mediaId}, ${currentPageNum})`);
+
+    }
+    item.appendChild(pageButton);
+    pagination.appendChild(item);
+    for (let i=0; i < pageNumbers.length; i++) {
+        let item = document.createElement("li");
+        const pageButton = document.createElement("a");
+        const currentPageNum = pageNumbers[i];
+        pageButton.innerText = pageNumbers[i];
+        if (currentPageNum==pageNum) {
+            item.classList.add("active");
+        }
+        if (search == null) {
+            pageButton.setAttribute("onClick", `getDestData(${mediaId}, ${currentPageNum} ,${20})`);
+        } else {
+            pageButton.setAttribute("onClick", `searchByKeyword(${mediaId}, ${currentPageNum})`);
+
+        }
+        item.appendChild(pageButton);
+        pagination.appendChild(item);
+    }
+    item = document.createElement("li");
+    pageButton = document.createElement("a");
+    if (pageNum>=numOfPages.length) {
+        currentPageNum = numOfPages.length;
+    } else {
+        currentPageNum = pageNum+1;
+    }
+    pageButton.innerText = ">";
+    if (search == null) {
+        pageButton.setAttribute("onClick", `getDestData(${mediaId}, ${currentPageNum} ,${20})`);
+    } else {
+        pageButton.setAttribute("onClick", `searchByKeyword(${mediaId}, ${currentPageNum})`);
+
+    }
+    item.appendChild(pageButton);
+    pagination.appendChild(item);
+    document.getElementById("publicDestinations").appendChild(pagination);
+
+    item = document.createElement("li");
+    pageButton = document.createElement("a");
+    currentPageNum = numOfPages.length;
+    pageButton.innerText = "Last";
+    if (search == null) {
+        pageButton.setAttribute("onClick", `getDestData(${mediaId}, ${currentPageNum} ,${20})`);
+    } else {
+        pageButton.setAttribute("onClick", `searchByKeyword(${mediaId}, ${currentPageNum})`);
+
+    }
+    item.appendChild(pageButton);
+    pagination.appendChild(item);
+    if(numOfPages < 1) {
+        pagination.remove()
+    }
 }
 
 /**

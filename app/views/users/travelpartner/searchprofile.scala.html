@@ -1,160 +1,103 @@
 @import helper._
 @import views.html.bootstrap3._
 
-@import play.data.DynamicForm
-
-@(dynamicForm : DynamicForm, travellerTypes : java.util.List[String], nationalities : java.util.List[String], genderMap: java.util.Map[String, java.lang.Boolean], resultProfiles : java.util.Set[User], user : User)
+@(user : User)
 
 
 @main(user, "Search") {
-
+    <div class="container">
     <div class="container-fluid">
         <h1>Search</h1>
 
-        @form(action = helper.CSRF(routes.TravelPartnerController.searchByAttribute)) {
-
-            @checkboxes(
-                dynamicForm("gender"),
-                label = "Gender selection",
-                checkboxMap = genderMap,
-                help = "Select the genders you would like to include in your search results"
-            )
-
-            @helper.select(
-                field = dynamicForm("travellertype"),
-                options = travellerTypes.map(travellerType => travellerType -> travellerType),
-                '_label -> "Select a traveller type to add:"
-            )
-
-            @helper.select(
-                dynamicForm("nationality"),
-                options = nationalities.map(nationality => nationality -> nationality),
-                '_label -> "Select a nationality to add:"
-            )
-
-            @helper.inputDate(dynamicForm("agerange1"), '_label -> "Born after:")
-            @helper.inputDate(dynamicForm("agerange2"), '_label -> "Born before:")
-
-            <input type="submit" value="Search by filters">
 
     </div>
+    <ul class="nav nav-tabs nav-justified">
+        <li class="active" id="travellerTabListItem"><a data-toggle="tab" href="#searchResultsTable">Travellers</a></li>
+        <li id="followingTabListItem"><a data-toggle="tab" href="#followingTab">Following</a></li>
+        <li id="followersTabListItem"><a data-toggle="tab" href="#followerTab">Followers</a></li>
+    </ul>
+        <br>
+        <label for="travel-partner-name-filter">Search by name <input type ="search" value="" checked id="travel-partner-name-filter"></label>
+        <br>
+        <label class="checkbox-inline"><input type="checkbox" value="" checked id="travel-partner-male-filter">Male</label>
+        <label class="checkbox-inline"><input type="checkbox" value="" checked id="travel-partner-female-filter">Female</label>
+        <label class="checkbox-inline"><input type="checkbox" value="" checked id="travel-partner-other-filter">Other</label>
+        <br><br>
+        <div class="form-group">
+            <label for="travel-partner-nationality-filter">Nationality</label>
+            <select class="form-control" id="travel-partner-nationality-filter">
 
+            </select>
+        </div>
+        <label for="travel-partner-born-after-filter">Born after:</label>
 
-        @if(resultProfiles.nonEmpty) {
+        <input type="date" id="travel-partner-born-after-filter"
+        min="1900-01-01" max="2020-01-01">
+        <label for="travel-partner-born-before-filter">Born before:</label>
 
-            <table class="table" id="searchResultsTable">
+        <input type="date" id="travel-partner-born-before-filter"
+        min="1900-01-01" max="2020-01-01">
+        <br><br>
+        <button type='button' class="btn btn-primary" onclick="searchUsers()">
+            Search travellers
+        </button>
+    <div class="tab-content">
+        <div id="searchResultsTable" class="tab-content tab-pane fade in active" >
+                <table class="table" id="search-table">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th scope="col" onClick="sortTable(0, 'search-table')" style="cursor: pointer;">Name</th>
+                            <th scope="col" onClick="sortTable(1, 'search-table')" style="cursor: pointer;">Gender</th>
+                            <th scope="col" onClick="sortTable(2, 'search-table')" style="cursor: pointer;">Nationalities</th>
+                            <th scope="col" onClick="sortTable(3, 'search-table')" style="cursor: pointer;">DOB</th>
+                            <th scope="col" onClick="sortTable(4, 'search-table')" style="cursor: pointer;">Traveller types</th>
+                            <th scope="col" style="cursor: pointer;"></th>
+                            <th scope="col"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="travel-partner-search-table-body">
+                    </tbody>
+                </table>
+                <div id="travel-partner-search-pagination"></div>
+        </div>
+
+        <div id="followingTab" class="tab-content tab-pane fade">
+                <table class="table" id="follower-table">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th scope="col" onClick="sortTable(0, 'follower-table')" style="cursor: pointer;">Name</th>
+                            <th scope="col" onClick="sortTable(1, 'follower-table')" style="cursor: pointer;">Gender</th>
+                            <th scope="col" onClick="sortTable(2, 'follower-table')" style="cursor: pointer;">Nationalities</th>
+                            <th scope="col" onClick="sortTable(3, 'follower-table')" style="cursor: pointer;">DOB</th>
+                            <th scope="col" onClick="sortTable(4, 'follower-table')" style="cursor: pointer;">Traveller types</th>
+                            <th scope="col" style="cursor: pointer;"></th>
+                            <th scope="col"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+        </div>
+        <div id="followerTab" class="tab-content tab-pane fade">
+            <table class="table" id="follower-table">
                 <thead class="thead-dark">
                     <tr>
-                        <th scope="col" onClick="sortTable(0)" style="cursor: pointer;">Name</th>
-                        <th scope="col" onClick="sortTable(1)" style="cursor: pointer;">Gender</th>
-                        <th scope="col" onClick="sortTable(2)" style="cursor: pointer;">Nationalities</th>
-                        <th scope="col" onClick="sortTable(3)" style="cursor: pointer;">DOB</th>
-                        <th scope="col" onClick="sortTable(4)" style="cursor: pointer;">Traveller types</th>
+                        <th scope="col" onClick="sortTable(0, 'follower-table')" style="cursor: pointer;">Name</th>
+                        <th scope="col" onClick="sortTable(1, 'follower-table')" style="cursor: pointer;">Gender</th>
+                        <th scope="col" onClick="sortTable(2, 'follower-table')" style="cursor: pointer;">Nationalities</th>
+                        <th scope="col" onClick="sortTable(3, 'follower-table')" style="cursor: pointer;">DOB</th>
+                        <th scope="col" onClick="sortTable(4, 'follower-table')" style="cursor: pointer;">Traveller types</th>
                         <th scope="col" style="cursor: pointer;"></th>
+                        <th scope="col"></th>
                     </tr>
                 </thead>
                 <tbody>
-                @if(! resultProfiles.isEmpty) {
-                    @for(profile <- resultProfiles) {
-                        <tr>
-                            <td scope="row">@profile.getFName().substring(0, 1).toUpperCase()@profile.getFName().substring(1).toLowerCase() @profile.getLName().substring(0, 1).toUpperCase()@profile.getLName().substring(1).toLowerCase()</td>
-                            <td>@profile.getGender()</td>
-                            <td>@for(nationality <- profile.getNationality()) {
-                                <p>@nationality.getNationalityName()</p>
-                            }</td>
-                            <td>@profile.getDateOfBirth()</td>
-                            <td>@for(travellerType <- profile.getTravellerTypes()) {
-                                <p>@travellerType.getTravellerTypeName()</p>
-                            }</td>
-                            <td><a class="btn btn-link" href="@routes.ProfileController.showProfile(profile.getUserid)">View</a></td>
-                        </tr>
-                        }
-                        </tbody>
-                    </table>
-                } else {
                 </tbody>
             </table>
-            <h2 align="center">No results found</h2>
-            }
-
-        } else {
-            <h2 align="center">No results displayed</h2>
-        }
-
-    }
+        </div>
+    </div>
+    </div>
 }
 
-<script>
-
-    //n = 0, sorting by email
-    //n = 2, sorting by gender
-    //n = 3, sorting by the travelers first nationality
-    //n = 4, sorting by date of birth
-    //n = 5, sorting by the travelers first traveler type
-    function sortTable(n) {
-        var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
-        table = document.getElementById("searchResultsTable");
-        switching = true;
-        // Set the sorting direction to ascending:
-        dir = "asc";
-        /* Make a loop that will continue until
-        no switching has been done: */
-        while (switching) {
-            // Start by saying: no switching is done:
-            switching = false;
-            rows = table.rows;
-            /* Loop through all table rows (except the
-            first, which contains table headers): */
-            for (i = 1; i < (rows.length - 1); i++) {
-                // Start by saying there should be no switching:
-                shouldSwitch = false;
-                /* Get the two elements you want to compare,
-                one from current row and one from the next: */
-                if (n == 2 || n == 4) {
-                    /*This is for the nationality and traveler type columns, the first traveler type
-                    or nationality is taken */
-                    x = rows[i].getElementsByTagName("TD")[n].getElementsByTagName("P")[0];
-                    y = rows[i + 1].getElementsByTagName("TD")[n].getElementsByTagName("P")[0];
-                } else {
-                    x = rows[i].getElementsByTagName("TD")[n];
-                    y = rows[i + 1].getElementsByTagName("TD")[n];
-                }
-
-                // console.log(dir);
-                // console.log(x.innerHTML.toLowerCase() +" "+ y.innerHTML.toLowerCase());
-                // console.log(x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase());
-
-                /* Check if the two rows should switch place,
-                based on the direction, asc or desc: */
-                if (dir == "asc") {
-                    if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
-                        // If so, mark as a switch and break the loop:
-                        shouldSwitch = true;
-                        break;
-                    }
-                } else if (dir == "desc") {
-                    if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
-                        // If so, mark as a switch and break the loop:
-                        shouldSwitch = true;
-                        break;
-                    }
-                }
-            }
-            if (shouldSwitch) {
-                /* If a switch has been marked, make the switch
-                and mark that a switch has been done: */
-                rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
-                switching = true;
-                // Each time a switch is done, increase this count by 1:
-                switchcount ++;
-            } else {
-                /* If no switching has been done AND the direction is "asc",
-                set the direction to "desc" and run the while loop again. */
-                if (switchcount == 0 && dir == "asc") {
-                    dir = "desc";
-                    switching = true;
-                }
-            }
-        }
-    }
-</script>
+    <script src="@routes.Assets.at("js/search/indexTravelPartnerSearch.js")"></script>
+<script src="@routes.Assets.at("js/search/searchUsers.js")"></script>

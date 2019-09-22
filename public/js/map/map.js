@@ -1458,10 +1458,10 @@ $("#formBody").submit(function(e){
 
 $("#destSearchInput").keyup(function ()
 {
-    searchByKeyword(1)
+    searchByKeyword(1, "all")
 });
 
-function searchByKeyword(currentPageNum) {
+function searchByKeyword(currentPageNum, tab) {
     const offset = (currentPageNum - 1) * 20;
     let searchInput = document.getElementById("destSearchInput").value;
     if(searchInput != "") {
@@ -1472,31 +1472,54 @@ function searchByKeyword(currentPageNum) {
             data: data,
             method: "GET",
             success: function (res) {
-                let displayedIds = [];
-                for (let j=0; j < res.destinations.length; j++) {
-                    if(res.destinations[j].isPublic === false) {
-                        displayedIds.push("destButton" + res.destinations[j].destid);
+                if (tab.id == "publicDestinationList" || tab == "all") {
+                    let publicCount = res.totalCountPublic;
+                    let publicData = document.getElementById("publicDestinationList");
+                    if (currentPageNum > 0) {
+                        while (publicData.childNodes.length > 0) {
+                            publicData.removeChild(publicData.childNodes[0]);
+                        }
                     }
-                }
-                let privateListChildren = document.getElementById("privateDestinationList").children;
+                    for (let destination of res.destinations) {
+                        let destElement = document.createElement('a');
+                        destElement.setAttribute("onClick", `displayDestination(${destination.destid}, ${destination.latitude}, ${destination.longitude})`);
+                        destElement.setAttribute('class', "list-group-item list-group-item-action");
+                        destElement.setAttribute('id', "destButton" + destination.destid)
+                        destElement.innerText = destination.destName + " | " + destination.destType + " | " + destination.country
+                        if (destination.isPublic == true) {
+                            publicData.appendChild(destElement);
+                        }
 
-                for(let i=0; i < privateListChildren.length; i++) {
-                    if (!displayedIds.includes(privateListChildren[i].id)) {
-                        privateListChildren[i].setAttribute("style", "display: none;");
-                    } else {
-                        privateListChildren[i].setAttribute("style", "display: block;");
                     }
+                    addPagination(publicCount, currentPageNum, searchInput, "publicDestinationList");
                 }
-                getDestinationsFromApiResponse(res, currentPageNum, searchInput);
+                if (tab.id == "privateDestinationList" || tab == "all"){
+                    let privateCount = res.totalCountPrivate
+                    let privateData = document.getElementById("privateDestinationList");
+                    if (currentPageNum > 0) {
+                        while (privateData.childNodes.length > 0) {
+                            privateData.removeChild(privateData.childNodes[0]);
+                        }
+                    }
+                    for (let destination of res.destinations) {
+                        let destElement = document.createElement('a');
+                        destElement.setAttribute("onClick", `displayDestination(${destination.destid}, ${destination.latitude}, ${destination.longitude})`);
+                        destElement.setAttribute('class', "list-group-item list-group-item-action");
+                        destElement.setAttribute('id', "destButton" + destination.destid)
+                        destElement.innerText = destination.destName + " | " + destination.destType + " | " + destination.country
+                        if(destination.isPublic != true) {
+                            privateData.appendChild(destElement);
+
+                        }
+                    }
+                    addPagination(privateCount, currentPageNum, searchInput, "privateDestinationList");
+                }
 
             }
         });
     } else {
-        searchDestinations(1, 20, null);
-        let privateListChildren = document.getElementById("privateDestinationList").children;
-        for(let i=0; i < privateListChildren.length; i++) {
-            privateListChildren[i].setAttribute("style", "display: block;");
-        }
+        getPrivateDestinations(1, 20);
+        getPublicDestinations(1, 20);
     }
 }
 
@@ -1585,9 +1608,9 @@ function getPublicDestinations(pageNum, quantity){
         data: data,
         contentType: 'application/json',
         success: (destData) => {
-            let count = destData.totalCountPublic;
+            let publicCount = destData.totalCountPublic;
             let destinationData = document.getElementById("publicDestinationList");
-            if (pageNum > 1) {
+            if (pageNum > 0) {
                 while (destinationData.childNodes.length > 0) {
                     destinationData.removeChild(destinationData.childNodes[0]);
                 }
@@ -1600,14 +1623,47 @@ function getPublicDestinations(pageNum, quantity){
                 destElement.innerText = destination.destName + " | " + destination.destType + " | " + destination.country
                 destinationData.appendChild(destElement);
             }
-            addPagination(count, pageNum, null);
+            addPagination(publicCount, pageNum, null, "publicDestinationList");
         }, error: function (error) {
             console.log(error);
         }
     })
 }
 
-function addPagination(count, pageNum, search) {
+function getPrivateDestinations(pageNum, quantity){
+    const offset = (pageNum - 1) * 20;
+    let data = {offset: offset,
+        quantity: quantity};
+
+    $.ajax({
+        type: 'GET',
+        url: "/users/destinations/getprivatepaginatedjson",
+        data: data,
+        contentType: 'application/json',
+        success: (destData) => {
+            let privateCount = destData.totalCountPrivate;
+            let destinationData = document.getElementById("privateDestinationList");
+            if (pageNum > 0) {
+                while (destinationData.childNodes.length > 0) {
+                    destinationData.removeChild(destinationData.childNodes[0]);
+                }
+            }
+            for (let destination of destData.destinations) {
+                let destElement = document.createElement('a');
+                destElement.setAttribute("onClick", `displayDestination(${destination.destid}, ${destination.latitude}, ${destination.longitude})`);
+                destElement.setAttribute('class', "list-group-item list-group-item-action");
+                destElement.setAttribute('id', "destButton" + destination.destid)
+                destElement.innerText = destination.destName + " | " + destination.destType + " | " + destination.country
+                destinationData.appendChild(destElement);
+            }
+            addPagination(privateCount, pageNum, null, "privateDestinationList");
+        }, error: function (error) {
+            console.log(error);
+        }
+    })
+}
+
+function addPagination(count, pageNum, search, tab) {
     let numOfPages = [];
     let pageNumbers = [];
     const pagination = document.createElement("ul");
@@ -1639,9 +1695,14 @@ function addPagination(count, pageNum, search) {
     let currentPageNum = 1;
     pageButton.innerText = "First";
     if (search == null) {
-        pageButton.setAttribute("onClick", `searchDestinations(${currentPageNum})`);
+        if (tab == "publicDestinationList") {
+            pageButton.setAttribute("onClick", `getPublicDestinations(${currentPageNum}, ${20})`);
+        } else  {
+            pageButton.setAttribute("onClick", `getPrivateDestinations(${currentPageNum}, ${20})`);
+
+        }
     } else {
-        pageButton.setAttribute("onClick", `searchByKeyword("${currentPageNum})`);
+        pageButton.setAttribute("onClick", `searchByKeyword(${currentPageNum}, ${tab})`);
 
     }
     item.appendChild(pageButton);
@@ -1656,10 +1717,14 @@ function addPagination(count, pageNum, search) {
     }
     pageButton.innerText = "<";
     if (search == null) {
-        pageButton.setAttribute("onClick", `searchDestinations(${currentPageNum})`);
-    } else {
-        pageButton.setAttribute("onClick", `searchByKeyword(${currentPageNum})`);
+        if (tab == "publicDestinationList") {
+            pageButton.setAttribute("onClick", `getPublicDestinations(${currentPageNum}, ${20})`);
+        } else  {
+            pageButton.setAttribute("onClick", `getPrivateDestinations(${currentPageNum}, ${20})`);
 
+        }
+    } else {
+            pageButton.setAttribute("onClick", `searchByKeyword(${currentPageNum}, ${tab})`);
     }
     item.appendChild(pageButton);
     pagination.appendChild(item);
@@ -1672,9 +1737,14 @@ function addPagination(count, pageNum, search) {
             item.classList.add("active");
         }
         if (search == null) {
-            pageButton.setAttribute("onClick", `searchDestinations(${currentPageNum})`);
+            if (tab == "publicDestinationList") {
+                pageButton.setAttribute("onClick", `getPublicDestinations(${currentPageNum}, ${20})`);
+            } else  {
+                pageButton.setAttribute("onClick", `getPrivateDestinations(${currentPageNum}, ${20})`);
+
+            }
         } else {
-            pageButton.setAttribute("onClick", `searchByKeyword(${currentPageNum})`);
+            pageButton.setAttribute("onClick", `searchByKeyword(${currentPageNum}, ${tab})`);
 
         }
         item.appendChild(pageButton);
@@ -1689,76 +1759,46 @@ function addPagination(count, pageNum, search) {
     }
     pageButton.innerText = ">";
     if (search == null) {
-        pageButton.setAttribute("onClick", `searchDestinations(${currentPageNum})`);
+        if (tab == "publicDestinationList") {
+            pageButton.setAttribute("onClick", `getPublicDestinations(${currentPageNum}, ${20})`);
+        } else  {
+            pageButton.setAttribute("onClick", `getPrivateDestinations(${currentPageNum}, ${20})`);
+
+        }
     } else {
-        pageButton.setAttribute("onClick", `searchByKeyword(${currentPageNum})`);
+        pageButton.setAttribute("onClick", `searchByKeyword(${currentPageNum}, ${tab})`);
 
     }
     item.appendChild(pageButton);
     pagination.appendChild(item);
-    document.getElementById("publicDestinationList").appendChild(pagination);
+    document.getElementById(tab).appendChild(pagination);
 
     item = document.createElement("li");
     pageButton = document.createElement("a");
     currentPageNum = numOfPages.length;
     pageButton.innerText = "Last";
     if (search == null) {
-        pageButton.setAttribute("onClick", `searchDestinations(${currentPageNum})`);
+        if (tab == "publicDestinationList") {
+            pageButton.setAttribute("onClick", `getPublicDestinations(${currentPageNum}, ${20})`);
+        } else  {
+            pageButton.setAttribute("onClick", `getPrivateDestinations(${currentPageNum}, ${20})`);
+
+        }
     } else {
-        pageButton.setAttribute("onClick", `searchByKeyword(${currentPageNum})`);
+        pageButton.setAttribute("onClick", `searchByKeyword(${currentPageNum}, ${tab})`);
 
     }
     item.appendChild(pageButton);
     pagination.appendChild(item);
 }
 
-function searchDestinations(pageNum) {
-    const offset = (pageNum-1)*20;
-
-    let data = {
-        offset: offset,
-        quantity: 20,
-    };
-
-
-    $.ajax({
-        success: function () {
-            $.ajax({
-                type: 'GET',
-                url:  "/users/destinations/getpublicpaginatedjson",
-                data: data,
-                success: function (data) {
-                    // console.log(data);
-                    getDestinationsFromApiResponse(data, pageNum, null);
-                }
-            });
-        },
-    });
-
-}
-
-function getDestinationsFromApiResponse(destData, pageNum, search) {
-    let count = destData.totalCountPublic;
-    let destinationData = document.getElementById("publicDestinationList");
-    while (destinationData.childNodes.length > 0) {
-        destinationData.removeChild(destinationData.childNodes[0]);
-    }
-    for (let destination of destData.destinations) {
-        let destElement = document.createElement('a');
-        destElement.setAttribute("onClick", `displayDestination(${destination.destid}, ${destination.latitude}, ${destination.longitude})`);
-        destElement.setAttribute('class', "list-group-item list-group-item-action");
-        destElement.setAttribute('id', "destButton" + destination.destid)
-        destElement.innerText = destination.destName + " | " + destination.destType + " | " + destination.country
-        destinationData.appendChild(destElement);
-    }
-    addPagination(count, pageNum, search);
-}
 
 
 
 window.onload = function() {
     checkTripVisits();
     getPublicDestinations(1, 20, null);
+    getPrivateDestinations(1, 20, null);
 
 };
 

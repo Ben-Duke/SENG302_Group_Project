@@ -267,16 +267,6 @@
                     <a class="btn btn-primary createDestBtn" onclick="viewCreatePanel()">
                         &#10133</a>
                     <div class="list-group" id="privateDestinationList">
-                        @for(destination <- destinations) {
-                            @if(!destination.getIsPublic()) {
-                                <a onclick="displayDestination(@destination.getDestId(),
-                                        @destination.getLatitude(),
-                                        @destination.getLongitude())"
-                                class="list-group-item list-group-item-action" id = "destButton@destination.getDestId">
-                                @destination.getDestName()
-                                </a>
-                            }
-                        }
                     </div>
                     <h4 style="text-align: left">Public Destinations</h4>
                     <div class="list-group" id="publicDestinationList">
@@ -457,6 +447,5 @@
         <input id="submit" type="submit" value="Create" class="btn btn-primary"/>
     </div>
     <span class="text-danger" id="existingMessage"></span>
-
 
 }

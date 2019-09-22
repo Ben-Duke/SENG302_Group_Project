@@ -1,5 +1,6 @@
 package models;
 
+import accessors.AlbumAccessor;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import controllers.ApplicationManager;
@@ -384,6 +385,6 @@ public class Destination extends TaggableModel implements AlbumOwner, MediaOwner
      */
     @JsonIgnore
     public Album getPrimaryAlbum() {
-        return albums.get(0);
+        return this.albums.get(0);
     }
 }

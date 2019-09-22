@@ -226,7 +226,7 @@ public class AdminController extends Controller {
      * Checks if the given user id is a default admin
      * @param request the HTTP request
      * @param adminsUserId the user id to check for
-     * @return
+     * @return "true" if the user is a default admin, "false" otherwise
      */
     public Result isDefaultAdmin(Http.Request request, Integer adminsUserId) {
         Admin admin = AdminAccessor.getAdminById(adminsUserId);

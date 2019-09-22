@@ -50,6 +50,7 @@ GET     /users/admin/data           controllers.AdminController.getUserData(requ
 
 GET     /users/admin/userCount           controllers.AdminController.getUserCount(request: Request)
 
+#Checks if the given user id is a default admin
 GET     /users/admin/isDefault/:userId           controllers.AdminController.isDefaultAdmin(request: Request, userId: Integer)
 
 

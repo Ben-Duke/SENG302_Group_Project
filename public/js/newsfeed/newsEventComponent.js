@@ -1,5 +1,26 @@
-
-function createNewsEventComponent(event, user) {
+/**
+ * Creates and displays a new NewsEventComponent.
+ *
+ * The event provided in the function parameter should contain the following attributes:
+ * event.title (The title of the event)
+ * event.url (The url to the event)
+ * event.eventPic (The picture of the event)
+ * event.address (The address of the event)
+ * event.startTime (The start time of the event)
+ * event.endTime (The end time of the event)
+ * event.type (The type of the event)
+ * event.description (The description of the event)
+ *
+ * The user provided in the function parameter should contain the following attributes:
+ * user.name (The name of the user)
+ * user.profilePicUrl (The profile pic src of the user) (not sure if this will work)
+ *
+ *
+ * @param event the event the user responded to
+ * @param user the user who responded to the event
+ * @param responseTime the time that the user responded. Format: "HH:mm dd-MM"
+ */
+function createNewsFeedEventResponseComponent(event, user, responseTime) {
     let newsContainer = document.getElementById("newsContainer");
 
     let newsItemDiv = document.createElement("div");
@@ -17,11 +38,12 @@ function createNewsEventComponent(event, user) {
     newsTitle.setAttribute("class", "newsTitle");
     //Insert checks for time. If after today's date, went to event.
     //If before today's date, going to event
-    newsTitle.innerText = event.title;
+    //For now, they are always going to the event
+    newsTitle.innerText = user.name + " is going to " + event.title;
 
     let newsTimeTxt = document.createElement("span");
     newsTitle.setAttribute("class", "newsTimeTxt");
-    newsTimeTxt.innerText = event.time;
+    newsTimeTxt.innerText = responseTime;
 
     newsHeaderDiv.appendChild(userProfileImg);
     newsHeaderDiv.appendChild(newsTitle);

@@ -476,6 +476,8 @@ GET /events/responses/:responseType                         controllers.EventRes
 
 GET /events/get/all                                         controllers.EventResponseController.getAllResponses(request : Request)
 
+PUT /events/linkphoto/:eventId/:photoId                     controllers.EventsController.LinkPhotoToEvent(request: Request, eventId: Integer, photoId: Integer)
+
 # Undo
 +nocsrf
 PUT     /undo                                              controllers.UndoRedoController.undo(request: Request)

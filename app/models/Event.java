@@ -182,4 +182,6 @@ public class Event extends Model implements AlbumOwner {
     public List<Album> getAlbums() {
         return albums;
     }
+
+    public Album getPrimaryAlbum() {return albums.get(0);}
 }

@@ -1,9 +1,14 @@
 package controllers;
 
+import accessors.AlbumAccessor;
 import accessors.DestinationAccessor;
+import accessors.EventAccessor;
+import accessors.UserPhotoAccessor;
 import com.fasterxml.jackson.databind.JsonNode;
 import models.Destination;
+import models.Event;
 import models.User;
+import models.UserPhoto;
 import play.mvc.Http;
 import play.mvc.Result;
 import utilities.EnvVariableKeys;
@@ -114,6 +119,35 @@ public class EventsController {
 
         return ok(data);
     }
+
+    /**
+     * Link a user's photo to an event
+     * @param request the
+     * @param userPhotoId
+     * @param eventId
+     * @return
+     */
+    public Result LinkPhotoToEvent(Http.Request request, Integer userPhotoId, Integer eventId) {
+        User user = User.getCurrentUser(request);
+        if (user == null) {
+            return unauthorized();
+        }
+        UserPhoto userPhoto = UserPhotoAccessor.getUserPhotoById(userPhotoId);
+        if(userPhoto == null) {
+            return badRequest();
+        }
+        if(userPhoto.getUser().getUserid() != user.getUserid()) {
+            return forbidden();
+        }
+        Event event = EventAccessor.getByInternalId(eventId);
+        if(event == null) {
+            return badRequest();
+        }
+        event.getPrimaryAlbum().addMedia(userPhoto);
+        AlbumAccessor.update(event.getPrimaryAlbum());
+        return ok();
+    }
+
 
 
 

@@ -20,6 +20,8 @@ public class Event extends Model {
     @Id
     private Integer eventId;
 
+    private Integer externalId;
+
     @Temporal(TemporalType.TIMESTAMP)
     @Formats.DateTime(pattern=DATE_PATTERN)
     //date was protected not public/private for some reason
@@ -32,12 +34,36 @@ public class Event extends Model {
     @CreatedTimestamp
     private LocalDateTime endTime;
 
+    private String name;
+    private String url;
+    private double latitude;
+    private double longitude;
+
+    @Column(columnDefinition = "TEXT")
     private String description;
 
     @ManyToOne
     private Destination destination;
 
     private static final Finder<Integer,Event> find = new Finder<>(Event.class, ApplicationManager.getDatabaseName());
+
+    public Event(Integer externalId, LocalDateTime startTime, LocalDateTime endTime, String name, String url, double latitude, double longitude, String description, Destination destination) {
+        this.externalId = externalId;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.name = name;
+        this.url = url;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.description = description;
+        this.destination = destination;
+    }
+
+    public Event() {}
+
+    public Event(String name) {
+        this.name = name;
+    }
 
     public Event(LocalDateTime startTime, LocalDateTime endTime, String description, Destination destination) {
         this.startTime = startTime;
@@ -86,4 +112,62 @@ public class Event extends Model {
         this.destination = destination;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
+
+    public void setEventId(Integer eventId) {
+        this.eventId = eventId;
+    }
+
+    public Integer getExternalId() {
+        return externalId;
+    }
+
+    public void setExternalId(Integer externalId) {
+        this.externalId = externalId;
+    }
+
+    public String toString() {
+        return "Event{" +
+                "eventId=" + eventId +
+                ", externalId=" + externalId +
+                ", startTime=" + startTime +
+                ", endTime=" + endTime +
+                ", name='" + name + '\'' +
+                ", url='" + url + '\'' +
+                ", latitude=" + latitude +
+                ", longitude=" + longitude +
+                ", description='" + description + '\'' +
+                ", destination=" + destination +
+                '}';
+    }
 }

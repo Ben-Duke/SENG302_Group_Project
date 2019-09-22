@@ -99,6 +99,15 @@ public class EventFindaUtilities {
         return eventFindaGetResponse(url);
     }
 
+    public static JsonNode getEventById(int eventId) {
+        if (eventId < 0) {
+            eventId = 1;
+        }
+
+        String url = "events.json?id=" + eventId;
+        return eventFindaGetResponse(url);
+    }
+
     public static JsonNode getEvents(String keyword, String category, String startDate,
                                      String endDate, String minPrice, String maxPrice,
                                      Destination destination, String sortBy, Integer offset) {

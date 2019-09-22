@@ -200,6 +200,14 @@ create table user (
   constraint pk_user primary key (userid)
 );
 
+create table follow (
+   follow_id                    integer auto_increment not null,
+   follower                     integer not null,
+   followed                     integer not null,
+   state                        varchar(191),
+   constraint pk_follow primary key (follow_id)
+);
+
 create table user_nationality (
   user_userid                   integer not null,
   nationality_natid             integer not null,
@@ -356,6 +364,12 @@ create index ix_visit_trip on visit (trip);
 alter table visit add constraint fk_visit_trip foreign key (trip) references trip (tripid) on delete restrict on update restrict;
 
 
+create index ix_follower_user on follow (follower);
+alter table follow add constraint fk_follower_user foreign key (follower) references user (userid) on delete restrict on update restrict;
+
+create index ix_followed_user on follow (followed);
+alter table follow add constraint fk_followed_user foreign key (followed) references user (userid) on delete restrict on update restrict;
+
 # --- !Downs
 
 alter table album drop constraint if exists fk_album_user;
@@ -439,8 +453,16 @@ drop index if exists ix_treasure_hunt_destination_destid;
 alter table treasure_hunt drop constraint if exists fk_treasure_hunt_user;
 drop index if exists ix_treasure_hunt_user;
 
+alter table follow drop constraint if exists fk_follower_user;
+drop index if exists ix_follower_user;
+
+alter table follow drop constraint if exists fk_followed_user;
+drop index if exists ix_followed_user;
+
 alter table trip drop constraint if exists fk_trip_user;
 drop index if exists ix_trip_user;
+
+
 
 alter table trip_tag drop constraint if exists fk_trip_tag_trip;
 drop index if exists ix_trip_tag_trip;
@@ -477,6 +499,8 @@ drop index if exists ix_visit_destination;
 
 alter table visit drop constraint if exists fk_visit_trip;
 drop index if exists ix_visit_trip;
+
+
 
 drop table if exists admin;
 
@@ -520,6 +544,8 @@ drop table if exists trip;
 
 drop table if exists trip_tag;
 
+drop table if exists follow;
+
 drop table if exists user;
 
 drop table if exists user_nationality;
@@ -531,4 +557,6 @@ drop table if exists user_traveller_type;
 drop table if exists user_treasure_hunt;
 
 drop table if exists visit;
+
+
 

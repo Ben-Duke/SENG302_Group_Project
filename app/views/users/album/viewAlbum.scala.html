@@ -10,7 +10,7 @@
     <title>Album</title>
 </head>
 
-<body onpageshow="getAlbum(@user.getUserid, @album.getAlbumId, @album.userIsOwner(user))">
+<body onpageshow="getAlbum(@user.getUserid, @album.getAlbumId)">
     <div class="container">
         <h2 style="margin-left: 45%"> @album.getTitle
             <a class="btn btn-default sharp pull-right" id="deleteAlbumButton" onclick= "showDeleteAlbumModal(@album.getDefault)"
@@ -33,11 +33,12 @@
                 <div id="col3" class="column"></div>
                 <div id="col4" class="column"></div>
             </div>
+            <div id="loadMoreBtnContainer"><button class="btn btn-primary" id="loadMoreBtn" onclick="getAlbum(@user.getUserid, @album.getAlbumId)">Load More</button></div>
         }
     </div>
 
     <!-- The Modal/Lightbox -->
-    <div id="myModal" class="modal" data-album="@album.getAlbumId" data-isOwner="@album.userIsOwner(user)">
+    <div id="myModal" class="modal" data-album="@album.getAlbumId" data-isOwner="@album.userIsOwner(user)" data-isAdmin="@user.userIsAdmin">
         <div class="modal-content">
             <div id="snackbar"></div>
             <div id="lightbox-modal">
@@ -221,6 +222,9 @@
                     <h1>Link and unlink photos to destinations</h1>
                 </div>
                 <div class="modal-body">
+                    <div id="dest-search-container">
+                        <input type="text" id="destSearchInput" placeholder="Search for Destination">
+                    </div>
                     <h2>Private destinations</h2>
                     @*<input type="text" class="searchDestinations" onkeyup="searchDestination" placeholder="Search for destinations">*@
                     <table class="table privateDestinations">
@@ -239,19 +243,21 @@
 
                     <h2>Public destinations</h2>
                     @*<input type="text" class="searchPublicDestinations" onkeyup="searchPublicDestination()" placeholder="Search for destinations">*@
-                    <table class="table publicDestinations">
-                        <thead class="thead-dark">
-                            <tr>
-                                <th scope="col">Name</th>
-                                <th scope="col">Type</th>
-                                <th scope="col">Country</th>
-                                <th scope="col">District</th>
-                            </tr>
-                        </thead>
-                        <tbody id="public-dest-tbody">
-                            <!-- All data for public destinations is loaded here -->
-                        </tbody>
-                    </table>
+                    <div id="publicDestinations">
+                        <table class="table publicDestinations">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Type</th>
+                                    <th scope="col">Country</th>
+                                    <th scope="col">District</th>
+                                </tr>
+                            </thead>
+                            <tbody id="public-dest-tbody">
+                                <!-- All data for public destinations is loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>

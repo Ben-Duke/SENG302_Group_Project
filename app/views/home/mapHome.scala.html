@@ -267,16 +267,6 @@
                     <a class="btn btn-primary createDestBtn" onclick="viewCreatePanel()">
                         &#10133</a>
                     <div class="list-group" id="privateDestinationList">
-                        @for(destination <- destinations) {
-                            @if(!destination.getIsPublic()) {
-                                <a onclick="displayDestination(@destination.getDestId(),
-                                        @destination.getLatitude(),
-                                        @destination.getLongitude())"
-                                class="list-group-item list-group-item-action" id = "destButton@destination.getDestId">
-                                @destination.getDestName()
-                                </a>
-                            }
-                        }
                     </div>
                     <h4 style="text-align: left">Public Destinations</h4>
                     <div class="list-group" id="publicDestinationList">
@@ -351,6 +341,10 @@
                 <datalist id="tripListDeletion"></datalist>
                 <hr>
                 <div id="tripList">
+                    <div id="trip-search-container">
+                        <input type="text" id="tripSearchInput" placeholder="Search for Trip">
+                    </div>
+                    <br>
                 <div id="trip-list-group"class="list-group">
                     @for(trip <- trips) {
 
@@ -399,6 +393,8 @@
 
     <script src="@routes.Assets.at("js/map/map.js")"></script>
     <script src="@routes.Assets.at("js/map/mapStyle.js")"></script>
+    <script src="https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js">
+    </script>
     <script src="https://maps.googleapis.com/maps/api/js?key=@googleApiKey&callback=initMap&libraries=drawing,places"
     async defer></script>
 
@@ -451,6 +447,5 @@
         <input id="submit" type="submit" value="Create" class="btn btn-primary"/>
     </div>
     <span class="text-danger" id="existingMessage"></span>
-
 
 }

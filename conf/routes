@@ -50,7 +50,7 @@ GET     /users/admin/data           controllers.AdminController.getUserData(requ
 
 GET     /users/admin/userCount           controllers.AdminController.getUserCount(request: Request)
 
-
+GET     /users/admin/isDefault/:userId           controllers.AdminController.isDefaultAdmin(request: Request, userId: Integer)
 
 
 GET /users/destination/placeid/:placeId   controllers.DestinationController.getPlacesDetailsRequest(request: Request, placeId:String)

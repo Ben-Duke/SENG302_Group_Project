@@ -169,7 +169,7 @@ public class UtilityFunctions {
 
     /**
      * Method to check if the email entered by the user is a valid email. Is only a basic check with regex, doesn't
-     * catch all emails and doesn't check if the email actually folllows.
+     * catch all emails and doesn't check if the email actually exists.
      * <p>
      * Email regex sourced online from here:
      * https://howtodoinjava.com/regex/java-regex-validate-email-address/

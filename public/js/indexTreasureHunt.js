@@ -1,4 +1,4 @@
-const treasureHuntsPerPage = 5;
+const treasureHuntsPerPage = 10;
 let currentOpenPageNum = 1;
 let currentOwnPageNum = 1;
 
@@ -30,9 +30,7 @@ function initOpenTreasureHunts() {
 }
 
 /**
- * Initializes the openTreasureHunts paginated table.
- *
- * @param numHuntsPerPage Number of treasure hunts to show per page.
+ * Initializes the usersTreasureHunts paginated table.
  */
 function initUsersTreasureHunts() {
     const offset = (currentOwnPageNum - 1) * treasureHuntsPerPage;
@@ -57,12 +55,22 @@ function initUsersTreasureHunts() {
     });
 }
 
+/**
+ * Adds a cell to a row in a table
+ * @param row the row to add
+ * @param text the text to put in the cell
+ */
 function addTextToRow(row, text) {
     const newCell = document.createElement("TD");
     newCell.innerText = text;
     row.appendChild(newCell);
 }
 
+/**
+ * Adds a delete buttton for the treasure hunts tables
+ * @param row the row to add the button to
+ * @param treasureHunt the TreasureHunt the button is linked to
+ */
 function addDeleteButtonToRow(row, treasureHunt) {
     const newCell = document.createElement("TD");
 
@@ -82,6 +90,11 @@ function addDeleteButtonToRow(row, treasureHunt) {
     row.appendChild(newCell);
 }
 
+/**
+ * Adds an edit button to a row of a treasure hunt table
+ * @param row the row to add the button to
+ * @param treasureHunt the TreasureHunt the edit button is linked to
+ */
 function addEditButtonToRow(row, treasureHunt) {
     const newCell = document.createElement("TD");
 
@@ -96,6 +109,11 @@ function addEditButtonToRow(row, treasureHunt) {
     row.appendChild(newCell);
 }
 
+/**
+ * Adds all rows to the table for a user's own TreasureHunts
+ * @param treasureHunts the treasurehunts to add
+ * @param count the number of treasure hunts
+ */
 function importUsersTreasureHunts(treasureHunts, count) {
     const table = document.getElementById("ownTreasureHuntTable");
     while (table.firstChild) {
@@ -125,7 +143,12 @@ function importUsersTreasureHunts(treasureHunts, count) {
 }
 
 
-function importOpenTreasureHunts(treasureHunts, count, ) {
+/**
+ * Adds all rows to the table for all public open TreasureHunts
+ * @param treasureHunts the treasurehunts to add
+ * @param count the number of treasure hunts
+ */
+function importOpenTreasureHunts(treasureHunts, count) {
     const table = document.getElementById("openTreasureHuntTable");
     while (table.firstChild) {
         table.removeChild(table.firstChild)
@@ -149,7 +172,67 @@ function importOpenTreasureHunts(treasureHunts, count, ) {
     addPagination(table, count, currentOpenPageNum);
 }
 
+/**
+ * Adds pagination to a table
+ * @param table the table to add pagination to
+ * @param count the number of items to account for
+ * @param pageNum the current page num
+ */
 function addPagination(table, count, pageNum) {
+    function getOnClick(text, tableId) {
+        if (typeof text === "number") {
+            if (table.id === "openTreasureHuntTable") {
+                return function () {
+                    currentOpenPageNum = text;
+                    initOpenTreasureHunts()
+                }
+            } else {
+                return function () {
+                    currentOwnPageNum = text;
+                    initUsersTreasureHunts()
+                }
+            }
+        } else if (typeof(text) === "string") {
+            switch (text) {
+                case "First":
+                    return getOnClick(1, tableId);
+                case "Last":
+                    return getOnClick(pageNumbers.length, tableId);
+                case "<":
+                    if (table.id === "openTreasureHuntTable") {
+                        return function () {
+                            if (currentOpenPageNum > 1) {
+                                currentOpenPageNum--;
+                            }
+                            initOpenTreasureHunts()
+                        }
+                    } else {
+                        return function () {
+                            if (currentOpenPageNum > 1) {
+                                currentOpenPageNum--;
+                            }
+                            initUsersTreasureHunts()
+                        }
+                    }
+                case ">":
+                    if (table.id === "openTreasureHuntTable") {
+                        return function () {
+                            if (currentOpenPageNum < pageNumbers.length) {
+                                currentOpenPageNum++;
+                            }
+                            initOpenTreasureHunts()
+                        }
+                    } else {
+                        return function () {
+                            if (currentOpenPageNum < pageNumbers.length) {
+                                currentOpenPageNum++;
+                            }
+                            initUsersTreasureHunts()
+                        }
+                    }
+            }
+        }
+    }
     function addPaginationButton(table, pagination, text, isCurrent) {
         const item = document.createElement("li");
         const pageButton = document.createElement("a");
@@ -158,19 +241,7 @@ function addPagination(table, count, pageNum) {
             item.classList.add("active");
         }
 
-        if (typeof text === "number") {
-            if (table.id === "openTreasureHuntTable") {
-                item.onclick = function () {
-                    currentOpenPageNum = text;
-                    initOpenTreasureHunts()
-                }
-            } else {
-                item.onclick = function () {
-                    currentOwnPageNum = text;
-                    initUsersTreasureHunts()
-                }
-            }
-        }
+        item.onclick = getOnClick(text, table.id);
 
         item.appendChild(pageButton);
         pagination.appendChild(item);

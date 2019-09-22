@@ -1,13 +1,12 @@
 package controllers;
 
+import accessors.AlbumAccessor;
 import accessors.EventResponseAccessor;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import models.Event;
-import models.EventResponse;
-import models.User;
+import models.*;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -60,6 +59,8 @@ public class EventResponseController {
             EventResponse eventResponse = new EventResponse(responseType, newEvent, user);
             EventResponseAccessor.insert(eventResponse);
             EventResponseAccessor.save(eventResponse);
+            Album album = new Album(newEvent, newEvent.getName(), true);
+            AlbumAccessor.insert(album);
             return ok();
         }
         EventResponse eventResponse = new EventResponse(responseType, event, user);

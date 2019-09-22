@@ -32,6 +32,11 @@ public class Album extends Model {
     @JoinColumn(name = "destination", referencedColumnName = "destid")
     public Destination destination;
 
+    @JsonIgnore
+    @ManyToOne
+    @JoinColumn(name = "event", referencedColumnName = "event_id")
+    public Event event;
+
     @ManyToOne
     public UserPhoto primaryPhoto;
 
@@ -79,6 +84,9 @@ public class Album extends Model {
         }
         else if(owner instanceof Destination) {
             destination = (Destination) owner;
+        }
+        else if(owner instanceof Event) {
+            event = (Event) owner;
         }
         else {
             throw new IllegalArgumentException("Invalid AlbumOwner type");

@@ -15,6 +15,7 @@ create table album (
   album_id                      integer auto_increment not null,
   user                          integer,
   destination                   integer,
+  event                         integer,
   primary_photo_media_id        integer,
   is_default                    boolean,
   title                         varchar(191),

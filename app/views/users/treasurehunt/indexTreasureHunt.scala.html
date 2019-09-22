@@ -17,31 +17,8 @@
                     <th scope="col">Delete</th>
                 </tr>
             </thead>
-            <tbody>
-            @for(treasureHunt <- openTreasureHunts) {
-                    <tr data-toggle="modal" data-id="@treasureHunt.getThuntid" data-target="#info" class="clickable">
-                        <th scope ="row">@treasureHunt.getTitle</th>
-                        <td>@treasureHunt.getEndDate</td>
-                        @*<td><a class="btn btn-success" href="@routes.DestinationController.createDestination()" role="button">*@
-            @*Take a guess</a></td>*@
-                        @if(user.userIsAdmin || treasureHunt.getUser.getUserid.equals(user.getUserid)) {
-                            <td>@treasureHunt.getDestination.getDestName</td>
-                        } else {
-                            <td>Hidden</td>
-                        }
-                        <td>@treasureHunt.getRiddle</td>
-                        @if(user.userIsAdmin || treasureHunt.getUser.getUserid.equals(user.getUserid)) {
-                            <td><a data-toggle="modal" data-target="#confirmTreasureHuntDeleteModal" class="btn btn-danger">
-                                Delete</a></td>
-                        } else {
-                        <td><a class="btn btn-danger" style="cursor: not-allowed; opacity: 0.5;">
-                            Unauthorized</a></td>
-                        }
-                    </tr>
-
-
-                    <br>
-            }
+            <tbody id="openTreasureHuntTable">
+                <!-- Data added dynamically through js -->
             </tbody>
         </table>
 
@@ -62,28 +39,8 @@
                     <th scope="col">Delete</th>
                 </tr>
             </thead>
-            <tbody>
-            @for(treasureHunt <- treasureHunts) {
-                <tr data-toggle="modal" data-id="@treasureHunt.getThuntid" data-target="#info" class="clickable">
-                    <th scope ="row">@treasureHunt.getTitle</th>
-                    @if(openTreasureHunts.contains(treasureHunt)){
-                        <td>Open</td>
-                    } else{
-                        <td>Closed</td>
-                    }
-                    <td>@treasureHunt.getStartDate</td>
-                    <td>@treasureHunt.getEndDate</td>
-                    <td>@treasureHunt.getDestination.getDestName</td>
-                    <td>@treasureHunt.getRiddle</td>
-                    <td><a href="@routes.TreasureHuntController.editTreasureHunt(treasureHunt.getThuntid)" class="btn btn-primary">
-                        Edit</a></td>
-                    <td><a data-toggle="modal" data-target="#confirmTreasureHuntDeleteModal" class="btn btn-danger">
-                        Delete</a></td>
-                </tr>
-
-                <br>
-                }
-
+            <tbody id="ownTreasureHuntTable">
+                    <!-- Data added dynamically through js -->
             </tbody>
         </table>
         <!-- Modal -->

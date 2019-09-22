@@ -1,9 +1,6 @@
 package controllers;
 
-import accessors.DestinationAccessor;
-import accessors.TagAccessor;
-import accessors.UserAccessor;
-import accessors.UserPhotoAccessor;
+import accessors.*;
 import factories.UserFactory;
 import formdata.DestinationFormData;
 import io.ebean.DuplicateKeyException;
@@ -50,7 +47,7 @@ public class HomeController {
         // Clear the command stack
         user.getCommandManager().setAllowedPage(CommandPage.MAP);
 
-        List<Trip> trips = user.getTripsSorted();
+        List<Trip> trips = TripAccessor.getPaginatedTrips(0,5, user);
 
         List<Destination> allDestinations = DestinationAccessor.getAllDestinations();
 

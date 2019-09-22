@@ -315,7 +315,7 @@ public class ProfileController extends Controller {
     }
 
     /**
-     * AJAX endpoint to check if profile picture folllows
+     * AJAX endpoint to check if profile picture exists
      * @param request the HTTP request
      * @return a HTTP result with a body containing JSON
      */

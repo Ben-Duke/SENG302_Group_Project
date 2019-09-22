@@ -86,6 +86,12 @@ POST    /users/profile/update/natpass/delpass       controllers.ProfileControlle
 #Renders page for searching travel partners
 GET     /users/profile/search       controllers.TravelPartnerController.renderFilterPage(request: Request)
 
+#Gets the number of travellers that match the given filters, up to a maximum of 100,000
+GET /users/profile/searchprofiles/count controllers.TravelPartnerController.getTravellerCountWithFilters(request: Request, name:String ?= null, travellertype:String ?= null ,nationality:String ?= null, bornafter:String ?= null, bornbefore:String ?= null, gender1:String ?= null, gender2:String ?= null, gender3:String ?= null)
+
+#Get Users based on search params
+GET /users/profile/searchprofiles    controllers.TravelPartnerController.travellerSearchPaginated(request: Request, offset: Int ?= 0, quantity: Int ?= 10, name:String ?= null, travellertype:String ?= null ,nationality:String ?= null, bornafter:String ?= null, bornbefore:String ?= null, gender1:String ?= null, gender2:String ?= null, gender3:String ?= null)
+
 #Handles searching for travel partners
 POST    /users/profile/search       controllers.TravelPartnerController.searchByAttribute(request: Request)
 
@@ -150,7 +156,10 @@ POST    /users/trips/visit/edit/:id       controllers.TripController.updateVisit
 GET     /users/trips/:id            controllers.TripController.displaytrip(request: Request, id:Integer)
 
 #Get trips matching a given name
-GET     /users/trips/matching/:name     controllers.TripController.getTripsByName(request: Request, name: String)
+GET     /users/trips/matching/:name     controllers.TripController.getTripsByName(request: Request, name: String, offset: Integer, quantity: Integer)
+
+#Get a paginated list of trips
+GET     /users/trips/paginated/:offset/:quantity         controllers.TripController.getPaginatedUserTrips(request: Request, offset: Integer, quantity: Integer)
 
 #Renders page that displays the home page where users can navigate to other pages
 GET     /users/home                 controllers.HomeController.showhome(request:Request)
@@ -231,6 +240,11 @@ GET     /users/destinations/getalljson         controllers.DestinationController
 
 # Gets paginated json of public destinations.
 GET     /users/destinations/getpublicpaginatedjson     controllers.DestinationController.getPaginatedPublicDestinations(request : Request, offset : Integer, quantity : Integer)
+
+GET     /users/destinations/getprivatepaginatedjson     controllers.DestinationController.getPaginatedPrivateDestinations(request : Request, offset : Integer, quantity : Integer)
+
+GET     /users/destinations/getallpaginatedjson     controllers.DestinationController.getAllDestinationForUserPaginated(request : Request, offset : Integer, quantity : Integer)
+
 
 #Renders page for displaying a given destination
 GET     /users/destinations/view/:id         controllers.DestinationController.viewDestination(request : Request, id : Integer)
@@ -314,6 +328,10 @@ GET     /users/destinations/matching/:name        controllers.DestinationControl
 #Renders treasure hunt index page
 GET     /users/treasurehunts                    controllers.TreasureHuntController.indexTreasureHunt(request : Request)
 
+GET     /users/treasurehunts/open               controllers.TreasureHuntController.getPaginatedOpenTreasureHunts(request : Request, offset : Integer, quantity : Integer)
+
+GET     /users/treasurehunts/user               controllers.TreasureHuntController.getPaginatedUserTreasureHunts(request : Request, offset : Integer, quantity : Integer)
+
 #Open Create treasure hunt page
 GET     /users/treasurehunts/create             controllers.TreasureHuntController.createTreasureHunt(request : Request)
 
@@ -339,7 +357,7 @@ GET     /users/:id/albums/getFromTitle/:title    controllers.AlbumController.get
 #Albums index page
 GET     /users/albums   controllers.AlbumController.indexAlbum(request : Request)
 
-#Get the first available album ID of a media item if it folllows
+#Get the first available album ID of a media item if it exists
 GET     /users/albums/getAlbumFromMediaId/:mediaId      controllers.AlbumController.getFirstAlbumIdFromMediaId(request : Request, mediaId : Integer)
 
 
@@ -387,6 +405,8 @@ GET     /users/events       controllers.EventsController.getEventsData(request :
 
 
 GET /users/trips/fetch/trips_routes_json  controllers.TripController.getTripsRoutesJson(request : Request)
+
+GET /users/trips/:tripId/asJson controllers.TripController.getTripsAsJson(request : Request, tripId : Integer)
 
 POST /users/trips/:tripId/addVisit/:destId   controllers.TripController.addVisitToTripJSRequest(request : Request, tripId:Integer, destId:Integer)
 
@@ -442,6 +462,12 @@ GET /tags/items/:tagId                                  controllers.TagControlle
 
 # Follower routes
 GET /users/follows/:profileId                           controllers.FollowController.isFollowing(request: Request, profileId: Integer)
+
+#Nationalities
+#Gets a list of all nationalities from the database
+GET /nationalities                                      controllers.NationalityController.getAllNationalities(request: Request)
+
+
 
 
 # Undo

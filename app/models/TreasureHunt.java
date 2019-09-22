@@ -3,16 +3,22 @@ package models;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import controllers.ApplicationManager;
 import io.ebean.Finder;
-import io.ebean.Model;
+import play.data.format.Formats;
+import utilities.UtilityFunctions;
+import utilities.exceptions.EbeanDateParseException;
 
 import javax.persistence.*;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 /** Model class for treasure hunt construction */
 @Entity
 public class TreasureHunt extends BaseModel {
+    private static final String DATE_PATTERN = "yyyy-MM-dd";
 
     /**
      * The id of the treasure hunt
@@ -33,19 +39,22 @@ public class TreasureHunt extends BaseModel {
     /**
      * The destination that is the correct answer to the treasure hunt
      */
-    @JsonIgnore
     @ManyToOne
     private Destination destination;
 
     /**
      * The starting date of the treasure hunt
      */
-    private String startDate;
+    @Temporal(TemporalType.DATE)
+    @Formats.DateTime(pattern = DATE_PATTERN)
+    private LocalDate startDate;
 
     /**
      * The end date of the treasure hunt;
      */
-    private String endDate;
+    @Temporal(TemporalType.DATE)
+    @Formats.DateTime(pattern = DATE_PATTERN)
+    private LocalDate endDate;
 
     /**
      * The owner of the treasure hunt;
@@ -62,24 +71,43 @@ public class TreasureHunt extends BaseModel {
     @ManyToMany(mappedBy = "guessedTHunts")
     private List<User> users;
 
-    private static Finder<Integer,TreasureHunt> find = new Finder<>(TreasureHunt.class,
+    private static Finder<Integer, TreasureHunt> find = new Finder<>(TreasureHunt.class,
             ApplicationManager.getDatabaseName());
 
 
     /**
      * Default Constructor
      */
-    public TreasureHunt() {}
+    public TreasureHunt() {
+    }
 
     /**
      * Constructor to create a treasure hunt
-     * @param title the treasure hunt's title
-     * @param riddle the treasure hunt's riddle
+     *
+     * @param title       the treasure hunt's title
+     * @param riddle      the treasure hunt's riddle
      * @param destination the correct destination that the users should be guessing
-     * @param startDate when the treasure hunt opens
-     * @param endDate when the treasure hunt closes
+     * @param startDate   when the treasure hunt opens
+     * @param endDate     when the treasure hunt closes
      */
-    public TreasureHunt(String title, String riddle, Destination destination, String startDate, String endDate, User user){
+    public TreasureHunt(String title, String riddle, Destination destination,
+                        String startDate, String endDate, User user) throws EbeanDateParseException {
+        this.title = title;
+        this.riddle = riddle;
+        this.destination = destination;
+
+        try {
+            this.startDate = UtilityFunctions.parseLocalDate(startDate);
+            this.endDate = UtilityFunctions.parseLocalDate(endDate);
+        } catch (DateTimeParseException e) {
+            throw new EbeanDateParseException(e);
+        }
+        this.user = user;
+        this.users = new ArrayList<>();
+    }
+
+    public TreasureHunt(String title, String riddle, Destination destination,
+                        LocalDate startDate, LocalDate endDate, User user) {
         this.title = title;
         this.riddle = riddle;
         this.destination = destination;
@@ -132,20 +160,36 @@ public class TreasureHunt extends BaseModel {
         this.destination = destination;
     }
 
-    public String getStartDate() {
+    public LocalDate getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(String startDate) {
+    public void setStartDate(LocalDate startDate) {
         this.startDate = startDate;
     }
 
-    public String getEndDate() {
+    public void setStartDate(String startDate) throws EbeanDateParseException {
+        try {
+            this.startDate = UtilityFunctions.parseLocalDate(startDate);
+        } catch (DateTimeParseException e) {
+            throw new EbeanDateParseException(e);
+        }
+    }
+
+    public LocalDate getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(String endDate) {
+    public void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
+    }
+
+    public void setEndDate(String endDate) throws EbeanDateParseException {
+        try {
+            this.endDate = UtilityFunctions.parseLocalDate(endDate);;
+        } catch (DateTimeParseException e) {
+            throw new EbeanDateParseException(e);
+        }
     }
 
     public User getUser() {
@@ -228,5 +272,18 @@ public class TreasureHunt extends BaseModel {
      */
     public void setThuntIdNull() {
         this.thuntid = null;
+    }
+
+    /**
+     * Checks if a treasure hunt is currently active.
+     * @return true if the treasure hunt is currently open, else false
+     */
+    public boolean isOpen() {
+        LocalDate currentDate = LocalDate.now(ZoneId.of("Pacific/Auckland"));
+        boolean isStartBeforeOrOnCurrent = this.getStartDate().isBefore(currentDate)
+                                    || this.getStartDate().isEqual(currentDate);
+        boolean isEndAfterCurrentDate = this.getEndDate().isAfter(currentDate);
+
+        return isStartBeforeOrOnCurrent && isEndAfterCurrentDate;
     }
 }

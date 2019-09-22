@@ -1,5 +1,3 @@
-configureFollowLinks();
-
 //n = 0, sorting by email
 //n = 2, sorting by gender
 //n = 3, sorting by the travelers first nationality
@@ -72,35 +70,6 @@ function sortTable(n, tableName) {
     }
 }
 
-function configureFollowLinks() {
-    const linkContainers = document.getElementsByClassName("followLink");
-    for (let linkContainer of linkContainers) {
-        const profileId = linkContainer.dataset.profile;
-        setFollowLink(profileId)
-    }
-
-    const followerLinkContainers = document.getElementsByClassName("followerTabLink");
-    for (let linkContainer of followerLinkContainers) {
-        const tabProfileId = linkContainer.dataset.profile;
-        setFollowedLink(tabProfileId)
-    }
-
-}
-
-function setFollowLink(profileId) {
-    let success;
-    $.ajax({
-        type: 'GET',
-        url: `/users/follows/${profileId}`,
-        success: function(followResult) {
-            if(followResult == false) {
-                document.getElementById("follow-" + profileId).style.display = "block";
-            } else {
-                document.getElementById("unfollow-" + profileId).style.display = "block";
-            }
-        }
-    });
-}
 
 function setFollowedLink(profileId) {
     let success;
@@ -132,13 +101,9 @@ function followUser(profileId, tab) {
         url: '/users/follow/' + profileId,
         success: function (data, textStatus, xhr) {
             if (xhr.status == 200) {
-                if (tab !== undefined) {
-                    document.getElementById(tab + "follow-" + profileId).style.display = "none";
-                    document.getElementById(tab + "unfollow-" + profileId).style.display = "block";
-                } else {
-                    document.getElementById("follow-" + profileId).style.display = "none";
-                    document.getElementById("unfollow-" + profileId).style.display = "block";
-                }
+                let followLink = document.getElementById(tab + "-follow-" + profileId);
+                followLink.innerText = "Unfollow";
+                followLink.setAttribute("onClick", `unfollowUser(${profileId}, 'searchResultsTable')`);
             }
         }
     })
@@ -157,13 +122,9 @@ function unfollowUser(profileId, tab) {
         url: '/users/unfollow/' + profileId,
         success: function (data, textStatus, xhr) {
             if (xhr.status == 200) {
-                if (tab !== undefined) {
-                    document.getElementById(tab + "unfollow-" + profileId).style.display = "none";
-                    document.getElementById(tab + "follow-" + profileId).style.display = "block";
-                } else {
-                    document.getElementById("unfollow-" + profileId).style.display = "none";
-                    document.getElementById("follow-" + profileId).style.display = "block";
-                }
+                let followLink = document.getElementById(tab + "-follow-" + profileId);
+                followLink.innerText = "Follow";
+                followLink.setAttribute("onClick", `followUser(${profileId}, 'searchResultsTable')`);
             }
         }
     })

@@ -219,12 +219,12 @@ async function displayData(users) {
 
         const changeAdmin = document.createElement("td");
 
-        if (!user.isCurrentUser) {
+        if (!user.isCurrentUser && (user.isAdmin !== undefined)) {
 
             const changeAdminButton = document.createElement("a");
             changeAdminButton.class = "btn btn-link";
-
-            if (user.isAdmin) {
+            console.log(user.isAdmin)
+            if (user.isAdmin || (user.isAdmin != undefined)) {
                 changeAdminButton.href = "/users/admin/remove/" + user.userId;
                 changeAdminButton.innerText = "Revoke Admin";
             } else {
@@ -239,7 +239,7 @@ async function displayData(users) {
 
         const actAsUser = document.createElement("td");
 
-        if (!user.isCurrentUser) {
+        if (!user.isCurrentUser && (user.isAdmin !== undefined)) {
 
             const actAsUserButton = document.createElement("a");
             actAsUserButton.class = "btn btn-link";
@@ -252,11 +252,39 @@ async function displayData(users) {
 
         row.appendChild(actAsUser);
 
+        const followLink = document.createElement("td");
+        const followLinkButton = document.createElement("a");
+        followLinkButton.class = "btn btn-link";
+        followLinkButton.id = "searchResultsTable-follow-" + user.userId
+        $.ajax({
+            type: 'GET',
+            url: `/users/follows/${user.userId}`,
+            success: function (followResult) {
+                if (followResult === true) {
+                    followLinkButton.setAttribute("onClick", `unfollowUser(${user.userId}, 'searchResultsTable')`);
+                    followLinkButton.innerText = "Unfollow";
+                } else {
+                    followLinkButton.setAttribute("onClick", `followUser(${user.userId}, 'searchResultsTable')`);
+                    followLinkButton.innerText = "Follow";
+                }
+            }
+        })
+        followLink.appendChild(followLinkButton);
+
+        row.appendChild(followLink);
+
+
+        const viewUser = document.createElement("td");
+        const viewUserButton = document.createElement("a");
+        viewUserButton.class = "btn btn-link";
+        viewUserButton.href = "/users/profile/" + user.userId;
+        viewUserButton.innerText = "View User";
+        viewUser.appendChild(viewUserButton);
+        row.appendChild(viewUser);
 
         tableBody.append(row);
     }
 }
-
 /**
  * Adds pagination elements
  * @param count the total number of data objects
@@ -370,3 +398,5 @@ function initDates() {
     document.getElementById("travel-partner-born-after-filter").setAttribute("max", today);
     document.getElementById("travel-partner-born-before-filter").setAttribute("max", today);
 }
+
+

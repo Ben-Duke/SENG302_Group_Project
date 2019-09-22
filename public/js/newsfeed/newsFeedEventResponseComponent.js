@@ -1,5 +1,5 @@
 /**
- * Creates and displays a new NewsEventComponent.
+ * Creates and displays a new event response on the news feed page
  *
  * The event provided in the function parameter should contain the following attributes:
  * event.title (The title of the event)
@@ -39,10 +39,11 @@ function createNewsFeedEventResponseComponent(event, user, responseTime) {
     //Insert checks for time. If after today's date, went to event.
     //If before today's date, going to event
     //For now, they are always going to the event
+    //For now, "is interested" is omitted but it'll be easy to add in
     newsTitle.innerText = user.name + " is going to " + event.title;
 
     let newsTimeTxt = document.createElement("span");
-    newsTitle.setAttribute("class", "newsTimeTxt");
+    newsTimeTxt.setAttribute("class", "newsTimeTxt");
     newsTimeTxt.innerText = responseTime;
 
     newsHeaderDiv.appendChild(userProfileImg);

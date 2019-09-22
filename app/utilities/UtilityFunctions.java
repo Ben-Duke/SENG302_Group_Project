@@ -2,6 +2,8 @@ package utilities;
 
 import accessors.TagAccessor;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import controllers.ApplicationManager;
 import controllers.routes;
 import models.*;
@@ -10,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import play.libs.Json;
 import play.mvc.Http;
 import play.mvc.Result;
+import utilities.exceptions.EbeanDateParseException;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -20,6 +23,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -31,6 +37,10 @@ import static play.mvc.Results.unauthorized;
  * A class for methods which check user entered data for correctness.
  */
 public class UtilityFunctions {
+
+    private static final String DATE_PATTERN = "yyyy-MM-dd";
+    private static final DateTimeFormatter DATE_FORMATTER =
+            DateTimeFormatter.ofPattern(DATE_PATTERN);
 
     private static final Logger logger = getLogger();
 
@@ -159,7 +169,7 @@ public class UtilityFunctions {
 
     /**
      * Method to check if the email entered by the user is a valid email. Is only a basic check with regex, doesn't
-     * catch all emails and doesn't check if the email actually folllows.
+     * catch all emails and doesn't check if the email actually exists.
      * <p>
      * Email regex sourced online from here:
      * https://howtodoinjava.com/regex/java-regex-validate-email-address/
@@ -443,4 +453,25 @@ public class UtilityFunctions {
     }
 
 
+    public static ObjectNode quantityError(int maxQuantity) {
+        String errorStr = "query parameter 'quantity' exceeded maximum " +
+                "allowed int: " + maxQuantity;
+
+        ObjectNode jsonError = (new ObjectMapper()).createObjectNode();
+        jsonError.put("error", errorStr);
+        jsonError.put("quantityLimit", maxQuantity);
+        return jsonError;
+    }
+
+    public static String getStringFromLocalDate(LocalDate localDate) {
+        return localDate.format(DATE_FORMATTER);
+    }
+
+    public static LocalDate parseLocalDate(String dateString) throws EbeanDateParseException {
+        try {
+            return LocalDate.parse(dateString, DATE_FORMATTER);
+        } catch (DateTimeParseException e) {
+            throw new EbeanDateParseException(e);
+        }
+    }
 }

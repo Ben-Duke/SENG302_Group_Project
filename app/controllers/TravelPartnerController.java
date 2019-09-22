@@ -131,7 +131,8 @@ public class TravelPartnerController {
      */
     public Result getTravellerCountWithFilters (
             Http.Request request, String travellerType, String nationality,
-            String bornAfter, String bornBefore, String gender1, String gender2, String gender3) {
+            String bornAfter, String bornBefore, String gender1, String gender2,
+            String gender3, String getFollowers, String getFollowing) {
         User currentUser = User.getCurrentUser(request);
         if(currentUser == null){
             return unauthorized("You need to be logged in to use this api");
@@ -142,7 +143,9 @@ public class TravelPartnerController {
         if (bornBefore == null) {
             bornBefore = "";
         }
-        Set<User> users = UserAccessor.getUsersByQuery(travellerType, 0, PSEUDO_INFINITE_NUMBER, nationality, bornAfter, bornBefore, gender1, gender2, gender3);
+        Set<User> users = UserAccessor.getUsersByQuery(travellerType, 0,
+                PSEUDO_INFINITE_NUMBER, nationality, bornAfter, bornBefore, gender1,
+                gender2, gender3, getFollowers, getFollowing);
         return ok(Integer.toString(users.size()));
     }
 
@@ -151,7 +154,9 @@ public class TravelPartnerController {
      * @return returns a Json response with any users that match the passed parameters
      */
     public Result travellerSearchPaginated (
-            Http.Request request, int offset, int quantity, String travellerType, String nationality, String bornAfter, String bornBefore, String gender1, String gender2, String gender3){
+            Http.Request request, int offset, int quantity, String travellerType,
+            String nationality, String bornAfter, String bornBefore, String gender1,
+            String gender2, String gender3, String getFollowers, String getFollowing){
         User currentUser = User.getCurrentUser(request);
         if(currentUser == null){
             return unauthorized("You need to be logged in to use this api");
@@ -167,8 +172,15 @@ public class TravelPartnerController {
         if (bornBefore == null) {
             bornBefore = "";
         }
-
-        Set<User> users = UserAccessor.getUsersByQuery(travellerType, offset,quantity,nationality, bornAfter, bornBefore, gender1, gender2, gender3);
+        if (getFollowing != null) {
+            getFollowing = Integer.toString(currentUser.getUserid());
+        }
+        if (getFollowers != null) {
+            getFollowers = Integer.toString(currentUser.getUserid());
+        }
+        Set<User> users = UserAccessor.getUsersByQuery(travellerType, offset, quantity,
+                nationality, bornAfter, bornBefore, gender1, gender2, gender3, getFollowers,
+                getFollowing);
         ObjectMapper objectMapper = new ObjectMapper();
         ArrayNode userNodes = objectMapper.createArrayNode();
 

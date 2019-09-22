@@ -21,12 +21,8 @@ public class UserAccessor {
     private static final String TRAVELLER_TYPE_COLUMN_NAME = "travellerTypes";
     private static final String NATIONALITY_COLUMN_NAME = "nationality";
     private static final String GENDER_COLUMN_NAME = "gender";
-
-
-    public enum ColumnNames {
-        TRAVELLER_TYPE,
-        NATIONALITY,
-    }
+    private static final String FOLLOWERS_COLUMN_NAME = "followers";
+    private static final String FOLLOWING_COLUMN_NAME = "following";
 
     public static void insert(User user) { user.save(); }
 
@@ -243,7 +239,8 @@ public class UserAccessor {
    public static Set<User> getUsersByQuery(String travellerType,
                                            int offset, int quantity, String queryNationality,
                                            String agerange1, String agerange2, String gender1,
-                                           String gender2, String gender3){
+                                           String gender2, String gender3, String getFollowers,
+                                           String getFollowing){
 
         List<List<Object>> equalsFields = new ArrayList<>();
 
@@ -260,6 +257,8 @@ public class UserAccessor {
        equalsFields = updateEqualsFields(gender1, GENDER_COLUMN_NAME, equalsFields);
        equalsFields = updateEqualsFields(gender2, GENDER_COLUMN_NAME, equalsFields);
        equalsFields = updateEqualsFields(gender3, GENDER_COLUMN_NAME, equalsFields);
+       equalsFields = updateEqualsFields(getFollowers, FOLLOWERS_COLUMN_NAME, equalsFields);
+       equalsFields = updateEqualsFields(getFollowing, FOLLOWING_COLUMN_NAME, equalsFields);
        Date date1 = null;
        Date date2 = null;
        Boolean parseDate = (agerange1 != null && agerange2 != null) && (!agerange1.equals("") || !agerange2.equals(""));
@@ -298,9 +297,21 @@ public class UserAccessor {
                            .fetch(NATIONALITY_COLUMN_NAME, "*")
                            .where()
                            .eq((String) equalsFields.get(1).get(0), equalsFields.get(1).get(1))
+
+                           .select("userid")
+                           .fetch(FOLLOWERS_COLUMN_NAME, "*")
+                           .where()
+                           .eq((String) equalsFields.get(5).get(0), equalsFields.get(5).get(1))
+
+                           .select("userid")
+                           .fetch(FOLLOWING_COLUMN_NAME, "*")
+                           .where()
+                           .eq((String) equalsFields.get(6).get(0), equalsFields.get(6).get(1))
+
                            .setFirstRow(offset).setMaxRows(quantity);
        }
        else {
+           System.out.println(equalsFields);
            query = //Ebean.find(User.class)
                    User.find().query()
                            .where()
@@ -320,6 +331,17 @@ public class UserAccessor {
                            .fetch(NATIONALITY_COLUMN_NAME, "*")
                            .where()
                            .eq((String) equalsFields.get(1).get(0), equalsFields.get(1).get(1))
+
+                           .select("userid")
+                           .fetch(FOLLOWERS_COLUMN_NAME, "*")
+                           .where()
+                           .eq((String) equalsFields.get(5).get(0), equalsFields.get(5).get(1))
+
+                           .select("userid")
+                           .fetch(FOLLOWING_COLUMN_NAME, "*")
+                           .where()
+                           .eq((String) equalsFields.get(6).get(0), equalsFields.get(6).get(1))
+
                            .setFirstRow(offset).setMaxRows(quantity);
        }
 
@@ -368,6 +390,12 @@ public class UserAccessor {
                     break;
                 case NATIONALITY_COLUMN_NAME:
                     convertedQueryValue = Nationality.find().query().where().eq("nationalityName", queryValue).findOne();
+                    break;
+                case FOLLOWERS_COLUMN_NAME:
+                    convertedQueryValue = User.find().query().where().eq("userid", queryValue).findOne();
+                    break;
+                case FOLLOWING_COLUMN_NAME:
+                    convertedQueryValue = User.find().query().where().eq("userid", queryValue).findOne();
                     break;
                 case GENDER_COLUMN_NAME:
                     convertedQueryValue = queryValue;

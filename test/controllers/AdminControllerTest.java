@@ -29,8 +29,7 @@ import java.util.List;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertEquals;
 import static play.mvc.Http.Status.*;
-import static play.test.Helpers.GET;
-import static play.test.Helpers.route;
+import static play.test.Helpers.*;
 
 public class AdminControllerTest extends BaseTestWithApplicationAndDatabase {
 
@@ -329,4 +328,25 @@ public class AdminControllerTest extends BaseTestWithApplicationAndDatabase {
     }
 
 
+    @Test
+    public void testIsDefaultAdmin() {
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET).uri("/users/admin/isDefault/1")
+                .session("connected", "2");
+
+        Result result = route(app, request);
+
+        assertEquals("\"true\"", contentAsString(result));
+    }
+
+    @Test
+    public void testIsDefaultAdminNonDefaultAdmin() {
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(GET).uri("/users/admin/isDefault/3")
+                .session("connected", "2");
+
+        Result result = route(app, request);
+
+        assertEquals("\"false\"", contentAsString(result));
+    }
 }

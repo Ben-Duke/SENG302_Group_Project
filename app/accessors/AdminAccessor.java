@@ -15,4 +15,8 @@ public class AdminAccessor {
     static public Finder<Integer, Admin> AdminFinder(){
         return Admin.find();
     }
+
+    public static Admin getAdminById(Integer userId) {
+        return Admin.find().query().where().eq("userId", userId).findOne();
+    }
 }

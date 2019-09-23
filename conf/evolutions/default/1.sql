@@ -88,7 +88,7 @@ create table media (
   user                          integer,
   is_public                     boolean default false not null,
   url                           varchar(191),
-  date_added                    date,
+  date_added                    datetime,
   caption                       varchar(191),
   is_profile                    boolean default false not null,
   constraint uq_media_url unique (url),

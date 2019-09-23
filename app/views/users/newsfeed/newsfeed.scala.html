@@ -1,0 +1,149 @@
+@import factories.UserFactory
+
+@(user: User)
+
+@main(user, "Newsfeed") {
+
+    <head>
+        <style>
+            #newsContainer {
+                margin: auto;
+                margin-top: -20px;
+                min-height: 100vh;
+                max-width: 750px;
+                width: 60%;
+                padding: 8px;
+
+                background-color: #edebeb;
+            }
+
+            .newsItem {
+                margin-bottom: 8px;
+                padding: 4px;
+                border-radius: 4px;
+                background-color: white;
+
+            }
+            .newsHeader {
+                height: 50px;
+                margin-bottom: 2px;
+            }
+            .newsTitle {
+                margin-left: 10px;
+            }
+            .newsTimeTxt {
+                float: right;
+            }
+            .userProfileImg {
+                height: 50px;
+                width: 50px;
+            }
+
+            .userPhotoImg {
+                max-height: 30vh;
+                max-width: 100%;
+                display: block;
+                margin: auto;
+                border-radius: 4px;
+            }
+
+        </style>
+    </head>
+
+
+    <div class="row">
+        <div id="newsContainer">
+
+            <div class="newsItem">
+                <div class="newsHeader">
+                    <img class="img-circle userProfileImg" src="@{routes.Assets.at("images/Generic.png")}")>
+                    <span class="newsTitle">Is Going to Event</span>
+                    <span class="newsTimeTxt">13:31 20/09</span>
+                </div>
+
+                <div class="newsBody">
+                    <div class="media">
+                        <div class="media-left">
+                            <a target="_blank" href="http://cdn.eventfinda.co.nz/uploads/events/transformed/1322793-587265-7.png">
+                                <img class="img-thumbnail" src="http://cdn.eventfinda.co.nz/uploads/events/transformed/1322793-587265-7.png">
+                            </a>
+                        </div>
+                        <div class="media-body">
+                            <a href="https://www.eventfinda.co.nz/2019/wellington-home-and-garden-show/wellington" target="_blank">
+                                <h4 class="media-heading">Wellington Home and Garden Show</h4>
+                            </a>
+                            <p>105 Waterloo Quay, Wellington</p>
+                            <p>Starts: 2019-09-20 10:00:00<br>Ends: 2019-09-22 16:00:00</p>
+                            <p>Type: Lifestyle Shows, Expos</p>
+                            <p>Wellington's iconic event is celebrating 20 years in 2019!  Join the fun, be inspired, and enjoy a day out at Westpac Stadium.<br><br>The Wellington Home &amp; Garden Show is packed with all the ideas and information that you ...</p>
+                        </div>
+                        <hr>
+                    </div>
+                </div>
+
+                <div class="newsFooter">
+
+                </div>
+            </div>
+
+            <div class="newsItem">
+                <div class="newsHeader">
+                    <img class="img-circle userProfileImg" src="@{routes.Assets.at("images/Generic.png")}")>
+                    <span class="newsTitle">Uploaded a Photo</span>
+                    <span class="newsTimeTxt">09:10 20/09</span>
+                </div>
+
+                <div class="newsBody">
+                    <img class="userPhotoImg" src="https://images.unsplash.com/photo-1531804055935-76f44d7c3621?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&w=1000&q=80">
+                </div>
+
+                <div class="newsFooter">
+
+                </div>
+            </div>
+
+            <div class="newsItem">
+                <div class="newsHeader">
+                    <img class="img-circle userProfileImg" src="@{routes.Assets.at("images/Generic.png")}")>
+                    <span class="newsTitle">Uploaded a Photo at <a>The Wok</a></span>
+                    <span class="newsTimeTxt">23:34 19/09</span>
+                </div>
+
+                <div class="newsBody">
+                    <img class="userPhotoImg" src="https://www.washingtonpost.com/graphics/2018/lifestyle/travel/amp-stories/2018-travel-photo-contest/img/180905-travel-photo-contest-010.jpg">
+                </div>
+
+                <div class="newsFooter">
+
+                </div>
+            </div>
+
+            <div class="newsItem">
+                <div class="newsHeader">
+                    <img class="img-circle userProfileImg" src="@{routes.Assets.at("images/Generic.png")}")>
+                    <span class="newsTitle">Is Interested in Event</span>
+                    <span class="newsTimeTxt">13:31 20/09</span>
+                </div>
+
+                <div class="newsBody">
+                    <div class="media"><div class="media-left"><a target="_blank" href="http://cdn.eventfinda.co.nz/uploads/events/transformed/1327611-589053-7.png?v=2"><img class="img-thumbnail" src="http://cdn.eventfinda.co.nz/uploads/events/transformed/1327611-589053-7.png?v=2"></a></div><div class="media-body"><a href="https://www.eventfinda.co.nz/2019/crazy-train-the-ozzy-osbourne-randy-rhoads-tribute-show/napier" target="_blank"><h4 class="media-heading">Crazy Train - The Ozzy Osbourne/ Randy Rhoads Tribute Show</h4></a><p>17 Carlyle Street, Napier, Hawke's Bay / Gisborne</p><p>Starts: 2019-09-20 21:00:00<br>Ends: 2019-09-20 23:30:00</p><p>Type: Classic Rock</p><p>Ozzy Osbourne - Randy Rhoads - Ultimate Supergroup - "Crazy Train"<br><br>The greatest Ozzy Osbourne/ Randy Rhoads show in the world, tours New Zealand!<br><br>Fans of Ozzy Osbourne’s early solo career are in for an amazing ...</p></div><hr></div>
+                </div>
+
+                <div class="newsFooter">
+
+                </div>
+            </div>
+
+
+
+
+        </div>
+    </div>
+
+
+    <script src="@routes.Assets.at("js/newsfeed/newsfeed.js")"></script>
+    <script src="@routes.Assets.at("js/newsfeed/newsFeedEventResponseComponent.js")"></script>
+    <script src="@routes.Assets.at("js/newsfeed/newsFeedMediaComponent.js")"></script>
+
+
+}

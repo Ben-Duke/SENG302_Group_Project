@@ -86,6 +86,9 @@ create table event (
   event_id                      integer auto_increment not null,
   external_id                   integer,
   name                          varchar(191),
+  address                       varchar(191),
+  type                          varchar(191),
+  image_url                     varchar(191),
   url                           varchar(191),
   latitude                      double not null,
   longitude                     double not null,
@@ -104,14 +107,15 @@ create table event_response (
   constraint pk_event_response primary key (event_response_id)
 );
 
+
 create table media (
   dtype                         varchar(31) not null,
   media_id                      integer auto_increment not null,
   user                          integer,
   is_public                     boolean default false not null,
-  url                           varchar(191),
-  is_media_public               boolean default false not null,
-  caption                       varchar(191),
+  url                           varchar(255),
+  date_added                    date,
+  caption                       varchar(255),
   is_profile                    boolean default false not null,
   constraint uq_media_url unique (url),
   constraint pk_media primary key (media_id)

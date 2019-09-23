@@ -1,15 +1,12 @@
 package models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import controllers.ApplicationManager;
 import io.ebean.Finder;
-import io.ebean.Model;
 import io.ebean.annotation.CreatedTimestamp;
 import play.data.format.Formats;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.Set;
 
 /** The model class for EventResponse construction */
 @Entity
@@ -41,6 +38,10 @@ public class EventResponse extends BaseModel{
         this.responseType = responseType;
         this.event = event;
         this.user = user;
+    }
+
+    public EventResponse(){
+
     }
 
     @Id

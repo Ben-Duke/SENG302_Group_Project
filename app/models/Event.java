@@ -39,6 +39,10 @@ public class Event extends Model implements AlbumOwner {
 
     private String name;
     private String url;
+    private String address;
+    private String type;
+
+    private String imageUrl;
     private double latitude;
     private double longitude;
 
@@ -49,17 +53,22 @@ public class Event extends Model implements AlbumOwner {
     @JsonIgnore
     @OneToMany(mappedBy = "event")
     private List<Album> albums;
+    public static final Finder<Integer,Event> find = new Finder<>(Event.class, ApplicationManager.getDatabaseName());
 
-    private static final Finder<Integer,Event> find = new Finder<>(Event.class, ApplicationManager.getDatabaseName());
 
-    public Event(Integer externalId, LocalDateTime startTime, LocalDateTime endTime, String name, String url, double latitude, double longitude, String description) {
+    public Event(Integer externalId, LocalDateTime startTime, LocalDateTime endTime,
+                 String name, String type, String url, String imageUrl, double latitude,
+                 double longitude, String address, String description) {
         this.externalId = externalId;
         this.startTime = startTime;
         this.endTime = endTime;
         this.name = name;
+        this.type = type;
         this.url = url;
+        this.imageUrl = imageUrl;
         this.latitude = latitude;
         this.longitude = longitude;
+        this.address = address;
         this.description = description;
         this.albums = new ArrayList<>();
     }
@@ -152,6 +161,33 @@ public class Event extends Model implements AlbumOwner {
         this.externalId = externalId;
     }
 
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+
+    @Override
     public String toString() {
         return "Event{" +
                 "eventId=" + eventId +
@@ -160,9 +196,11 @@ public class Event extends Model implements AlbumOwner {
                 ", endTime=" + endTime +
                 ", name='" + name + '\'' +
                 ", url='" + url + '\'' +
+                ", address='" + address + '\'' +
+                ", imageUrl='" + imageUrl + '\'' +
                 ", latitude=" + latitude +
                 ", longitude=" + longitude +
-                ", description='" + description +
+                ", description='" + description + '\'' +
                 '}';
     }
     @Override

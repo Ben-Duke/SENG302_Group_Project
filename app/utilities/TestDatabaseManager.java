@@ -50,7 +50,7 @@ public class TestDatabaseManager {
         CountryUtils.updateCountries();
         CountryUtils.validateUsedCountries();
 
-        addEventResponseTypes();
+//        addEventResponseTypes();
 
         setUserPasswords();
 

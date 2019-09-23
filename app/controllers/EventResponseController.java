@@ -2,6 +2,8 @@ package controllers;
 
 import accessors.AlbumAccessor;
 import accessors.EventResponseAccessor;
+import accessors.UserAccessor;
+import accessors.UserPhotoAccessor;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -13,12 +15,15 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
+import models.UserPhoto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import play.libs.Json;
 import play.mvc.Http;
 import play.mvc.Result;
 import utilities.EventFindaUtilities;
+import utilities.UtilityFunctions;
+import utilities.exceptions.EbeanDateParseException;
 
 import static play.mvc.Results.*;
 
@@ -37,35 +42,48 @@ public class EventResponseController {
      */
     public Result respondToEvent(Http.Request request, Integer externalEventId, String responseType) {
         User user = User.getCurrentUser(request);
-//        if (user == null) {return unauthorized();}
+        if (user == null) {return unauthorized();}
         Event event = Event.find().query().where().eq("externalId", externalEventId).findOne();
         if (event == null) {
             JsonNode jsonData = EventFindaUtilities.getEventById(externalEventId).get("events");
             if (jsonData.size() == 0) {return badRequest();}
             JsonNode eventData = jsonData.get(0);
+            int lastTransfom = eventData.get("images").get("images").get(0).get("transforms").get("@attributes").get("count").asInt()-1;
             Event newEvent = new Event(
                     eventData.get("id").asInt(),
                     LocalDateTime.parse(eventData.get("datetime_start").toString().substring(1, 20), formatter),
                     LocalDateTime.parse(eventData.get("datetime_end").toString().substring(1, 20), formatter),
-                    eventData.get("name").toString(),
-                    eventData.get("url").toString(),
+                    eventData.get("name").asText(),
+                    eventData.get("category").get("name").asText(),
+                    eventData.get("url").asText(),
+                    eventData.get("images").get("images").get(0).get("transforms").get("transforms").get(lastTransfom).get("url").asText(),
                     eventData.get("point").get("lat").asDouble(),
                     eventData.get("point").get("lng").asDouble(),
-                    eventData.get("description").toString()
+                    eventData.get("address").asText(),
+                    eventData.get("description").asText()
             );
             newEvent.insert();
             newEvent.save();
-            EventResponse eventResponse = new EventResponse(responseType, newEvent, user);
-            EventResponseAccessor.insert(eventResponse);
+            newEvent = Event.find.byId(newEvent.getEventId());
+            EventResponse eventResponse = new EventResponse();
             EventResponseAccessor.save(eventResponse);
+            EventResponse savedEventResponse = EventResponseAccessor.getById(eventResponse.getEventResponseId());
+            savedEventResponse.setUser(user);
+            savedEventResponse.setEvent(newEvent);
+            savedEventResponse.setResponseType(responseType);
+            EventResponseAccessor.update(savedEventResponse);
             Album album = new Album(newEvent, newEvent.getName(), true);
             AlbumAccessor.insert(album);
             newEvent.update();
             return ok();
         }
-        EventResponse eventResponse = new EventResponse(responseType, event, user);
-        EventResponseAccessor.insert(eventResponse);
+        EventResponse eventResponse = new EventResponse();
         EventResponseAccessor.save(eventResponse);
+        EventResponse savedEventResponse = EventResponseAccessor.getById(eventResponse.getEventResponseId());
+        savedEventResponse.setUser(user);
+        savedEventResponse.setEvent(event);
+        savedEventResponse.setResponseType(responseType);
+        EventResponseAccessor.update(savedEventResponse);
         return ok();
     }
 
@@ -105,26 +123,42 @@ public class EventResponseController {
         ArrayNode responses = objectMapper.createArrayNode();
         for (EventResponse response : eventResponses) {
             ObjectNode responseNode = objectMapper.createObjectNode();
+
+            ObjectNode userNode = objectMapper.createObjectNode();
+            User user = response.getUser();
+            UserPhoto profilePhoto = UserAccessor.getProfilePhoto(user);
+            userNode.put("id", user.getUserid());
+            userNode.put("name", user.getFName() + " " + user.getLName());
+            if (profilePhoto != null) {
+                userNode.put("profilePicUrl", profilePhoto.getUrlWithPath());
+            } else {
+                userNode.put("profilePicUrl", "null");
+            }
+
+
             ObjectNode eventNode = objectMapper.createObjectNode();
             Event event = response.getEvent();
             eventNode.put("id", event.getEventId());
             eventNode.put("externalId", event.getExternalId());
             eventNode.put("name", event.getName());
+            eventNode.put("type", event.getType());
             eventNode.put("description", event.getDescription());
             eventNode.put("url", event.getUrl());
+            eventNode.put("imageUrl", event.getImageUrl());
             eventNode.put("lat", event.getLatitude());
             eventNode.put("lng", event.getLongitude());
+            eventNode.put("address", event.getAddress());
             eventNode.put("startTime", event.getStartTime().format(formatter));
             eventNode.put("endTime", event.getEndTime().format(formatter));
 
             responseNode.put("responseId", response.getEventResponseId());
             responseNode.put("responseType", response.getResponseType());
-            responseNode.put("userId", response.getUser().getUserid());
-            responseNode.put("event", eventNode);
+            responseNode.set("user", userNode);
+            responseNode.set("event", eventNode);
             responseNode.put("responseDateTime", response.getResponseDateTime().format(formatter));
             responses.add(responseNode);
         }
-        json.put("responses", responses);
+        json.set("responses", responses);
         return json;
     }
 
@@ -132,5 +166,27 @@ public class EventResponseController {
         return ok(Json.toJson(EventResponseAccessor.getAllEventResponses()));
     }
 
+    public Result getEventResponses(Http.Request request, int offset, int limit, String localDateTime) {
+        User user = User.getCurrentUser(request);
+        if (user == null) {
+            return unauthorized("Must be logged in to use this API endpoint.");
+        }
 
+        LocalDateTime parsedLocalDateTime = null;
+        try {
+            parsedLocalDateTime = UtilityFunctions
+                    .parseLocalDateTime(localDateTime);
+        } catch (EbeanDateParseException e) {
+           //silent catch, handled below
+        }
+        if (parsedLocalDateTime == null) {
+            return badRequest("Invalid date time string");
+        }
+
+        List<EventResponse> eventResponses = EventResponseAccessor
+                .getEventResponses(offset, limit, parsedLocalDateTime);
+
+
+        return ok(getJsonEventResponses(eventResponses));
+    }
 }

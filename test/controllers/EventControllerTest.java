@@ -41,7 +41,6 @@ public class EventControllerTest  extends BaseTestWithApplicationAndDatabase {
         return EventAccessor.getByInternalId(event.getEventId());
     }
 
-    @SuppressWarnings("Duplicates")
     @Test
     public void linkPhotoToEventSuccessful() {
 
@@ -68,7 +67,6 @@ public class EventControllerTest  extends BaseTestWithApplicationAndDatabase {
     }
 
 
-    @SuppressWarnings("Duplicates")
     @Test
     public void unlinkPhotoToEventSuccessful() {
 

@@ -13803,12 +13803,25 @@ INSERT INTO `destination` (`destid`, `user`, `is_public`, `dest_name`, `dest_typ
 (3643, 1, 1, 'Brussels Midi Railway Station', 'Town', 'Brussels', 'Belgium', 1, 50.8346, 4.33628, 1, NULL);
 
 
--- Albums
+-- Albums (small data set)
 INSERT INTO `album` (`album_id`, `user`, `destination`, `primary_photo_media_id`, `is_default`, `title`) VALUES
 (1, 1, NULL, NULL, 1, 'Default'),
 (2, 2, NULL, NULL, 1, 'Default'),
 (3, 3, NULL, NULL, 1, 'Default'),
 (4, 4, NULL, NULL, 1, 'Default'),
+(41, 5, NULL, NULL, 1, 'Default'),
+(42, 6, NULL, NULL, 1, 'Default'),
+(43, 7, NULL, NULL, 1, 'Default'),
+(44, 8, NULL, NULL, 1, 'Default'),
+(45, 9, NULL, NULL, 1, 'Default'),
+(46, 10, NULL, NULL, 1, 'Default'),
+(47, 11, NULL, NULL, 1, 'Default'),
+(48, 12, NULL, NULL, 1, 'Default'),
+(49, 13, NULL, NULL, 1, 'Default'),
+(50, 14, NULL, NULL, 1, 'Default'),
+(51, 15, NULL, NULL, 1, 'Default'),
+(52, 16, NULL, NULL, 1, 'Default'),
+
 (5, NULL, 1, NULL, NULL, 'Christchurch'),
 (6, NULL, 2, NULL, NULL, 'Wellington'),
 (7, NULL, 3, NULL, NULL, 'The Wok'),
@@ -13830,7 +13843,7 @@ INSERT INTO `album` (`album_id`, `user`, `destination`, `primary_photo_media_id`
 (39, NULL, 17, NULL, 0, 'Gisborne'),
 (40, NULL, 18, NULL, 0, 'Lake Pukaki');
 
-
+# big data destination albums
 INSERT INTO `album` (`album_id`, `user`, `destination`, `primary_photo_media_id`, `is_default`, `title`) VALUES
 (100, NULL, 100, NULL, 1, 'Anaa Airport'),
 (101, NULL, 101, NULL, 1, 'El Mellah Airport'),

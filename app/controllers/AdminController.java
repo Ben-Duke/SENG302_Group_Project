@@ -179,6 +179,13 @@ public class AdminController extends Controller {
         User currentUser = User.getCurrentUser(request);
         if (currentUser != null && currentUser.userIsAdmin()) {
             User userToEdit = User.find().byId(userId);
+
+            // Add default user album if they do not have one
+            if (userToEdit != null) {
+                userToEdit.addDefaultAlbum();
+                userToEdit.save();
+            }
+
             List<Admin> adminList = Admin.find().query().where()
                     .eq("userId", currentUser.getUserid()).findList();
             if(adminList.size() == 1) {
@@ -186,6 +193,7 @@ public class AdminController extends Controller {
                 admin.setUserToEdit(userToEdit.getUserid());
                 admin.update();
             }
+
             return redirect(routes.HomeController.showhome());
         } else {
             return unauthorized("Unauthorized: You are not an Admin");

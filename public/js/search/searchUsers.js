@@ -1,5 +1,3 @@
-configureFollowLinks();
-
 //n = 0, sorting by email
 //n = 2, sorting by gender
 //n = 3, sorting by the travelers first nationality
@@ -84,7 +82,6 @@ function configureFollowLinks() {
         const tabProfileId = linkContainer.dataset.profile;
         setFollowedLink(tabProfileId)
     }
-
 }
 
 function setFollowLink(profileId) {

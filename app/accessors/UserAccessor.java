@@ -236,6 +236,7 @@ public class UserAccessor {
      * @param gender3 The third gender union to search for: Valid values are Male, Female, Other
      * @return a list of users, returns empty if none are found
      */
+   @SuppressWarnings("Duplicates")
    public static Set<User> getUsersByQuery(String travellerType,
                                            int offset, int quantity, String queryNationality,
                                            String agerange1, String agerange2, String gender1,
@@ -277,10 +278,13 @@ public class UserAccessor {
            //Do Nothing
        }
        Query<User> query = null;
+       String followingColumnName = (String) equalsFields.get(6).get(0);
+       String followersColumnName = (String) equalsFields.get(5).get(0);
        if(date1 != null && date2 != null){
            query = //Ebean.find(User.class)
                    User.find().query()
-                           .where().gt("dateOfBirth", date1)
+                           .where()
+                           .gt("dateOfBirth", date1)
                            .lt("dateOfBirth", date2)
                            .or()
                            .eq((String) equalsFields.get(2).get(0), equalsFields.get(2).get(1))
@@ -301,17 +305,16 @@ public class UserAccessor {
                            .select("userid")
                            .fetch(FOLLOWERS_COLUMN_NAME, "*")
                            .where()
-                           .eq((String) equalsFields.get(5).get(0), equalsFields.get(5).get(1))
+                           .eq(followersColumnName, equalsFields.get(5).get(1))
 
                            .select("userid")
                            .fetch(FOLLOWING_COLUMN_NAME, "*")
                            .where()
-                           .eq((String) equalsFields.get(6).get(0), equalsFields.get(6).get(1))
+                           .eq(followingColumnName, equalsFields.get(6).get(1))
 
                            .setFirstRow(offset).setMaxRows(quantity);
        }
        else {
-           System.out.println(equalsFields);
            query = //Ebean.find(User.class)
                    User.find().query()
                            .where()
@@ -335,14 +338,15 @@ public class UserAccessor {
                            .select("userid")
                            .fetch(FOLLOWERS_COLUMN_NAME, "*")
                            .where()
-                           .eq((String) equalsFields.get(5).get(0), equalsFields.get(5).get(1))
+                           .eq(followersColumnName, equalsFields.get(5).get(1))
 
                            .select("userid")
                            .fetch(FOLLOWING_COLUMN_NAME, "*")
                            .where()
-                           .eq((String) equalsFields.get(6).get(0), equalsFields.get(6).get(1))
+                           .eq(followingColumnName, equalsFields.get(6).get(1))
 
-                           .setFirstRow(offset).setMaxRows(quantity);
+                           .setFirstRow(offset)
+                           .setMaxRows(quantity);
        }
 
        return query.findSet();
@@ -393,9 +397,16 @@ public class UserAccessor {
                     break;
                 case FOLLOWERS_COLUMN_NAME:
                     convertedQueryValue = User.find().query().where().eq("userid", queryValue).findOne();
+                    ((User) convertedQueryValue).setPassword("1");
+                    //UserAccessor.update((User) convertedQueryValue);
+                    //convertedQueryValue = User.find().query().where().eq("userid", queryValue).findOne();
                     break;
                 case FOLLOWING_COLUMN_NAME:
                     convertedQueryValue = User.find().query().where().eq("userid", queryValue).findOne();
+                    ((User) convertedQueryValue).setPassword("1");
+                    //UserAccessor.update((User) convertedQueryValue);
+                    //convertedQueryValue = User.find().query().where().eq("userid", queryValue).findOne();
+                    System.out.println("query value is " + convertedQueryValue);
                     break;
                 case GENDER_COLUMN_NAME:
                     convertedQueryValue = queryValue;

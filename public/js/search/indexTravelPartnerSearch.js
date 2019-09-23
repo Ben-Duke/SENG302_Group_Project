@@ -114,6 +114,7 @@ function appendQueryParameters(route) {
  */
 async function onPaginate(currentPage) {
     currentPageNum = currentPage;
+
     await renderPaginatedData();
 }
 
@@ -213,43 +214,52 @@ async function displayData(users) {
         travellerTypes.innerText = user.travellerTypes;
         row.appendChild(travellerTypes);
 
-        const changeAdmin = document.createElement("td");
 
         if (!user.isCurrentUser) {
 
-            const changeAdminButton = document.createElement("a");
-            changeAdminButton.class = "btn btn-link";
+            const followLink = document.createElement("td");
+            followLink.setAttribute("class", "followLink");
+            followLink.setAttribute("data-profile", user.userId);
 
-            if (user.isAdmin) {
-                changeAdminButton.href = "/users/admin/remove/" + user.userId;
-                changeAdminButton.innerText = "Revoke Admin";
-            } else {
-                changeAdminButton.href = "/users/admin/make/" + user.userId;
-                changeAdminButton.innerText = "Make Admin";
-            }
-            changeAdmin.appendChild(changeAdminButton);
+            const viewUser = document.createElement("td");
+            const viewUserBtn = document.createElement("a");
+            viewUserBtn.setAttribute("class", "btn");
+            viewUserBtn.setAttribute("class", "btn-link");
+            viewUserBtn.href = "/users/profile/"+user.userId;
+            viewUserBtn.innerText = "View";
+
+            viewUser.appendChild(viewUserBtn);
+
+            const followUserBtn = document.createElement("a");
+            followUserBtn.setAttribute("class", "btn");
+            followUserBtn.setAttribute("class", "btn-link");
+            followUserBtn.id = "follow-"+user.userId;
+            followUserBtn.setAttribute("onclick", "followUser("+user.userId+")");
+            followUserBtn.innerText = "Follow";
+            followUserBtn.style.display = "none";
+            followUserBtn.style.cursor = "pointer";
+
+            followLink.appendChild(followUserBtn);
+
+            const unfollowUserBtn = document.createElement("a");
+            unfollowUserBtn.setAttribute("class", "btn");
+            unfollowUserBtn.setAttribute("class", "btn-link");
+            unfollowUserBtn.id = "unfollow-"+user.userId;
+            unfollowUserBtn.setAttribute("onclick", "unfollowUser("+user.userId+")");
+            unfollowUserBtn.innerText = "Unfollow";
+            unfollowUserBtn.style.display = "none";
+            unfollowUserBtn.style.cursor = "pointer";
+
+            followLink.appendChild(unfollowUserBtn);
+            followLink.appendChild(followUserBtn);
+
+            row.appendChild(viewUser);
+            row.appendChild(followLink);
         }
-
-        row.appendChild(changeAdmin);
-
-
-        const actAsUser = document.createElement("td");
-
-        if (!user.isCurrentUser) {
-
-            const actAsUserButton = document.createElement("a");
-            actAsUserButton.class = "btn btn-link";
-
-            actAsUserButton.href = "/users/admin/actasuser/" + user.userId;
-            actAsUserButton.innerText = "Act as user";
-
-            actAsUser.appendChild(actAsUserButton);
-        }
-
-        row.appendChild(actAsUser);
 
 
         tableBody.append(row);
+        configureFollowLinks();
     }
 }
 
@@ -319,6 +329,9 @@ function addPagination(count, pageNum) {
         const currentPageNum = pageNumbers[i];
         pageButton.innerText = pageNumbers[i];
         if (currentPageNum === pageNum) {
+
+            console.log(1.2);
+
             pageButton.classList.add("active");
         }
         pageButton.setAttribute("onClick", `onPaginate(${pageNumbers[i]})`);

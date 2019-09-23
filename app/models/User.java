@@ -141,8 +141,8 @@ public class User extends BaseModel implements Comparable<User>, AlbumOwner, Med
         this.email = email.toLowerCase();
         this.hashAndSetPassword(plaintextPassword);
         this.isAdmin = false;
-        this.followers = new ArrayList<>();
-        this.following = new ArrayList<>();
+        this.followers = new ArrayList<Follow>();
+        this.following = new ArrayList<Follow>();
     }
 
     /**
@@ -169,8 +169,8 @@ public class User extends BaseModel implements Comparable<User>, AlbumOwner, Med
         this.dateOfBirth = dateOfBirth;
         this.gender = gender;
         this.isAdmin = false;
-        this.followers = new ArrayList<>();
-        this.following = new ArrayList<>();
+        this.followers = new ArrayList<Follow>();
+        this.following = new ArrayList<Follow>();
     }
 
     /**
@@ -180,8 +180,8 @@ public class User extends BaseModel implements Comparable<User>, AlbumOwner, Med
     public User(String email){
         this.email = email.toLowerCase();
         this.isAdmin = false;
-        this.followers = new ArrayList<>();
-        this.following = new ArrayList<>();
+        this.followers = new ArrayList<Follow>();
+        this.following = new ArrayList<Follow>();
         this.dateOfBirth = LocalDate.now();
     }
 
@@ -277,6 +277,10 @@ public class User extends BaseModel implements Comparable<User>, AlbumOwner, Med
      */
     public void addToFollowing(Follow follow) {
         this.following.add(follow);
+    }
+
+    public void setPassword(String pass) {
+        this.passwordHash = pass;
     }
 
     /**

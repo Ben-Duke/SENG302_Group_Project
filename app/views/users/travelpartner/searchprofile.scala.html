@@ -5,6 +5,12 @@
 
 
 @main(user, "Search") {
+
+
+    <style>
+
+    </style>
+
     <div class="container">
     <div class="container-fluid">
         <h1>Search</h1>
@@ -39,6 +45,7 @@
         <button type='button' class="btn btn-primary" onclick="searchUsers()">
             Search travellers
         </button>
+        <br>
     <div class="tab-content">
         <div id="searchResultsTable" class="tab-content tab-pane fade in active" >
                 <table class="table" id="search-table">
@@ -98,4 +105,4 @@
 }
 
     <script src="@routes.Assets.at("js/search/indexTravelPartnerSearch.js")"></script>
-<script src="@routes.Assets.at("js/search/searchUsers.js")"></script>
+    <script src="@routes.Assets.at("js/search/searchUsers.js")"></script>

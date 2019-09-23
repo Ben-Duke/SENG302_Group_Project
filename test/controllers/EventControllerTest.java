@@ -27,8 +27,9 @@ public class EventControllerTest  extends BaseTestWithApplicationAndDatabase {
     public void linkPhotoToDestinationSuccessful() {
         Destination destination = DestinationAccessor.getDestinationById(3);
 
-        Event event = new Event(1000, LocalDateTime.now(), LocalDateTime.MAX, "testEvent", "event.com",
-                destination.getLatitude(), destination.getLongitude(), "test event");
+
+        Event event = new Event(1000, LocalDateTime.now(), LocalDateTime.MAX, "testEvent", "type","event.com", "imageurl",
+                destination.getLatitude(), destination.getLongitude(), "", "test event");
         EventAccessor.insert(event);
         event = EventAccessor.getByInternalId(event.getEventId());
         Command albumCommand = new CreateAlbumCommand(event.getName(), event, null);

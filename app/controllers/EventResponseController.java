@@ -65,6 +65,9 @@ public class EventResponseController {
             newEvent.insert();
             newEvent.save();
             newEvent = Event.find.byId(newEvent.getEventId());
+            Album album = new Album(newEvent, newEvent.getName(), true);
+            AlbumAccessor.insert(album);
+            newEvent.update();
             EventResponse eventResponse = new EventResponse();
             EventResponseAccessor.save(eventResponse);
             EventResponse savedEventResponse = EventResponseAccessor.getById(eventResponse.getEventResponseId());
@@ -72,9 +75,6 @@ public class EventResponseController {
             savedEventResponse.setEvent(newEvent);
             savedEventResponse.setResponseType(responseType);
             EventResponseAccessor.update(savedEventResponse);
-            Album album = new Album(newEvent, newEvent.getName(), true);
-            AlbumAccessor.insert(album);
-            newEvent.update();
             return ok();
         }
         EventResponse eventResponse = new EventResponse();

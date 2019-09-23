@@ -39,7 +39,7 @@ public abstract class Media extends TaggableModel {
     @ManyToMany(mappedBy = "media")
     public List<Album> albums;
 
-    private LocalDateTime date_added;
+    public LocalDateTime date_added;
 
     private String caption = "";
 
@@ -49,13 +49,16 @@ public abstract class Media extends TaggableModel {
         this.user = user;
         this.caption = caption;
         this.date_added = LocalDateTime.now();
+        System.out.println("con1 " + date_added);
     }
 
     public Media(String url, boolean isPublic, User user) {
         this.url = url;
         this.isPublic = isPublic;
         this.user = user;
-        this.date_added = LocalDateTime.now();
+        this.date_added =  LocalDateTime.now();
+        System.out.println(this.date_added);
+        System.out.println("con2 " + date_added);
     }
 
     public static Finder<Integer,Media> find = new

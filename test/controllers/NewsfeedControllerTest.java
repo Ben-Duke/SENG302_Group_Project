@@ -4,6 +4,7 @@ import accessors.MediaAccessor;
 import accessors.UserAccessor;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import models.Media;
 import models.Tag;
 import models.User;
 import models.UserPhoto;
@@ -17,6 +18,7 @@ import play.test.Helpers;
 import testhelpers.BaseTestWithApplicationAndDatabase;
 
 import java.rmi.server.ExportException;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -63,6 +65,13 @@ public class NewsfeedControllerTest extends BaseTestWithApplicationAndDatabase{
         Result newsfeedResult = route(app, newsfeedRequest);
         JsonNode newsfeedResponse = Json.parse( contentAsString( newsfeedResult));
 
-        assertEquals(2,newsfeedResponse.size());
+        assertEquals(1,newsfeedResponse.size());
+    }
+
+    @Test
+    public void temp(){
+        Media media = new UserPhoto("test",true,true,null);
+        MediaAccessor.insert(media);
+        System.out.println("Test " + MediaAccessor.getMediaById(media.mediaId).getDate_added());
     }
 }

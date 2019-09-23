@@ -70,6 +70,9 @@ public class MediaAccessor {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
         for(int i = 0; i < userMedia.size(); i++){
+
+//            System.out.println("class is " + userMedia.get(i).getClass().getName());
+//            System.out.println("from the getmediadata call " );
             ObjectNode mediaNode = (new ObjectMapper()).createObjectNode();
             mediaNode.put("User", (user.getFName() + " " + user.getLName()));
             mediaNode.put("url", (userMedia.get(i).getUrl()));

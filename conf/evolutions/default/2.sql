@@ -295,6 +295,7 @@ INSERT INTO `user` (`userid`, `email`, `password_hash`, `date_of_birth`, `gender
 
 -- follow
 INSERT INTO `follow`(`follow_id`, `follower`, `followed`, `state`) VALUES
+(NULL,1,6,NULL ),
 (NULL,2,3,NULL ),
 (NULL,2,4,NULL ),
 (NULL,2,5,NULL ),

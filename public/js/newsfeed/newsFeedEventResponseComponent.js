@@ -67,7 +67,7 @@ function createNewsFeedEventResponseComponent(event, user, responseTime) {
     mediaLeftDiv.setAttribute("class", "media-left");
 
     let link1 = document.createElement("a");
-    link1.href = event.url;
+    link1.href = `events/${event.id}`;
     link1.target = "_blank";
 
     let eventThumbnailImg = document.createElement("img");
@@ -78,7 +78,7 @@ function createNewsFeedEventResponseComponent(event, user, responseTime) {
     mediaBodyDiv.setAttribute("class", "media-body");
 
     let link2 = document.createElement("a");
-    link2.href = event.url;
+    link2.href = `events/${event.id}`;
     link2.target = "_blank";
 
 

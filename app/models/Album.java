@@ -108,11 +108,14 @@ public class Album extends Model {
      * @return the album owner
      */
     public AlbumOwner getOwner() {
-        if(destination == null) {
+        if(user != null) {
             return user;
         }
-        else if(user == null) {
+        else if(destination != null) {
             return destination;
+        }
+        else if (event != null) {
+            return event;
         }
         return owner;
     }

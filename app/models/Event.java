@@ -45,8 +45,6 @@ public class Event extends Model implements AlbumOwner {
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    @ManyToOne
-    private Destination destination;
 
     @JsonIgnore
     @OneToMany(mappedBy = "event")
@@ -54,7 +52,7 @@ public class Event extends Model implements AlbumOwner {
 
     private static final Finder<Integer,Event> find = new Finder<>(Event.class, ApplicationManager.getDatabaseName());
 
-    public Event(Integer externalId, LocalDateTime startTime, LocalDateTime endTime, String name, String url, double latitude, double longitude, String description, Destination destination) {
+    public Event(Integer externalId, LocalDateTime startTime, LocalDateTime endTime, String name, String url, double latitude, double longitude, String description) {
         this.externalId = externalId;
         this.startTime = startTime;
         this.endTime = endTime;
@@ -63,7 +61,6 @@ public class Event extends Model implements AlbumOwner {
         this.latitude = latitude;
         this.longitude = longitude;
         this.description = description;
-        this.destination = destination;
         this.albums = new ArrayList<>();
     }
 
@@ -73,11 +70,10 @@ public class Event extends Model implements AlbumOwner {
         this.name = name;
     }
 
-    public Event(LocalDateTime startTime, LocalDateTime endTime, String description, Destination destination) {
+    public Event(LocalDateTime startTime, LocalDateTime endTime, String description) {
         this.startTime = startTime;
         this.endTime = endTime;
         this.description = description;
-        this.destination = destination;
     }
 
     public static Finder<Integer, Event> find() {
@@ -110,14 +106,6 @@ public class Event extends Model implements AlbumOwner {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public Destination getDestination() {
-        return destination;
-    }
-
-    public void setDestination(Destination destination) {
-        this.destination = destination;
     }
 
     public String getName() {
@@ -174,8 +162,7 @@ public class Event extends Model implements AlbumOwner {
                 ", url='" + url + '\'' +
                 ", latitude=" + latitude +
                 ", longitude=" + longitude +
-                ", description='" + description + '\'' +
-                ", destination=" + destination +
+                ", description='" + description +
                 '}';
     }
     @Override

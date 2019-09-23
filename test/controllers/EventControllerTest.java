@@ -1,11 +1,10 @@
 package controllers;
 
-import accessors.DestinationAccessor;
-import accessors.EventAccessor;
-import accessors.UserAccessor;
-import models.Destination;
-import models.Event;
-import models.User;
+import accessors.*;
+import models.*;
+import models.commands.Albums.CreateAlbumCommand;
+import models.commands.Events.CreateEventCommand;
+import models.commands.General.Command;
 import org.junit.Ignore;
 import org.junit.Test;
 import play.mvc.Http;
@@ -27,15 +26,29 @@ public class EventControllerTest  extends BaseTestWithApplicationAndDatabase {
     @Test
     public void linkPhotoToDestinationSuccessful() {
         Destination destination = DestinationAccessor.getDestinationById(3);
-        Event event = new Event(1000, LocalDateTime.now(), LocalDateTime.MAX, "testEvent", "event.com",
-                destination.getLatitude(), destination.getLongitude(), "test event", destination);
-        EventAccessor.insert(event);
 
+        Event event = new Event(1000, LocalDateTime.now(), LocalDateTime.MAX, "testEvent", "event.com",
+                destination.getLatitude(), destination.getLongitude(), "test event");
+        EventAccessor.insert(event);
+        event = EventAccessor.getByInternalId(event.getEventId());
+        Command albumCommand = new CreateAlbumCommand(event.getName(), event, null);
+        albumCommand.execute();
+        EventAccessor.update(event);
         User user = UserAccessor.getById(2);
+
+
+
+        Album userDefaultAlbum = user.getAlbums().get(0);
+        Media media1 = new UserPhoto("/test", false, false, user);
+        MediaAccessor.insert(media1);
+        userDefaultAlbum.addMedia(media1);
+        AlbumAccessor.update(userDefaultAlbum);
+        String url = "/events/linkphoto/" + user.getAlbums().get(0).getMedia().get(0).getMediaId() + "/" + event.getEventId();
+
 
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(PUT)
-                .uri("/events/linkphoto/" + event.getEventId() + "/" + user.getAlbums().get(0).getMedia().get(0).getMediaId()).session("connected", "2");
+                .uri(url).session("connected", "2");
         Result result = route(app, request);
         assertEquals(OK, result.status());
 

@@ -476,7 +476,7 @@ GET /events/responses/:responseType                         controllers.EventRes
 
 GET /events/get/all                                         controllers.EventResponseController.getAllResponses(request : Request)
 
-PUT /events/linkphoto/:eventId/:photoId                     controllers.EventsController.LinkPhotoToEvent(request: Request, eventId: Integer, photoId: Integer)
+PUT /events/linkphoto/:photoId/:eventId                     controllers.EventsController.LinkPhotoToEvent(request: Request, photoId: Integer, eventId: Integer)
 
 # Undo
 +nocsrf

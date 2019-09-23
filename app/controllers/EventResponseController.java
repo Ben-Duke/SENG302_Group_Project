@@ -51,8 +51,7 @@ public class EventResponseController {
                     eventData.get("url").toString(),
                     eventData.get("point").get("lat").asDouble(),
                     eventData.get("point").get("lng").asDouble(),
-                    eventData.get("description").toString(),
-                    null
+                    eventData.get("description").toString()
             );
             newEvent.insert();
             newEvent.save();
@@ -61,6 +60,7 @@ public class EventResponseController {
             EventResponseAccessor.save(eventResponse);
             Album album = new Album(newEvent, newEvent.getName(), true);
             AlbumAccessor.insert(album);
+            newEvent.update();
             return ok();
         }
         EventResponse eventResponse = new EventResponse(responseType, event, user);

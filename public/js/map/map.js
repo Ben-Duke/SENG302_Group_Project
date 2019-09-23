@@ -2128,13 +2128,13 @@ function setTripPaginationLinks(tripCount, perPage, search) {
     let previousArrow = document.createElement("a");
     previousArrow.setAttribute("id", "previous-trip");
     previousArrow.setAttribute("onclick","previousTripPage(" + search + ")");
-    previousArrow.innerText = "&laquo";
+    previousArrow.innerText = "<";
     previousArrowLink.appendChild(previousArrow);
     let nextArrowLink = document.createElement("li");
     let nextArrow = document.createElement("a");
     nextArrow.setAttribute("id", "next-trip");
     nextArrow.setAttribute("onclick","nextTripPage(" + search + ")");
-    nextArrow.innerText = "&raquo";
+    nextArrow.innerText = ">";
     nextArrowLink.appendChild(nextArrow);
     paginationList.appendChild(previousArrowLink);
 

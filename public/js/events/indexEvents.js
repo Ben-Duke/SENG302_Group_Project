@@ -44,6 +44,22 @@ function getEventsFromApiResponse(eventData, url, pageNum) {
     addPagination(count, pageNum);
 }
 
+function respondToEvent(eventId){
+    console.log(eventId);
+    $.ajax({
+        success: function () {
+            $.ajax({
+                type: 'PUT',
+                url: "/events/respond/" + eventId + "/" + "Going",
+                success: function () {
+                    location.reload()
+                },
+            })
+        }
+    })
+}
+
+
 function displayEvents(events) {
     document.getElementById("events-results").appendChild(document.createElement("hr"));
     for (let i=0; i < events.length; i++) {
@@ -61,12 +77,28 @@ function displayEvents(events) {
         const mediaBody = document.createElement("div");
         mediaBody.classList.add("media-body")
         const eventLink = document.createElement("a");
-        eventLink.setAttribute("href", events[i].url);
-        eventLink.setAttribute("target", "_blank");
+        $.ajax({
+            success: function () {
+                $.ajax({
+                    type: 'GET',
+                    url: "/users/events/exists/" + events[i].id,
+                    success: function (data) {
+                        eventLink.setAttribute("href", data);
+                    },
+                    error: function() {
+                        eventLink.setAttribute("href", events[i].url);
+                        eventLink.setAttribute("target", "_blank");
+                    }
+                })
+            }
+        })
+        const eventResponse = document.createElement("a");
+        eventResponse.setAttribute("onclick", "respondToEvent(" + events[i].id + ")");
         const eventName = document.createElement("h4");
         eventName.classList.add("media-heading");
         eventName.innerText = events[i]["name"];
         eventLink.appendChild(eventName);
+        eventResponse.innerText = "Going";
         const eventDateTime = document.createElement("p");
         eventDateTime.innerText = "Starts: " + events[i].datetime_start + "\nEnds: " + events[i].datetime_end;
         const eventAddress = document.createElement("p");
@@ -76,6 +108,7 @@ function displayEvents(events) {
         const eventDescription = document.createElement("p");
         eventDescription.innerText = events[i].description;
         mediaBody.appendChild(eventLink);
+        mediaBody.appendChild(eventResponse);
         mediaBody.appendChild(eventAddress);
         mediaBody.appendChild(eventDateTime);
         mediaBody.appendChild(eventCategory);

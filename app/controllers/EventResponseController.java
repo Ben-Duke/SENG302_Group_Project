@@ -55,17 +55,15 @@ public class EventResponseController {
                     eventData.get("id").asInt(),
                     LocalDateTime.parse(eventData.get("datetime_start").toString().substring(1, 20), formatter),
                     LocalDateTime.parse(eventData.get("datetime_end").toString().substring(1, 20), formatter),
-                    eventData.get("name").toString(),
-                    eventData.get("category").get("name").toString(),
-                    eventData.get("url").toString(),
-                    eventData.get("images").get("images").get(0).get("transforms").get("transforms").get(lastTransfom).toString(),
+                    eventData.get("name").asText(),
+                    eventData.get("category").get("name").asText(),
+                    eventData.get("url").asText(),
+                    eventData.get("images").get("images").get(0).get("transforms").get("transforms").get(lastTransfom).asText(),
                     eventData.get("point").get("lat").asDouble(),
                     eventData.get("point").get("lng").asDouble(),
-                    eventData.get("address").toString(),
-                    eventData.get("description").toString()
+                    eventData.get("address").asText(),
+                    eventData.get("description").asText()
             );
-            System.out.println("user is " + user);
-            System.out.println("event is " + newEvent);
             newEvent.insert();
             newEvent.save();
             newEvent = Event.find.byId(newEvent.getEventId());
@@ -76,7 +74,6 @@ public class EventResponseController {
             savedEventResponse.setEvent(newEvent);
             savedEventResponse.setResponseType(responseType);
             EventResponseAccessor.update(savedEventResponse);
-            System.out.println(EventResponseAccessor.getById(eventResponse.getEventResponseId()));
             return ok();
         }
         EventResponse eventResponse = new EventResponse();

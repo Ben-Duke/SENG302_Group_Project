@@ -21,6 +21,9 @@
  * @param responseTime the time that the user responded. Format: "HH:mm dd-MM"
  */
 function createNewsFeedEventResponseComponent(event, user, responseTime) {
+
+    const path = "/users/home/servePicture/";
+
     let newsContainer = document.getElementById("newsContainer");
 
     let newsItemDiv = document.createElement("div");
@@ -30,9 +33,13 @@ function createNewsFeedEventResponseComponent(event, user, responseTime) {
     newsHeaderDiv.setAttribute("class", "newsHeader");
 
     let userProfileImg = document.createElement("img");
-    userProfileImg.setAttribute("class", "userProfileImg");
-    userProfileImg.setAttribute("class", "img-circle");
-    userProfileImg.src = user.profilePicUrl;
+    userProfileImg.setAttribute("class", "img-circle userProfileImg");
+    // userProfileImg.setAttribute("class", "img-circle");
+    if (user.profilePicUrl === "null") {
+        userProfileImg.src = "/assets/images/Generic.png";
+    } else {
+        userProfileImg.src = path + encodeURIComponent(user.profilePicUrl);
+    }
 
     let newsTitle = document.createElement("span");
     newsTitle.setAttribute("class", "newsTitle");

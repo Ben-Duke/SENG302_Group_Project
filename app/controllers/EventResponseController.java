@@ -50,7 +50,6 @@ public class EventResponseController {
             if (jsonData.size() == 0) {return badRequest();}
             JsonNode eventData = jsonData.get(0);
             int lastTransfom = eventData.get("images").get("images").get(0).get("transforms").get("@attributes").get("count").asInt()-1;
-            System.out.println(eventData);
             Event newEvent = new Event(
                     eventData.get("id").asInt(),
                     LocalDateTime.parse(eventData.get("datetime_start").toString().substring(1, 20), formatter),
@@ -58,7 +57,7 @@ public class EventResponseController {
                     eventData.get("name").asText(),
                     eventData.get("category").get("name").asText(),
                     eventData.get("url").asText(),
-                    eventData.get("images").get("images").get(0).get("transforms").get("transforms").get(lastTransfom).asText(),
+                    eventData.get("images").get("images").get(0).get("transforms").get("transforms").get(lastTransfom).get("url").asText(),
                     eventData.get("point").get("lat").asDouble(),
                     eventData.get("point").get("lng").asDouble(),
                     eventData.get("address").asText(),
@@ -120,7 +119,6 @@ public class EventResponseController {
         ObjectMapper objectMapper = new ObjectMapper();
         ObjectNode json = objectMapper.createObjectNode();
         ArrayNode responses = objectMapper.createArrayNode();
-        System.out.println(eventResponses);
         for (EventResponse response : eventResponses) {
             ObjectNode responseNode = objectMapper.createObjectNode();
 
@@ -129,7 +127,11 @@ public class EventResponseController {
             UserPhoto profilePhoto = UserAccessor.getProfilePhoto(user);
             userNode.put("id", user.getUserid());
             userNode.put("name", user.getFName() + " " + user.getLName());
-            userNode.put("profilePicUrl", profilePhoto.getUrlWithPath());
+            if (profilePhoto != null) {
+                userNode.put("profilePicUrl", profilePhoto.getUrlWithPath());
+            } else {
+                userNode.put("profilePicUrl", "null");
+            }
 
 
             ObjectNode eventNode = objectMapper.createObjectNode();

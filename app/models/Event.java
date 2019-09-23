@@ -44,7 +44,7 @@ public class Event extends Model {
 
     private static final Finder<Integer,Event> find = new Finder<>(Event.class, ApplicationManager.getDatabaseName());
 
-    public Event(Integer externalId, LocalDateTime startTime, LocalDateTime endTime, String name, String url, double latitude, double longitude, String description, Destination destination) {
+    public Event(Integer externalId, LocalDateTime startTime, LocalDateTime endTime, String name, String url, double latitude, double longitude, String description) {
         this.externalId = externalId;
         this.startTime = startTime;
         this.endTime = endTime;
@@ -61,7 +61,7 @@ public class Event extends Model {
         this.name = name;
     }
 
-    public Event(LocalDateTime startTime, LocalDateTime endTime, String description, Destination destination) {
+    public Event(LocalDateTime startTime, LocalDateTime endTime, String description) {
         this.startTime = startTime;
         this.endTime = endTime;
         this.description = description;

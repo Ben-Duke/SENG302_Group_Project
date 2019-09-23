@@ -52,8 +52,7 @@ public class EventResponseController {
                     eventData.get("url").toString(),
                     eventData.get("point").get("lat").asDouble(),
                     eventData.get("point").get("lng").asDouble(),
-                    eventData.get("description").toString(),
-                    null
+                    eventData.get("description").toString()
             );
             newEvent.insert();
             newEvent.save();

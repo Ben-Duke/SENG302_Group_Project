@@ -13843,7 +13843,7 @@ INSERT INTO `album` (`album_id`, `user`, `destination`, `primary_photo_media_id`
 (39, NULL, 17, NULL, 0, 'Gisborne'),
 (40, NULL, 18, NULL, 0, 'Lake Pukaki');
 
-# big data destination albums
+-- big data destination albums
 INSERT INTO `album` (`album_id`, `user`, `destination`, `primary_photo_media_id`, `is_default`, `title`) VALUES
 (100, NULL, 100, NULL, 1, 'Anaa Airport'),
 (101, NULL, 101, NULL, 1, 'El Mellah Airport'),

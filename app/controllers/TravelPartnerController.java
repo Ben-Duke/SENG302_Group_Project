@@ -181,29 +181,35 @@ public class TravelPartnerController {
         Set<User> users = UserAccessor.getUsersByQuery(travellerType, offset, quantity,
                 nationality, bornAfter, bornBefore, gender1, gender2, gender3, getFollowers,
                 getFollowing);
+
         ObjectMapper objectMapper = new ObjectMapper();
         ArrayNode userNodes = objectMapper.createArrayNode();
 
         for (User user : users) {
-            ObjectNode userNode = objectMapper.createObjectNode();
-            userNode.put("userId", user.getUserid());
-            userNode.put("name", user.getFName() + " " + user.getLName());
-            userNode.put("gender", user.getGender());
-            userNode.put("dob", user.getDateOfBirth().toString());
+            if (user.getUserid() != currentUser.getUserid()) {
+                ObjectNode userNode = objectMapper.createObjectNode();
+                userNode.put("userId", user.getUserid());
+                userNode.put("name", user.getFName() + " " + user.getLName());
+                userNode.put("gender", user.getGender());
+                userNode.put("dob", user.getDateOfBirth().toString());
 
-            ArrayNode nationalityNodes = objectMapper.createArrayNode();
-            for (Nationality userNationality : user.getNationality()) {
-                nationalityNodes.add(userNationality.getNationalityName());
+                ArrayNode nationalityNodes = objectMapper.createArrayNode();
+                for (Nationality userNationality : user.getNationality()) {
+                    nationalityNodes.add(userNationality.getNationalityName());
+                }
+                userNode.put("nationalities", nationalityNodes);
+
+                ArrayNode travellerTypeNodes = objectMapper.createArrayNode();
+                for (TravellerType userTravellerType : user.getTravellerTypes()) {
+                    travellerTypeNodes.add(userTravellerType.getTravellerTypeName());
+                }
+                userNode.put("travellerTypes", travellerTypeNodes);
+
+                boolean isCurrentUserFollowingUser = currentUser.isFollowing(user);
+                userNode.put("isFollowedByCurrentUser", isCurrentUserFollowingUser);
+
+                userNodes.add(userNode);
             }
-            userNode.put("nationalities", nationalityNodes);
-
-            ArrayNode travellerTypeNodes = objectMapper.createArrayNode();
-            for (TravellerType userTravellerType : user.getTravellerTypes()) {
-                travellerTypeNodes.add(userTravellerType.getTravellerTypeName());
-            }
-            userNode.put("travellerTypes", travellerTypeNodes);
-
-            userNodes.add(userNode);
         }
         return ok(userNodes);
     }

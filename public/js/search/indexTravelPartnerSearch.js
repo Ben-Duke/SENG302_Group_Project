@@ -215,8 +215,6 @@ async function displayData(users) {
         row.appendChild(travellerTypes);
 
 
-        if (!user.isCurrentUser) {
-
             const followLink = document.createElement("td");
             followLink.setAttribute("class", "followLink");
             followLink.setAttribute("data-profile", user.userId);
@@ -236,10 +234,8 @@ async function displayData(users) {
             followUserBtn.id = "follow-"+user.userId;
             followUserBtn.setAttribute("onclick", "followUser("+user.userId+")");
             followUserBtn.innerText = "Follow";
-            followUserBtn.style.display = "none";
             followUserBtn.style.cursor = "pointer";
 
-            followLink.appendChild(followUserBtn);
 
             const unfollowUserBtn = document.createElement("a");
             unfollowUserBtn.setAttribute("class", "btn");
@@ -247,19 +243,25 @@ async function displayData(users) {
             unfollowUserBtn.id = "unfollow-"+user.userId;
             unfollowUserBtn.setAttribute("onclick", "unfollowUser("+user.userId+")");
             unfollowUserBtn.innerText = "Unfollow";
-            unfollowUserBtn.style.display = "none";
             unfollowUserBtn.style.cursor = "pointer";
 
-            followLink.appendChild(unfollowUserBtn);
+
+            if (user.isFollowedByCurrentUser) {
+                followUserBtn.style.display = "none";
+            } else {
+                unfollowUserBtn.style.display = "none";
+            }
+
+
             followLink.appendChild(followUserBtn);
+            followLink.appendChild(unfollowUserBtn);
 
             row.appendChild(viewUser);
             row.appendChild(followLink);
-        }
 
 
         tableBody.append(row);
-        configureFollowLinks();
+        // configureFollowLinks();
     }
 }
 
@@ -330,7 +332,7 @@ function addPagination(count, pageNum) {
         pageButton.innerText = pageNumbers[i];
         if (currentPageNum === pageNum) {
 
-            console.log(1.2);
+            // console.log(1.2);
 
             pageButton.classList.add("active");
         }

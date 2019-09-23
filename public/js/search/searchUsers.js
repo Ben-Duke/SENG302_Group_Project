@@ -70,51 +70,6 @@ function sortTable(n, tableName) {
     }
 }
 
-function configureFollowLinks() {
-    const linkContainers = document.getElementsByClassName("followLink");
-    for (let linkContainer of linkContainers) {
-        const profileId = linkContainer.dataset.profile;
-        setFollowLink(profileId)
-    }
-
-    const followerLinkContainers = document.getElementsByClassName("followerTabLink");
-    for (let linkContainer of followerLinkContainers) {
-        const tabProfileId = linkContainer.dataset.profile;
-        setFollowedLink(tabProfileId)
-    }
-}
-
-function setFollowLink(profileId) {
-    let success;
-    $.ajax({
-        type: 'GET',
-        url: `/users/follows/${profileId}`,
-        success: function(followResult) {
-            if(followResult == false) {
-                document.getElementById("follow-" + profileId).style.display = "block";
-            } else {
-                document.getElementById("unfollow-" + profileId).style.display = "block";
-            }
-        }
-    });
-}
-
-function setFollowedLink(profileId) {
-    let success;
-    $.ajax({
-        type: 'GET',
-        url: `/users/followed/${profileId}`,
-        success: function(followResult) {
-            if(followResult == false) {
-                document.getElementById("followingTab-follow-" + profileId).style.display = "block";
-            } else {
-                document.getElementById("followingTab-follow-" + profileId).style.display = "block";
-            }
-        }
-    });
-}
-
-
 
 function followUser(profileId, tab) {
     var token = $('input[name="csrfToken"]').attr('value');

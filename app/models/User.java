@@ -263,6 +263,16 @@ public class User extends BaseModel implements Comparable<User>, AlbumOwner, Med
         return null;
     }
 
+    public boolean isFollowing(User user) {
+
+        for (Follow follow : this.following) {
+            if (follow.getFollowed().getUserid() == user.getUserid()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /**
      * Add a follow to the users list of followers
      * @param follow

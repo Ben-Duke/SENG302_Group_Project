@@ -5,9 +5,9 @@ configureFollowLinks();
 //n = 3, sorting by the travelers first nationality
 //n = 4, sorting by date of birth
 //n = 5, sorting by the travelers first traveler type
-function sortTable(n) {
+function sortTable(n, tableName) {
     let table, rows, switching, i, x, y, shouldSwitch, dir, switchCount = 0;
-    table = document.getElementById("searchResultsTable");
+    table = document.getElementById(tableName);
     switching = true;
     // Set the sorting direction to ascending:
     dir = "asc";
@@ -78,26 +78,17 @@ function configureFollowLinks() {
         const profileId = linkContainer.dataset.profile;
         setFollowLink(profileId)
     }
-    // const linkButton = document.createElement('BUTTON');
-    // linkButton.setAttribute('id', `link-${destination.destId}`);
-    // linkButton.setAttribute('class', 'btn btn-primary');
-    // linkButton.innerText = 'Link to destination';
-    // linkButton.addEventListener('click', () => {
-    //     linkDestination(destination.destId, mediaId)
-    // });
-    //
-    // const unlinkButton = document.createElement('BUTTON');
-    // unlinkButton.setAttribute('id', `unlink-${destination.destId}`);
-    // unlinkButton.setAttribute('class', 'btn btn-danger');
-    // unlinkButton.innerText = 'Unlink from destination';
-    // unlinkButton.style.display = 'none';
-    // unlinkButton.addEventListener('click', () => {
-    //     unlinkDestination(destination.destId, mediaId)
-    //
-    // })
+
+    const followerLinkContainers = document.getElementsByClassName("followerTabLink");
+    for (let linkContainer of followerLinkContainers) {
+        const tabProfileId = linkContainer.dataset.profile;
+        setFollowedLink(tabProfileId)
+    }
+
 }
 
 function setFollowLink(profileId) {
+    let success;
     $.ajax({
         type: 'GET',
         url: `/users/follows/${profileId}`,
@@ -111,8 +102,24 @@ function setFollowLink(profileId) {
     });
 }
 
+function setFollowedLink(profileId) {
+    let success;
+    $.ajax({
+        type: 'GET',
+        url: `/users/followed/${profileId}`,
+        success: function(followResult) {
+            if(followResult == false) {
+                document.getElementById("followingTab-follow-" + profileId).style.display = "block";
+            } else {
+                document.getElementById("followingTab-follow-" + profileId).style.display = "block";
+            }
+        }
+    });
+}
 
-function followUser(profileId) {
+
+
+function followUser(profileId, tab) {
     var token = $('input[name="csrfToken"]').attr('value');
     $.ajaxSetup({
         beforeSend: function (xhr) {
@@ -125,15 +132,19 @@ function followUser(profileId) {
         url: '/users/follow/' + profileId,
         success: function (data, textStatus, xhr) {
             if (xhr.status == 200) {
-                document.getElementById("follow-" + profileId).style.display = "none";
-                document.getElementById("unfollow-" + profileId).style.display = "block";
-            } else {
+                if (tab !== undefined) {
+                    document.getElementById(tab + "follow-" + profileId).style.display = "none";
+                    document.getElementById(tab + "unfollow-" + profileId).style.display = "block";
+                } else {
+                    document.getElementById("follow-" + profileId).style.display = "none";
+                    document.getElementById("unfollow-" + profileId).style.display = "block";
+                }
             }
         }
     })
 }
 
-function unfollowUser(profileId) {
+function unfollowUser(profileId, tab) {
     var token = $('input[name="csrfToken"]').attr('value');
     $.ajaxSetup({
         beforeSend: function (xhr) {
@@ -146,9 +157,13 @@ function unfollowUser(profileId) {
         url: '/users/unfollow/' + profileId,
         success: function (data, textStatus, xhr) {
             if (xhr.status == 200) {
-                document.getElementById("unfollow-" + profileId).style.display = "none";
-                document.getElementById("follow-" + profileId).style.display = "block";
-            } else {
+                if (tab !== undefined) {
+                    document.getElementById(tab + "unfollow-" + profileId).style.display = "none";
+                    document.getElementById(tab + "follow-" + profileId).style.display = "block";
+                } else {
+                    document.getElementById("unfollow-" + profileId).style.display = "none";
+                    document.getElementById("follow-" + profileId).style.display = "block";
+                }
             }
         }
     })

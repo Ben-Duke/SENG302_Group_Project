@@ -3,7 +3,6 @@ package controllers;
 import accessors.*;
 import models.*;
 import models.commands.Albums.CreateAlbumCommand;
-import models.commands.Events.CreateEventCommand;
 import models.commands.General.Command;
 import org.junit.Ignore;
 import org.junit.Test;

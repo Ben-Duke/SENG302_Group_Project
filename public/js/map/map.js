@@ -24,7 +24,7 @@ function initMap() {
         },
     });
 
-    // geoCoder = new google.maps.Geocoder;
+    geoCoder = new google.maps.Geocoder;
 
     initPlacesAutocompleteSearch();
     initDestinationMarkers();

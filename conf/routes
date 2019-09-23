@@ -483,9 +483,13 @@ GET /users/newsfeed controllers.NewsfeedController.indexNewsfeed(request: Reques
 GET /events/responses/newsfeed/:offset/:limit/:localDateTime    controllers.EventResponseController.getEventResponses(request: Request, offset: Integer, limit: Integer, localDateTime: String)
 
 
-PUT /events/linkphoto/:photoId/:eventId                     controllers.EventsController.LinkPhotoToEvent(request: Request, photoId: Integer, eventId: Integer)
+PUT /events/linkphoto/:photoId/:eventId                     controllers.EventsController.linkPhotoToEvent(request: Request, photoId: Integer, eventId: Integer)
 
-PUT /events/unlinkphoto/:photoId/:eventId                     controllers.EventsController.UnlinkPhotoToEvent(request: Request, photoId: Integer, eventId: Integer)
+PUT /events/unlinkphoto/:photoId/:eventId                     controllers.EventsController.unlinkPhotoToEvent(request: Request, photoId: Integer, eventId: Integer)
+
+GET /events/photos/:eventId                     controllers.EventsController.getEventPhotos(request: Request, eventId: Integer)
+
+
 
 
 # Undo

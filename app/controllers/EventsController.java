@@ -6,12 +6,11 @@ import accessors.EventAccessor;
 import accessors.UserPhotoAccessor;
 import accessors.EventResponseAccessor;
 import com.fasterxml.jackson.databind.JsonNode;
-import models.Destination;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import models.*;
 import models.Event;
-import models.Event;
-import models.EventResponse;
-import models.User;
-import models.UserPhoto;
 import play.libs.Json;
 import play.mvc.Http;
 import play.mvc.Result;
@@ -132,7 +131,7 @@ public class EventsController {
      * @param eventId
      * @return
      */
-    public Result LinkPhotoToEvent(Http.Request request, Integer userPhotoId, Integer eventId) {
+    public Result linkPhotoToEvent(Http.Request request, Integer userPhotoId, Integer eventId) {
         User user = User.getCurrentUser(request);
         if (user == null) {
             return unauthorized();
@@ -160,7 +159,7 @@ public class EventsController {
      * @param eventId
      * @return
      */
-    public Result UnlinkPhotoToEvent(Http.Request request, Integer userPhotoId, Integer eventId) {
+    public Result unlinkPhotoToEvent(Http.Request request, Integer userPhotoId, Integer eventId) {
         User user = User.getCurrentUser(request);
         if (user == null) {
             return unauthorized();
@@ -181,6 +180,40 @@ public class EventsController {
         }
         AlbumAccessor.update(event.getPrimaryAlbum());
         return ok();
+    }
+
+    /**
+     * Get a JSON object containing a list of the event's photos
+     * Each event photo has a caption, urlWithPath and isPublic attribute.
+     * @param request the HTTP request
+     * @param eventId the id of the event
+     * @return a result JSON object with a list of event photos
+     */
+    public Result getEventPhotos(Http.Request request, Integer eventId) {
+        User user = User.getCurrentUser(request);
+        if (user == null) {
+            return unauthorized();
+        }
+        Event event = EventAccessor.getByInternalId(eventId);
+        if(event == null) {
+            return badRequest();
+        }
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        ObjectNode responseNode = objectMapper.createObjectNode();
+        ArrayNode eventPhotos = objectMapper.createArrayNode();
+        List<Media> eventMedia = event.getPrimaryAlbum().getMedia();
+
+        for (Media media: eventMedia) {
+            ObjectNode mediaNode = objectMapper.createObjectNode();
+            mediaNode.put("caption", media.getCaption());
+            mediaNode.put("urlWithPath", media.getUrlWithPath());
+            mediaNode.put("isPublic", media.getIsPublic());
+            eventPhotos.add(mediaNode);
+        }
+        responseNode.set("eventPhotos", eventPhotos);
+
+        return ok(responseNode);
     }
 
 

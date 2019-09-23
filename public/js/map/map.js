@@ -120,7 +120,14 @@ function initMapLegend() {
         let name = type.name;
         let icon = type.url;
         let div = document.createElement('div');
-        div.innerHTML = '<img src="' + icon + '"> ' + name;
+
+        let img = document.createElement('img');
+        img.setAttribute("src", icon);
+        let span = document.createElement('span');
+        span.innerText = name;
+
+        div.appendChild(img);
+        div.appendChild(span);
         legend.appendChild(div);
     }
 
@@ -873,7 +880,14 @@ function initMapLegend() {
         let name = type.name;
         let icon = type.url;
         let div = document.createElement('div');
-        div.innerHTML = '<img src="' + icon + '"> ' + name;
+
+        let img = document.createElement('img');
+        img.setAttribute("src", icon);
+        let span = document.createElement('span');
+        span.innerText = name;
+
+        div.appendChild(img);
+        div.appendChild(span);
         legend.appendChild(div);
     }
 
@@ -2114,13 +2128,13 @@ function setTripPaginationLinks(tripCount, perPage, search) {
     let previousArrow = document.createElement("a");
     previousArrow.setAttribute("id", "previous-trip");
     previousArrow.setAttribute("onclick","previousTripPage(" + search + ")");
-    previousArrow.innerHTML = "&laquo";
+    previousArrow.innerText = "&laquo";
     previousArrowLink.appendChild(previousArrow);
     let nextArrowLink = document.createElement("li");
     let nextArrow = document.createElement("a");
     nextArrow.setAttribute("id", "next-trip");
     nextArrow.setAttribute("onclick","nextTripPage(" + search + ")");
-    nextArrow.innerHTML = "&raquo";
+    nextArrow.innerText = "&raquo";
     nextArrowLink.appendChild(nextArrow);
     paginationList.appendChild(previousArrowLink);
 

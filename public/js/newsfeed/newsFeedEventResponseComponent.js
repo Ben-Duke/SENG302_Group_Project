@@ -2,9 +2,9 @@
  * Creates and displays a new event response on the news feed page
  *
  * The event provided in the function parameter should contain the following attributes:
- * event.title (The title of the event)
+ * event.name (The title of the event)
  * event.url (The url to the event)
- * event.eventPic (The picture of the event)
+ * event.imageUrl (The picture of the event)
  * event.address (The address of the event)
  * event.startTime (The start time of the event)
  * event.endTime (The end time of the event)
@@ -40,7 +40,7 @@ function createNewsFeedEventResponseComponent(event, user, responseTime) {
     //If before today's date, going to event
     //For now, they are always going to the event
     //For now, "is interested" is omitted but it'll be easy to add in
-    newsTitle.innerText = user.name + " is going to " + event.title;
+    newsTitle.innerText = user.name + " is going to " + event.name;
 
     let newsTimeTxt = document.createElement("span");
     newsTimeTxt.setAttribute("class", "newsTimeTxt");
@@ -65,7 +65,7 @@ function createNewsFeedEventResponseComponent(event, user, responseTime) {
 
     let eventThumbnailImg = document.createElement("img");
     eventThumbnailImg.setAttribute("class", "img-thumbnail");
-    eventThumbnailImg.src = event.eventPic;
+    eventThumbnailImg.src = event.imageUrl;
 
     let mediaBodyDiv = document.createElement("div");
     mediaBodyDiv.setAttribute("class", "media-body");
@@ -77,7 +77,7 @@ function createNewsFeedEventResponseComponent(event, user, responseTime) {
 
     let eventHeading = document.createElement("h4");
     eventHeading.setAttribute("class", "media-heading");
-    eventHeading.innerText = event.title;
+    eventHeading.innerText = event.name;
 
     let eventAddress = document.createElement("p");
     eventAddress.innerText = event.address;

@@ -182,7 +182,7 @@ public class AdminController extends Controller {
 
             // Add default user album if they do not have one
             if (userToEdit != null) {
-                userToEdit.addDefaultAlbum();
+                userToEdit.addMissingData();
                 userToEdit.save();
             }
 

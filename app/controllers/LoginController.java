@@ -73,7 +73,7 @@ public class LoginController {
             } else {
                 // Check the user has a default album
                 User user = UserAccessor.getById(Integer.parseInt(userId));
-                user.addDefaultAlbum();
+                user.addMissingData();
                 user.getCommandManager().resetUndoRedoStack();
 
                 return redirect(routes.HomeController.mainMapPage())

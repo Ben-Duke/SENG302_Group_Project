@@ -398,9 +398,12 @@ GET     /events             controllers.EventsController.getEventsDataByDestinat
 
 GET     /users/events/search            controllers.EventsController.indexEvents(request : Request)
 
+GET     /users/events/:eventId            controllers.EventsController.viewEvent(request : Request, eventId: Integer)
+
+
 GET     /users/events       controllers.EventsController.getEventsData(request : Request, keyword: String, category : String, startDate: String, endDate: String, minPrice: String, maxPrice: String, destination: String, sortBy: String, offset: Integer)
 
-
+GET     /users/events/exists/:eventId                controllers.EventsController.checkEventExists(request : Request, eventId : Integer)
 
 GET /users/trips/fetch/trips_routes_json  controllers.TripController.getTripsRoutesJson(request : Request)
 

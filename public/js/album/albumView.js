@@ -798,9 +798,9 @@ function showSlides(n) {
         const privacyBtn = document.getElementById("privacyBtn");
         if (privacyBtn != null) {
             if (slides[slideIndex - 1].getAttribute("data-privacy") === "true") {
-                document.getElementById("privacyBtn").innerHTML = "Make Private";
+                document.getElementById("privacyBtn").innerText = "Make Private";
             } else if (slides[slideIndex - 1].getAttribute("data-privacy") === "false") {
-                document.getElementById("privacyBtn").innerHTML = "Make Public";
+                document.getElementById("privacyBtn").innerText = "Make Public";
             }
         }
         setSlideListeners(albumMediaData, slideIndex-1);

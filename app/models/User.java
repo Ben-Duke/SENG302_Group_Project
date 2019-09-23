@@ -229,6 +229,27 @@ public class User extends BaseModel implements Comparable<User>, AlbumOwner, Med
                 '}';
     }
 
+    private boolean hasDefaultAlbum() {
+        for (Album album : this.getAlbums()) {
+            if (album.getDefault()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /** Add a default album to this user if they do not have one */
+    public void addDefaultAlbum() {
+        if (!this.hasDefaultAlbum()) {
+            Album defaultAlbum = new Album(this, "Default", true);
+            defaultAlbum.save();
+
+            this.getAlbums().add(defaultAlbum);
+            this.save();
+        }
+    }
+
     /**
      * Follow another user and return the follow that has been made
      * @param userToFollow the user to follow

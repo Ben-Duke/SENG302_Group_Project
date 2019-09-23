@@ -37,7 +37,7 @@ public class Album extends Model {
 
     private AlbumOwner owner;
 
-    private Boolean isDefault;
+    private boolean isDefault;
 
     private String title;
 
@@ -224,7 +224,7 @@ public class Album extends Model {
         return false;
     }
 
-    public Boolean getDefault() {
+    public boolean getDefault() {
         return isDefault;
     }
 

@@ -71,7 +71,11 @@ public class LoginController {
                 return internalServerError(loginPage.render(userLoginForm,
                                                 User.getCurrentUser(request)));
             } else {
-                UserAccessor.getById(Integer.parseInt(userId)).getCommandManager().resetUndoRedoStack();
+                // Check the user has a default album
+                User user = UserAccessor.getById(Integer.parseInt(userId));
+                user.addDefaultAlbum();
+                user.getCommandManager().resetUndoRedoStack();
+
                 return redirect(routes.HomeController.mainMapPage())
                            .addingToSession(request, "connected", userId);
             }

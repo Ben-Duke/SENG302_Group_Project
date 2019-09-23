@@ -485,6 +485,9 @@ GET /events/responses/newsfeed/:offset/:limit/:localDateTime    controllers.Even
 
 PUT /events/linkphoto/:photoId/:eventId                     controllers.EventsController.LinkPhotoToEvent(request: Request, photoId: Integer, eventId: Integer)
 
+PUT /events/unlinkphoto/:photoId/:eventId                     controllers.EventsController.UnlinkPhotoToEvent(request: Request, photoId: Integer, eventId: Integer)
+
+
 # Undo
 +nocsrf
 PUT     /undo                                              controllers.UndoRedoController.undo(request: Request)

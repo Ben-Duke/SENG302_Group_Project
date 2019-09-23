@@ -22,11 +22,9 @@ import static play.test.Helpers.route;
 
 public class EventControllerTest  extends BaseTestWithApplicationAndDatabase {
 
-    @Ignore
-    @Test
-    public void linkPhotoToDestinationSuccessful() {
+    private Event populateDatabaseWithEventThenReturnEvent() {
         Destination destination = DestinationAccessor.getDestinationById(3);
-
+        User user = UserAccessor.getById(2);
 
         Event event = new Event(1000, LocalDateTime.now(), LocalDateTime.MAX, "testEvent", "type","event.com", "imageurl",
                 destination.getLatitude(), destination.getLongitude(), "", "test event");
@@ -35,15 +33,26 @@ public class EventControllerTest  extends BaseTestWithApplicationAndDatabase {
         Command albumCommand = new CreateAlbumCommand(event.getName(), event, null);
         albumCommand.execute();
         EventAccessor.update(event);
-        User user = UserAccessor.getById(2);
-
-
-
         Album userDefaultAlbum = user.getAlbums().get(0);
         Media media1 = new UserPhoto("/test", false, false, user);
         MediaAccessor.insert(media1);
         userDefaultAlbum.addMedia(media1);
         AlbumAccessor.update(userDefaultAlbum);
+        return EventAccessor.getByInternalId(event.getEventId());
+    }
+
+    @SuppressWarnings("Duplicates")
+    @Test
+    public void linkPhotoToEventSuccessful() {
+
+        Event event = populateDatabaseWithEventThenReturnEvent();
+
+        int eventMediaSizeBefore = event.getPrimaryAlbum().getMedia().size();
+
+
+        User user = UserAccessor.getById(2);
+
+
         String url = "/events/linkphoto/" + user.getAlbums().get(0).getMedia().get(0).getMediaId() + "/" + event.getEventId();
 
 
@@ -53,7 +62,46 @@ public class EventControllerTest  extends BaseTestWithApplicationAndDatabase {
         Result result = route(app, request);
         assertEquals(OK, result.status());
 
-        assertEquals(1,event.getPrimaryAlbum().getMedia().size());
+        event = EventAccessor.getByInternalId(event.getEventId());
+
+        assertEquals(eventMediaSizeBefore + 1,event.getPrimaryAlbum().getMedia().size());
     }
 
+
+    @SuppressWarnings("Duplicates")
+    @Test
+    public void unlinkPhotoToEventSuccessful() {
+
+        User user = UserAccessor.getById(2);
+
+        Event event = populateDatabaseWithEventThenReturnEvent();
+
+        int eventMediaSizeBefore = event.getPrimaryAlbum().getMedia().size();
+
+        String url = "/events/linkphoto/" + user.getAlbums().get(0).getMedia().get(0).getMediaId() + "/" + event.getEventId();
+
+
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(PUT)
+                .uri(url).session("connected", "2");
+        Result result = route(app, request);
+        assertEquals(OK, result.status());
+
+        event = EventAccessor.getByInternalId(event.getEventId());
+
+        assertEquals(eventMediaSizeBefore + 1,event.getPrimaryAlbum().getMedia().size());
+
+        url = "/events/unlinkphoto/" + user.getAlbums().get(0).getMedia().get(0).getMediaId() + "/" + event.getEventId();
+
+
+        request = Helpers.fakeRequest()
+                .method(PUT)
+                .uri(url).session("connected", "2");
+        result = route(app, request);
+        assertEquals(OK, result.status());
+
+        event = EventAccessor.getByInternalId(event.getEventId());
+
+        assertEquals(eventMediaSizeBefore, event.getPrimaryAlbum().getMedia().size());
+    }
 }

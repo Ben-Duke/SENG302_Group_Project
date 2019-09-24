@@ -106,8 +106,23 @@ async function displayData(users) {
             changeAdminButton.class = "btn btn-link";
 
             if (user.isAdmin) {
-                changeAdminButton.href = "/users/admin/remove/" + user.userId;
-                changeAdminButton.innerText = "Revoke Admin";
+                const token =  $('input[name="csrfToken"]').attr('value');
+                $.ajaxSetup({
+                    beforeSend: function(xhr) {
+                        xhr.setRequestHeader('Csrf-Token', token);
+                    }
+                });
+                $.ajax({
+                    type: 'GET',
+                    url: `/users/admin/isDefault/` + user.userId,
+                    contentType: 'application/json',
+                    success: (res) => {
+                        if (res === "false") {
+                            changeAdminButton.href = "/users/admin/remove/" + user.userId;
+                            changeAdminButton.innerText = "Revoke Admin";
+                        }
+                    }
+                });
             } else {
                 changeAdminButton.href = "/users/admin/make/" + user.userId;
                 changeAdminButton.innerText = "Make Admin";

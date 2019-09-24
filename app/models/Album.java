@@ -224,7 +224,7 @@ public class Album extends Model {
         return false;
     }
 
-    public Boolean getDefault() {
+    public boolean getDefault() {
         return isDefault;
     }
 

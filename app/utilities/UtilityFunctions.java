@@ -46,10 +46,6 @@ public class UtilityFunctions {
     private static final DateTimeFormatter DATE_TIME_FORMATTER =
             DateTimeFormatter.ofPattern(DATE_TIME_PATTERN);
 
-    private static final String DATE_TIME_PATTERN = "yyyy-MM-dd hh:mm:ss";
-    private static final DateTimeFormatter DATE_TIME_FORMATTER =
-            DateTimeFormatter.ofPattern(DATE_TIME_PATTERN);
-
     private static final Logger logger = getLogger();
 
     /** Get a default logger (application) */
@@ -503,7 +499,7 @@ public class UtilityFunctions {
     }
 
     public static String getResponseAdjustedForTime(EventResponse response, Boolean isCurrentUser) {
-        String responseType = response.getResponseType();
+        String responseType = response.getResponseType().toString();
         if  (responseType.equalsIgnoreCase("Going") &&
             response.getEvent().getEndTime().isBefore(LocalDateTime.now())) {
             System.out.println(getFormattedDateTime(response.getEvent().getEndTime()));

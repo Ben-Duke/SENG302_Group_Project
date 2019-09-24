@@ -183,7 +183,11 @@ function addTagLabel(name) {
 
     newTag.className = "tag-label tag";
     newTag.id = name;
-    newText.innerHTML = `<a>${name}</a>`;
+
+    let aElement = document.createElement('a');
+    aElement.innerText = name;
+    newText.appendChild(aElement);
+
     newIcon.className = "remove glyphicon glyphicon-remove-sign glyphicon-white";
 
     newRemove.onclick = function() {

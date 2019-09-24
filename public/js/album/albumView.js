@@ -518,7 +518,7 @@ function searchByKeyword(mediaId, currentPageNum) {
 
                 for(let i=0; i < privateListChildren.length; i++) {
                     if (!displayedIds.includes(privateListChildren[i].id)) {
-                        [i].setAttribute("style", "display: none;");
+                        privateListChildren[i].setAttribute("style", "display: none;");
                     } else {
                         privateListChildren[i].setAttribute("style", "display: block;");
                     }

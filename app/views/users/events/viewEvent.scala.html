@@ -34,10 +34,10 @@
     <div class="row">
         <label class="col-sm-0 control-label"></label>
         <div class="col-sm-7">
-            <a href="@event.getUrl().substring(1, event.getUrl().length()-1)" target="_blank">
-                <h2> @event.getName().substring(1, event.getName().length()-1)</h2>
+            <a href="@event.getUrl()" target="_blank">
+                <h2> @event.getName()</h2>
             </a>
-            <h4>@event.getDescription().substring(1, event.getDescription().length()-1)</h4>
+            <h4>@event.getDescription()</h4>
             @if(!isGoing) {
                 <a class="btn btn-primary" role="button" onmouseover="this.innerText = 'Going'" onmouseout="this.innerText = 'Not Going'">
                     Not Going
@@ -67,29 +67,30 @@
                     Add Media
                 </a>
             }
-            @for(photo <- event.getPrimaryAlbum.getMedia) {
-                @if(photo.isOwner(user) || photo.getIsPublic()) {
+            <div class="row">
+                @for(photo <- event.getPrimaryAlbum.getMedia) {
+                    @if(photo.isOwner(user) || photo.getIsPublic()) {
 
-                    <img src="">
-                    <a href="#" data-toggle="modal" data-target="#photo-carousel" onclick="displayPhoto(@photo.getMediaId())">
+                        <a href="#" data-toggle="modal" data-target="#photo-carousel" onclick="displayPhoto(@photo.getMediaId())">
 
-                        <div class="" id="imageContainer">
-                            <div class="overlay">
-                                <i class="icon" title="User Profile">
-                                @if(photo.getIsPublic()) {
-                                    <i class="fa fa-eye-green"></i>
-                                } else {
-                                    <i class="fa fa-eye-red"></i>
-                                }
-                                </i>
+                            <div class="" id="imageContainer">
+                                <div class="overlay">
+                                    <i class="icon" title="User Profile">
+                                    @if(photo.getIsPublic()) {
+                                        <i class="fa fa-eye-green"></i>
+                                    } else {
+                                        <i class="fa fa-eye-red"></i>
+                                    }
+                                    </i>
+                                </div>
+                                <img class="img-thumbnail" id=@{photo.getUrl} src="@{routes.HomeController.index(photo.getUrlWithPath())}" alt="Event Image">
                             </div>
-                            <img class="img-thumbnails" id=@{photo.getUrl} src="@{routes.HomeController.index(photo.getUrlWithPath())}" alt="Event Image">
-                        </div>
 
 
-                    </a>
+                        </a>
+                    }
                 }
-            }
+            </div>
         </div>
     </div>
     <div id="myModal" class="modal fade" role="dialog">
@@ -108,7 +109,7 @@
 
                     @for(photo <- user.getUserPhotos) {
                         @if(!photo.getAlbums.exists(album => album.event == event)) {
-                            <a id="addPhotoLink" class="btn btn-light" onclick="linkPhotoToEvent(@photo.getMediaId, @event.getEventId)">
+                            <a id="addPhotoLink-@photo.getMediaId" class="btn btn-light" onclick="linkPhotoToEvent(@photo.getMediaId, @event.getEventId)">
                                 <div class="container" id="imagesContainer">
                                     <div class="overlay">
                                         <i class="icon" title="User Profile">

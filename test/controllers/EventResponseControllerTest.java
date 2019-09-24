@@ -1,34 +1,48 @@
 package controllers;
 
 import accessors.EventAccessor;
+import accessors.EventResponseAccessor;
 import accessors.UserAccessor;
 import models.Event;
 import models.EventResponse;
 import org.junit.Ignore;
 import org.junit.Test;
+import play.libs.Json;
 import play.mvc.Http;
 import play.mvc.Result;
 import play.test.Helpers;
 import testhelpers.BaseTestWithApplicationAndDatabase;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import static org.junit.Assert.*;
 import static play.mvc.Http.Status.BAD_REQUEST;
 import static play.mvc.Http.Status.OK;
 import static play.mvc.Http.Status.SEE_OTHER;
-import static play.test.Helpers.PUT;
+import static play.test.Helpers.*;
+import static play.test.Helpers.contentAsString;
 import static play.test.Helpers.route;
+import com.fasterxml.jackson.databind.JsonNode;
+
+
 
 public class EventResponseControllerTest extends BaseTestWithApplicationAndDatabase {
 
+    private Integer LOGIN_USER_ID = 2;
 
-    private void initialiseEventResponse(LocalDateTime endTime) {
+
+    private void insertEventResponse(LocalDateTime endTime) {
         Event event = new Event(LocalDateTime.MIN, endTime, "test");
         EventAccessor.insert(event);
         event = EventAccessor.getEventById(event.getEventId());
-        EventResponse eventResponse = new EventResponse("Going", event, UserAccessor.getById(2));
-        eventResponse.insert();
+        EventResponse eventResponse = new EventResponse();
+        EventResponseAccessor.save(eventResponse);
+        EventResponse savedEventResponse = EventResponseAccessor.getById(eventResponse.getEventResponseId());
+        savedEventResponse.setUser(UserAccessor.getById(LOGIN_USER_ID));
+        savedEventResponse.setEvent(event);
+        savedEventResponse.setResponseType("Going");
+        EventResponseAccessor.update(savedEventResponse);
     }
 
 
@@ -98,8 +112,30 @@ public class EventResponseControllerTest extends BaseTestWithApplicationAndDatab
 
     @Test
     public void testGetEventResponsesWithThreeValidEvents() {
+        LocalDateTime time = LocalDateTime.now().plusDays(1);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy%20HH:mm:ss");
+        String formattedString = time.format(formatter);
+
         Http.RequestBuilder request = Helpers.fakeRequest()
-                .method(PUT)
-                .uri("/events/responses/newsfeed/0/100000/").session("connected", null);
+                .method(GET)
+                .uri("/events/responses/newsfeed/0/100000/"+formattedString)
+                .session("connected", Integer.toString(LOGIN_USER_ID));
+        Result result = route(app, request);
+        JsonNode response = Json.parse(contentAsString(result));
+        int beforeSize = response.get("responses").size();
+
+        insertEventResponse(LocalDateTime.now().plusDays(1));
+        insertEventResponse(LocalDateTime.now().plusDays(2));
+        insertEventResponse(LocalDateTime.now().plusDays(3));
+
+        request = Helpers.fakeRequest()
+                .method(GET)
+                .uri("/events/responses/newsfeed/0/100000/"+formattedString)
+                .session("connected", Integer.toString(LOGIN_USER_ID));
+        result = route(app, request);
+        response = Json.parse(contentAsString(result));
+        int afterSize = response.get("responses").size();
+
+        assertEquals(beforeSize + 3, afterSize);
     }
 }

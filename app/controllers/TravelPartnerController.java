@@ -143,10 +143,25 @@ public class TravelPartnerController {
         if (bornBefore == null) {
             bornBefore = "";
         }
-        Set<User> users = UserAccessor.getUsersByQuery(travellerType, 0,
-                PSEUDO_INFINITE_NUMBER, nationality, bornAfter, bornBefore, gender1,
-                gender2, gender3, getFollowers, getFollowing);
-        return ok(Integer.toString(users.size()));
+
+        int userCount;
+
+        if (getFollowing != null) {
+
+            userCount = UserAccessor.getFollowingCount(currentUser);
+
+        } else if (getFollowers != null) {
+
+            userCount = UserAccessor.getFollowedCount(currentUser);
+
+        } else {
+
+            userCount = UserAccessor.getUserQueryCount(travellerType, nationality,
+                    bornAfter, bornBefore, gender1,
+                    gender2, gender3);
+        }
+
+        return ok(Integer.toString(userCount));
     }
 
     /**
@@ -172,15 +187,23 @@ public class TravelPartnerController {
         if (bornBefore == null) {
             bornBefore = "";
         }
+
+        Set<User> users;
+
         if (getFollowing != null) {
-            getFollowing = Integer.toString(currentUser.getUserid());
+
+             users = UserAccessor.getFollowingQuery(currentUser, offset, quantity);
+
+        } else if (getFollowers != null) {
+
+            users = UserAccessor.getFollowedQuery(currentUser, offset, quantity);
+
+        } else {
+
+            users = UserAccessor.getUsersByQuery(travellerType, offset, quantity,
+                    nationality, bornAfter, bornBefore, gender1, gender2, gender3);
         }
-        if (getFollowers != null) {
-            getFollowers = Integer.toString(currentUser.getUserid());
-        }
-        Set<User> users = UserAccessor.getUsersByQuery(travellerType, offset, quantity,
-                nationality, bornAfter, bornBefore, gender1, gender2, gender3, getFollowers,
-                getFollowing);
+
 
         ObjectMapper objectMapper = new ObjectMapper();
         ArrayNode userNodes = objectMapper.createArrayNode();
@@ -213,6 +236,7 @@ public class TravelPartnerController {
         }
         return ok(userNodes);
     }
+
 
 
     /**

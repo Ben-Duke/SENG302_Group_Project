@@ -205,29 +205,29 @@ public class User extends BaseModel implements Comparable<User>, AlbumOwner, Med
         return find;
     }
 
-    @Override
-    public String toString() {
-        return "User{" +
-                "email='" + email + '\'' +
-                ", userid=" + userid +
-                ", passwordHash='" + passwordHash + '\'' +
-                ", creationDate=" + creationDate +
-                ", nationality=" + nationality +
-                ", dateOfBirth=" + dateOfBirth +
-                ", gender='" + gender + '\'' +
-                ", fName='" + fName + '\'' +
-                ", lName='" + lName + '\'' +
-                ", passports=" + passports +
-                ", trips=" + trips +
-                ", treasureHunts=" + treasureHunts +
-                ", destinations=" + destinations +
-                ", travellerTypes=" + travellerTypes +
-                ", guessedTHunts=" + guessedTHunts +
-                ", commandManager=" + getCommandManager() +
-                ", userPhotos=" + userPhotos +
-                ", isAdmin=" + isAdmin +
-                '}';
-    }
+//    @Override
+//    public String toString() {
+//        return "User{" +
+//                "email='" + email + '\'' +
+//                ", userid=" + userid +
+//                ", passwordHash='" + passwordHash + '\'' +
+//                ", creationDate=" + creationDate +
+//                ", nationality=" + nationality +
+//                ", dateOfBirth=" + dateOfBirth +
+//                ", gender='" + gender + '\'' +
+//                ", fName='" + fName + '\'' +
+//                ", lName='" + lName + '\'' +
+//                ", passports=" + passports +
+//                ", trips=" + trips +
+//                ", treasureHunts=" + treasureHunts +
+//                ", destinations=" + destinations +
+//                ", travellerTypes=" + travellerTypes +
+//                ", guessedTHunts=" + guessedTHunts +
+//                ", commandManager=" + getCommandManager() +
+//                ", userPhotos=" + userPhotos +
+//                ", isAdmin=" + isAdmin +
+//                '}';
+//    }
 
     /**
      * Follow another user and return the follow that has been made

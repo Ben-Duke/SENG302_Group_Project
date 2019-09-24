@@ -41,6 +41,10 @@ public class EventResponse extends BaseModel{
         this.user = user;
     }
 
+    public EventResponse(){
+
+    }
+
     @Id
     private Integer eventResponseId;
 

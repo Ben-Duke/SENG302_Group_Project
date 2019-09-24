@@ -481,6 +481,19 @@ GET /events/responses/:eventId/:responseType/:userId        controllers.EventRes
 GET /events/responses/:responseType                         controllers.EventResponseController.getEventResponsesByResponseType(request : Request, responseType : String)
 
 GET /events/get/all                                         controllers.EventResponseController.getAllResponses(request : Request)
+GET /users/newsfeed controllers.NewsfeedController.indexNewsfeed(request: Request)
+
+GET /events/responses/newsfeed/:offset/:limit/:localDateTime    controllers.EventResponseController.getEventResponses(request: Request, offset: Integer, limit: Integer, localDateTime: String)
+
+
+PUT /events/linkphoto/:photoId/:eventId                     controllers.EventsController.linkPhotoToEvent(request: Request, photoId: Integer, eventId: Integer)
+
+PUT /events/unlinkphoto/:photoId/:eventId                     controllers.EventsController.unlinkPhotoToEvent(request: Request, photoId: Integer, eventId: Integer)
+
+GET /events/photos/:eventId                     controllers.EventsController.getEventPhotos(request: Request, eventId: Integer)
+
+
+
 
 # Undo
 +nocsrf

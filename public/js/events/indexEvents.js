@@ -154,10 +154,13 @@ function displayEvents(events) {
         mediaRow.classList.add("media")
         const mediaLeft = document.createElement("div");
         mediaLeft.classList.add("media-left");
+
         const eventImageLink = document.createElement("a");
         eventImageLink.setAttribute("target", "_blank");
+
         const lastImage = events[i].images.images[0].transforms["@attributes"].count - 1;
         eventImageLink.setAttribute("href", events[i].images.images[0].transforms.transforms[lastImage].url);
+
         const eventImage = document.createElement("img");
         eventImage.classList.add("img-thumbnail");
         eventImage.setAttribute("src", events[i].images.images[0].transforms.transforms[lastImage].url);

@@ -1,5 +1,6 @@
 package models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import controllers.ApplicationManager;
 import io.ebean.Finder;
 import io.ebean.Model;
@@ -8,12 +9,14 @@ import play.data.format.Formats;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Model for events
  */
 @Entity
-public class Event extends Model {
+public class Event extends Model implements AlbumOwner {
 
     private static final String DATE_PATTERN = "dd-MM-yyyy HH:mm:ss";
 
@@ -25,34 +28,47 @@ public class Event extends Model {
     @Temporal(TemporalType.TIMESTAMP)
     @Formats.DateTime(pattern=DATE_PATTERN)
     //date was protected not public/private for some reason
-    @CreatedTimestamp
     private LocalDateTime startTime;
 
 
     @Temporal(TemporalType.TIMESTAMP)
     @Formats.DateTime(pattern=DATE_PATTERN)
-    @CreatedTimestamp
     private LocalDateTime endTime;
 
     private String name;
     private String url;
+    private String address;
+    private String type;
+
+    private String imageUrl;
     private double latitude;
     private double longitude;
 
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    private static final Finder<Integer,Event> find = new Finder<>(Event.class, ApplicationManager.getDatabaseName());
 
-    public Event(Integer externalId, LocalDateTime startTime, LocalDateTime endTime, String name, String url, double latitude, double longitude, String description) {
+    @JsonIgnore
+    @OneToMany(mappedBy = "event")
+    private List<Album> albums;
+    public static final Finder<Integer,Event> find = new Finder<>(Event.class, ApplicationManager.getDatabaseName());
+
+
+    public Event(Integer externalId, LocalDateTime startTime, LocalDateTime endTime,
+                 String name, String type, String url, String imageUrl, double latitude,
+                 double longitude, String address, String description) {
         this.externalId = externalId;
         this.startTime = startTime;
         this.endTime = endTime;
         this.name = name;
+        this.type = type;
         this.url = url;
+        this.imageUrl = imageUrl;
         this.latitude = latitude;
         this.longitude = longitude;
+        this.address = address;
         this.description = description;
+        this.albums = new ArrayList<>();
     }
 
     public Event() {}
@@ -143,6 +159,33 @@ public class Event extends Model {
         this.externalId = externalId;
     }
 
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+
+    @Override
     public String toString() {
         return "Event{" +
                 "eventId=" + eventId +
@@ -151,9 +194,17 @@ public class Event extends Model {
                 ", endTime=" + endTime +
                 ", name='" + name + '\'' +
                 ", url='" + url + '\'' +
+                ", address='" + address + '\'' +
+                ", imageUrl='" + imageUrl + '\'' +
                 ", latitude=" + latitude +
                 ", longitude=" + longitude +
                 ", description='" + description + '\'' +
                 '}';
     }
+    @Override
+    public List<Album> getAlbums() {
+        return albums;
+    }
+
+    public Album getPrimaryAlbum() {return albums.get(0);}
 }

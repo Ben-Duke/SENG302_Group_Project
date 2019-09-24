@@ -1,6 +1,7 @@
 package accessors;
 
 
+import models.Album;
 import models.Tag;
 import models.UserPhoto;
 import org.junit.Assert;
@@ -24,5 +25,14 @@ public class MediaAccessorTest extends BaseTestWithApplicationAndDatabase {
        MediaAccessor.delete(photo);
        Assert.assertTrue (UserPhoto.find().byId(1)==null);
    }
+
+
+    @Test
+    public void testCreationDateIsNotNull(){
+        UserPhoto photo = new UserPhoto("", true, true, null, null,
+                null);
+        Assert.assertNotNull(MediaAccessor.getMediaCreationDate(photo));
+    }
+
 
 }

@@ -5,6 +5,7 @@ import models.EventResponse;
 import models.ResponseType;
 import models.User;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -120,6 +121,16 @@ public class EventResponseAccessor {
      */
     public static void update(EventResponse eventResponse) {
         eventResponse.update();
+    }
+
+
+    public static List<EventResponse> getEventResponses(int offset, int limit, LocalDateTime dateTime) { //TODO test
+        return EventResponse.find().query().where()
+                .lt("responseDateTime", dateTime)
+                .order().desc("responseDateTime")
+                .setFirstRow(offset)
+                .setMaxRows(limit)
+                .findList();
     }
 
 }

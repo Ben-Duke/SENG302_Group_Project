@@ -24,6 +24,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.*;
@@ -39,8 +40,15 @@ import static play.mvc.Results.unauthorized;
 public class UtilityFunctions {
 
     private static final String DATE_PATTERN = "yyyy-MM-dd";
+    private static final String DATE_TIME_PATTERN = "dd-MM-yyyy HH:mm:ss";
     private static final DateTimeFormatter DATE_FORMATTER =
             DateTimeFormatter.ofPattern(DATE_PATTERN);
+    private static final DateTimeFormatter DATE_TIME_FORMATTER =
+            DateTimeFormatter.ofPattern(DATE_TIME_PATTERN);
+
+    private static final String DATE_TIME_PATTERN = "yyyy-MM-dd hh:mm:ss";
+    private static final DateTimeFormatter DATE_TIME_FORMATTER =
+            DateTimeFormatter.ofPattern(DATE_TIME_PATTERN);
 
     private static final Logger logger = getLogger();
 
@@ -473,5 +481,40 @@ public class UtilityFunctions {
         } catch (DateTimeParseException e) {
             throw new EbeanDateParseException(e);
         }
+    }
+
+    public static String getFormattedDateTime(LocalDateTime time) {
+        return time.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"));
+    }
+
+    /**
+     * Parses a string in the format of "dd-MM-yyyy HH:mm:ss" to a local date time
+     * @param dateTimeString the string to parse
+     * @return the parsed Local Date Time
+     * @throws EbeanDateParseException if the parsing fails
+     */
+    //TODO: Test
+    public static LocalDateTime parseLocalDateTime(String dateTimeString) throws EbeanDateParseException {
+        try {
+            return LocalDateTime.parse(dateTimeString, DATE_TIME_FORMATTER);
+        } catch (DateTimeParseException e) {
+            throw new EbeanDateParseException(e);
+        }
+    }
+
+    public static String getResponseAdjustedForTime(EventResponse response, Boolean isCurrentUser) {
+        String responseType = response.getResponseType();
+        if  (responseType.equalsIgnoreCase("Going") &&
+            response.getEvent().getEndTime().isBefore(LocalDateTime.now())) {
+            System.out.println(getFormattedDateTime(response.getEvent().getEndTime()));
+            responseType = "went";
+        } else  {
+            if (isCurrentUser) {
+                responseType = "are " + responseType.toLowerCase();
+            } else {
+                responseType = "is " + responseType.toLowerCase();
+            }
+        }
+        return responseType;
     }
 }

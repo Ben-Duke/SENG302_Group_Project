@@ -165,6 +165,8 @@ public class EventResponseController {
     }
 
     public Result getEventResponses(Http.Request request, int offset, int limit, String localDateTime) {
+        System.out.println(localDateTime);
+        System.out.println("test");
         User user = User.getCurrentUser(request);
         if (user == null) {
             return unauthorized("Must be logged in to use this API endpoint.");

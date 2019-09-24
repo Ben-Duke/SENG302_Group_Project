@@ -8,7 +8,9 @@ initNewsfeed();
 initLazyLoading();
 
 function getDateTimeForURL(dateTimeString) {
-    return dateTimeString.replace("\\s", '%');
+    const result = dateTimeString.replace("\\s", '%');
+    console.log(result);
+    return result;
 }
 
 function getAndLoadMoreNewsFeedItems() {

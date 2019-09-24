@@ -477,6 +477,8 @@ PUT /events/respond/:eventId/:responseType                  controllers.EventRes
 
 GET /events/responses/:eventId/:responseType                controllers.EventResponseController.getResponsesForEventByResponseType(request : Request, eventId : Integer, responseType : String)
 
+GET /events/responses/getjson    controllers.EventResponseController.getEventResponses(request: Request, offset: Integer, limit: Integer, localDateTime: String)
+
 GET /events/responses/:responseType                         controllers.EventResponseController.getEventResponsesByResponseType(request : Request, responseType : String)
 
 GET /events/get/all                                         controllers.EventResponseController.getAllResponses(request : Request)
@@ -485,7 +487,6 @@ GET /users/newsfeedapi                                        controllers.Newsfe
 
 GET /users/newsfeed                                         controllers.NewsfeedController.newsfeedPage(request: Request)
 
-GET /events/responses/getjson    controllers.EventResponseController.getEventResponses(request: Request, offset: Integer, limit: Integer, localDateTime: String)
 
 
 # Undo

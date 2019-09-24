@@ -59,4 +59,32 @@ function linkPhotoToEvent(mediaId, eventId) {
     });
 }
 
+function unlinkPhotoToEvent(mediaId, eventId) {
+    $.ajax({
+        type: 'PUT',
+        url: `/events/unlinkphoto/${mediaId}/${eventId}`,
+        success: function () {
+            window.location.reload()
+        }
+    });
+}
+
+$("#photo-carousel").on('hidden.bs.modal', function(){
+    const carouselItems = document.getElementById("carousel-inner").children;
+    for (let item of carouselItems) {
+        item.classList.remove('active');
+    }
+    activePhotoId = undefined;
+});
+
+let activePhotoId;
+function displayPhoto(photoId) {
+    if (activePhotoId !== undefined) {
+        document.getElementById('caro-'+activePhotoId).classList.remove('active');
+    }
+
+    document.getElementById('caro-'+photoId).classList.add('active');
+    activePhotoId = photoId;
+}
+
 

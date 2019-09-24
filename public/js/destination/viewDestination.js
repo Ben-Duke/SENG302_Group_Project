@@ -96,6 +96,14 @@ function displayPhoto(photoId) {
     activePhotoId = photoId;
 }
 
+$("#photo-carousel").on('hidden.bs.modal', function(){
+    const carouselItems = document.getElementById("carousel-inner").children;
+    for (let item of carouselItems) {
+        item.classList.remove('active');
+    }
+    activePhotoId = undefined;
+});
+
 /**
  * Sets a photo privacy to the setting specified
  * @param mediaId the id of the media to change privacy

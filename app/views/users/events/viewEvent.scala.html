@@ -41,6 +41,54 @@
                     width: 120px;
                     float: left;
                 }
+                .vertical-center {
+                    margin: 0;
+                    position: absolute;
+                    top: 50%;
+                    -ms-transform: translateY(-50%);
+                    left: 50%;transform: translate(-50%, -50%);
+                }
+                .icon {
+                    color: white;
+                    font-size: 25px;
+                    position: absolute;
+                    top: -20px;
+                    left: 75px;
+                    max-width: 60px;
+                    transform: translate(50%, 50%);
+                    -ms-transform: translate(-50%, -50%);
+                }
+
+                .fa {
+                    display: inline-block;
+                    font-size: inherit;
+                    text-rendering: auto;
+                    -webkit-font-smoothing: antialiased;
+                    -moz-osx-font-smoothing: grayscale
+                }
+
+                .fa-eye-green {
+                    color: green;
+                }
+
+                .fa-eye-red {
+                    color: red;
+                }
+
+                .fa-eye-green:before {
+                    content: "\1F441";
+                }
+
+                .fa-eye-red:before {
+                    content: "\1F441";
+                }
+                .overlay {
+                    position: absolute;
+                    max-width: 200px;
+                    opacity: 1;
+                    transition: .3s ease;
+                }
+
 
 
         </style>
@@ -148,6 +196,33 @@
                     </div>
                 </div>
 
+            </div>
+        </div>
+
+        <div id="photo-carousel" class="modal fade">
+            <div class="container vertical-center">
+                <div class="carousel slide" id="myslider" data-ride="carousel" data-interval="false">
+                    <div id="carousel-inner" class="carousel-inner" style="text-align: center;">
+                    @for(photo <- event.getPrimaryAlbum.getMedia) {
+                        @if(photo.isOwner(user) || photo.getIsPublic()) {
+                            <div id="caro-@photo.getMediaId" class="item">
+
+                                <img class="center" id="carouselImage@photo.getMediaId()" src="@{routes.HomeController.index(photo.getUrlWithPath)}" style="height: 75%; margin: auto;">
+
+
+                                <a class="btn btn-danger" onclick="unlinkPhotoToEvent(@photo.getMediaId(), @event.getEventId)">
+                                    Remove Photo</a>
+                            </div>
+                        }
+                    }
+                    </div>
+                    <a class ="left carousel-control" href="#myslider" data-slide="prev">
+                        <span class="glyphicon glyphicon-chevron-left"></span>
+                    </a>
+                    <a class ="right carousel-control" href="#myslider" data-slide="next">
+                        <span class="glyphicon glyphicon-chevron-right"></span>
+                    </a>
+                </div>
             </div>
         </div>
     </div>

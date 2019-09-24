@@ -195,6 +195,8 @@ public class DestinationController extends Controller {
             }
         }
 
+        // add an album for the destination if it does not have one
+        destination.addPrimaryAlbum();
 
         boolean inEditMode = false;
 
@@ -227,6 +229,9 @@ public class DestinationController extends Controller {
                 return unauthorized("Not your destination");
             }
         }
+
+        // add an album for the destination if it does not have one
+        destination.addPrimaryAlbum();
 
         DestinationFormData formData = destFactory.makeDestinationFormData(destination);
 

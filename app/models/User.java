@@ -489,7 +489,7 @@ public class User extends BaseModel implements Comparable<User>, AlbumOwner, Med
     public void setPassport(List<Passport> passport) {
         this.passports = passport;
     }
-    
+
     public void setUserid(Integer userid) {
         this.userid = userid;
     }
@@ -737,5 +737,4 @@ public class User extends BaseModel implements Comparable<User>, AlbumOwner, Med
         this.passwordHash = editedUser.getPasswordHash();
     }
 }
-
 

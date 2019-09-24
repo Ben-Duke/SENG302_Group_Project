@@ -1,10 +1,14 @@
 package accessors;
 
+import io.ebean.Query;
 import models.Tag;
 import models.Trip;
 import models.User;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import static io.ebean.Expr.like;
 
 /**
  * A class to handle accessing Trips from the database
@@ -20,8 +24,43 @@ public class TripAccessor {
      * @param name name of a trip to find in the database
      * @return Trip
      */
-    public static List<Trip> getTripsByName(String name, User user) {
-        return Trip.find().query().where().eq("user", user).like("trip_name", "%" + name + "%").findList();
+    public static List<Trip> getTripsByName(String name, User user, Integer offset, Integer quantity) {
+        return Trip.find().query().
+                where().eq("user", user)
+                .or(like("trip_name", "%" + name + "%"),
+                        like("trip_name", "%" + name.toUpperCase() + "%"))
+                .setFirstRow(offset).setMaxRows(quantity).findList();
+
+    }
+
+    public static Integer getTotalUserTripCount(User user) {
+        return Trip.find().query().where().eq("user", user) .findCount();
+
+    }
+
+
+    /**
+     * Gets a paginated List of a users trips, with an offset and quantity to fetch.
+     *
+     * @param offset an integer representing the number of destinations to skip before sending
+     * @param quantity an integer representing the maximum length of the jsonArray
+     * @param user the user whose trips are to be retrieved
+     * @return A list of user trips matching the offset and quantity.
+     */
+    public static List<Trip> getPaginatedTrips(int offset, int quantity, User user){
+        if (quantity < 1) {
+            return new ArrayList<Trip>();
+        }
+
+        if (offset < 0) {
+            offset = 0;
+        }
+
+        Query<Trip> query = Trip.find().query()
+                .where()
+                .eq("user", user)
+                .setFirstRow(offset).setMaxRows(quantity);
+        return query.findList();
     }
 
 

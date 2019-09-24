@@ -130,7 +130,7 @@ public class TravelPartnerController {
      * @return
      */
     public Result getTravellerCountWithFilters (
-            Http.Request request, String travellerType, String nationality,
+            Http.Request request,  String queryName, String travellerType, String nationality,
             String bornAfter, String bornBefore, String gender1, String gender2,
             String gender3, String getFollowers, String getFollowing) {
         User currentUser = User.getCurrentUser(request);
@@ -143,7 +143,9 @@ public class TravelPartnerController {
         if (bornBefore == null) {
             bornBefore = "";
         }
-
+        if (queryName == null) {
+            queryName = "";
+        }
         int userCount;
 
         if (getFollowing != null) {
@@ -155,7 +157,7 @@ public class TravelPartnerController {
 
         } else {
 
-            userCount = UserAccessor.getUserQueryCount(travellerType, nationality,
+            userCount = UserAccessor.getUserQueryCount(travellerType, queryName, nationality,
                     bornAfter, bornBefore, gender1,
                     gender2, gender3);
         }
@@ -168,7 +170,7 @@ public class TravelPartnerController {
      * @return returns a Json response with any users that match the passed parameters
      */
     public Result travellerSearchPaginated (
-            Http.Request request, int offset, int quantity, String travellerType,
+            Http.Request request, int offset, int quantity, String queryName, String travellerType,
             String nationality, String bornAfter, String bornBefore, String gender1,
             String gender2, String gender3, String getFollowers, String getFollowing){
         User currentUser = User.getCurrentUser(request);
@@ -187,6 +189,9 @@ public class TravelPartnerController {
             bornBefore = "";
         }
 
+        if (queryName == null) {
+            queryName = "";
+        }
         Set<User> users;
 
         if (getFollowing != null) {
@@ -196,9 +201,8 @@ public class TravelPartnerController {
             users = UserAccessor.getFollowingQuery(currentUser, offset, quantity);
 
         } else {
-
             users = UserAccessor.getUsersByQuery(travellerType, offset, quantity,
-                    nationality, bornAfter, bornBefore, gender1, gender2, gender3);
+                    queryName, nationality, bornAfter, bornBefore, gender1, gender2, gender3);
         }
 
 

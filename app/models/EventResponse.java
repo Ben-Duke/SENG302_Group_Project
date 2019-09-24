@@ -3,6 +3,7 @@ package models;
 import controllers.ApplicationManager;
 import io.ebean.Finder;
 import io.ebean.annotation.CreatedTimestamp;
+import io.ebean.annotation.EnumValue;
 import play.data.format.Formats;
 
 import javax.persistence.*;
@@ -10,7 +11,8 @@ import java.time.LocalDateTime;
 
 /** The model class for EventResponse construction */
 @Entity
-@Table(name = "event_response")
+@Table(name = "event_response",
+        uniqueConstraints= @UniqueConstraint(columnNames={"user_userid", "event_event_id"}))
 public class EventResponse extends BaseModel{
 
     private static final String DATE_PATTERN = "dd-MM-yyyy HH:mm:ss";
@@ -21,12 +23,11 @@ public class EventResponse extends BaseModel{
         return find;
     }
 
-
     /**
      * Constructor for event response
      * @param responseType The name of the event response type being created
      */
-    public EventResponse(String responseType){
+    public EventResponse(ResponseType responseType){
         this.responseType = responseType;
     }
 
@@ -34,7 +35,7 @@ public class EventResponse extends BaseModel{
      * Constructor for event response
      * @param responseType The name of the event response type being created
      */
-    public EventResponse(String responseType, Event event, User user){
+    public EventResponse(ResponseType responseType, Event event, User user){
         this.responseType = responseType;
         this.event = event;
         this.user = user;
@@ -43,7 +44,7 @@ public class EventResponse extends BaseModel{
     @Id
     private Integer eventResponseId;
 
-    private String responseType;
+    private ResponseType responseType;
 
     @ManyToOne
     private User user;
@@ -88,11 +89,11 @@ public class EventResponse extends BaseModel{
         this.eventResponseId = eventResponseId;
     }
 
-    public String getResponseType() {
+    public ResponseType getResponseType() {
         return responseType;
     }
 
-    public void setResponseType(String responseType) {
+    public void setResponseType(ResponseType responseType) {
         this.responseType = responseType;
     }
 

@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import models.Event;
 import models.EventResponse;
+import models.ResponseType;
 import models.User;
 
 import java.time.LocalDateTime;
@@ -21,6 +22,8 @@ import play.libs.Json;
 import play.mvc.Http;
 import play.mvc.Result;
 import utilities.EventFindaUtilities;
+
+import javax.persistence.PersistenceException;
 
 import static play.mvc.Results.*;
 
@@ -57,15 +60,23 @@ public class EventResponseController {
             );
             newEvent.insert();
             newEvent.save();
-            EventResponse eventResponse = new EventResponse(responseType, newEvent, user);
+            EventResponse eventResponse = new EventResponse(ResponseType.valueOf(responseType), newEvent, user);
+            try {
+                EventResponseAccessor.insert(eventResponse);
+                EventResponseAccessor.save(eventResponse);
+                return ok();
+            } catch (PersistenceException p) {
+                return forbidden();
+            }
+        }
+        EventResponse eventResponse = new EventResponse(ResponseType.valueOf(responseType), event, user);
+        try {
             EventResponseAccessor.insert(eventResponse);
             EventResponseAccessor.save(eventResponse);
             return ok();
+        } catch (PersistenceException p) {
+            return forbidden();
         }
-        EventResponse eventResponse = new EventResponse(responseType, event, user);
-        EventResponseAccessor.insert(eventResponse);
-        EventResponseAccessor.save(eventResponse);
-        return ok();
     }
 
     /**
@@ -77,7 +88,7 @@ public class EventResponseController {
     public Result getEventResponsesByResponseType(Http.Request request, String responseType) {
         User user = User.getCurrentUser(request);
         if (user == null) {return redirect(routes.UserController.userindex());}
-        List<EventResponse> eventResponses = EventResponseAccessor.getByUserAndType(user, responseType);
+        List<EventResponse> eventResponses = EventResponseAccessor.getByUserAndType(user, ResponseType.valueOf(responseType));
         return ok(getJsonEventResponses(eventResponses));
     }
 
@@ -93,7 +104,7 @@ public class EventResponseController {
         if (user == null) {return redirect(routes.UserController.userindex());}
         Event event = Event.find().query().where().eq("externalId", externalEventId).findOne();
         if (event == null) {return badRequest("No one has responded to this event yet.");}
-        List<EventResponse> eventResponses = EventResponseAccessor.getByEventAndType(event, responseType);
+        List<EventResponse> eventResponses = EventResponseAccessor.getByEventAndType(event, ResponseType.valueOf(responseType));
         if (eventResponses.isEmpty()) {return badRequest("No one has responded as " + responseType + " to this event.");}
         return ok(getJsonEventResponses(eventResponses));
     }
@@ -114,7 +125,8 @@ public class EventResponseController {
         if (event == null) {return badRequest("No one has responded to this event yet.");}
         User queryUser = UserAccessor.getById(userId);
         if (queryUser == null) {return badRequest("No one has responded to this event yet.");}
-        List<EventResponse> eventResponses = EventResponseAccessor.getByUserEventAndType(queryUser, event, responseType);
+        List<EventResponse> eventResponses = EventResponseAccessor.getByUserEventAndType(queryUser, event,
+                ResponseType.valueOf(responseType));
         if (eventResponses.isEmpty()) {return forbidden("This user has not responded as " + responseType + " to this event.");}
         return ok(getJsonEventResponses(eventResponses));
     }
@@ -138,7 +150,7 @@ public class EventResponseController {
             eventNode.put("endTime", event.getEndTime().format(formatter));
 
             responseNode.put("responseId", response.getEventResponseId());
-            responseNode.put("responseType", response.getResponseType());
+            responseNode.put("responseType", response.getResponseType().toString());
             responseNode.put("userId", response.getUser().getUserid());
             responseNode.set("event", eventNode);
             responseNode.put("responseDateTime", response.getResponseDateTime().format(formatter));

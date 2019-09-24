@@ -2,6 +2,7 @@ package accessors;
 
 import models.Event;
 import models.EventResponse;
+import models.ResponseType;
 import models.User;
 
 import java.util.List;
@@ -49,7 +50,7 @@ public class EventResponseAccessor {
      * @param responseType String
      * @return List of Event Responses
      */
-    public static List<EventResponse> getByEventAndType(Event event, String responseType) {
+    public static List<EventResponse> getByEventAndType(Event event, ResponseType responseType) {
         return EventResponse.find().query().where().eq(
                 "event", event).eq("response_type", responseType).findList();
     }
@@ -68,7 +69,7 @@ public class EventResponseAccessor {
      * @param responseType String
      * @return List of Event Responses
      */
-    public static List<EventResponse> getByUserAndType(User user, String responseType) {
+    public static List<EventResponse> getByUserAndType(User user, ResponseType responseType) {
         return EventResponse.find().query().where().eq(
                 "user", user).eq("response_type", responseType).findList();
     }
@@ -79,7 +80,7 @@ public class EventResponseAccessor {
      * @param responseType String
      * @return List of Event Responses
      */
-    public static List<EventResponse> getByUserEventAndType(User user, Event event, String responseType) {
+    public static List<EventResponse> getByUserEventAndType(User user, Event event, ResponseType responseType) {
         return EventResponse.find().query().where().eq(
                 "user", user).eq("response_type", responseType).eq("event", event).findList();
     }

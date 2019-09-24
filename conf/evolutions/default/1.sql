@@ -100,6 +100,8 @@ create table event_response (
   user_userid                   integer,
   event_event_id                integer,
   response_date_time            timestamp not null,
+  constraint ck_event_response_response_type check ( response_type in (0,1,2,3)),
+  constraint uq_event_response_user_userid_event_event_id unique (user_userid,event_event_id),
   constraint pk_event_response primary key (event_response_id)
 );
 

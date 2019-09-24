@@ -293,7 +293,7 @@ public class TagController {
         }
         if (!destination.getIsPublic()
                 && !user.userIsAdmin()
-                && user.getUserid() != destination.getUser().getUserid()) {
+                && !destination.isUserOwner(user)) {
             return forbidden();
         }
         Set<Tag> tags = destination.getTags();
@@ -315,7 +315,7 @@ public class TagController {
         if (destination == null) {
             return notFound();
         }
-        if (!destination.getIsPublic() && !destination.getUser().equals(user) && !user.userIsAdmin()) {
+        if (!destination.getIsPublic() && !destination.isUserOwner(user) && !user.userIsAdmin()) {
             return forbidden();
         }
         String tagName = request.body().asJson().get("tag").asText();
@@ -351,7 +351,7 @@ public class TagController {
         if (destination == null) {
             return notFound("Photo not found");
         }
-        if (!destination.getIsPublic() && !destination.getUser().equals(user) && !user.userIsAdmin()) {
+        if (!destination.getIsPublic() && !destination.isUserOwner(user) && !user.userIsAdmin()) {
             return forbidden();
         }
         String tagName = request.body().asJson().get("tag").asText();

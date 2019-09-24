@@ -124,7 +124,6 @@
             <h3 style="margin-top: 0;">Edit mode</h3>
 
             @if(destination.isUserOwner(user) || user.userIsAdmin()) {
-
                 @helper.form(action = helper.CSRF(routes.DestinationController.updateDestination(destination.getDestId()))) {
                     @formBody()
 

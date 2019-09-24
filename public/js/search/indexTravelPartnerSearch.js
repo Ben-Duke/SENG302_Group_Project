@@ -1,4 +1,6 @@
 let userCount;
+let followingCount;
+let followerCount;
 const usersPerPage = 10;
 let currentPageNum;
 let filters;
@@ -12,6 +14,7 @@ async function init() {
     initDates();
     searchUsers();
     searchFollowing();
+    searchFollowed();
 }
 
 /**
@@ -72,9 +75,17 @@ async function searchUsers() {
 async function searchFollowing() {
     updateFilters();
     let count = await getUserCount('following');
-    userCount = count;
+    followingCount = count;
     currentPageNum = 1;
     await renderPaginatedData('following');
+}
+
+async function searchFollowed() {
+    updateFilters();
+    let count = await getUserCount('follower');
+    followerCount = count;
+    currentPageNum = 1;
+    await renderPaginatedData('follower');
 }
 
 
@@ -134,8 +145,14 @@ async function onPaginate(currentPage, type) {
  */
 async function renderPaginatedData(type) {
     await renderUserData(currentPageNum, usersPerPage, type);
+    if (type === 'following') {
+        addPagination(followingCount, currentPageNum, type);
+    } else if (type === "follower") {
+        addPagination(followerCount, currentPageNum, type);
 
-    addPagination(userCount, currentPageNum, type);
+    } else {
+        addPagination(userCount, currentPageNum, type);
+    }
 }
 
 /**
@@ -150,8 +167,10 @@ async function getUserCount(type) {
     if (type === 'following') {
         filteredRoute += '&getfollowing=true';
     }
+    if (type === 'follower') {
+        filteredRoute += '&getfollowers=true';
+    }
 
-    console.log(filteredRoute);
 
     $.ajaxSetup({
         beforeSend: function(xhr) {
@@ -174,7 +193,6 @@ async function getUserCount(type) {
  * @param quantity the quantity of users to retrieve
  */
 async function renderUserData(pageNum, quantity, type) {
-    console.log(type)
 
     const offset = (pageNum - 1) * quantity;
     const searchTravelPartnerRoute = "/users/profile/searchprofiles?";
@@ -182,6 +200,10 @@ async function renderUserData(pageNum, quantity, type) {
 
     if (type == 'following') {
         filteredRoute += '&getfollowing=true';
+    }
+
+    if (type == 'follower') {
+        filteredRoute += '&getfollowers=true';
     }
 
     filteredRoute += `&offset=${offset}&quantity=${10}`;
@@ -198,7 +220,6 @@ async function renderUserData(pageNum, quantity, type) {
         url: filteredRoute,
         contentType: 'application/json',
     });
-    console.log(users)
 
     await displayData(users, type);
 }
@@ -211,16 +232,21 @@ async function renderUserData(pageNum, quantity, type) {
  * @param users the user data retrieved from the database
  */
 async function displayData(users, type) {
+    let tab;
 
     let tableBody;
 
     if (type === 'following') {
         tableBody = document.getElementById('following-table-body');
+        tab = 'followingTable-';
 
     } else if (type === 'follower') {
+        tableBody = document.getElementById('follower-table-body');
+        tab = 'followerTable-'
 
     } else {
         tableBody = document.getElementById('travel-partner-search-table-body');
+        tab = 'searchResultsTable-';
     }
 
 
@@ -230,6 +256,7 @@ async function displayData(users, type) {
 
     for (let user of users) {
         const row = document.createElement("tr");
+        row.id  = tab + user.userId
 
         const name = document.createElement("th");
         name.innerText = user.name;
@@ -268,7 +295,7 @@ async function displayData(users, type) {
             const followUserBtn = document.createElement("a");
             followUserBtn.setAttribute("class", "btn");
             followUserBtn.setAttribute("class", "btn-link");
-            followUserBtn.id = "follow-"+user.userId;
+            followUserBtn.id = tab + "follow-"+user.userId;
             followUserBtn.setAttribute("onclick", "followUser("+user.userId+")");
             followUserBtn.innerText = "Follow";
             followUserBtn.style.cursor = "pointer";
@@ -277,8 +304,8 @@ async function displayData(users, type) {
             const unfollowUserBtn = document.createElement("a");
             unfollowUserBtn.setAttribute("class", "btn");
             unfollowUserBtn.setAttribute("class", "btn-link");
-            unfollowUserBtn.id = "unfollow-"+user.userId;
-            unfollowUserBtn.setAttribute("onclick", "unfollowUser("+user.userId+")");
+            unfollowUserBtn.id = tab + "unfollow-"+user.userId;
+            unfollowUserBtn.setAttribute("onclick", "unfollowUser("+user.userId+ ")");
             unfollowUserBtn.innerText = "Unfollow";
             unfollowUserBtn.style.cursor = "pointer";
 
@@ -308,15 +335,14 @@ async function displayData(users, type) {
  * @param pageNum number of pages to add
  */
 function addPagination(count, pageNum, type) {
-    console.log(count);
     // remove existing pagination
 
     let tablePagination;
 
     if (type === 'following') {
         tablePagination = document.getElementById('following-pagination');
-
     } else if (type === 'follower') {
+        tablePagination = document.getElementById('follower-pagination');
 
     } else {
         tablePagination = document.getElementById("travel-partner-search-pagination");
@@ -384,7 +410,6 @@ function addPagination(count, pageNum, type) {
         pageButton.innerText = pageNumbers[i];
         if (currentPageNum === pageNum) {
 
-            // console.log(1.2);
 
             pageButton.classList.add("active");
         }
@@ -406,7 +431,7 @@ function addPagination(count, pageNum, type) {
     if (type === 'following') {
         document.getElementById("following-pagination").appendChild(pagination);
     } else if (type === 'follower') {
-
+        document.getElementById("follower-pagination").appendChild(pagination);
     } else {
         document.getElementById("travel-partner-search-pagination").appendChild(pagination);
     }

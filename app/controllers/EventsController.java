@@ -102,19 +102,4 @@ public class EventsController {
         return ok(data);
     }
 
-    public Result indexEvent(Http.Request request, int eventId) {
-        User user = User.getCurrentUser(request);
-
-        if (user == null) { return redirect(routes.UserController.userindex()); }
-
-        String googleApiKey = EnvironmentalVariablesAccessor.getEnvVariable(
-                EnvVariableKeys.GOOGLE_MAPS_API_KEY.toString());
-        Event event = Event.find().byId(eventId);
-        List<EventResponeses> eventRespones =
-
-        Map<Integer, String> categoryIdsToNames = EventFindaUtilities.getMainCategories();
-
-        return ok(viewEvent.render(user, event, eventRespones, googleApiKey));
-    }
-
 }

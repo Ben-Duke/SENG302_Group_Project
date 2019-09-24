@@ -74,10 +74,6 @@ async function displayData(users) {
     for (let user of users) {
         const row = document.createElement("tr");
 
-        const userId = document.createElement("th");
-        userId.innerText = user.userId;
-        row.appendChild(userId);
-
         const email = document.createElement("td");
         email.innerText = user.email;
         row.appendChild(email);

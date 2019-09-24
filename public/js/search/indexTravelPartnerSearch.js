@@ -4,6 +4,7 @@ let followerCount;
 const usersPerPage = 10;
 let currentPageNum;
 let filters;
+
 init();
 
 /**

@@ -33,8 +33,6 @@ import static play.mvc.Results.*;
 
 public class TravelPartnerController {
 
-    private final int PSEUDO_INFINITE_NUMBER = 100000;
-
     @Inject
     FormFactory formFactory;
 
@@ -157,7 +155,7 @@ public class TravelPartnerController {
 
         } else {
 
-            userCount = UserAccessor.getUserQueryCount(queryName,travellerType, nationality,
+            userCount = UserAccessor.getUserQueryCount(queryName, travellerType, nationality,
                     bornAfter, bornBefore, gender1,
                     gender2, gender3);
         }
@@ -170,7 +168,7 @@ public class TravelPartnerController {
      * @return returns a Json response with any users that match the passed parameters
      */
     public Result travellerSearchPaginated (
-            Http.Request request, int offset, int quantity, String queryName, String travellerType,
+            Http.Request request, String queryName, int offset, int quantity, String travellerType,
             String nationality, String bornAfter, String bornBefore, String gender1,
             String gender2, String gender3, String getFollowers, String getFollowing){
         User currentUser = User.getCurrentUser(request);

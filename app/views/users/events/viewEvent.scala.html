@@ -125,11 +125,12 @@
                 @for(response <- eventResponses) {
                     <div class="responseItem">
                         <img class="img-circle userProfileImg" src="@{routes.HomeController.serveProfilePicture(response.getUser.getUserid())}")>
+
                         @if(user == response.getUser) {
-                            <span class="responseType">You are @response.getResponseType</span>
+                            <span class="responseType">You  @UtilityFunctions.getResponseAdjustedForTime(response, true)</span>
                         } else {
                             <span class="responseType">@response.getUser.getFName @response.getUser.getLName
-                                    is @response.getResponseType</span>
+                                @UtilityFunctions.getResponseAdjustedForTime(response, false)</span>
                         }
                         <span class="responseTime">@UtilityFunctions.getFormattedDateTime(response.getResponseDateTime)</span>
                     </div>

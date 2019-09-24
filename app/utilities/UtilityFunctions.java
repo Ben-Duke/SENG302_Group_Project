@@ -497,4 +497,20 @@ public class UtilityFunctions {
             throw new EbeanDateParseException(e);
         }
     }
+
+    public static String getResponseAdjustedForTime(EventResponse response, Boolean isCurrentUser) {
+        String responseType = response.getResponseType();
+        if  (responseType.equalsIgnoreCase("Going") &&
+            response.getEvent().getEndTime().isBefore(LocalDateTime.now())) {
+            System.out.println(getFormattedDateTime(response.getEvent().getEndTime()));
+            responseType = "went";
+        } else  {
+            if (isCurrentUser) {
+                responseType = "are " + responseType.toLowerCase();
+            } else {
+                responseType = "is " + responseType.toLowerCase();
+            }
+        }
+        return responseType;
+    }
 }

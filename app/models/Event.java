@@ -28,13 +28,11 @@ public class Event extends Model implements AlbumOwner {
     @Temporal(TemporalType.TIMESTAMP)
     @Formats.DateTime(pattern=DATE_PATTERN)
     //date was protected not public/private for some reason
-    @CreatedTimestamp
     private LocalDateTime startTime;
 
 
     @Temporal(TemporalType.TIMESTAMP)
     @Formats.DateTime(pattern=DATE_PATTERN)
-    @CreatedTimestamp
     private LocalDateTime endTime;
 
     private String name;

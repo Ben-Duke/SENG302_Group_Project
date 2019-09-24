@@ -229,10 +229,14 @@ public class EventFindaUtilities {
         JsonNode categoryResults =  eventFindaGetResponse(categoryQuery);
 
         Map<Integer, String> categoryIdsToNames = new TreeMap<>();
-        for (JsonNode result : categoryResults.get("categories")) {
-            Integer artistId = new ObjectMapper().convertValue(result.get("id"), Integer.class);
-            String artistName = new ObjectMapper().convertValue(result.get("name"), String.class);
-            categoryIdsToNames.put(artistId, artistName);
+        try {
+            for (JsonNode result : categoryResults.get("categories")) {
+                Integer artistId = new ObjectMapper().convertValue(result.get("id"), Integer.class);
+                String artistName = new ObjectMapper().convertValue(result.get("name"), String.class);
+                categoryIdsToNames.put(artistId, artistName);
+            }
+        } catch (NullPointerException e) {
+            logger.error("Could not connect to EventFinda");
         }
 
         return categoryIdsToNames;

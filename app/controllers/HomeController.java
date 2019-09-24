@@ -54,11 +54,8 @@ public class HomeController {
         List<Destination> userAccessibleDestinations = new ArrayList<>();
 
         for (Destination destination : allDestinations) {
-            if (destination.getUser().getUserid() == user.getUserid() ||
-            destination.getIsPublic()) {
-
+            if (destination.isUserOwner(user) || destination.getIsPublic()) {
                 userAccessibleDestinations.add(destination);
-
             }
         }
 

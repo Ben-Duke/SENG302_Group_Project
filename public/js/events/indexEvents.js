@@ -54,7 +54,21 @@ function respondToEvent(eventId, responseType){
                 type: 'PUT',
                 url: "/events/respond/" + eventId + "/" + responseType,
                 success: function () {
-                    location.reload()
+                    let going = document.querySelector('[data-event-id="'+eventId+'"] [data-going]')
+                    let interested = document.querySelector('[data-event-id="'+eventId+'"] [data-interested]')
+                    let notGoing = document.querySelector('[data-event-id="'+eventId+'"] [data-notGoing]')
+                    going.setAttribute("data-Going", "false")
+                    interested.setAttribute("data-Interested", "false")
+                    notGoing.setAttribute("data-NotGoing", "false")
+                    going.classList.remove("btn-primary")
+                    interested.classList.remove("btn-primary")
+                    notGoing.classList.remove("btn-primary")
+                    going.classList.add("btn-light")
+                    interested.classList.add("btn-light")
+                    notGoing.classList.add("btn-light")
+                    let object = document.querySelector('[data-event-id="'+eventId+'"] [data-'+responseType+']')
+                    object.setAttribute('data-'+responseType, "true")
+                    object.classList.add("btn-primary")
                 },
             })
         }
@@ -71,10 +85,67 @@ function getEventResponses(eventId, responseType, userId){
     })
 }
 
+function getEventResponsesByType(responseType){
+    $.ajax({
+        type: 'GET',
+        url: "/events/responses/" + responseType,
+        success: function (resData) {
+            return resData;
+        },
+    })
+}
+
 function displayEvents(events) {
     const eventResultsDiv = document.querySelector("#events-results");
     const userId = eventResultsDiv.dataset.userid;
     document.getElementById("events-results").appendChild(document.createElement("hr"));
+    let isGoingResponses;
+    let isInterestedResponses;
+    let isNotGoingResponses;
+
+    $.ajax({
+        async: false,
+            success: function () {
+            $.ajax({
+            async: false,
+                type: 'GET',
+                url: "/events/responses/Going",
+                success: function (resData) {
+                    isGoingResponses = resData;
+                },
+            })
+        }
+    })
+
+    $.ajax({
+        async: false,
+            success: function () {
+            $.ajax({
+            async: false,
+                type: 'GET',
+                url: "/events/responses/Interested",
+                success: function (resData) {
+                    isInterestedResponses = resData;
+                },
+            })
+        }
+    })
+
+    $.ajax({
+        async: false,
+            success: function () {
+            $.ajax({
+            async: false,
+                type: 'GET',
+                url: "/events/responses/NotGoing",
+                success: function (resData) {
+                    isNotGoingResponses = resData;
+                },
+            })
+        }
+    })
+
+    const allResponses = [isGoingResponses, isInterestedResponses, isNotGoingResponses]
     for (let i=0; i < events.length; i++) {
         let isGoing = false;
         let isInterested = false;
@@ -92,86 +163,49 @@ function displayEvents(events) {
         eventImage.setAttribute("src", events[i].images.images[0].transforms.transforms[lastImage].url);
         const mediaBody = document.createElement("div");
         mediaBody.classList.add("media-body")
+        mediaBody.setAttribute("data-event-id", events[i].id)
         const eventLink = document.createElement("a");
-        $.ajax({
-            success: function () {
-                $.ajax({
-                    type: 'GET',
-                    url: "/users/events/exists/" + events[i].id,
-                    success: function (data) {
-                        eventLink.setAttribute("href", data);
-                    },
-                    error: function() {
-                        eventLink.setAttribute("href", events[i].url);
-                        eventLink.setAttribute("target", "_blank");
-                    }
-                })
-            }
-        })
+        eventLink.setAttribute("href", events[i].id);
 
-        $.ajax({
-            async: false,
-            success: function () {
-                $.ajax({
-                    async: false,
-                    type: 'GET',
-                    url: "/events/responses/" + events[i].id + "/" + 'Going'+ "/" + userId,
-                    success: function (resData) {
-                        if (resData.responses.length > 0) isGoing = true
-                    },
-                })
-            }
-        })
-
-        $.ajax({
-            async: false,
-            success: function () {
-                $.ajax({
-                    async: false,
-                    type: 'GET',
-                    url: "/events/responses/" + events[i].id + "/" + 'Interested'+ "/" + userId,
-                    success: function (resData) {
-                        if (resData.responses.length > 0) isInterested = true
-                    },
-                })
-            }
-        })
-
-
-        $.ajax({
-            async: false,
-            success: function () {
-                $.ajax({
-                    async: false,
-                    type: 'GET',
-                    url: "/events/responses/" + events[i].id + "/" + 'NotGoing'+ "/" + userId,
-                    success: function (resData) {
-                        if (resData.responses.length > 0) isNotGoing = true
-                    },
-                })
-            }
-        })
-
-//        const isGoing = getEventResponses(events[i].id, 'Going', userId);
-//        const isInterested = getEventResponses(events[i].id, 'Interested', userId);
-//        const isNotGoing = getEventResponses(events[i].id, 'NotGoing', userId);
         const goingResponse = document.createElement("a");
         goingResponse.classList.add("btn");
         goingResponse.classList.add("btn-light");
         goingResponse.setAttribute("onclick", "respondToEvent(" + events[i].id + ", 'Going'" + ")");
+        goingResponse.setAttribute("data-going", "false");
         const eventName = document.createElement("h4");
         const interestedResponse = document.createElement("a");
         interestedResponse.classList.add("btn");
         interestedResponse.classList.add("btn-light");
         interestedResponse.setAttribute("onclick", "respondToEvent(" + events[i].id + ", 'Interested'" + ")");
+        interestedResponse.setAttribute("data-interested", "false");
         const notGoingResponse = document.createElement("a");
         notGoingResponse.classList.add("btn");
         notGoingResponse.classList.add("btn-light");
         notGoingResponse.setAttribute("onclick", "respondToEvent(" + events[i].id + ", 'NotGoing'" + ")");
-
-        if (isGoing === true) {goingResponse.classList.add("btn-primary");}
-        else if (isInterested === true) {interestedResponse.classList.add("btn-primary");}
-        else if (isNotGoing === true) {notGoingResponse.classList.add("btn-primary");}
+        notGoingResponse.setAttribute("data-notGoing", "false");
+        for (let j=0; j < allResponses.length; j++) {
+            for (let k=0; k < allResponses[j].responses.length; k++) {
+                if (allResponses[j].responses[k].responseType === "Going" &&
+                        allResponses[j].responses[k].event.externalId === events[i].id) {
+                    goingResponse.classList.add("btn-primary");
+                    goingResponse.setAttribute("data-going", "true");
+//                    interestedResponse.setAttribute("data-interested", "false");
+//                    notGoingResponse.setAttribute("data-notGoing", "false");
+                } else if (allResponses[j].responses[k].responseType === "Interested" &&
+                        allResponses[j].responses[k].event.externalId === events[i].id) {
+                    interestedResponse.classList.add("btn-primary");
+                    interestedResponse.setAttribute("data-interested", "true");
+//                    goingResponse.setAttribute("data-going", "false");
+//                    notGoingResponse.setAttribute("data-notGoing", "false");
+                } else if (allResponses[j].responses[k].responseType === "NotGoing" &&
+                        allResponses[j].responses[k].event.externalId === events[i].id) {
+                    notGoingResponse.classList.add("btn-primary");
+                    notGoingResponse.setAttribute("data-notGoing", "true");
+//                    interestedResponse.setAttribute("data-interested", "false");
+//                    goingResponse.setAttribute("data-going", "false");
+                }
+            }
+        }
 
         eventName.classList.add("media-heading");
         eventName.innerText = events[i]["name"];

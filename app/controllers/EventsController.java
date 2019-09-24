@@ -120,23 +120,23 @@ public class EventsController {
         return ok(data);
     }
 
-    public Result viewEvent(Http.Request request, int eventId) {
+    public Result viewEvent(Http.Request request, int externalEvenetId) {
         User user = User.getCurrentUser(request);
 
         if (user == null) { return redirect(routes.UserController.userindex()); }
 
         String googleApiKey = EnvironmentalVariablesAccessor.getEnvVariable(
                 EnvVariableKeys.GOOGLE_MAPS_API_KEY.toString());
-        Event event = Event.find().byId(eventId);
-        List<EventResponse> eventResponses = EventResponseAccessor.getByEvent(event);
-        boolean isGoing = false;
-        for (EventResponse userEvent : eventResponses) {
-            if(userEvent.getUser().getUserid() == user.getUserid()) {
-                isGoing = true;
-            }
-        }
+//        Event event = Event.find().query().where().eq("externalId", externalEvenetId).findOne();
+//        List<EventResponse> eventResponses = EventResponseAccessor.getByEvent(event);
+//        boolean isGoing = false;
+//        for (EventResponse userEvent : eventResponses) {
+//            if(userEvent.getUser().getUserid() == user.getUserid()) {
+//                isGoing = true;
+//            }
+//        }
 
-        return ok(viewEvent.render(user, event, eventResponses, googleApiKey, isGoing));
+        return ok(viewEvent.render(user, googleApiKey));
     }
 
     public Result checkEventExists(Http.Request request, int eventId) {

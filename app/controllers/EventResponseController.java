@@ -61,6 +61,26 @@ public class EventResponseController {
             newEvent.insert();
             newEvent.save();
             EventResponse eventResponse = new EventResponse(ResponseType.valueOf(responseType), newEvent, user);
+            EventResponse existingEventResponse = EventResponseAccessor.getByUserAndEvent(user, newEvent);
+            if (existingEventResponse == null) {
+                try {
+                    EventResponseAccessor.insert(eventResponse);
+                    EventResponseAccessor.save(eventResponse);
+                    return ok();
+                } catch (PersistenceException p) {
+                    return forbidden();
+                }
+            } else {
+                existingEventResponse.setResponseType(ResponseType.valueOf(responseType));
+                existingEventResponse.setResponseDateTime(LocalDateTime.now());
+                EventResponseAccessor.update(existingEventResponse);
+                EventResponseAccessor.save(existingEventResponse);
+                return ok();
+            }
+        }
+        EventResponse eventResponse = new EventResponse(ResponseType.valueOf(responseType), event, user);
+        EventResponse existingEventResponse = EventResponseAccessor.getByUserAndEvent(user, event);
+        if (existingEventResponse == null) {
             try {
                 EventResponseAccessor.insert(eventResponse);
                 EventResponseAccessor.save(eventResponse);
@@ -68,14 +88,12 @@ public class EventResponseController {
             } catch (PersistenceException p) {
                 return forbidden();
             }
-        }
-        EventResponse eventResponse = new EventResponse(ResponseType.valueOf(responseType), event, user);
-        try {
-            EventResponseAccessor.insert(eventResponse);
-            EventResponseAccessor.save(eventResponse);
+        } else {
+            existingEventResponse.setResponseType(ResponseType.valueOf(responseType));
+            existingEventResponse.setResponseDateTime(LocalDateTime.now());
+            EventResponseAccessor.update(existingEventResponse);
+            EventResponseAccessor.save(existingEventResponse);
             return ok();
-        } catch (PersistenceException p) {
-            return forbidden();
         }
     }
 

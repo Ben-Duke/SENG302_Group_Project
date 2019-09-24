@@ -274,9 +274,9 @@ INSERT INTO `user` (`userid`, `email`, `password_hash`, `date_of_birth`, `gender
 (3, 'testuser2@uclive.ac.nz', '$2a$10$HnwLNh5oKC1go2H5kOJOleu/oLszMIpYVzlq1/dkNAK/w/BhkTzdG', '1960-12-25', 'Female', 'Caitlyn', 'Jenner', 0, 0, '2019-08-20 20:44:25'),
 (4, 'testuser3@uclive.ac.nz', '$2a$10$rjJrAFqLnTdb.Riy6VCMSOSdHcF5IF..tfkiW6Z2lm2jqYVRslQ7C', '2006-06-09', 'Male', 'John', 'Smith', 0, 0, '2019-08-20 20:44:25'),
 (5, 'noel.bisson@gmail.com', '$2a$10$HqfW8ovh02QgqlKL1IUFMORpIBoBP/Dcpqx5rrrcj0/B..Twy9Cx6', '1998-03-06', 'Male', 'Noel', 'Bisson', 0, 0, '2019-08-20 20:46:28'),
-(6, 'ben.duke@gmail.com', '$2a$10$cZsomtrMGR/Mq2xSgjb/oeicndQBrV092.j80O1M3uPD7x/UWOOZe', '1994-08-08', 'Male', 'Ben', 'Duke', 0, 0, '2019-08-20 20:47:47'),
+(6, 'ben.duke@gmail.com', '$2a$10$EUMIDn.2bVaFxPGq5IdlXuX.aafZUY4DqmL6gYEHWM4t1Lp.t//kK', '1994-08-08', 'Male', 'Ben', 'Duke', 0, 0, '2019-08-20 20:47:47'),
 (7, 'jack.orchard@gmail.com', '$2a$10$vQAR2DFztO1vdOAD6vC17.wrCZRW5/I66c/tixpDN47KuQ1AtkA3O', '1997-05-16', 'Male', 'Jack', 'Orchard', 0, 0, '2019-08-20 20:48:44'),
-(8, 'logan.shaw@gmail.com', '$2a$10$gxxqY2u7DYUEQVcRK6jHJuYVMSRhViIekaHbMjh79kpqOrS135rXq', '1999-02-12', 'Male', 'Logan ', 'Shaw', 0, 0, '2019-08-20 20:49:17'),
+(8, 'logan.shaw@gmail.com', '$2Fa$10$gxxqY2u7DYUEQVcRK6jHJuYVMSRhViIekaHbMjh79kpqOrS135rXq', '1999-02-12', 'Male', 'Logan ', 'Shaw', 0, 0, '2019-08-20 20:49:17'),
 (9, 'jason.little@gmail.com', '$2a$10$Kv59.oawFqlGJEVa3wyMfengJOxDZb.JDzHXeFn/Bhw5zqQR.mSUa', '1994-07-13', 'Male', 'Jason', 'Little', 0, 0, '2019-08-20 20:50:10'),
 (10, 'priyesh.shah@gmail.com', '$2a$10$GbadXoPxGghyCW6lPDTjIeNzS/JfiCIqmlauPNiDIyQFivees1oRq', '1996-06-13', 'Other', 'Priyesh', 'Shah', 0, 0, '2019-08-20 20:50:48'),
 (11, 'michael.shannon@gmail.com', '$2a$10$i0GWnSrk2HSU4ZoFeV5em.kplOnwRDI18RgvGQqFEJ5KMMNNAW66i', '1998-01-15', 'Male', 'Michael', 'Shannon', 0, 0, '2019-08-20 20:51:22'),
@@ -286,12 +286,16 @@ INSERT INTO `user` (`userid`, `email`, `password_hash`, `date_of_birth`, `gender
 (15, 'test4.shah@gmail.com', '$2a$10$GbadXoPxGghyCW6lPDTjIeNzS/JfiCIqmlauPNiDIyQFivees1oRq', '1996-06-13', 'Other', 'test4', 'Shah', 0, 0, '2019-08-20 20:50:48'),
 (16, 'test5.shah@gmail.com', '$2a$10$GbadXoPxGghyCW6lPDTjIeNzS/JfiCIqmlauPNiDIyQFivees1oRq', '1996-06-13', 'Other', 'test5', 'Shah', 0, 0, '2019-08-20 20:50:48');
 --
+
+
+
+
 -- follow
 INSERT INTO `follow`(`follow_id`, `follower`, `followed`, `state`) VALUES
+(NULL,1,6,NULL ),
 (NULL,2,3,NULL ),
 (NULL,2,4,NULL ),
 (NULL,2,5,NULL ),
-(NULL,2,6,NULL ),
 (NULL,2,7,NULL ),
 (NULL,2,8,NULL ),
 (NULL,2,9,NULL ),
@@ -314,7 +318,9 @@ INSERT INTO `follow`(`follow_id`, `follower`, `followed`, `state`) VALUES
 (NULL,12,6,NULL ),
 (NULL,13,6,NULL ),
 (NULL,14,6,NULL ),
-(NULL,15,6,NULL );
+(NULL,15,6,NULL ),
+(NULL,3,2,NULL ),
+(NULL,4,2,NULL );
 
 -- Admin
 INSERT INTO `admin` (`user_id`, `user_id_to_edit`, `is_default`) VALUES
@@ -467,6 +473,7 @@ INSERT INTO `user_traveller_type` (`user_userid`, `traveller_type_ttypeid`) VALU
 
 -- user_photo
 -- set in code
+
 
 
 -- user_photo_destination

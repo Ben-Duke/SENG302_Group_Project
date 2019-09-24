@@ -50,7 +50,8 @@ GET     /users/admin/data           controllers.AdminController.getUserData(requ
 
 GET     /users/admin/userCount           controllers.AdminController.getUserCount(request: Request)
 
-
+#Checks if the given user id is a default admin
+GET     /users/admin/isDefault/:userId           controllers.AdminController.isDefaultAdmin(request: Request, userId: Integer)
 
 
 GET /users/destination/placeid/:placeId   controllers.DestinationController.getPlacesDetailsRequest(request: Request, placeId:String)
@@ -154,7 +155,10 @@ POST    /users/trips/visit/edit/:id       controllers.TripController.updateVisit
 GET     /users/trips/:id            controllers.TripController.displaytrip(request: Request, id:Integer)
 
 #Get trips matching a given name
-GET     /users/trips/matching/:name     controllers.TripController.getTripsByName(request: Request, name: String)
+GET     /users/trips/matching/:name     controllers.TripController.getTripsByName(request: Request, name: String, offset: Integer, quantity: Integer)
+
+#Get a paginated list of trips
+GET     /users/trips/paginated/:offset/:quantity         controllers.TripController.getPaginatedUserTrips(request: Request, offset: Integer, quantity: Integer)
 
 #Renders page that displays the home page where users can navigate to other pages
 GET     /users/home                 controllers.HomeController.showhome(request:Request)
@@ -323,6 +327,10 @@ GET     /users/destinations/matching/:name        controllers.DestinationControl
 #Renders treasure hunt index page
 GET     /users/treasurehunts                    controllers.TreasureHuntController.indexTreasureHunt(request : Request)
 
+GET     /users/treasurehunts/open               controllers.TreasureHuntController.getPaginatedOpenTreasureHunts(request : Request, offset : Integer, quantity : Integer)
+
+GET     /users/treasurehunts/user               controllers.TreasureHuntController.getPaginatedUserTreasureHunts(request : Request, offset : Integer, quantity : Integer)
+
 #Open Create treasure hunt page
 GET     /users/treasurehunts/create             controllers.TreasureHuntController.createTreasureHunt(request : Request)
 
@@ -399,6 +407,8 @@ GET     /users/events       controllers.EventsController.getEventsData(request :
 GET     /users/events/exists/:eventId                controllers.EventsController.checkEventExists(request : Request, eventId : Integer)
 
 GET /users/trips/fetch/trips_routes_json  controllers.TripController.getTripsRoutesJson(request : Request)
+
+GET /users/trips/:tripId/asJson controllers.TripController.getTripsAsJson(request : Request, tripId : Integer)
 
 POST /users/trips/:tripId/addVisit/:destId   controllers.TripController.addVisitToTripJSRequest(request : Request, tripId:Integer, destId:Integer)
 

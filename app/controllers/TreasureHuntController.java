@@ -125,6 +125,7 @@ public class TreasureHuntController extends Controller {
         for (TreasureHunt treasureHunt: treasureHunts) {
             ObjectNode treasureHuntJson = (new ObjectMapper()).createObjectNode();
             treasureHuntJson.put("title", treasureHunt.getTitle());
+            treasureHuntJson.put("id", treasureHunt.getThuntid());
             treasureHuntJson.put("endDate", UtilityFunctions.getStringFromLocalDate(treasureHunt.getEndDate()));
             treasureHuntJson.put("riddle", treasureHunt.getRiddle());
 

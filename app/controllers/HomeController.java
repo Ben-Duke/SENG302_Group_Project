@@ -97,6 +97,7 @@ public class HomeController {
             } else if(! user.hasNationality()){
                 return redirect(routes.ProfileController.updateNatPass());
             } else {
+                user.getCommandManager().setUser(user);
                 // Clear command stack
                 user.getCommandManager().setAllowedPage(CommandPage.HOME);
 

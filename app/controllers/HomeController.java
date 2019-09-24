@@ -94,6 +94,7 @@ public class HomeController {
             } else if(! user.hasNationality()){
                 return redirect(routes.ProfileController.updateNatPass());
             } else {
+                user.getCommandManager().setUser(user);
                 // Clear command stack
                 user.getCommandManager().setAllowedPage(CommandPage.HOME);
 
@@ -161,7 +162,7 @@ public class HomeController {
             Set<Tag> tags = TagAccessor.findPendingTagsFromUserId(user.getUserid());
             UploadPhotoCommand uploadPhotoCommand = new UploadPhotoCommand(newPhoto, fileObject, user, albumName, tags);
             user.getCommandManager().executeCommand(uploadPhotoCommand);
-            TagAccessor.removePendingTagsFromUserId(user.getUserid());
+
             return ok();
         } else {
             return badRequest();

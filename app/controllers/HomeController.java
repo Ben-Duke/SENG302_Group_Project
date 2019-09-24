@@ -162,7 +162,7 @@ public class HomeController {
             Set<Tag> tags = TagAccessor.findPendingTagsFromUserId(user.getUserid());
             UploadPhotoCommand uploadPhotoCommand = new UploadPhotoCommand(newPhoto, fileObject, user, albumName, tags);
             user.getCommandManager().executeCommand(uploadPhotoCommand);
-            TagAccessor.removePendingTagsFromUserId(user.getUserid());
+
             return ok();
         } else {
             return badRequest();

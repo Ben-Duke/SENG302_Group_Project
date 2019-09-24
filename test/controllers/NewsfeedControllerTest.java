@@ -68,10 +68,4 @@ public class NewsfeedControllerTest extends BaseTestWithApplicationAndDatabase{
         assertEquals(1,newsfeedResponse.size());
     }
 
-    @Test
-    public void temp(){
-        Media media = new UserPhoto("test",true,true,null);
-        MediaAccessor.insert(media);
-        System.out.println("Test " + MediaAccessor.getMediaById(media.mediaId).getDate_added());
-    }
 }

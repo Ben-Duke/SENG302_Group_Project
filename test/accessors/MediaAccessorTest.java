@@ -50,7 +50,7 @@ public class MediaAccessorTest extends BaseTestWithApplicationAndDatabase {
                 null);
         MediaAccessor.insert(photo);
         List<Media> urls = MediaAccessor.getAllMediaForUser(user);
-        assertEquals(3, urls.size());
+        assertEquals(2, urls.size());
     }
 
     //Will be deleted after using this for quick testing and will be used for the sorting the json return

@@ -21,6 +21,9 @@ import views.html.users.events.*;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -53,7 +56,29 @@ public class NewsfeedController {
 
         }
 
-        return ok(Json.toJson(userNewsfeed));
-    }
+        //sort the data by date
 
+        JsonNode json = Json.parse(userNewsfeed.toString());
+//        Collections.sort(json, compare());
+//        System.out.println(getClass());
+
+
+
+
+
+        return ok(json);
+    }
+//    public int compare(com.fasterxml.jackson.databind.node.ObjectNode c1, com.fasterxml.jackson.databind.node.ObjectNode c2) {
+//        long value1 = c1.getDate().getTime();
+//        long value2 = c2.getDate().getTime();
+//        if (value2 > value1) {
+//            return 1;
+//        } else if (value1 > value2) {
+//            return -1;
+//        } else {
+//            return 0;
+//        }
+//    }
 }
+
+

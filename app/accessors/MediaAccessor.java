@@ -59,6 +59,16 @@ public class MediaAccessor {
 
     }
 
+    public List<Media> getFollowingMedia(User user){
+        return Media.find.query().where().select("*")
+                .fetch("user")
+                .where()
+                .eq("user", user)
+                .and()
+                .eq("isPublic",true)
+                .findList();
+    }
+
     /**
      * Returns an ArrayNode list of all media a user
      * @param user the user that media is needed for
@@ -71,8 +81,6 @@ public class MediaAccessor {
 
         for(int i = 0; i < userMedia.size(); i++){
 
-//            System.out.println("class is " + userMedia.get(i).getClass().getName());
-//            System.out.println("from the getmediadata call " );
             ObjectNode mediaNode = (new ObjectMapper()).createObjectNode();
             mediaNode.put("User", (user.getFName() + " " + user.getLName()));
             mediaNode.put("url", (userMedia.get(i).getUrl()));
@@ -82,6 +90,7 @@ public class MediaAccessor {
 
         return userData;
     }
+
     /**
      * Gets the list of destinations that has an album linked to the media
      * @return the list of destinations that has an album linked to the media

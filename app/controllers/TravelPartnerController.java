@@ -157,7 +157,7 @@ public class TravelPartnerController {
 
         } else {
 
-            userCount = UserAccessor.getUserQueryCount(travellerType, queryName, nationality,
+            userCount = UserAccessor.getUserQueryCount(queryName,travellerType, nationality,
                     bornAfter, bornBefore, gender1,
                     gender2, gender3);
         }

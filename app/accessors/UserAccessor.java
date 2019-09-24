@@ -351,11 +351,11 @@ public class UserAccessor {
        return query.findSet();
    }
 
-   public static int getUserQueryCount(String travellerType, String queryNationality,
+   public static int getUserQueryCount(String queryName, String travellerType, String queryNationality,
                                        String agerange1, String agerange2, String gender1,
                                        String gender2, String gender3) {
 
-       int userCount = getUserQueryFromParams(travellerType, queryNationality,
+       int userCount = getUserQueryFromParams(queryName, travellerType, queryNationality,
                agerange1, agerange2,
                gender1, gender2, gender3).findCount();
 

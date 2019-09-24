@@ -1,5 +1,6 @@
 package controllers;
 
+import accessors.AdminAccessor;
 import accessors.UserAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -178,6 +179,13 @@ public class AdminController extends Controller {
         User currentUser = User.getCurrentUser(request);
         if (currentUser != null && currentUser.userIsAdmin()) {
             User userToEdit = User.find().byId(userId);
+
+            // Add default user album if they do not have one
+            if (userToEdit != null) {
+                userToEdit.addMissingData();
+                userToEdit.save();
+            }
+
             List<Admin> adminList = Admin.find().query().where()
                     .eq("userId", currentUser.getUserid()).findList();
             if(adminList.size() == 1) {
@@ -185,6 +193,7 @@ public class AdminController extends Controller {
                 admin.setUserToEdit(userToEdit.getUserid());
                 admin.update();
             }
+
             return redirect(routes.HomeController.showhome());
         } else {
             return unauthorized("Unauthorized: You are not an Admin");
@@ -219,5 +228,22 @@ public class AdminController extends Controller {
         } else {
             return unauthorized("Unauthorized: You are not an Admin");
         }
+    }
+
+    /**
+     * Checks if the given user id is a default admin
+     * @param request the HTTP request
+     * @param adminsUserId the user id to check for
+     * @return "true" if the user is a default admin, "false" otherwise
+     */
+    public Result isDefaultAdmin(Http.Request request, Integer adminsUserId) {
+        Admin admin = AdminAccessor.getAdminById(adminsUserId);
+        if (admin == null) {
+            return ok(Json.toJson("false"));
+        }
+        if (!admin.isDefault()) {
+            return ok(Json.toJson("false"));
+        }
+        return ok(Json.toJson("true"));
     }
 }

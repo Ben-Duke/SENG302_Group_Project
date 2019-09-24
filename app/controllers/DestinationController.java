@@ -185,7 +185,7 @@ public class DestinationController extends Controller {
     public Result viewDestination(Http.Request request, Integer destId) {
         User user = User.getCurrentUser(request);
         if (user == null) { return redirect(routes.UserController.userindex()); }
-
+;
         Destination destination = DestinationAccessor.getDestinationById(destId);
         if (destination == null) { return notFound("Destination does not exist"); }
 
@@ -194,7 +194,6 @@ public class DestinationController extends Controller {
                 return unauthorized("Not your destination");
             }
         }
-
 
         boolean inEditMode = false;
 
@@ -517,8 +516,13 @@ public class DestinationController extends Controller {
             destFactory.mergeDestinations(matchingDestinations, destination);
         }
 
+        // set the owner to be null since no one owns public destinations
+        destination.setUser(null);
+        destination.save();
+
         String googleApiKey = EnvironmentalVariablesAccessor.getEnvVariable(
                 EnvVariableKeys.GOOGLE_MAPS_API_KEY.toString());
+
         return ok(destinationPage.render(user, destination, false,
                 null, null, null, null,
                 googleApiKey));
@@ -570,7 +574,7 @@ public class DestinationController extends Controller {
                 List<Destination> userAccessibleDestinations = new ArrayList<>();
 
                 for (Destination existingDestination : allDestinations) {
-                    if (existingDestination.getUser().getUserid() == user.getUserid() ||
+                    if (existingDestination.isUserOwner(user) ||
                             newDestination.getIsPublic()) {
                         userAccessibleDestinations.add(existingDestination);
                     }
@@ -633,7 +637,7 @@ public class DestinationController extends Controller {
         List<Destination> userAccessibleDestinations = new ArrayList<>();
 
         for (Destination existingDestination : allDestinations) {
-            if (existingDestination.getUser().getUserid() == user.getUserid() ||
+            if (existingDestination.isUserOwner(user) ||
                     destination.getIsPublic()) {
                 userAccessibleDestinations.add(existingDestination);
             }
@@ -863,7 +867,6 @@ public class DestinationController extends Controller {
             }
 
         return ok();
-
     }
 
 
@@ -886,7 +889,7 @@ public class DestinationController extends Controller {
         if (destination == null) return notFound("No destination found with that id");
         // This block checks if the user is the owner of either the photo or the destination.
         // If not the owner then returns an unauthorized error else proceeds as usual.
-        if (destination.getUser().getUserid() != user.getUserid()
+        if (!destination.isUserOwner(user)
                 && photo.getUser().getUserid() != user.getUserid()) {
             return unauthorized("You cannot unlink this photo from this destination as neither of those belong to you.");
         }
@@ -973,7 +976,7 @@ public class DestinationController extends Controller {
         User user = User.getCurrentUser(request);
         if (user != null) {
             Destination destination = Destination.find().byId(destId);
-            if (destination.getIsPublic() || destination.getUser().getUserid() == user.getUserid() || user.userIsAdmin()) {
+            if (destination.getIsPublic() || destination.isUserOwner(user) || user.userIsAdmin()) {
                 return ok(Json.toJson(destination));
             } else {
                 return unauthorized("Oops, this is a private destination and you don't own it.");

@@ -22,6 +22,9 @@ function getEventsData(latitude, longitude, place, pageNum) {
                     }
                     displayEvents(events);
                     addPagination(count, pageNum);
+                },
+                error: () => {
+                    failLoad();
                 }
             });
         }
@@ -234,4 +237,9 @@ function unLoader() {
     document.getElementById("eventsPage").style.display = "block";
     window.scrollTo(0, 0);
     document.getElementById("loader").style.display = "none";
+}
+
+function failLoad() {
+    const page = document.getElementById('loader');
+    page.innerText = "We are struggling to reach EventFinda. Please connect to the internet"
 }

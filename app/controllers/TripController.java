@@ -292,14 +292,13 @@ public class TripController extends Controller {
             if(destination == null) {
                 return notFound();
             }
-            if (!destination.getIsPublic() && destination.getUser().getUserid() != user.getUserid()) {
+            if (!destination.getIsPublic() && !destination.isUserOwner(user)) {
                 return forbidden("2");
 
             }
 
             // If public dest and user not owner and user not admin
-            if (destination.getIsPublic() && destination.getUser().getUserid()
-                    != user.getUserid() && !user.userIsAdmin()) {
+            if (destination.getIsPublic() && !destination.isUserOwner(user) && !user.userIsAdmin()) {
                 destination.setUser(UserAccessor.getById(1)); // change ownership to admin
                 DestinationAccessor.update(destination);
             }
@@ -343,15 +342,13 @@ public class TripController extends Controller {
                 return notFound();
             }
             // If private dest and user not owner and user not admin
-            if (!destination.getIsPublic() && destination.getUser().getUserid()
-                    != user.getUserid() && !user.userIsAdmin()) {
+            if (!destination.getIsPublic() && !destination.isUserOwner(user) && !user.userIsAdmin()) {
                 return forbidden("2");
 
             }
 
             // If public dest and user not owner and user not admin
-            if (destination.getIsPublic() && destination.getUser().getUserid()
-                    != user.getUserid() && !user.userIsAdmin()) {
+            if (destination.getIsPublic() && !destination.isUserOwner(user) && !user.userIsAdmin()) {
                 destination.setUser(UserAccessor.getById(1)); // change ownership to admin
                 DestinationAccessor.update(destination);
             }

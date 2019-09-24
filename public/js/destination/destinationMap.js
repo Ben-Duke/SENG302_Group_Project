@@ -155,7 +155,14 @@ function initMapLegend() {
         let name = type.name;
         let icon = type.url;
         let div = document.createElement('div');
-        div.innerHTML = '<img src="' + icon + '"> ' + name;
+
+        let img = document.createElement('img');
+        img.setAttribute("src", icon);
+        let span = document.createElement('span');
+        span.innerText = name;
+
+        div.appendChild(img);
+        div.appendChild(span);
         legend.appendChild(div);
     }
 

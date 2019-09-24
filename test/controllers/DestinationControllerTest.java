@@ -619,7 +619,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
         Result result = makeDestinationPublic(destId);
         assertEquals(OK, result.status());
 
-        // Set the copy to public
+        // Set the copy to public (the existing public destination will be merged into it)
         int copyId = destCopy.getDestId();
         Result copyResult = makeDestinationPublic(copyId);
         assertEquals(OK, result.status());

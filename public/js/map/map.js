@@ -40,7 +40,9 @@ async function initMap() {
     let tripJSON = await getPaginatedTripResults(tripPageNum, 5);
     let trips  = tripJSON.trips;
     let tripCount = tripJSON.tripCount;
-    setTripPaginationLinks(tripCount, 5);
+    if (tripCount > 0) {
+        setTripPaginationLinks(tripCount, 5);
+    }
 
     initTripRoutes();
 }
@@ -150,8 +152,9 @@ async function createNewPaginatedTrip() {
     tripJSON = await getPaginatedTripResults(numPages, 5);
     let trips  = tripJSON.trips;
 
-    setTripPaginationLinks(tripCount, 5);
-
+    if (tripCount > 0) {
+        setTripPaginationLinks(tripCount, 5);
+    }
     let trip = trips[trips.length-1];
     let data = trip;
 
@@ -1492,7 +1495,9 @@ $("#tripSearchInput").keyup(async function()
                 while (paginationList.firstChild) {
                     paginationList.removeChild(paginationList.firstChild);
                 }
-                setTripPaginationLinks(res.tripCount, 5, searchInput);
+                if (tripCount > 0) {
+                    setTripPaginationLinks(res.tripCount, 5, searchInput);
+                }
                 tripPageNum = 1;
 
 
@@ -1511,7 +1516,9 @@ $("#tripSearchInput").keyup(async function()
         let tripJSON = await getPaginatedTripResults(tripPageNum, 5);
         let trips  = tripJSON.trips;
         let tripCount = tripJSON.tripCount;
-        setTripPaginationLinks(tripCount, 5);
+        if (tripCount > 0) {
+            setTripPaginationLinks(tripCount, 5);
+        }
         displayTripTablePage(trips);
 
     }
@@ -1556,7 +1563,9 @@ function searchByKeyword(currentPageNum, tab) {
                         }
 
                     }
-                    addPagination(publicCount, currentPageNum, searchInput, "publicDestinationList");
+                    if (publicCount > 0) {
+                        addPagination(publicCount, currentPageNum, searchInput, "publicDestinationList");
+                    }
                 }
                 if (tab.id == "privateDestinationList" || tab == "all"){
                     let privateCount = res.totalCountPrivate
@@ -1577,7 +1586,9 @@ function searchByKeyword(currentPageNum, tab) {
 
                         }
                     }
-                    addPagination(privateCount, currentPageNum, searchInput, "privateDestinationList");
+                    if (privateCount > 0) {
+                        addPagination(privateCount, currentPageNum, searchInput, "privateDestinationList");
+                    }
                 }
 
             }
@@ -1688,7 +1699,9 @@ function getPublicDestinations(pageNum, quantity){
                 destElement.innerText = destination.destName + " | " + destination.destType + " | " + destination.country
                 destinationData.appendChild(destElement);
             }
-            addPagination(publicCount, pageNum, null, "publicDestinationList");
+            if (publicCount > 0) {
+                addPagination(publicCount, pageNum, null, "publicDestinationList");
+            }
         }, error: function (error) {
             console.log(error);
         }
@@ -1721,7 +1734,9 @@ function getPrivateDestinations(pageNum, quantity){
                 destElement.innerText = destination.destName + " | " + destination.destType + " | " + destination.country
                 destinationData.appendChild(destElement);
             }
-            addPagination(privateCount, pageNum, null, "privateDestinationList");
+            if (privateCount > 0) {
+                addPagination(privateCount, pageNum, null, "privateDestinationList");
+            }
         }, error: function (error) {
             console.log(error);
         }

@@ -24,6 +24,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.*;
@@ -39,8 +40,11 @@ import static play.mvc.Results.unauthorized;
 public class UtilityFunctions {
 
     private static final String DATE_PATTERN = "yyyy-MM-dd";
+    private static final String DATE_TIME_PATTERN = "dd-MM-yyyy HH:mm:ss";
     private static final DateTimeFormatter DATE_FORMATTER =
             DateTimeFormatter.ofPattern(DATE_PATTERN);
+    private static final DateTimeFormatter DATE_TIME_FORMATTER =
+            DateTimeFormatter.ofPattern(DATE_TIME_PATTERN);
 
     private static final Logger logger = getLogger();
 
@@ -470,6 +474,21 @@ public class UtilityFunctions {
     public static LocalDate parseLocalDate(String dateString) throws EbeanDateParseException {
         try {
             return LocalDate.parse(dateString, DATE_FORMATTER);
+        } catch (DateTimeParseException e) {
+            throw new EbeanDateParseException(e);
+        }
+    }
+
+    /**
+     * Parses a string in the format of "dd-MM-yyyy HH:mm:ss" to a local date time
+     * @param dateTimeString the string to parse
+     * @return the parsed Local Date Time
+     * @throws EbeanDateParseException if the parsing fails
+     */
+    //TODO: Test
+    public static LocalDateTime parseLocalDateTime(String dateTimeString) throws EbeanDateParseException {
+        try {
+            return LocalDateTime.parse(dateTimeString, DATE_TIME_FORMATTER);
         } catch (DateTimeParseException e) {
             throw new EbeanDateParseException(e);
         }

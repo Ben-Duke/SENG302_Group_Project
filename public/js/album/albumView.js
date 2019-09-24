@@ -219,12 +219,12 @@ function setMediaPrivacy(mediaId, setPublic, link) {
         success: () => {
             const privacyIcon = document.querySelector('i[data-privacyMediaId="'+mediaId+'"]');
             if (!setPublic) {
-                link.innerHTML = "Make Public";
+                link.innerText = "Make Public";
                 document.querySelector('div[data-mediaId="'+mediaId+'"]').setAttribute("data-privacy", false.toString());
                 privacyIcon.classList.remove("fa-eye-green");
                 privacyIcon.classList.add("fa-eye-red");
             } else {
-                link.innerHTML = "Make Private";
+                link.innerText = "Make Private";
                 document.querySelector('div[data-mediaId="'+mediaId+'"]').setAttribute("data-privacy", true.toString());
                 privacyIcon.classList.remove("fa-eye-red");
                 privacyIcon.classList.add("fa-eye-green");
@@ -296,6 +296,7 @@ async function displayGrid(i, albumData, path, offSet) {
         privacyIcon.classList.add("fa", "fa-eye-red");
     }
     let img1 = document.createElement("img");
+    console.log(url);
     img1.src = path + encodeURIComponent(url);
     img1.setAttribute("data-id", i);
     img1.setAttribute("data-mediaId", albumData[i]["mediaId"]);
@@ -377,7 +378,7 @@ async function displaySlides(i, albumData, path) {
                     if (el.innerText != "Click to add caption.")
                     data[el.getAttribute('data-name')] = el.innerText;
                     // we could send an ajax request to update the field
-                    submitEditCaption(content.innerHTML, mediaId);
+                    submitEditCaption(content.innerText, mediaId);
                     el.blur();
                     event.preventDefault();
                 });
@@ -798,9 +799,9 @@ function showSlides(n) {
         const privacyBtn = document.getElementById("privacyBtn");
         if (privacyBtn != null) {
             if (slides[slideIndex - 1].getAttribute("data-privacy") === "true") {
-                document.getElementById("privacyBtn").innerHTML = "Make Private";
+                document.getElementById("privacyBtn").innerText = "Make Private";
             } else if (slides[slideIndex - 1].getAttribute("data-privacy") === "false") {
-                document.getElementById("privacyBtn").innerHTML = "Make Public";
+                document.getElementById("privacyBtn").innerText = "Make Public";
             }
         }
         setSlideListeners(albumMediaData, slideIndex-1);

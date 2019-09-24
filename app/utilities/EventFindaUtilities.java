@@ -99,6 +99,15 @@ public class EventFindaUtilities {
         return eventFindaGetResponse(url);
     }
 
+    public static JsonNode getEventById(int eventId) {
+        if (eventId < 0) {
+            eventId = 1;
+        }
+
+        String url = "events.json?id=" + eventId;
+        return eventFindaGetResponse(url);
+    }
+
     public static JsonNode getEvents(String keyword, String category, String startDate,
                                      String endDate, String minPrice, String maxPrice,
                                      Destination destination, String sortBy, Integer offset) {
@@ -229,10 +238,14 @@ public class EventFindaUtilities {
         JsonNode categoryResults =  eventFindaGetResponse(categoryQuery);
 
         Map<Integer, String> categoryIdsToNames = new TreeMap<>();
-        for (JsonNode result : categoryResults.get("categories")) {
-            Integer artistId = new ObjectMapper().convertValue(result.get("id"), Integer.class);
-            String artistName = new ObjectMapper().convertValue(result.get("name"), String.class);
-            categoryIdsToNames.put(artistId, artistName);
+        try {
+            for (JsonNode result : categoryResults.get("categories")) {
+                Integer artistId = new ObjectMapper().convertValue(result.get("id"), Integer.class);
+                String artistName = new ObjectMapper().convertValue(result.get("name"), String.class);
+                categoryIdsToNames.put(artistId, artistName);
+            }
+        } catch (NullPointerException e) {
+            logger.error("Could not connect to EventFinda");
         }
 
         return categoryIdsToNames;

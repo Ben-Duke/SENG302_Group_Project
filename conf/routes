@@ -50,7 +50,8 @@ GET     /users/admin/data           controllers.AdminController.getUserData(requ
 
 GET     /users/admin/userCount           controllers.AdminController.getUserCount(request: Request)
 
-
+#Checks if the given user id is a default admin
+GET     /users/admin/isDefault/:userId           controllers.AdminController.isDefaultAdmin(request: Request, userId: Integer)
 
 
 GET /users/destination/placeid/:placeId   controllers.DestinationController.getPlacesDetailsRequest(request: Request, placeId:String)
@@ -400,9 +401,12 @@ GET     /events             controllers.EventsController.getEventsDataByDestinat
 
 GET     /users/events/search            controllers.EventsController.indexEvents(request : Request)
 
+GET     /users/events/:eventId            controllers.EventsController.viewEvent(request : Request, eventId: Integer)
+
+
 GET     /users/events       controllers.EventsController.getEventsData(request : Request, keyword: String, category : String, startDate: String, endDate: String, minPrice: String, maxPrice: String, destination: String, sortBy: String, offset: Integer)
 
-
+GET     /users/events/exists/:eventId                controllers.EventsController.checkEventExists(request : Request, eventId : Integer)
 
 GET /users/trips/fetch/trips_routes_json  controllers.TripController.getTripsRoutesJson(request : Request)
 
@@ -468,6 +472,18 @@ GET /users/follows/:profileId                           controllers.FollowContro
 GET /nationalities                                      controllers.NationalityController.getAllNationalities(request: Request)
 
 
+
+# News feed
+PUT /events/respond/:eventId/:responseType                  controllers.EventResponseController.respondToEvent(request : Request, eventId : Integer, responseType : String)
+
+GET /events/responses/:eventId/:responseType                controllers.EventResponseController.getResponsesForEventByResponseType(request : Request, eventId : Integer, responseType : String)
+
+GET /events/responses/:responseType                         controllers.EventResponseController.getEventResponsesByResponseType(request : Request, responseType : String)
+
+GET /events/get/all                                         controllers.EventResponseController.getAllResponses(request : Request)
+GET /users/newsfeed controllers.NewsfeedController.indexNewsfeed(request: Request)
+
+GET /events/responses/newsfeed/:offset/:limit/:localDateTime    controllers.EventResponseController.getEventResponses(request: Request, offset: Integer, limit: Integer, localDateTime: String)
 
 
 # Undo

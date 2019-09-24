@@ -105,7 +105,7 @@ public class TagController {
      *         Bad request if the tag name is invalid
      */
     public Result addRawTag(Http.Request request) {
-
+        int characterLimit = 25;
         User user = User.getCurrentUser(request);
         if (user == null) {
             return unauthorized();
@@ -113,6 +113,10 @@ public class TagController {
         String tagName = request.body().asJson().get("tag").asText();
         if (tagName.isEmpty()) {
             return badRequest();
+        }
+        if(tagName.length() > characterLimit){
+
+            return badRequest("Tag name can be at most 25 characters in length");
         }
         Tag tag = TagAccessor.getTagByName(tagName);
         if(tag != null) {
@@ -208,6 +212,7 @@ public class TagController {
      * @return Http response detailing the success or failure
      */
     public Result addPhotoTag(Http.Request request, int photoId) {
+        int characterLimit = 25;
         User user = User.getCurrentUser(request);
         if (user != null) {
             UserPhoto photo = UserPhotoAccessor.getUserPhotoById(photoId);
@@ -218,6 +223,11 @@ public class TagController {
                 return forbidden();
             } else {
                 String tagName = request.body().asJson().get("tag").asText();
+                if(tagName.length() > characterLimit){
+
+                    return badRequest("Tag name can be at most 25 characters in length");
+                }
+
                 if (tagName.isEmpty()) {
                     return badRequest();
                 }
@@ -308,6 +318,7 @@ public class TagController {
      */
     public Result addDestTag(Http.Request request, int destId) {
         User user = User.getCurrentUser(request);
+        int characterLimit = 25;
         if (user == null) {
             return unauthorized();
         }
@@ -321,6 +332,10 @@ public class TagController {
         String tagName = request.body().asJson().get("tag").asText();
         if (tagName.isEmpty()) {
             return badRequest();
+        }
+        if(tagName.length() > characterLimit){
+
+            return badRequest("Tag name can be at most 25 characters in length");
         }
         Tag tag = TagAccessor.getTagByName(tagName);
 
@@ -420,6 +435,7 @@ public class TagController {
      */
     public Result addTripTag(Http.Request request, int tripId) {
         User user = User.getCurrentUser(request);
+        int characterLimit = 25;
         if (user != null) {
             Trip trip = TripAccessor.getTripById(tripId);
             if (trip == null) {
@@ -433,6 +449,12 @@ public class TagController {
             if (tagName.isEmpty()) {
                 return badRequest("Tag name cannot be empty");
             }
+
+            if(tagName.length() > characterLimit) {
+
+                return badRequest("Tag name can be at most 25 characters in length");
+            }
+
             Tag tagEbeans = TagAccessor.getTagByName(tagName);
 
             if (tagEbeans != null) {

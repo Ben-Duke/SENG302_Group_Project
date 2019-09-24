@@ -2,10 +2,7 @@ package utilities;
 
 import accessors.TagAccessor;
 import accessors.UserAccessor;
-import models.Event;
-import models.EventResponse;
-import models.Tag;
-import models.TravellerType;
+import models.*;
 import org.junit.Test;
 import play.db.Database;
 import play.db.Databases;
@@ -496,7 +493,7 @@ public class UtilityFunctionsTest extends BaseTestWithApplicationAndDatabase {
 
     private EventResponse initialiseEventResponse(LocalDateTime endTime) {
         Event event = new Event(LocalDateTime.MIN, endTime, "test");
-        return new EventResponse("Going", event, UserAccessor.getById(2));
+        return new EventResponse(ResponseType.valueOf("Going"), event, UserAccessor.getById(2));
     }
 
 

@@ -1,11 +1,17 @@
 package controllers;
 
+import accessors.EventAccessor;
+import accessors.UserAccessor;
+import models.Event;
+import models.EventResponse;
 import org.junit.Ignore;
 import org.junit.Test;
 import play.mvc.Http;
 import play.mvc.Result;
 import play.test.Helpers;
 import testhelpers.BaseTestWithApplicationAndDatabase;
+
+import java.time.LocalDateTime;
 
 import static org.junit.Assert.*;
 import static play.mvc.Http.Status.BAD_REQUEST;
@@ -15,6 +21,16 @@ import static play.test.Helpers.PUT;
 import static play.test.Helpers.route;
 
 public class EventResponseControllerTest extends BaseTestWithApplicationAndDatabase {
+
+
+    private void initialiseEventResponse(LocalDateTime endTime) {
+        Event event = new Event(LocalDateTime.MIN, endTime, "test");
+        EventAccessor.insert(event);
+        event = EventAccessor.getEventById(event.getEventId());
+        EventResponse eventResponse = new EventResponse("Going", event, UserAccessor.getById(2));
+        eventResponse.insert();
+    }
+
 
     @Ignore
     @Test
@@ -78,5 +94,12 @@ public class EventResponseControllerTest extends BaseTestWithApplicationAndDatab
     @Ignore
     @Test
     public void getAllResponses() {
+    }
+
+    @Test
+    public void testGetEventResponsesWithThreeValidEvents() {
+        Http.RequestBuilder request = Helpers.fakeRequest()
+                .method(PUT)
+                .uri("/events/responses/newsfeed/0/100000/").session("connected", null);
     }
 }

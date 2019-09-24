@@ -355,6 +355,7 @@ public class UserAccessor {
                                        String agerange1, String agerange2, String gender1,
                                        String gender2, String gender3) {
 
+
        int userCount = getUserQueryFromParams(queryName, travellerType, queryNationality,
                agerange1, agerange2,
                gender1, gender2, gender3).findCount();

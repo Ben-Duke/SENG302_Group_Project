@@ -550,6 +550,8 @@ public class DestinationController extends Controller {
     }
 
     /**
+     * AJAX request.
+     *
      * Extracts a destination object from the form user fills out.
      * Checks if input makes a valid destination.
      * Associates the current user with that destination.
@@ -612,7 +614,7 @@ public class DestinationController extends Controller {
         cmd.execute();
 
         logger.info("end");
-        return redirect(routes.HomeController.mainMapPage());
+        return ok("successfully created new destination");
     }
 
 

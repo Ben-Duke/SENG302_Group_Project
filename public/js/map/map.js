@@ -1622,6 +1622,7 @@ $("#submit").click(function(e){
         dataType: 'text',
         timeout: 5000,
         success: function(response) {
+            console.log(response);
             location.reload()
         },
         error: function(response) {

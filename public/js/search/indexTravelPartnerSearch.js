@@ -11,6 +11,7 @@ async function init() {
     await initNationalities();
     initDates();
     searchUsers();
+    searchFollowing();
 }
 
 /**
@@ -68,6 +69,16 @@ async function searchUsers() {
     await renderPaginatedData();
 }
 
+async function searchFollowing() {
+    updateFilters();
+    let count = await getUserCount('following');
+    userCount = count;
+    currentPageNum = 1;
+    await renderPaginatedData('following');
+}
+
+
+
 /**
  * Updates the filters based on what the user has selected
  */
@@ -112,29 +123,36 @@ function appendQueryParameters(route) {
 /**
  * Called when the user clicks on a pagination button to switch pages.
  */
-async function onPaginate(currentPage) {
+async function onPaginate(currentPage, type) {
     currentPageNum = currentPage;
 
-    await renderPaginatedData();
+    await renderPaginatedData(type);
 }
 
 /**
  * Renders the new table elements based on pagination
  */
-async function renderPaginatedData() {
-    await renderUserData(currentPageNum, usersPerPage);
+async function renderPaginatedData(type) {
+    await renderUserData(currentPageNum, usersPerPage, type);
 
-    addPagination(userCount, currentPageNum);
+    addPagination(userCount, currentPageNum, type);
 }
 
 /**
  * Gets the total count of users in the database based on query parameters
  */
-async function getUserCount() {
+async function getUserCount(type) {
 
     const token =  $('input[name="csrfToken"]').attr('value');
     const userCountRoute = "/users/profile/searchprofiles/count?";
     let filteredRoute = appendQueryParameters(userCountRoute);
+
+    if (type === 'following') {
+        filteredRoute += '&getfollowing=true';
+    }
+
+    console.log(filteredRoute);
+
     $.ajaxSetup({
         beforeSend: function(xhr) {
             xhr.setRequestHeader('Csrf-Token', token);
@@ -155,11 +173,17 @@ async function getUserCount() {
  * @param pageNum the page number to retrieve
  * @param quantity the quantity of users to retrieve
  */
-async function renderUserData(pageNum, quantity) {
+async function renderUserData(pageNum, quantity, type) {
+    console.log(type)
 
     const offset = (pageNum - 1) * quantity;
     const searchTravelPartnerRoute = "/users/profile/searchprofiles?";
     let filteredRoute = appendQueryParameters(searchTravelPartnerRoute);
+
+    if (type == 'following') {
+        filteredRoute += '&getfollowing=true';
+    }
+
     filteredRoute += `&offset=${offset}&quantity=${10}`;
 
     const token =  $('input[name="csrfToken"]').attr('value');
@@ -174,8 +198,9 @@ async function renderUserData(pageNum, quantity) {
         url: filteredRoute,
         contentType: 'application/json',
     });
+    console.log(users)
 
-    await displayData(users);
+    await displayData(users, type);
 }
 
 /**
@@ -185,8 +210,20 @@ async function renderUserData(pageNum, quantity) {
  * traveller types
  * @param users the user data retrieved from the database
  */
-async function displayData(users) {
-    const tableBody = document.getElementById('travel-partner-search-table-body');
+async function displayData(users, type) {
+
+    let tableBody;
+
+    if (type === 'following') {
+        tableBody = document.getElementById('following-table-body');
+
+    } else if (type === 'follower') {
+
+    } else {
+        tableBody = document.getElementById('travel-partner-search-table-body');
+    }
+
+
     while (tableBody.childNodes.length > 0) {
         tableBody.childNodes[0].remove();
     }
@@ -270,18 +307,33 @@ async function displayData(users) {
  * @param count the total number of data objects
  * @param pageNum number of pages to add
  */
-function addPagination(count, pageNum) {
+function addPagination(count, pageNum, type) {
+    console.log(count);
     // remove existing pagination
-    let eventsPagination = document.getElementById("travel-partner-search-pagination");
-    while (eventsPagination.childNodes.length > 0) {
-        eventsPagination.childNodes[0].remove();
+
+    let tablePagination;
+
+    if (type === 'following') {
+        tablePagination = document.getElementById('following-pagination');
+
+    } else if (type === 'follower') {
+
+    } else {
+        tablePagination = document.getElementById("travel-partner-search-pagination");
+    }
+
+    let newType = "'"+type+"'";
+
+
+    while (tablePagination.childNodes.length > 0) {
+        tablePagination.childNodes[0].remove();
     }
 
     let numOfPages = [];
     let pageNumbers = [];
     let places = '';
-    const maxPages = Math.ceil(count/usersPerPage);   // round up as there may be more total users than a multiple of 10
-    const pagination = document.createElement("ul");
+    let maxPages = Math.ceil(count/usersPerPage);   // round up as there may be more total users than a multiple of 10
+    let pagination = document.createElement("ul");
     pagination.classList.add("pagination");
     for (let i = 0; i < maxPages; i++) {
         numOfPages.push(i + 1);
@@ -310,7 +362,7 @@ function addPagination(count, pageNum) {
     pageButton = document.createElement("a");
     currentPageNum = 1;
     pageButton.innerText = "First";
-    pageButton.setAttribute("onClick", `onPaginate(${1})`);
+    pageButton.setAttribute("onClick", `onPaginate(${1} , ${newType})`);
     item.appendChild(pageButton);
     pagination.appendChild(item);
 
@@ -322,7 +374,7 @@ function addPagination(count, pageNum) {
         currentPageNum = pageNum - 1;
     }
     pageButton.innerText = "<";
-    pageButton.setAttribute("onClick", `onPaginate(${currentPageNum - 1})`);
+    pageButton.setAttribute("onClick", `onPaginate(${currentPageNum - 1} , ${newType})`);
     item.appendChild(pageButton);
     pagination.appendChild(item);
     for (let i = 0; i < pageNumbers.length; i++  ) {
@@ -336,7 +388,7 @@ function addPagination(count, pageNum) {
 
             pageButton.classList.add("active");
         }
-        pageButton.setAttribute("onClick", `onPaginate(${pageNumbers[i]})`);
+        pageButton.setAttribute("onClick", `onPaginate(${pageNumbers[i]} , ${newType})`);
         item.appendChild(pageButton);
         pagination.appendChild(item);
     }
@@ -348,16 +400,22 @@ function addPagination(count, pageNum) {
         currentPageNum = pageNum + 1;
     }
     pageButton.innerText = ">";
-    pageButton.setAttribute("onClick", `onPaginate(${currentPageNum + 1})`);
+    pageButton.setAttribute("onClick", `onPaginate(${currentPageNum + 1} , ${newType})`);
     item.appendChild(pageButton);
     pagination.appendChild(item);
-    document.getElementById("travel-partner-search-pagination").appendChild(pagination);
+    if (type === 'following') {
+        document.getElementById("following-pagination").appendChild(pagination);
+    } else if (type === 'follower') {
+
+    } else {
+        document.getElementById("travel-partner-search-pagination").appendChild(pagination);
+    }
 
     item = document.createElement("li");
     pageButton = document.createElement("a");
 
     pageButton.innerText = "Last";
-    pageButton.setAttribute("onClick", `onPaginate(${maxPages})`);
+    pageButton.setAttribute("onClick", `onPaginate(${maxPages}, ${newType})`);
     item.appendChild(pageButton);
     pagination.appendChild(item);
 }

@@ -354,6 +354,7 @@ public class UserAccessor {
 
        Set<Follow> followSet = Follow.find().query().where().eq("followed", currentUser)
                .setFirstRow(offSet).setMaxRows(quantity).findSet();
+       System.out.println(followSet);
 
        Set<User> followedUser = new HashSet<>();
        for (Follow follow: followSet) {
@@ -377,7 +378,7 @@ public class UserAccessor {
 
         Set<User> followedUser = new HashSet<>();
         for (Follow follow: followSet) {
-            followedUser.add(follow.getFollower());
+            followedUser.add(follow.getFollowed());
         }
 
         return followedUser;

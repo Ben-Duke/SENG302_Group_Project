@@ -69,21 +69,22 @@
 
         <div id="followingTab" class="tab-content tab-pane fade">
             <br>
-                <table class="table" id="follower-table">
-                    <thead class="thead-dark">
-                        <tr>
-                            <th scope="col" onClick="sortTable(0, 'follower-table')" style="cursor: pointer;">Name</th>
-                            <th scope="col" onClick="sortTable(1, 'follower-table')" style="cursor: pointer;">Gender</th>
-                            <th scope="col" onClick="sortTable(2, 'follower-table')" style="cursor: pointer;">Nationalities</th>
-                            <th scope="col" onClick="sortTable(3, 'follower-table')" style="cursor: pointer;">DOB</th>
-                            <th scope="col" onClick="sortTable(4, 'follower-table')" style="cursor: pointer;">Traveller types</th>
-                            <th scope="col" style="cursor: pointer;"></th>
-                            <th scope="col"></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                </table>
+            <table class="table" id="following-table">
+                <thead class="thead-dark">
+                    <tr>
+                        <th scope="col" onClick="sortTable(0, 'following-table')" style="cursor: pointer;">Name</th>
+                        <th scope="col" onClick="sortTable(1, 'following-table')" style="cursor: pointer;">Gender</th>
+                        <th scope="col" onClick="sortTable(2, 'following-table')" style="cursor: pointer;">Nationalities</th>
+                        <th scope="col" onClick="sortTable(3, 'following-table')" style="cursor: pointer;">DOB</th>
+                        <th scope="col" onClick="sortTable(4, 'following-table')" style="cursor: pointer;">Traveller types</th>
+                        <th scope="col" style="cursor: pointer;"></th>
+                        <th scope="col"></th>
+                    </tr>
+                </thead>
+                <tbody id="following-table-body">
+                </tbody>
+            </table>
+            <div id="following-pagination"></div>
         </div>
         <div id="followerTab" class="tab-content tab-pane fade">
             <br>

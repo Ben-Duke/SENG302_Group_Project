@@ -148,11 +148,10 @@ public class TravelPartnerController {
 
         if (getFollowing != null) {
 
-            userCount = UserAccessor.getFollowingCount(currentUser);
+            userCount = UserAccessor.getFollowedCount(currentUser);
 
         } else if (getFollowers != null) {
-
-            userCount = UserAccessor.getFollowedCount(currentUser);
+            userCount = UserAccessor.getFollowingCount(currentUser);
 
         } else {
 
@@ -191,12 +190,10 @@ public class TravelPartnerController {
         Set<User> users;
 
         if (getFollowing != null) {
-
-             users = UserAccessor.getFollowingQuery(currentUser, offset, quantity);
+            users = UserAccessor.getFollowedQuery(currentUser, offset, quantity);
 
         } else if (getFollowers != null) {
-
-            users = UserAccessor.getFollowedQuery(currentUser, offset, quantity);
+            users = UserAccessor.getFollowingQuery(currentUser, offset, quantity);
 
         } else {
 

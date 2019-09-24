@@ -87,4 +87,35 @@ function displayPhoto(photoId) {
     activePhotoId = photoId;
 }
 
+/**
+ * Sets a photo privacy to the setting specified
+ * @param mediaId the id of the media to change privacy
+ * @param setPublic true to set to public, false to set to private
+ */
+function setMediaPrivacy(mediaId, setPublic) {
+    const intPublic = setPublic ? 1 : 0;
+    $.ajax({
+        type: 'GET',
+        url: '/users/home/photoPrivacy/' + mediaId + '/' + intPublic,
+        contentType: 'application/json',
+        success: () => {
+            const makePublic = document.getElementById(`makePublicLink-${mediaId}`);
+            const makePrivate = document.getElementById(`makePrivateLink-${mediaId}`);
+
+            makePublic.style.display = makePublic.style.display === "none" ? "" : "none";
+            makePrivate.style.display = makePrivate.style.display === "none" ? "" : "none"
+
+            const privacyEye = document.getElementById(`privacy-eye-${mediaId}`);
+            if (privacyEye.classList.contains("fa-eye-red")) {
+                privacyEye.classList.remove("fa-eye-red");
+                privacyEye.classList.add("fa-eye-green");
+            } else {
+                privacyEye.classList.remove("fa-eye-green");
+                privacyEye.classList.add("fa-eye-red");
+            }
+        }
+    });
+}
+
+
 

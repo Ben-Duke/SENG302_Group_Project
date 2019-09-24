@@ -152,9 +152,9 @@
                                 <div class="overlay">
                                     <i class="icon" title="User Profile">
                                     @if(photo.getIsPublic()) {
-                                        <i class="fa fa-eye-green"></i>
+                                        <i id="privacy-eye-@photo.getMediaId" class="fa fa-eye-green"></i>
                                     } else {
-                                        <i class="fa fa-eye-red"></i>
+                                        <i id="privacy-eye-@photo.getMediaId" class="fa fa-eye-red"></i>
                                     }
                                     </i>
                                 </div>
@@ -223,7 +223,12 @@
 
 
                             <a class="btn btn-danger" onclick="unlinkPhotoToEvent(@photo.getMediaId(), @event.getEventId)">
-                                Remove Photo</a>
+                                Remove From Event</a>
+
+                            <a class="btn btn-primary" id="makePrivateLink-@photo.getMediaId()" data-mediaId="@photo.getMediaId" style="display: @getDisplayType(photo.getIsPublic, "make private")" onclick="setMediaPrivacy(@photo.getMediaId(), false)">
+                                Make Private</a>
+                            <a class="btn btn-primary" id="makePublicLink-@photo.getMediaId()" data-mediaId="@photo.getMediaId" style="display: @getDisplayType(photo.getIsPublic, "make public")" onclick="setMediaPrivacy(@photo.getMediaId(), true)">
+                                Make Public</a>
                         </div>
                     }
                 }
@@ -245,3 +250,15 @@
     <script src="https://maps.googleapis.com/maps/api/js?key=@googleApiKey&callback=initMap&libraries=drawing"
     async defer></script>
 }
+
+@getDisplayType(photoPublic: Boolean, buttonType: String) = {
+@if(photoPublic && buttonType == "make public") {
+        none
+    } else if(!photoPublic && buttonType == "make private") {
+        none
+    } else {    @*return empty*@
+    }
+
+}
+
+

@@ -614,7 +614,7 @@ public class DestinationController extends Controller {
         cmd.execute();
 
         logger.info("end");
-        return ok("successfully created new destination");
+        return ok(Json.toJson(newDestination));
     }
 
 

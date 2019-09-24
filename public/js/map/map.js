@@ -1623,7 +1623,46 @@ $("#submit").click(function(e){
         timeout: 5000,
         success: function(response) {
             console.log(response);
-            location.reload()
+            getPrivateDestinations(1, 20, null);
+            // location.reload()
+            let marker = new google.maps.Marker({
+                position: {
+                    lat: response.latitude,
+                    lng: response.longitude
+                },
+                map: window.globalMap,
+                icon: getMarkerIcon(response.isPublic)
+            });
+
+            let infoWindow = new google.maps.InfoWindow({
+                content: getMapInfoWindowHTML(response)
+            });
+
+            // markers.push(marker);
+
+            let index = globalMarkers.length;
+
+            //make the marker and infoWindow globals (persist in browser session)
+            window.globalMarkers.push({
+                marker: marker,
+                infoWindow: infoWindow,
+                isClicked: false
+            });
+
+            initMarkerEventHandlers(index);
+            initInforWindowEventHandlers(index);
+
+
+            document.getElementById("destName").value = "";
+            document.getElementById("country").value = "";
+            document.getElementById("district").value = "";
+            document.getElementById("latitude").value = "";
+            document.getElementById("longitude").value = "";
+            document.getElementById("destType").value = "";
+            displayDestination(response.destId, response.latitude, response.longitude);
+
+
+
         },
         error: function(response) {
             let responseData = JSON.parse(response.responseText);

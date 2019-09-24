@@ -49,4 +49,11 @@ function initEventMarker() {
 
 }
 
+function linkPhotoToEvent(mediaId, eventId) {
+    $.ajax({
+        type: 'PUT',
+        url: `/events/linkphoto/${mediaId}/${eventId}`,
+    });
+}
+
 

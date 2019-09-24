@@ -38,16 +38,13 @@
                 <h2> @event.getName().substring(1, event.getName().length()-1)</h2>
             </a>
             <h4>@event.getDescription().substring(1, event.getDescription().length()-1)</h4>
-            @if(isGoing == false) {
+            @if(!isGoing) {
                 <a class="btn btn-primary" role="button" onmouseover="this.innerText = 'Going'" onmouseout="this.innerText = 'Not Going'">
                     Not Going
                 </a>
             } else {
                 <a class="btn btn-primary" role="button" onmouseover="this.innerText = 'Not Going'" onmouseout="this.innerText = 'Going'">
                     Going
-                </a>
-                <a class="btn btn-primary" role="button">
-                    Add Media
                 </a>
             }
             @for(response <- eventResponses) {
@@ -64,6 +61,77 @@
                     </div>
                 }
             }
+            <h2>Event Media</h2>
+            @if(isGoing) {
+                <a class="btn btn-primary" role="button" data-toggle="modal" data-target="#myModal">
+                    Add Media
+                </a>
+            }
+            @for(photo <- event.getPrimaryAlbum.getMedia) {
+                @if(photo.isOwner(user) || photo.getIsPublic()) {
+
+                    <img src="">
+                    <a href="#" data-toggle="modal" data-target="#photo-carousel" onclick="displayPhoto(@photo.getMediaId())">
+
+                        <div class="" id="imageContainer">
+                            <div class="overlay">
+                                <i class="icon" title="User Profile">
+                                @if(photo.getIsPublic()) {
+                                    <i class="fa fa-eye-green"></i>
+                                } else {
+                                    <i class="fa fa-eye-red"></i>
+                                }
+                                </i>
+                            </div>
+                            <img class="img-thumbnails" id=@{photo.getUrl} src="@{routes.HomeController.index(photo.getUrlWithPath())}" alt="Event Image">
+                        </div>
+
+
+                    </a>
+                }
+            }
+        </div>
+    </div>
+    <div id="myModal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Select Your Photo</h4>
+                </div>
+
+                <div class="modal-body">
+                    @if(user.getUserPhotos.isEmpty) {
+                        <p id="para">No photos to add to destination. Upload some!</p>
+                    }
+
+                    @for(photo <- user.getUserPhotos) {
+                        @if(!photo.getAlbums.exists(album => album.event == event)) {
+                            <a id="addPhotoLink" class="btn btn-light" onclick="linkPhotoToEvent(@photo.getMediaId, @event.getEventId)">
+                                <div class="container" id="imagesContainer">
+                                    <div class="overlay">
+                                        <i class="icon" title="User Profile">
+                                        @if(photo.getIsPublic) {
+                                            <i class="fa fa-eye"></i>
+                                        } else {
+                                            <i class="fa fa-eye-slash"></i>
+                                        }
+                                        </i>
+                                    </div>
+                                    <img class="img-thumbnail" id=@{photo.getUrl} width="60" src="@{routes.HomeController.index(photo.getUrlWithPath)}" alt="User Image">
+                                </div>
+                            </a>
+                        }
+                    }
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+
         </div>
     </div>
 

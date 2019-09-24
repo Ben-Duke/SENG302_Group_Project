@@ -387,4 +387,12 @@ public class Destination extends TaggableModel implements AlbumOwner, MediaOwner
     public Album getPrimaryAlbum() {
         return this.albums.get(0);
     }
+
+    /** If the destination does not have a primary album, add one */
+    public void addPrimaryAlbum() {
+        Album primaryAlbum = new Album(this, this.getDestName(), true);
+        primaryAlbum.save();
+
+        this.albums.add(primaryAlbum);
+    }
 }

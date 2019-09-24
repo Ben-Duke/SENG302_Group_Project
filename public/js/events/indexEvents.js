@@ -47,13 +47,12 @@ function getEventsFromApiResponse(eventData, url, pageNum) {
     addPagination(count, pageNum);
 }
 
-function respondToEvent(eventId){
-    console.log(eventId);
+function respondToEvent(eventId, responseType){
     $.ajax({
         success: function () {
             $.ajax({
                 type: 'PUT',
-                url: "/events/respond/" + eventId + "/" + "Going",
+                url: "/events/respond/" + eventId + "/" + responseType,
                 success: function () {
                     location.reload()
                 },
@@ -62,10 +61,24 @@ function respondToEvent(eventId){
     })
 }
 
+function getEventResponses(eventId, responseType, userId){
+    $.ajax({
+        type: 'GET',
+        url: "/events/responses/" + eventId + "/" + responseType+ "/" + userId,
+        success: function (resData) {
+            if (resData.responses.length > 0) return true
+        },
+    })
+}
 
 function displayEvents(events) {
+    const eventResultsDiv = document.querySelector("#events-results");
+    const userId = eventResultsDiv.dataset.userid;
     document.getElementById("events-results").appendChild(document.createElement("hr"));
     for (let i=0; i < events.length; i++) {
+        let isGoing = false;
+        let isInterested = false;
+        let isNotGoing = false;
         const mediaRow = document.createElement("div");
         mediaRow.classList.add("media")
         const mediaLeft = document.createElement("div");
@@ -95,13 +108,77 @@ function displayEvents(events) {
                 })
             }
         })
-        const eventResponse = document.createElement("a");
-        eventResponse.setAttribute("onclick", "respondToEvent(" + events[i].id + ")");
+
+        $.ajax({
+            async: false,
+            success: function () {
+                $.ajax({
+                    async: false,
+                    type: 'GET',
+                    url: "/events/responses/" + events[i].id + "/" + 'Going'+ "/" + userId,
+                    success: function (resData) {
+                        if (resData.responses.length > 0) isGoing = true
+                    },
+                })
+            }
+        })
+
+        $.ajax({
+            async: false,
+            success: function () {
+                $.ajax({
+                    async: false,
+                    type: 'GET',
+                    url: "/events/responses/" + events[i].id + "/" + 'Interested'+ "/" + userId,
+                    success: function (resData) {
+                        if (resData.responses.length > 0) isInterested = true
+                    },
+                })
+            }
+        })
+
+
+        $.ajax({
+            async: false,
+            success: function () {
+                $.ajax({
+                    async: false,
+                    type: 'GET',
+                    url: "/events/responses/" + events[i].id + "/" + 'NotGoing'+ "/" + userId,
+                    success: function (resData) {
+                        if (resData.responses.length > 0) isNotGoing = true
+                    },
+                })
+            }
+        })
+
+//        const isGoing = getEventResponses(events[i].id, 'Going', userId);
+//        const isInterested = getEventResponses(events[i].id, 'Interested', userId);
+//        const isNotGoing = getEventResponses(events[i].id, 'NotGoing', userId);
+        const goingResponse = document.createElement("a");
+        goingResponse.classList.add("btn");
+        goingResponse.classList.add("btn-light");
+        goingResponse.setAttribute("onclick", "respondToEvent(" + events[i].id + ", 'Going'" + ")");
         const eventName = document.createElement("h4");
+        const interestedResponse = document.createElement("a");
+        interestedResponse.classList.add("btn");
+        interestedResponse.classList.add("btn-light");
+        interestedResponse.setAttribute("onclick", "respondToEvent(" + events[i].id + ", 'Interested'" + ")");
+        const notGoingResponse = document.createElement("a");
+        notGoingResponse.classList.add("btn");
+        notGoingResponse.classList.add("btn-light");
+        notGoingResponse.setAttribute("onclick", "respondToEvent(" + events[i].id + ", 'NotGoing'" + ")");
+
+        if (isGoing === true) {goingResponse.classList.add("btn-primary");}
+        else if (isInterested === true) {interestedResponse.classList.add("btn-primary");}
+        else if (isNotGoing === true) {notGoingResponse.classList.add("btn-primary");}
+
         eventName.classList.add("media-heading");
         eventName.innerText = events[i]["name"];
         eventLink.appendChild(eventName);
-        eventResponse.innerText = "Going";
+        goingResponse.innerText = "Going";
+        interestedResponse.innerText = "Interested";
+        notGoingResponse.innerText = "Not Going"
         const eventDateTime = document.createElement("p");
         eventDateTime.innerText = "Starts: " + events[i].datetime_start + "\nEnds: " + events[i].datetime_end;
         const eventAddress = document.createElement("p");
@@ -111,11 +188,13 @@ function displayEvents(events) {
         const eventDescription = document.createElement("p");
         eventDescription.innerText = events[i].description;
         mediaBody.appendChild(eventLink);
-        mediaBody.appendChild(eventResponse);
         mediaBody.appendChild(eventAddress);
         mediaBody.appendChild(eventDateTime);
         mediaBody.appendChild(eventCategory);
         mediaBody.appendChild(eventDescription);
+        mediaBody.appendChild(goingResponse);
+        mediaBody.appendChild(interestedResponse);
+        mediaBody.appendChild(notGoingResponse);
         eventImageLink.appendChild(eventImage);
         mediaLeft.appendChild(eventImageLink);
         mediaRow.appendChild(mediaLeft);
@@ -205,7 +284,6 @@ function addPagination(count, pageNum) {
     item = document.createElement("li");
     pageButton = document.createElement("a");
     currentPageNum = numOfPages.length;
-    // console.log(currentPageNum);
     pageButton.innerText = "Last";
     pageButton.setAttribute("onClick", `searchEvents(${currentPageNum})`);
     item.appendChild(pageButton);

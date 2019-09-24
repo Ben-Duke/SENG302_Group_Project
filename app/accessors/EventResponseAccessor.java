@@ -73,6 +73,18 @@ public class EventResponseAccessor {
                 "user", user).eq("response_type", responseType).findList();
     }
 
+    /** Return a list of Event Responses that are by a given user for an event of a particular type
+     * @param user User
+     * @param event Event
+     * @param responseType String
+     * @return List of Event Responses
+     */
+    public static List<EventResponse> getByUserEventAndType(User user, Event event, String responseType) {
+        return EventResponse.find().query().where().eq(
+                "user", user).eq("response_type", responseType).eq("event", event).findList();
+    }
+
+
     /** Insert the EventResponse  */
     /** Insert a EventResponse
      * @param eventResponse EventResponse to insert into database

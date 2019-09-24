@@ -476,6 +476,8 @@ PUT /events/respond/:eventId/:responseType                  controllers.EventRes
 
 GET /events/responses/:eventId/:responseType                controllers.EventResponseController.getResponsesForEventByResponseType(request : Request, eventId : Integer, responseType : String)
 
+GET /events/responses/:eventId/:responseType/:userId        controllers.EventResponseController.getResponsesForEventAndUserByResponseType(request : Request, eventId : Integer, responseType : String, userId : Integer)
+
 GET /events/responses/:responseType                         controllers.EventResponseController.getEventResponsesByResponseType(request : Request, responseType : String)
 
 GET /events/get/all                                         controllers.EventResponseController.getAllResponses(request : Request)

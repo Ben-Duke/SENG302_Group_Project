@@ -1,6 +1,7 @@
 package controllers;
 
 import accessors.EventResponseAccessor;
+import accessors.UserAccessor;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -38,7 +39,7 @@ public class EventResponseController {
      */
     public Result respondToEvent(Http.Request request, Integer externalEventId, String responseType) {
         User user = User.getCurrentUser(request);
-//        if (user == null) {return unauthorized();}
+        if (user == null) {return unauthorized();}
         Event event = Event.find().query().where().eq("externalId", externalEventId).findOne();
         if (event == null) {
             JsonNode jsonData = EventFindaUtilities.getEventById(externalEventId).get("events");
@@ -94,6 +95,27 @@ public class EventResponseController {
         if (event == null) {return badRequest("No one has responded to this event yet.");}
         List<EventResponse> eventResponses = EventResponseAccessor.getByEventAndType(event, responseType);
         if (eventResponses.isEmpty()) {return badRequest("No one has responded as " + responseType + " to this event.");}
+        return ok(getJsonEventResponses(eventResponses));
+    }
+
+    /**
+     * Controller method to get responses for an event and an user by response type.
+     * @param request Request
+     * @param userId Id of the user
+     * @param externalEventId Id of the event
+     * @param responseType type of response
+     * @param userId Id of the user
+     * @return Result
+     */
+    public Result getResponsesForEventAndUserByResponseType(Http.Request request, Integer externalEventId, String responseType, Integer userId) {
+        User user = User.getCurrentUser(request);
+        if (user == null) {return redirect(routes.UserController.userindex());}
+        Event event = Event.find().query().where().eq("externalId", externalEventId).findOne();
+        if (event == null) {return badRequest("No one has responded to this event yet.");}
+        User queryUser = UserAccessor.getById(userId);
+        if (queryUser == null) {return badRequest("No one has responded to this event yet.");}
+        List<EventResponse> eventResponses = EventResponseAccessor.getByUserEventAndType(queryUser, event, responseType);
+        if (eventResponses.isEmpty()) {return forbidden("This user has not responded as " + responseType + " to this event.");}
         return ok(getJsonEventResponses(eventResponses));
     }
 

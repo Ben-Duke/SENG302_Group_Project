@@ -444,7 +444,7 @@ public class UserAccessor {
                     convertedQueryValue = TravellerType.find().query().where().eq("travellerTypeName", queryValue).findOne();
                     break;
                 case NATIONALITY_COLUMN_NAME:
-                    convertedQueryValue = Nationality.find().query().where().eq("nationalityName", queryValue).findOne();
+                    convertedQueryValue = Nationality.find().query().where().ilike("nationalityName", "%" + queryValue + "%").findOne();
                     break;
                 case GENDER_COLUMN_NAME:
                     convertedQueryValue = queryValue;

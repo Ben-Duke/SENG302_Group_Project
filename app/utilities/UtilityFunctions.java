@@ -479,6 +479,10 @@ public class UtilityFunctions {
         }
     }
 
+    public static String getFormattedDateTime(LocalDateTime time) {
+        return time.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"));
+    }
+
     /**
      * Parses a string in the format of "dd-MM-yyyy HH:mm:ss" to a local date time
      * @param dateTimeString the string to parse

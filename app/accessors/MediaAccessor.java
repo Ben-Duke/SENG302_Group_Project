@@ -6,10 +6,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import models.Album;
 import models.Destination;
 import models.Media;
-import models.Tag;
 import models.*;
-import java.lang.reflect.Array;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -59,34 +56,57 @@ public class MediaAccessor {
 
     }
 
-    public List<Media> getFollowingMedia(User user){
-        return Media.find.query().where().select("*")
+    /**
+     * Gets a list of media of all the media belong to users that the given user is following.
+     * Gets records earlier than the given date time up to the given limit, based on the given offset (pagination).
+     * @param user the given user
+     * @param offset the offset
+     * @param limit the limit
+     * @param dateTime the date time
+     * @return a list of media
+     */
+    public static List<Media> getFollowingMedia(User user, int offset, int limit, LocalDateTime dateTime){
+
+        List<Integer> list = new ArrayList<Integer>();
+        List<Follow> userFollowing=  user.getFollowing();
+        for(int i = 0; i < userFollowing.size() ;i++){
+            list.add(userFollowing.get(i).getFolowedUserId());
+        }
+
+        return Media.find.query().where()
+                .select("*")
                 .fetch("user")
                 .where()
-                .eq("user", user)
+                .in("userid", list)
+
                 .and()
                 .eq("isPublic",true)
+                .lt("date_added", dateTime)
+                .order().desc("date_added")
+                .setFirstRow(offset)
+                .setMaxRows(limit)
+
                 .findList();
     }
 
     /**
-     * Returns an ArrayNode list of all media a user
-     * @param user the user that media is needed for
-     * @return an ArrayNode list of all media a user
+     * Returns an ArrayNode of a media item, which is an node which
+     * contains a User, url and date_created
+     * @param media the media item
+     * @return an ArrayNode of a media item
      */
-    public static ArrayNode getUserMediaData(User user){
+    public static ArrayNode getUserMediaData(Media media){
         ArrayNode userData = (new ObjectMapper()).createArrayNode();
-        List<Media> userMedia = getAllMediaForUser(user);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-        for(int i = 0; i < userMedia.size(); i++){
 
+            User user = UserAccessor.getById(media.user.getUserid());
             ObjectNode mediaNode = (new ObjectMapper()).createObjectNode();
             mediaNode.put("User", (user.getFName() + " " + user.getLName()));
-            mediaNode.put("url", (userMedia.get(i).getUrl()));
-            mediaNode.put("date_created", (userMedia.get(i).getDate_added().format(formatter)));
+            mediaNode.put("url", (media.getUrl()));
+            mediaNode.put("date_created", (media.getDate_added().format(formatter)));
             userData.add(mediaNode);
-        }
+
 
         return userData;
     }

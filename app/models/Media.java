@@ -49,7 +49,6 @@ public abstract class Media extends TaggableModel {
         this.user = user;
         this.caption = caption;
         this.date_added = LocalDateTime.now();
-        System.out.println("con1 " + date_added);
     }
 
     public Media(String url, boolean isPublic, User user) {
@@ -57,8 +56,6 @@ public abstract class Media extends TaggableModel {
         this.isPublic = isPublic;
         this.user = user;
         this.date_added =  LocalDateTime.now();
-        System.out.println(this.date_added);
-        System.out.println("con2 " + date_added);
     }
 
     public static Finder<Integer,Media> find = new

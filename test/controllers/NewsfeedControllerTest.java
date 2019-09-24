@@ -16,17 +16,10 @@ import play.mvc.Http;
 import play.mvc.Result;
 import play.test.Helpers;
 import testhelpers.BaseTestWithApplicationAndDatabase;
-
-import java.rmi.server.ExportException;
 import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.Collections;
-
-import java.util.HashMap;
-import java.util.Map;
+import java.time.format.DateTimeFormatter;
 
 import static org.junit.Assert.assertEquals;
-import static play.mvc.Http.Status.NOT_FOUND;
 import static play.mvc.Http.Status.OK;
 import static play.test.Helpers.*;
 
@@ -52,8 +45,9 @@ public class NewsfeedControllerTest extends BaseTestWithApplicationAndDatabase{
 
     @Test
     public void checkContentForFollowingUserIsThere(){
-
-
+        LocalDateTime time = LocalDateTime.now().plusDays(1);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy%20HH:mm:ss");
+        String formattedString = time.format(formatter);
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(POST)
                 .uri("/users/follow/2").session("connected", "1");
@@ -61,10 +55,9 @@ public class NewsfeedControllerTest extends BaseTestWithApplicationAndDatabase{
 
         Http.RequestBuilder newsfeedRequest = Helpers.fakeRequest()
                 .method(GET)
-                .uri("/users/newsfeed").session("connected", "1");
+                .uri("/users/newsfeedapi?offset=0&limit=1000&localDateTime="+formattedString).session("connected", "1");
         Result newsfeedResult = route(app, newsfeedRequest);
         JsonNode newsfeedResponse = Json.parse( contentAsString( newsfeedResult));
-
         assertEquals(1,newsfeedResponse.size());
     }
 

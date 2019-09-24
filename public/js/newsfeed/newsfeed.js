@@ -20,15 +20,23 @@ function getAndLoadMoreNewsFeedItems() {
     });
 
     $.ajax({
+        url: '/events/responses/getjson',
         type: 'GET',
-        url: '/events/responses/newsfeed/0/10/' + getDateTimeForURL(
-                                    oldestDateTimeOfLoadedEventResponse_GLOBAL),
+        data: {
+            offset: 0,
+            limit: 10,
+            localDateTime: getDateTimeForURL(oldestDateTimeOfLoadedEventResponse_GLOBAL)
+        },
         success: function (result) {
             const responses = result.responses;
             for (response of responses) {
                 createNewsFeedEventResponseComponent(response.event, response.user, response.responseDateTime)
             }
-            oldestDateTimeOfLoadedEventResponse_GLOBAL = responses[responses.length].responseDateTime;
+
+            if (0 < responses.length) {
+                oldestDateTimeOfLoadedEventResponse_GLOBAL = responses[responses.length].responseDateTime;
+            }
+
             hasNewsFeedFinishedInnitialLoad_GLOBAL = true;
         },
         error: (err) => {

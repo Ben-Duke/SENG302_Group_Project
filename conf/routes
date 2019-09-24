@@ -485,7 +485,7 @@ GET /users/newsfeedapi                                        controllers.Newsfe
 
 GET /users/newsfeed                                         controllers.NewsfeedController.newsfeedPage(request: Request)
 
-GET /events/responses/newsfeed/:offset/:limit/:localDateTime    controllers.EventResponseController.getEventResponses(request: Request, offset: Integer, limit: Integer, localDateTime: String)
+GET /events/responses/getjson    controllers.EventResponseController.getEventResponses(request: Request, offset: Integer, limit: Integer, localDateTime: String)
 
 
 # Undo

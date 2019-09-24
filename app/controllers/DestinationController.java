@@ -560,55 +560,59 @@ public class DestinationController extends Controller {
      * @return renders the index page or an unauthorized message is no user is logged in.
      */
     public Result saveDestinationFromRequest(Http.Request request) {
+        logger.info("start");
         User user = User.getCurrentUser(request);
 
-        if (user != null) { // checks if a user is logged in
-            Result errorForm = validateEditCreateForm(request, user, null);
-            if (errorForm != null) {
-                return errorForm;
-            } else {
-
-                Destination newDestination = formFactory.form(Destination.class)
-                        .bindFromRequest(request).get();
-                List<Destination> allDestinations = DestinationAccessor.getAllDestinations();
-                List<Destination> userAccessibleDestinations = new ArrayList<>();
-
-                for (Destination existingDestination : allDestinations) {
-                    if (existingDestination.isUserOwner(user) ||
-                            newDestination.getIsPublic()) {
-                        userAccessibleDestinations.add(existingDestination);
-                    }
-                }
-
-                for (Destination existingDestination : userAccessibleDestinations) {
-                    if (newDestination.isSimilar(existingDestination) || newDestination.isSame(existingDestination)) {
-                        return badRequest();
-                    }
-                }
-
-                Form<DestinationFormData> destinationForm = formFactory.form(DestinationFormData.class).bindFromRequest();
-                newDestination.setTags(new HashSet<>());
-                newDestination.setUser(user);
-                newDestination.setCountryValid(true);
-
-                if (destinationForm.get().getTags() != null && destinationForm.get().getTags().length() > 0) {
-                    List<String> tags = Arrays.asList(destinationForm.get().getTags().split(","));
-                    Set uniqueTags = UtilityFunctions.tagLiteralsAsSet(tags);
-                    newDestination.setTags(uniqueTags);
-                }
-                newDestination.save();
-                CreateAlbumCommand cmd = new CreateAlbumCommand(
-                        newDestination.getDestName(),
-                        newDestination,
-                        null);
-                cmd.execute();
-
-                return redirect(routes.HomeController.mainMapPage());
-            }
-
-        } else {
+        if (user == null) {
             return redirect(routes.UserController.userindex());
         }
+
+        Result errorForm = validateEditCreateForm(request, user, null);
+        if (errorForm != null) {
+            return errorForm;
+        }
+
+        Destination newDestination = formFactory.form(Destination.class)
+                .bindFromRequest(request).get();
+        logger.info("start get all dests");
+        List<Destination> allDestinations = DestinationAccessor.getAllDestinations();
+        logger.info("end get all dests");
+        List<Destination> userAccessibleDestinations = new ArrayList<>();
+
+        logger.info("start loop all dests");
+        for (Destination existingDestination : allDestinations) {
+            if (existingDestination.isUserOwner(user) ||
+                    newDestination.getIsPublic()) {
+                userAccessibleDestinations.add(existingDestination);
+            }
+        }
+        logger.info("finish loop all dests");
+
+        for (Destination existingDestination : userAccessibleDestinations) {
+            if (newDestination.isSimilar(existingDestination) || newDestination.isSame(existingDestination)) {
+                return badRequest();
+            }
+        }
+
+        Form<DestinationFormData> destinationForm = formFactory.form(DestinationFormData.class).bindFromRequest();
+        newDestination.setTags(new HashSet<>());
+        newDestination.setUser(user);
+        newDestination.setCountryValid(true);
+
+        if (destinationForm.get().getTags() != null && destinationForm.get().getTags().length() > 0) {
+            List<String> tags = Arrays.asList(destinationForm.get().getTags().split(","));
+            Set uniqueTags = UtilityFunctions.tagLiteralsAsSet(tags);
+            newDestination.setTags(uniqueTags);
+        }
+        newDestination.save();
+        CreateAlbumCommand cmd = new CreateAlbumCommand(
+                newDestination.getDestName(),
+                newDestination,
+                null);
+        cmd.execute();
+
+        logger.info("end");
+        return redirect(routes.HomeController.mainMapPage());
     }
 
 

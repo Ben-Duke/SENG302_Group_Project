@@ -180,79 +180,9 @@
             <div id="destinationsTab" class="tab-content tab-pane fade">
 
                 <div id="singleDestinationContainer">
-
-                    @for(destination <- destinations) {
-
-                        <div id="singleDestination_@destination.getDestId()" class="singleDestination">
-
-                            <div class="row">
-                                <label class="col-sm-3 control-label">Name</label>
-                                <div class="col-sm-9">
-                                    <span>@destination.getDestName()</span>
-                                </div>
-                            </div>
-
-                            <div class="row">
-                                <label class="col-sm-3 control-label">Type</label>
-                                <div class="col-sm-9">
-                                    <span>@destination.getDestType()</span>
-                                </div>
-                            </div>
-
-                            <div class="row">
-                                <label class="col-sm-3 control-label">Traveller Types</label>
-                                <div class="col-sm-9">
-                                @for(travellerType <- destination.getTravellerTypes()) {
-                                    <span style="margin-right: 6px;">@travellerType</span>
-                                }
-                                </div>
-                            </div>
-
-                            <div class="row">
-                                <label class="col-sm-3 control-label">Country</label>
-                                <div class="col-sm-9">
-                                    <span>@destination.getCountry()</span>
-                                    @if(!destination.getIsCountryValid()) {
-
-                                    }
-                                </div>
-                            </div>
-
-                            <div class="row">
-                                <label class="col-sm-3 control-label">District</label>
-                                <div class="col-sm-9">
-                                    <span>@destination.getDistrict()</span>
-                                </div>
-                            </div>
-
-                            <div class="row">
-                                <label class="col-sm-3 control-label">Latitude</label>
-                                <div class="col-sm-9">
-                                    <span>@destination.getLatitude()</span>
-                                </div>
-                            </div>
-
-                            <div class="row">
-                                <label class="col-sm-3 control-label">Longitude</label>
-                                <div class="col-sm-9">
-                                    <span>@destination.getLongitude()</span>
-                                </div>
-                            </div>
-                            <div class="destBtnContainer">
-                                <a class="btn btn-primary" href="@routes.DestinationController.viewDestination(destination.getDestId())">
-                                View</a>
-                                <a class="btn btn-primary" href="@routes.DestinationController.editDestination(destination.getDestId())">
-                                Edit</a>
-                            </div>
-
-
-                        </div>
-
-                    }
                     <div class="singleDestination" id="createDestination" style="margin-top: 20px">
                         @formBody()
                     </div>
-
                 </div>
 
 

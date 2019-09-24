@@ -793,6 +793,7 @@ function showSlides(n) {
     for (i = 0; i < slides.length; i++) {
         slides[i].style.display = "none";
     }
+    changeTaggableModel(slides[slideIndex - 1].dataset.mediaid, "photo");
     if(slides[slideIndex-1] !== undefined) {
         slides[slideIndex-1].style.display = "inline-block";
         const privacyBtn = document.getElementById("privacyBtn");

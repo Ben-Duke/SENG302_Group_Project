@@ -7,13 +7,15 @@ package utilities;
  */
 public enum TableName {
     // drop all connecting tables first - don't need to specify primary key column name
+    event_response("event_response_id"),
+    event("event_id"),
+
     trip_tag("", false),
     destination_tag("", false),
     media_tag("", false),
     album_media("media_media_id", false),
     tag_user("", false),
     tag("tag_id"),
-
     visit("visitid"),
     destination_media("destination_destid", false),
     user_treasure_hunt("user_userid", false),

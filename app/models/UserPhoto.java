@@ -7,6 +7,7 @@ import io.ebean.Model;
 
 import javax.persistence.*;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.*;
 
 /**
@@ -42,6 +43,7 @@ public class UserPhoto extends Media {
     public UserPhoto(String url, boolean isPublic, boolean isProfile, User user) {
         super(url, isPublic, user);
         this.isProfile = isProfile;
+        this.date_added = LocalDateTime.now();
     }
 
     /**
@@ -58,6 +60,7 @@ public class UserPhoto extends Media {
         this.isProfile = isProfile;
         this.primaryPhotoDestinations = primaryPhotoDestinations;
         this.albums = albums;
+        this.date_added = LocalDateTime.now();
     }
 
 
@@ -69,6 +72,7 @@ public class UserPhoto extends Media {
         super(userPhoto.getUrl(), userPhoto.getIsPublic(), userPhoto.getUser(), userPhoto.getCaption());
         this.isProfile = userPhoto.getIsProfilePhoto();
         this.primaryPhotoDestinations = userPhoto.getPrimaryPhotoDestinations();
+        this.date_added = LocalDateTime.now();
     }
 
     /**
@@ -119,6 +123,10 @@ public class UserPhoto extends Media {
         }
 
         return url;
+    }
+
+    public LocalDateTime getDateCreated(){
+        return super.getDate_added();
     }
 
     /**

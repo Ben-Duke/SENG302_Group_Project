@@ -13,7 +13,7 @@
  * @param user the user who uploaded the media
  * @param responseTime the time that the user uploaded the media
  */
-function createNewsFeedMediaComponent(media, user, responseTime) {
+function createNewsFeedMediaComponent(media, user, timeOfUpload) {
     let newsContainer = document.getElementById("newsContainer");
 
     let newsItemDiv = document.createElement("div");

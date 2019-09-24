@@ -110,12 +110,12 @@ function setMediaPrivacy(mediaId, setPublic) {
         success: () => {
             if (!setPublic) {
                 let publicButton = document.getElementById("makePrivateLink-"+mediaId);
-                publicButton.innerHTML = "Make Public";
+                publicButton.innerText = "Make Public";
                 publicButton.setAttribute('id', "makePublicLink-"+mediaId);
                 publicButton.setAttribute('onclick', "setMediaPrivacy("+mediaId+", " + !setPublic + ")");
             } else {
                 let privateButton = document.getElementById("makePublicLink-"+mediaId);
-                privateButton.innerHTML = "Make Private";
+                privateButton.innerText = "Make Private";
                 privateButton.setAttribute('id', "makePrivateLink-"+mediaId);
                 privateButton.setAttribute('onclick', "setMediaPrivacy("+mediaId+", " + !setPublic + ")");
             }

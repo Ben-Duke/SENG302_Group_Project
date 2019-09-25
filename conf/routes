@@ -477,7 +477,7 @@ PUT /events/respond/:eventId/:responseType                  controllers.EventRes
 
 GET /events/responses/:eventId/:responseType                controllers.EventResponseController.getResponsesForEventByResponseType(request : Request, eventId : Integer, responseType : String)
 
-GET /events/responses/getjson    controllers.EventResponseController.getEventResponses(request: Request, offset: Integer, limit: Integer, localDateTime: String)
+GET /events/responses/getjson                               controllers.EventResponseController.getEventResponses(request: Request, offset: Integer, limit: Integer, localDateTime: String)
 
 GET /events/responses/:responseType                         controllers.EventResponseController.getEventResponsesByResponseType(request : Request, responseType : String)
 

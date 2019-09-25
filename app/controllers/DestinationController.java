@@ -563,7 +563,6 @@ public class DestinationController extends Controller {
      * @return renders the index page or an unauthorized message is no user is logged in.
      */
     public Result saveDestinationFromRequest(Http.Request request) {
-        logger.info("start");
         User user = User.getCurrentUser(request);
 
         if (user == null) {
@@ -577,19 +576,15 @@ public class DestinationController extends Controller {
 
         Destination newDestination = formFactory.form(Destination.class)
                 .bindFromRequest(request).get();
-        logger.info("start get all dests");
         List<Destination> allDestinations = DestinationAccessor.getAllDestinations();
-        logger.info("end get all dests");
         List<Destination> userAccessibleDestinations = new ArrayList<>();
 
-        logger.info("start loop all dests");
         for (Destination existingDestination : allDestinations) {
             if (existingDestination.isUserOwner(user) ||
                     newDestination.getIsPublic()) {
                 userAccessibleDestinations.add(existingDestination);
             }
         }
-        logger.info("finish loop all dests");
 
         for (Destination existingDestination : userAccessibleDestinations) {
             if (newDestination.isSimilar(existingDestination) || newDestination.isSame(existingDestination)) {
@@ -614,7 +609,6 @@ public class DestinationController extends Controller {
                 null);
         cmd.execute();
 
-        logger.info("end");
         return ok(Json.toJson(newDestination));
     }
 

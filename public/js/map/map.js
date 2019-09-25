@@ -1563,6 +1563,7 @@ function searchByKeyword(currentPageNum, tab) {
                         }
 
                     }
+                    createDestinationViews(destData.destinations, destData.travellerTypeMap)
                     if (publicCount > 0) {
                         addPagination(publicCount, currentPageNum, searchInput, "publicDestinationList");
                     }
@@ -1613,16 +1614,15 @@ $("#submit").click(function(e){
         latitude: $("#latitude").val(),
         longitude: $("#longitude").val(),
         destType: $("#destType").val()
-    }
+    };
+
     $.ajax({
         type: 'POST',
         url: '/users/destinations/save',
         contentType: 'application/json',
         data: JSON.stringify(formData),
-        dataType: 'text',
         timeout: 5000,
         success: function(response) {
-            console.log(response);
             getPrivateDestinations(1, 20, null);
             // location.reload()
             let marker = new google.maps.Marker({
@@ -1659,10 +1659,6 @@ $("#submit").click(function(e){
             document.getElementById("latitude").value = "";
             document.getElementById("longitude").value = "";
             document.getElementById("destType").value = "";
-            displayDestination(response.destId, response.latitude, response.longitude);
-
-
-
         },
         error: function(response) {
             let responseData = JSON.parse(response.responseText);
@@ -1711,6 +1707,7 @@ $("#submit").click(function(e){
         }
 
     });
+
 });
 
 function getPublicDestinations(pageNum, quantity){
@@ -1724,6 +1721,7 @@ function getPublicDestinations(pageNum, quantity){
         data: data,
         contentType: 'application/json',
         success: (destData) => {
+
             let publicCount = destData.totalCountPublic;
             let destinationData = document.getElementById("publicDestinationList");
             if (pageNum > 0) {
@@ -1739,6 +1737,7 @@ function getPublicDestinations(pageNum, quantity){
                 destElement.innerText = destination.destName + " | " + destination.destType + " | " + destination.country
                 destinationData.appendChild(destElement);
             }
+            createDestinationViews(destData.destinations, destData.travellerTypeMap)
             if (publicCount > 0) {
                 addPagination(publicCount, pageNum, null, "publicDestinationList");
             }
@@ -1759,6 +1758,7 @@ function getPrivateDestinations(pageNum, quantity){
         data: data,
         contentType: 'application/json',
         success: (destData) => {
+
             let privateCount = destData.totalCountPrivate;
             let destinationData = document.getElementById("privateDestinationList");
             if (pageNum > 0) {
@@ -1774,6 +1774,7 @@ function getPrivateDestinations(pageNum, quantity){
                 destElement.innerText = destination.destName + " | " + destination.destType + " | " + destination.country
                 destinationData.appendChild(destElement);
             }
+            createDestinationViews(destData.destinations, destData.travellerTypeMap);
             if (privateCount > 0) {
                 addPagination(privateCount, pageNum, null, "privateDestinationList");
             }
@@ -1910,6 +1911,171 @@ function addPagination(count, pageNum, search, tab) {
     }
     item.appendChild(pageButton);
     pagination.appendChild(item);
+}
+
+function createDestinationViews(destinations, travellerTypes){
+
+    let singleDestinationContainer = document.getElementById('singleDestinationContainer');
+
+    for(let destination of destinations) {
+        let singleDestination = document.createElement('div');
+        singleDestination.setAttribute("class", "singleDestination");
+        singleDestination.setAttribute("id", "singleDestination_"+destination.destid);
+
+        let nameRow = document.createElement('div');
+        nameRow.setAttribute("class", "row");
+        let nameLabel = document.createElement('label');
+        nameLabel.setAttribute("class", "col-sm-3 control-label");
+        nameLabel.innerText = "Name";
+
+        let nameDiv = document.createElement('div');
+        nameDiv.setAttribute("class", "col-sm-9");
+
+        let nameSpan = document.createElement('span');
+        nameSpan.innerText = destination.destName;
+
+        nameDiv.appendChild(nameSpan);
+        nameRow.appendChild(nameLabel);
+        nameRow.appendChild(nameDiv);
+
+        singleDestination.appendChild(nameRow);
+
+
+        let typeRow = document.createElement('div');
+        typeRow.setAttribute("class", "row");
+        let typeLabel = document.createElement('label');
+        typeLabel.setAttribute("class", "col-sm-3 control-label");
+        typeLabel.innerText = "Type";
+
+        let typeDiv = document.createElement('div');
+        typeDiv.setAttribute("class", "col-sm-9");
+
+        let typeSpan = document.createElement('span');
+        typeSpan.innerText = destination.destType;
+
+        typeDiv.appendChild(typeSpan);
+        typeRow.appendChild(typeLabel);
+        typeRow.appendChild(typeDiv);
+
+        singleDestination.appendChild(typeRow);
+
+
+        let travellerRow = document.createElement('div');
+        travellerRow.setAttribute("class", "row");
+        let travellerLabel = document.createElement('label');
+        travellerLabel.setAttribute("class", "col-sm-3 control-label");
+        travellerLabel.innerText = "Traveller Types";
+
+        let travellerDiv = document.createElement('div');
+        travellerDiv.setAttribute("class", "col-sm-9");
+
+        for (let travellerType of travellerTypes[destination.destId]) {
+
+            let travellerSpan = document.createElement('span');
+            travellerSpan.innerText = travellerType.travellerTypeName;
+            travellerSpan.style.marginRight = '6px';
+
+            travellerDiv.appendChild(travellerSpan);
+        }
+
+
+        travellerRow.appendChild(travellerLabel);
+        travellerRow.appendChild(travellerDiv);
+        singleDestination.appendChild(travellerRow);
+
+        let countryRow = document.createElement('div');
+        countryRow.setAttribute("class", "row");
+        let countyLabel = document.createElement('label');
+        countyLabel.setAttribute("class", "col-sm-3 control-label");
+        countyLabel.innerText = "Country";
+
+        let countryDiv = document.createElement('div');
+        countryDiv.setAttribute("class", "col-sm-9");
+
+        let countrySpan = document.createElement('span');
+        countrySpan.innerText = destination.country;
+
+        countryDiv.appendChild(countrySpan);
+        countryRow.appendChild(countyLabel);
+        countryRow.appendChild(countryDiv);
+
+        singleDestination.appendChild(countryRow);
+
+        let districtRow = document.createElement('div');
+        districtRow.setAttribute("class", "row");
+        let districtLabel = document.createElement('label');
+        districtLabel.setAttribute("class", "col-sm-3 control-label");
+        districtLabel.innerText = "District";
+
+        let districtDiv = document.createElement('div');
+        districtDiv.setAttribute("class", "col-sm-9");
+
+        let districtSpan = document.createElement('span');
+        districtSpan.innerText = destination.district;
+
+        districtDiv.appendChild(districtSpan);
+        districtRow.appendChild(districtLabel);
+        districtRow.appendChild(districtDiv);
+
+        singleDestination.appendChild(districtRow);
+
+        let latitudeRow = document.createElement('div');
+        latitudeRow.setAttribute("class", "row");
+        let latitudeLabel = document.createElement('label');
+        latitudeLabel.setAttribute("class", "col-sm-3 control-label");
+        latitudeLabel.innerText = "Latitude";
+
+        let latitudeDiv = document.createElement('div');
+        latitudeDiv.setAttribute("class", "col-sm-9");
+
+        let latitudeSpan = document.createElement('span');
+        latitudeSpan.innerText = destination.latitude;
+
+        latitudeDiv.appendChild(latitudeSpan);
+        latitudeRow.appendChild(latitudeLabel);
+        latitudeRow.appendChild(latitudeDiv);
+
+        singleDestination.appendChild(latitudeRow);
+
+        let longitudeRow = document.createElement('div');
+        longitudeRow.setAttribute("class", "row");
+        let longitudeLabel = document.createElement('label');
+        longitudeLabel.setAttribute("class", "col-sm-3 control-label");
+        longitudeLabel.innerText = "Longitude";
+
+        let longitudeDiv = document.createElement('div');
+        longitudeDiv.setAttribute("class", "col-sm-9");
+
+        let longitudeSpan = document.createElement('span');
+        longitudeSpan.innerText = destination.longitude;
+
+        longitudeDiv.appendChild(longitudeSpan);
+        longitudeRow.appendChild(longitudeLabel);
+        longitudeRow.appendChild(longitudeDiv);
+
+        singleDestination.appendChild(longitudeRow);
+
+        let buttonContainer = document.createElement('div');
+        buttonContainer.setAttribute('class', 'destBtnContainer');
+
+        let viewButton = document.createElement('a');
+        viewButton.setAttribute('class', 'btn btn-primary');
+        viewButton.href = "/users/destinations/view/" + destination.destId;
+        viewButton.innerText = "View";
+
+        let editButton = document.createElement('a');
+        editButton.setAttribute('class', 'btn btn-primary');
+        editButton.href = "/users/destinations/edit/" + destination.destId;
+        editButton.innerText = "Edit";
+
+        buttonContainer.appendChild(viewButton);
+        buttonContainer.appendChild(editButton);
+        singleDestination.appendChild(buttonContainer);
+
+        singleDestinationContainer.appendChild(singleDestination);
+        singleDestination.style.display = "none";
+
+    }
 }
 
 

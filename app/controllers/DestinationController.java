@@ -1141,9 +1141,19 @@ public class DestinationController extends Controller {
                 .getPaginatedPublicDestinations(offset, quantity);
 
         ObjectNode result = (new ObjectMapper()).createObjectNode();
+
+
         result.set("destinations", Json.toJson(destinations));
         result.put("totalCountPublic", Ebean.find(Destination.class).where()
                 .eq("destIsPublic", true) .findCount());
+
+        HashMap<Integer, Set<TravellerType>> destinationTrallerTypes = new HashMap();
+
+        for (Destination destination : destinations) {
+            destinationTrallerTypes.put(destination.getDestId(), destination.getTravellerTypes());
+        }
+
+        result.put("travellerTypeMap", Json.toJson(destinationTrallerTypes));
 
         return ok(Json.toJson(result));
     }
@@ -1181,6 +1191,14 @@ public class DestinationController extends Controller {
         result.put("totalCountPrivate", Destination.find().query().where().eq("user", user)
                 .and().eq("destIsPublic", false)
                 .findCount());
+
+        HashMap<Integer, Set<TravellerType>> destinationTrallerTypes = new HashMap();
+
+        for (Destination destination : destinations) {
+            destinationTrallerTypes.put(destination.getDestId(), destination.getTravellerTypes());
+        }
+
+        result.put("travellerTypeMap", Json.toJson(destinationTrallerTypes));
 
         return ok(Json.toJson(result));
     }
@@ -1281,6 +1299,13 @@ public class DestinationController extends Controller {
         result.put("totalCountPublic", Destination.find().query().where().like("destName", "%" + name + "%").where().eq("destIsPublic", true).findCount());
         result.put("totalCountPrivate", Destination.find().query().where().like("destName", "%" + name + "%").where().eq("destIsPublic", false).where().eq("user", user).findCount());
 
+        HashMap<Integer, Set<TravellerType>> destinationTrallerTypes = new HashMap();
+
+        for (Destination destination : destinations) {
+            destinationTrallerTypes.put(destination.getDestId(), destination.getTravellerTypes());
+        }
+
+        result.put("travellerTypeMap", Json.toJson(destinationTrallerTypes));
 
         return ok(Json.toJson(result));
     }

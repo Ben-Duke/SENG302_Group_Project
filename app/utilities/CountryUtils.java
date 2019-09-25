@@ -65,8 +65,6 @@ public class CountryUtils {
 
             if (lastUpdated.compareTo(yesterdayDate) < 0) {
                 reloadCountries();
-            } else {
-                validateUsedCountries();
             }
 
         }

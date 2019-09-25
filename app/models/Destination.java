@@ -316,6 +316,7 @@ public class Destination extends TaggableModel implements AlbumOwner, MediaOwner
         if (!this.district.equals(other.getDistrict())) {
             return false;
         }
+
         if (Math.round(this.latitude*1000) != Math.round(other.getLatitude()*1000)) {
             return false;
         }

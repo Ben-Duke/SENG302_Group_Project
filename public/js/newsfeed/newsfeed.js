@@ -1,5 +1,7 @@
 let lastScrollY_GLOBAL = window.scrollY;
 let hasNewsFeedFinishedInnitialLoad_GLOBAL = false;
+let lazyLoadingFinished = false;
+let eventsResponsesLoaded = new Set();
 
 let oldestDateTimeOfLoadedEventResponse_GLOBAL = getCurrentDate();
 let oldestDateTimeOfLoadedMedia = undefined;
@@ -53,10 +55,16 @@ function getAndLoadMoreNewsFeedItems() {
         success: function (result) {
             const responses = result.responses;
             for (let response of responses) {
-                createNewsFeedEventResponseComponent(response.event, response.user, response.responseDateTime)
+                // Add response component if it has not already been added
+                if (!eventsResponsesLoaded.has(response.responseId)) {
+                    eventsResponsesLoaded.add(response.responseId);
+                    createNewsFeedEventResponseComponent(response.event, response.user, response.responseDateTime)
+                }
             }
 
-            if (0 < responses.length) {
+            if (responses.length === 0) {
+                lazyLoadingFinished = true;
+            } else {
                 oldestDateTimeOfLoadedEventResponse_GLOBAL = responses[responses.length - 1].responseDateTime;
             }
 
@@ -124,7 +132,7 @@ function isLazyLoadingTriggered() {
  * @param event
  */
 function processScrollEvent(event) {
-    if (isLazyLoadingTriggered()) {
+    if (isLazyLoadingTriggered() && !lazyLoadingFinished) {
         getAndLoadMoreNewsFeedItems();
     }
 }

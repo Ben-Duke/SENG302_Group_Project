@@ -8,6 +8,7 @@ import models.User;
 import java.util.ArrayList;
 import java.util.List;
 
+import static io.ebean.Expr.ilike;
 import static io.ebean.Expr.like;
 
 /**
@@ -26,11 +27,30 @@ public class TripAccessor {
      */
     public static List<Trip> getTripsByName(String name, User user, Integer offset, Integer quantity) {
         return Trip.find().query().
-                where().eq("user", user)
-                .or(like("trip_name", "%" + name + "%"),
-                        like("trip_name", "%" + name.toUpperCase() + "%"))
-                .setFirstRow(offset).setMaxRows(quantity).findList();
+                where()
+                .eq("user", user)
+                .and()
+                .ilike("trip_name", "%" + name + "%")
+                .setFirstRow(offset)
+                .setMaxRows(quantity).findList();
 
+    }
+
+    /**
+     * Gets the total count of matching trips based on a trip name and user.
+     *
+     * @param name The trip name to search for
+     * @param user The user to search trips for
+     * @return An int representing the total number of matching trips for that
+     * name and user.
+     */
+    public static int getTripsByNameTotalCount(String name, User user) {
+        return Trip.find().query().
+                where()
+                .eq("user", user)
+                .and()
+                .ilike("trip_name", "%" + name + "%")
+                .findCount();
     }
 
     public static Integer getTotalUserTripCount(User user) {

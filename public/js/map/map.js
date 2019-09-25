@@ -11,6 +11,7 @@ let isNewTrip = false;
 let geoCoder;
 let destMarker;
 let tripPageNum = 0;
+let maxTripPageNum_GLOBAL = undefined;
 let paginatedTripData;
 
 
@@ -137,10 +138,7 @@ function initMapLegend() {
 }
 
 async function createNewPaginatedTrip() {
-    let paginationList = document.getElementById("trip-pagination-list");
-    while (paginationList.firstChild) {
-        paginationList.removeChild(paginationList.firstChild);
-    }
+
 
 
     let tripJSON = await getPaginatedTripResults(tripPageNum, 5);
@@ -1138,6 +1136,7 @@ function initPlacesAutocompleteSearch() {
                         document.getElementById('createDestination').style.display = 'none';
                     }
                     $('[href="#destinationsTab"]').tab('show');
+
                     displayDestination(data, coordinates.lat(), coordinates.lng());
                 }
                 else if (xhr.status == 201) {
@@ -1483,11 +1482,14 @@ $("#tripSearchInput").keyup(async function()
 {
     let searchInput = document.getElementById("tripSearchInput").value;
     if(searchInput != "") {
-        let data = {offset: 0,
-                quantity: 5};
+        let data = {
+            offset: 0,
+            quantity: 5,
+            searchInput: searchInput
+        };
 
         $.ajax({
-            url: '/users/trips/matching/' + searchInput,
+            url: '/users/trips/matching/search',
             data: data,
             method: "GET",
             success: function (res) {
@@ -1495,7 +1497,7 @@ $("#tripSearchInput").keyup(async function()
                 while (paginationList.firstChild) {
                     paginationList.removeChild(paginationList.firstChild);
                 }
-                if (tripCount > 0) {
+                if (res.tripCount > 0) {
                     setTripPaginationLinks(res.tripCount, 5, searchInput);
                 }
                 tripPageNum = 1;
@@ -1508,10 +1510,6 @@ $("#tripSearchInput").keyup(async function()
             }
         });
     } else {
-        let paginationList = document.getElementById("trip-pagination-list");
-        while (paginationList.firstChild) {
-            paginationList.removeChild(paginationList.firstChild);
-        }
         tripPageNum = 1;
         let tripJSON = await getPaginatedTripResults(tripPageNum, 5);
         let trips  = tripJSON.trips;
@@ -1563,6 +1561,7 @@ function searchByKeyword(currentPageNum, tab) {
                         }
 
                     }
+                    createDestinationViews(destData.destinations, destData.travellerTypeMap)
                     if (publicCount > 0) {
                         addPagination(publicCount, currentPageNum, searchInput, "publicDestinationList");
                     }
@@ -1613,16 +1612,51 @@ $("#submit").click(function(e){
         latitude: $("#latitude").val(),
         longitude: $("#longitude").val(),
         destType: $("#destType").val()
-    }
+    };
+
     $.ajax({
         type: 'POST',
         url: '/users/destinations/save',
         contentType: 'application/json',
         data: JSON.stringify(formData),
-        dataType: 'text',
         timeout: 5000,
         success: function(response) {
-            location.reload()
+            getPrivateDestinations(1, 20, null);
+            // location.reload()
+            let marker = new google.maps.Marker({
+                position: {
+                    lat: response.latitude,
+                    lng: response.longitude
+                },
+                map: window.globalMap,
+                icon: getMarkerIcon(response.isPublic)
+            });
+
+            let infoWindow = new google.maps.InfoWindow({
+                content: getMapInfoWindowHTML(response)
+            });
+
+            // markers.push(marker);
+
+            let index = globalMarkers.length;
+
+            //make the marker and infoWindow globals (persist in browser session)
+            window.globalMarkers.push({
+                marker: marker,
+                infoWindow: infoWindow,
+                isClicked: false
+            });
+
+            initMarkerEventHandlers(index);
+            initInforWindowEventHandlers(index);
+
+
+            document.getElementById("destName").value = "";
+            document.getElementById("country").value = "";
+            document.getElementById("district").value = "";
+            document.getElementById("latitude").value = "";
+            document.getElementById("longitude").value = "";
+            document.getElementById("destType").value = "";
         },
         error: function(response) {
             let responseData = JSON.parse(response.responseText);
@@ -1671,6 +1705,7 @@ $("#submit").click(function(e){
         }
 
     });
+
 });
 
 function getPublicDestinations(pageNum, quantity){
@@ -1684,6 +1719,7 @@ function getPublicDestinations(pageNum, quantity){
         data: data,
         contentType: 'application/json',
         success: (destData) => {
+
             let publicCount = destData.totalCountPublic;
             let destinationData = document.getElementById("publicDestinationList");
             if (pageNum > 0) {
@@ -1699,6 +1735,7 @@ function getPublicDestinations(pageNum, quantity){
                 destElement.innerText = destination.destName + " | " + destination.destType + " | " + destination.country
                 destinationData.appendChild(destElement);
             }
+            createDestinationViews(destData.destinations, destData.travellerTypeMap)
             if (publicCount > 0) {
                 addPagination(publicCount, pageNum, null, "publicDestinationList");
             }
@@ -1719,6 +1756,7 @@ function getPrivateDestinations(pageNum, quantity){
         data: data,
         contentType: 'application/json',
         success: (destData) => {
+
             let privateCount = destData.totalCountPrivate;
             let destinationData = document.getElementById("privateDestinationList");
             if (pageNum > 0) {
@@ -1734,6 +1772,7 @@ function getPrivateDestinations(pageNum, quantity){
                 destElement.innerText = destination.destName + " | " + destination.destType + " | " + destination.country
                 destinationData.appendChild(destElement);
             }
+            createDestinationViews(destData.destinations, destData.travellerTypeMap);
             if (privateCount > 0) {
                 addPagination(privateCount, pageNum, null, "privateDestinationList");
             }
@@ -1872,34 +1911,208 @@ function addPagination(count, pageNum, search, tab) {
     pagination.appendChild(item);
 }
 
+function createDestinationViews(destinations, travellerTypes){
+
+    let singleDestinationContainer = document.getElementById('singleDestinationContainer');
+
+    for(let destination of destinations) {
+        let singleDestination = document.createElement('div');
+        singleDestination.setAttribute("class", "singleDestination");
+        singleDestination.setAttribute("id", "singleDestination_"+destination.destid);
+
+        let nameRow = document.createElement('div');
+        nameRow.setAttribute("class", "row");
+        let nameLabel = document.createElement('label');
+        nameLabel.setAttribute("class", "col-sm-3 control-label");
+        nameLabel.innerText = "Name";
+
+        let nameDiv = document.createElement('div');
+        nameDiv.setAttribute("class", "col-sm-9");
+
+        let nameSpan = document.createElement('span');
+        nameSpan.innerText = destination.destName;
+
+        nameDiv.appendChild(nameSpan);
+        nameRow.appendChild(nameLabel);
+        nameRow.appendChild(nameDiv);
+
+        singleDestination.appendChild(nameRow);
 
 
+        let typeRow = document.createElement('div');
+        typeRow.setAttribute("class", "row");
+        let typeLabel = document.createElement('label');
+        typeLabel.setAttribute("class", "col-sm-3 control-label");
+        typeLabel.innerText = "Type";
 
-async function nextTripPage(search) {
-    jumpToTripPage(tripPageNum + 1, search);
+        let typeDiv = document.createElement('div');
+        typeDiv.setAttribute("class", "col-sm-9");
+
+        let typeSpan = document.createElement('span');
+        typeSpan.innerText = destination.destType;
+
+        typeDiv.appendChild(typeSpan);
+        typeRow.appendChild(typeLabel);
+        typeRow.appendChild(typeDiv);
+
+        singleDestination.appendChild(typeRow);
+
+
+        let travellerRow = document.createElement('div');
+        travellerRow.setAttribute("class", "row");
+        let travellerLabel = document.createElement('label');
+        travellerLabel.setAttribute("class", "col-sm-3 control-label");
+        travellerLabel.innerText = "Traveller Types";
+
+        let travellerDiv = document.createElement('div');
+        travellerDiv.setAttribute("class", "col-sm-9");
+
+        for (let travellerType of travellerTypes[destination.destId]) {
+
+            let travellerSpan = document.createElement('span');
+            travellerSpan.innerText = travellerType.travellerTypeName;
+            travellerSpan.style.marginRight = '6px';
+
+            travellerDiv.appendChild(travellerSpan);
+        }
+
+
+        travellerRow.appendChild(travellerLabel);
+        travellerRow.appendChild(travellerDiv);
+        singleDestination.appendChild(travellerRow);
+
+        let countryRow = document.createElement('div');
+        countryRow.setAttribute("class", "row");
+        let countyLabel = document.createElement('label');
+        countyLabel.setAttribute("class", "col-sm-3 control-label");
+        countyLabel.innerText = "Country";
+
+        let countryDiv = document.createElement('div');
+        countryDiv.setAttribute("class", "col-sm-9");
+
+        let countrySpan = document.createElement('span');
+        countrySpan.innerText = destination.country;
+
+        countryDiv.appendChild(countrySpan);
+        countryRow.appendChild(countyLabel);
+        countryRow.appendChild(countryDiv);
+
+        singleDestination.appendChild(countryRow);
+
+        let districtRow = document.createElement('div');
+        districtRow.setAttribute("class", "row");
+        let districtLabel = document.createElement('label');
+        districtLabel.setAttribute("class", "col-sm-3 control-label");
+        districtLabel.innerText = "District";
+
+        let districtDiv = document.createElement('div');
+        districtDiv.setAttribute("class", "col-sm-9");
+
+        let districtSpan = document.createElement('span');
+        districtSpan.innerText = destination.district;
+
+        districtDiv.appendChild(districtSpan);
+        districtRow.appendChild(districtLabel);
+        districtRow.appendChild(districtDiv);
+
+        singleDestination.appendChild(districtRow);
+
+        let latitudeRow = document.createElement('div');
+        latitudeRow.setAttribute("class", "row");
+        let latitudeLabel = document.createElement('label');
+        latitudeLabel.setAttribute("class", "col-sm-3 control-label");
+        latitudeLabel.innerText = "Latitude";
+
+        let latitudeDiv = document.createElement('div');
+        latitudeDiv.setAttribute("class", "col-sm-9");
+
+        let latitudeSpan = document.createElement('span');
+        latitudeSpan.innerText = destination.latitude;
+
+        latitudeDiv.appendChild(latitudeSpan);
+        latitudeRow.appendChild(latitudeLabel);
+        latitudeRow.appendChild(latitudeDiv);
+
+        singleDestination.appendChild(latitudeRow);
+
+        let longitudeRow = document.createElement('div');
+        longitudeRow.setAttribute("class", "row");
+        let longitudeLabel = document.createElement('label');
+        longitudeLabel.setAttribute("class", "col-sm-3 control-label");
+        longitudeLabel.innerText = "Longitude";
+
+        let longitudeDiv = document.createElement('div');
+        longitudeDiv.setAttribute("class", "col-sm-9");
+
+        let longitudeSpan = document.createElement('span');
+        longitudeSpan.innerText = destination.longitude;
+
+        longitudeDiv.appendChild(longitudeSpan);
+        longitudeRow.appendChild(longitudeLabel);
+        longitudeRow.appendChild(longitudeDiv);
+
+        singleDestination.appendChild(longitudeRow);
+
+        let buttonContainer = document.createElement('div');
+        buttonContainer.setAttribute('class', 'destBtnContainer');
+
+        let viewButton = document.createElement('a');
+        viewButton.setAttribute('class', 'btn btn-primary');
+        viewButton.href = "/users/destinations/view/" + destination.destId;
+        viewButton.innerText = "View";
+
+        let editButton = document.createElement('a');
+        editButton.setAttribute('class', 'btn btn-primary');
+        editButton.href = "/users/destinations/edit/" + destination.destId;
+        editButton.innerText = "Edit";
+
+        buttonContainer.appendChild(viewButton);
+        buttonContainer.appendChild(editButton);
+        singleDestination.appendChild(buttonContainer);
+
+        singleDestinationContainer.appendChild(singleDestination);
+        singleDestination.style.display = "none";
+
+    }
 }
 
-async function previousTripPage(search) {
+
+
+
+async function nextTripPage() {
+    const searchInput = document.getElementById("destSearchInput").value;
+    const newTripPage = tripPageNum + 1;
+    if (newTripPage <= maxTripPageNum_GLOBAL) {
+        jumpToTripPage(newTripPage, searchInput);
+    }
+}
+
+async function previousTripPage() {
+    const searchInput = document.getElementById("destSearchInput").value;
     let newTripPageNumber = tripPageNum;
     if(tripPageNum > 1) {
         newTripPageNumber -= 1;
-    } else {
-        newTripPageNumber = 1;
+        jumpToTripPage(newTripPageNumber, searchInput);
     }
-    jumpToTripPage(newTripPageNumber, search);
 }
 
-async function jumpToTripPage(pageNumber, search) {
+async function jumpToTripPage(pageNumber) {
+    if (pageNumber === tripPageNum) {
+        return // do nothing
+    }
+
+    const searchInput = document.getElementById("destSearchInput").value;
+
     document.getElementById("trip-pagination-link-" + tripPageNum).removeAttribute("class");
 
     tripPageNum = pageNumber;
     document.getElementById("trip-pagination-link-" + tripPageNum).setAttribute("class", "active");
 
-    if (search == undefined) {
+    if (searchInput == undefined || searchInput == null || searchInput.length === 0) {
         let newlyDisplayedTrips = await getPaginatedTripResults(tripPageNum, 5);
         displayTripTablePage(newlyDisplayedTrips.trips);
     } else {
-        let newlyDisplayedTrips = await getPaginatedTripSearchResults(tripPageNum, 5, search);
+        let newlyDisplayedTrips = await getPaginatedTripSearchResults(tripPageNum, 5, searchInput);
         displayTripTablePage(newlyDisplayedTrips.trips);
     }
 
@@ -2123,11 +2336,13 @@ async function getPaginatedTripResults(pageNum, quantity) {
 
 async function getPaginatedTripSearchResults(pageNum, quantity, searchInput) {
     const offset = (pageNum - 1) * quantity;
-    let data = {offset: offset,
-                    quantity: quantity};
+    let data = {
+        offset: offset,
+        quantity: quantity,
+        searchInput: searchInput};
 
     let trips = await $.ajax({
-        url: '/users/trips/matching/' + searchInput,
+        url: '/users/trips/matching/search',
         data: data,
         method: "GET"
     });
@@ -2139,21 +2354,26 @@ async function getPaginatedTripSearchResults(pageNum, quantity, searchInput) {
 
 function setTripPaginationLinks(tripCount, perPage, search) {
     let paginationList = document.getElementById("trip-pagination-list");
+    while (paginationList.firstChild) {
+        paginationList.removeChild(paginationList.firstChild);
+    }
+
     let previousArrowLink = document.createElement("li");
     let previousArrow = document.createElement("a");
     previousArrow.setAttribute("id", "previous-trip");
-    previousArrow.setAttribute("onclick","previousTripPage(" + search + ")");
+    previousArrow.setAttribute("onclick","previousTripPage()");
     previousArrow.innerText = "<";
     previousArrowLink.appendChild(previousArrow);
     let nextArrowLink = document.createElement("li");
     let nextArrow = document.createElement("a");
     nextArrow.setAttribute("id", "next-trip");
-    nextArrow.setAttribute("onclick","nextTripPage(" + search + ")");
+    nextArrow.setAttribute("onclick","nextTripPage()");
     nextArrow.innerText = ">";
     nextArrowLink.appendChild(nextArrow);
     paginationList.appendChild(previousArrowLink);
 
     let numPages = Math.ceil(tripCount/perPage);
+    maxTripPageNum_GLOBAL = numPages;
     let lastPageCount = tripCount % perPage;
     if (lastPageCount == 0) {
         lastPageCount = perPage;
@@ -2169,7 +2389,7 @@ function setTripPaginationLinks(tripCount, perPage, search) {
         let pageNumberLink = document.createElement("a");
         pageNumberLink.innerText = i.toString();
 
-        pageNumberLink.setAttribute("onclick", "jumpToTripPage(" + i + "," + search + ")");
+        pageNumberLink.setAttribute("onclick", "jumpToTripPage(" + i + ")");
         pageNumber.appendChild(pageNumberLink);
         paginationList.appendChild(pageNumber);
     }

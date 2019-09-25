@@ -603,7 +603,7 @@ public class TripControllerTest extends BaseTestWithApplicationAndDatabase {
 
     @Test
     public void getTripsByNameOne () {
-        String urlFormat = "/users/trips/matching/Trip?offset=%d&quantity=%d";
+        String urlFormat = "/users/trips/matching/search?searchInput=Trip&offset=%d&quantity=%d";
         String url = String.format(urlFormat, 0, 1);
 
         Http.RequestBuilder request = Helpers.fakeRequest()

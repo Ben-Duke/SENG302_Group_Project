@@ -13,7 +13,10 @@
  * @param user the user who uploaded the media
  * @param responseTime the time that the user uploaded the media
  */
-function createNewsFeedMediaComponent(media, user, timeOfUpload) {
+function createNewsFeedMediaComponent(media, user, responseTime) {
+
+    const path = "/users/home/servePicture/";
+
     let newsContainer = document.getElementById("newsContainer");
 
     let newsItemDiv = document.createElement("div");
@@ -23,9 +26,12 @@ function createNewsFeedMediaComponent(media, user, timeOfUpload) {
     newsHeaderDiv.setAttribute("class", "newsHeader");
     let userProfileImg = document.createElement("img");
 
-    userProfileImg.setAttribute("class", "userProfileImg");
-    userProfileImg.setAttribute("class", "img-circle");
-    userProfileImg.src = user.profilePicUrl;
+    userProfileImg.setAttribute("class", "img-circle userProfileImg");
+    if (user.profilePicUrl === "null") {
+        userProfileImg.src = "/assets/images/Generic.png";
+    } else {
+        userProfileImg.src = path + encodeURIComponent(user.profilePicUrl);
+    }
 
     let newsTitle = document.createElement("span");
     newsTitle.setAttribute("class", "newsTitle");
@@ -46,7 +52,7 @@ function createNewsFeedMediaComponent(media, user, timeOfUpload) {
     userPhotoImg.setAttribute("class", "userPhotoImg");
     //Might not work. albumView.js line 349 for reference.
     // Maybe ask Priyesh on how to do this.
-    userPhotoImg.src = media.url;
+    userPhotoImg.src = path + encodeURIComponent(media);
 
     newsBodyDiv.appendChild(userPhotoImg);
 

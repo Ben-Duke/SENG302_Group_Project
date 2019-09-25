@@ -138,10 +138,7 @@ function initMapLegend() {
 }
 
 async function createNewPaginatedTrip() {
-    let paginationList = document.getElementById("trip-pagination-list");
-    while (paginationList.firstChild) {
-        paginationList.removeChild(paginationList.firstChild);
-    }
+
 
 
     let tripJSON = await getPaginatedTripResults(tripPageNum, 5);
@@ -1512,10 +1509,7 @@ $("#tripSearchInput").keyup(async function()
             }
         });
     } else {
-        let paginationList = document.getElementById("trip-pagination-list");
-        while (paginationList.firstChild) {
-            paginationList.removeChild(paginationList.firstChild);
-        }
+
         tripPageNum = 1;
         let tripJSON = await getPaginatedTripResults(tripPageNum, 5);
         let trips  = tripJSON.trips;
@@ -2150,6 +2144,10 @@ async function getPaginatedTripSearchResults(pageNum, quantity, searchInput) {
 
 function setTripPaginationLinks(tripCount, perPage, search) {
     let paginationList = document.getElementById("trip-pagination-list");
+    while (paginationList.firstChild) {
+        paginationList.removeChild(paginationList.firstChild);
+    }
+
     let previousArrowLink = document.createElement("li");
     let previousArrow = document.createElement("a");
     previousArrow.setAttribute("id", "previous-trip");

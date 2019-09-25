@@ -558,9 +558,8 @@ INSERT INTO `visit` (`visitid`, `visitorder`, `destination`, `trip`, `arrival`, 
 -- Delete in reverse order to the order data was added to avoid violating
 -- foreign key constraints
 
-delete from event_response;
 
-delete from event;
+
 
 delete from follow;
 
@@ -603,6 +602,10 @@ delete from destination_traveller_type;
 delete from traveller_type;
 
 delete from album;
+
+delete from event_response;
+
+delete from event;
 
 delete from destination;
 

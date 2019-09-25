@@ -21,7 +21,6 @@ import utilities.EventFindaUtilities;
 import utilities.UtilityFunctions;
 import views.html.users.events.*;
 
-import javax.rmi.CORBA.Util;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;

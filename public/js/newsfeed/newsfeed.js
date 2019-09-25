@@ -3,6 +3,8 @@ let hasNewsFeedFinishedInitialLoad_GLOBAL = false;
 
 let lazyLoadingFinished = false;
 
+let newsFeedItems_GLOBAL = [];
+
 const eventsResponsesLoaded = new Set();
 const mediaLoaded = new Set();
 
@@ -49,30 +51,37 @@ function parseDate(dateStr) {
     return new Date(dateString)
 }
 
+function depopulateNewsFeed() {
+    const newsContainer = document.getElementById('newsContainer');
+    while (newsContainer.firstChild) {
+        newsContainer.removeChild(newsContainer.firstChild)
+    }
+}
+
 function populateNewsFeed(responses, mediaResult) {
-    let newsFeedItems = [];
+    depopulateNewsFeed();
     for (let photo of mediaResult) {
         photo.dateKey = parseDate(photo.date_created);
         if (!mediaLoaded.has(photo.url)) {
             mediaLoaded.add(photo.url);
-            newsFeedItems.push(photo);
+            newsFeedItems_GLOBAL.push(photo);
         }
     }
     for (let eventResponse of responses) {
         if (!eventsResponsesLoaded.has(eventResponse.responseId)) {
             eventResponse.dateKey = parseDate(eventResponse.responseDateTime);
             eventsResponsesLoaded.add(eventResponse.responseId);
-            newsFeedItems.push(eventResponse);
+            newsFeedItems_GLOBAL.push(eventResponse);
         }
     }
-    newsFeedItems.sort((b, a) => {
+    newsFeedItems_GLOBAL.sort((b, a) => {
         if (a.dateKey > b.dateKey)
             return 1;
         else if (a.dateKey < b.dateKey)
             return -1;
         return 0
     });
-    for (let item of newsFeedItems) {
+    for (let item of newsFeedItems_GLOBAL) {
         if (item.hasOwnProperty("responseId")) {
             createNewsFeedEventResponseComponent(item.event, item.user, item.responseDateTime)
         }

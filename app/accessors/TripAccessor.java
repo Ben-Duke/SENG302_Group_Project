@@ -26,9 +26,8 @@ public class TripAccessor {
      */
     public static List<Trip> getTripsByName(String name, User user, Integer offset, Integer quantity) {
         return Trip.find().query().
-                where().eq("user", user)
-                .or(like("trip_name", "%" + name + "%"),
-                        like("trip_name", "%" + name.toUpperCase() + "%"))
+                where().eq("user", user).
+                icontains("trip_name", name)
                 .setFirstRow(offset).setMaxRows(quantity).findList();
 
     }

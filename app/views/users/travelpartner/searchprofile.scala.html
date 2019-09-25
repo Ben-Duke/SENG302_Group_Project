@@ -16,33 +16,35 @@
         <li id="followingTabListItem"><a data-toggle="tab" href="#followingTab">Following</a></li>
         <li id="followersTabListItem"><a data-toggle="tab" href="#followerTab">Followers</a></li>
     </ul>
-        <br>
-        <label for="travel-partner-name-filter">Search by name <input type ="search" value="" checked id="travel-partner-name-filter"></label>
-        <br>
-        <label class="checkbox-inline"><input type="checkbox" value="" checked id="travel-partner-male-filter">Male</label>
-        <label class="checkbox-inline"><input type="checkbox" value="" checked id="travel-partner-female-filter">Female</label>
-        <label class="checkbox-inline"><input type="checkbox" value="" checked id="travel-partner-other-filter">Other</label>
-        <br><br>
-        <div class="form-group">
-            <label for="travel-partner-nationality-filter">Nationality</label>
-            <select class="form-control" id="travel-partner-nationality-filter">
 
-            </select>
-        </div>
-        <label for="travel-partner-born-after-filter">Born after:</label>
-
-        <input type="date" id="travel-partner-born-after-filter"
-        min="1900-01-01" max="2020-01-01">
-        <label for="travel-partner-born-before-filter">Born before:</label>
-
-        <input type="date" id="travel-partner-born-before-filter"
-        min="1900-01-01" max="2020-01-01">
-        <br><br>
-        <button type='button' class="btn btn-primary" onclick="searchUsers()">
-            Search travellers
-        </button>
     <div class="tab-content">
         <div id="searchResultsTable" class="tab-content tab-pane fade in active" >
+            <br>
+            <label for="travel-partner-name-filter">Search by name <input type ="search" value="" checked id="travel-partner-name-filter"></label>
+            <br>
+            <label class="checkbox-inline"><input type="checkbox" value="" checked id="travel-partner-male-filter">Male</label>
+            <label class="checkbox-inline"><input type="checkbox" value="" checked id="travel-partner-female-filter">Female</label>
+            <label class="checkbox-inline"><input type="checkbox" value="" checked id="travel-partner-other-filter">Other</label>
+            <br><br>
+            <div class="form-group">
+                <label for="travel-partner-nationality-filter">Nationality</label>
+                <select class="form-control" id="travel-partner-nationality-filter">
+
+                </select>
+            </div>
+            <label for="travel-partner-born-after-filter">Born after:</label>
+
+            <input type="date" id="travel-partner-born-after-filter"
+            min="1900-01-01" max="2020-01-01">
+            <label for="travel-partner-born-before-filter">Born before:</label>
+
+            <input type="date" id="travel-partner-born-before-filter"
+            min="1900-01-01" max="2020-01-01">
+            <br><br>
+            <button type='button' class="btn btn-primary" onclick="searchUsers()">
+                Search travellers
+            </button>
+            <br>
                 <table class="table" id="search-table">
                     <thead class="thead-dark">
                         <tr>
@@ -62,23 +64,26 @@
         </div>
 
         <div id="followingTab" class="tab-content tab-pane fade">
-                <table class="table" id="follower-table">
-                    <thead class="thead-dark">
-                        <tr>
-                            <th scope="col" onClick="sortTable(0, 'follower-table')" style="cursor: pointer;">Name</th>
-                            <th scope="col" onClick="sortTable(1, 'follower-table')" style="cursor: pointer;">Gender</th>
-                            <th scope="col" onClick="sortTable(2, 'follower-table')" style="cursor: pointer;">Nationalities</th>
-                            <th scope="col" onClick="sortTable(3, 'follower-table')" style="cursor: pointer;">DOB</th>
-                            <th scope="col" onClick="sortTable(4, 'follower-table')" style="cursor: pointer;">Traveller types</th>
-                            <th scope="col" style="cursor: pointer;"></th>
-                            <th scope="col"></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                </table>
+            <br>
+            <table class="table" id="following-table">
+                <thead class="thead-dark">
+                    <tr>
+                        <th scope="col" onClick="sortTable(0, 'following-table')" style="cursor: pointer;">Name</th>
+                        <th scope="col" onClick="sortTable(1, 'following-table')" style="cursor: pointer;">Gender</th>
+                        <th scope="col" onClick="sortTable(2, 'following-table')" style="cursor: pointer;">Nationalities</th>
+                        <th scope="col" onClick="sortTable(3, 'following-table')" style="cursor: pointer;">DOB</th>
+                        <th scope="col" onClick="sortTable(4, 'following-table')" style="cursor: pointer;">Traveller types</th>
+                        <th scope="col" style="cursor: pointer;"></th>
+                        <th scope="col"></th>
+                    </tr>
+                </thead>
+                <tbody id="following-table-body">
+                </tbody>
+            </table>
+            <div id="following-pagination"></div>
         </div>
         <div id="followerTab" class="tab-content tab-pane fade">
+            <br>
             <table class="table" id="follower-table">
                 <thead class="thead-dark">
                     <tr>
@@ -91,13 +96,14 @@
                         <th scope="col"></th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="follower-table-body">
                 </tbody>
             </table>
+            <div id="follower-pagination"></div>
         </div>
     </div>
     </div>
 }
 
     <script src="@routes.Assets.at("js/search/indexTravelPartnerSearch.js")"></script>
-<script src="@routes.Assets.at("js/search/searchUsers.js")"></script>
+    <script src="@routes.Assets.at("js/search/searchUsers.js")"></script>

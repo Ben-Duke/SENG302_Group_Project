@@ -88,10 +88,10 @@ POST    /users/profile/update/natpass/delpass       controllers.ProfileControlle
 GET     /users/profile/search       controllers.TravelPartnerController.renderFilterPage(request: Request)
 
 #Gets the number of travellers that match the given filters, up to a maximum of 100,000
-GET /users/profile/searchprofiles/count controllers.TravelPartnerController.getTravellerCountWithFilters(request: Request, name:String ?= null, travellertype:String ?= null ,nationality:String ?= null, bornafter:String ?= null, bornbefore:String ?= null, gender1:String ?= null, gender2:String ?= null, gender3:String ?= null)
+GET /users/profile/searchprofiles/count controllers.TravelPartnerController.getTravellerCountWithFilters(request: Request, name:String ?= null, travellertype:String ?= null,nationality:String ?= null, bornafter:String ?= null, bornbefore:String ?= null, gender1:String ?= null, gender2:String ?= null, gender3:String ?= null, getfollowers:String ?= null, getfollowing:String ?= null)
 
 #Get Users based on search params
-GET /users/profile/searchprofiles    controllers.TravelPartnerController.travellerSearchPaginated(request: Request, offset: Int ?= 0, quantity: Int ?= 10, name:String ?= null, travellertype:String ?= null ,nationality:String ?= null, bornafter:String ?= null, bornbefore:String ?= null, gender1:String ?= null, gender2:String ?= null, gender3:String ?= null)
+GET /users/profile/searchprofiles    controllers.TravelPartnerController.travellerSearchPaginated(request: Request, name:String ?= null, offset: Int ?= 0, quantity: Int ?= 10, travellertype:String ?= null ,nationality:String ?= null, bornafter:String ?= null, bornbefore:String ?= null, gender1:String ?= null, gender2:String ?= null, gender3:String ?= null, getfollowers:String ?= null, getfollowing:String ?= null)
 
 #Handles searching for travel partners
 POST    /users/profile/search       controllers.TravelPartnerController.searchByAttribute(request: Request)

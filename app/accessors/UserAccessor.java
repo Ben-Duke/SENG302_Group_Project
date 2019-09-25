@@ -1,24 +1,15 @@
 package accessors;
 
-import com.fasterxml.jackson.core.*;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.JsonNodeType;
+import io.ebean.ExpressionList;
 import io.ebean.Query;
 import models.*;
-import play.libs.Json;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.util.*;
 
 /**
@@ -30,12 +21,8 @@ public class UserAccessor {
     private static final String TRAVELLER_TYPE_COLUMN_NAME = "travellerTypes";
     private static final String NATIONALITY_COLUMN_NAME = "nationality";
     private static final String GENDER_COLUMN_NAME = "gender";
-
-
-    public enum ColumnNames {
-        TRAVELLER_TYPE,
-        NATIONALITY,
-    }
+    private static final String FOLLOWERS_COLUMN_NAME = "followers";
+    private static final String FOLLOWING_COLUMN_NAME = "following";
 
     public static void insert(User user) { user.save(); }
 
@@ -221,6 +208,98 @@ public class UserAccessor {
         return new HashSet<>();
     }
 
+
+    private static ExpressionList<User> getUserQueryFromParams(String queryName, String travellerType,
+                                               String queryNationality,
+                                               String agerange1, String agerange2,
+                                               String gender1, String gender2, String gender3) {
+        List<List<Object>> equalsFields = new ArrayList<>();
+
+        equalsFields = updateEqualsFields(travellerType, TRAVELLER_TYPE_COLUMN_NAME, equalsFields);
+        equalsFields = updateEqualsFields(queryNationality, NATIONALITY_COLUMN_NAME, equalsFields);
+        equalsFields = updateEqualsFields(gender1, GENDER_COLUMN_NAME, equalsFields);
+        equalsFields = updateEqualsFields(gender2, GENDER_COLUMN_NAME, equalsFields);
+        equalsFields = updateEqualsFields(gender3, GENDER_COLUMN_NAME, equalsFields);
+
+        String[] splittedName = new String[] {queryName, queryName};
+        if (queryName.split("\\s+").length  > 1) {
+            splittedName = queryName.split("\\s+");
+        }
+
+        Date date1 = null;
+        Date date2 = null;
+        Boolean parseDate = (agerange1 != null && agerange2 != null) && (!agerange1.equals("") || !agerange2.equals(""));
+        try {
+            if (parseDate && agerange1.equals("") && !agerange2.equals("")) {
+                date1 = new Date(Long.MIN_VALUE);
+                date2 = new SimpleDateFormat("yyyy-MM-dd").parse(agerange2);
+            } else if (parseDate && agerange2.equals("") && !agerange1.equals("")) {
+                date1 = new SimpleDateFormat("yyyy-MM-dd").parse(agerange1);
+                date2 = new Date();
+            } else if (parseDate && !agerange1.equals("") && !agerange2.equals("")) {
+                date1 = new SimpleDateFormat("yyyy-MM-dd").parse(agerange1);
+                date2 = new SimpleDateFormat("yyyy-MM-dd").parse(agerange2);
+            }
+        } catch (ParseException e) {
+            //Do Nothing
+        }
+
+        ExpressionList<User> query = null;
+        if(date1 != null && date2 != null){
+            query = //Ebean.find(User.class)
+                    User.find().query()
+                            .where()
+                            .gt("dateOfBirth", date1)
+                            .lt("dateOfBirth", date2)
+                            .or()
+                            .eq((String) equalsFields.get(2).get(0), equalsFields.get(2).get(1))
+                            .eq((String) equalsFields.get(3).get(0), equalsFields.get(3).get(1))
+                            .eq((String) equalsFields.get(4).get(0), equalsFields.get(4).get(1))
+                            .endOr()
+                            .where()
+                            .or()
+                            .ilike("f_name", "%" + splittedName[0] + "%")
+                            .ilike("l_name", "%" + splittedName[1] + "%")
+                            .select("userid")
+                            //Use this to get connected traveller types
+                            .fetch(TRAVELLER_TYPE_COLUMN_NAME,"*")
+                            .where()
+                            .eq((String) equalsFields.get(0).get(0),  equalsFields.get(0).get(1))
+
+                            .select("userid")
+                            .fetch(NATIONALITY_COLUMN_NAME, "*")
+                            .where()
+                            .eq((String) equalsFields.get(1).get(0), equalsFields.get(1).get(1));
+
+        }
+        else {
+            query = //Ebean.find(User.class)
+                    User.find().query()
+                            .where()
+                            .or()
+                            .eq((String) equalsFields.get(2).get(0), equalsFields.get(2).get(1))
+                            .eq((String) equalsFields.get(3).get(0), equalsFields.get(3).get(1))
+                            .eq((String) equalsFields.get(4).get(0), equalsFields.get(4).get(1))
+                            .endOr()
+                            .where()
+                            .or()
+                            .ilike("f_name", "%" + splittedName[0] + "%")
+                            .ilike("l_name", "%" + splittedName[1] + "%")
+                            .endOr()                            .select("userid")
+                            //Use this to get connected traveller types
+                            .fetch(TRAVELLER_TYPE_COLUMN_NAME,"*")
+
+                            .where()
+
+                            .eq((String) equalsFields.get(0).get(0),  equalsFields.get(0).get(1))
+                            .select("userid")
+                            .fetch(NATIONALITY_COLUMN_NAME, "*")
+                            .where()
+                            .eq((String) equalsFields.get(1).get(0), equalsFields.get(1).get(1));
+        }
+        return query;
+    }
+
     /**
      * Sends a request to ebeans to get a list of users based on pass parameters
      * Usage examples:
@@ -248,16 +327,11 @@ public class UserAccessor {
      * @param gender3 The third gender union to search for: Valid values are Male, Female, Other
      * @return a list of users, returns empty if none are found
      */
+   @SuppressWarnings("Duplicates")
    public static Set<User> getUsersByQuery(String travellerType,
                                            int offset, int quantity, String queryName, String queryNationality,
                                            String agerange1, String agerange2, String gender1,
-                                           String gender2, String gender3){
-       String[] splittedName = new String[] {queryName, queryName};
-       if (queryName.split("\\s+").length  > 1) {
-           splittedName = queryName.split("\\s+");
-       }
-
-       List<List<Object>> equalsFields = new ArrayList<>();
+                                           String gender2, String gender3) {
 
        if(quantity < 1) {
            return new HashSet<>();
@@ -266,86 +340,66 @@ public class UserAccessor {
        if(offset < 0) {
            offset = 0;
        }
-       equalsFields = updateEqualsFields(travellerType, TRAVELLER_TYPE_COLUMN_NAME, equalsFields);
-       equalsFields = updateEqualsFields(queryNationality, NATIONALITY_COLUMN_NAME, equalsFields);
-       equalsFields = updateEqualsFields(gender1, GENDER_COLUMN_NAME, equalsFields);
-       equalsFields = updateEqualsFields(gender2, GENDER_COLUMN_NAME, equalsFields);
-       equalsFields = updateEqualsFields(gender3, GENDER_COLUMN_NAME, equalsFields);
-       Date date1 = null;
-       Date date2 = null;
-       Boolean parseDate = (agerange1 != null && agerange2 != null) && (!agerange1.equals("") || !agerange2.equals(""));
-       try {
-           if (parseDate && agerange1.equals("") && !agerange2.equals("")) {
-               date1 = new Date(Long.MIN_VALUE);
-               date2 = new SimpleDateFormat("yyyy-MM-dd").parse(agerange2);
-           } else if (parseDate && agerange2.equals("") && !agerange1.equals("")) {
-               date1 = new SimpleDateFormat("yyyy-MM-dd").parse(agerange1);
-               date2 = new Date();
-           } else if (parseDate && !agerange1.equals("") && !agerange2.equals("")) {
-               date1 = new SimpleDateFormat("yyyy-MM-dd").parse(agerange1);
-               date2 = new SimpleDateFormat("yyyy-MM-dd").parse(agerange2);
-           }
-       } catch (ParseException e) {
-           //Do Nothing
-       }
-       Query<User> query = null;
-       if(date1 != null && date2 != null){
-           query = //Ebean.find(User.class)
-                   User.find().query()
-                           .where().gt("dateOfBirth", date1)
-                           .lt("dateOfBirth", date2)
-                           .or()
-                           .eq((String) equalsFields.get(2).get(0), equalsFields.get(2).get(1))
-                           .eq((String) equalsFields.get(3).get(0), equalsFields.get(3).get(1))
-                           .eq((String) equalsFields.get(4).get(0), equalsFields.get(4).get(1))
-                           .endOr()
-                           .where()
-                           .or()
-                           .ilike("f_name", "%" + splittedName[0] + "%")
-                           .ilike("l_name", "%" + splittedName[1] + "%")
-                           .select("userid")
-                           //Use this to get connected traveller types
-                           .fetch(TRAVELLER_TYPE_COLUMN_NAME,"*")
-                           .where()
-                           .eq((String) equalsFields.get(0).get(0),  equalsFields.get(0).get(1))
 
-                           .select("userid")
-                           .fetch(NATIONALITY_COLUMN_NAME, "*")
-                           .where()
-                           .eq((String) equalsFields.get(1).get(0), equalsFields.get(1).get(1))
-                           .setFirstRow(offset).setMaxRows(quantity);
-
-       }
-       else {
-           query = //Ebean.find(User.class)
-                   User.find().query()
-                           .where()
-                           .or()
-                           .eq((String) equalsFields.get(2).get(0), equalsFields.get(2).get(1))
-                           .eq((String) equalsFields.get(3).get(0), equalsFields.get(3).get(1))
-                           .eq((String) equalsFields.get(4).get(0), equalsFields.get(4).get(1))
-                           .endOr()
-                           .where()
-                           .or()
-                           .ilike("f_name", "%" + splittedName[0] + "%")
-                           .ilike("l_name", "%" + splittedName[1] + "%")
-                           .endOr()
-                           .select("userid")
-                           //Use this to get connected traveller types
-                           .fetch(TRAVELLER_TYPE_COLUMN_NAME,"*")
-
-                           .where()
-
-                           .eq((String) equalsFields.get(0).get(0),  equalsFields.get(0).get(1))
-                           .select("userid")
-                           .fetch(NATIONALITY_COLUMN_NAME, "*")
-                           .where()
-                           .eq((String) equalsFields.get(1).get(0), equalsFields.get(1).get(1))
-                           .setFirstRow(offset).setMaxRows(quantity);
-       }
+        Query<User> query = getUserQueryFromParams(queryName, travellerType, queryNationality,
+                                                   agerange1, agerange2,
+                                                   gender1, gender2, gender3)
+                .setFirstRow(offset).setMaxRows(quantity);
 
        return query.findSet();
    }
+
+   public static int getUserQueryCount(String queryName, String travellerType, String queryNationality,
+                                       String agerange1, String agerange2, String gender1,
+                                       String gender2, String gender3) {
+
+
+       int userCount = getUserQueryFromParams(queryName, travellerType, queryNationality,
+               agerange1, agerange2,
+               gender1, gender2, gender3).findCount();
+
+       return userCount;
+   }
+
+
+   public static Set<User> getFollowingQuery(User currentUser, int offSet, int quantity) {
+
+       Set<Follow> followSet = Follow.find().query().where().eq("followed", currentUser)
+               .setFirstRow(offSet).setMaxRows(quantity).findSet();
+
+       Set<User> followedUser = new HashSet<>();
+       for (Follow follow: followSet) {
+           followedUser.add(follow.getFollower());
+       }
+
+       return followedUser;
+   }
+
+   public static int getFollowingCount(User currentUser) {
+
+       int followingCount = Follow.find().query().where().eq("followed", currentUser).findCount();
+
+       return followingCount;
+   }
+
+    public static Set<User> getFollowedQuery(User currentUser, int offSet, int quantity) {
+
+        Set<Follow> followSet = Follow.find().query().where().eq("follower", currentUser)
+                .setFirstRow(offSet).setMaxRows(quantity).findSet();
+
+        Set<User> followedUser = new HashSet<>();
+        for (Follow follow: followSet) {
+            followedUser.add(follow.getFollowed());
+        }
+
+        return followedUser;
+    }
+
+    public static int getFollowedCount(User currentUser) {
+        int followedCount = Follow.find().query().where().eq("follower", currentUser).findCount();
+
+        return followedCount;
+    }
 
     /**
      * Converts the first letter of each word in a sentence to a capital letter.
@@ -388,7 +442,7 @@ public class UserAccessor {
                     convertedQueryValue = TravellerType.find().query().where().eq("travellerTypeName", queryValue).findOne();
                     break;
                 case NATIONALITY_COLUMN_NAME:
-                    convertedQueryValue = Nationality.find().query().where().eq("nationalityName", queryValue).findOne();
+                    convertedQueryValue = Nationality.find().query().where().ilike("nationalityName", "%" + queryValue + "%").findOne();
                     break;
                 case GENDER_COLUMN_NAME:
                     convertedQueryValue = queryValue;

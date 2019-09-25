@@ -147,7 +147,7 @@ public class EventResponseControllerTest extends BaseTestWithApplicationAndDatab
 
     @Test
     public void testGetEventResponsesWithThreeValidEvents() {
-        LocalDateTime time = LocalDateTime.now();
+        LocalDateTime time = LocalDateTime.now().plusDays(1);
         int offset = 0;
         int limit = 100000;
 

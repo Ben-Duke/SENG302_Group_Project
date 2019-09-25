@@ -1,5 +1,3 @@
-configureFollowLinks();
-
 //n = 0, sorting by email
 //n = 2, sorting by gender
 //n = 3, sorting by the travelers first nationality
@@ -72,54 +70,9 @@ function sortTable(n, tableName) {
     }
 }
 
-function configureFollowLinks() {
-    const linkContainers = document.getElementsByClassName("followLink");
-    for (let linkContainer of linkContainers) {
-        const profileId = linkContainer.dataset.profile;
-        setFollowLink(profileId)
-    }
 
-    const followerLinkContainers = document.getElementsByClassName("followerTabLink");
-    for (let linkContainer of followerLinkContainers) {
-        const tabProfileId = linkContainer.dataset.profile;
-        setFollowedLink(tabProfileId)
-    }
-
-}
-
-function setFollowLink(profileId) {
-    let success;
-    $.ajax({
-        type: 'GET',
-        url: `/users/follows/${profileId}`,
-        success: function(followResult) {
-            if(followResult == false) {
-                document.getElementById("follow-" + profileId).style.display = "block";
-            } else {
-                document.getElementById("unfollow-" + profileId).style.display = "block";
-            }
-        }
-    });
-}
-
-function setFollowedLink(profileId) {
-    let success;
-    $.ajax({
-        type: 'GET',
-        url: `/users/followed/${profileId}`,
-        success: function(followResult) {
-            if(followResult == false) {
-                document.getElementById("followingTab-follow-" + profileId).style.display = "block";
-            } else {
-                document.getElementById("followingTab-follow-" + profileId).style.display = "block";
-            }
-        }
-    });
-}
-
-
-
-function followUser(profileId, tab) {
+function followUser(profileId) {
+    console.log(profileId)
     var token = $('input[name="csrfToken"]').attr('value');
     $.ajaxSetup({
         beforeSend: function (xhr) {
@@ -132,19 +85,23 @@ function followUser(profileId, tab) {
         url: '/users/follow/' + profileId,
         success: function (data, textStatus, xhr) {
             if (xhr.status == 200) {
-                if (tab !== undefined) {
-                    document.getElementById(tab + "follow-" + profileId).style.display = "none";
-                    document.getElementById(tab + "unfollow-" + profileId).style.display = "block";
-                } else {
-                    document.getElementById("follow-" + profileId).style.display = "none";
-                    document.getElementById("unfollow-" + profileId).style.display = "block";
+                if (document.getElementById("searchResultsTable-" + profileId) != undefined)
+                    document.getElementById("searchResultsTable-unfollow-" + profileId).style.display = "block";
+                    document.getElementById("searchResultsTable-follow-" + profileId).style.display = "none";
                 }
-            }
+
+                if (document.getElementById('followerTable-' + profileId) != undefined) {
+                    document.getElementById("followerTable-follow-" + profileId).style.display = "none";
+                    document.getElementById("followerTable-unfollow-" + profileId).style.display = "block";
+                }
+            searchFollowing();
+
         }
     })
 }
 
-function unfollowUser(profileId, tab) {
+function unfollowUser(profileId) {
+
     var token = $('input[name="csrfToken"]').attr('value');
     $.ajaxSetup({
         beforeSend: function (xhr) {
@@ -157,13 +114,16 @@ function unfollowUser(profileId, tab) {
         url: '/users/unfollow/' + profileId,
         success: function (data, textStatus, xhr) {
             if (xhr.status == 200) {
-                if (tab !== undefined) {
-                    document.getElementById(tab + "unfollow-" + profileId).style.display = "none";
-                    document.getElementById(tab + "follow-" + profileId).style.display = "block";
-                } else {
-                    document.getElementById("unfollow-" + profileId).style.display = "none";
-                    document.getElementById("follow-" + profileId).style.display = "block";
+                if (document.getElementById("searchResultsTable-" + profileId) != undefined) {
+                    document.getElementById("searchResultsTable-unfollow-" + profileId).style.display = "none";
+                    document.getElementById("searchResultsTable-follow-" + profileId).style.display = "block";
                 }
+                document.getElementById("followingTable-" + profileId).remove()
+                if (document.getElementById("followerTable-follow-" + profileId) != undefined) {
+                    document.getElementById("followerTable-unfollow-" + profileId).style.display = "none";
+                    document.getElementById("followerTable-follow-" + profileId).style.display = "block";
+                }
+                searchFollowing();
             }
         }
     })

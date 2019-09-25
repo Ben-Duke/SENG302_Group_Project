@@ -156,7 +156,7 @@ public class TravelPartnerControllerTest extends BaseTestWithApplicationAndDatab
                         "&gender1=male&gender2=female&gender3=other").session("connected", "3");
         Result result = route(app, request);
         int jsonSize = Json.parse(contentAsString(result)).size();
-        assertEquals(10, jsonSize );
+        assertEquals(9, jsonSize );
 
         //There are no users born after 2025. The query will return 0 results.
         request = Helpers.fakeRequest()
@@ -188,7 +188,7 @@ public class TravelPartnerControllerTest extends BaseTestWithApplicationAndDatab
                         "&gender1=male&gender2=female&gender3=other").session("connected", "3");
         result = route(app, request);
         jsonSize = Json.parse(contentAsString(result)).size();
-        assertEquals(10, jsonSize );
+        assertEquals(9, jsonSize );
     }
 
     /**
@@ -272,7 +272,7 @@ public class TravelPartnerControllerTest extends BaseTestWithApplicationAndDatab
         super.populateDatabase();
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(GET)
-                .uri("/users/profile/searchprofiles?nationality=Czechoslovakia&gender1=male&gender2=female&gender3=other").session("connected", "2");
+                .uri("/users/profile/searchprofiles?nationality=Czechoslovakia&gender1=male&gender2=female&gender3=other").session("connected", "3");
         Result result = route(app, request);
         int jsonSize = Json.parse(contentAsString(result)).size();
         assertEquals(1, jsonSize );
@@ -288,7 +288,7 @@ public class TravelPartnerControllerTest extends BaseTestWithApplicationAndDatab
         super.populateDatabase();
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(GET)
-                .uri("/users/profile/searchprofiles?nationality=Bbechoslovakia&gender1=male&gender2=female&gender3=other").session("connected", "2");
+                .uri("/users/profile/searchprofiles?nationality=Bbechoslovakia&gender1=male&gender2=female&gender3=other").session("connected", "3");
         Result result = route(app, request);
         int jsonSize = Json.parse(contentAsString(result)).size();
         assertEquals(0, jsonSize );
@@ -302,7 +302,7 @@ public class TravelPartnerControllerTest extends BaseTestWithApplicationAndDatab
         //Test user 1 has a traveller type of gap year so this should return one result
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(GET)
-                .uri("/users/profile/searchprofiles?nationality=Czechoslovakia&travellertype=gap%20year&gender1=male&gender2=female&gender3=other").session("connected", "2");
+                .uri("/users/profile/searchprofiles?nationality=Czechoslovakia&travellertype=gap%20year&gender1=male&gender2=female&gender3=other").session("connected", "3");
         Result result = route(app, request);
         int jsonSize = Json.parse(contentAsString(result)).size();
         assertEquals(1, jsonSize );
@@ -310,7 +310,7 @@ public class TravelPartnerControllerTest extends BaseTestWithApplicationAndDatab
         //Test user 1 has a traveller type of gap year not groupie so this should return no results
         request = Helpers.fakeRequest()
                 .method(GET)
-                .uri("/users/profile/searchprofiles?nationality=Czechoslovakia&travellertype=groupie&gender1=male&gender2=female&gender3=other").session("connected", "2");
+                .uri("/users/profile/searchprofiles?nationality=Czechoslovakia&travellertype=groupie&gender1=male&gender2=female&gender3=other").session("connected", "3");
         result = route(app, request);
         jsonSize = Json.parse(contentAsString(result)).size();
         assertEquals(0, jsonSize );

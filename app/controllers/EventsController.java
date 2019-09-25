@@ -148,7 +148,7 @@ public class EventsController {
         if(userPhoto.getUser().getUserid() != user.getUserid()) {
             return forbidden();
         }
-        Event event = EventAccessor.getByInternalId(eventId);
+        Event event = EventAccessor.getEventById(eventId);
         if(event == null) {
             return badRequest();
         }
@@ -176,7 +176,7 @@ public class EventsController {
         if(userPhoto.getUser().getUserid() != user.getUserid()) {
             return forbidden();
         }
-        Event event = EventAccessor.getByInternalId(eventId);
+        Event event = EventAccessor.getEventById(eventId);
         if(event == null) {
             return badRequest();
         }
@@ -199,7 +199,7 @@ public class EventsController {
         if (user == null) {
             return unauthorized();
         }
-        Event event = EventAccessor.getByInternalId(eventId);
+        Event event = EventAccessor.getEventById(eventId);
         if(event == null) {
             return badRequest();
         }
@@ -226,7 +226,7 @@ public class EventsController {
         if (jsonData.size() == 0) {return null;}
         JsonNode eventData = jsonData.get(0);
         int lastTransfom = eventData.get("images").get("images").get(0).get("transforms").get("@attributes").get("count").asInt()-1;
-        Event event = new Event(
+        return new Event(
                 eventData.get("id").asInt(),
                 LocalDateTime.parse(eventData.get("datetime_start").toString().substring(1, 20), formatter),
                 LocalDateTime.parse(eventData.get("datetime_end").toString().substring(1, 20), formatter),
@@ -239,7 +239,6 @@ public class EventsController {
                 eventData.get("address").asText(),
                 eventData.get("description").asText()
         );
-        return event;
     }
 
 

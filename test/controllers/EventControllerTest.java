@@ -31,7 +31,7 @@ public class EventControllerTest  extends BaseTestWithApplicationAndDatabase {
         Event event = new Event(1000, LocalDateTime.now(), LocalDateTime.MAX, "testEvent", "type","event.com", "imageurl",
                 destination.getLatitude(), destination.getLongitude(), "", "test event");
         EventAccessor.insert(event);
-        event = EventAccessor.getByInternalId(event.getEventId());
+        event = EventAccessor.getEventById(event.getEventId());
         Command albumCommand = new CreateAlbumCommand(event.getName(), event, null);
         albumCommand.execute();
         EventAccessor.update(event);
@@ -40,7 +40,7 @@ public class EventControllerTest  extends BaseTestWithApplicationAndDatabase {
         MediaAccessor.insert(media1);
         userDefaultAlbum.addMedia(media1);
         AlbumAccessor.update(userDefaultAlbum);
-        return EventAccessor.getByInternalId(event.getEventId());
+        return EventAccessor.getEventById(event.getEventId());
     }
 
     private void linkMediaToEvent(User user, Event event, Media media) {
@@ -62,7 +62,7 @@ public class EventControllerTest  extends BaseTestWithApplicationAndDatabase {
                 .uri(url).session("connected", "2");
         route(app, request);
 
-        event = EventAccessor.getByInternalId(event.getEventId());
+        event = EventAccessor.getEventById(event.getEventId());
 
         return event;
     }
@@ -87,7 +87,7 @@ public class EventControllerTest  extends BaseTestWithApplicationAndDatabase {
         Result result = route(app, request);
         assertEquals(OK, result.status());
 
-        event = EventAccessor.getByInternalId(event.getEventId());
+        event = EventAccessor.getEventById(event.getEventId());
 
         assertEquals(eventMediaSizeBefore + 1,event.getPrimaryAlbum().getMedia().size());
     }
@@ -115,7 +115,7 @@ public class EventControllerTest  extends BaseTestWithApplicationAndDatabase {
         Result result = route(app, request);
         assertEquals(OK, result.status());
 
-        event = EventAccessor.getByInternalId(event.getEventId());
+        event = EventAccessor.getEventById(event.getEventId());
 
         assertEquals(eventMediaSizeBefore, event.getPrimaryAlbum().getMedia().size());
     }
@@ -146,11 +146,11 @@ public class EventControllerTest  extends BaseTestWithApplicationAndDatabase {
         media3 = MediaAccessor.getMediaById(media3.getMediaId());
         media4 = MediaAccessor.getMediaById(media4.getMediaId());
         linkMediaToEvent(user, event, media2);
-        event = EventAccessor.getByInternalId(event.getEventId());
+        event = EventAccessor.getEventById(event.getEventId());
         linkMediaToEvent(user, event, media3);
-        event = EventAccessor.getByInternalId(event.getEventId());
+        event = EventAccessor.getEventById(event.getEventId());
         linkMediaToEvent(user, event, media4);
-        event = EventAccessor.getByInternalId(event.getEventId());
+        event = EventAccessor.getEventById(event.getEventId());
 
         String url = "/events/photos/" + event.getEventId();
 

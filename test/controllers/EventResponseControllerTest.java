@@ -5,6 +5,7 @@ import accessors.EventResponseAccessor;
 import accessors.UserAccessor;
 import models.Event;
 import models.EventResponse;
+import models.ResponseType;
 import org.junit.Ignore;
 import org.junit.Test;
 import play.libs.Json;
@@ -45,7 +46,7 @@ public class EventResponseControllerTest extends BaseTestWithApplicationAndDatab
         EventResponse savedEventResponse = EventResponseAccessor.getById(eventResponse.getEventResponseId());
         savedEventResponse.setUser(UserAccessor.getById(LOGIN_USER_ID));
         savedEventResponse.setEvent(event);
-        savedEventResponse.setResponseType("Going");
+        savedEventResponse.setResponseType(ResponseType.valueOf("Going"));
         EventResponseAccessor.update(savedEventResponse);
     }
 
@@ -63,7 +64,7 @@ public class EventResponseControllerTest extends BaseTestWithApplicationAndDatab
         EventResponse savedEventResponse = EventResponseAccessor.getById(eventResponse.getEventResponseId());
         savedEventResponse.setUser(UserAccessor.getById(LOGIN_USER_ID));
         savedEventResponse.setEvent(event);
-        savedEventResponse.setResponseType("Going");
+        savedEventResponse.setResponseType(ResponseType.valueOf("Going"));
         EventResponseAccessor.update(savedEventResponse);
         savedEventResponse = EventResponseAccessor.getById(savedEventResponse.getEventResponseId());
         savedEventResponse.setResponseDateTime(responseDateTime);

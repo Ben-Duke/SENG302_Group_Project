@@ -151,11 +151,12 @@ PATCH     /user/trips/visit/dates/:id      controllers.TripController.updateVisi
 #Handles editing a visit of a trip
 POST    /users/trips/visit/edit/:id       controllers.TripController.updateVisit(request: Request, id:Integer)
 
+#Get trips matching a given name
+GET     /users/trips/matching/search     controllers.TripController.getTripsByName(request: Request, searchInput: String, offset: Integer, quantity: Integer)
+
 #Renders page that displays a given trip
 GET     /users/trips/:id            controllers.TripController.displaytrip(request: Request, id:Integer)
 
-#Get trips matching a given name
-GET     /users/trips/matching/:name     controllers.TripController.getTripsByName(request: Request, name: String, offset: Integer, quantity: Integer)
 
 #Get a paginated list of trips
 GET     /users/trips/paginated/:offset/:quantity         controllers.TripController.getPaginatedUserTrips(request: Request, offset: Integer, quantity: Integer)

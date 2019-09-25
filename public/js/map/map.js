@@ -2093,10 +2093,8 @@ async function previousTripPage() {
     let newTripPageNumber = tripPageNum;
     if(tripPageNum > 1) {
         newTripPageNumber -= 1;
-    } else {
-        newTripPageNumber = 1;
+        jumpToTripPage(newTripPageNumber, searchInput);
     }
-    jumpToTripPage(newTripPageNumber, searchInput);
 }
 
 async function jumpToTripPage(pageNumber, search) {

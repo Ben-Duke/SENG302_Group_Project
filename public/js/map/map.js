@@ -2134,7 +2134,6 @@ function setTripPaginationLinks(tripCount, perPage, search) {
         paginationList.removeChild(paginationList.firstChild);
     }
 
-    //let paginationList = document.getElementById("trip-pagination-list");
     let previousArrowLink = document.createElement("li");
     let previousArrow = document.createElement("a");
     previousArrow.setAttribute("id", "previous-trip");

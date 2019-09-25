@@ -122,6 +122,9 @@ function importUsersTreasureHunts(treasureHunts, count) {
     for (let treasureHunt of treasureHunts) {
         const row = document.createElement("TR");
         row.classList.add("clickable");
+        row.setAttribute('data-toggle','modal');
+        row.setAttribute('data-id', treasureHunt.id);
+        row.setAttribute('data-target','#info');
 
         const titleCell = document.createElement("TH");
         titleCell.setAttribute("scope", "row");
@@ -156,6 +159,9 @@ function importOpenTreasureHunts(treasureHunts, count) {
     for (let treasureHunt of treasureHunts) {
         const row = document.createElement("TR");
         row.classList.add("clickable");
+        row.setAttribute('data-toggle','modal');
+        row.setAttribute('data-id', treasureHunt.id);
+        row.setAttribute('data-target','#info');
 
         const titleCell = document.createElement("TH");
         titleCell.setAttribute("scope", "row");

@@ -33,8 +33,6 @@ import static play.mvc.Results.*;
 
 public class TravelPartnerController {
 
-    private final int PSEUDO_INFINITE_NUMBER = 100000;
-
     @Inject
     FormFactory formFactory;
 
@@ -130,8 +128,9 @@ public class TravelPartnerController {
      * @return
      */
     public Result getTravellerCountWithFilters (
-            Http.Request request, String queryName, String travellerType, String nationality,
-            String bornAfter, String bornBefore, String gender1, String gender2, String gender3) {
+            Http.Request request,  String queryName, String travellerType, String nationality,
+            String bornAfter, String bornBefore, String gender1, String gender2,
+            String gender3, String getFollowers, String getFollowing) {
         User currentUser = User.getCurrentUser(request);
         if(currentUser == null){
             return unauthorized("You need to be logged in to use this api");
@@ -145,8 +144,23 @@ public class TravelPartnerController {
         if (queryName == null) {
             queryName = "";
         }
-        Set<User> users = UserAccessor.getUsersByQuery(travellerType, 0, PSEUDO_INFINITE_NUMBER, queryName, nationality, bornAfter, bornBefore, gender1, gender2, gender3);
-        return ok(Integer.toString(users.size()));
+        int userCount;
+
+        if (getFollowing != null) {
+
+            userCount = UserAccessor.getFollowedCount(currentUser);
+
+        } else if (getFollowers != null) {
+            userCount = UserAccessor.getFollowingCount(currentUser);
+
+        } else {
+
+            userCount = UserAccessor.getUserQueryCount(queryName, travellerType, nationality,
+                    bornAfter, bornBefore, gender1,
+                    gender2, gender3);
+        }
+
+        return ok(Integer.toString(userCount));
     }
 
     /**
@@ -154,7 +168,9 @@ public class TravelPartnerController {
      * @return returns a Json response with any users that match the passed parameters
      */
     public Result travellerSearchPaginated (
-            Http.Request request, int offset, int quantity, String queryName, String travellerType, String nationality, String bornAfter, String bornBefore, String gender1, String gender2, String gender3){
+            Http.Request request, String queryName, int offset, int quantity, String travellerType,
+            String nationality, String bornAfter, String bornBefore, String gender1,
+            String gender2, String gender3, String getFollowers, String getFollowing){
         User currentUser = User.getCurrentUser(request);
         if(currentUser == null){
             return unauthorized("You need to be logged in to use this api");
@@ -174,34 +190,52 @@ public class TravelPartnerController {
         if (queryName == null) {
             queryName = "";
         }
+        Set<User> users;
 
-        Set<User> users = UserAccessor.getUsersByQuery(travellerType,offset,quantity, queryName, nationality, bornAfter, bornBefore, gender1, gender2, gender3);
+        if (getFollowing != null) {
+            users = UserAccessor.getFollowedQuery(currentUser, offset, quantity);
+
+        } else if (getFollowers != null) {
+            users = UserAccessor.getFollowingQuery(currentUser, offset, quantity);
+
+        } else {
+            users = UserAccessor.getUsersByQuery(travellerType, offset, quantity,
+                    queryName, nationality, bornAfter, bornBefore, gender1, gender2, gender3);
+        }
+
+
         ObjectMapper objectMapper = new ObjectMapper();
         ArrayNode userNodes = objectMapper.createArrayNode();
 
         for (User user : users) {
-            ObjectNode userNode = objectMapper.createObjectNode();
-            userNode.put("userId", user.getUserid());
-            userNode.put("name", user.getFName() + " " + user.getLName());
-            userNode.put("gender", user.getGender());
-            userNode.put("dob", user.getDateOfBirth().toString());
+            if (user.getUserid() != currentUser.getUserid()) {
+                ObjectNode userNode = objectMapper.createObjectNode();
+                userNode.put("userId", user.getUserid());
+                userNode.put("name", user.getFName() + " " + user.getLName());
+                userNode.put("gender", user.getGender());
+                userNode.put("dob", user.getDateOfBirth().toString());
 
-            ArrayNode nationalityNodes = objectMapper.createArrayNode();
-            for (Nationality userNationality : user.getNationality()) {
-                nationalityNodes.add(userNationality.getNationalityName());
+                ArrayNode nationalityNodes = objectMapper.createArrayNode();
+                for (Nationality userNationality : user.getNationality()) {
+                    nationalityNodes.add(userNationality.getNationalityName());
+                }
+                userNode.put("nationalities", nationalityNodes);
+
+                ArrayNode travellerTypeNodes = objectMapper.createArrayNode();
+                for (TravellerType userTravellerType : user.getTravellerTypes()) {
+                    travellerTypeNodes.add(userTravellerType.getTravellerTypeName());
+                }
+                userNode.put("travellerTypes", travellerTypeNodes);
+
+                boolean isCurrentUserFollowingUser = currentUser.isFollowing(user);
+                userNode.put("isFollowedByCurrentUser", isCurrentUserFollowingUser);
+
+                userNodes.add(userNode);
             }
-            userNode.put("nationalities", nationalityNodes);
-
-            ArrayNode travellerTypeNodes = objectMapper.createArrayNode();
-            for (TravellerType userTravellerType : user.getTravellerTypes()) {
-                travellerTypeNodes.add(userTravellerType.getTravellerTypeName());
-            }
-            userNode.put("travellerTypes", travellerTypeNodes);
-
-            userNodes.add(userNode);
         }
         return ok(userNodes);
     }
+
 
 
     /**

@@ -6,5 +6,6 @@ public enum CommandPage {
     TREASURE_HUNT,
     TRIP,
     MAP,
-    ALBUM
+    ALBUM,
+    EVENT
 }

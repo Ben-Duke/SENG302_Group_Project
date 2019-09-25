@@ -1,19 +1,21 @@
 package models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import controllers.ApplicationManager;
 import io.ebean.Finder;
 import io.ebean.Model;
-import io.ebean.annotation.CreatedTimestamp;
 import play.data.format.Formats;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Model for events
  */
 @Entity
-public class Event extends Model {
+public class Event extends Model implements AlbumOwner {
 
     private static final String DATE_PATTERN = "dd-MM-yyyy HH:mm:ss";
 
@@ -43,6 +45,10 @@ public class Event extends Model {
     @Column(columnDefinition = "TEXT")
     private String description;
 
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "event")
+    private List<Album> albums;
     public static final Finder<Integer,Event> find = new Finder<>(Event.class, ApplicationManager.getDatabaseName());
 
 
@@ -60,6 +66,7 @@ public class Event extends Model {
         this.longitude = longitude;
         this.address = address;
         this.description = description;
+        this.albums = new ArrayList<>();
     }
 
     public Event() {}
@@ -192,5 +199,14 @@ public class Event extends Model {
                 ", description='" + description + '\'' +
                 '}';
     }
+    @Override
+    public List<Album> getAlbums() {
+        return albums;
+    }
 
+    public Album getPrimaryAlbum() {return albums.get(0);}
+
+    public void setAlbums(List<Album> albums) {
+        this.albums = albums;
+    }
 }

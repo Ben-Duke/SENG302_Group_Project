@@ -2,6 +2,7 @@ package accessors;
 
 import models.Event;
 import models.EventResponse;
+import models.ResponseType;
 import models.User;
 
 import java.time.LocalDateTime;
@@ -50,7 +51,7 @@ public class EventResponseAccessor {
      * @param responseType String
      * @return List of Event Responses
      */
-    public static List<EventResponse> getByEventAndType(Event event, String responseType) {
+    public static List<EventResponse> getByEventAndType(Event event, ResponseType responseType) {
         return EventResponse.find().query().where().eq(
                 "event", event).eq("response_type", responseType).findList();
     }
@@ -69,10 +70,32 @@ public class EventResponseAccessor {
      * @param responseType String
      * @return List of Event Responses
      */
-    public static List<EventResponse> getByUserAndType(User user, String responseType) {
+    public static List<EventResponse> getByUserAndType(User user, ResponseType responseType) {
         return EventResponse.find().query().where().eq(
                 "user", user).eq("response_type", responseType).findList();
     }
+
+    /** Return a list of Event Responses that are by a given user for an event.
+     * @param user User
+     * @param event Event
+     * @return List of Event Responses
+     */
+    public static EventResponse getByUserAndEvent(User user, Event event) {
+        return EventResponse.find().query().where().eq(
+                "user", user).eq("event", event).findOne();
+    }
+
+    /** Return a list of Event Responses that are by a given user for an event of a particular type
+     * @param user User
+     * @param event Event
+     * @param responseType String
+     * @return List of Event Responses
+     */
+    public static List<EventResponse> getByUserEventAndType(User user, Event event, ResponseType responseType) {
+        return EventResponse.find().query().where().eq(
+                "user", user).eq("response_type", responseType).eq("event", event).findList();
+    }
+
 
     /** Insert the EventResponse  */
     /** Insert a EventResponse

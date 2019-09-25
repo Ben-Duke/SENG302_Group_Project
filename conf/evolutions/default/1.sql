@@ -15,6 +15,7 @@ create table album (
   album_id                      integer auto_increment not null,
   user                          integer,
   destination                   integer,
+  event                         integer,
   primary_photo_media_id        integer,
   is_default                    boolean,
   title                         varchar(191),
@@ -103,6 +104,8 @@ create table event_response (
   user_userid                   integer,
   event_event_id                integer,
   response_date_time            timestamp not null,
+  constraint ck_event_response_response_type check ( response_type in (0,1,2,3)),
+  constraint uq_event_response_user_userid_event_event_id unique (user_userid,event_event_id),
   constraint pk_event_response primary key (event_response_id)
 );
 
@@ -113,7 +116,7 @@ create table media (
   user                          integer,
   is_public                     boolean default false not null,
   url                           varchar(191),
-  date_added                    datetime,
+  date_added                    date,
   caption                       varchar(191),
   is_profile                    boolean default false not null,
   constraint uq_media_url unique (url),
@@ -252,6 +255,9 @@ alter table album add constraint fk_album_user foreign key (user) references use
 create index ix_album_destination on album (destination);
 alter table album add constraint fk_album_destination foreign key (destination) references destination (destid) on delete restrict on update restrict;
 
+create index ix_album_event on album (event);
+alter table album add constraint fk_album_event foreign key (event) references event (event_id) on delete restrict on update restrict;
+
 create index ix_album_primary_photo_media_id on album (primary_photo_media_id);
 alter table album add constraint fk_album_primary_photo_media_id foreign key (primary_photo_media_id) references media (media_id) on delete restrict on update restrict;
 
@@ -378,6 +384,9 @@ drop index if exists ix_album_user;
 
 alter table album drop constraint if exists fk_album_destination;
 drop index if exists ix_album_destination;
+
+alter table album drop constraint if exists fk_album_event;
+drop index if exists ix_album_event;
 
 alter table album drop constraint if exists fk_album_primary_photo_media_id;
 drop index if exists ix_album_primary_photo_media_id;

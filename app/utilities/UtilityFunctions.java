@@ -483,18 +483,38 @@ public class UtilityFunctions {
         }
     }
 
+    public static String getFormattedDateTime(LocalDateTime time) {
+        return time.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"));
+    }
+
     /**
      * Parses a string in the format of "dd-MM-yyyy HH:mm:ss" to a local date time
      * @param dateTimeString the string to parse
      * @return the parsed Local Date Time
      * @throws EbeanDateParseException if the parsing fails
      */
-    //TODO: Test
     public static LocalDateTime parseLocalDateTime(String dateTimeString) throws EbeanDateParseException {
         try {
             return LocalDateTime.parse(dateTimeString, DATE_TIME_FORMATTER);
         } catch (DateTimeParseException e) {
             throw new EbeanDateParseException(e);
         }
+    }
+
+    public static String getResponseAdjustedForTime(EventResponse response, Boolean isCurrentUser) {
+        ResponseType responseType = response.getResponseType();
+        String displayedResponse;
+
+        if  (responseType.equals(ResponseType.Going) &&
+            response.getEvent().getEndTime().isBefore(LocalDateTime.now())) {
+            displayedResponse = ResponseType.Went.getDisplayText();
+        } else  {
+            if (isCurrentUser) {
+                displayedResponse = "are " + responseType.getDisplayText();
+            } else {
+                displayedResponse = "is " + responseType.getDisplayText();
+            }
+        }
+        return displayedResponse;
     }
 }

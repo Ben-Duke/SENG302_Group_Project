@@ -152,11 +152,12 @@ PATCH     /user/trips/visit/dates/:id      controllers.TripController.updateVisi
 #Handles editing a visit of a trip
 POST    /users/trips/visit/edit/:id       controllers.TripController.updateVisit(request: Request, id:Integer)
 
+#Get trips matching a given name
+GET     /users/trips/matching/search     controllers.TripController.getTripsByName(request: Request, searchInput: String, offset: Integer, quantity: Integer)
+
 #Renders page that displays a given trip
 GET     /users/trips/:id            controllers.TripController.displaytrip(request: Request, id:Integer)
 
-#Get trips matching a given name
-GET     /users/trips/matching/:name     controllers.TripController.getTripsByName(request: Request, name: String, offset: Integer, quantity: Integer)
 
 #Get a paginated list of trips
 GET     /users/trips/paginated/:offset/:quantity         controllers.TripController.getPaginatedUserTrips(request: Request, offset: Integer, quantity: Integer)
@@ -479,6 +480,8 @@ GET /events/responses/:eventId/:responseType                controllers.EventRes
 
 GET /events/responses/getjson                               controllers.EventResponseController.getEventResponses(request: Request, offset: Integer, limit: Integer, localDateTime: String)
 
+GET /events/responses/:eventId/:responseType/:userId        controllers.EventResponseController.getResponsesForEventAndUserByResponseType(request : Request, eventId : Integer, responseType : String, userId : Integer)
+
 GET /events/responses/:responseType                         controllers.EventResponseController.getEventResponsesByResponseType(request : Request, responseType : String)
 
 GET /events/get/all                                         controllers.EventResponseController.getAllResponses(request : Request)
@@ -486,6 +489,15 @@ GET /events/get/all                                         controllers.EventRes
 GET /users/newsfeed/media                                        controllers.NewsfeedController.getMediaForNewsfeed(request: Request, offset: Integer, limit: Integer, localDateTime: String)
 
 GET /users/newsfeed                                         controllers.NewsfeedController.newsfeedPage(request: Request)
+
+
+
+PUT /events/linkphoto/:photoId/:eventId                     controllers.EventsController.linkPhotoToEvent(request: Request, photoId: Integer, eventId: Integer)
+
+PUT /events/unlinkphoto/:photoId/:eventId                     controllers.EventsController.unlinkPhotoToEvent(request: Request, photoId: Integer, eventId: Integer)
+
+GET /events/photos/:eventId                     controllers.EventsController.getEventPhotos(request: Request, eventId: Integer)
+
 
 
 

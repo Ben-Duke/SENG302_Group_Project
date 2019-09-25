@@ -7,8 +7,6 @@ package utilities;
  */
 public enum TableName {
     // drop all connecting tables first - don't need to specify primary key column name
-    event_response("event_response_id"),
-    event("event_id"),
 
     trip_tag("", false),
     destination_tag("", false),
@@ -31,7 +29,8 @@ public enum TableName {
     traveller_type("ttypeid"),
     media("media_id"),
     album("album_id"),
-
+    event_response("event_response_id"),
+    event("event_id"),
     destination("destid"),
     follow("follow_id"),
     admin("user_id"),   // has an underscore but user primary key does not

@@ -1,5 +1,6 @@
 package controllers;
 
+import accessors.AlbumAccessor;
 import accessors.EventResponseAccessor;
 import accessors.UserAccessor;
 import accessors.UserPhotoAccessor;
@@ -7,9 +8,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import models.Event;
-import models.EventResponse;
-import models.User;
+import models.*;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -25,6 +24,8 @@ import play.mvc.Result;
 import utilities.EventFindaUtilities;
 import utilities.UtilityFunctions;
 import utilities.exceptions.EbeanDateParseException;
+
+import javax.persistence.PersistenceException;
 
 import static play.mvc.Results.*;
 
@@ -66,24 +67,47 @@ public class EventResponseController {
             newEvent.insert();
             newEvent.save();
             newEvent = Event.find.byId(newEvent.getEventId());
-            EventResponse eventResponse = new EventResponse();
-            EventResponseAccessor.save(eventResponse);
-            EventResponse savedEventResponse = EventResponseAccessor.getById(eventResponse.getEventResponseId());
-            savedEventResponse.setUser(user);
-            savedEventResponse.setEvent(newEvent);
-            savedEventResponse.setResponseType(responseType);
-            EventResponseAccessor.update(savedEventResponse);
+            Album album = new Album(newEvent, newEvent.getName(), true);
+            AlbumAccessor.insert(album);
+            newEvent.update();
+            EventResponse eventResponse = new EventResponse(ResponseType.valueOf(responseType), newEvent, user);
+            EventResponse existingEventResponse = EventResponseAccessor.getByUserAndEvent(user, newEvent);
+            if (existingEventResponse == null) {
+                try {
+                    EventResponseAccessor.insert(eventResponse);
+                    EventResponseAccessor.save(eventResponse);
+                    return ok();
+                } catch (PersistenceException p) {
+                    return forbidden();
+                }
+            } else {
+                existingEventResponse.setResponseType(ResponseType.valueOf(responseType));
+                existingEventResponse.setResponseDateTime(LocalDateTime.now());
+                EventResponseAccessor.update(existingEventResponse);
+                EventResponseAccessor.save(existingEventResponse);
+                return ok();
+            }
+        }
+        EventResponse eventResponse = new EventResponse(ResponseType.valueOf(responseType), event, user);
+        EventResponse existingEventResponse = EventResponseAccessor.getByUserAndEvent(user, event);
+        if (existingEventResponse == null) {
+            try {
+                EventResponseAccessor.insert(eventResponse);
+                EventResponseAccessor.save(eventResponse);
+                return ok();
+            } catch (PersistenceException p) {
+                return forbidden();
+            }
+        } else {
+            existingEventResponse.setResponseType(ResponseType.valueOf(responseType));
+            existingEventResponse.setResponseDateTime(LocalDateTime.now());
+            EventResponseAccessor.update(existingEventResponse);
+            EventResponseAccessor.save(existingEventResponse);
             return ok();
         }
-        EventResponse eventResponse = new EventResponse();
-        EventResponseAccessor.save(eventResponse);
-        EventResponse savedEventResponse = EventResponseAccessor.getById(eventResponse.getEventResponseId());
-        savedEventResponse.setUser(user);
-        savedEventResponse.setEvent(event);
-        savedEventResponse.setResponseType(responseType);
-        EventResponseAccessor.update(savedEventResponse);
-        return ok();
     }
+
+//    public Result getLimited
 
     /**
      * Controller method to get events the user has responded to by response type.
@@ -94,7 +118,7 @@ public class EventResponseController {
     public Result getEventResponsesByResponseType(Http.Request request, String responseType) {
         User user = User.getCurrentUser(request);
         if (user == null) {return redirect(routes.UserController.userindex());}
-        List<EventResponse> eventResponses = EventResponseAccessor.getByUserAndType(user, responseType);
+        List<EventResponse> eventResponses = EventResponseAccessor.getByUserAndType(user, ResponseType.valueOf(responseType));
         return ok(getJsonEventResponses(eventResponses));
     }
 
@@ -110,8 +134,30 @@ public class EventResponseController {
         if (user == null) {return redirect(routes.UserController.userindex());}
         Event event = Event.find().query().where().eq("externalId", externalEventId).findOne();
         if (event == null) {return badRequest("No one has responded to this event yet.");}
-        List<EventResponse> eventResponses = EventResponseAccessor.getByEventAndType(event, responseType);
+        List<EventResponse> eventResponses = EventResponseAccessor.getByEventAndType(event, ResponseType.valueOf(responseType));
         if (eventResponses.isEmpty()) {return badRequest("No one has responded as " + responseType + " to this event.");}
+        return ok(getJsonEventResponses(eventResponses));
+    }
+
+    /**
+     * Controller method to get responses for an event and an user by response type.
+     * @param request Request
+     * @param userId Id of the user
+     * @param externalEventId Id of the event
+     * @param responseType type of response
+     * @param userId Id of the user
+     * @return Result
+     */
+    public Result getResponsesForEventAndUserByResponseType(Http.Request request, Integer externalEventId, String responseType, Integer userId) {
+        User user = User.getCurrentUser(request);
+        if (user == null) {return redirect(routes.UserController.userindex());}
+        Event event = Event.find().query().where().eq("externalId", externalEventId).findOne();
+        if (event == null) {return badRequest("No one has responded to this event yet.");}
+        User queryUser = UserAccessor.getById(userId);
+        if (queryUser == null) {return badRequest("No one has responded to this event yet.");}
+        List<EventResponse> eventResponses = EventResponseAccessor.getByUserEventAndType(queryUser, event,
+                ResponseType.valueOf(responseType));
+        if (eventResponses.isEmpty()) {return forbidden("This user has not responded as " + responseType + " to this event.");}
         return ok(getJsonEventResponses(eventResponses));
     }
 
@@ -150,7 +196,7 @@ public class EventResponseController {
             eventNode.put("endTime", UtilityFunctions.getStringFromDateTime(event.getEndTime()));
 
             responseNode.put("responseId", response.getEventResponseId());
-            responseNode.put("responseType", response.getResponseType());
+            responseNode.put("responseType", response.getResponseType().toString());
             responseNode.set("user", userNode);
             responseNode.set("event", eventNode);
             responseNode.put("responseDateTime", UtilityFunctions.getStringFromDateTime(response.getResponseDateTime()));

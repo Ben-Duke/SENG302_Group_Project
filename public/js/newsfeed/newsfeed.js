@@ -1,16 +1,37 @@
 let lastScrollY_GLOBAL = window.scrollY;
 let hasNewsFeedFinishedInnitialLoad_GLOBAL = false;
 
-let oldestDateTimeOfLoadedEventResponse_GLOBAL = '30-09-2019%2000:00:00';
+let oldestDateTimeOfLoadedEventResponse_GLOBAL = getCurrentDate();
 let oldestDateTimeOfLoadedMedia = undefined;
 
 initNewsfeed();
 initLazyLoading();
 
-function getDateTimeForURL(dateTimeString) {
-    const result = dateTimeString.replace("\\s", '%');
-    console.log(result);
-    return result;
+function getCurrentDate() {
+    const date = new Date();
+    let day = '' + date.getDate();
+    let month = '' + (date.getMonth() + 1);
+    const year = date.getFullYear();
+
+    let hour = '' + date.getHours();
+    let minutes = '' + date.getMinutes();
+    let seconds = '' + date.getSeconds();
+
+    if (month.length < 2)
+        month = '0' + month;
+    if (day.length < 2) {
+        day = '0' + day;
+    }
+    if (hour.length < 2) {
+        hour = '0' + hour
+    }
+    if (minutes.length < 2) {
+        minutes = '0' + minutes
+    }
+    if (seconds.length < 2) {
+        seconds = '0' + seconds
+    }
+    return `${day}-${month}-${year} ${hour}:${minutes}:${seconds}`
 }
 
 function getAndLoadMoreNewsFeedItems() {
@@ -27,16 +48,16 @@ function getAndLoadMoreNewsFeedItems() {
         data: {
             offset: 0,
             limit: 10,
-            localDateTime: getDateTimeForURL(oldestDateTimeOfLoadedEventResponse_GLOBAL)
+            localDateTime: oldestDateTimeOfLoadedEventResponse_GLOBAL
         },
         success: function (result) {
             const responses = result.responses;
-            for (response of responses) {
+            for (let response of responses) {
                 createNewsFeedEventResponseComponent(response.event, response.user, response.responseDateTime)
             }
 
             if (0 < responses.length) {
-                oldestDateTimeOfLoadedEventResponse_GLOBAL = responses[responses.length].responseDateTime;
+                oldestDateTimeOfLoadedEventResponse_GLOBAL = responses[responses.length - 1].responseDateTime;
             }
 
             hasNewsFeedFinishedInnitialLoad_GLOBAL = true;

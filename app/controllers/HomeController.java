@@ -40,7 +40,6 @@ public class HomeController {
 
 
     public Result mainMapPage(Http.Request request) {
-
         User user = User.getCurrentUser(request);
         if (user == null) { return redirect(routes.UserController.userindex()); }
 
@@ -63,7 +62,6 @@ public class HomeController {
         destFormData = formFactory.form(DestinationFormData.class);
 
         Map<String, Boolean> countryList = CountryUtils.getCountriesMap();
-
         String googleApiKey = EnvironmentalVariablesAccessor.getEnvVariable(
                 EnvVariableKeys.GOOGLE_MAPS_API_KEY.toString());
         return ok(mapHome.render(user, trips, userAccessibleDestinations,

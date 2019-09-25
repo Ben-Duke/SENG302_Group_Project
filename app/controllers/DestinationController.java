@@ -295,6 +295,7 @@ public class DestinationController extends Controller {
         }
 
         Destination newDestination = getDestinationFromRequest(request);
+        newDestination.setDestId(oldDestination.getDestId());
 
         DestinationFactory destinationFactory = new DestinationFactory();
 
@@ -550,6 +551,8 @@ public class DestinationController extends Controller {
     }
 
     /**
+     * AJAX request.
+     *
      * Extracts a destination object from the form user fills out.
      * Checks if input makes a valid destination.
      * Associates the current user with that destination.
@@ -562,53 +565,51 @@ public class DestinationController extends Controller {
     public Result saveDestinationFromRequest(Http.Request request) {
         User user = User.getCurrentUser(request);
 
-        if (user != null) { // checks if a user is logged in
-            Result errorForm = validateEditCreateForm(request, user, null);
-            if (errorForm != null) {
-                return errorForm;
-            } else {
-
-                Destination newDestination = formFactory.form(Destination.class)
-                        .bindFromRequest(request).get();
-                List<Destination> allDestinations = DestinationAccessor.getAllDestinations();
-                List<Destination> userAccessibleDestinations = new ArrayList<>();
-
-                for (Destination existingDestination : allDestinations) {
-                    if (existingDestination.isUserOwner(user) ||
-                            newDestination.getIsPublic()) {
-                        userAccessibleDestinations.add(existingDestination);
-                    }
-                }
-
-                for (Destination existingDestination : userAccessibleDestinations) {
-                    if (newDestination.isSimilar(existingDestination) || newDestination.isSame(existingDestination)) {
-                        return badRequest();
-                    }
-                }
-
-                Form<DestinationFormData> destinationForm = formFactory.form(DestinationFormData.class).bindFromRequest();
-                newDestination.setTags(new HashSet<>());
-                newDestination.setUser(user);
-                newDestination.setCountryValid(true);
-
-                if (destinationForm.get().getTags() != null && destinationForm.get().getTags().length() > 0) {
-                    List<String> tags = Arrays.asList(destinationForm.get().getTags().split(","));
-                    Set uniqueTags = UtilityFunctions.tagLiteralsAsSet(tags);
-                    newDestination.setTags(uniqueTags);
-                }
-                newDestination.save();
-                CreateAlbumCommand cmd = new CreateAlbumCommand(
-                        newDestination.getDestName(),
-                        newDestination,
-                        null);
-                cmd.execute();
-
-                return redirect(routes.HomeController.mainMapPage());
-            }
-
-        } else {
+        if (user == null) {
             return redirect(routes.UserController.userindex());
         }
+
+        Result errorForm = validateEditCreateForm(request, user, null);
+        if (errorForm != null) {
+            return errorForm;
+        }
+
+        Destination newDestination = formFactory.form(Destination.class)
+                .bindFromRequest(request).get();
+        List<Destination> allDestinations = DestinationAccessor.getAllDestinations();
+        List<Destination> userAccessibleDestinations = new ArrayList<>();
+
+        for (Destination existingDestination : allDestinations) {
+            if (existingDestination.isUserOwner(user) ||
+                    newDestination.getIsPublic()) {
+                userAccessibleDestinations.add(existingDestination);
+            }
+        }
+
+        for (Destination existingDestination : userAccessibleDestinations) {
+            if (newDestination.isSimilar(existingDestination) || newDestination.isSame(existingDestination)) {
+                return badRequest();
+            }
+        }
+
+        Form<DestinationFormData> destinationForm = formFactory.form(DestinationFormData.class).bindFromRequest();
+        newDestination.setTags(new HashSet<>());
+        newDestination.setUser(user);
+        newDestination.setCountryValid(true);
+
+        if (destinationForm.get().getTags() != null && destinationForm.get().getTags().length() > 0) {
+            List<String> tags = Arrays.asList(destinationForm.get().getTags().split(","));
+            Set uniqueTags = UtilityFunctions.tagLiteralsAsSet(tags);
+            newDestination.setTags(uniqueTags);
+        }
+        newDestination.save();
+        CreateAlbumCommand cmd = new CreateAlbumCommand(
+                newDestination.getDestName(),
+                newDestination,
+                null);
+        cmd.execute();
+
+        return ok(Json.toJson(newDestination));
     }
 
 
@@ -638,7 +639,7 @@ public class DestinationController extends Controller {
 
         for (Destination existingDestination : allDestinations) {
             if (existingDestination.isUserOwner(user) ||
-                    destination.getIsPublic()) {
+                    existingDestination.getIsPublic()) {
                 userAccessibleDestinations.add(existingDestination);
             }
         }
@@ -1135,9 +1136,19 @@ public class DestinationController extends Controller {
                 .getPaginatedPublicDestinations(offset, quantity);
 
         ObjectNode result = (new ObjectMapper()).createObjectNode();
+
+
         result.set("destinations", Json.toJson(destinations));
         result.put("totalCountPublic", Ebean.find(Destination.class).where()
                 .eq("destIsPublic", true) .findCount());
+
+        HashMap<Integer, Set<TravellerType>> destinationTrallerTypes = new HashMap();
+
+        for (Destination destination : destinations) {
+            destinationTrallerTypes.put(destination.getDestId(), destination.getTravellerTypes());
+        }
+
+        result.put("travellerTypeMap", Json.toJson(destinationTrallerTypes));
 
         return ok(Json.toJson(result));
     }
@@ -1175,6 +1186,14 @@ public class DestinationController extends Controller {
         result.put("totalCountPrivate", Destination.find().query().where().eq("user", user)
                 .and().eq("destIsPublic", false)
                 .findCount());
+
+        HashMap<Integer, Set<TravellerType>> destinationTrallerTypes = new HashMap();
+
+        for (Destination destination : destinations) {
+            destinationTrallerTypes.put(destination.getDestId(), destination.getTravellerTypes());
+        }
+
+        result.put("travellerTypeMap", Json.toJson(destinationTrallerTypes));
 
         return ok(Json.toJson(result));
     }
@@ -1275,6 +1294,13 @@ public class DestinationController extends Controller {
         result.put("totalCountPublic", Destination.find().query().where().like("destName", "%" + name + "%").where().eq("destIsPublic", true).findCount());
         result.put("totalCountPrivate", Destination.find().query().where().like("destName", "%" + name + "%").where().eq("destIsPublic", false).where().eq("user", user).findCount());
 
+        HashMap<Integer, Set<TravellerType>> destinationTrallerTypes = new HashMap();
+
+        for (Destination destination : destinations) {
+            destinationTrallerTypes.put(destination.getDestId(), destination.getTravellerTypes());
+        }
+
+        result.put("travellerTypeMap", Json.toJson(destinationTrallerTypes));
 
         return ok(Json.toJson(result));
     }

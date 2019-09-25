@@ -782,10 +782,12 @@ public class TagControllerTest extends BaseTestWithApplicationAndDatabase {
 
     @Test
     public void removeUsersPendingTagsCheckOnlyBelongingToUserRemoved() {
-        String tagName = "Super cool new exciting tag";
+        String tagName = "Super cool new";
         addRawTagHelper(tagName, 2);
         addRawTagHelper(tagName, 3);
-        int beforeSize = TagAccessor.getTagByName(tagName).getPendingUsers().size();
+        Tag tag = TagAccessor.getTagByName(tagName);
+        Set<User> pendingUsers = tag.getPendingUsers();
+        int beforeSize = pendingUsers.size();
         removeUsersPendingTagHelper(tagName, 2);
         assertNotNull(TagAccessor.getTagByName(tagName));
         assertEquals(beforeSize - 1, TagAccessor.getTagByName(tagName).getPendingUsers().size());

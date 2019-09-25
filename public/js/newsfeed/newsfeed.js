@@ -78,7 +78,21 @@ function getAndLoadMoreNewsFeedItems() {
             console.error(err);
             hasNewsFeedFinishedInnitialLoad_GLOBAL = true;
         }
+    });
+
+    $.ajax({
+        type: 'GET',
+        data: data,
+        url: '/users/newsfeed/media',
+        success: function (result) {
+            responses = result;
+            for (response of responses) {
+                createNewsFeedMediaComponent(response.url, response.user, response.date_created);
+            }
+        }
     })
+
+
 }
 
 

@@ -7,6 +7,8 @@ import models.Album;
 import models.Destination;
 import models.Media;
 import models.*;
+import play.libs.Json;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -93,22 +95,28 @@ public class MediaAccessor {
      * Returns an ArrayNode of a media item, which is an node which
      * contains a User, url and date_created
      * @param media the media item
-     * @return an ArrayNode of a media item
+     * @return an ObjectNode of a media item
      */
-    public static ArrayNode getUserMediaData(Media media){
-        ArrayNode userData = (new ObjectMapper()).createArrayNode();
+    public static ObjectNode getUserMediaData(Media media){
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
 
             User user = UserAccessor.getById(media.user.getUserid());
             ObjectNode mediaNode = (new ObjectMapper()).createObjectNode();
-            mediaNode.put("User", (user.getFName() + " " + user.getLName()));
-            mediaNode.put("url", (media.getUrl()));
+            ObjectNode userNode = (new ObjectMapper()).createObjectNode();
+            userNode.put("name", (user.getFName() + " " + user.getLName()));
+            UserPhoto profilePicture = UserAccessor.getProfilePhoto(user);
+            if(profilePicture == null) {
+                userNode.put("profilePicUrl", "null");
+            } else {
+                userNode.put("profilePicUrl", profilePicture.getUrlWithPath());
+            }
+
+            mediaNode.set("user", userNode);
+            mediaNode.put("url", (media.getUrlWithPath()));
             mediaNode.put("date_created", (media.getDate_added().format(formatter)));
-            userData.add(mediaNode);
 
-
-        return userData;
+        return mediaNode;
     }
 
     /**

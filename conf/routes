@@ -483,7 +483,7 @@ GET /events/responses/:responseType                         controllers.EventRes
 
 GET /events/get/all                                         controllers.EventResponseController.getAllResponses(request : Request)
 
-GET /users/newsfeedapi                                        controllers.NewsfeedController.getMediaForNewsfeed(request: Request, offset: Integer, limit: Integer, localDateTime: String)
+GET /users/newsfeed/media                                        controllers.NewsfeedController.getMediaForNewsfeed(request: Request, offset: Integer, limit: Integer, localDateTime: String)
 
 GET /users/newsfeed                                         controllers.NewsfeedController.newsfeedPage(request: Request)
 

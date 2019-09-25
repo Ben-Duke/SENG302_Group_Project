@@ -32,9 +32,13 @@
                         @login_page_fieldset(userForm)
                     }
                     </div>
-                    <form>
-                        <button class="btn btn-default" formaction="@routes.RegisterController.createuser()">Create User</button>
+                    <h4>Don't have an account?
+                        <form action="@routes.RegisterController.createuser()" style="display: inline;">
+                        <button class="btn btn-primary">Sign Up</button>
                     </form>
+                    </h4>
+
+
                 </div>
 
             </div>

@@ -1,4 +1,4 @@
-.navbar-custom { background-color: #8585ad} /* Use this to change background */
+.navbar-custom { background-color: #A530C5; height:65px} /* Use this to change background */
 .navbar-custom .navbar-nav>.active>a:hover,.navbar-custom .navbar-nav>li>a:hover, .navbar-custom .navbar-nav>li>a:focus { background-color:#9d9d9d}
 .navbar-custom .navbar-nav>.active>a,.navbar-custom .navbar-nav>.open>a,.navbar-custom .navbar-nav>.open>a, .navbar-custom .navbar-nav>.open>a:hover,.navbar-custom .navbar-nav>.open>a, .navbar-custom .navbar-nav>.open>a:hover, .navbar-custom .navbar-nav>.open>a:focus { background-color: #080808}
 .dropdown-menu { background-color: #ffffff}
@@ -8,7 +8,7 @@
 .navbar-custom { border-color: grey}
 .navbar-custom .navbar-brand { color: #999999}
 .navbar-custom .navbar-brand:hover { color: #9d9d9d}
-.navbar-custom .navbar-nav>li>a { color: #452c59
+.navbar-custom .navbar-nav>li>a { color: #FFFFFF;
 }
 .navbar-custom .navbar-nav>li>a:hover, .navbar-custom .navbar-nav>li>a:focus { color: #ffffff}
 .navbar-custom .navbar-nav>.active>a,.navbar-custom .navbar-nav>.open>a, .navbar-custom .navbar-nav>.open>a:hover, .navbar-custom .navbar-nav>.open>a:focus { color: #ffffff}

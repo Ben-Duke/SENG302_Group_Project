@@ -13,6 +13,7 @@ import play.mvc.Http;
 import play.mvc.Result;
 import utilities.UtilityFunctions;
 import views.html.users.loginpage.*;
+import views.html.users.userIndex;
 
 import javax.inject.Inject;
 
@@ -59,7 +60,7 @@ public class LoginController {
                                             .bindFromRequest();
         if (userLoginForm.hasErrors()) {
             // redirect user to same login page with some errors.
-            return badRequest(loginPage.render(userLoginForm, User.getCurrentUser(request)));
+            return badRequest(userIndex.render(userLoginForm, User.getCurrentUser(request)));
         } else {
             String email = userLoginForm.get().email;
             String userId = Integer.toString(LoginFactory.getUserId(email));
@@ -68,8 +69,7 @@ public class LoginController {
                 // happens if somehow there are multiple users with the same email
                 // address in the db
                 flash("serverError", "Internal Server Error, please try again");
-                return internalServerError(loginPage.render(userLoginForm,
-                                                User.getCurrentUser(request)));
+                return internalServerError(userIndex.render(userLoginForm, User.getCurrentUser(request)));
             } else {
                 // Check the user has a default album
                 User user = UserAccessor.getById(Integer.parseInt(userId));

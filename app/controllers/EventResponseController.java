@@ -210,6 +210,7 @@ public class EventResponseController {
         return ok(Json.toJson(EventResponseAccessor.getAllEventResponses()));
     }
 
+    /** Get event responses only for users you are following */
     public Result getEventResponses(Http.Request request, int offset, int limit, String localDateTime) {
         User user = User.getCurrentUser(request);
         if (user == null) {
@@ -228,7 +229,7 @@ public class EventResponseController {
         }
 
         List<EventResponse> eventResponses = EventResponseAccessor
-                .getEventResponses(offset, limit, parsedLocalDateTime);
+                .getEventResponsesOfFollowingPaginated(user, offset, limit, parsedLocalDateTime);
 
 
         return ok(getJsonEventResponses(eventResponses));

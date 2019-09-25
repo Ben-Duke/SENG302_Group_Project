@@ -138,6 +138,16 @@ public class EventResponseAccessor {
                 .findList();
     }
 
+    public static List<EventResponse> getEventResponsesOfFollowingPaginated(User user, int offset, int limit, LocalDateTime dateTime) {
+        return EventResponse.find().query().where()
+                .in("user_userid", user.getFollowingIds())
+                .lt("responseDateTime", dateTime)
+                .order().desc("responseDateTime")
+                .setFirstRow(offset)
+                .setMaxRows(limit)
+                .findList();
+    }
+
     public static List<EventResponse> getEventResponsesOfFollowing(User user, int limit) {
         return EventResponse.find().query().where()
                 .in("user_userid", user.getFollowingIds())

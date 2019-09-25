@@ -1,5 +1,5 @@
 .navbar-custom { background-color: #A530C5; height:65px} /* Use this to change background */
-.navbar-custom .navbar-nav>.active>a:hover,.navbar-custom .navbar-nav>li>a:hover, .navbar-custom .navbar-nav>li>a:focus { background-color:#9d9d9d}
+.navbar-custom .navbar-nav>.active>a:hover,.navbar-custom .navbar-nav>li>a:hover, .navbar-custom .navbar-nav>li>a:focus { background-color:#5D088A}
 .navbar-custom .navbar-nav>.active>a,.navbar-custom .navbar-nav>.open>a,.navbar-custom .navbar-nav>.open>a, .navbar-custom .navbar-nav>.open>a:hover,.navbar-custom .navbar-nav>.open>a, .navbar-custom .navbar-nav>.open>a:hover, .navbar-custom .navbar-nav>.open>a:focus { background-color: #080808}
 .dropdown-menu { background-color: #ffffff}
 .dropdown-menu>li>a:hover, .dropdown-menu>li>a:focus { background-color: #428bca}

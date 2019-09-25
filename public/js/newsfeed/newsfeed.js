@@ -1,10 +1,15 @@
 let lastScrollY_GLOBAL = window.scrollY;
-let hasNewsFeedFinishedInnitialLoad_GLOBAL = false;
+let hasNewsFeedFinishedInitialLoad_GLOBAL = false;
+
 let lazyLoadingFinished = false;
-let eventsResponsesLoaded = new Set();
+let lazyLoadingMediaFinished = false;
+let lazyLoadingEventResponseFinished = false;
+
+const eventsResponsesLoaded = new Set();
+const mediaLoaded = new Set();
 
 let oldestDateTimeOfLoadedEventResponse_GLOBAL = getCurrentDate();
-let oldestDateTimeOfLoadedMedia = undefined;
+let oldestDateTimeOfLoadedMedia_GLOBAL = getCurrentDate();
 
 initNewsfeed();
 initLazyLoading();
@@ -36,24 +41,46 @@ function getCurrentDate() {
     return `${day}-${month}-${year} ${hour}:${minutes}:${seconds}`
 }
 
-function getAndLoadMoreNewsFeedItems() {
-    if (lazyLoadingFinished) {
-        return;
-    } // Returns early if lazy loading finished
+function getAndLoadMedia() {
+    $.ajax({
+        type: 'GET',
+        data: {
+            offset: 0,
+            limit: 10,
+            localDateTime: oldestDateTimeOfLoadedMedia_GLOBAL
+        },
+        url: '/users/newsfeed/media',
+        success: function (result) {
+            for (let response of result) {
+                if (!mediaLoaded.has(response.url)) {
+                    mediaLoaded.add(response.url);
+                    createNewsFeedMediaComponent(response.url, response.user, response.date_created);
+                }
+            }
 
-    let token = $('input[name="csrfToken"]').attr('value');
-    $.ajaxSetup({
-        beforeSend: function (xhr) {
-            xhr.setRequestHeader('Csrf-Token', token);
+            if (result.length === 0) {
+                finishLazyLoadingMedia();
+            } else {
+                oldestDateTimeOfLoadedMedia_GLOBAL = result[result.length - 1].date_created;
+            }
+
+
+            hasNewsFeedFinishedInitialLoad_GLOBAL = true;
+        },
+        error: (err) => {
+            console.error(err);
+            hasNewsFeedFinishedInitialLoad_GLOBAL = true;
         }
-    });
+    })
+}
 
+function getAndLoadEventResponses() {
     $.ajax({
         url: '/events/responses/getjson',
         type: 'GET',
         data: {
             offset: 0,
-            limit: 10,
+            limit: 5,
             localDateTime: oldestDateTimeOfLoadedEventResponse_GLOBAL
         },
         success: function (result) {
@@ -67,37 +94,55 @@ function getAndLoadMoreNewsFeedItems() {
             }
 
             if (responses.length === 0) {
-                finishLazyLoading();
+                finishLazyLoadingEventResponse();
             } else {
                 oldestDateTimeOfLoadedEventResponse_GLOBAL = responses[responses.length - 1].responseDateTime;
             }
 
-            hasNewsFeedFinishedInnitialLoad_GLOBAL = true;
+            hasNewsFeedFinishedInitialLoad_GLOBAL = true;
         },
         error: (err) => {
             console.error(err);
-            hasNewsFeedFinishedInnitialLoad_GLOBAL = true;
+            hasNewsFeedFinishedInitialLoad_GLOBAL = true;
+        }
+    });
+}
+
+function getAndLoadMoreNewsFeedItems() {
+    if (lazyLoadingFinished) return; // Returns early if lazy loading finished
+
+    let token = $('input[name="csrfToken"]').attr('value');
+    $.ajaxSetup({
+        beforeSend: function (xhr) {
+            xhr.setRequestHeader('Csrf-Token', token);
         }
     });
 
-    $.ajax({
-        type: 'GET',
-        data: data,
-        url: '/users/newsfeed/media',
-        success: function (result) {
-            responses = result;
-            for (response of responses) {
-                createNewsFeedMediaComponent(response.url, response.user, response.date_created);
-            }
-        }
-    })
-
+    if (!lazyLoadingMediaFinished) {
+        getAndLoadMedia();
+    }
+    if (!lazyLoadingEventResponseFinished) {
+        getAndLoadEventResponses();
+    }
 
 }
 
 
+function finishLazyLoadingEventResponse() {
+    lazyLoadingEventResponseFinished = true;
+    if (lazyLoadingMediaFinished) {
+        finishLazyLoading()
+    }
+}
+
+function finishLazyLoadingMedia() {
+    lazyLoadingMediaFinished = true;
+    if (lazyLoadingEventResponseFinished) {
+        finishLazyLoading()
+    }
+}
+
 function finishLazyLoading() {
-    lazyLoadingFinished = true;
     document.getElementById('loadMoreBtn').style.display = 'none';
     document.getElementById('endOfScroll').style.display = "inline-block";
 }
@@ -127,7 +172,7 @@ function initLazyLoading() {
  * @returns {boolean} true if lazy loading should occur
  */
 function isLazyLoadingTriggered() {
-    if (! hasNewsFeedFinishedInnitialLoad_GLOBAL) {
+    if (! hasNewsFeedFinishedInitialLoad_GLOBAL) {
         lastScrollY_GLOBAL = window.scrollY;
         return false; // news feed has not finished innital page load.
     }

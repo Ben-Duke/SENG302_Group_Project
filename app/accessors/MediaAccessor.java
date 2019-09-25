@@ -1,13 +1,12 @@
 package accessors;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import models.Album;
 import models.Destination;
 import models.Media;
 import models.*;
-import play.libs.Json;
+import utilities.UtilityFunctions;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -114,7 +113,7 @@ public class MediaAccessor {
 
             mediaNode.set("user", userNode);
             mediaNode.put("url", (media.getUrlWithPath()));
-            mediaNode.put("date_created", (media.getDate_added().format(formatter)));
+            mediaNode.put("date_created", UtilityFunctions.getStringFromDateTime(media.getDate_added()));
 
         return mediaNode;
     }

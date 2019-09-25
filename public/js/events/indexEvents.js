@@ -175,7 +175,6 @@ function displayEvents(events) {
         goingResponse.classList.add("btn-light");
         goingResponse.setAttribute("onclick", "respondToEvent(" + events[i].id + ", 'Going'" + ")");
         goingResponse.setAttribute("data-going", "false");
-        const eventName = document.createElement("h4");
         const interestedResponse = document.createElement("a");
         interestedResponse.classList.add("btn");
         interestedResponse.classList.add("btn-light");
@@ -192,24 +191,19 @@ function displayEvents(events) {
                         allResponses[j].responses[k].event.externalId === events[i].id) {
                     goingResponse.classList.add("btn-primary");
                     goingResponse.setAttribute("data-going", "true");
-//                    interestedResponse.setAttribute("data-interested", "false");
-//                    notGoingResponse.setAttribute("data-notGoing", "false");
                 } else if (allResponses[j].responses[k].responseType === "Interested" &&
                         allResponses[j].responses[k].event.externalId === events[i].id) {
                     interestedResponse.classList.add("btn-primary");
                     interestedResponse.setAttribute("data-interested", "true");
-//                    goingResponse.setAttribute("data-going", "false");
-//                    notGoingResponse.setAttribute("data-notGoing", "false");
                 } else if (allResponses[j].responses[k].responseType === "NotGoing" &&
                         allResponses[j].responses[k].event.externalId === events[i].id) {
                     notGoingResponse.classList.add("btn-primary");
                     notGoingResponse.setAttribute("data-notGoing", "true");
-//                    interestedResponse.setAttribute("data-interested", "false");
-//                    goingResponse.setAttribute("data-going", "false");
                 }
             }
         }
 
+        const eventName = document.createElement("h4");
         eventName.classList.add("media-heading");
         eventName.innerText = events[i]["name"];
         eventLink.appendChild(eventName);

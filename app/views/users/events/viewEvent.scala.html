@@ -113,6 +113,7 @@
                 <h2> @event.getName()</h2>
             </a>
             <h4>@event.getDescription()</h4>
+            <div id="respondButtons" class="well" data-event-id="@event.getExternalId()"></div>
             @if(isStored) {
                 <div class="well response-well ">
                 @for(response <- eventResponses) {

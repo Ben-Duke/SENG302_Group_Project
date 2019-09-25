@@ -1,19 +1,22 @@
-.body{
-
-    background-image:url("");
+body{
+    background-color: #f9f9f9;
+    background-repeat: no-repeat;
+    background-size: 100% auto;
+    background-position: 70% 10%;
+    background-attachment: fixed;
 }
 .loginform{
+    padding-top: 200px;
+    padding-right:100px;
+    /*top: 50%;*/
+    /*left: 50%;*/
+    /*margin-right: -25%;*/
+}
 
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    margin-right: -50%;
-    transform: translate(-50%, -50%);
-    background-color: #ffd39e;
-    border: 1px solid #888;
-    width: 20%;
-    padding: 16px;
-
-    border-radius: 15px 15px 15px 15px;
-
+@media (min-width: 0px) {
+    .row.equal {
+        display: flex;
+        flex-wrap: wrap;
+        padding-top: 150px;
+    }
 }

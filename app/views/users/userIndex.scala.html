@@ -2,20 +2,35 @@
 
 @main(user, "All Users") {
 
-    <body style = background-image:url("./assets/images/background.jpg");>
-        <link rel="stylesheet" type="text/css"
-        href='@routes.Assets.at("stylesheets/userIndex.css")'>
+    @*<body style = background-image:url("./assets/images/background.jpg");>*@
+    <head>
+        <link rel="stylesheet" href="@routes.Assets.at("stylesheets/userIndex.css")">
+    </head>
+    <body style = background-image:url("./assets/images/icons/logoLarge.png");>
 
 
+    @*<div class = "loginform">*@
+        @*<h2>Welcome to TravelEA</h2>*@
 
-    <div class = "loginform">
-        <h2>Welcome to TravelEA</h2>
+        @*<form>*@
+            @*<button class="btn btn-default" formaction="@routes.RegisterController.createuser()">Create User</button>*@
+            @*<button class="btn btn-default" formaction="@routes.LoginController.login()">Login</button>*@
+        @*</form>*@
+    @*</div>*@
+        <div class="container">
+            <div class="row equal">
+                @*<div class="col-lg-8">*@
+                    @*<img src ='/assets/images/icons/logoLarge.png' height="600" width="600" style="padding-top: 0px">*@
+                @*</div>*@
+                <div class="col-lg-4 loginform">
+                    <h2>Welcome to iVentr</h2>
 
-        <form>
-            <button class="btn btn-default" formaction="@routes.RegisterController.createuser()">Create User</button>
-            <button class="btn btn-default" formaction="@routes.LoginController.login()">Login</button>
-        </form>
-    </div>
-
+                    <form>
+                    <button class="btn btn-default" formaction="@routes.RegisterController.createuser()">Create User</button>
+                    <button class="btn btn-default" formaction="@routes.LoginController.login()">Login</button>
+                    </form>
+                </div>
+            </div>
+        </div>
     </body>
 }

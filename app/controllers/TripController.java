@@ -701,7 +701,7 @@ public class TripController extends Controller {
     public Result getTripsByName(Http.Request request, String name, int offset, int quantity) {
         User user = User.getCurrentUser(request);
         if (user == null) {
-            return redirect(routes.UserController.userindex()); //TODO probably use OK()
+            return redirect(routes.UserController.userindex());
         }
         List<Trip> trips = TripAccessor.getTripsByName(name, user, offset, quantity);
         ObjectMapper objectMapper = new ObjectMapper();

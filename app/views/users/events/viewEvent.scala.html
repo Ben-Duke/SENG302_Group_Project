@@ -2,6 +2,7 @@
 @import utilities.UtilityFunctions
 @main(user, "Event") {
     <head>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
         <style>
 
                 .userProfileImg {
@@ -100,140 +101,148 @@
                 }
         </style>
     </head>
-    <div class="row">
-        <div class="col-sm-5">
-            <div id="map">
+    <div class="container">
+        <div class="row">
 
-            </div>
-        </div>
-        <label class="col-sm-0 control-label"></label>
-        <div class="col-sm-6">
-            <img src="@event.getImageUrl">
-            <a href="@event.getUrl()" target="_blank">
-                <h2> @event.getName()</h2>
-            </a>
-            <h4>@event.getDescription()</h4>
-            <div id="respondButtons" class="well" data-event-id="@event.getExternalId()"></div>
-            @if(isStored) {
+            <label class="col-sm-0 control-label"></label>
+            <div class="col-sm-7">
+                <img src="@event.getImageUrl" style="margin-top: 10px;">
+                <a href="@event.getUrl()" target="_blank">
+                    <h2> @event.getName() <i class="fa">&#xf08e;</i></h2>
+                </a>
+                <h4>@event.getDescription()</h4>
+                <h5>Type: @event.getType() | Starts: @event.getStartTime() | Ends: @event.getEndTime()</h5>
+                <h5>@event.getAddress()</h5>
+                <div id="respondButtons" class="well" data-event-id="@event.getExternalId()"></div>
+
+                @if(isStored) {
                 <div class="well response-well ">
-                @for(response <- eventResponses) {
+                    @for(response <- eventResponses) {
                     <div class="responseItem">
                         <img class="img-circle userProfileImg" src="@{routes.HomeController.serveProfilePicture(response.getUser.getUserid())}")>
 
                         @if(user == response.getUser) {
-                            <span class="responseType">You  @UtilityFunctions.getResponseAdjustedForTime(response, true)</span>
+                        <span class="responseType">You  @UtilityFunctions.getResponseAdjustedForTime(response, true)</span>
                         } else {
-                            <span class="responseType">@response.getUser.getFName @response.getUser.getLName
-                                @UtilityFunctions.getResponseAdjustedForTime(response, false)</span>
+                        <span class="responseType">@response.getUser.getFName @response.getUser.getLName
+                                    @UtilityFunctions.getResponseAdjustedForTime(response, false)</span>
                         }
                         <span class="responseTime">@UtilityFunctions.getFormattedDateTime(response.getResponseDateTime)</span>
                     </div>
-                }
-                </div>
-            }
-
-
-            @if(isStored) {
-                <h2>Event Media</h2>
-                <a class="btn btn-primary" role="button" data-toggle="modal" data-target="#myModal">
-                    Add Media
-                </a>
-                <div class="row">
-                @for(photo <- event.getPrimaryAlbum.getMedia) {
-                    @if(photo.isOwner(user) || photo.getIsPublic()) {
-
-                        <a href="#" data-toggle="modal" data-target="#photo-carousel" onclick="displayPhoto(@photo.getMediaId())">
-
-                            <div class="" id="imageContainer">
-                                <div class="overlay">
-                                    <i class="icon" title="User Profile">
-                                    @if(photo.getIsPublic()) {
-                                        <i class="fa fa-eye-green"></i>
-                                    } else {
-                                        <i class="fa fa-eye-red"></i>
-                                    }
-                                    </i>
-                                </div>
-                                <img class="img-thumbnail" id=@{photo.getUrl} src="@{routes.HomeController.index(photo.getUrlWithPath())}" alt="Event Image">
-                            </div>
-
-
-                        </a>
                     }
-                }
                 </div>
-                <div id="myModal" class="modal fade" role="dialog">
-                    <div class="modal-dialog">
+                }
 
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                <h4 class="modal-title">Select Your Photo</h4>
+                @if(isStored) {
+                    <h2>Media</h2>
+                    <a class="btn btn-primary" role="button" data-toggle="modal" data-target="#myModal">
+                        Add Media
+                    </a>
+                    <div class="row">
+                    @for(photo <- event.getPrimaryAlbum.getMedia) {
+                        @if(photo.isOwner(user) || photo.getIsPublic()) {
+
+                            <a href="#" data-toggle="modal" data-target="#photo-carousel" onclick="displayPhoto(@photo.getMediaId())">
+
+                                <div class="" id="imageContainer">
+                                    <div class="overlay">
+                                        <i class="icon" title="User Profile">
+                                        @if(photo.getIsPublic()) {
+                                            <i class="fa fa-eye-green"></i>
+                                        } else {
+                                            <i class="fa fa-eye-red"></i>
+                                        }
+                                        </i>
+                                    </div>
+                                    <img class="img-thumbnail" id=@{photo.getUrl} src="@{routes.HomeController.index(photo.getUrlWithPath())}" alt="Event Image">
+                                </div>
+
+
+                            </a>
+                        }
+                    }
+                    </div>
+                    <div id="myModal" class="modal fade" role="dialog">
+                        <div class="modal-dialog">
+
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                    <h4 class="modal-title">Select Your Photo</h4>
+                                </div>
+
+                                <div class="modal-body">
+                                    @if(user.getUserPhotos.isEmpty) {
+                                        <p id="para">No photos to add to event. Upload some!</p>
+                                    }
+
+                                    @for(photo <- user.getUserPhotos) {
+                                        @if(!photo.getAlbums.exists(album => album.event == event)) {
+                                            <a id="addPhotoLink-@photo.getMediaId" class="btn btn-light" onclick="linkPhotoToEvent(@photo.getMediaId, @event.getEventId)
+                                            <div class="container" id="imagesContainer">
+                                                <div class="overlay">
+                                                    <i class="icon" title="User Profile">
+                                                    @if(photo.getIsPublic) {
+                                                        <i class="fa fa-eye"></i>
+                                                    } else {
+                                                        <i class="fa fa-eye-slash"></i>
+                                                    }
+                                                    </i>
+                                                </div>
+                                                <img class="img-thumbnail" id=@{photo.getUrl} width="60" src="@{routes.HomeController.index(photo.getUrlWithPath)}" alt="User Image">
+                                            </div>
+                                            </a>
+                                        }
+                                    }
+
+                                </div>
+
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                </div>
                             </div>
 
-                            <div class="modal-body">
-                                @if(user.getUserPhotos.isEmpty) {
-                                    <p id="para">No photos to add to event. Upload some!</p>
-                                }
+                        </div>
+                    </div>
 
-                                @for(photo <- user.getUserPhotos) {
-                                    @if(!photo.getAlbums.exists(album => album.event == event)) {
-                                        <a id="addPhotoLink-@photo.getMediaId" class="btn btn-light" onclick="linkPhotoToEvent(@photo.getMediaId, @event.getEventId)
-                                        <div class="container" id="imagesContainer">
-                                            <div class="overlay">
-                                                <i class="icon" title="User Profile">
-                                                @if(photo.getIsPublic) {
-                                                    <i class="fa fa-eye"></i>
-                                                } else {
-                                                    <i class="fa fa-eye-slash"></i>
-                                                }
-                                                </i>
-                                            </div>
-                                            <img class="img-thumbnail" id=@{photo.getUrl} width="60" src="@{routes.HomeController.index(photo.getUrlWithPath)}" alt="User Image">
+                    <div id="photo-carousel" class="modal fade">
+                        <div class="container vertical-center">
+                            <div class="carousel slide" id="myslider" data-ride="carousel" data-interval="false">
+                                <div id="carousel-inner" class="carousel-inner" style="text-align: center;">
+                                @for(photo <- event.getPrimaryAlbum.getMedia) {
+                                    @if(photo.isOwner(user) || photo.getIsPublic()) {
+                                        <div id="caro-@photo.getMediaId" class="item">
+
+                                            <img class="center" id="carouselImage@photo.getMediaId()" src="@{routes.HomeController.index(photo.getUrlWithPath)}" style="height: 75%; margin: auto;">
+
+
+                                            <a class="btn btn-danger" onclick="unlinkPhotoToEvent(@photo.getMediaId(), @event.getEventId)">
+                                    Remove Photo</a>
                                         </div>
-                                        </a>
                                     }
                                 }
-
-                            </div>
-
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                </div>
+                                <a class ="left carousel-control" href="#myslider" data-slide="prev">
+                                    <span class="glyphicon glyphicon-chevron-left"></span>
+                                </a>
+                                <a class ="right carousel-control" href="#myslider" data-slide="next">
+                                    <span class="glyphicon glyphicon-chevron-right"></span>
+                                </a>
                             </div>
                         </div>
-
                     </div>
+                }
+
+            </div>
+            <div class="col-sm-5">
+                <div id="map">
+
                 </div>
-
-                <div id="photo-carousel" class="modal fade">
-                    <div class="container vertical-center">
-                        <div class="carousel slide" id="myslider" data-ride="carousel" data-interval="false">
-                            <div id="carousel-inner" class="carousel-inner" style="text-align: center;">
-                            @for(photo <- event.getPrimaryAlbum.getMedia) {
-                                @if(photo.isOwner(user) || photo.getIsPublic()) {
-                                    <div id="caro-@photo.getMediaId" class="item">
-
-                                        <img class="center" id="carouselImage@photo.getMediaId()" src="@{routes.HomeController.index(photo.getUrlWithPath)}" style="height: 75%; margin: auto;">
-
-
-                                        <a class="btn btn-danger" onclick="unlinkPhotoToEvent(@photo.getMediaId(), @event.getEventId)">
-                                Remove Photo</a>
-                                    </div>
-                                }
-                            }
-                            </div>
-                            <a class ="left carousel-control" href="#myslider" data-slide="prev">
-                                <span class="glyphicon glyphicon-chevron-left"></span>
-                            </a>
-                            <a class ="right carousel-control" href="#myslider" data-slide="next">
-                                <span class="glyphicon glyphicon-chevron-right"></span>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            }
-
+            </div>
         </div>
+    </div>
+    <div id="eventsPage">
+
     </div>
 
 

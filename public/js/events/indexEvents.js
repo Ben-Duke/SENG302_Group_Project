@@ -96,8 +96,6 @@ function getEventResponsesByType(responseType){
 }
 
 function displayEvents(events) {
-    const eventResultsDiv = document.querySelector("#events-results");
-    const userId = eventResultsDiv.dataset.userid;
     document.getElementById("events-results").appendChild(document.createElement("hr"));
     let isGoingResponses;
     let isInterestedResponses;
@@ -147,9 +145,6 @@ function displayEvents(events) {
 
     const allResponses = [isGoingResponses, isInterestedResponses, isNotGoingResponses]
     for (let i=0; i < events.length; i++) {
-        let isGoing = false;
-        let isInterested = false;
-        let isNotGoing = false;
         const mediaRow = document.createElement("div");
         mediaRow.classList.add("media")
         const mediaLeft = document.createElement("div");
@@ -218,11 +213,18 @@ function displayEvents(events) {
         eventCategory.innerText = "Type: " + events[i].category.name
         const eventDescription = document.createElement("p");
         eventDescription.innerText = events[i].description;
+        const eventFindaLinkP = document.createElement("p");
+        const eventFindaLink = document.createElement("a");
+        eventFindaLink.innerText = "View on eventfinda";
+        eventFindaLink.setAttribute("href", events[i].url);
+        eventFindaLink.setAttribute("target", "_blank");
+        eventFindaLinkP.appendChild(eventFindaLink);
         mediaBody.appendChild(eventLink);
         mediaBody.appendChild(eventAddress);
         mediaBody.appendChild(eventDateTime);
         mediaBody.appendChild(eventCategory);
         mediaBody.appendChild(eventDescription);
+        mediaBody.appendChild(eventFindaLinkP);
         mediaBody.appendChild(goingResponse);
         mediaBody.appendChild(interestedResponse);
         mediaBody.appendChild(notGoingResponse);
@@ -238,11 +240,8 @@ function displayEvents(events) {
 }
 
 function addPagination(count, pageNum) {
-    numOfPages = [];
-    pageNumbers = [];
-    latitudes = -43.53;
-    longitudes = 172.620278;
-    places = '';
+    let numOfPages = [];
+    let pageNumbers = [];
     const pagination = document.createElement("ul");
     pagination.classList.add("pagination");
     for (let i=0; i < count; i+=20) {
@@ -254,7 +253,7 @@ function addPagination(count, pageNum) {
             if (numOfPages.length >= pageNum+5) {
                 pageNumbers = [pageNum-3,pageNum-2, pageNum-1, pageNum, pageNum+1, pageNum+2, pageNum+3, pageNum+4];
             } else {
-                lastPage = numOfPages.length-0;
+                let lastPage = numOfPages.length-0;
                 pageNumbers = []
                 for (let j=lastPage-7; (j<lastPage+1 && j>0); j++) {
                     pageNumbers.push(j);
@@ -269,8 +268,8 @@ function addPagination(count, pageNum) {
         pageNumbers = numOfPages;
     }
     let item = document.createElement("li");
-    pageButton = document.createElement("a");
-    currentPageNum = 1;
+    let pageButton = document.createElement("a");
+    let currentPageNum = 1;
     pageButton.innerText = "First";
     pageButton.setAttribute("onClick", `searchEvents(${currentPageNum})`);
     item.appendChild(pageButton);
@@ -323,11 +322,15 @@ function addPagination(count, pageNum) {
     while (eventsPagination.childNodes.length > 0) {
         eventsPagination.childNodes[0].remove();
     }
-    eventFindaLogo = document.createElement("img");
+    const eventFindaLogoLink = document.createElement("a");
+    eventFindaLogoLink.setAttribute("href", "https://www.eventfinda.co.nz");
+    eventFindaLogoLink.setAttribute("target", "_blank");
+    const eventFindaLogo = document.createElement("img");
     eventFindaLogo.setAttribute("src", "https://www.eventfinda.co.nz/images/global/attribution.gif?pwiomi");
-    eventFindaLogo.setAttribute("style", "margin-right:10px; width:170px; height:25px; position: absolute; bottom:0; right:0");
+    eventFindaLogo.setAttribute("style", "margin-right:10px; width:170px; height:25px; position: fixed; bottom:0; right:0");
+    eventFindaLogoLink.appendChild(eventFindaLogo);
     document.getElementById("eventsPage").appendChild(pagination);
-    document.getElementById("eventsPage").appendChild(eventFindaLogo);
+    document.getElementById("eventsPage").appendChild(eventFindaLogoLink);
 }
 
 function loader() {

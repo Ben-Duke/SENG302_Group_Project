@@ -176,7 +176,6 @@ function setUpRespondButtons() {
     interestedResponse.innerText = "Interested";
     notGoingResponse.innerText = "Not Going"
 
-    console.log(allResponses);
     for (let j=0; j < allResponses.length; j++) {
         for (let k=0; k < allResponses[j].responses.length; k++) {
             if (allResponses[j].responses[k].responseType == "Going" &&
@@ -197,5 +196,14 @@ function setUpRespondButtons() {
     respondButtons.appendChild(goingResponse);
     respondButtons.appendChild(interestedResponse);
     respondButtons.appendChild(notGoingResponse);
+
+    const eventFindaLogoLink = document.createElement("a");
+    eventFindaLogoLink.setAttribute("href", "https://www.eventfinda.co.nz");
+    eventFindaLogoLink.setAttribute("target", "_blank");
+    const eventFindaLogo = document.createElement("img");
+    eventFindaLogo.setAttribute("src", "https://www.eventfinda.co.nz/images/global/attribution.gif?pwiomi");
+    eventFindaLogo.setAttribute("style", "margin-right:10px; width:170px; height:25px; position: fixed; bottom:0; right:0");
+    eventFindaLogoLink.appendChild(eventFindaLogo);
+    document.getElementById("eventsPage").appendChild(eventFindaLogoLink);
 }
 

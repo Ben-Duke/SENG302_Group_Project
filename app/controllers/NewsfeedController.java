@@ -11,13 +11,18 @@ import utilities.UtilityFunctions;
 import utilities.exceptions.EbeanDateParseException;
 import views.html.users.newsfeed.newsfeed;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static play.mvc.Results.*;
 
 public class NewsfeedController {
 
+    private static final String DATE_TIME_PATTERN = "dd-MM-yyyy HH:mm:ss";
+    private static final DateTimeFormatter DATE_TIME_FORMATTER =
+            DateTimeFormatter.ofPattern(DATE_TIME_PATTERN);
 
     /**
      * Renders the news feed page
@@ -48,9 +53,8 @@ public class NewsfeedController {
 
         LocalDateTime parsedLocalDateTime = null;
         try {
-            parsedLocalDateTime = UtilityFunctions
-                    .parseLocalDateTime(datetimeString);
-        } catch (EbeanDateParseException e) {
+            parsedLocalDateTime = LocalDateTime.parse(datetimeString, DATE_TIME_FORMATTER);
+        } catch (Exception e) {
             //silent catch, handled below
         }
         if (parsedLocalDateTime == null) {
@@ -62,7 +66,6 @@ public class NewsfeedController {
         for(int i = 0; i < media.size(); i++) {
             userNewsfeed.add(MediaAccessor.getUserMediaData(media.get(i)));
         }
-
         return ok(Json.toJson(userNewsfeed));
     }
 

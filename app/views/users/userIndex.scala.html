@@ -6,7 +6,7 @@
     <head>
         <link rel="stylesheet" href="@routes.Assets.at("stylesheets/userIndex.css")">
     </head>
-    <body style = background-image:url("./assets/images/icons/logoLarge.png");>
+    <body>
 
 
     @*<div class = "loginform">*@
@@ -19,17 +19,18 @@
     @*</div>*@
         <div class="container">
             <div class="row equal">
-                @*<div class="col-lg-8">*@
-                    @*<img src ='/assets/images/icons/logoLarge.png' height="600" width="600" style="padding-top: 0px">*@
-                @*</div>*@
-                <div class="col-lg-4 loginform">
-                    <h2>Welcome to iVentr</h2>
+                <div class="col-lg-8 col-md-8 col-sm-4 background-img">
+                    <img src ='/assets/images/icons/logoLarge.png' width="600px">
+                </div>
+                <div class="col-lg-4 col-md-4 col-sm-4 loginform">
+                    <h2>Welcome to iVentr </h2>
 
                     <form>
                     <button class="btn btn-default" formaction="@routes.RegisterController.createuser()">Create User</button>
                     <button class="btn btn-default" formaction="@routes.LoginController.login()">Login</button>
                     </form>
                 </div>
+
             </div>
         </div>
     </body>

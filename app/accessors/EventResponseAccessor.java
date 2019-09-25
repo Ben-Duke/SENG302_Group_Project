@@ -56,6 +56,11 @@ public class EventResponseAccessor {
                 "event", event).eq("response_type", responseType).findList();
     }
 
+    public static int getCountByEventAndType(Event event, ResponseType responseType) {
+        return EventResponse.find().query().where().eq(
+                "event", event).eq("response_type", responseType).findCount();
+    }
+
     /** Return a list of Event Responses by a given user
      * @param user User
      * @return List of Event Responses
@@ -124,7 +129,7 @@ public class EventResponseAccessor {
     }
 
 
-    public static List<EventResponse> getEventResponses(int offset, int limit, LocalDateTime dateTime) { //TODO test
+    public static List<EventResponse> getEventResponses(int offset, int limit, LocalDateTime dateTime) {
         return EventResponse.find().query().where()
                 .lt("responseDateTime", dateTime)
                 .order().desc("responseDateTime")
@@ -133,4 +138,11 @@ public class EventResponseAccessor {
                 .findList();
     }
 
+    public static List<EventResponse> getEventResponsesOfFollowing(User user, int limit) {
+        return EventResponse.find().query().where()
+                .in("user_userid", user.getFollowingIds())
+                .order().desc("responseDateTime")
+                .setMaxRows(limit)
+                .findList();
+    }
 }

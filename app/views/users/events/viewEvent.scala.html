@@ -1,5 +1,7 @@
 @(user : User, event : Event, eventResponses : List[EventResponse], googleApiKey : String, isStored : Boolean)
 @import utilities.UtilityFunctions
+    @import accessors.EventResponseAccessor
+
 @main(user, "Event") {
     <head>
         <style>
@@ -114,6 +116,14 @@
             </a>
             <h4>@event.getDescription()</h4>
             @if(isStored) {
+                <h4 id="response-totals">
+                    <b>
+                    @EventResponseAccessor.getCountByEventAndType(event, ResponseType.Going) Going |
+                    @EventResponseAccessor.getCountByEventAndType(event, ResponseType.Interested) Interested |
+                        @EventResponseAccessor.getCountByEventAndType(event, ResponseType.NotGoing) Not Going
+                    </b>
+                </h4>
+
                 <div class="well response-well ">
                 @for(response <- eventResponses) {
                     <div class="responseItem">

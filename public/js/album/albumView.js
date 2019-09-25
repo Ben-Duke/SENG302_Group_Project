@@ -784,16 +784,17 @@ function currentSlide(n) {
     showSlides(slideIndex = n);
 }
 
+
 /** Called when displaying a photo modal */
 function showSlides(n) {
-
+    
     let i;
+
     let slides = document.getElementsByClassName("mySlides");
 
     if (n > slides.length) {slideIndex = 1}
     if (n < 1) {slideIndex = slides.length}
     for (i = 0; i < slides.length; i++) {
-        console.log(slides[i]);
         slides[i].style.display = "none";
     }
 
@@ -802,6 +803,26 @@ function showSlides(n) {
     }
 
     if(slides[slideIndex-1] !== undefined) {
+
+        let mediaId = slides[slideIndex - 1].dataset.mediaid;
+
+        $.ajax({
+            type: 'GET',
+            url: '/users/photos/'+ mediaId +'/caption',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            success:function (caption) {
+
+                if (caption !== "") {
+                    document.querySelector("[captionmediaid='" + mediaId + "']").innerText = caption;
+                }
+            },
+            error: function(xhr, textStatus, errorThrown){
+                console.log(xhr.status + " " + textStatus + " " + errorThrown);
+            }
+        });
+
 
         slides[slideIndex-1].style.display = "inline-block";
         const privacyBtn = document.getElementById("privacyBtn");
@@ -1079,7 +1100,6 @@ function deletePhotoRequest(photoId){
     })
 }
 
-
 /**
  * Sends a request to change the photo caption and toggles appropriate displays
  * @param caption the new caption
@@ -1096,7 +1116,7 @@ function submitEditCaption(caption, photoId) {
         headers: {
             'Content-Type': 'application/json'
         },
-        success:function (){
+        success:function () {
             document.getElementById('undoButton').classList.remove('disabled');
         },
         error: function(xhr, textStatus, errorThrown){

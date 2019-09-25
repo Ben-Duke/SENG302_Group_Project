@@ -295,6 +295,7 @@ public class DestinationController extends Controller {
         }
 
         Destination newDestination = getDestinationFromRequest(request);
+        newDestination.setDestId(oldDestination.getDestId());
 
         DestinationFactory destinationFactory = new DestinationFactory();
 

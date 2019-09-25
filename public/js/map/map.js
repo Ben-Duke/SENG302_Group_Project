@@ -1138,6 +1138,7 @@ function initPlacesAutocompleteSearch() {
                         document.getElementById('createDestination').style.display = 'none';
                     }
                     $('[href="#destinationsTab"]').tab('show');
+
                     displayDestination(data, coordinates.lat(), coordinates.lng());
                 }
                 else if (xhr.status == 201) {

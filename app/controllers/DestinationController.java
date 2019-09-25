@@ -644,7 +644,7 @@ public class DestinationController extends Controller {
 
         for (Destination existingDestination : allDestinations) {
             if (existingDestination.isUserOwner(user) ||
-                    destination.getIsPublic()) {
+                    existingDestination.getIsPublic()) {
                 userAccessibleDestinations.add(existingDestination);
             }
         }

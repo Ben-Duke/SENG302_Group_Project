@@ -37,6 +37,10 @@ function getCurrentDate() {
 }
 
 function getAndLoadMoreNewsFeedItems() {
+    if (lazyLoadingFinished) {
+        return;
+    } // Returns early if lazy loading finished
+
     let token = $('input[name="csrfToken"]').attr('value');
     $.ajaxSetup({
         beforeSend: function (xhr) {
@@ -63,7 +67,7 @@ function getAndLoadMoreNewsFeedItems() {
             }
 
             if (responses.length === 0) {
-                lazyLoadingFinished = true;
+                finishLazyLoading();
             } else {
                 oldestDateTimeOfLoadedEventResponse_GLOBAL = responses[responses.length - 1].responseDateTime;
             }
@@ -76,6 +80,14 @@ function getAndLoadMoreNewsFeedItems() {
         }
     })
 }
+
+
+function finishLazyLoading() {
+    lazyLoadingFinished = true;
+    document.getElementById('loadMoreBtn').style.display = 'none';
+    document.getElementById('endOfScroll').style.display = "inline-block";
+}
+
 
 function initNewsfeed() {
     getAndLoadMoreNewsFeedItems();

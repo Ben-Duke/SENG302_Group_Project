@@ -2097,6 +2097,10 @@ async function previousTripPage() {
 }
 
 async function jumpToTripPage(pageNumber) {
+    if (pageNumber === tripPageNum) {
+        return // do nothing
+    }
+
     const searchInput = document.getElementById("destSearchInput").value;
 
     document.getElementById("trip-pagination-link-" + tripPageNum).removeAttribute("class");
@@ -2104,7 +2108,7 @@ async function jumpToTripPage(pageNumber) {
     tripPageNum = pageNumber;
     document.getElementById("trip-pagination-link-" + tripPageNum).setAttribute("class", "active");
 
-    if (searchInput == undefined || searchInput == null) {
+    if (searchInput == undefined || searchInput == null || searchInput.length === 0) {
         let newlyDisplayedTrips = await getPaginatedTripResults(tripPageNum, 5);
         displayTripTablePage(newlyDisplayedTrips.trips);
     } else {

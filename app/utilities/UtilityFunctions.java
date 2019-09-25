@@ -489,7 +489,6 @@ public class UtilityFunctions {
      * @return the parsed Local Date Time
      * @throws EbeanDateParseException if the parsing fails
      */
-    //TODO: Test
     public static LocalDateTime parseLocalDateTime(String dateTimeString) throws EbeanDateParseException {
         try {
             return LocalDateTime.parse(dateTimeString, DATE_TIME_FORMATTER);
@@ -499,18 +498,19 @@ public class UtilityFunctions {
     }
 
     public static String getResponseAdjustedForTime(EventResponse response, Boolean isCurrentUser) {
-        String responseType = response.getResponseType().toString();
-        if  (responseType.equalsIgnoreCase("Going") &&
+        ResponseType responseType = response.getResponseType();
+        String displayedResponse;
+
+        if  (responseType.equals(ResponseType.Going) &&
             response.getEvent().getEndTime().isBefore(LocalDateTime.now())) {
-            System.out.println(getFormattedDateTime(response.getEvent().getEndTime()));
-            responseType = "went";
+            displayedResponse = ResponseType.Went.getDisplayText();
         } else  {
             if (isCurrentUser) {
-                responseType = "are " + responseType.toLowerCase();
+                displayedResponse = "are " + responseType.getDisplayText();
             } else {
-                responseType = "is " + responseType.toLowerCase();
+                displayedResponse = "is " + responseType.getDisplayText();
             }
         }
-        return responseType;
+        return displayedResponse;
     }
 }

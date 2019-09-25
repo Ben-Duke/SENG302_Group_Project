@@ -107,6 +107,8 @@ public class EventResponseController {
         }
     }
 
+//    public Result getLimited
+
     /**
      * Controller method to get events the user has responded to by response type.
      * @param request Request

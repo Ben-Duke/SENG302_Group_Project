@@ -151,7 +151,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
         formData.put("longitude", "-50.0");
         Http.RequestBuilder request = Helpers.fakeRequest().bodyForm(formData).method(POST).uri("/users/destinations/save").session("connected", "2");
         Result result = route(app, request);
-        assertEquals(SEE_OTHER, result.status());
+        assertEquals(OK, result.status());
         assertEquals(4, User.find().byId(2).getDestinations().size());
     }
 
@@ -172,7 +172,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
         Http.RequestBuilder request = Helpers.fakeRequest().bodyForm(formData)
                 .method(POST).uri("/users/destinations/save").session("connected", "2");
         Result result = route(app, request);
-        assertEquals(SEE_OTHER, result.status());
+        assertEquals(OK, result.status());
         assertEquals(4, User.find().byId(2).getDestinations().size());
         assertEquals(1,
                 DestinationAccessor.getDestinationsbyName("Summoner's Rift").size());
@@ -276,7 +276,7 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
         Http.RequestBuilder request = Helpers.fakeRequest().bodyForm(formData).method(Helpers.POST).
                 uri("/users/destinations/save").session("connected", "1");
         Result result = route(app, request);
-        assertEquals(REDIRECT_HTTP_STATUS, result.status());
+        assertEquals(OK, result.status());
     }
 
     /**

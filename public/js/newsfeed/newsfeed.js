@@ -2,8 +2,6 @@ let lastScrollY_GLOBAL = window.scrollY;
 let hasNewsFeedFinishedInitialLoad_GLOBAL = false;
 
 let lazyLoadingFinished = false;
-let lazyLoadingMediaFinished = false;
-let lazyLoadingEventResponseFinished = false;
 
 const eventsResponsesLoaded = new Set();
 const mediaLoaded = new Set();
@@ -41,7 +39,67 @@ function getCurrentDate() {
     return `${day}-${month}-${year} ${hour}:${minutes}:${seconds}`
 }
 
-function getAndLoadMedia() {
+
+function parseDate(dateStr) {
+    const workingDateParts = dateStr.trim().split(" ");
+    const dateParts = workingDateParts[0].split("-");
+    const timePart = workingDateParts[1];
+
+    const dateString = `${dateParts[2]}-${dateParts[1]}-${dateParts[0]} ${timePart}`;
+    return new Date(dateString)
+}
+
+function populateNewsFeed(responses, mediaResult) {
+    let newsFeedItems = [];
+    for (let photo of mediaResult) {
+        photo.dateKey = parseDate(photo.date_created);
+        if (!mediaLoaded.has(photo.url)) {
+            mediaLoaded.add(photo.url);
+            newsFeedItems.push(photo);
+        }
+    }
+    for (let eventResponse of responses) {
+        if (!eventsResponsesLoaded.has(eventResponse.responseId)) {
+            eventResponse.dateKey = parseDate(eventResponse.responseDateTime);
+            eventsResponsesLoaded.add(eventResponse.responseId);
+            newsFeedItems.push(eventResponse);
+        }
+    }
+    newsFeedItems.sort((b, a) => {
+        if (a.dateKey > b.dateKey)
+            return 1;
+        else if (a.dateKey < b.dateKey)
+            return -1;
+        return 0
+    });
+    for (let item of newsFeedItems) {
+        if (item.hasOwnProperty("responseId")) {
+            createNewsFeedEventResponseComponent(item.event, item.user, item.responseDateTime)
+        }
+        else if (item.hasOwnProperty("url")) {
+            createNewsFeedMediaComponent(item.url, item.user, item.date_created);
+        }
+    }
+
+    if (responses.length + mediaResult.length === 0) {
+        finishLazyLoading();
+    } else {
+        try {
+            oldestDateTimeOfLoadedMedia_GLOBAL = mediaResult[mediaResult.length - 1].date_created;
+        } catch {
+            console.log("No media in this request");
+        }
+        try {
+            oldestDateTimeOfLoadedEventResponse_GLOBAL = responses[responses.length - 1].responseDateTime;
+        } catch {
+            console.log("No event responses in this request")
+        }
+    }
+
+    hasNewsFeedFinishedInitialLoad_GLOBAL = true;
+}
+
+function requestMediaItemsAndLoadNewsFeed(responses) {
     $.ajax({
         type: 'GET',
         data: {
@@ -50,22 +108,8 @@ function getAndLoadMedia() {
             localDateTime: oldestDateTimeOfLoadedMedia_GLOBAL
         },
         url: '/users/newsfeed/media',
-        success: function (result) {
-            for (let response of result) {
-                if (!mediaLoaded.has(response.url)) {
-                    mediaLoaded.add(response.url);
-                    createNewsFeedMediaComponent(response.url, response.user, response.date_created);
-                }
-            }
-
-            if (result.length === 0) {
-                finishLazyLoadingMedia();
-            } else {
-                oldestDateTimeOfLoadedMedia_GLOBAL = result[result.length - 1].date_created;
-            }
-
-
-            hasNewsFeedFinishedInitialLoad_GLOBAL = true;
+        success: function (mediaResult) {
+            populateNewsFeed(responses, mediaResult);
         },
         error: (err) => {
             console.error(err);
@@ -74,7 +118,7 @@ function getAndLoadMedia() {
     })
 }
 
-function getAndLoadEventResponses() {
+function requestNewsfeedItems() {
     $.ajax({
         url: '/events/responses/getjson',
         type: 'GET',
@@ -83,23 +127,9 @@ function getAndLoadEventResponses() {
             limit: 5,
             localDateTime: oldestDateTimeOfLoadedEventResponse_GLOBAL
         },
-        success: function (result) {
-            const responses = result.responses;
-            for (let response of responses) {
-                // Add response component if it has not already been added
-                if (!eventsResponsesLoaded.has(response.responseId)) {
-                    eventsResponsesLoaded.add(response.responseId);
-                    createNewsFeedEventResponseComponent(response.event, response.user, response.responseDateTime)
-                }
-            }
-
-            if (responses.length === 0) {
-                finishLazyLoadingEventResponse();
-            } else {
-                oldestDateTimeOfLoadedEventResponse_GLOBAL = responses[responses.length - 1].responseDateTime;
-            }
-
-            hasNewsFeedFinishedInitialLoad_GLOBAL = true;
+        success: function (eventResponses) {
+            const responses = eventResponses.responses;
+            requestMediaItemsAndLoadNewsFeed(responses)
         },
         error: (err) => {
             console.error(err);
@@ -117,32 +147,12 @@ function getAndLoadMoreNewsFeedItems() {
             xhr.setRequestHeader('Csrf-Token', token);
         }
     });
-
-    if (!lazyLoadingMediaFinished) {
-        getAndLoadMedia();
-    }
-    if (!lazyLoadingEventResponseFinished) {
-        getAndLoadEventResponses();
-    }
-
+    requestNewsfeedItems();
 }
 
-
-function finishLazyLoadingEventResponse() {
-    lazyLoadingEventResponseFinished = true;
-    if (lazyLoadingMediaFinished) {
-        finishLazyLoading()
-    }
-}
-
-function finishLazyLoadingMedia() {
-    lazyLoadingMediaFinished = true;
-    if (lazyLoadingEventResponseFinished) {
-        finishLazyLoading()
-    }
-}
 
 function finishLazyLoading() {
+    lazyLoadingFinished = true;
     document.getElementById('loadMoreBtn').style.display = 'none';
     document.getElementById('endOfScroll').style.display = "inline-block";
 }

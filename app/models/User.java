@@ -142,8 +142,8 @@ public class User extends BaseModel implements Comparable<User>, AlbumOwner, Med
         this.email = email.toLowerCase();
         this.hashAndSetPassword(plaintextPassword);
         this.isAdmin = false;
-        this.followers = new ArrayList<>();
-        this.following = new ArrayList<>();
+        this.followers = new ArrayList<Follow>();
+        this.following = new ArrayList<Follow>();
     }
 
     /**
@@ -170,8 +170,8 @@ public class User extends BaseModel implements Comparable<User>, AlbumOwner, Med
         this.dateOfBirth = dateOfBirth;
         this.gender = gender;
         this.isAdmin = false;
-        this.followers = new ArrayList<>();
-        this.following = new ArrayList<>();
+        this.followers = new ArrayList<Follow>();
+        this.following = new ArrayList<Follow>();
     }
 
     /**
@@ -181,8 +181,8 @@ public class User extends BaseModel implements Comparable<User>, AlbumOwner, Med
     public User(String email){
         this.email = email.toLowerCase();
         this.isAdmin = false;
-        this.followers = new ArrayList<>();
-        this.following = new ArrayList<>();
+        this.followers = new ArrayList<Follow>();
+        this.following = new ArrayList<Follow>();
         this.dateOfBirth = LocalDate.now();
     }
 
@@ -206,29 +206,29 @@ public class User extends BaseModel implements Comparable<User>, AlbumOwner, Med
         return find;
     }
 
-    @Override
-    public String toString() {
-        return "User{" +
-                "email='" + email + '\'' +
-                ", userid=" + userid +
-                ", passwordHash='" + passwordHash + '\'' +
-                ", creationDate=" + creationDate +
-                ", nationality=" + nationality +
-                ", dateOfBirth=" + dateOfBirth +
-                ", gender='" + gender + '\'' +
-                ", fName='" + fName + '\'' +
-                ", lName='" + lName + '\'' +
-                ", passports=" + passports +
-                ", trips=" + trips +
-                ", treasureHunts=" + treasureHunts +
-                ", destinations=" + destinations +
-                ", travellerTypes=" + travellerTypes +
-                ", guessedTHunts=" + guessedTHunts +
-                ", commandManager=" + getCommandManager() +
-                ", userPhotos=" + userPhotos +
-                ", isAdmin=" + isAdmin +
-                '}';
-    }
+//    @Override
+//    public String toString() {
+//        return "User{" +
+//                "email='" + email + '\'' +
+//                ", userid=" + userid +
+//                ", passwordHash='" + passwordHash + '\'' +
+//                ", creationDate=" + creationDate +
+//                ", nationality=" + nationality +
+//                ", dateOfBirth=" + dateOfBirth +
+//                ", gender='" + gender + '\'' +
+//                ", fName='" + fName + '\'' +
+//                ", lName='" + lName + '\'' +
+//                ", passports=" + passports +
+//                ", trips=" + trips +
+//                ", treasureHunts=" + treasureHunts +
+//                ", destinations=" + destinations +
+//                ", travellerTypes=" + travellerTypes +
+//                ", guessedTHunts=" + guessedTHunts +
+//                ", commandManager=" + getCommandManager() +
+//                ", userPhotos=" + userPhotos +
+//                ", isAdmin=" + isAdmin +
+//                '}';
+//    }
 
     /** Return true if the user has a default album, false otherwise */
     private boolean hasDefaultAlbum() {
@@ -329,6 +329,16 @@ public class User extends BaseModel implements Comparable<User>, AlbumOwner, Med
         return null;
     }
 
+    public boolean isFollowing(User user) {
+
+        for (Follow follow : this.following) {
+            if (follow.getFollowed().getUserid() == user.getUserid()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /**
      * Add a follow to the users list of followers
      * @param follow
@@ -343,6 +353,10 @@ public class User extends BaseModel implements Comparable<User>, AlbumOwner, Med
      */
     public void addToFollowing(Follow follow) {
         this.following.add(follow);
+    }
+
+    public void setPassword(String pass) {
+        this.passwordHash = pass;
     }
 
     /**

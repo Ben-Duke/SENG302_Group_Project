@@ -205,7 +205,7 @@ function isLazyLoadingTriggered() {
     }
 
     const hasScrolledBelowTriggerPoint = (window.innerHeight + window.scrollY)
-        >= (document.body.offsetHeight * 0.95);
+        >= (document.body.offsetHeight * 0.75);
 
     if (! hasScrolledBelowTriggerPoint) {
         lastScrollY_GLOBAL = window.scrollY;

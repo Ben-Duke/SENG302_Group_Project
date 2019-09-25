@@ -55,7 +55,7 @@ public class NewsfeedControllerTest extends BaseTestWithApplicationAndDatabase{
 
         Http.RequestBuilder newsfeedRequest = Helpers.fakeRequest()
                 .method(GET)
-                .uri("/users/newsfeedapi?offset=0&limit=1000&localDateTime="+formattedString).session("connected", "1");
+                .uri("/users/newsfeed/media?offset=0&limit=1000&localDateTime="+formattedString).session("connected", "1");
         Result newsfeedResult = route(app, newsfeedRequest);
         JsonNode newsfeedResponse = Json.parse( contentAsString( newsfeedResult));
         assertEquals(1,newsfeedResponse.size());

@@ -1,7 +1,10 @@
 let userCount;
+let followingCount;
+let followerCount;
 const usersPerPage = 10;
 let currentPageNum;
 let filters;
+
 init();
 
 /**
@@ -11,6 +14,8 @@ async function init() {
     await initNationalities();
     initDates();
     searchUsers();
+    searchFollowing();
+    searchFollowed();
 }
 
 /**
@@ -68,6 +73,24 @@ async function searchUsers() {
     await renderPaginatedData();
 }
 
+async function searchFollowing() {
+    updateFilters();
+    let count = await getUserCount('following');
+    followingCount = count;
+    currentPageNum = 1;
+    await renderPaginatedData('following');
+}
+
+async function searchFollowed() {
+    updateFilters();
+    let count = await getUserCount('follower');
+    followerCount = count;
+    currentPageNum = 1;
+    await renderPaginatedData('follower');
+}
+
+
+
 /**
  * Updates the filters based on what the user has selected
  */
@@ -116,28 +139,44 @@ function appendQueryParameters(route) {
 /**
  * Called when the user clicks on a pagination button to switch pages.
  */
-async function onPaginate(currentPage) {
+async function onPaginate(currentPage, type) {
     currentPageNum = currentPage;
-    await renderPaginatedData();
+
+    await renderPaginatedData(type);
 }
 
 /**
  * Renders the new table elements based on pagination
  */
-async function renderPaginatedData() {
-    await renderUserData(currentPageNum, usersPerPage);
+async function renderPaginatedData(type) {
+    await renderUserData(currentPageNum, usersPerPage, type);
+    if (type === 'following') {
+        addPagination(followingCount, currentPageNum, type);
+    } else if (type === "follower") {
+        addPagination(followerCount, currentPageNum, type);
 
-    addPagination(userCount, currentPageNum);
+    } else {
+        addPagination(userCount, currentPageNum, type);
+    }
 }
 
 /**
  * Gets the total count of users in the database based on query parameters
  */
-async function getUserCount() {
+async function getUserCount(type) {
 
     const token =  $('input[name="csrfToken"]').attr('value');
     const userCountRoute = "/users/profile/searchprofiles/count?";
     let filteredRoute = appendQueryParameters(userCountRoute);
+
+    if (type === 'following') {
+        filteredRoute += '&getfollowing=true';
+    }
+    if (type === 'follower') {
+        filteredRoute += '&getfollowers=true';
+    }
+
+
     $.ajaxSetup({
         beforeSend: function(xhr) {
             xhr.setRequestHeader('Csrf-Token', token);
@@ -158,11 +197,20 @@ async function getUserCount() {
  * @param pageNum the page number to retrieve
  * @param quantity the quantity of users to retrieve
  */
-async function renderUserData(pageNum, quantity) {
+async function renderUserData(pageNum, quantity, type) {
 
     const offset = (pageNum - 1) * quantity;
     const searchTravelPartnerRoute = "/users/profile/searchprofiles?";
     let filteredRoute = appendQueryParameters(searchTravelPartnerRoute);
+
+    if (type == 'following') {
+        filteredRoute += '&getfollowing=true';
+    }
+
+    if (type == 'follower') {
+        filteredRoute += '&getfollowers=true';
+    }
+
     filteredRoute += `&offset=${offset}&quantity=${10}`;
 
     const token =  $('input[name="csrfToken"]').attr('value');
@@ -178,7 +226,7 @@ async function renderUserData(pageNum, quantity) {
         contentType: 'application/json',
     });
 
-    await displayData(users);
+    await displayData(users, type);
 }
 
 /**
@@ -188,14 +236,32 @@ async function renderUserData(pageNum, quantity) {
  * traveller types
  * @param users the user data retrieved from the database
  */
-async function displayData(users) {
-    const tableBody = document.getElementById('travel-partner-search-table-body');
+async function displayData(users, type) {
+    let tab;
+
+    let tableBody;
+
+    if (type === 'following') {
+        tableBody = document.getElementById('following-table-body');
+        tab = 'followingTable-';
+
+    } else if (type === 'follower') {
+        tableBody = document.getElementById('follower-table-body');
+        tab = 'followerTable-'
+
+    } else {
+        tableBody = document.getElementById('travel-partner-search-table-body');
+        tab = 'searchResultsTable-';
+    }
+
+
     while (tableBody.childNodes.length > 0) {
         tableBody.childNodes[0].remove();
     }
 
     for (let user of users) {
         const row = document.createElement("tr");
+        row.id  = tab + user.userId
 
         const name = document.createElement("th");
         name.innerText = user.name;
@@ -217,43 +283,54 @@ async function displayData(users) {
         travellerTypes.innerText = user.travellerTypes;
         row.appendChild(travellerTypes);
 
-        const changeAdmin = document.createElement("td");
 
-        if (!user.isCurrentUser) {
+            const followLink = document.createElement("td");
+            followLink.setAttribute("class", "followLink");
+            followLink.setAttribute("data-profile", user.userId);
 
-            const changeAdminButton = document.createElement("a");
-            changeAdminButton.class = "btn btn-link";
+            const viewUser = document.createElement("td");
+            const viewUserBtn = document.createElement("a");
+            viewUserBtn.setAttribute("class", "btn");
+            viewUserBtn.setAttribute("class", "btn-link");
+            viewUserBtn.href = "/users/profile/"+user.userId;
+            viewUserBtn.innerText = "View";
 
-            if (user.isAdmin) {
-                changeAdminButton.href = "/users/admin/remove/" + user.userId;
-                changeAdminButton.innerText = "Revoke Admin";
+            viewUser.appendChild(viewUserBtn);
+
+            const followUserBtn = document.createElement("a");
+            followUserBtn.setAttribute("class", "btn");
+            followUserBtn.setAttribute("class", "btn-link");
+            followUserBtn.id = tab + "follow-"+user.userId;
+            followUserBtn.setAttribute("onclick", "followUser("+user.userId+")");
+            followUserBtn.innerText = "Follow";
+            followUserBtn.style.cursor = "pointer";
+
+
+            const unfollowUserBtn = document.createElement("a");
+            unfollowUserBtn.setAttribute("class", "btn");
+            unfollowUserBtn.setAttribute("class", "btn-link");
+            unfollowUserBtn.id = tab + "unfollow-"+user.userId;
+            unfollowUserBtn.setAttribute("onclick", "unfollowUser("+user.userId+ ")");
+            unfollowUserBtn.innerText = "Unfollow";
+            unfollowUserBtn.style.cursor = "pointer";
+
+
+            if (user.isFollowedByCurrentUser) {
+                followUserBtn.style.display = "none";
             } else {
-                changeAdminButton.href = "/users/admin/make/" + user.userId;
-                changeAdminButton.innerText = "Make Admin";
+                unfollowUserBtn.style.display = "none";
             }
-            changeAdmin.appendChild(changeAdminButton);
-        }
-
-        row.appendChild(changeAdmin);
 
 
-        const actAsUser = document.createElement("td");
+            followLink.appendChild(followUserBtn);
+            followLink.appendChild(unfollowUserBtn);
 
-        if (!user.isCurrentUser) {
-
-            const actAsUserButton = document.createElement("a");
-            actAsUserButton.class = "btn btn-link";
-
-            actAsUserButton.href = "/users/admin/actasuser/" + user.userId;
-            actAsUserButton.innerText = "Act as user";
-
-            actAsUser.appendChild(actAsUserButton);
-        }
-
-        row.appendChild(actAsUser);
+            row.appendChild(viewUser);
+            row.appendChild(followLink);
 
 
         tableBody.append(row);
+        // configureFollowLinks();
     }
 }
 
@@ -262,18 +339,32 @@ async function displayData(users) {
  * @param count the total number of data objects
  * @param pageNum number of pages to add
  */
-function addPagination(count, pageNum) {
+function addPagination(count, pageNum, type) {
     // remove existing pagination
-    let eventsPagination = document.getElementById("travel-partner-search-pagination");
-    while (eventsPagination.childNodes.length > 0) {
-        eventsPagination.childNodes[0].remove();
+
+    let tablePagination;
+
+    if (type === 'following') {
+        tablePagination = document.getElementById('following-pagination');
+    } else if (type === 'follower') {
+        tablePagination = document.getElementById('follower-pagination');
+
+    } else {
+        tablePagination = document.getElementById("travel-partner-search-pagination");
+    }
+
+    let newType = "'"+type+"'";
+
+
+    while (tablePagination.childNodes.length > 0) {
+        tablePagination.childNodes[0].remove();
     }
 
     let numOfPages = [];
     let pageNumbers = [];
     let places = '';
-    const maxPages = Math.ceil(count/usersPerPage);   // round up as there may be more total users than a multiple of 10
-    const pagination = document.createElement("ul");
+    let maxPages = Math.ceil(count/usersPerPage);   // round up as there may be more total users than a multiple of 10
+    let pagination = document.createElement("ul");
     pagination.classList.add("pagination");
     for (let i = 0; i < maxPages; i++) {
         numOfPages.push(i + 1);
@@ -302,7 +393,7 @@ function addPagination(count, pageNum) {
     pageButton = document.createElement("a");
     currentPageNum = 1;
     pageButton.innerText = "First";
-    pageButton.setAttribute("onClick", `onPaginate(${1})`);
+    pageButton.setAttribute("onClick", `onPaginate(${1} , ${newType})`);
     item.appendChild(pageButton);
     pagination.appendChild(item);
 
@@ -314,7 +405,7 @@ function addPagination(count, pageNum) {
         currentPageNum = pageNum - 1;
     }
     pageButton.innerText = "<";
-    pageButton.setAttribute("onClick", `onPaginate(${currentPageNum - 1})`);
+    pageButton.setAttribute("onClick", `onPaginate(${currentPageNum - 1} , ${newType})`);
     item.appendChild(pageButton);
     pagination.appendChild(item);
     for (let i = 0; i < pageNumbers.length; i++  ) {
@@ -323,9 +414,11 @@ function addPagination(count, pageNum) {
         const currentPageNum = pageNumbers[i];
         pageButton.innerText = pageNumbers[i];
         if (currentPageNum === pageNum) {
+
+
             pageButton.classList.add("active");
         }
-        pageButton.setAttribute("onClick", `onPaginate(${pageNumbers[i]})`);
+        pageButton.setAttribute("onClick", `onPaginate(${pageNumbers[i]} , ${newType})`);
         item.appendChild(pageButton);
         pagination.appendChild(item);
     }
@@ -337,16 +430,22 @@ function addPagination(count, pageNum) {
         currentPageNum = pageNum + 1;
     }
     pageButton.innerText = ">";
-    pageButton.setAttribute("onClick", `onPaginate(${currentPageNum + 1})`);
+    pageButton.setAttribute("onClick", `onPaginate(${currentPageNum + 1} , ${newType})`);
     item.appendChild(pageButton);
     pagination.appendChild(item);
-    document.getElementById("travel-partner-search-pagination").appendChild(pagination);
+    if (type === 'following') {
+        document.getElementById("following-pagination").appendChild(pagination);
+    } else if (type === 'follower') {
+        document.getElementById("follower-pagination").appendChild(pagination);
+    } else {
+        document.getElementById("travel-partner-search-pagination").appendChild(pagination);
+    }
 
     item = document.createElement("li");
     pageButton = document.createElement("a");
 
     pageButton.innerText = "Last";
-    pageButton.setAttribute("onClick", `onPaginate(${maxPages})`);
+    pageButton.setAttribute("onClick", `onPaginate(${maxPages}, ${newType})`);
     item.appendChild(pageButton);
     pagination.appendChild(item);
 }

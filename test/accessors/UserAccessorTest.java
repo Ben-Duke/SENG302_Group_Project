@@ -129,4 +129,43 @@ public class UserAccessorTest extends BaseTestWithApplicationAndDatabase {
         UserPhoto photo = UserAccessor.getProfilePhoto(User.find().byId(1));
         assertNull(photo);
     }
+
+    @Test
+    public void getUserQueryCount() {
+
+        User user = new User("123@uclive.ac.nz", "hunter22");
+        user.setFName("J");
+        user.setGender("Male");
+        user.save();
+
+        User user2 = new User("1234@uclive.ac.nz", "hunter22");
+        user2.setFName("Ja");
+        user2.setGender("Male");
+        user2.save();
+
+        User user3 = new User("12345@uclive.ac.nz", "hunter22");
+        user3.setFName("Jas");
+        user3.setGender("Male");
+        user3.save();
+
+        User user4 = new User("123456@uclive.ac.nz", "hunter22");
+        user4.setFName("Jaso");
+        user4.setGender("Male");
+        user4.save();
+
+        int count = UserAccessor.getUserQueryCount(
+                "J",
+                null,
+                null,
+                "",
+                "",
+                "male",
+                "female",
+                "other");
+
+
+        assertEquals(4, count);
+
+    }
+
 }

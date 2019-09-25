@@ -39,10 +39,12 @@ public class CommandManager extends BaseModel {
     }
 
     public void setAllowedPage(CommandPage allowedPage) {
+        if (this.allowedPage != allowedPage) {
+            TagAccessor.removePendingTagsFromUserId(user.getUserid());
+        }
         this.allowedPage = allowedPage;
         filterStack(undoStack);
         filterStack(redoStack);
-        TagAccessor.removePendingTagsFromUserId(user.getUserid());
     }
 
     /**

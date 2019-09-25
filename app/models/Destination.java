@@ -346,14 +346,15 @@ public class Destination extends TaggableModel implements AlbumOwner, MediaOwner
     }
 
     /**
-     * Checks if the given user id (of the currently logged in user) is the same as the owner of the entity.
-     * @param userid the user id to be tested
-     * @return true if userid is the owner of the entity, false if owner has a different user id.
+     * Checks if the given useris the same as the owner of the entity.
+     * @return true if user is the owner of the entity, false if not.
      */
-    public boolean isUserOwner(Integer userid){
-        return this.user.getUserid() == userid;
+    public boolean isUserOwner(User user) {
+        if (this.user == null) {
+            return false;
+        }
+        return this.user.getUserid() == user.getUserid();
     }
-    public boolean isUserOwner(User user) { return this.user.getUserid() == user.getUserid(); }
 
     /** Modifies the fields of this Destination which are included in the
      *   destination editing form to be equal to those fields of the destination
@@ -385,12 +386,15 @@ public class Destination extends TaggableModel implements AlbumOwner, MediaOwner
      */
     @JsonIgnore
     public Album getPrimaryAlbum() {
+        if (this.albums.isEmpty()) {
+            this.addPrimaryAlbum();     // add in the album if it does not have one
+        }
         return this.albums.get(0);
     }
 
     /** If the destination does not have a primary album, add one */
-    public void addPrimaryAlbum() {
-        Album primaryAlbum = new Album(this, this.getDestName(), true);
+    private void addPrimaryAlbum() {
+        Album primaryAlbum = new Album(this, this.getDestName(), true);     // does not matter if default or not
         primaryAlbum.save();
 
         this.albums.add(primaryAlbum);

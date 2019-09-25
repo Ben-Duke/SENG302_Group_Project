@@ -587,39 +587,47 @@ public class DestinationControllerTest extends BaseTestWithApplicationAndDatabas
         assertEquals(2, destination.getUser().getUserid());
     }
 
-
-    /**
-     * Test to handle updating a destination with valid details after the destination has been made public.
-     * It should still work since the owner is stil the user.
-     *
-     * EDIT: OOPS I misintepreted the AC. This should be done after someone else has used the public destination.
-     */
-    @Test
-    public void updateDestinationWithLoginSessionAndValidDestinationAndValidOwnerAfterBeingSetToPublicBeforeBeingAdded(){
-
-        //Set destination 3 to public
+    private Result makeDestinationPublic(int destId) {
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(GET)
-                .uri("/users/destinations/update/make_public/2").session("connected", "2");
-        Result result = route(app, request);
-        assertEquals(OK, result.status());
-
-
-        Map<String, String> formData = new HashMap<>();
-        formData.put("destName", "Summoner's Rift");
-        formData.put("destType", "Yes");
-        formData.put("district", "Demacia");
-        formData.put("country", "Angola");
-        formData.put("latitude", "50.0");
-        formData.put("longitude", "-50.0");
-        Http.RequestBuilder request2 = Helpers.fakeRequest().bodyForm(formData).method(POST).uri("/users/destinations/update/2").session("connected", "2");
-        Result result2 = route(app, request2);
-        assertEquals(REDIRECT_HTTP_STATUS, result2.status());
+                .uri("/users/destinations/update/make_public/" + destId).session("connected", "2"); // 2 = userId
+        return route(app, request);
     }
 
-    /*
     @Test
-    public void setPrimaryPhotoWithLoginSessionAndValidDestinationAndValidUser(){
+    public void makeDestinationPublic_noMerge_checkDestinationOwnerIsNull(){
+        int destId = 2;
+
+        // Set destination to public (will not merge with existing public destination)
+        Result result = makeDestinationPublic(destId);
+        assertEquals(OK, result.status());
+
+        // Check that the destination owner is null
+        Destination destination = DestinationAccessor.getDestinationById(destId);
+        assertNull(destination.getUser());
+    }
+
+    @Test
+    public void makeDestinationPublic_withMerge_checkDestinationOwnerIsNull() {
+        int destId = 2;
+
+        // Create a similar destination to the destination
+        Destination destCopy = new Destination(DestinationAccessor.getDestinationById(destId));
+        destCopy.save();
+
+        // Set destination to public
+        Result result = makeDestinationPublic(destId);
+        assertEquals(OK, result.status());
+
+        // Set the copy to public (the existing public destination will be merged into it)
+        int copyId = destCopy.getDestId();
+        Result copyResult = makeDestinationPublic(copyId);
+        assertEquals(OK, result.status());
+
+        // Check that the destination owner is null - destinations are merged into the one being made public
+        Destination destination = DestinationAccessor.getDestinationById(copyId);
+        assertNull(destination.getUser());
+    }
 
     /**
      * Unit test for ajax request to get the owner of a destination given by a destination id

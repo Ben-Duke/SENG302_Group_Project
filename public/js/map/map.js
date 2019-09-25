@@ -11,6 +11,7 @@ let isNewTrip = false;
 let geoCoder;
 let destMarker;
 let tripPageNum = 0;
+let maxTripPageNum_GLOBAL = undefined;
 let paginatedTripData;
 
 
@@ -1481,15 +1482,21 @@ $("#tripSearchInput").keyup(async function()
 {
     let searchInput = document.getElementById("tripSearchInput").value;
     if(searchInput != "") {
-        let data = {offset: 0,
-                quantity: 5};
+        let data = {
+            offset: 0,
+            quantity: 5,
+            searchInput: searchInput
+        };
 
         $.ajax({
-            url: '/users/trips/matching/' + searchInput,
+            url: '/users/trips/matching/search',
             data: data,
             method: "GET",
             success: function (res) {
-
+                let paginationList = document.getElementById("trip-pagination-list");
+                while (paginationList.firstChild) {
+                    paginationList.removeChild(paginationList.firstChild);
+                }
                 if (res.tripCount > 0) {
                     setTripPaginationLinks(res.tripCount, 5, searchInput);
                 }
@@ -1503,7 +1510,6 @@ $("#tripSearchInput").keyup(async function()
             }
         });
     } else {
-
         tripPageNum = 1;
         let tripJSON = await getPaginatedTripResults(tripPageNum, 5);
         let trips  = tripJSON.trips;
@@ -2073,31 +2079,40 @@ function createDestinationViews(destinations, travellerTypes){
 
 
 
-async function nextTripPage(search) {
-    jumpToTripPage(tripPageNum + 1, search);
+async function nextTripPage() {
+    const searchInput = document.getElementById("destSearchInput").value;
+    const newTripPage = tripPageNum + 1;
+    if (newTripPage <= maxTripPageNum_GLOBAL) {
+        jumpToTripPage(newTripPage, searchInput);
+    }
 }
 
-async function previousTripPage(search) {
+async function previousTripPage() {
+    const searchInput = document.getElementById("destSearchInput").value;
     let newTripPageNumber = tripPageNum;
     if(tripPageNum > 1) {
         newTripPageNumber -= 1;
-    } else {
-        newTripPageNumber = 1;
+        jumpToTripPage(newTripPageNumber, searchInput);
     }
-    jumpToTripPage(newTripPageNumber, search);
 }
 
-async function jumpToTripPage(pageNumber, search) {
+async function jumpToTripPage(pageNumber) {
+    if (pageNumber === tripPageNum) {
+        return // do nothing
+    }
+
+    const searchInput = document.getElementById("destSearchInput").value;
+
     document.getElementById("trip-pagination-link-" + tripPageNum).removeAttribute("class");
 
     tripPageNum = pageNumber;
     document.getElementById("trip-pagination-link-" + tripPageNum).setAttribute("class", "active");
 
-    if (search == undefined) {
+    if (searchInput == undefined || searchInput == null || searchInput.length === 0) {
         let newlyDisplayedTrips = await getPaginatedTripResults(tripPageNum, 5);
         displayTripTablePage(newlyDisplayedTrips.trips);
     } else {
-        let newlyDisplayedTrips = await getPaginatedTripSearchResults(tripPageNum, 5, search);
+        let newlyDisplayedTrips = await getPaginatedTripSearchResults(tripPageNum, 5, searchInput);
         displayTripTablePage(newlyDisplayedTrips.trips);
     }
 
@@ -2321,11 +2336,13 @@ async function getPaginatedTripResults(pageNum, quantity) {
 
 async function getPaginatedTripSearchResults(pageNum, quantity, searchInput) {
     const offset = (pageNum - 1) * quantity;
-    let data = {offset: offset,
-                    quantity: quantity};
+    let data = {
+        offset: offset,
+        quantity: quantity,
+        searchInput: searchInput};
 
     let trips = await $.ajax({
-        url: '/users/trips/matching/' + searchInput,
+        url: '/users/trips/matching/search',
         data: data,
         method: "GET"
     });
@@ -2344,18 +2361,19 @@ function setTripPaginationLinks(tripCount, perPage, search) {
     let previousArrowLink = document.createElement("li");
     let previousArrow = document.createElement("a");
     previousArrow.setAttribute("id", "previous-trip");
-    previousArrow.setAttribute("onclick","previousTripPage(" + search + ")");
+    previousArrow.setAttribute("onclick","previousTripPage()");
     previousArrow.innerText = "<";
     previousArrowLink.appendChild(previousArrow);
     let nextArrowLink = document.createElement("li");
     let nextArrow = document.createElement("a");
     nextArrow.setAttribute("id", "next-trip");
-    nextArrow.setAttribute("onclick","nextTripPage(" + search + ")");
+    nextArrow.setAttribute("onclick","nextTripPage()");
     nextArrow.innerText = ">";
     nextArrowLink.appendChild(nextArrow);
     paginationList.appendChild(previousArrowLink);
 
     let numPages = Math.ceil(tripCount/perPage);
+    maxTripPageNum_GLOBAL = numPages;
     let lastPageCount = tripCount % perPage;
     if (lastPageCount == 0) {
         lastPageCount = perPage;
@@ -2371,7 +2389,7 @@ function setTripPaginationLinks(tripCount, perPage, search) {
         let pageNumberLink = document.createElement("a");
         pageNumberLink.innerText = i.toString();
 
-        pageNumberLink.setAttribute("onclick", "jumpToTripPage(" + i + "," + search + ")");
+        pageNumberLink.setAttribute("onclick", "jumpToTripPage(" + i + ")");
         pageNumber.appendChild(pageNumberLink);
         paginationList.appendChild(pageNumber);
     }

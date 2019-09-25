@@ -86,6 +86,7 @@ function sendGetTagsRequest() {
         }
     }).fail((xhr, textStatus, errorThrown) => {
         console.log(xhr.status + " " + textStatus + " " + errorThrown);
+
     });
 }
 
@@ -253,6 +254,12 @@ function sendAddTagRequest(name, taggableType, taggableId) {
         addTagLabel(name)
     }).fail((xhr, textStatus, errorThrown) => {
         console.log(xhr.status + " " + textStatus + " " + errorThrown);
+        console.log(xhr.responseText)
+        if(xhr.responseText === "Tag name can be at most 25 characters in length"){
+            alert(xhr.responseText);
+
+
+        }
     });
 }
 

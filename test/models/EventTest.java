@@ -3,12 +3,14 @@ package models;
 import accessors.EventAccessor;
 import accessors.UserAccessor;
 import org.junit.Test;
+import org.slf4j.Logger;
 import play.mvc.Http;
 import play.mvc.Result;
 import play.test.Helpers;
 import testhelpers.BaseTestWithApplicationAndDatabase;
 import utilities.TableName;
 import utilities.TestDatabaseManager;
+import utilities.UtilityFunctions;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -20,6 +22,8 @@ import static play.test.Helpers.PUT;
 import static play.test.Helpers.route;
 
 public class EventTest extends BaseTestWithApplicationAndDatabase {
+
+    private Logger logger = UtilityFunctions.getLogger();
 
     /* Remove all event responses */
     private void removeAllResponses() {
@@ -85,12 +89,6 @@ public class EventTest extends BaseTestWithApplicationAndDatabase {
 
     /* Test data contains 8 responses of users user 2 is following */
     @Test
-    public void getLimitedResponses_userResponded_MoreThan9FollowerResponses() {
-
-    }
-
-    /* Test data contains 8 responses of users user 2 is following */
-    @Test
     public void getLimitedResponses_userResponded_LessThan9FollowerResponses() {
         Event event = EventAccessor.getByInternalId(1);
         User user = UserAccessor.getById(2);
@@ -101,8 +99,7 @@ public class EventTest extends BaseTestWithApplicationAndDatabase {
 
         List<EventResponse> responses = event.getLimitedResponses(user);
 
-        // check the list contains only the user response
-        assertEquals(10, responses.size());
+        assertEquals(9, responses.size());
         assertEquals(user, responses.get(0).getUser());
 
         // check all other responses are from users that the user is following

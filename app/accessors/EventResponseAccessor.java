@@ -124,7 +124,7 @@ public class EventResponseAccessor {
     }
 
 
-    public static List<EventResponse> getEventResponses(int offset, int limit, LocalDateTime dateTime) { //TODO test
+    public static List<EventResponse> getEventResponses(int offset, int limit, LocalDateTime dateTime) {
         return EventResponse.find().query().where()
                 .lt("responseDateTime", dateTime)
                 .order().desc("responseDateTime")
@@ -133,4 +133,11 @@ public class EventResponseAccessor {
                 .findList();
     }
 
+    public static List<EventResponse> getEventResponsesOfFollowing(User user, int limit) {
+        return EventResponse.find().query().where()
+                .in("user_userid", user.getFollowingIds())
+                .order().desc("responseDateTime")
+                .setMaxRows(limit)
+                .findList();
+    }
 }

@@ -433,7 +433,6 @@ drop index if exists ix_destination_modification_request_traveller_type_destin_1
 alter table destination_modification_request_traveller_type drop constraint if exists fk_destination_modification_request_traveller_type_travel_2;
 drop index if exists ix_destination_modification_request_traveller_type_travel_2;
 
-
 alter table event_response drop constraint if exists fk_event_response_user_userid;
 drop index if exists ix_event_response_user_userid;
 

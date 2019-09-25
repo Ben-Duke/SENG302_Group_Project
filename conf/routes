@@ -104,6 +104,7 @@ GET     /users/map_home     controllers.HomeController.mainMapPage(request : Req
 
 
 
+
 #Add route for adding a trip with AJAX
 
 #Add destination to a trip using AJAX
@@ -481,7 +482,10 @@ GET /events/responses/:eventId/:responseType/:userId        controllers.EventRes
 GET /events/responses/:responseType                         controllers.EventResponseController.getEventResponsesByResponseType(request : Request, responseType : String)
 
 GET /events/get/all                                         controllers.EventResponseController.getAllResponses(request : Request)
-GET /users/newsfeed controllers.NewsfeedController.indexNewsfeed(request: Request)
+
+GET /users/newsfeed/media                                        controllers.NewsfeedController.getMediaForNewsfeed(request: Request, offset: Integer, limit: Integer, localDateTime: String)
+
+GET /users/newsfeed                                         controllers.NewsfeedController.newsfeedPage(request: Request)
 
 GET /events/responses/newsfeed/:offset/:limit/:localDateTime    controllers.EventResponseController.getEventResponses(request: Request, offset: Integer, limit: Integer, localDateTime: String)
 

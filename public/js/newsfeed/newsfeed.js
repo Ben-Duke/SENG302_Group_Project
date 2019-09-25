@@ -17,5 +17,28 @@ function initNewsfeed() {
                 createNewsFeedEventResponseComponent(response.event, response.user, response.responseDateTime)
             }
         }
+    });
+
+    let date = new Date();
+    let dateString = date.toLocaleString();
+    dateString = dateString.replace("/", "-");
+    dateString = dateString.replace("/", "-");
+    dateString = dateString.replace(",", "");
+
+    let data = {offset: 0,
+                limit: 10,
+                localDateTime: dateString};
+    $.ajax({
+        type: 'GET',
+        data: data,
+        url: '/users/newsfeed/media',
+        success: function (result) {
+            responses = result;
+            for (response of responses) {
+                createNewsFeedMediaComponent(response.url, response.user, response.date_created);
+            }
+        }
     })
+
+
 }

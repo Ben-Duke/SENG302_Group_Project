@@ -1,53 +1,35 @@
 package accessors;
 
+import io.ebean.Finder;
 import models.Event;
 
 public class EventAccessor {
 
-    // Private constructor to hide the implicit public one
-    private EventAccessor() {
-        throw new IllegalStateException("Utility class");
+    static public Finder<Integer, Event> EventFinder(){
+        return Event.find();
     }
 
-
-    /** Return a Event  matching the id passed
-     * @param id Id value of a Event  in the database
-     * @return Event
-     */
-    public static Event getByInternalId(int id) {
-        return Event.find().query().where().eq("eventId", id).findOne();
+    public static Event getEventById(Integer eventId) {
+        return EventFinder().query().where().eq("eventId", eventId).findOne();
     }
 
-    /** Return a Event  matching the id passed
-     * @param id Id value of a Event  in the database
-     * @return Event
-     */
-    public static Event getByExternalId(int id) {
-        return Event.find().query().where().eq("externalId", id).findOne();
-    }
-
-    /**
-     * Insert an event
-     * @param event the event to insert
+    /** Insert an event
+     * @param event event to save
      */
     public static void insert(Event event) {
         event.save();
     }
 
-    /**
-     * Update an event
-     * @param event the event to update
-     */
-    public static void update(Event event) {
-        event.update();
-    }
-
-    /**
-     * Delete an event
-     * @param event the event to delete
+    /** Delete an event
+     * @param event event to delete
      */
     public static void delete(Event event) {
         event.delete();
     }
+
+    /** Update the event
+     * @param event event to update
+     */
+    public static void update(Event event) { event.update(); }
 
 }

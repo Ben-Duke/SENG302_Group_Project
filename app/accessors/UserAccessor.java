@@ -1,10 +1,19 @@
 package accessors;
 
+import com.fasterxml.jackson.core.*;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.JsonNodeType;
 import io.ebean.ExpressionList;
 import io.ebean.Query;
 import models.*;
 import play.libs.Json;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -171,7 +180,6 @@ public class UserAccessor {
                     new Throwable("Multiple profile photos."));
         }
     }
-
 
     /**
      * Gets a paginated List of Users, with an offset and quantity to fetch.

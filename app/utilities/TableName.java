@@ -30,6 +30,9 @@ public enum TableName {
     media("media_id"),
     album("album_id"),
 
+    event_response("event_response_id"),
+    event("event_id"),
+
     destination("destid"),
     follow("follow_id"),
     admin("user_id"),   // has an underscore but user primary key does not

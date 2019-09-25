@@ -255,7 +255,6 @@ public class EventsController {
         boolean isStored = false;
         List<EventResponse> eventResponses = new ArrayList<>();
         if (event == null) {
-            isStored = false;
             event = createEvent(eventId);
             List<Album> albumList = new ArrayList<>();
             Album eventAlbum = new Album(event, event.getName(), false);

@@ -500,6 +500,24 @@ INSERT INTO `user_traveller_type` (`user_userid`, `traveller_type_ttypeid`) VALU
 -- user_photo_destination
 -- no data
 
+-- events
+INSERT INTO `event` (`event_id`, `external_id`, `name`, `address`, `type`, `image_url`, `url`, `latitude`, `longitude`, `description`, `start_time`, `end_time`) VALUES
+(1, 597759, 'September to Remember', '8 Butter Factory Lane, Whangarei', 'Comedy', 'http://cdn.eventfinda.co.nz/uploads/events/transformed/1349168-597759-7.jpg?v=2',
+ 'https://www.eventfinda.co.nz/2019/september-to-remember/whangarei', -35.7238, 174.3203,
+ 'We''re back again on a new day with a new space and a fresh outlook on life.\r\n\r\nThis month we''re bringing you the local flavour and nationally recognised comedians you know and love.\r\n\r\nWe''re starting later and getting ...',
+ '2019-09-25 08:00:00', '2019-09-25 10:00:00');
+
+-- event responses
+INSERT INTO `event_response` (`event_response_id`, `response_type`, `user_userid`, `event_event_id`, `response_date_time`) VALUES
+(1, '2', 5, 1, '2019-09-25 04:04:15'),
+(2, '2', 6, 1, '2019-09-25 05:08:34'),
+(3, '1', 7, 1, '2019-09-25 05:08:50'),
+(4, '0', 8, 1, '2019-09-25 05:11:21'),
+(5, '1', 9, 1, '2019-09-25 05:11:56'),
+(6, '2', 10, 1, '2019-09-25 05:08:34'),
+(7, '1', 11, 1, '2019-09-25 05:08:50'),
+(8, '0', 12, 1, '2019-09-25 05:11:21');
+
 -- tags
 INSERT INTO `tag`(`tag_id`, `name`) VALUES
 (1,'Fun place to stay'),

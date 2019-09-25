@@ -7,9 +7,7 @@ import io.ebean.Ebean;
 import models.*;
 import org.slf4j.Logger;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.CountDownLatch;
 
 
@@ -49,8 +47,6 @@ public class TestDatabaseManager {
         // Setup which is run for both tests and sbt run
         CountryUtils.updateCountries();
         CountryUtils.validateUsedCountries();
-
-//        addEventResponseTypes();
 
         setUserPasswords();
 
@@ -130,20 +126,6 @@ public class TestDatabaseManager {
         }
     }
 
-    /**
-     * Add event response types to the database.
-     */
-    public void addEventResponseTypes() {
-//        EventResponse going = new EventResponse(ResponseType.valueOf("Going")));
-//        EventResponse interested = new EventResponse(ResponseType.valueOf("Interested"));
-//        EventResponse notInterested = new EventResponse(ResponseType.valueOf("Not Interested"));
-//        EventResponse went = new EventResponse(ResponseType.valueOf("Went"));
-//        EventResponseAccessor.insert(interested);
-//        EventResponseAccessor.insert(notInterested);
-//        EventResponseAccessor.insert(going);
-//        EventResponseAccessor.insert(went);
-    }
-
     /** Clear data from all tables except nationality, passport and traveller type */
     public void clearMostData() {
         List<TableName> persisted = Arrays.asList(
@@ -151,12 +133,19 @@ public class TestDatabaseManager {
                 TableName.passport,
                 TableName.traveller_type);
 
-        clearData(persisted);
+        clearDataExceptPersisted(persisted);
     }
 
     /** Clear all data from the database */
     public void clearAllData() {
-        clearData(new ArrayList<>());  // pass an empty list
+        clearData(Arrays.asList(TableName.values()));
+    }
+
+    private void clearDataExceptPersisted(List<TableName> persisted) {
+        List<TableName> toClear = new ArrayList<>(Arrays.asList(TableName.values()));
+        toClear.removeAll(persisted);   // remove any tables that we do not want to wipe
+
+        clearData(toClear);
     }
 
     /**
@@ -168,14 +157,10 @@ public class TestDatabaseManager {
      * Always runs on DEFAULT database not a database with a different name which
      * the application is connected to
      */
-    private void clearData(List<TableName> persisted) {
+    public void clearData(List<TableName> toClear) {
         logger.info("Clearing database data");
 
-        for (TableName tableName : TableName.values()) {
-            if (persisted.contains(tableName)) {
-                continue;   // do not clear tables in persisted
-            }
-
+        for (TableName tableName : toClear) {
             String sql = String.format("DELETE FROM %s", tableName);
             Ebean.createSqlUpdate(sql).execute();
 

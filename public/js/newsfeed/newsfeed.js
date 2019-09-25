@@ -14,7 +14,7 @@ function initNewsfeed() {
         success: function (result) {
             responses = result.responses;
             for (response of responses) {
-                createNewsFeedEventResponseComponent(response.event, response.user, response.responseDateTime)
+                createNewsFeedEventResponseComponent(response.event, response.user, response.responseDateTime, response.responseType)
             }
         }
     });

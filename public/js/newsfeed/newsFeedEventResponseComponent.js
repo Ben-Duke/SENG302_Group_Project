@@ -20,7 +20,7 @@
  * @param user the user who responded to the event
  * @param responseTime the time that the user responded. Format: "HH:mm dd-MM"
  */
-function createNewsFeedEventResponseComponent(event, user, responseTime) {
+function createNewsFeedEventResponseComponent(event, user, responseTime, responseType) {
 
     const path = "/users/home/servePicture/";
 
@@ -47,7 +47,11 @@ function createNewsFeedEventResponseComponent(event, user, responseTime) {
     //If before today's date, going to event
     //For now, they are always going to the event
     //For now, "is interested" is omitted but it'll be easy to add in
-    newsTitle.innerText = user.name + " is going to " + event.name;
+    let responseText = " is going to ";
+    if (responseType === "Interested") {
+        responseText = " is interested in ";
+    }
+    newsTitle.innerText = user.name + responseText + event.name;
 
     let newsTimeTxt = document.createElement("span");
     newsTimeTxt.setAttribute("class", "newsTimeTxt");
@@ -118,6 +122,9 @@ function createNewsFeedEventResponseComponent(event, user, responseTime) {
     newsItemDiv.appendChild(newsHeaderDiv);
     newsItemDiv.appendChild(newsBodyDiv);
     newsItemDiv.appendChild(newsFooterDiv);
+    console.log(responseType);
+    if (responseType !== "NotGoing") {
+        newsContainer.appendChild(newsItemDiv);
+    }
 
-    newsContainer.appendChild(newsItemDiv);
 }

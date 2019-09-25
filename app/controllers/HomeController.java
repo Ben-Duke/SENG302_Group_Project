@@ -40,7 +40,8 @@ public class HomeController {
 
 
     public Result mainMapPage(Http.Request request) {
-
+        long startTime = System.nanoTime();
+        logger.info("start");
         User user = User.getCurrentUser(request);
         if (user == null) { return redirect(routes.UserController.userindex()); }
 
@@ -53,19 +54,23 @@ public class HomeController {
 
         List<Destination> userAccessibleDestinations = new ArrayList<>();
 
+        logger.info("start loop all dests" + " " + Long.toString((System.nanoTime() - startTime) / 10000000) + "ms");
         for (Destination destination : allDestinations) {
             if (destination.isUserOwner(user) || destination.getIsPublic()) {
                 userAccessibleDestinations.add(destination);
             }
         }
+        logger.info("finish loop all dests" + " " + Long.toString((System.nanoTime() - startTime) / 10000000) + "ms");
 
         Form<DestinationFormData> destFormData;
         destFormData = formFactory.form(DestinationFormData.class);
 
+        logger.info("start get countries map" + " " + Long.toString((System.nanoTime() - startTime) / 10000000) + "ms");
         Map<String, Boolean> countryList = CountryUtils.getCountriesMap();
-
+        logger.info("finish get countries map" + " " + Long.toString((System.nanoTime() - startTime) / 10000000) + "ms");
         String googleApiKey = EnvironmentalVariablesAccessor.getEnvVariable(
                 EnvVariableKeys.GOOGLE_MAPS_API_KEY.toString());
+        logger.info("end" + " " + Long.toString((System.nanoTime() - startTime) / 10000000) + "ms");
         return ok(mapHome.render(user, trips, userAccessibleDestinations,
                 destFormData, countryList, Destination.getTypeList(), googleApiKey));
 

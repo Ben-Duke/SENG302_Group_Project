@@ -786,15 +786,23 @@ function currentSlide(n) {
 
 /** Called when displaying a photo modal */
 function showSlides(n) {
-    var i;
-    var slides = document.getElementsByClassName("mySlides");
+
+    let i;
+    let slides = document.getElementsByClassName("mySlides");
+
     if (n > slides.length) {slideIndex = 1}
     if (n < 1) {slideIndex = slides.length}
     for (i = 0; i < slides.length; i++) {
+        console.log(slides[i]);
         slides[i].style.display = "none";
     }
-    changeTaggableModel(slides[slideIndex - 1].dataset.mediaid, "photo");
+
+    if (typeof changeTaggableModel === "function") { //False when viewing users' photos as no tag editor
+        changeTaggableModel(slides[slideIndex - 1].dataset.mediaid, "photo");
+    }
+
     if(slides[slideIndex-1] !== undefined) {
+
         slides[slideIndex-1].style.display = "inline-block";
         const privacyBtn = document.getElementById("privacyBtn");
         if (privacyBtn != null) {

@@ -36,7 +36,7 @@ public class DestinationFactory {
         for(Destination dest : Destination.find().query().where().eq("destName", destination.getDestName()).findList()){
             if((dest.getDestName().equals(destination.getDestName())) &&
                     (dest.getDistrict().equals(destination.getDistrict())) &&
-                    (dest.getCountry().equals(destination.getCountry()))){
+                    (dest.getCountry().equals(destination.getCountry())) && !dest.getDestId().equals(destination.getDestId())){
                 destinations.add(dest);
             }
         }

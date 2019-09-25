@@ -11,6 +11,7 @@ let isNewTrip = false;
 let geoCoder;
 let destMarker;
 let tripPageNum = 0;
+let maxTripPageNum_GLOBAL = undefined;
 let paginatedTripData;
 
 
@@ -1483,11 +1484,14 @@ $("#tripSearchInput").keyup(async function()
 {
     let searchInput = document.getElementById("tripSearchInput").value;
     if(searchInput != "") {
-        let data = {offset: 0,
-                quantity: 5};
+        let data = {
+            offset: 0,
+            quantity: 5,
+            searchInput: searchInput
+        };
 
         $.ajax({
-            url: '/users/trips/matching/' + searchInput,
+            url: '/users/trips/matching/search',
             data: data,
             method: "GET",
             success: function (res) {
@@ -1495,7 +1499,7 @@ $("#tripSearchInput").keyup(async function()
                 while (paginationList.firstChild) {
                     paginationList.removeChild(paginationList.firstChild);
                 }
-                if (tripCount > 0) {
+                if (res.tripCount > 0) {
                     setTripPaginationLinks(res.tripCount, 5, searchInput);
                 }
                 tripPageNum = 1;
@@ -1875,18 +1879,23 @@ function addPagination(count, pageNum, search, tab) {
 
 
 
-async function nextTripPage(search) {
-    jumpToTripPage(tripPageNum + 1, search);
+async function nextTripPage() {
+    const searchInput = document.getElementById("destSearchInput").value;
+    const newTripPage = tripPageNum + 1;
+    if (newTripPage <= maxTripPageNum_GLOBAL) {
+        jumpToTripPage(newTripPage, searchInput);
+    }
 }
 
-async function previousTripPage(search) {
+async function previousTripPage() {
+    const searchInput = document.getElementById("destSearchInput").value;
     let newTripPageNumber = tripPageNum;
     if(tripPageNum > 1) {
         newTripPageNumber -= 1;
     } else {
         newTripPageNumber = 1;
     }
-    jumpToTripPage(newTripPageNumber, search);
+    jumpToTripPage(newTripPageNumber, searchInput);
 }
 
 async function jumpToTripPage(pageNumber, search) {
@@ -2123,11 +2132,13 @@ async function getPaginatedTripResults(pageNum, quantity) {
 
 async function getPaginatedTripSearchResults(pageNum, quantity, searchInput) {
     const offset = (pageNum - 1) * quantity;
-    let data = {offset: offset,
-                    quantity: quantity};
+    let data = {
+        offset: offset,
+        quantity: quantity,
+        searchInput: searchInput};
 
     let trips = await $.ajax({
-        url: '/users/trips/matching/' + searchInput,
+        url: '/users/trips/matching/search',
         data: data,
         method: "GET"
     });
@@ -2142,18 +2153,19 @@ function setTripPaginationLinks(tripCount, perPage, search) {
     let previousArrowLink = document.createElement("li");
     let previousArrow = document.createElement("a");
     previousArrow.setAttribute("id", "previous-trip");
-    previousArrow.setAttribute("onclick","previousTripPage(" + search + ")");
+    previousArrow.setAttribute("onclick","previousTripPage()");
     previousArrow.innerText = "<";
     previousArrowLink.appendChild(previousArrow);
     let nextArrowLink = document.createElement("li");
     let nextArrow = document.createElement("a");
     nextArrow.setAttribute("id", "next-trip");
-    nextArrow.setAttribute("onclick","nextTripPage(" + search + ")");
+    nextArrow.setAttribute("onclick","nextTripPage()");
     nextArrow.innerText = ">";
     nextArrowLink.appendChild(nextArrow);
     paginationList.appendChild(previousArrowLink);
 
     let numPages = Math.ceil(tripCount/perPage);
+    maxTripPageNum_GLOBAL = numPages;
     let lastPageCount = tripCount % perPage;
     if (lastPageCount == 0) {
         lastPageCount = perPage;

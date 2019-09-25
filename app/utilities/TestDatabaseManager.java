@@ -61,6 +61,7 @@ public class TestDatabaseManager {
         String sql = fileReader.readFile();
 
         Ebean.createSqlUpdate(sql).execute();
+
     }
 
     /**

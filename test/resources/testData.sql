@@ -370,6 +370,7 @@ INSERT INTO `user` (`email`, `password_hash`, `date_of_birth`, `gender`,`f_name`
 ('smaroy@google.com.hk', '', '1987-02-17', 'Female', 'Sabina', 'Maro', 0, 0, '2019-01-01 00:00:00'),
 ('dkerswillz@businesswire.com', '', '1993-02-07', 'Female', 'Dehlia', 'Kerswill', 0, 0, '2019-01-01 00:00:00'),
 ('kkinnier10@twitter.com', '', '1972-01-25', 'Female', 'Kaela', 'Kinnier', 0, 0, '2019-01-01 00:00:00');
+
 -- Admin
 INSERT INTO `admin` (`user_id`, `user_id_to_edit`, `is_default`) VALUES
 (1, NULL, 1);

@@ -1510,7 +1510,6 @@ $("#tripSearchInput").keyup(async function()
             }
         });
     } else {
-
         tripPageNum = 1;
         let tripJSON = await getPaginatedTripResults(tripPageNum, 5);
         let trips  = tripJSON.trips;
@@ -2097,17 +2096,19 @@ async function previousTripPage() {
     }
 }
 
-async function jumpToTripPage(pageNumber, search) {
+async function jumpToTripPage(pageNumber) {
+    const searchInput = document.getElementById("destSearchInput").value;
+
     document.getElementById("trip-pagination-link-" + tripPageNum).removeAttribute("class");
 
     tripPageNum = pageNumber;
     document.getElementById("trip-pagination-link-" + tripPageNum).setAttribute("class", "active");
 
-    if (search == undefined) {
+    if (searchInput == undefined || searchInput == null) {
         let newlyDisplayedTrips = await getPaginatedTripResults(tripPageNum, 5);
         displayTripTablePage(newlyDisplayedTrips.trips);
     } else {
-        let newlyDisplayedTrips = await getPaginatedTripSearchResults(tripPageNum, 5, search);
+        let newlyDisplayedTrips = await getPaginatedTripSearchResults(tripPageNum, 5, searchInput);
         displayTripTablePage(newlyDisplayedTrips.trips);
     }
 
@@ -2384,7 +2385,7 @@ function setTripPaginationLinks(tripCount, perPage, search) {
         let pageNumberLink = document.createElement("a");
         pageNumberLink.innerText = i.toString();
 
-        pageNumberLink.setAttribute("onclick", "jumpToTripPage(" + i + "," + search + ")");
+        pageNumberLink.setAttribute("onclick", "jumpToTripPage(" + i + ")");
         pageNumber.appendChild(pageNumberLink);
         paginationList.appendChild(pageNumber);
     }

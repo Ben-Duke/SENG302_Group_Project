@@ -36,6 +36,23 @@ public class TripAccessor {
 
     }
 
+    /**
+     * Gets the total count of matching trips based on a trip name and user.
+     *
+     * @param name The trip name to search for
+     * @param user The user to search trips for
+     * @return An int representing the total number of matching trips for that
+     * name and user.
+     */
+    public static int getTripsByNameTotalCount(String name, User user) {
+        return Trip.find().query().
+                where()
+                .eq("user", user)
+                .and()
+                .ilike("trip_name", "%" + name + "%")
+                .findCount();
+    }
+
     public static Integer getTotalUserTripCount(User user) {
         return Trip.find().query().where().eq("user", user) .findCount();
 

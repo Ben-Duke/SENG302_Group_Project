@@ -84,7 +84,6 @@ function sendGetTagsRequest() {
         for (let tag of tags) {
             addTagLabel(tag.name)
         }
-        console.log(tags);
     }).fail((xhr, textStatus, errorThrown) => {
         console.log(xhr.status + " " + textStatus + " " + errorThrown);
 

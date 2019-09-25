@@ -700,7 +700,9 @@ public class TripController extends Controller {
      */
     public Result getTripsByName(Http.Request request, String name, int offset, int quantity) {
         User user = User.getCurrentUser(request);
-        if (user == null) { return redirect(routes.UserController.userindex()); }
+        if (user == null) {
+            return redirect(routes.UserController.userindex()); //TODO probably use OK()
+        }
         List<Trip> trips = TripAccessor.getTripsByName(name, user, offset, quantity);
         ObjectMapper objectMapper = new ObjectMapper();
         ObjectNode result = objectMapper.createObjectNode();
@@ -713,7 +715,7 @@ public class TripController extends Controller {
                 tripsListNode.add(tripNode);
             }
             result.put("trips", tripsListNode);
-            result.put("tripCount", tripsListNode.size());
+            result.put("tripCount", TripAccessor.getTripsByNameTotalCount(name, user));
             return ok(Json.toJson(result));
         } else {
             result.put("trips", tripsListNode);

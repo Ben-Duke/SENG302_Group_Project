@@ -21,12 +21,17 @@ import views.html.users.events.*;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import static play.mvc.Results.*;
 
 public class EventsController {
+
+    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     public Result indexEvents(Http.Request request) {
         User user = User.getCurrentUser(request);
@@ -216,7 +221,26 @@ public class EventsController {
         return ok(responseNode);
     }
 
-
+    private Event createEvent(int eventId) {
+        JsonNode jsonData = EventFindaUtilities.getEventById(eventId).get("events");
+        if (jsonData.size() == 0) {return null;}
+        JsonNode eventData = jsonData.get(0);
+        int lastTransfom = eventData.get("images").get("images").get(0).get("transforms").get("@attributes").get("count").asInt()-1;
+        Event event = new Event(
+                eventData.get("id").asInt(),
+                LocalDateTime.parse(eventData.get("datetime_start").toString().substring(1, 20), formatter),
+                LocalDateTime.parse(eventData.get("datetime_end").toString().substring(1, 20), formatter),
+                eventData.get("name").asText(),
+                eventData.get("category").get("name").asText(),
+                eventData.get("url").asText(),
+                eventData.get("images").get("images").get(0).get("transforms").get("transforms").get(lastTransfom).get("url").asText(),
+                eventData.get("point").get("lat").asDouble(),
+                eventData.get("point").get("lng").asDouble(),
+                eventData.get("address").asText(),
+                eventData.get("description").asText()
+        );
+        return event;
+    }
 
 
     public Result viewEvent(Http.Request request, int eventId) {
@@ -226,16 +250,25 @@ public class EventsController {
 
         String googleApiKey = EnvironmentalVariablesAccessor.getEnvVariable(
                 EnvVariableKeys.GOOGLE_MAPS_API_KEY.toString());
-        Event event = Event.find().query().where().eq("event_id", 1).findOne();
-        List<EventResponse> eventResponses = EventResponseAccessor.getByEvent(event);
-        boolean isGoing = false;
-        for (EventResponse userEvent : eventResponses) {
-            if(userEvent.getUser().getUserid() == user.getUserid()) {
-                isGoing = true;
-            }
+
+        Event event = Event.find().query().where().eq("externalId", eventId).findOne();
+        boolean isStored = false;
+        List<EventResponse> eventResponses = new ArrayList<>();
+        if (event == null) {
+            isStored = false;
+            event = createEvent(eventId);
+            List<Album> albumList = new ArrayList<>();
+            Album eventAlbum = new Album(event, event.getName(), false);
+            Media eventPhoto = new UserPhoto(event.getImageUrl(), true, false, user);
+            eventAlbum.addMedia(eventPhoto);
+            albumList.add(eventAlbum);
+            event.setAlbums(albumList);
+        } else {
+            eventResponses = EventResponseAccessor.getByEvent(event);
+            isStored = true;
         }
 
-        return ok(viewEvent.render(user, event, eventResponses, googleApiKey, isGoing));
+        return ok(viewEvent.render(user, event, eventResponses, googleApiKey, isStored));
     }
 
     public Result checkEventExists(Http.Request request, int eventId) {

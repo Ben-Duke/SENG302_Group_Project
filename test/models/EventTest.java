@@ -99,7 +99,7 @@ public class EventTest extends BaseTestWithApplicationAndDatabase {
 
         List<EventResponse> responses = event.getLimitedResponses(user);
 
-        assertEquals(9, responses.size());
+        assertEquals(6, responses.size());
         assertEquals(user, responses.get(0).getUser());
 
         // check all other responses are from users that the user is following

@@ -211,6 +211,10 @@ public class Event extends Model implements AlbumOwner {
     }
 
     public Album getPrimaryAlbum() {
+        // add the primary album if it is missing
+        if (this.albums.isEmpty()) {
+            this.albums.add(new Album(this, this.getName(), false));
+        }
         return albums.get(0);
     }
 
@@ -231,7 +235,7 @@ public class Event extends Model implements AlbumOwner {
             responses.add(userResponse); // add the user response
         }
         // add follower responses
-        responses.addAll(EventResponseAccessor.getEventResponsesOfFollowing(user, 10));
+        responses.addAll(EventResponseAccessor.getEventResponsesOfFollowing(user, 5));
 
         return responses;
     }

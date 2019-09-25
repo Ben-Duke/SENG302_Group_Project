@@ -11,14 +11,17 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import models.*;
 import models.Event;
+import org.slf4j.Logger;
 import play.libs.Json;
 import play.mvc.Http;
 import play.mvc.Result;
 import utilities.EnvVariableKeys;
 import utilities.EnvironmentalVariablesAccessor;
 import utilities.EventFindaUtilities;
+import utilities.UtilityFunctions;
 import views.html.users.events.*;
 
+import javax.rmi.CORBA.Util;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
@@ -30,6 +33,8 @@ import java.util.Map;
 import static play.mvc.Results.*;
 
 public class EventsController {
+
+    private Logger logger = UtilityFunctions.getLogger();
 
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
@@ -263,7 +268,7 @@ public class EventsController {
             albumList.add(eventAlbum);
             event.setAlbums(albumList);
         } else {
-            eventResponses = EventResponseAccessor.getByEvent(event);
+            eventResponses = event.getLimitedResponses(user);
             isStored = true;
         }
 

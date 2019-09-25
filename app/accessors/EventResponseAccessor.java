@@ -56,6 +56,11 @@ public class EventResponseAccessor {
                 "event", event).eq("response_type", responseType).findList();
     }
 
+    public static int getCountByEventAndType(Event event, ResponseType responseType) {
+        return EventResponse.find().query().where().eq(
+                "event", event).eq("response_type", responseType).findCount();
+    }
+
     /** Return a list of Event Responses by a given user
      * @param user User
      * @return List of Event Responses

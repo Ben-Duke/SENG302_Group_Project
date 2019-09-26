@@ -78,7 +78,7 @@ public class EventResponseControllerTest extends BaseTestWithApplicationAndDatab
         String formattedString = time.format(formatter);
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(GET)
-                .uri("/events/responses/newsfeed/" + offset + "/" + limit + "/" +formattedString)
+                .uri("/events/responses/getjson?offset=" + offset + "&limit=" + limit + "&localDateTime=" + formattedString)
                 .session("connected", Integer.toString(LOGIN_USER_ID));
         return route(app, request);
     }

@@ -157,7 +157,7 @@ function displayEvents(events) {
         eventImageLink.setAttribute("href", events[i].images.images[0].transforms.transforms[lastImage].url);
 
         const eventImage = document.createElement("img");
-        eventImage.classList.add("img-thumbnail");
+        eventImage.classList.add("event-img");
         eventImage.setAttribute("src", events[i].images.images[0].transforms.transforms[lastImage].url);
         const mediaBody = document.createElement("div");
         mediaBody.classList.add("media-body")

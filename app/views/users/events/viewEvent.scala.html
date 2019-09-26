@@ -82,29 +82,39 @@
                         content: "\1F441";
                     }
 
-                    .fa-eye-red:before {
-                        content: "\1F441";
-                    }
-                    .overlay {
-                        position: absolute;
-                        max-width: 200px;
-                        opacity: 1;
-                        transition: .3s ease;
-                    }
-                    #map {
-                        height: 610px;
-                        max-width: 675px;
-                    }
-                    .response-well {
-                        margin-top: 15px;
-                    }
-                    .responseTime {
-                        float: right;
-                    }
-            </style>
-        </head>
+                .fa-eye-red:before {
+                    content: "\1F441";
+                }
+                .overlay {
+                    position: absolute;
+                    max-width: 200px;
+                    opacity: 1;
+                    transition: .3s ease;
+                }
+                #map {
+                    height: 610px;
+                    max-width: 675px;
+                }
+                .response-well {
+                    margin-top: 15px;
+                }
+                .responseTime {
+                    float: right;
+                }
+                .event-img {
+                    border-radius: 5px;
+                    cursor: pointer;
+                    transition: 0.3s;
+                    max-height: 250px;
+                    max-width: 250px;
+                    width: 250px;
+                }
+        </style>
+    </head>
         <div class="container">
-            <div class="row">
+    <div class="row">
+        <div class="col-sm-5">
+            <div id="map">
 
                 <label class="col-sm-0 control-label"></label>
                 <div class="col-sm-7">

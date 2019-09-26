@@ -1,5 +1,6 @@
 let map;
 window.globalMarkers = [];
+let markerCluster;
 
 function initMap() {
     map = window.globalMap = new google.maps.Map(document.getElementById('map'), {
@@ -25,6 +26,7 @@ function initDestinationMarkers() {
         method: 'GET'})
         .then(res => res.json())
         .then(destinations => {
+            let markers = [];
             let marker;
             let infoWindow;
             for (let index = 0; index < destinations.length; index++) {
@@ -41,6 +43,8 @@ function initDestinationMarkers() {
                     content: getMapInfoWindowHTML(destinations[index])
                 });
 
+                markers.push(marker);
+
                 //make the marker and infoWindow globals (persist in browser session)
                 window.globalMarkers.push({
                     marker: marker,
@@ -51,6 +55,10 @@ function initDestinationMarkers() {
                 initMarkerEventHandlers(index);
                 initInforWindowEventHandlers(index);
             }
+
+            markerCluster = new MarkerClusterer(window.globalMap, markers,
+                {imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'});
+
         });
 }
 

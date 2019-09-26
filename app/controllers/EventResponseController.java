@@ -192,14 +192,14 @@ public class EventResponseController {
             eventNode.put("lat", event.getLatitude());
             eventNode.put("lng", event.getLongitude());
             eventNode.put("address", event.getAddress());
-            eventNode.put("startTime", event.getStartTime().format(formatter));
-            eventNode.put("endTime", event.getEndTime().format(formatter));
+            eventNode.put("startTime", UtilityFunctions.getStringFromDateTime(event.getStartTime()));
+            eventNode.put("endTime", UtilityFunctions.getStringFromDateTime(event.getEndTime()));
 
             responseNode.put("responseId", response.getEventResponseId());
             responseNode.put("responseType", response.getResponseType().toString());
             responseNode.set("user", userNode);
             responseNode.set("event", eventNode);
-            responseNode.put("responseDateTime", response.getResponseDateTime().format(formatter));
+            responseNode.put("responseDateTime", UtilityFunctions.getStringFromDateTime(response.getResponseDateTime()));
             responses.add(responseNode);
         }
         json.set("responses", responses);
@@ -210,6 +210,7 @@ public class EventResponseController {
         return ok(Json.toJson(EventResponseAccessor.getAllEventResponses()));
     }
 
+    /** Get event responses only for users you are following */
     public Result getEventResponses(Http.Request request, int offset, int limit, String localDateTime) {
         User user = User.getCurrentUser(request);
         if (user == null) {
@@ -228,7 +229,7 @@ public class EventResponseController {
         }
 
         List<EventResponse> eventResponses = EventResponseAccessor
-                .getEventResponses(offset, limit, parsedLocalDateTime);
+                .getEventResponsesOfFollowingPaginated(user, offset, limit, parsedLocalDateTime);
 
 
         return ok(getJsonEventResponses(eventResponses));

@@ -16,6 +16,7 @@ import testhelpers.BaseTestWithApplicationAndDatabase;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Collections;
 
 import static org.junit.Assert.*;
 import static play.mvc.Http.Status.BAD_REQUEST;
@@ -25,7 +26,8 @@ import static play.test.Helpers.*;
 import static play.test.Helpers.contentAsString;
 import static play.test.Helpers.route;
 import com.fasterxml.jackson.databind.JsonNode;
-
+import utilities.TableName;
+import utilities.TestDatabaseManager;
 
 
 public class EventResponseControllerTest extends BaseTestWithApplicationAndDatabase {
@@ -76,7 +78,7 @@ public class EventResponseControllerTest extends BaseTestWithApplicationAndDatab
         String formattedString = time.format(formatter);
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(GET)
-                .uri("/events/responses/newsfeed/" + offset + "/" + limit + "/" +formattedString)
+                .uri("/events/responses/getjson?offset=" + offset + "&limit=" + limit + "&localDateTime=" + formattedString)
                 .session("connected", Integer.toString(LOGIN_USER_ID));
         return route(app, request);
     }
@@ -141,9 +143,10 @@ public class EventResponseControllerTest extends BaseTestWithApplicationAndDatab
         assertEquals(SEE_OTHER, result.status());
     }
 
-    @Ignore
-    @Test
-    public void getAllResponses() {
+    /* Remove all event responses */
+    private void removeAllResponses() {
+        TestDatabaseManager testDatabaseManager = new TestDatabaseManager();
+        testDatabaseManager.clearData(Collections.singletonList(TableName.event_response));
     }
 
     @Test
@@ -175,6 +178,8 @@ public class EventResponseControllerTest extends BaseTestWithApplicationAndDatab
 
         //This assumes that there are initially no event responses. This might have to be
         //changed if event responses are added to the database.
+        removeAllResponses();
+
         Result result = getEventResponses(offset, limit, time);
 
         JsonNode response = Json.parse(contentAsString(result));
@@ -194,12 +199,15 @@ public class EventResponseControllerTest extends BaseTestWithApplicationAndDatab
 
     @Test
     public void testGetEventResponsesWithEventsTestingOffset() {
+
+
         int offset = 0;
         int limit = 2;
         LocalDateTime time = LocalDateTime.now().plusDays(1);
 
         //This assumes that there are initially no event responses. This might have to be
         //changed if event responses are added to the database.
+        removeAllResponses();
 
         insertEventResponse(LocalDateTime.now().plusDays(1));
         insertEventResponse(LocalDateTime.now().plusDays(1));
@@ -233,6 +241,8 @@ public class EventResponseControllerTest extends BaseTestWithApplicationAndDatab
 
     @Test
     public void testGetEventResponsesWithEventsTestingEventRespondTime() {
+        removeAllResponses();
+
         LocalDateTime time = LocalDateTime.now();
         int limit = 100000;
         int offset = 0;

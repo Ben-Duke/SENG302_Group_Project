@@ -6,7 +6,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Travel  EA</title>
+        <title>iVentr</title>
 
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -14,7 +14,7 @@
 
             <!--  Load site-specific customizations after bootstrap. -->
         <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/main.css")">
-        <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
+        <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/icons/logoNoText.png")">
 
         <script src="@routes.Assets.at("js/jquery-3.3.1.min.js")" type="text/javascript"></script>
         <script src="@routes.Assets.at("js/bootstrap.min.js")" type="text/javascript"></script>
@@ -30,7 +30,7 @@
 
                 <div class="container-fluid">
                     <div class="navbar-header">
-                        <a class="navbar-brand" href="@routes.HomeController.mainMapPage()"><img src ='/assets/images/icons/logo.png' height="60" width="78" style="padding-top: 0px"></a>
+                        <a class="navbar-brand" href="@routes.HomeController.mainMapPage()"><img src ='/assets/images/icons/logoNoText.png' height="50" width="78" style="padding-top: 0px"></a>
                     </div>
                     <ul class="nav navbar-nav">
                         @if(user != null) {

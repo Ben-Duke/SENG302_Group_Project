@@ -7,6 +7,7 @@ import controllers.ApplicationManager;
 import io.ebean.Finder;
 import io.ebean.Model;
 import models.media.MediaOwner;
+import utilities.CountryUtils;
 
 import javax.persistence.*;
 import java.util.*;
@@ -366,6 +367,14 @@ public class Destination extends TaggableModel implements AlbumOwner, MediaOwner
     public void applyEditChanges(Destination newDestination) {
         this.destName = newDestination.getDestName();
         this.country = newDestination.getCountry();
+        List<String> countries = CountryUtils.getCountries();
+        if (!countries.contains(country)) {
+            setCountryValid(false);
+        } else {
+            if (!getIsCountryValid()) {
+                setCountryValid(true);
+            }
+        }
         this.district = newDestination.getDistrict();
         this.longitude = newDestination.getLongitude();
         this.latitude = newDestination.getLatitude();

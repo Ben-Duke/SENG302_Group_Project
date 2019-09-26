@@ -33,6 +33,7 @@ import utilities.TestDatabaseManager;
 public class EventResponseControllerTest extends BaseTestWithApplicationAndDatabase {
 
     private Integer LOGIN_USER_ID = 2;
+    private Integer FOLLOWING_USER_ID = 3;
 
 
     /**
@@ -46,7 +47,7 @@ public class EventResponseControllerTest extends BaseTestWithApplicationAndDatab
         EventResponse eventResponse = new EventResponse();
         EventResponseAccessor.save(eventResponse);
         EventResponse savedEventResponse = EventResponseAccessor.getById(eventResponse.getEventResponseId());
-        savedEventResponse.setUser(UserAccessor.getById(LOGIN_USER_ID));
+        savedEventResponse.setUser(UserAccessor.getById(FOLLOWING_USER_ID));
         savedEventResponse.setEvent(event);
         savedEventResponse.setResponseType(ResponseType.valueOf("Going"));
         EventResponseAccessor.update(savedEventResponse);
@@ -64,7 +65,7 @@ public class EventResponseControllerTest extends BaseTestWithApplicationAndDatab
         EventResponse eventResponse = new EventResponse();
         EventResponseAccessor.save(eventResponse);
         EventResponse savedEventResponse = EventResponseAccessor.getById(eventResponse.getEventResponseId());
-        savedEventResponse.setUser(UserAccessor.getById(LOGIN_USER_ID));
+        savedEventResponse.setUser(UserAccessor.getById(FOLLOWING_USER_ID));
         savedEventResponse.setEvent(event);
         savedEventResponse.setResponseType(ResponseType.valueOf("Going"));
         EventResponseAccessor.update(savedEventResponse);

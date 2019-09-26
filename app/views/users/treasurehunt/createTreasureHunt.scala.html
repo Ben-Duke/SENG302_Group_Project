@@ -4,6 +4,7 @@
 
 
 @main(user, "Treasure Hunt") {
+    <div class="container">
     @helper.form(action = helper.CSRF(routes.TreasureHuntController.createAndSaveTreasureHunt())) {
         <fieldset>
                 <!-- Header -->
@@ -47,6 +48,7 @@
             </div>
         </div>
     }
+    </div>
 }
 
 

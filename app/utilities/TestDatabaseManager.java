@@ -1,14 +1,13 @@
 package utilities;
 
+import accessors.EventResponseAccessor;
 import accessors.UserAccessor;
 import controllers.ApplicationManager;
 import io.ebean.Ebean;
 import models.*;
 import org.slf4j.Logger;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.CountDownLatch;
 
 
@@ -62,6 +61,7 @@ public class TestDatabaseManager {
         String sql = fileReader.readFile();
 
         Ebean.createSqlUpdate(sql).execute();
+
     }
 
     /**
@@ -123,7 +123,6 @@ public class TestDatabaseManager {
                 user.hashAndSetPassword(EnvironmentalVariablesAccessor.getEnvVariable(
                         EnvVariableKeys.TEST_USER_PASSWORD_DEFAULT.toString()));
             }
-
             user.update();
         }
     }
@@ -135,12 +134,19 @@ public class TestDatabaseManager {
                 TableName.passport,
                 TableName.traveller_type);
 
-        clearData(persisted);
+        clearDataExceptPersisted(persisted);
     }
 
     /** Clear all data from the database */
     public void clearAllData() {
-        clearData(new ArrayList<>());  // pass an empty list
+        clearData(Arrays.asList(TableName.values()));
+    }
+
+    private void clearDataExceptPersisted(List<TableName> persisted) {
+        List<TableName> toClear = new ArrayList<>(Arrays.asList(TableName.values()));
+        toClear.removeAll(persisted);   // remove any tables that we do not want to wipe
+
+        clearData(toClear);
     }
 
     /**
@@ -152,14 +158,10 @@ public class TestDatabaseManager {
      * Always runs on DEFAULT database not a database with a different name which
      * the application is connected to
      */
-    private void clearData(List<TableName> persisted) {
+    public void clearData(List<TableName> toClear) {
         logger.info("Clearing database data");
 
-        for (TableName tableName : TableName.values()) {
-            if (persisted.contains(tableName)) {
-                continue;   // do not clear tables in persisted
-            }
-
+        for (TableName tableName : toClear) {
             String sql = String.format("DELETE FROM %s", tableName);
             Ebean.createSqlUpdate(sql).execute();
 

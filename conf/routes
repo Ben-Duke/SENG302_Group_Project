@@ -104,6 +104,7 @@ GET     /users/map_home     controllers.HomeController.mainMapPage(request : Req
 
 
 
+
 #Add route for adding a trip with AJAX
 
 #Add destination to a trip using AJAX
@@ -400,9 +401,12 @@ GET     /events             controllers.EventsController.getEventsDataByDestinat
 
 GET     /users/events/search            controllers.EventsController.indexEvents(request : Request)
 
+GET     /users/events/:eventId            controllers.EventsController.viewEvent(request : Request, eventId: Integer)
+
+
 GET     /users/events       controllers.EventsController.getEventsData(request : Request, keyword: String, category : String, startDate: String, endDate: String, minPrice: String, maxPrice: String, destination: String, sortBy: String, offset: Integer)
 
-
+GET     /users/events/exists/:eventId                controllers.EventsController.checkEventExists(request : Request, eventId : Integer)
 
 GET /users/trips/fetch/trips_routes_json  controllers.TripController.getTripsRoutesJson(request : Request)
 
@@ -466,6 +470,33 @@ GET /users/follows/:profileId                           controllers.FollowContro
 #Nationalities
 #Gets a list of all nationalities from the database
 GET /nationalities                                      controllers.NationalityController.getAllNationalities(request: Request)
+
+
+
+# News feed
+PUT /events/respond/:eventId/:responseType                  controllers.EventResponseController.respondToEvent(request : Request, eventId : Integer, responseType : String)
+
+GET /events/responses/:eventId/:responseType                controllers.EventResponseController.getResponsesForEventByResponseType(request : Request, eventId : Integer, responseType : String)
+
+GET /events/responses/getjson                               controllers.EventResponseController.getEventResponses(request: Request, offset: Integer, limit: Integer, localDateTime: String)
+
+GET /events/responses/:eventId/:responseType/:userId        controllers.EventResponseController.getResponsesForEventAndUserByResponseType(request : Request, eventId : Integer, responseType : String, userId : Integer)
+
+GET /events/responses/:responseType                         controllers.EventResponseController.getEventResponsesByResponseType(request : Request, responseType : String)
+
+GET /events/get/all                                         controllers.EventResponseController.getAllResponses(request : Request)
+
+GET /users/newsfeed/media                                        controllers.NewsfeedController.getMediaForNewsfeed(request: Request, offset: Integer, limit: Integer, localDateTime: String)
+
+GET /users/newsfeed                                         controllers.NewsfeedController.newsfeedPage(request: Request)
+
+
+
+PUT /events/linkphoto/:photoId/:eventId                     controllers.EventsController.linkPhotoToEvent(request: Request, photoId: Integer, eventId: Integer)
+
+PUT /events/unlinkphoto/:photoId/:eventId                     controllers.EventsController.unlinkPhotoToEvent(request: Request, photoId: Integer, eventId: Integer)
+
+GET /events/photos/:eventId                     controllers.EventsController.getEventPhotos(request: Request, eventId: Integer)
 
 
 

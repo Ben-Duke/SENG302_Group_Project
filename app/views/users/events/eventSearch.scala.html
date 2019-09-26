@@ -6,8 +6,6 @@
 @main(user, "Events") {
 
     <head>
-
-
         <link rel="stylesheet" href="@routes.Assets.at("stylesheets/events.css")">
         <style>
             body {
@@ -37,10 +35,17 @@
                 overflow-x:hidden;
                 overflow-y:auto;
             }
+            .event-img {
+                border-radius: 5px;
+                cursor: pointer;
+                transition: 0.3s;
+                max-height: 250px;
+                max-width: 250px;
+                width: 250px;
+            }
 
         </style>
     </head>
-
 
 
     <div class="col-md-4" id="search-container" >
@@ -164,11 +169,10 @@
     </div>
 
     <div class="text-center" id="no-results"></div>
-    <div class="col-md-8" id="events-results"></div>
+    <div class="col-md-8" id="events-results" data-userId="@user.getUserid()"></div>
 
     <div id="loader" style="display: none;"></div>
-    <div class="text-center" id="eventsPage">
-    </div>
+    <div class="text-center" id="eventsPage"></div>
 
     <script src="@routes.Assets.at("js/events/eventSearchMap.js")"></script>
     <script src="@routes.Assets.at("js/events/eventSearch.js")"></script>

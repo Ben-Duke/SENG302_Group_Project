@@ -1,8 +1,8 @@
 package utilities;
 
 import accessors.TagAccessor;
-import models.Tag;
-import models.TravellerType;
+import accessors.UserAccessor;
+import models.*;
 import org.junit.Test;
 import play.db.Database;
 import play.db.Databases;
@@ -11,6 +11,7 @@ import play.db.evolutions.Evolutions;
 import play.test.WithApplication;
 import testhelpers.BaseTestWithApplicationAndDatabase;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -488,5 +489,35 @@ public class UtilityFunctionsTest extends BaseTestWithApplicationAndDatabase {
 
         int finalNumTags = Tag.find.all().size();
         assertEquals(initialNumTags, finalNumTags); // check size unchanged
+    }
+
+    private EventResponse initialiseEventResponse(LocalDateTime endTime) {
+        Event event = new Event(LocalDateTime.MIN, endTime, "test");
+        return new EventResponse(ResponseType.valueOf("Going"), event, UserAccessor.getById(2));
+    }
+
+
+    @Test
+    public void getResponsePastCurrentUser() {
+        EventResponse response = initialiseEventResponse(LocalDateTime.MIN.plusYears(1));
+        assertEquals("went", UtilityFunctions.getResponseAdjustedForTime(response, true));
+    }
+
+    @Test
+    public void getResponsePastNotCurrentUser() {
+        EventResponse response = initialiseEventResponse(LocalDateTime.MIN.plusYears(1));
+        assertEquals("went", UtilityFunctions.getResponseAdjustedForTime(response, false));
+    }
+
+    @Test
+    public void getResponseFutureIsCurrentUser() {
+        EventResponse response = initialiseEventResponse(LocalDateTime.MAX);
+        assertEquals("are going", UtilityFunctions.getResponseAdjustedForTime(response, true));
+    }
+
+    @Test
+    public void getResponseFutureNotCurrentUser() {
+        EventResponse response = initialiseEventResponse(LocalDateTime.MAX);
+        assertEquals("is going", UtilityFunctions.getResponseAdjustedForTime(response, false));
     }
 }

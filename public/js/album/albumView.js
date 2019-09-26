@@ -296,6 +296,7 @@ async function displayGrid(i, albumData, path, offSet) {
         privacyIcon.classList.add("fa", "fa-eye-red");
     }
     let img1 = document.createElement("img");
+    console.log(url);
     img1.src = path + encodeURIComponent(url);
     img1.setAttribute("data-id", i);
     img1.setAttribute("data-mediaId", albumData[i]["mediaId"]);

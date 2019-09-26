@@ -1,49 +1,88 @@
 package models;
 
+import accessors.EventAccessor;
+import accessors.EventResponseAccessor;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import controllers.ApplicationManager;
 import io.ebean.Finder;
 import io.ebean.Model;
-import io.ebean.annotation.CreatedTimestamp;
 import play.data.format.Formats;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Model for events
  */
 @Entity
-public class Event extends Model {
+public class Event extends Model implements AlbumOwner {
 
     private static final String DATE_PATTERN = "dd-MM-yyyy HH:mm:ss";
 
     @Id
     private Integer eventId;
 
+    private Integer externalId;
+
     @Temporal(TemporalType.TIMESTAMP)
-    @Formats.DateTime(pattern=DATE_PATTERN)
+    @Formats.DateTime(pattern = DATE_PATTERN)
     //date was protected not public/private for some reason
-    @CreatedTimestamp
     private LocalDateTime startTime;
 
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Formats.DateTime(pattern=DATE_PATTERN)
-    @CreatedTimestamp
+    @Formats.DateTime(pattern = DATE_PATTERN)
     private LocalDateTime endTime;
 
+    private String name;
+    private String url;
+    private String address;
+    private String type;
+
+    private String imageUrl;
+    private double latitude;
+    private double longitude;
+
+    @Column(columnDefinition = "TEXT")
     private String description;
 
-    @ManyToOne
-    private Destination destination;
 
-    private static final Finder<Integer,Event> find = new Finder<>(Event.class, ApplicationManager.getDatabaseName());
+    @JsonIgnore
+    @OneToMany(mappedBy = "event")
+    private List<Album> albums;
+    public static final Finder<Integer, Event> find = new Finder<>(Event.class, ApplicationManager.getDatabaseName());
 
-    public Event(LocalDateTime startTime, LocalDateTime endTime, String description, Destination destination) {
+
+    public Event(Integer externalId, LocalDateTime startTime, LocalDateTime endTime,
+                 String name, String type, String url, String imageUrl, double latitude,
+                 double longitude, String address, String description) {
+        this.externalId = externalId;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.name = name;
+        this.type = type;
+        this.url = url;
+        this.imageUrl = imageUrl;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.address = address;
+        this.description = description;
+        this.albums = new ArrayList<>();
+    }
+
+    public Event() {
+    }
+
+    public Event(String name) {
+        this.name = name;
+    }
+
+    public Event(LocalDateTime startTime, LocalDateTime endTime, String description) {
         this.startTime = startTime;
         this.endTime = endTime;
         this.description = description;
-        this.destination = destination;
     }
 
     public static Finder<Integer, Event> find() {
@@ -78,12 +117,112 @@ public class Event extends Model {
         this.description = description;
     }
 
-    public Destination getDestination() {
-        return destination;
+    public String getName() {
+        return name;
     }
 
-    public void setDestination(Destination destination) {
-        this.destination = destination;
+    public void setName(String name) {
+        this.name = name;
     }
 
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
+
+    public void setEventId(Integer eventId) {
+        this.eventId = eventId;
+    }
+
+    public Integer getExternalId() {
+        return externalId;
+    }
+
+    public void setExternalId(Integer externalId) {
+        this.externalId = externalId;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+
+    @Override
+    public String toString() {
+        return "Event{" +
+                "eventId=" + eventId +
+                ", externalId=" + externalId +
+                ", startTime=" + startTime +
+                ", endTime=" + endTime +
+                ", name='" + name + '\'' +
+                ", url='" + url + '\'' +
+                ", address='" + address + '\'' +
+                ", imageUrl='" + imageUrl + '\'' +
+                ", latitude=" + latitude +
+                ", longitude=" + longitude +
+                ", description='" + description + '\'' +
+                '}';
+    }
+
+    @Override
+    public List<Album> getAlbums() {
+        return albums;
+    }
+
+    public Album getPrimaryAlbum() {
+        // add the primary album if it is missing
+        if (this.albums.isEmpty()) {
+            this.albums.add(new Album(this, this.getName(), false));
+        }
+        return albums.get(0);
+    }
+
+    public void setAlbums(List<Album> albums) {
+        this.albums = albums;
+    }
+
+    public List<EventResponse> getLimitedResponses(User user) {
+        // add follower responses
+        return new ArrayList<>(EventResponseAccessor.getEventResponsesOfFollowing(user, this,5));
+    }
 }

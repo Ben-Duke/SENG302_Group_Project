@@ -15,6 +15,7 @@ create table album (
   album_id                      integer auto_increment not null,
   user                          integer,
   destination                   integer,
+  event                         integer,
   primary_photo_media_id        integer,
   is_default                    boolean,
   title                         varchar(191),
@@ -81,13 +82,41 @@ create table destination_modification_request_traveller_type (
   constraint pk_destination_modification_request_traveller_type primary key (destination_modification_request_id,traveller_type_ttypeid)
 );
 
+create table event (
+  event_id                      integer auto_increment not null,
+  external_id                   integer,
+  name                          varchar(191),
+  address                       varchar(191),
+  type                          varchar(191),
+  image_url                     varchar(191),
+  url                           varchar(191),
+  latitude                      double not null,
+  longitude                     double not null,
+  description                   TEXT,
+  start_time                    timestamp not null,
+  end_time                      timestamp not null,
+  constraint pk_event primary key (event_id)
+);
+
+create table event_response (
+  event_response_id             integer auto_increment not null,
+  response_type                 varchar(191),
+  user_userid                   integer,
+  event_event_id                integer,
+  response_date_time            timestamp not null,
+  constraint ck_event_response_response_type check ( response_type in (0,1,2,3)),
+  constraint uq_event_response_user_userid_event_event_id unique (user_userid,event_event_id),
+  constraint pk_event_response primary key (event_response_id)
+);
+
+
 create table media (
   dtype                         varchar(31) not null,
   media_id                      integer auto_increment not null,
   user                          integer,
   is_public                     boolean default false not null,
   url                           varchar(191),
-  is_media_public               boolean default false not null,
+  date_added                    date,
   caption                       varchar(191),
   is_profile                    boolean default false not null,
   constraint uq_media_url unique (url),
@@ -226,6 +255,9 @@ alter table album add constraint fk_album_user foreign key (user) references use
 create index ix_album_destination on album (destination);
 alter table album add constraint fk_album_destination foreign key (destination) references destination (destid) on delete restrict on update restrict;
 
+create index ix_album_event on album (event);
+alter table album add constraint fk_album_event foreign key (event) references event (event_id) on delete restrict on update restrict;
+
 create index ix_album_primary_photo_media_id on album (primary_photo_media_id);
 alter table album add constraint fk_album_primary_photo_media_id foreign key (primary_photo_media_id) references media (media_id) on delete restrict on update restrict;
 
@@ -270,6 +302,13 @@ alter table destination_modification_request_traveller_type add constraint fk_de
 
 create index ix_destination_modification_request_traveller_type_travel_2 on destination_modification_request_traveller_type (traveller_type_ttypeid);
 alter table destination_modification_request_traveller_type add constraint fk_destination_modification_request_traveller_type_travel_2 foreign key (traveller_type_ttypeid) references traveller_type (ttypeid) on delete restrict on update restrict;
+
+
+create index ix_event_response_user_userid on event_response (user_userid);
+alter table event_response add constraint fk_event_response_user_userid foreign key (user_userid) references user (userid) on delete restrict on update restrict;
+
+create index ix_event_response_event_event_id on event_response (event_event_id);
+alter table event_response add constraint fk_event_response_event_event_id foreign key (event_event_id) references event (event_id) on delete restrict on update restrict;
 
 create index ix_media_user on media (user);
 alter table media add constraint fk_media_user foreign key (user) references user (userid) on delete restrict on update restrict;
@@ -346,6 +385,9 @@ drop index if exists ix_album_user;
 alter table album drop constraint if exists fk_album_destination;
 drop index if exists ix_album_destination;
 
+alter table album drop constraint if exists fk_album_event;
+drop index if exists ix_album_event;
+
 alter table album drop constraint if exists fk_album_primary_photo_media_id;
 drop index if exists ix_album_primary_photo_media_id;
 
@@ -390,6 +432,12 @@ drop index if exists ix_destination_modification_request_traveller_type_destin_1
 
 alter table destination_modification_request_traveller_type drop constraint if exists fk_destination_modification_request_traveller_type_travel_2;
 drop index if exists ix_destination_modification_request_traveller_type_travel_2;
+
+alter table event_response drop constraint if exists fk_event_response_user_userid;
+drop index if exists ix_event_response_user_userid;
+
+alter table event_response drop constraint if exists fk_event_response_event_event_id;
+drop index if exists ix_event_response_event_event_id;
 
 alter table media drop constraint if exists fk_media_user;
 drop index if exists ix_media_user;
@@ -478,6 +526,10 @@ drop table if exists destination_traveller_type;
 drop table if exists destination_modification_request;
 
 drop table if exists destination_modification_request_traveller_type;
+
+drop table if exists event;
+
+drop table if exists event_response;
 
 drop table if exists media;
 

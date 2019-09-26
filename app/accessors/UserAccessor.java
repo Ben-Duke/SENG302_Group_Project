@@ -3,14 +3,13 @@ package accessors;
 import io.ebean.ExpressionList;
 import io.ebean.Query;
 import models.*;
-import play.libs.Json;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.util.*;
 
 /**
@@ -171,7 +170,6 @@ public class UserAccessor {
                     new Throwable("Multiple profile photos."));
         }
     }
-
 
     /**
      * Gets a paginated List of Users, with an offset and quantity to fetch.

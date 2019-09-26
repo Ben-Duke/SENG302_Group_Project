@@ -223,6 +223,6 @@ public class Event extends Model implements AlbumOwner {
 
     public List<EventResponse> getLimitedResponses(User user) {
         // add follower responses
-        return new ArrayList<>(EventResponseAccessor.getEventResponsesOfFollowing(user, 5));
+        return new ArrayList<>(EventResponseAccessor.getEventResponsesOfFollowing(user, this,5));
     }
 }

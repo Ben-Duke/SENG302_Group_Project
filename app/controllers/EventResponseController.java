@@ -22,7 +22,7 @@ import play.libs.Json;
 import play.mvc.Http;
 import play.mvc.Result;
 import utilities.EventFindaUtilities;
-import utilities.UtilityFunctions;
+import utilities.*;
 import utilities.exceptions.EbeanDateParseException;
 
 import javax.persistence.PersistenceException;

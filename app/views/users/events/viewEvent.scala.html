@@ -240,6 +240,9 @@
                 @if(isStored) {
                     <h4 style="margin-left: 20px; margin-top: 20px;" id="response-totals">
                         <b id="event-response-count">
+                            @EventResponseAccessor.getCountByEventAndType(event, ResponseType.Going) Going |
+                            @EventResponseAccessor.getCountByEventAndType(event, ResponseType.Interested) Interested |
+                            @EventResponseAccessor.getCountByEventAndType(event, ResponseType.NotGoing) Not Going
 
                         </b>
                     </h4>

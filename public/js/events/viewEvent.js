@@ -244,11 +244,11 @@ function setUpRespondButtons() {
     respondButtons.appendChild(interestedResponse);
     respondButtons.appendChild(notGoingResponse);
 
-    // set up response counts
-    const responseCounts = document.getElementById('event-response-count');
-    responseCounts.innerText = `${isGoingResponses.responses.length} Going | `;
-    responseCounts.innerText += ` ${isInterestedResponses.responses.length} Interested | `;
-    responseCounts.innerText += ` ${isNotGoingResponses.responses.length} Not Going`;
+    // // set up response counts
+    // const responseCounts = document.getElementById('event-response-count');
+    // responseCounts.innerText = `${isGoingResponses.responses.length} Going | `;
+    // responseCounts.innerText += ` ${isInterestedResponses.responses.length} Interested | `;
+    // responseCounts.innerText += ` ${isNotGoingResponses.responses.length} Not Going`;
 
     const eventFindaLogoLink = document.createElement("a");
     eventFindaLogoLink.setAttribute("href", "https://www.eventfinda.co.nz");

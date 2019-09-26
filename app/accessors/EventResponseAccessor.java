@@ -53,12 +53,12 @@ public class EventResponseAccessor {
      */
     public static List<EventResponse> getByEventAndType(Event event, ResponseType responseType) {
         return EventResponse.find().query().where().eq(
-                "event", event).eq("response_type", responseType).findList();
+                "event_event_id", event.getEventId()).eq("response_type", responseType).findList();
     }
 
     public static int getCountByEventAndType(Event event, ResponseType responseType) {
         return EventResponse.find().query().where().eq(
-                "event", event).eq("response_type", responseType).findCount();
+                "event_event_id", event.getEventId()).eq("response_type", responseType).findCount();
     }
 
     /** Return a list of Event Responses by a given user
@@ -138,6 +138,7 @@ public class EventResponseAccessor {
                 .findList();
     }
 
+    /** For newsfeed */
     public static List<EventResponse> getEventResponsesOfFollowingPaginated(User user, int offset, int limit, LocalDateTime dateTime) {
         return EventResponse.find().query().where()
                 .in("user_userid", user.getFollowingIds())
@@ -148,8 +149,10 @@ public class EventResponseAccessor {
                 .findList();
     }
 
-    public static List<EventResponse> getEventResponsesOfFollowing(User user, int limit) {
+    /** For event page */
+    public static List<EventResponse> getEventResponsesOfFollowing(User user, Event event, int limit) {
         return EventResponse.find().query().where()
+                .eq("event_event_id", event.getEventId())
                 .in("user_userid", user.getFollowingIds())
                 .order().desc("responseDateTime")
                 .setMaxRows(limit)

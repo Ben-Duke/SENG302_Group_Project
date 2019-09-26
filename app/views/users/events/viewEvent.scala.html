@@ -25,42 +25,43 @@
                         border-radius: 4px;
                         background-color: white;
 
-                    }
-                    #map {
-                        margin: 10px 20px 10px 20px;
-                        height: 30vh;
-                    }
-                    #imagesContainer {
-                        position: relative;
-                        max-width: 120px;
-                        height: 100%;
-                        width: 100%;
-                        left: -25px;
-                        top: -5px;
-                    }
-                    #imageContainer {
-                        position: relative;
-                        margin: 10px;
-                        width: 120px;
-                        float: left;
-                    }
-                    .vertical-center {
-                        margin: 0;
-                        position: absolute;
-                        top: 50%;
-                        -ms-transform: translateY(-50%);
-                        left: 50%;transform: translate(-50%, -50%);
-                    }
-                    .icon {
-                        color: white;
-                        font-size: 25px;
-                        position: absolute;
-                        top: -20px;
-                        left: 75px;
-                        max-width: 60px;
-                        transform: translate(50%, 50%);
-                        -ms-transform: translate(-50%, -50%);
-                    }
+                }
+                #map {
+                    margin: 10px 20px 10px 20px;
+                    height: 280px;
+                    max-width: 675px;
+                }
+                #imagesContainer {
+                    position: relative;
+                    max-width: 120px;
+                    height: 100%;
+                    width: 100%;
+                    left: -25px;
+                    top: -5px;
+                }
+                #imageContainer {
+                    position: relative;
+                    margin: 10px;
+                    width: 120px;
+                    float: left;
+                }
+                .vertical-center {
+                    margin: 0;
+                    position: absolute;
+                    top: 50%;
+                    -ms-transform: translateY(-50%);
+                    left: 50%;transform: translate(-50%, -50%);
+                }
+                .icon {
+                    color: white;
+                    font-size: 25px;
+                    position: absolute;
+                    top: -20px;
+                    left: 75px;
+                    max-width: 60px;
+                    transform: translate(50%, 50%);
+                    -ms-transform: translate(-50%, -50%);
+                }
 
                     .fa {
                         display: inline-block;
@@ -82,29 +83,26 @@
                         content: "\1F441";
                     }
 
-                    .fa-eye-red:before {
-                        content: "\1F441";
-                    }
-                    .overlay {
-                        position: absolute;
-                        max-width: 200px;
-                        opacity: 1;
-                        transition: .3s ease;
-                    }
-                    #map {
-                        height: 610px;
-                        max-width: 675px;
-                    }
-                    .response-well {
-                        margin-top: 15px;
-                    }
-                    .responseTime {
-                        float: right;
-                    }
-            </style>
-        </head>
-        <div class="container">
-            <div class="row">
+                .fa-eye-red:before {
+                    content: "\1F441";
+                }
+                .overlay {
+                    position: absolute;
+                    max-width: 200px;
+                    opacity: 1;
+                    transition: .3s ease;
+                }
+
+                .response-well {
+                    margin: 20px;
+                }
+                .responseTime {
+                    float: right;
+                }
+        </style>
+    </head>
+    <div class="container">
+        <div class="row">
 
                 <label class="col-sm-0 control-label"></label>
                 <div class="col-sm-7">
@@ -117,31 +115,6 @@
                     <h5>@event.getAddress()</h5>
                     <div id="respondButtons" class="well" data-event-id="@event.getExternalId()"></div>
 
-                    @if(isStored) {
-                        <h4 id="response-totals">
-                            <b>
-                                @EventResponseAccessor.getCountByEventAndType(event, ResponseType.Going) Going |
-                                @EventResponseAccessor.getCountByEventAndType(event, ResponseType.Interested) Interested |
-                                @EventResponseAccessor.getCountByEventAndType(event, ResponseType.NotGoing) Not Going
-                            </b>
-                        </h4>
-
-                        <div class="well response-well ">
-                        @for(response <- eventResponses) {
-                            <div class="responseItem">
-                                <img class="img-circle userProfileImg" src="@{routes.HomeController.serveProfilePicture(response.getUser.getUserid())}")>
-
-                                @if(user == response.getUser) {
-                                    <span class="responseType">You  @UtilityFunctions.getResponseAdjustedForTime(response, true)</span>
-                                } else {
-                                    <span class="responseType">@response.getUser.getFName @response.getUser.getLName
-                                        @UtilityFunctions.getResponseAdjustedForTime(response, false)</span>
-                                }
-                                <span class="responseTime">@UtilityFunctions.getFormattedDateTime(response.getResponseDateTime)</span>
-                            </div>
-                        }
-                        </div>
-                    }
 
                     @if(isStored) {
                         <h2>Media</h2>
@@ -247,11 +220,35 @@
                 <div class="col-sm-5">
                     <div id="map">
 
-                    </div>
                 </div>
+                @if(isStored) {
+                    <h4 style="margin-left: 20px; margin-top: 20px;" id="response-totals">
+                        <b>
+                            @EventResponseAccessor.getCountByEventAndType(event, ResponseType.Going) Going |
+                            @EventResponseAccessor.getCountByEventAndType(event, ResponseType.Interested) Interested |
+                            @EventResponseAccessor.getCountByEventAndType(event, ResponseType.NotGoing) Not Going
+                        </b>
+                    </h4>
+                <div class="well response-well ">
+                    @for(response <- eventResponses) {
+                    <div class="responseItem">
+                        <img class="img-circle userProfileImg" src="@{routes.HomeController.serveProfilePicture(response.getUser.getUserid())}")>
+
+                        @if(user == response.getUser) {
+                        <span class="responseType">You  @UtilityFunctions.getResponseAdjustedForTime(response, true)</span>
+                        } else {
+                        <span class="responseType">@response.getUser.getFName @response.getUser.getLName
+                                    @UtilityFunctions.getResponseAdjustedForTime(response, false)</span>
+                        }
+                        <span class="responseTime">@UtilityFunctions.getFormattedDateTime(response.getResponseDateTime)</span>
+                    </div>
+                    }
+                </div>
+                }
             </div>
         </div>
-        <div id="eventsPage">
+    </div>
+    <div id="eventsPage">
 
         </div>
 

@@ -133,27 +133,27 @@ function respondToEvent(eventId, responseType){
     interested.classList.add("btn-light")
     notGoing.classList.add("btn-light")
     let object = document.querySelector('[data-event-id="'+eventId+'"] [data-'+responseType+']')
-    object.setAttribute('data-'+responseType, "true")
-    object.classList.add("btn-primary")
+    object.setAttribute('data-'+responseType, "true");
+    object.classList.add("btn-primary");
     $.ajax({
         type: 'PUT',
         url: "/events/respond/" + eventId + "/" + responseType,
         success: function () {
-
+            location.reload();
         },
         error : function () {
             let going = document.querySelector('[data-event-id="'+eventId+'"] [data-going]')
             let interested = document.querySelector('[data-event-id="'+eventId+'"] [data-interested]')
             let notGoing = document.querySelector('[data-event-id="'+eventId+'"] [data-notGoing]')
             going.setAttribute("data-Going", "false")
-            interested.setAttribute("data-Interested", "false")
-            notGoing.setAttribute("data-NotGoing", "false")
-            going.classList.remove("btn-primary")
-            interested.classList.remove("btn-primary")
-            notGoing.classList.remove("btn-primary")
-            going.classList.add("btn-light")
-            interested.classList.add("btn-light")
-            notGoing.classList.add("btn-light")
+            interested.setAttribute("data-Interested", "false");
+            notGoing.setAttribute("data-NotGoing", "false");
+            going.classList.remove("btn-primary");
+            interested.classList.remove("btn-primary");
+            notGoing.classList.remove("btn-primary");
+            going.classList.add("btn-light");
+            interested.classList.add("btn-light");
+            notGoing.classList.add("btn-light");
         }
     });
 }

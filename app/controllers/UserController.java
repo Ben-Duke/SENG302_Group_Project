@@ -2,16 +2,20 @@ package controllers;
 
 import accessors.UserPhotoAccessor;
 import factories.UserFactory;
+import formdata.LoginFormData;
 import models.Admin;
 import models.User;
 import models.UserPhoto;
 import org.slf4j.Logger;
+import play.data.Form;
+import play.data.FormFactory;
 import play.libs.Json;
 import play.mvc.Http;
 import play.mvc.Result;
 import utilities.*;
 import views.html.users.userIndex;
 
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -20,6 +24,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import static play.mvc.Results.*;
 
 public class UserController {
+
+    @Inject
+    FormFactory formFactory;
 
     private final Logger logger = UtilityFunctions.getLogger();
 
@@ -70,7 +77,8 @@ public class UserController {
                 Thread.currentThread().interrupt();
             }
         }
-        return ok(userIndex.render(User.getCurrentUser(request)));
+        Form<LoginFormData> loginFormData = formFactory.form(LoginFormData.class);
+        return ok(userIndex.render(loginFormData, User.getCurrentUser(request)));
     }
 
     /**

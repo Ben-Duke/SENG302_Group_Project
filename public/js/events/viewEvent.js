@@ -155,7 +155,7 @@ function respondToEvent(eventId, responseType){
             interested.classList.add("btn-light")
             notGoing.classList.add("btn-light")
         }
-    })
+    });
 }
 
 function setUpRespondButtons() {
@@ -164,7 +164,7 @@ function setUpRespondButtons() {
     let isNotGoingResponses;
 
     $.ajax({
-    async: false,
+        async: false,
         type: 'GET',
         url: "/events/responses/Going",
         success: function (resData) {
@@ -174,7 +174,7 @@ function setUpRespondButtons() {
 
 
     $.ajax({
-    async: false,
+        async: false,
         type: 'GET',
         url: "/events/responses/Interested",
         success: function (resData) {
@@ -183,32 +183,37 @@ function setUpRespondButtons() {
     })
 
     $.ajax({
-    async: false,
+        async: false,
         type: 'GET',
         url: "/events/responses/NotGoing",
         success: function (resData) {
             isNotGoingResponses = resData;
         },
-    })
+    });
 
     const allResponses = [isGoingResponses, isInterestedResponses, isNotGoingResponses]
 
     const respondButtons = document.getElementById("respondButtons");
+
+
     const eventId = respondButtons.dataset.eventId;
 
     const goingResponse = document.createElement("a");
+    goingResponse.setAttribute("data-responseButton", true);
     goingResponse.classList.add("btn");
     goingResponse.classList.add("btn-light");
     goingResponse.setAttribute("onclick", "respondToEvent(" + eventId + ", 'Going'" + ")");
     goingResponse.setAttribute("data-going", "false");
 
     const interestedResponse = document.createElement("a");
+    goingResponse.setAttribute("data-responseButton", true);
     interestedResponse.classList.add("btn");
     interestedResponse.classList.add("btn-light");
     interestedResponse.setAttribute("onclick", "respondToEvent(" + eventId + ", 'Interested'" + ")");
     interestedResponse.setAttribute("data-interested", "false");
 
     const notGoingResponse = document.createElement("a");
+    goingResponse.setAttribute("data-responseButton", true);
     notGoingResponse.classList.add("btn");
     notGoingResponse.classList.add("btn-light");
     notGoingResponse.setAttribute("onclick", "respondToEvent(" + eventId + ", 'NotGoing'" + ")");
@@ -238,6 +243,12 @@ function setUpRespondButtons() {
     respondButtons.appendChild(goingResponse);
     respondButtons.appendChild(interestedResponse);
     respondButtons.appendChild(notGoingResponse);
+
+    // set up response counts
+    const responseCounts = document.getElementById('event-response-count');
+    responseCounts.innerText = `${isGoingResponses.responses.length} Going | `;
+    responseCounts.innerText += ` ${isInterestedResponses.responses.length} Interested | `;
+    responseCounts.innerText += ` ${isNotGoingResponses.responses.length} Not Going`;
 
     const eventFindaLogoLink = document.createElement("a");
     eventFindaLogoLink.setAttribute("href", "https://www.eventfinda.co.nz");

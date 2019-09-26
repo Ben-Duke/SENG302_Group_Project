@@ -221,21 +221,8 @@ public class Event extends Model implements AlbumOwner {
         this.albums = albums;
     }
 
-    /**
-     * Get the first 10 responses for the event where the first response is for the user
-     * if they have responded to the event and the rest are people the user is following who have responded
-     * to the event
-     */
     public List<EventResponse> getLimitedResponses(User user) {
-        // get the user if they are going
-        List<EventResponse> responses = new ArrayList<>();
-        EventResponse userResponse = EventResponseAccessor.getByUserAndEvent(user, this);
-        if (userResponse != null) {
-            responses.add(userResponse); // add the user response
-        }
         // add follower responses
-        responses.addAll(EventResponseAccessor.getEventResponsesOfFollowing(user, 5));
-
-        return responses;
+        return new ArrayList<>(EventResponseAccessor.getEventResponsesOfFollowing(user, 5));
     }
 }

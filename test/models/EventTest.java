@@ -50,7 +50,7 @@ public class EventTest extends BaseTestWithApplicationAndDatabase {
     }
 
     @Test
-    public void getLimitedResponses_userResponded_noOtherFollowerResponses_checkOneResponseFound() {
+    public void getLimitedResponses_userResponded_noOtherFollowerResponses_checkNoResponsesFound() {
         removeAllResponses();
 
         Event event = EventAccessor.getEventById(1);
@@ -63,26 +63,7 @@ public class EventTest extends BaseTestWithApplicationAndDatabase {
         List<EventResponse> responses = event.getLimitedResponses(user);
 
         // check the list contains only the user response
-        assertEquals(1, responses.size());
-        assertEquals(user, responses.get(0).getUser());
-    }
-
-    @Test
-    public void getLimitedResponses_userResponded_noOtherFollowerResponses_checkResponsesAreForCorrectEvent() {
-        removeAllResponses();
-
-        Event event = EventAccessor.getEventById(1);
-        User user = UserAccessor.getById(2);
-
-        // respond to the event
-        Result result = respondGoingToEvent(user, event);
-        assertEquals(OK, result.status());
-
-        List<EventResponse> responses = event.getLimitedResponses(user);
-
-        // check the list contains only the user response
-        assertEquals(1, responses.size());
-        assertEquals(event, responses.get(0).getEvent());
+        assertEquals(0, responses.size());
     }
 
     /* Test data contains 8 responses of users user 2 is following */
@@ -97,12 +78,11 @@ public class EventTest extends BaseTestWithApplicationAndDatabase {
 
         List<EventResponse> responses = event.getLimitedResponses(user);
 
-        assertEquals(6, responses.size());
-        assertEquals(user, responses.get(0).getUser());
+        assertEquals(5, responses.size());
 
         // check all other responses are from users that the user is following
-        for (int i = 1; i < responses.size(); i++) {    // skip first user
-            assertTrue(user.isFollowing(responses.get(i).getUser()));
+        for (EventResponse response : responses) {    // skip first user
+            assertTrue(user.isFollowing(response.getUser()));
         }
     }
 }

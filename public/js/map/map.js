@@ -151,10 +151,12 @@ async function createNewPaginatedTrip() {
     let trips  = tripJSON.trips;
 
     if (tripCount > 0) {
+        let trips  = tripJSON.trips;
         setTripPaginationLinks(tripCount, 5);
     }
     let trip = trips[trips.length-1];
     let data = trip;
+
 
     await jumpToTripPage(numPages);
 
@@ -1462,6 +1464,7 @@ function checkTripVisits() {
                         success: function () {
                             let element = document.getElementById("Button" + trip);
                             element.parentNode.removeChild(element);
+                            document.getElementById("singleTrip_" + trip).remove()
                             const x = document.getElementById("snackbar");
 
                             // Add the "show" class to DIV
@@ -2097,17 +2100,12 @@ async function previousTripPage() {
 }
 
 async function jumpToTripPage(pageNumber) {
-    if (pageNumber === tripPageNum) {
-        return // do nothing
-    }
-
-    const searchInput = document.getElementById("destSearchInput").value;
+    const searchInput = document.getElementById("tripSearchInput").value;
 
     document.getElementById("trip-pagination-link-" + tripPageNum).removeAttribute("class");
 
     tripPageNum = pageNumber;
     document.getElementById("trip-pagination-link-" + tripPageNum).setAttribute("class", "active");
-
     if (searchInput == undefined || searchInput == null || searchInput.length === 0) {
         let newlyDisplayedTrips = await getPaginatedTripResults(tripPageNum, 5);
         displayTripTablePage(newlyDisplayedTrips.trips);
@@ -2136,7 +2134,6 @@ function displayTripTablePage(trips) {
     }
 
     document.getElementById("tag-container").setAttribute("style", "visibility: hidden;");
-
     if (trips !== undefined) {
         for(let i = 0; i < trips.length; i++) {
             let trip = trips[i];

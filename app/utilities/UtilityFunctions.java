@@ -24,6 +24,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.*;
@@ -39,8 +40,11 @@ import static play.mvc.Results.unauthorized;
 public class UtilityFunctions {
 
     private static final String DATE_PATTERN = "yyyy-MM-dd";
+    private static final String DATE_TIME_PATTERN = "dd-MM-yyyy HH:mm:ss";
     private static final DateTimeFormatter DATE_FORMATTER =
             DateTimeFormatter.ofPattern(DATE_PATTERN);
+    private static final DateTimeFormatter DATE_TIME_FORMATTER =
+            DateTimeFormatter.ofPattern(DATE_TIME_PATTERN);
 
     private static final Logger logger = getLogger();
 
@@ -467,11 +471,50 @@ public class UtilityFunctions {
         return localDate.format(DATE_FORMATTER);
     }
 
+    public static String getStringFromDateTime(LocalDateTime time) {
+        return time.format(DATE_TIME_FORMATTER);
+    }
+
     public static LocalDate parseLocalDate(String dateString) throws EbeanDateParseException {
         try {
             return LocalDate.parse(dateString, DATE_FORMATTER);
         } catch (DateTimeParseException e) {
             throw new EbeanDateParseException(e);
         }
+    }
+
+    public static String getFormattedDateTime(LocalDateTime time) {
+        return time.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"));
+    }
+
+    /**
+     * Parses a string in the format of "dd-MM-yyyy HH:mm:ss" to a local date time
+     * @param dateTimeString the string to parse
+     * @return the parsed Local Date Time
+     * @throws EbeanDateParseException if the parsing fails
+     */
+    public static LocalDateTime parseLocalDateTime(String dateTimeString) throws EbeanDateParseException {
+        try {
+            return LocalDateTime.parse(dateTimeString, DATE_TIME_FORMATTER);
+        } catch (DateTimeParseException e) {
+            throw new EbeanDateParseException(e);
+        }
+    }
+
+    public static String getResponseAdjustedForTime(EventResponse response, Boolean isCurrentUser) {
+        ResponseType responseType = response.getResponseType();
+        String displayedResponse;
+
+        if  (responseType.equals(ResponseType.Going) &&
+            response.getEvent().getEndTime().isBefore(LocalDateTime.now())) {
+            displayedResponse = ResponseType.Went.getDisplayText();
+        } else  {
+            if (isCurrentUser) {
+                displayedResponse = "are " + responseType.getDisplayText();
+            } else {
+                displayedResponse = "is " + responseType.getDisplayText();
+            }
+        }
+        return displayedResponse;
     }
 }

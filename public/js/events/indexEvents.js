@@ -47,29 +47,175 @@ function getEventsFromApiResponse(eventData, url, pageNum) {
     addPagination(count, pageNum);
 }
 
+function respondToEvent(eventId, responseType){
+    let going = document.querySelector('[data-event-id="'+eventId+'"] [data-going]')
+    let interested = document.querySelector('[data-event-id="'+eventId+'"] [data-interested]')
+    let notGoing = document.querySelector('[data-event-id="'+eventId+'"] [data-notGoing]')
+    going.setAttribute("data-Going", "false")
+    interested.setAttribute("data-Interested", "false")
+    notGoing.setAttribute("data-NotGoing", "false")
+    going.classList.remove("btn-primary")
+    interested.classList.remove("btn-primary")
+    notGoing.classList.remove("btn-primary")
+    going.classList.add("btn-light")
+    interested.classList.add("btn-light")
+    notGoing.classList.add("btn-light")
+    let object = document.querySelector('[data-event-id="'+eventId+'"] [data-'+responseType+']')
+    object.setAttribute('data-'+responseType, "true")
+    object.classList.add("btn-primary")
+    $.ajax({
+        type: 'PUT',
+        url: "/events/respond/" + eventId + "/" + responseType,
+        success: function () {
+
+        },
+        error : function () {
+            let going = document.querySelector('[data-event-id="'+eventId+'"] [data-going]')
+            let interested = document.querySelector('[data-event-id="'+eventId+'"] [data-interested]')
+            let notGoing = document.querySelector('[data-event-id="'+eventId+'"] [data-notGoing]')
+            going.setAttribute("data-Going", "false")
+            interested.setAttribute("data-Interested", "false")
+            notGoing.setAttribute("data-NotGoing", "false")
+            going.classList.remove("btn-primary")
+            interested.classList.remove("btn-primary")
+            notGoing.classList.remove("btn-primary")
+            going.classList.add("btn-light")
+            interested.classList.add("btn-light")
+            notGoing.classList.add("btn-light")
+        }
+    })
+}
+
+function getEventResponses(eventId, responseType, userId){
+    $.ajax({
+        type: 'GET',
+        url: "/events/responses/" + eventId + "/" + responseType+ "/" + userId,
+        success: function (resData) {
+            if (resData.responses.length > 0) return true
+        },
+    })
+}
+
+function getEventResponsesByType(responseType){
+    $.ajax({
+        type: 'GET',
+        url: "/events/responses/" + responseType,
+        success: function (resData) {
+            return resData;
+        },
+    })
+}
+
 function displayEvents(events) {
     document.getElementById("events-results").appendChild(document.createElement("hr"));
+    let isGoingResponses;
+    let isInterestedResponses;
+    let isNotGoingResponses;
+
+    $.ajax({
+        async: false,
+            success: function () {
+            $.ajax({
+            async: false,
+                type: 'GET',
+                url: "/events/responses/Going",
+                success: function (resData) {
+                    isGoingResponses = resData;
+                },
+            })
+        }
+    })
+
+    $.ajax({
+        async: false,
+            success: function () {
+            $.ajax({
+            async: false,
+                type: 'GET',
+                url: "/events/responses/Interested",
+                success: function (resData) {
+                    isInterestedResponses = resData;
+                },
+            })
+        }
+    })
+
+    $.ajax({
+        async: false,
+            success: function () {
+            $.ajax({
+            async: false,
+                type: 'GET',
+                url: "/events/responses/NotGoing",
+                success: function (resData) {
+                    isNotGoingResponses = resData;
+                },
+            })
+        }
+    })
+
+    const allResponses = [isGoingResponses, isInterestedResponses, isNotGoingResponses]
     for (let i=0; i < events.length; i++) {
         const mediaRow = document.createElement("div");
         mediaRow.classList.add("media")
         const mediaLeft = document.createElement("div");
         mediaLeft.classList.add("media-left");
+
         const eventImageLink = document.createElement("a");
         eventImageLink.setAttribute("target", "_blank");
+
         const lastImage = events[i].images.images[0].transforms["@attributes"].count - 1;
         eventImageLink.setAttribute("href", events[i].images.images[0].transforms.transforms[lastImage].url);
+
         const eventImage = document.createElement("img");
-        eventImage.classList.add("img-thumbnail");
+        eventImage.classList.add("event-img");
         eventImage.setAttribute("src", events[i].images.images[0].transforms.transforms[lastImage].url);
         const mediaBody = document.createElement("div");
         mediaBody.classList.add("media-body")
+        mediaBody.setAttribute("data-event-id", events[i].id)
         const eventLink = document.createElement("a");
-        eventLink.setAttribute("href", events[i].url);
-        eventLink.setAttribute("target", "_blank");
+        eventLink.setAttribute("href", events[i].id);
+
+        const goingResponse = document.createElement("a");
+        goingResponse.classList.add("btn");
+        goingResponse.classList.add("btn-light");
+        goingResponse.setAttribute("onclick", "respondToEvent(" + events[i].id + ", 'Going'" + ")");
+        goingResponse.setAttribute("data-going", "false");
+        const interestedResponse = document.createElement("a");
+        interestedResponse.classList.add("btn");
+        interestedResponse.classList.add("btn-light");
+        interestedResponse.setAttribute("onclick", "respondToEvent(" + events[i].id + ", 'Interested'" + ")");
+        interestedResponse.setAttribute("data-interested", "false");
+        const notGoingResponse = document.createElement("a");
+        notGoingResponse.classList.add("btn");
+        notGoingResponse.classList.add("btn-light");
+        notGoingResponse.setAttribute("onclick", "respondToEvent(" + events[i].id + ", 'NotGoing'" + ")");
+        notGoingResponse.setAttribute("data-notGoing", "false");
+        for (let j=0; j < allResponses.length; j++) {
+            for (let k=0; k < allResponses[j].responses.length; k++) {
+                if (allResponses[j].responses[k].responseType === "Going" &&
+                        allResponses[j].responses[k].event.externalId === events[i].id) {
+                    goingResponse.classList.add("btn-primary");
+                    goingResponse.setAttribute("data-going", "true");
+                } else if (allResponses[j].responses[k].responseType === "Interested" &&
+                        allResponses[j].responses[k].event.externalId === events[i].id) {
+                    interestedResponse.classList.add("btn-primary");
+                    interestedResponse.setAttribute("data-interested", "true");
+                } else if (allResponses[j].responses[k].responseType === "NotGoing" &&
+                        allResponses[j].responses[k].event.externalId === events[i].id) {
+                    notGoingResponse.classList.add("btn-primary");
+                    notGoingResponse.setAttribute("data-notGoing", "true");
+                }
+            }
+        }
+
         const eventName = document.createElement("h4");
         eventName.classList.add("media-heading");
         eventName.innerText = events[i]["name"];
         eventLink.appendChild(eventName);
+        goingResponse.innerText = "Going";
+        interestedResponse.innerText = "Interested";
+        notGoingResponse.innerText = "Not Going"
         const eventDateTime = document.createElement("p");
         eventDateTime.innerText = "Starts: " + events[i].datetime_start + "\nEnds: " + events[i].datetime_end;
         const eventAddress = document.createElement("p");
@@ -78,11 +224,21 @@ function displayEvents(events) {
         eventCategory.innerText = "Type: " + events[i].category.name
         const eventDescription = document.createElement("p");
         eventDescription.innerText = events[i].description;
+        const eventFindaLinkP = document.createElement("p");
+        const eventFindaLink = document.createElement("a");
+        eventFindaLink.innerText = "View on eventfinda";
+        eventFindaLink.setAttribute("href", events[i].url);
+        eventFindaLink.setAttribute("target", "_blank");
+        eventFindaLinkP.appendChild(eventFindaLink);
         mediaBody.appendChild(eventLink);
         mediaBody.appendChild(eventAddress);
         mediaBody.appendChild(eventDateTime);
         mediaBody.appendChild(eventCategory);
         mediaBody.appendChild(eventDescription);
+        mediaBody.appendChild(eventFindaLinkP);
+        mediaBody.appendChild(goingResponse);
+        mediaBody.appendChild(interestedResponse);
+        mediaBody.appendChild(notGoingResponse);
         eventImageLink.appendChild(eventImage);
         mediaLeft.appendChild(eventImageLink);
         mediaRow.appendChild(mediaLeft);
@@ -95,11 +251,8 @@ function displayEvents(events) {
 }
 
 function addPagination(count, pageNum) {
-    numOfPages = [];
-    pageNumbers = [];
-    latitudes = -43.53;
-    longitudes = 172.620278;
-    places = '';
+    let numOfPages = [];
+    let pageNumbers = [];
     const pagination = document.createElement("ul");
     pagination.classList.add("pagination");
     for (let i=0; i < count; i+=20) {
@@ -111,7 +264,7 @@ function addPagination(count, pageNum) {
             if (numOfPages.length >= pageNum+5) {
                 pageNumbers = [pageNum-3,pageNum-2, pageNum-1, pageNum, pageNum+1, pageNum+2, pageNum+3, pageNum+4];
             } else {
-                lastPage = numOfPages.length-0;
+                let lastPage = numOfPages.length-0;
                 pageNumbers = []
                 for (let j=lastPage-7; (j<lastPage+1 && j>0); j++) {
                     pageNumbers.push(j);
@@ -126,8 +279,8 @@ function addPagination(count, pageNum) {
         pageNumbers = numOfPages;
     }
     let item = document.createElement("li");
-    pageButton = document.createElement("a");
-    currentPageNum = 1;
+    let pageButton = document.createElement("a");
+    let currentPageNum = 1;
     pageButton.innerText = "First";
     pageButton.setAttribute("onClick", `searchEvents(${currentPageNum})`);
     item.appendChild(pageButton);
@@ -172,7 +325,6 @@ function addPagination(count, pageNum) {
     item = document.createElement("li");
     pageButton = document.createElement("a");
     currentPageNum = numOfPages.length;
-    // console.log(currentPageNum);
     pageButton.innerText = "Last";
     pageButton.setAttribute("onClick", `searchEvents(${currentPageNum})`);
     item.appendChild(pageButton);
@@ -181,11 +333,15 @@ function addPagination(count, pageNum) {
     while (eventsPagination.childNodes.length > 0) {
         eventsPagination.childNodes[0].remove();
     }
-    eventFindaLogo = document.createElement("img");
+    const eventFindaLogoLink = document.createElement("a");
+    eventFindaLogoLink.setAttribute("href", "https://www.eventfinda.co.nz");
+    eventFindaLogoLink.setAttribute("target", "_blank");
+    const eventFindaLogo = document.createElement("img");
     eventFindaLogo.setAttribute("src", "https://www.eventfinda.co.nz/images/global/attribution.gif?pwiomi");
-    eventFindaLogo.setAttribute("style", "margin-right:10px; width:170px; height:25px; position: absolute; bottom:0; right:0");
+    eventFindaLogo.setAttribute("style", "margin-right:10px; width:170px; height:25px; position: fixed; bottom:0; right:0");
+    eventFindaLogoLink.appendChild(eventFindaLogo);
     document.getElementById("eventsPage").appendChild(pagination);
-    document.getElementById("eventsPage").appendChild(eventFindaLogo);
+    document.getElementById("eventsPage").appendChild(eventFindaLogoLink);
 }
 
 function loader() {

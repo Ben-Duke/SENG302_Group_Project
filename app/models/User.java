@@ -802,5 +802,14 @@ public class User extends BaseModel implements Comparable<User>, AlbumOwner, Med
         this.email = editedUser.getEmail();
         this.passwordHash = editedUser.getPasswordHash();
     }
+
+    public List<Integer> getFollowingIds() {
+        List<Integer> ids = new ArrayList<>();
+        for (Follow follower : this.getFollowing()) {
+            ids.add(follower.getFolowedUserId());
+        }
+
+        return ids;
+    }
 }
 

@@ -274,9 +274,9 @@ INSERT INTO `user` (`userid`, `email`, `password_hash`, `date_of_birth`, `gender
 (3, 'testuser2@uclive.ac.nz', '$2a$10$HnwLNh5oKC1go2H5kOJOleu/oLszMIpYVzlq1/dkNAK/w/BhkTzdG', '1960-12-25', 'Female', 'Caitlyn', 'Jenner', 0, 0, '2019-08-20 20:44:25'),
 (4, 'testuser3@uclive.ac.nz', '$2a$10$rjJrAFqLnTdb.Riy6VCMSOSdHcF5IF..tfkiW6Z2lm2jqYVRslQ7C', '2006-06-09', 'Male', 'John', 'Smith', 0, 0, '2019-08-20 20:44:25'),
 (5, 'noel.bisson@gmail.com', '$2a$10$HqfW8ovh02QgqlKL1IUFMORpIBoBP/Dcpqx5rrrcj0/B..Twy9Cx6', '1998-03-06', 'Male', 'Noel', 'Bisson', 0, 0, '2019-08-20 20:46:28'),
-(6, 'ben.duke@gmail.com', '$2a$10$cZsomtrMGR/Mq2xSgjb/oeicndQBrV092.j80O1M3uPD7x/UWOOZe', '1994-08-08', 'Male', 'Ben', 'Duke', 0, 0, '2019-08-20 20:47:47'),
+(6, 'ben.duke@gmail.com', '$2a$10$EUMIDn.2bVaFxPGq5IdlXuX.aafZUY4DqmL6gYEHWM4t1Lp.t//kK', '1994-08-08', 'Male', 'Ben', 'Duke', 0, 0, '2019-08-20 20:47:47'),
 (7, 'jack.orchard@gmail.com', '$2a$10$vQAR2DFztO1vdOAD6vC17.wrCZRW5/I66c/tixpDN47KuQ1AtkA3O', '1997-05-16', 'Male', 'Jack', 'Orchard', 0, 0, '2019-08-20 20:48:44'),
-(8, 'logan.shaw@gmail.com', '$2a$10$gxxqY2u7DYUEQVcRK6jHJuYVMSRhViIekaHbMjh79kpqOrS135rXq', '1999-02-12', 'Male', 'Logan ', 'Shaw', 0, 0, '2019-08-20 20:49:17'),
+(8, 'logan.shaw@gmail.com', '$2Fa$10$gxxqY2u7DYUEQVcRK6jHJuYVMSRhViIekaHbMjh79kpqOrS135rXq', '1999-02-12', 'Male', 'Logan ', 'Shaw', 0, 0, '2019-08-20 20:49:17'),
 (9, 'jason.little@gmail.com', '$2a$10$Kv59.oawFqlGJEVa3wyMfengJOxDZb.JDzHXeFn/Bhw5zqQR.mSUa', '1994-07-13', 'Male', 'Jason', 'Little', 0, 0, '2019-08-20 20:50:10'),
 (10, 'priyesh.shah@gmail.com', '$2a$10$GbadXoPxGghyCW6lPDTjIeNzS/JfiCIqmlauPNiDIyQFivees1oRq', '1996-06-13', 'Other', 'Priyesh', 'Shah', 0, 0, '2019-08-20 20:50:48'),
 (11, 'michael.shannon@gmail.com', '$2a$10$i0GWnSrk2HSU4ZoFeV5em.kplOnwRDI18RgvGQqFEJ5KMMNNAW66i', '1998-01-15', 'Male', 'Michael', 'Shannon', 0, 0, '2019-08-20 20:51:22'),
@@ -286,12 +286,15 @@ INSERT INTO `user` (`userid`, `email`, `password_hash`, `date_of_birth`, `gender
 (15, 'test4.shah@gmail.com', '$2a$10$GbadXoPxGghyCW6lPDTjIeNzS/JfiCIqmlauPNiDIyQFivees1oRq', '1996-06-13', 'Other', 'test4', 'Shah', 0, 0, '2019-08-20 20:50:48'),
 (16, 'test5.shah@gmail.com', '$2a$10$GbadXoPxGghyCW6lPDTjIeNzS/JfiCIqmlauPNiDIyQFivees1oRq', '1996-06-13', 'Other', 'test5', 'Shah', 0, 0, '2019-08-20 20:50:48');
 --
+
+
+
+
 -- follow
 INSERT INTO `follow`(`follow_id`, `follower`, `followed`, `state`) VALUES
 (NULL,2,3,NULL ),
 (NULL,2,4,NULL ),
 (NULL,2,5,NULL ),
-(NULL,2,6,NULL ),
 (NULL,2,7,NULL ),
 (NULL,2,8,NULL ),
 (NULL,2,9,NULL ),
@@ -314,7 +317,9 @@ INSERT INTO `follow`(`follow_id`, `follower`, `followed`, `state`) VALUES
 (NULL,12,6,NULL ),
 (NULL,13,6,NULL ),
 (NULL,14,6,NULL ),
-(NULL,15,6,NULL );
+(NULL,15,6,NULL ),
+(NULL,3,2,NULL ),
+(NULL,4,2,NULL );
 
 -- Admin
 INSERT INTO `admin` (`user_id`, `user_id_to_edit`, `is_default`) VALUES
@@ -469,8 +474,38 @@ INSERT INTO `user_traveller_type` (`user_userid`, `traveller_type_ttypeid`) VALU
 -- set in code
 
 
+
 -- user_photo_destination
 -- no data
+
+-- Event
+INSERT INTO `event` (`event_id`, `external_id`, `name`, `address`, `type`, `image_url`, `url`, `latitude`, `longitude`, `description`, `start_time`, `end_time`) VALUES
+(1, 589921, 'Mel Parsons', '3 Garlands Road, Woolston, Christchurch', 'Folk', 'http://cdn.eventfinda.co.nz/uploads/events/transformed/1329367-589921-7.jpg?v=3',
+ 'https://www.eventfinda.co.nz/2019/mel-parsons/christchurch', -43.5568, 172.6803,
+ 'Needing little introduction on these shores, award-winning singer songwriter Mel Parsons is hitting the road with her new album ''Glass Heart'' for an intimate solo tour of some her favourite New Zealand venues. ...', '2019-09-26 08:00:00', '2019-09-26 11:59:59'),
+(2, 547427, 'Songwriters In the Round', '185 Manchester St, Christchurch',
+ 'Singer-Songwriter', 'http://cdn.eventfinda.co.nz/uploads/events/transformed/1228501-547427-7.jpg', 'https://www.eventfinda.co.nz/2019/songwriters-in-the-round/christchurch',
+ -43.5326, 172.6395, 'Three singer-songwriters share their original songs acoustically and the stories behind their music.',
+ '2019-02-28 06:00:00', '2019-11-28 09:00:00');
+
+-- Event responses
+INSERT INTO `event_response` (`event_response_id`, `response_type`, `user_userid`, `event_event_id`, `response_date_time`) VALUES
+(1, '2', 5, 2, '2019-09-25 04:04:15'),
+(2, '2', 6, 2, '2019-09-25 05:08:34'),
+(3, '1', 7, 2, '2019-09-25 05:08:50'),
+(4, '0', 8, 2, '2019-09-25 05:11:21'),
+(5, '1', 9, 2, '2019-09-25 05:11:56'),
+(6, '2', 10, 2, '2019-09-25 05:08:34'),
+(7, '1', 11, 2, '2019-09-25 05:08:50'),
+(8, '0', 12, 2, '2019-09-25 05:11:21'),
+(9, '2', 13, 2, '2019-09-25 05:08:34'),
+(10, '1', 14, 2, '2019-09-25 05:08:50'),
+(11, '0', 15, 2, '2019-09-25 05:11:21'),
+(12, '0', 16, 2, '2019-09-25 05:11:21'),
+(13, '2', 3, 2, '2019-09-25 05:08:34'),
+(14, '1', 4, 2, '2019-09-25 05:08:50'),
+(15, '0', 2, 2, '2019-09-25 04:04:15');
+
 
 -- tags
 INSERT INTO `tag` (`tag_id`, `name`) VALUES
@@ -551,6 +586,9 @@ INSERT INTO `visit` (`visitid`, `visitorder`, `destination`, `trip`, `arrival`, 
 -- Delete in reverse order to the order data was added to avoid violating
 -- foreign key constraints
 
+
+
+
 delete from follow;
 
 delete from visit;
@@ -564,6 +602,10 @@ delete from trip_tag;
 delete from tag_user;
 
 delete from tag;
+
+delete from event_response;
+
+delete from event;
 
 delete from album_media;
 
@@ -592,6 +634,10 @@ delete from destination_traveller_type;
 delete from traveller_type;
 
 delete from album;
+
+delete from event_response;
+
+delete from event;
 
 delete from destination;
 

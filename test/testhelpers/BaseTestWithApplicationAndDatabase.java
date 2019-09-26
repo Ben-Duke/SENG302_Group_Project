@@ -95,7 +95,6 @@ public class BaseTestWithApplicationAndDatabase extends WithApplication {
      */
     @After
     public void shutdownDatabase() {
-        Evolutions.cleanupEvolutions(database);
         database.shutdown();
         Helpers.stop(application);
     }

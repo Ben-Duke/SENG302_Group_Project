@@ -135,18 +135,18 @@
 
                             <a href="#" data-toggle="modal" data-target="#photo-carousel" onclick="displayPhoto(@photo.getMediaId())">
 
-                                <div class="" id="imageContainer">
-                                    <div class="overlay">
-                                        <i class="icon" title="User Profile">
-                                        @if(photo.getIsPublic()) {
-                                            <i class="fa fa-eye-green"></i>
-                                        } else {
-                                            <i class="fa fa-eye-red"></i>
-                                        }
-                                        </i>
-                                    </div>
-                                    <img class="img-thumbnail" id=@{photo.getUrl} src="@{routes.HomeController.index(photo.getUrlWithPath())}" alt="Event Image">
+                            <div class="" id="imageContainer">
+                                <div class="overlay">
+                                    <i class="icon" title="User Profile">
+                                    @if(photo.getIsPublic()) {
+                                        <i id="privacy-eye-@photo.getMediaId" class="fa fa-eye-green"></i>
+                                    } else {
+                                        <i id="privacy-eye-@photo.getMediaId" class="fa fa-eye-red"></i>
+                                    }
+                                    </i>
                                 </div>
+                                <img class="img-thumbnail" id=@{photo.getUrl} src="@{routes.HomeController.index(photo.getUrlWithPath())}" alt="Event Image">
+                            </div>
 
 
                             </a>
@@ -207,21 +207,27 @@
                                             <img class="center" id="carouselImage@photo.getMediaId()" src="@{routes.HomeController.index(photo.getUrlWithPath)}" style="height: 75%; margin: auto;">
 
 
-                                            <a class="btn btn-danger" onclick="unlinkPhotoToEvent(@photo.getMediaId(), @event.getEventId)">
-                                    Remove Photo</a>
-                                        </div>
-                                    }
-                                }
-                                </div>
-                                <a class ="left carousel-control" href="#myslider" data-slide="prev">
-                                    <span class="glyphicon glyphicon-chevron-left"></span>
-                                </a>
-                                <a class ="right carousel-control" href="#myslider" data-slide="next">
-                                    <span class="glyphicon glyphicon-chevron-right"></span>
-                                </a>
-                            </div>
+                            <a class="btn btn-danger" onclick="unlinkPhotoToEvent(@photo.getMediaId(), @event.getEventId)">
+                                Remove From Event</a>
+
+                            <a class="btn btn-primary" id="makePrivateLink-@photo.getMediaId()" data-mediaId="@photo.getMediaId" style="display: @getDisplayType(photo.getIsPublic, "make private")" onclick="setMediaPrivacy(@photo.getMediaId(), false)">
+                                Make Private</a>
+                            <a class="btn btn-primary" id="makePublicLink-@photo.getMediaId()" data-mediaId="@photo.getMediaId" style="display: @getDisplayType(photo.getIsPublic, "make public")" onclick="setMediaPrivacy(@photo.getMediaId(), true)">
+                                Make Public</a>
                         </div>
-                    </div>
+                    }
+                }
+                </div>
+                <a class ="left carousel-control" href="#myslider" data-slide="prev">
+                    <span class="glyphicon glyphicon-chevron-left"></span>
+                </a>
+                <a class ="right carousel-control" href="#myslider" data-slide="next">
+                    <span class="glyphicon glyphicon-chevron-right"></span>
+                </a>
+            </div>
+        </div>
+
+
                 }
 
             </div>
@@ -268,4 +274,15 @@
     <script src="https://maps.googleapis.com/maps/api/js?key=@googleApiKey&callback=initMap&libraries=drawing"
     async defer></script>
 }
+
+@getDisplayType(photoPublic: Boolean, buttonType: String) = {
+@if(photoPublic && buttonType == "make public") {
+        none
+    } else if(!photoPublic && buttonType == "make private") {
+        none
+    } else {    @*return empty*@
+    }
+
+}
+
 

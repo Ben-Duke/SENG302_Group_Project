@@ -1,86 +1,86 @@
 @(user : User, event : Event, eventResponses : List[EventResponse], googleApiKey : String, isStored : Boolean)
-    @import utilities.UtilityFunctions
-    @import accessors.EventResponseAccessor
+@import utilities.UtilityFunctions
+@import accessors.EventResponseAccessor
 
-    @main(user, "Event") {
-        <head>
-            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-            <style>
+@main(user, "Event") {
+    <head>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        <style>
 
-                    .userProfileImg {
-                        height: 50px;
-                        width: 50px;
-                    }
+                .userProfileImg {
+                    height: 50px;
+                    width: 50px;
+                }
 
-                    .userPhotoImg {
-                        max-height: 30vh;
-                        max-width: 100%;
-                        display: block;
-                        margin: auto;
-                        border-radius: 4px;
-                    }
-                    .responseItem {
-                        margin-bottom: 8px;
-                        padding: 4px;
-                        border-radius: 4px;
-                        background-color: white;
+                .userPhotoImg {
+                    max-height: 30vh;
+                    max-width: 100%;
+                    display: block;
+                    margin: auto;
+                    border-radius: 4px;
+                }
+                .responseItem {
+                    margin-bottom: 8px;
+                    padding: 4px;
+                    border-radius: 4px;
+                    background-color: white;
 
-                    }
-                    #map {
-                        margin: 10px 20px 10px 20px;
-                        height: 30vh;
-                    }
-                    #imagesContainer {
-                        position: relative;
-                        max-width: 120px;
-                        height: 100%;
-                        width: 100%;
-                        left: -25px;
-                        top: -5px;
-                    }
-                    #imageContainer {
-                        position: relative;
-                        margin: 10px;
-                        width: 120px;
-                        float: left;
-                    }
-                    .vertical-center {
-                        margin: 0;
-                        position: absolute;
-                        top: 50%;
-                        -ms-transform: translateY(-50%);
-                        left: 50%;transform: translate(-50%, -50%);
-                    }
-                    .icon {
-                        color: white;
-                        font-size: 25px;
-                        position: absolute;
-                        top: -20px;
-                        left: 75px;
-                        max-width: 60px;
-                        transform: translate(50%, 50%);
-                        -ms-transform: translate(-50%, -50%);
-                    }
+                }
+                #map {
+                    margin: 10px 20px 10px 20px;
+                    height: 30vh;
+                }
+                #imagesContainer {
+                    position: relative;
+                    max-width: 120px;
+                    height: 100%;
+                    width: 100%;
+                    left: -25px;
+                    top: -5px;
+                }
+                #imageContainer {
+                    position: relative;
+                    margin: 10px;
+                    width: 120px;
+                    float: left;
+                }
+                .vertical-center {
+                    margin: 0;
+                    position: absolute;
+                    top: 50%;
+                    -ms-transform: translateY(-50%);
+                    left: 50%;transform: translate(-50%, -50%);
+                }
+                .icon {
+                    color: white;
+                    font-size: 25px;
+                    position: absolute;
+                    top: -20px;
+                    left: 75px;
+                    max-width: 60px;
+                    transform: translate(50%, 50%);
+                    -ms-transform: translate(-50%, -50%);
+                }
 
-                    .fa {
-                        display: inline-block;
-                        font-size: inherit;
-                        text-rendering: auto;
-                        -webkit-font-smoothing: antialiased;
-                        -moz-osx-font-smoothing: grayscale
-                    }
+                .fa {
+                    display: inline-block;
+                    font-size: inherit;
+                    text-rendering: auto;
+                    -webkit-font-smoothing: antialiased;
+                    -moz-osx-font-smoothing: grayscale
+                }
 
-                    .fa-eye-green {
-                        color: green;
-                    }
+                .fa-eye-green {
+                    color: green;
+                }
 
-                    .fa-eye-red {
-                        color: red;
-                    }
+                .fa-eye-red {
+                    color: red;
+                }
 
-                    .fa-eye-green:before {
-                        content: "\1F441";
-                    }
+                .fa-eye-green:before {
+                    content: "\1F441";
+                }
 
                 .fa-eye-red:before {
                     content: "\1F441";
@@ -111,93 +111,91 @@
                 }
         </style>
     </head>
-        <div class="container">
-    <div class="row">
-        <div class="col-sm-5">
-            <div id="map">
+    <div class="container">
+        <div class="row">
 
-                <label class="col-sm-0 control-label"></label>
-                <div class="col-sm-7">
-                    <img src="@event.getImageUrl" style="margin-top: 10px;">
-                    <a href="@event.getUrl()" target="_blank">
-                        <h2> @event.getName() <i class="fa">&#xf08e;</i></h2>
-                    </a>
-                    <h4>@event.getDescription()</h4>
-                    <h5>Type: @event.getType() | Starts: @event.getStartTime() | Ends: @event.getEndTime()</h5>
-                    <h5>@event.getAddress()</h5>
-                    <div id="respondButtons" class="well" data-event-id="@event.getExternalId()"></div>
+            <label class="col-sm-0 control-label"></label>
+            <div class="col-sm-7">
+                <img src="@event.getImageUrl" style="margin-top: 10px;">
+                <a href="@event.getUrl()" target="_blank">
+                    <h2> @event.getName() <i class="fa">&#xf08e;</i></h2>
+                </a>
+                <h4>@event.getDescription()</h4>
+                <h5>Type: @event.getType() | Starts: @event.getStartTime() | Ends: @event.getEndTime()</h5>
+                <h5>@event.getAddress()</h5>
+                <div id="respondButtons" class="well" data-event-id="@event.getExternalId()"></div>
 
-                    @if(isStored) {
-                        <h4 id="response-totals">
-                            <b>
-                                @EventResponseAccessor.getCountByEventAndType(event, ResponseType.Going) Going |
-                                @EventResponseAccessor.getCountByEventAndType(event, ResponseType.Interested) Interested |
-                                @EventResponseAccessor.getCountByEventAndType(event, ResponseType.NotGoing) Not Going
-                            </b>
-                        </h4>
+                @if(isStored) {
+                    <h4 id="response-totals">
+                        <b>
+                            @EventResponseAccessor.getCountByEventAndType(event, ResponseType.Going) Going |
+                            @EventResponseAccessor.getCountByEventAndType(event, ResponseType.Interested) Interested |
+                            @EventResponseAccessor.getCountByEventAndType(event, ResponseType.NotGoing) Not Going
+                        </b>
+                    </h4>
 
-                        <div class="well response-well ">
-                        @for(response <- eventResponses) {
-                            <div class="responseItem">
-                                <img class="img-circle userProfileImg" src="@{routes.HomeController.serveProfilePicture(response.getUser.getUserid())}")>
+                    <div class="well response-well ">
+                    @for(response <- eventResponses) {
+                        <div class="responseItem">
+                            <img class="img-circle userProfileImg" src="@{routes.HomeController.serveProfilePicture(response.getUser.getUserid())}")>
 
-                                @if(user == response.getUser) {
-                                    <span class="responseType">You  @UtilityFunctions.getResponseAdjustedForTime(response, true)</span>
-                                } else {
-                                    <span class="responseType">@response.getUser.getFName @response.getUser.getLName
-                                        @UtilityFunctions.getResponseAdjustedForTime(response, false)</span>
-                                }
-                                <span class="responseTime">@UtilityFunctions.getFormattedDateTime(response.getResponseDateTime)</span>
-                            </div>
-                        }
+                            @if(user == response.getUser) {
+                                <span class="responseType">You  @UtilityFunctions.getResponseAdjustedForTime(response, true)</span>
+                            } else {
+                                <span class="responseType">@response.getUser.getFName @response.getUser.getLName
+                                    @UtilityFunctions.getResponseAdjustedForTime(response, false)</span>
+                            }
+                            <span class="responseTime">@UtilityFunctions.getFormattedDateTime(response.getResponseDateTime)</span>
                         </div>
                     }
+                    </div>
+                }
 
-                    @if(isStored) {
-                        <h2>Media</h2>
-                        <a class="btn btn-primary" role="button" data-toggle="modal" data-target="#myModal">
-                            Add Media
-                        </a>
-                        <div class="row">
-                        @for(photo <- event.getPrimaryAlbum.getMedia) {
-                            @if(photo.isOwner(user) || photo.getIsPublic()) {
+                @if(isStored) {
+                    <h2>Media</h2>
+                    <a class="btn btn-primary" role="button" data-toggle="modal" data-target="#myModal">
+                        Add Media
+                    </a>
+                    <div class="row">
+                    @for(photo <- event.getPrimaryAlbum.getMedia) {
+                        @if(photo.isOwner(user) || photo.getIsPublic()) {
 
-                                <a href="#" data-toggle="modal" data-target="#photo-carousel" onclick="displayPhoto(@photo.getMediaId())">
+                            <a href="#" data-toggle="modal" data-target="#photo-carousel" onclick="displayPhoto(@photo.getMediaId())">
 
-                                    <div class="" id="imageContainer">
-                                        <div class="overlay">
-                                            <i class="icon" title="User Profile">
-                                            @if(photo.getIsPublic()) {
-                                                <i class="fa fa-eye-green"></i>
-                                            } else {
-                                                <i class="fa fa-eye-red"></i>
-                                            }
-                                            </i>
-                                        </div>
-                                        <img class="img-thumbnail" id=@{photo.getUrl} src="@{routes.HomeController.index(photo.getUrlWithPath())}" alt="Event Image">
-                                    </div>
-
-
-                                </a>
-                            }
-                        }
-                        </div>
-                        <div id="myModal" class="modal fade" role="dialog">
-                            <div class="modal-dialog">
-
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                        <h4 class="modal-title">Select Your Photo</h4>
-                                    </div>
-
-                                    <div class="modal-body">
-                                        @if(user.getUserPhotos.isEmpty) {
-                                            <p id="para">No photos to add to event. Upload some!</p>
+                                <div class="" id="imageContainer">
+                                    <div class="overlay">
+                                        <i class="icon" title="User Profile">
+                                        @if(photo.getIsPublic()) {
+                                            <i class="fa fa-eye-green"></i>
+                                        } else {
+                                            <i class="fa fa-eye-red"></i>
                                         }
+                                        </i>
+                                    </div>
+                                    <img class="img-thumbnail" id=@{photo.getUrl} src="@{routes.HomeController.index(photo.getUrlWithPath())}" alt="Event Image">
+                                </div>
 
-                                        @for(photo <- user.getUserPhotos) {
-                                            @if(!photo.getAlbums.exists(album => album.event == event)) {
+
+                            </a>
+                        }
+                    }
+                    </div>
+                    <div id="myModal" class="modal fade" role="dialog">
+                        <div class="modal-dialog">
+
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                    <h4 class="modal-title">Select Your Photo</h4>
+                                </div>
+
+                                <div class="modal-body">
+                                    @if(user.getUserPhotos.isEmpty) {
+                                        <p id="para">No photos to add to event. Upload some!</p>
+                                    }
+
+                                    @for(photo <- user.getUserPhotos) {
+                                        @if(!photo.getAlbums.exists(album => album.event == event)) {
                                             <a id="addPhotoLink-@photo.getMediaId" class="btn btn-light" onclick="linkPhotoToEvent(@photo.getMediaId, @event.getEventId)
                                                                                                                   <div class="container" id="imagesContainer">
                                                 <div class="overlay">
@@ -212,65 +210,65 @@
                                                 <img class="img-thumbnail" id=@{photo.getUrl} width="60" src="@{routes.HomeController.index(photo.getUrlWithPath)}" alt="User Image">
                                             </div>
                                             </a>
-                                            }
-                                        }
-
-                                    </div>
-
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                                    </div>
-                                </div>
-
-                            </div>
-                        </div>
-
-                        <div id="photo-carousel" class="modal fade">
-                            <div class="container vertical-center">
-                                <div class="carousel slide" id="myslider" data-ride="carousel" data-interval="false">
-                                    <div id="carousel-inner" class="carousel-inner" style="text-align: center;">
-                                    @for(photo <- event.getPrimaryAlbum.getMedia) {
-                                        @if(photo.isOwner(user) || photo.getIsPublic()) {
-                                            <div id="caro-@photo.getMediaId" class="item">
-
-                                                <img class="center" id="carouselImage@photo.getMediaId()" src="@{routes.HomeController.index(photo.getUrlWithPath)}" style="height: 75%; margin: auto;">
-
-
-                                                <a class="btn btn-danger" onclick="unlinkPhotoToEvent(@photo.getMediaId(), @event.getEventId)">
-                                    Remove Photo</a>
-                                            </div>
                                         }
                                     }
-                                    </div>
-                                    <a class ="left carousel-control" href="#myslider" data-slide="prev">
-                                        <span class="glyphicon glyphicon-chevron-left"></span>
-                                    </a>
-                                    <a class ="right carousel-control" href="#myslider" data-slide="next">
-                                        <span class="glyphicon glyphicon-chevron-right"></span>
-                                    </a>
+
+                                </div>
+
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                                 </div>
                             </div>
+
                         </div>
-                    }
-
-                </div>
-                <div class="col-sm-5">
-                    <div id="map">
-
                     </div>
+
+                    <div id="photo-carousel" class="modal fade">
+                        <div class="container vertical-center">
+                            <div class="carousel slide" id="myslider" data-ride="carousel" data-interval="false">
+                                <div id="carousel-inner" class="carousel-inner" style="text-align: center;">
+                                @for(photo <- event.getPrimaryAlbum.getMedia) {
+                                    @if(photo.isOwner(user) || photo.getIsPublic()) {
+                                        <div id="caro-@photo.getMediaId" class="item">
+
+                                            <img class="center" id="carouselImage@photo.getMediaId()" src="@{routes.HomeController.index(photo.getUrlWithPath)}" style="height: 75%; margin: auto;">
+
+
+                                            <a class="btn btn-danger" onclick="unlinkPhotoToEvent(@photo.getMediaId(), @event.getEventId)">
+                                    Remove Photo</a>
+                                        </div>
+                                    }
+                                }
+                                </div>
+                                <a class ="left carousel-control" href="#myslider" data-slide="prev">
+                                    <span class="glyphicon glyphicon-chevron-left"></span>
+                                </a>
+                                <a class ="right carousel-control" href="#myslider" data-slide="next">
+                                    <span class="glyphicon glyphicon-chevron-right"></span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+            </div>
+            <div class="col-sm-5">
+                <div id="map">
+
                 </div>
             </div>
         </div>
-        <div id="eventsPage">
+    </div>
+    <div id="eventsPage">
 
-        </div>
+    </div>
 
 
 
 
-        <script src="@routes.Assets.at("js/events/viewEvent.js")"></script>
-        <script>setLatLng(@event.getLatitude(), @event.getLongitude());</script>
-        <script src="https://maps.googleapis.com/maps/api/js?key=@googleApiKey&callback=initMap&libraries=drawing"
-        async defer></script>
-    }
+    <script src="@routes.Assets.at("js/events/viewEvent.js")"></script>
+    <script>setLatLng(@event.getLatitude(), @event.getLongitude());</script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=@googleApiKey&callback=initMap&libraries=drawing"
+    async defer></script>
+}
 

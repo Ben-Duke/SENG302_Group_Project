@@ -8,9 +8,7 @@ import play.mvc.Http;
 import play.mvc.Result;
 import play.test.Helpers;
 import testhelpers.BaseTestWithApplicationAndDatabase;
-import utilities.TableName;
-import utilities.TestDatabaseManager;
-import utilities.UtilityFunctions;
+import utilities.*;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -35,7 +33,7 @@ public class EventTest extends BaseTestWithApplicationAndDatabase {
     public void getLimitedResponses_userNotResponded_noOtherFollowerResponses() {
         removeAllResponses();
 
-        Event event = EventAccessor.getByInternalId(1);
+        Event event = EventAccessor.getEventById(1);
         User user = UserAccessor.getById(2);
 
         List<EventResponse> responses = event.getLimitedResponses(user);
@@ -55,7 +53,7 @@ public class EventTest extends BaseTestWithApplicationAndDatabase {
     public void getLimitedResponses_userResponded_noOtherFollowerResponses_checkOneResponseFound() {
         removeAllResponses();
 
-        Event event = EventAccessor.getByInternalId(1);
+        Event event = EventAccessor.getEventById(1);
         User user = UserAccessor.getById(2);
 
         // respond to the event
@@ -73,7 +71,7 @@ public class EventTest extends BaseTestWithApplicationAndDatabase {
     public void getLimitedResponses_userResponded_noOtherFollowerResponses_checkResponsesAreForCorrectEvent() {
         removeAllResponses();
 
-        Event event = EventAccessor.getByInternalId(1);
+        Event event = EventAccessor.getEventById(1);
         User user = UserAccessor.getById(2);
 
         // respond to the event
@@ -90,7 +88,7 @@ public class EventTest extends BaseTestWithApplicationAndDatabase {
     /* Test data contains 8 responses of users user 2 is following */
     @Test
     public void getLimitedResponses_userResponded_LessThan9FollowerResponses() {
-        Event event = EventAccessor.getByInternalId(1);
+        Event event = EventAccessor.getEventById(1);
         User user = UserAccessor.getById(2);
 
         // respond to the event

@@ -1,19 +1,19 @@
-.body{
-
-    background-image:url("");
+body{
+    background-color: #f9f9f9;
 }
 .loginform{
+    /*top: 50%;*/
+    /*left: 50%;*/
+    /*margin-right: -25%;*/
+    /*padding-top: 250px;*/
+}
 
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    margin-right: -50%;
-    transform: translate(-50%, -50%);
-    background-color: #ffd39e;
-    border: 1px solid #888;
-    width: 20%;
-    padding: 16px;
+@media (min-width: 0px) {
+    .row.equal {
+        padding-top: 10%;
+    }
+}
 
-    border-radius: 15px 15px 15px 15px;
-
+.background-img {
+    max-width: 100%;
 }

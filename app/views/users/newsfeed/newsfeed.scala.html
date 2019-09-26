@@ -17,6 +17,10 @@
                 background-color: #edebeb;
             }
 
+            #loadMoreBtn, #endOfScroll {
+                margin-top: 10px;
+            }
+
             .newsItem {
                 margin-bottom: 8px;
                 padding: 4px;
@@ -45,6 +49,14 @@
                 display: block;
                 margin: auto;
                 border-radius: 4px;
+            }
+            .event-img {
+                border-radius: 5px;
+                cursor: pointer;
+                transition: 0.3s;
+                max-height: 250px;
+                max-width: 250px;
+                width: 250px;
             }
 
         </style>
@@ -137,6 +149,12 @@
 
 
 
+        </div>
+        <div class="container text-center">
+            <btn class="btn btn-primary" id="loadMoreBtn" onclick="getAndLoadMoreNewsFeedItems()">Load more...</btn>
+            <div class="well" id="endOfScroll" style="display: none">
+                You have reached the end of your news feed
+            </div>
         </div>
     </div>
 

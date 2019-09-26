@@ -471,6 +471,10 @@ public class UtilityFunctions {
         return localDate.format(DATE_FORMATTER);
     }
 
+    public static String getStringFromDateTime(LocalDateTime time) {
+        return time.format(DATE_TIME_FORMATTER);
+    }
+
     public static LocalDate parseLocalDate(String dateString) throws EbeanDateParseException {
         try {
             return LocalDate.parse(dateString, DATE_FORMATTER);

@@ -1,5 +1,7 @@
 @(user : User, event : Event, eventResponses : List[EventResponse], googleApiKey : String, isStored : Boolean)
 @import utilities.UtilityFunctions
+    @import accessors.EventResponseAccessor
+
 @main(user, "Event") {
     <head>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -116,6 +118,24 @@
                 <div id="respondButtons" class="well" data-event-id="@event.getExternalId()"></div>
 
                 @if(isStored) {
+            </div>
+        </div>
+        <label class="col-sm-0 control-label"></label>
+        <div class="col-sm-6">
+            <img src="@event.getImageUrl">
+            <a href="@event.getUrl()" target="_blank">
+                <h2> @event.getName()</h2>
+            </a>
+            <h4>@event.getDescription()</h4>
+            @if(isStored) {
+                <h4 id="response-totals">
+                    <b>
+                    @EventResponseAccessor.getCountByEventAndType(event, ResponseType.Going) Going |
+                    @EventResponseAccessor.getCountByEventAndType(event, ResponseType.Interested) Interested |
+                        @EventResponseAccessor.getCountByEventAndType(event, ResponseType.NotGoing) Not Going
+                    </b>
+                </h4>
+
                 <div class="well response-well ">
                     @for(response <- eventResponses) {
                     <div class="responseItem">

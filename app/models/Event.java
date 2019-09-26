@@ -1,5 +1,7 @@
 package models;
 
+import accessors.EventAccessor;
+import accessors.EventResponseAccessor;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import controllers.ApplicationManager;
 import io.ebean.Finder;
@@ -26,13 +28,13 @@ public class Event extends Model implements AlbumOwner {
     private Integer externalId;
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Formats.DateTime(pattern=DATE_PATTERN)
+    @Formats.DateTime(pattern = DATE_PATTERN)
     //date was protected not public/private for some reason
     private LocalDateTime startTime;
 
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Formats.DateTime(pattern=DATE_PATTERN)
+    @Formats.DateTime(pattern = DATE_PATTERN)
     private LocalDateTime endTime;
 
     private String name;
@@ -51,7 +53,7 @@ public class Event extends Model implements AlbumOwner {
     @JsonIgnore
     @OneToMany(mappedBy = "event")
     private List<Album> albums;
-    public static final Finder<Integer,Event> find = new Finder<>(Event.class, ApplicationManager.getDatabaseName());
+    public static final Finder<Integer, Event> find = new Finder<>(Event.class, ApplicationManager.getDatabaseName());
 
 
     public Event(Integer externalId, LocalDateTime startTime, LocalDateTime endTime,
@@ -71,7 +73,8 @@ public class Event extends Model implements AlbumOwner {
         this.albums = new ArrayList<>();
     }
 
-    public Event() {}
+    public Event() {
+    }
 
     public Event(String name) {
         this.name = name;
@@ -201,14 +204,39 @@ public class Event extends Model implements AlbumOwner {
                 ", description='" + description + '\'' +
                 '}';
     }
+
     @Override
     public List<Album> getAlbums() {
         return albums;
     }
 
-    public Album getPrimaryAlbum() {return albums.get(0);}
+    public Album getPrimaryAlbum() {
+        // add the primary album if it is missing
+        if (this.albums.isEmpty()) {
+            this.albums.add(new Album(this, this.getName(), false));
+        }
+        return albums.get(0);
+    }
 
     public void setAlbums(List<Album> albums) {
         this.albums = albums;
+    }
+
+    /**
+     * Get the first 10 responses for the event where the first response is for the user
+     * if they have responded to the event and the rest are people the user is following who have responded
+     * to the event
+     */
+    public List<EventResponse> getLimitedResponses(User user) {
+        // get the user if they are going
+        List<EventResponse> responses = new ArrayList<>();
+        EventResponse userResponse = EventResponseAccessor.getByUserAndEvent(user, this);
+        if (userResponse != null) {
+            responses.add(userResponse); // add the user response
+        }
+        // add follower responses
+        responses.addAll(EventResponseAccessor.getEventResponsesOfFollowing(user, 5));
+
+        return responses;
     }
 }

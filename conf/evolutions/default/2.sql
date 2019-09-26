@@ -479,6 +479,35 @@ INSERT INTO `user_traveller_type` (`user_userid`, `traveller_type_ttypeid`) VALU
 -- user_photo_destination
 -- no data
 
+-- Event
+INSERT INTO `event` (`event_id`, `external_id`, `name`, `address`, `type`, `image_url`, `url`, `latitude`, `longitude`, `description`, `start_time`, `end_time`) VALUES
+(1, 589921, 'Mel Parsons', '3 Garlands Road, Woolston, Christchurch', 'Folk', 'http://cdn.eventfinda.co.nz/uploads/events/transformed/1329367-589921-7.jpg?v=3',
+ 'https://www.eventfinda.co.nz/2019/mel-parsons/christchurch', -43.5568, 172.6803,
+ 'Needing little introduction on these shores, award-winning singer songwriter Mel Parsons is hitting the road with her new album ''Glass Heart'' for an intimate solo tour of some her favourite New Zealand venues. ...', '2019-09-26 08:00:00', '2019-09-26 11:59:59'),
+(2, 547427, 'Songwriters In the Round', '185 Manchester St, Christchurch',
+ 'Singer-Songwriter', 'http://cdn.eventfinda.co.nz/uploads/events/transformed/1228501-547427-7.jpg', 'https://www.eventfinda.co.nz/2019/songwriters-in-the-round/christchurch',
+ -43.5326, 172.6395, 'Three singer-songwriters share their original songs acoustically and the stories behind their music.',
+ '2019-02-28 06:00:00', '2019-11-28 09:00:00');
+
+-- Event responses
+INSERT INTO `event_response` (`event_response_id`, `response_type`, `user_userid`, `event_event_id`, `response_date_time`) VALUES
+(1, '2', 5, 2, '2019-09-25 04:04:15'),
+(2, '2', 6, 2, '2019-09-25 05:08:34'),
+(3, '1', 7, 2, '2019-09-25 05:08:50'),
+(4, '0', 8, 2, '2019-09-25 05:11:21'),
+(5, '1', 9, 2, '2019-09-25 05:11:56'),
+(6, '2', 10, 2, '2019-09-25 05:08:34'),
+(7, '1', 11, 2, '2019-09-25 05:08:50'),
+(8, '0', 12, 2, '2019-09-25 05:11:21'),
+(9, '2', 13, 2, '2019-09-25 05:08:34'),
+(10, '1', 14, 2, '2019-09-25 05:08:50'),
+(11, '0', 15, 2, '2019-09-25 05:11:21'),
+(12, '0', 16, 2, '2019-09-25 05:11:21'),
+(13, '2', 3, 2, '2019-09-25 05:08:34'),
+(14, '1', 4, 2, '2019-09-25 05:08:50'),
+(15, '0', 2, 2, '2019-09-25 04:04:15');
+
+
 -- tags
 INSERT INTO `tag` (`tag_id`, `name`) VALUES
 (7, '#Culture'),
@@ -574,6 +603,10 @@ delete from trip_tag;
 delete from tag_user;
 
 delete from tag;
+
+delete from event_response;
+
+delete from event;
 
 delete from album_media;
 

@@ -85,7 +85,7 @@ public class EventResponseControllerTest extends BaseTestWithApplicationAndDatab
     }
 
 
-    @Ignore
+
     @Test
     public void respondToEventGoing() {
         Http.RequestBuilder request = Helpers.fakeRequest()
@@ -95,7 +95,7 @@ public class EventResponseControllerTest extends BaseTestWithApplicationAndDatab
         assertEquals(OK, result.status());
     }
 
-    @Ignore
+
     @Test
     public void respondToEventInvalidEvent() {
         Http.RequestBuilder request = Helpers.fakeRequest()
@@ -105,7 +105,7 @@ public class EventResponseControllerTest extends BaseTestWithApplicationAndDatab
         assertEquals(BAD_REQUEST, result.status());
     }
 
-    @Ignore
+
     @Test
     public void respondToEventInterested() {
         Http.RequestBuilder request = Helpers.fakeRequest()
@@ -115,17 +115,17 @@ public class EventResponseControllerTest extends BaseTestWithApplicationAndDatab
         assertEquals(OK, result.status());
     }
 
-    @Ignore
+
     @Test
     public void respondToEventNotInterested() {
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(PUT)
-                .uri("/events/respond/594788/NotInterested").session("connected", "1");
+                .uri("/events/respond/594788/NotGoing").session("connected", "1");
         Result result = route(app, request);
         assertEquals(OK, result.status());
     }
 
-    @Ignore
+
     @Test
     public void respondToEventWent() {
         Http.RequestBuilder request = Helpers.fakeRequest()
@@ -134,7 +134,7 @@ public class EventResponseControllerTest extends BaseTestWithApplicationAndDatab
         Result result = route(app, request);
         assertEquals(OK, result.status());
     }
-    @Ignore
+
     @Test
     public void respondToEventLoggedOut() {
         Http.RequestBuilder request = Helpers.fakeRequest()

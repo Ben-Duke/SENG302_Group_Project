@@ -46,6 +46,9 @@ public class ApplicationManager {
      * @return A String representing the user photo URL
      */
     public static String getMediaPath(){
+        if (mediaPath == null) {
+            mediaPath = "/../media_";
+        }
         return mediaPath;
     }
 

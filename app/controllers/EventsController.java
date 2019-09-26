@@ -1,9 +1,6 @@
 package controllers;
 
-import accessors.AlbumAccessor;
-import accessors.DestinationAccessor;
-import accessors.EventAccessor;
-import accessors.UserPhotoAccessor;
+import accessors.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -152,8 +149,16 @@ public class EventsController {
         if(event == null) {
             return badRequest();
         }
+
         event.getPrimaryAlbum().addMedia(userPhoto);
-        AlbumAccessor.update(event.getPrimaryAlbum());
+
+        MediaAccessor.update(userPhoto);
+
+        AlbumAccessor.insert(event.getPrimaryAlbum());
+
+        EventAccessor.update(event);
+
+
         return ok();
     }
 

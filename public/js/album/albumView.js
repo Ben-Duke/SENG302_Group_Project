@@ -374,14 +374,14 @@ async function displaySlides(i, albumData, path) {
             //
 
             if (input) {
-                content.addEventListener('blur', function (event) {
+                content.onblur = function (event) {
                     if (el.innerText != "Click to add caption.")
                     data[el.getAttribute('data-name')] = el.innerText;
                     // we could send an ajax request to update the field
                     submitEditCaption(content.innerText, mediaId);
                     el.blur();
                     event.preventDefault();
-                });
+                }
             }
         });
     }

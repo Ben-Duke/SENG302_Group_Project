@@ -111,7 +111,6 @@
     </head>
     <div class="container">
         <div class="row">
-
             <label class="col-sm-0 control-label"></label>
             <div class="col-sm-7">
                 <img src="@event.getImageUrl" style="margin-top: 10px;">
@@ -123,7 +122,6 @@
                 <h5>@event.getAddress()</h5>
                 <div id="respondButtons" class="well" data-event-id="@event.getExternalId()"></div>
 
-
                 @if(isStored) {
                     <h2>Media</h2>
                     <a class="btn btn-primary" role="button" data-toggle="modal" data-target="#myModal">
@@ -132,9 +130,7 @@
                     <div class="row">
                     @for(photo <- event.getPrimaryAlbum.getMedia) {
                         @if(photo.isOwner(user) || photo.getIsPublic()) {
-
                             <a href="#" data-toggle="modal" data-target="#photo-carousel" onclick="displayPhoto(@photo.getMediaId())">
-
                                 <div class="" id="imageContainer">
                                     <div class="overlay">
                                         <i class="icon" title="User Profile">
@@ -147,15 +143,12 @@
                                     </div>
                                     <img class="img-thumbnail" id=@{photo.getUrl} src="@{routes.HomeController.index(photo.getUrlWithPath())}" alt="Event Image">
                                 </div>
-
-
                             </a>
                         }
                     }
                     </div>
                     <div id="myModal" class="modal fade" role="dialog">
                         <div class="modal-dialog">
-
                             <div class="modal-content">
                                 <div class="modal-header">
                                     <button type="button" class="close" data-dismiss="modal">&times;</button>
@@ -166,11 +159,9 @@
                                     @if(user.getUserPhotos.isEmpty) {
                                         <p id="para">No photos to add to event. Upload some!</p>
                                     }
-
                                     @for(photo <- user.getUserPhotos) {
                                         @if(!photo.getAlbums.exists(album => album.event == event)) {
-                                            <a id="addPhotoLink-@photo.getMediaId" class="btn btn-light" onclick="linkPhotoToEvent(@photo.getMediaId, @event.getEventId)
-                                                                                                                  <div class="container" id="imagesContainer">
+                                            <a id="addPhotoLink-@photo.getMediaId" class="btn btn-light" onclick="linkPhotoToEvent(@photo.getMediaId, @event.getEventId)">
                                                 <div class="overlay">
                                                     <i class="icon" title="User Profile">
                                                     @if(photo.getIsPublic) {
@@ -181,7 +172,6 @@
                                                     </i>
                                                 </div>
                                                 <img class="img-thumbnail" id=@{photo.getUrl} width="60" src="@{routes.HomeController.index(photo.getUrlWithPath)}" alt="User Image">
-                                            </div>
                                             </a>
                                         }
                                     }
@@ -192,7 +182,6 @@
                                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                                 </div>
                             </div>
-
                         </div>
                     </div>
 
@@ -204,17 +193,10 @@
                                 @for(photo <- event.getPrimaryAlbum.getMedia) {
                                     @if(photo.isOwner(user) || photo.getIsPublic()) {
                                         <div id="caro-@photo.getMediaId" class="item">
-
                                             <img class="center" id="carouselImage@photo.getMediaId()" src="@{routes.HomeController.index(photo.getUrlWithPath)}" style="height: 75%; margin: auto;">
-
-
-                                            <a class="btn btn-danger" onclick="unlinkPhotoToEvent(@photo.getMediaId(), @event.getEventId)">
-                                Remove From Event</a>
-
-                                            <a class="btn btn-primary" id="makePrivateLink-@photo.getMediaId()" data-mediaId="@photo.getMediaId" style="display: @getDisplayType(photo.getIsPublic, "make private")" onclick="setMediaPrivacy(@photo.getMediaId(), false)">
-                                                Make Private</a>
-                                            <a class="btn btn-primary" id="makePublicLink-@photo.getMediaId()" data-mediaId="@photo.getMediaId" style="display: @getDisplayType(photo.getIsPublic, "make public")" onclick="setMediaPrivacy(@photo.getMediaId(), true)">
-                                                Make Public</a>
+                                            <a class="btn btn-danger" onclick="unlinkPhotoToEvent(@photo.getMediaId(), @event.getEventId)">Remove From Event</a>
+                                            <a class="btn btn-primary" id="makePrivateLink-@photo.getMediaId()" data-mediaId="@photo.getMediaId" style="display: @getDisplayType(photo.getIsPublic, "make private")" onclick="setMediaPrivacy(@photo.getMediaId(), false)"> Make Private</a>
+                                            <a class="btn btn-primary" id="makePublicLink-@photo.getMediaId()" data-mediaId="@photo.getMediaId" style="display: @getDisplayType(photo.getIsPublic, "make public")" onclick="setMediaPrivacy(@photo.getMediaId(), true)"> Make Public</a>
                                         </div>
                                     }
                                 }
@@ -229,41 +211,40 @@
                         </div>
                     </div>
 
-                        }
+                }
 
 
             </div>
                 <div class="col-sm-5">
                     <div id="map">
 
-                </div>
-                @if(isStored) {
-                    <h4 style="margin-left: 20px; margin-top: 20px;" id="response-totals">
-                        <b id="event-response-count">
-                            @EventResponseAccessor.getCountByEventAndType(event, ResponseType.Going) Going |
-                            @EventResponseAccessor.getCountByEventAndType(event, ResponseType.Interested) Interested |
-                            @EventResponseAccessor.getCountByEventAndType(event, ResponseType.NotGoing) Not Going
+                    </div>
+                    @if(isStored) {
+                        <h4 style="margin-left: 20px; margin-top: 20px;" id="response-totals">
+                            <b id="event-response-count">
+                                @EventResponseAccessor.getCountByEventAndType(event, ResponseType.Going) Going |
+                                @EventResponseAccessor.getCountByEventAndType(event, ResponseType.Interested) Interested |
+                                @EventResponseAccessor.getCountByEventAndType(event, ResponseType.NotGoing) Not Going
+                            </b>
+                        </h4>
+                        <div class="well response-well ">
+                            @for(response <- eventResponses) {
+                            <div class="responseItem">
+                                <img class="img-circle userProfileImg" src="@{routes.HomeController.serveProfilePicture(response.getUser.getUserid())}")>
 
-                        </b>
-                    </h4>
-                <div class="well response-well ">
-                    @for(response <- eventResponses) {
-                    <div class="responseItem">
-                        <img class="img-circle userProfileImg" src="@{routes.HomeController.serveProfilePicture(response.getUser.getUserid())}")>
-
-                                @if(user == response.getUser) {
-                                    <span class="responseType">You  @UtilityFunctions.getResponseAdjustedForTime(response, true)</span>
-                                } else {
-                                    <span class="responseType">@response.getUser.getFName @response.getUser.getLName
-                                        @UtilityFunctions.getResponseAdjustedForTime(response, false)</span>
+                                        @if(user == response.getUser) {
+                                            <span class="responseType">You  @UtilityFunctions.getResponseAdjustedForTime(response, true)</span>
+                                        } else {
+                                            <span class="responseType">@response.getUser.getFName @response.getUser.getLName
+                                                @UtilityFunctions.getResponseAdjustedForTime(response, false)</span>
+                                        }
+                                        <span class="responseTime">@UtilityFunctions.getFormattedDateTime(response.getResponseDateTime)</span>
+                                    </div>
                                 }
-                                <span class="responseTime">@UtilityFunctions.getFormattedDateTime(response.getResponseDateTime)</span>
-                            </div>
-                        }
+                                </div>
+                            }
                         </div>
-                    }
                 </div>
-            </div>
         </div>
         <div id="eventsPage">
 

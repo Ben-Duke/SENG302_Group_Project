@@ -71,7 +71,7 @@ function createNewsFeedEventResponseComponent(event, user, responseTime) {
     link1.target = "_self";
 
     let eventThumbnailImg = document.createElement("img");
-    eventThumbnailImg.setAttribute("class", "img-thumbnail");
+    eventThumbnailImg.setAttribute("class", "event-img");
     eventThumbnailImg.src = event.imageUrl;
 
     let mediaBodyDiv = document.createElement("div");

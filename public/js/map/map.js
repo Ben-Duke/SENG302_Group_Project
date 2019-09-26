@@ -1564,7 +1564,7 @@ function searchByKeyword(currentPageNum, tab) {
                         }
 
                     }
-                    createDestinationViews(destData.destinations, destData.travellerTypeMap)
+                    createDestinationViews(res.destinations, res.travellerTypeMap)
                     if (publicCount > 0) {
                         addPagination(publicCount, currentPageNum, searchInput, "publicDestinationList");
                     }

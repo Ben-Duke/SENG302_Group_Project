@@ -29,7 +29,7 @@ public class CountryUtils {
      * Return all countries from the API as a list
      * @return List of all countries
      */
-    static List<String> getCountries() {
+    public static List<String> getCountries() {
         updateCountries();
         return countries;
     }

@@ -1,21 +1,37 @@
-@(user : User)
+@import formdata.LoginFormData
+@import views.html.helper.form
+@import views.html.users.loginpage.login_page_fieldset
+@(userForm : Form[LoginFormData], user : User)
 
 @main(user, "All Users") {
 
-    <body style = background-image:url("./assets/images/background.jpg");>
-        <link rel="stylesheet" type="text/css"
-        href='@routes.Assets.at("stylesheets/userIndex.css")'>
+    @*<body style = background-image:url("./assets/images/background.jpg");>*@
+    <head>
+        <link rel="stylesheet" href="@routes.Assets.at("stylesheets/userIndex.css")">
+    </head>
+    <body>
+        <div class="container">
+            <div class="row equal">
+                <div class="col-lg-7 background-img">
+                    <img src ='/assets/images/icons/logoLarge.png' width="600px">
+                </div>
+                <div class="col-lg-5 loginform">
+                    <h2>Welcome to iVentr </h2>
+                    <div class="well">
+                    @form(helper.CSRF(routes.LoginController.loginrequest()) , 'class -> "form-horizontal") {
+                        @login_page_fieldset(userForm)
+                    }
+                    </div>
+                    <h4>Don't have an account?
+                        <form action="@routes.RegisterController.createuser()" style="display: inline;">
+                        <button class="btn btn-primary">Sign Up</button>
+                    </form>
+                    </h4>
 
 
+                </div>
 
-    <div class = "loginform">
-        <h2>Welcome to TravelEA</h2>
-
-        <form>
-            <button class="btn btn-default" formaction="@routes.RegisterController.createuser()">Create User</button>
-            <button class="btn btn-default" formaction="@routes.LoginController.login()">Login</button>
-        </form>
-    </div>
-
+            </div>
+        </div>
     </body>
 }

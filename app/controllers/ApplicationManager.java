@@ -73,7 +73,17 @@ public class ApplicationManager {
      */
     public final static String getDefaultDestinationPhotoFullURL() {
         String urlToRoot = Paths.get(".").toAbsolutePath().normalize().toString();
+
         return urlToRoot + "/public/images/destinationPlaceHolder.png";
+    }
+
+    public final static String getDefaultDestinationPhotoAlternativeURL() {
+        String otherURLPath = Paths.get(".").toAbsolutePath().normalize().toString()
+                + ApplicationManager.getMediaPath()
+                + "/"
+                + "destinationPlaceHolder.png";
+
+        return otherURLPath;
     }
 
     /**

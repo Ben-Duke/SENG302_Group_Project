@@ -29,6 +29,7 @@ import models.commands.General.CommandPage;
 import models.commands.Photos.DeletePhotoCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import play.ApplicationLoader;
 import play.data.DynamicForm;
 import play.data.Form;
 import play.data.FormFactory;
@@ -37,16 +38,14 @@ import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
 
+import scala.App;
 import utilities.CountryUtils;
 import utilities.EnvVariableKeys;
 import utilities.EnvironmentalVariablesAccessor;
 import views.html.users.destination.*;
 
 import javax.inject.Inject;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.*;
@@ -1240,13 +1239,33 @@ public class DestinationController extends Controller {
     public Result servePrimaryPicture(Http.Request request, Integer destId) {
         if (destId != null) {
             UserPhoto primaryPicture = DestinationFactory.getPrimaryPicture(destId);
+            System.out.println(primaryPicture);
             if (primaryPicture != null) {
+                System.out.println(1);
                 return ok(new File(primaryPicture.getUrlWithPath()));
             } else {
                 //should be 404 but then console logs an error
-                return ok(new File(ApplicationManager.getDefaultDestinationPhotoFullURL()));
+                System.out.println(2);
+
+                File photo = null;
+                try {
+                    photo = new File(ApplicationManager.getDefaultDestinationPhotoFullURL());
+                } catch (Exception e) {
+                    // does nothing
+                }
+
+                if (photo == null) {
+                    photo = new File(ApplicationManager.getDefaultDestinationPhotoAlternativeURL());
+                }
+
+                if (photo == null) {
+                    return internalServerError();
+                }
+
+                return ok(photo);
             }
         } else {
+            System.out.println(3);
             return redirect(routes.UserController.userindex());
         }
     }

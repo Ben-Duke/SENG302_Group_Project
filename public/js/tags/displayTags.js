@@ -32,7 +32,7 @@ function getItemData(item) {
         data.header = item.destName;
         data.type = 'Destination';
         data.body = item.district + ', ' + item.country;
-        data.img = '/users/destinations/getprimaryphoto/' + item.destId
+        data.img = '/users/destinations/getprimaryphoto/' + item.destId;
         data.link = "/users/destinations/view/" + item.destId;
         addItem(data);
 

@@ -25,9 +25,21 @@ function getItemData(item) {
         } else {
             data.body = "No date entered"
         }
-        data.img = "/users/trips/" + item.tripid + "/tripPicture";
         data.link = "/users/map_home";
-        addItem(data);
+
+        const tripImageURL = "/users/trips/" + item.tripid + "/tripPicture";
+        $.ajax({
+            type: 'GET',
+            url: tripImageURL,
+            success: function(notUser) {
+                data.img = tripImageURL;
+                addItem(data);
+            },
+            error: function() {
+                data.img = '/assets/images/destinationPlaceHolder.png';
+                addItem(data);
+            }
+        });
     } else if (item.hasOwnProperty('destName')) {
         data.header = item.destName;
         data.type = 'Destination';

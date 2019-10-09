@@ -1255,7 +1255,11 @@ public class DestinationController extends Controller {
                 }
 
                 if (photo == null) {
-                    photo = new File(ApplicationManager.getDefaultDestinationPhotoAlternativeURL());
+                    try {
+                        photo = new File(ApplicationManager.getDefaultDestinationPhotoAlternativeURL());
+                    } catch (Exception e) {
+                        // does nothing
+                    }
                 }
 
                 if (photo == null) {

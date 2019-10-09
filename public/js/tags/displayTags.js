@@ -31,8 +31,12 @@ function getItemData(item) {
         $.ajax({
             type: 'GET',
             url: tripImageURL,
-            success: function(notUser) {
-                data.img = tripImageURL;
+            success: function(data, textStatus, xhr) {
+                if (xhr.status !== 200) {
+                    data.img = '/assets/images/destinationPlaceHolder.png';
+                } else {
+                    data.img = tripImageURL;
+                }
                 addItem(data);
             },
             error: function() {
